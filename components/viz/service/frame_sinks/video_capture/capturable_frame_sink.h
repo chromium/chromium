@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 
+#include <memory>
 #include <variant>
 
 #include "base/time/time.h"
@@ -95,8 +96,8 @@ class CapturableFrameSink {
   // LocalSurfaceId is at least `local_surface_id`. Note that if this id is
   // default constructed, then the next surface will provide the copy output
   // regardless of its LocalSurfaceId.
-  virtual void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request) = 0;
+  virtual void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
+                                       pending_copy_output_request) = 0;
 
   // Returns the CompositorFrameMetadata of the last activated CompositorFrame.
   // Return null if no CompositorFrame has activated yet.

@@ -1216,8 +1216,8 @@ class TestVizClient {
   CopyOutputRequest* RequestCopyOfOutput() {
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     auto* copy_request_ptr = copy_request.get();
-    root_sink_->RequestCopyOfOutput(PendingCopyOutputRequest{
-        local_surface_id(), SubtreeCaptureId(), std::move(copy_request)});
+    root_sink_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+        local_surface_id(), SubtreeCaptureId(), std::move(copy_request)));
     return copy_request_ptr;
   }
 
@@ -2014,9 +2014,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
 
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
-                                         SubtreeCaptureId(),
-                                         std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput(
+      std::make_unique<PendingCopyOutputRequest>(
+          embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+          std::move(copy_request)));
 
   CompositorFrame root_frame =
       CompositorFrameBuilder()
@@ -2071,9 +2072,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       embedded_surface_id.local_surface_id(), std::move(embedded_frame));
 
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
-  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
-                                         SubtreeCaptureId(),
-                                         std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput(
+      std::make_unique<PendingCopyOutputRequest>(
+          embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+          std::move(copy_request)));
 
   CompositorFrame root_frame =
       CompositorFrameBuilder()
@@ -2124,8 +2126,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     embedded_support->RequestCopyOfOutput(
-        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
-         std::move(copy_request)});
+        std::make_unique<PendingCopyOutputRequest>(
+            embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+            std::move(copy_request)));
   }
 
   {
@@ -2222,8 +2225,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     embedded_support->RequestCopyOfOutput(
-        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
-         std::move(copy_request)});
+        std::make_unique<PendingCopyOutputRequest>(
+            embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+            std::move(copy_request)));
   }
 
   {
@@ -2366,9 +2370,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
-  root_sink_->RequestCopyOfOutput({root_surface_id_.local_surface_id(),
-                                   SubtreeCaptureId(),
-                                   std::move(copy_request)});
+  root_sink_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      root_surface_id_.local_surface_id(), SubtreeCaptureId(),
+      std::move(copy_request)));
 
   aggregator_.set_take_copy_requests(false);
   auto aggregated_frame = AggregateFrame(root_surface_id_);
@@ -2422,8 +2426,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, VideoCapturePreventsMerge) {
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     auto* copy_request_ptr = copy_request.get();
     embedded_support->RequestCopyOfOutput(
-        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
-         std::move(copy_request)});
+        std::make_unique<PendingCopyOutputRequest>(
+            embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+            std::move(copy_request)));
 
     auto aggregated_frame = AggregateFrame(root_surface_id_);
 
@@ -2487,9 +2492,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
                         device_scale_factor);
   auto copy_request(CopyOutputRequest::CreateStubForTesting());
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
-                                         SubtreeCaptureId(),
-                                         std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput(
+      std::make_unique<PendingCopyOutputRequest>(
+          embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+          std::move(copy_request)));
 
   TestSurfaceIdAllocator parent_surface_id(parent_support->frame_sink_id());
 
@@ -9764,9 +9770,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Now add a CopyOutputRequest on the child surface, so that the delegated
   // ink metadata does get populated on the aggregated frame.
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
-  child_sink_->RequestCopyOfOutput({child_surface_id.local_surface_id(),
-                                    SubtreeCaptureId(),
-                                    std::move(copy_request)});
+  child_sink_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      child_surface_id.local_surface_id(), SubtreeCaptureId(),
+      std::move(copy_request)));
 
   aggregated_frame = AggregateFrame(root_surface_id_);
 

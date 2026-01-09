@@ -194,7 +194,7 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   // |PendingCopyOutputRequest::subtree_capture_id| if such a render pass
   // exists, otherwise the request will be ignored.
   void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request);
+      std::unique_ptr<PendingCopyOutputRequest> pending_copy_output_request);
 
   using CopyRequestsMap =
       std::multimap<CompositorRenderPassId, std::unique_ptr<CopyOutputRequest>>;

@@ -18,12 +18,6 @@ PendingCopyOutputRequest::PendingCopyOutputRequest(
       copy_output_request(std::move(request)),
       capture_exact_surface_id(capture_exact_id) {}
 
-PendingCopyOutputRequest::PendingCopyOutputRequest(PendingCopyOutputRequest&&) =
-    default;
-
-PendingCopyOutputRequest& PendingCopyOutputRequest::operator=(
-    PendingCopyOutputRequest&&) = default;
-
 PendingCopyOutputRequest::~PendingCopyOutputRequest() = default;
 
 }  // namespace viz

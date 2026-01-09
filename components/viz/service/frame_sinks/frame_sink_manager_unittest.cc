@@ -1070,7 +1070,7 @@ TEST_F(FrameSinkManagerTest,
   // `LocalSurfaceId`.
   auto requests = cfss->TakeCopyOutputRequests(id1);
   ASSERT_EQ(requests.size(), 1u);
-  ASSERT_EQ(requests[0].copy_output_request.get(), request_ptr);
+  ASSERT_EQ(requests[0]->copy_output_request.get(), request_ptr);
 
   manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   manager_->UnregisterBeginFrameSource(&source);

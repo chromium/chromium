@@ -387,13 +387,13 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
 }
 
 void Surface::RequestCopyOfOutput(
-    PendingCopyOutputRequest pending_copy_output_request) {
+    std::unique_ptr<PendingCopyOutputRequest> pending_copy_output_request) {
   TRACE_EVENT1("viz", "Surface::RequestCopyOfOutput", "has_active_frame_data",
                !!active_frame_data_);
 
-  if (!pending_copy_output_request.subtree_capture_id.is_valid()) {
+  if (!pending_copy_output_request->subtree_capture_id.is_valid()) {
     RequestCopyOfOutputOnRootRenderPass(
-        std::move(pending_copy_output_request.copy_output_request));
+        std::move(pending_copy_output_request->copy_output_request));
     return;
   }
 
@@ -402,9 +402,9 @@ void Surface::RequestCopyOfOutput(
 
   for (auto& render_pass : GetActiveFrame().render_pass_list) {
     if (render_pass->subtree_capture_id ==
-        pending_copy_output_request.subtree_capture_id) {
+        pending_copy_output_request->subtree_capture_id) {
       RequestCopyOfOutputOnRenderPass(
-          std::move(pending_copy_output_request.copy_output_request),
+          std::move(pending_copy_output_request->copy_output_request),
           *render_pass);
       return;
     }
@@ -846,7 +846,7 @@ void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
 void Surface::TakeCopyOutputRequestsFromClient() {
   if (!surface_client_)
     return;
-  for (PendingCopyOutputRequest& request_params :
+  for (std::unique_ptr<PendingCopyOutputRequest>& request_params :
        surface_client_->TakeCopyOutputRequests(
            surface_id().local_surface_id())) {
     RequestCopyOfOutput(std::move(request_params));

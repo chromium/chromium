@@ -514,19 +514,19 @@ void CompositorFrameSinkSupport::ReceiveFromChild(
   surface_resource_holder_.ReceiveFromChild(resources);
 }
 
-std::vector<PendingCopyOutputRequest>
+std::vector<std::unique_ptr<PendingCopyOutputRequest>>
 CompositorFrameSinkSupport::TakeCopyOutputRequests(
     const LocalSurfaceId& latest_local_id) {
-  std::vector<PendingCopyOutputRequest> results;
+  std::vector<std::unique_ptr<PendingCopyOutputRequest>> results;
   for (auto it = copy_output_requests_.begin();
        it != copy_output_requests_.end();) {
     // Pick up the requests that require an exact `LocalSurfaceId` match.
-    if (it->capture_exact_surface_id) {
+    if ((*it)->capture_exact_surface_id) {
       // `ui::DelegatedFrameHostAndroid` won't send a `CopyOutputRequest`
       // without a valid `LocalSurfaceId`. This is guaranteed as we can't
       // serialize/deserialize an empty `LocalSurfaceId`.
-      CHECK(it->local_surface_id.is_valid());
-      if (it->local_surface_id == latest_local_id) {
+      CHECK((*it)->local_surface_id.is_valid());
+      if ((*it)->local_surface_id == latest_local_id) {
         results.push_back(std::move(*it));
         it = copy_output_requests_.erase(it);
       } else {
@@ -535,14 +535,14 @@ CompositorFrameSinkSupport::TakeCopyOutputRequests(
     }
     // Requests with a non-valid local id should be satisfied as soon as
     // possible.
-    else if (!it->local_surface_id.is_valid() ||  // NOLINT
-             latest_local_id.IsSameOrNewerThan(it->local_surface_id)) {
+    else if (!(*it)->local_surface_id.is_valid() ||  // NOLINT
+             latest_local_id.IsSameOrNewerThan((*it)->local_surface_id)) {
       results.push_back(std::move(*it));
       it = copy_output_requests_.erase(it);
     } else if (latest_local_id.IsNewerThanIgnoringEmbedToken(
-                   it->local_surface_id) &&
+                   (*it)->local_surface_id) &&
                latest_local_id.embed_token() !=
-                   it->local_surface_id.embed_token()) {
+                   (*it)->local_surface_id.embed_token()) {
       // This must be that the embedding changed, so discard.
       it = copy_output_requests_.erase(it);
     } else {
@@ -918,10 +918,10 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       copy_request->set_result_task_runner(
           base::SequencedTaskRunner::GetCurrentDefault());
 
-      RequestCopyOfOutput(
-          PendingCopyOutputRequest(last_created_surface_id_.local_surface_id(),
-                                   SubtreeCaptureId{}, std::move(copy_request),
-                                   /*capture_exact_id=*/true));
+      RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+          last_created_surface_id_.local_surface_id(), SubtreeCaptureId{},
+          std::move(copy_request),
+          /*capture_exact_id=*/true));
     }
 
     if (!create_surface_return.has_value()) {
@@ -1396,7 +1396,7 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
 }
 
 void CompositorFrameSinkSupport::RequestCopyOfOutput(
-    PendingCopyOutputRequest pending_copy_output_request) {
+    std::unique_ptr<PendingCopyOutputRequest> pending_copy_output_request) {
   copy_output_requests_.push_back(std::move(pending_copy_output_request));
   if (last_activated_surface_id_.is_valid()) {
     BeginFrameAck ack;
@@ -1721,8 +1721,8 @@ void CompositorFrameSinkSupport::ClearAllPendingCopyOutputRequests() {
     // the underlying GPU resources. The GPU resources will finally be
     // released when the `Surface` is destroyed (in this case, after the
     // CopyOutputRequest is fulfilled).
-    if (request.capture_exact_surface_id) {
-      const SurfaceId target_id(frame_sink_id_, request.local_surface_id);
+    if (request->capture_exact_surface_id) {
+      const SurfaceId target_id(frame_sink_id_, request->local_surface_id);
       auto* target_surface = surface_manager_->GetSurfaceForId(target_id);
       if (target_surface) {
         target_surface->RequestCopyOfOutput(std::move(request));

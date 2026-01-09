@@ -21,8 +21,10 @@ struct VIZ_SERVICE_EXPORT PendingCopyOutputRequest {
                            SubtreeCaptureId subtree_id,
                            std::unique_ptr<CopyOutputRequest> request,
                            bool capture_exact_id = false);
-  PendingCopyOutputRequest(PendingCopyOutputRequest&&);
-  PendingCopyOutputRequest& operator=(PendingCopyOutputRequest&&);
+  PendingCopyOutputRequest(const PendingCopyOutputRequest&) = delete;
+  PendingCopyOutputRequest& operator=(const PendingCopyOutputRequest&) = delete;
+  PendingCopyOutputRequest(PendingCopyOutputRequest&&) = delete;
+  PendingCopyOutputRequest& operator=(PendingCopyOutputRequest&&) = delete;
   ~PendingCopyOutputRequest();
 
   // The ID of the local surface which |copy_output_request| will be placed on

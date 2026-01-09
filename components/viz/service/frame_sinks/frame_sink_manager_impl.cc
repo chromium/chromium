@@ -533,7 +533,7 @@ void FrameSinkManagerImpl::RequestCopyOfOutput(
     std::unique_ptr<CopyOutputRequest> request,
     bool capture_exact_surface_id) {
   TRACE_EVENT0("viz", "FrameSinkManagerImpl::RequestCopyOfOutput");
-  PendingCopyOutputRequest pending_request(
+  auto pending_request = std::make_unique<PendingCopyOutputRequest>(
       surface_id.local_surface_id(), SubtreeCaptureId(), std::move(request),
       capture_exact_surface_id);
   // The exact request can be picked up by the targeted surface right away,

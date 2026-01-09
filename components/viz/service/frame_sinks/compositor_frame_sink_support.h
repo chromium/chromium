@@ -165,7 +165,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       const std::vector<TransferableResource>& resources) override;
   // Takes the CopyOutputRequests that were requested for a surface with at
   // most |local_surface_id|.
-  std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
+  std::vector<std::unique_ptr<PendingCopyOutputRequest>> TakeCopyOutputRequests(
       const LocalSurfaceId& local_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
   void SendCompositorFrameAck() override;
@@ -233,8 +233,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       const VideoCaptureSubTarget& sub_target) const override;
   void OnClientCaptureStarted() override;
   void OnClientCaptureStopped() override;
-  void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request) override;
+  void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
+                               pending_copy_output_request) override;
   const CompositorFrameMetadata* GetLastActivatedFrameMetadata() override;
 
   HitTestAggregator* GetHitTestAggregator();
@@ -251,7 +251,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // string.
   static const char* GetSubmitResultAsString(SubmitResult result);
 
-  const std::vector<PendingCopyOutputRequest>&
+  const std::vector<std::unique_ptr<PendingCopyOutputRequest>>&
   copy_output_requests_for_testing() const {
     return copy_output_requests_;
   }
@@ -430,7 +430,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // PendingCopyOutputRequest::local_surface_id will not. Note that if the
   // PendingCopyOutputRequest::local_surface_id is default initialized, then the
   // next surface will take it regardless of its LocalSurfaceId.
-  std::vector<PendingCopyOutputRequest> copy_output_requests_;
+  std::vector<std::unique_ptr<PendingCopyOutputRequest>> copy_output_requests_;
 
   bool callback_received_begin_frame_ = true;
   bool callback_received_receive_ack_ = true;

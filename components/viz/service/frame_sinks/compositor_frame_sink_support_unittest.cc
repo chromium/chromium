@@ -985,8 +985,8 @@ TEST_P(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called1,
                      called1_run_loop.QuitClosure()));
-  support_->RequestCopyOfOutput(
-      {local_surface_id_, kSubtreeId1, std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id_, kSubtreeId1, std::move(request)));
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(called1);
 
@@ -999,8 +999,8 @@ TEST_P(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called2,
                      called2_run_loop.QuitClosure()));
-  support_->RequestCopyOfOutput(
-      {local_surface_id_, kSubtreeId2, std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id_, kSubtreeId2, std::move(request)));
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   called2_run_loop.Run();
   EXPECT_FALSE(called1);
@@ -1040,8 +1040,8 @@ TEST_P(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
                      called1_run_loop.QuitClosure()));
   request->set_source(source_id1);
 
-  support_->RequestCopyOfOutput(
-      {local_surface_id_, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id_, SubtreeCaptureId(), std::move(request)));
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(called1);
 
@@ -1054,8 +1054,8 @@ TEST_P(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
                      called2_run_loop.QuitClosure()));
   request->set_source(source_id2);
 
-  support_->RequestCopyOfOutput(
-      {local_surface_id_, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id_, SubtreeCaptureId(), std::move(request)));
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   // Callbacks have different sources so neither should be called.
   EXPECT_FALSE(called1);
@@ -1070,8 +1070,8 @@ TEST_P(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
                      called3_run_loop.QuitClosure()));
   request->set_source(source_id1);
 
-  support_->RequestCopyOfOutput(
-      {local_surface_id_, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id_, SubtreeCaptureId(), std::move(request)));
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   // Two callbacks are from source1, so the first should be called.
   called1_run_loop.Run();
@@ -1338,8 +1338,8 @@ TEST_P(CompositorFrameSinkSupportTest,
       CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(
-      {local_surface_id1, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id1, SubtreeCaptureId(), std::move(request)));
 
   // First surface takes CopyOutputRequests from its client. Now only the first
   // surface should report having CopyOutputRequests.
@@ -1382,8 +1382,8 @@ TEST_P(CompositorFrameSinkSupportTest,
       CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(
-      {local_surface_id2, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id2, SubtreeCaptureId(), std::move(request)));
 
   // The first surface doesn't have copy output requests, because it can't
   // satisfy the request that the client has.
@@ -1425,8 +1425,8 @@ TEST_P(CompositorFrameSinkSupportTest,
       CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(
-      {local_surface_id1, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id1, SubtreeCaptureId(), std::move(request)));
 
   // Create the second surface.
   support_->SubmitCompositorFrame(local_surface_id2,
@@ -1469,8 +1469,8 @@ TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestEmbeddingTokenChanges) {
       CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
       result_future.GetCallback());
-  support_->RequestCopyOfOutput(
-      {local_surface_id1, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id1, SubtreeCaptureId(), std::move(request)));
 
   // Create the second surface with new embedding token.
   support_->SubmitCompositorFrame(local_surface_id2,
@@ -1500,8 +1500,8 @@ TEST_P(CompositorFrameSinkSupportTest,
       CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(
-      {local_surface_id2, SubtreeCaptureId(), std::move(request)});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id2, SubtreeCaptureId(), std::move(request)));
 
   GetSurfaceForId(id1)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(GetSurfaceForId(id1)->HasCopyOutputRequests());
@@ -1553,23 +1553,23 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Send a non-exact CopyOutputRequest. It can be picked up by either Surface1
   // or Surface2.
-  support_->RequestCopyOfOutput(
-      {local_surface_id1, SubtreeCaptureId(),
-       std::make_unique<CopyOutputRequest>(
-           CopyOutputRequest::ResultFormat::RGBA,
-           CopyOutputRequest::ResultDestination::kSystemMemory,
-           base::BindOnce(StubResultCallback))});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id1, SubtreeCaptureId(),
+      std::make_unique<CopyOutputRequest>(
+          CopyOutputRequest::ResultFormat::RGBA,
+          CopyOutputRequest::ResultDestination::kSystemMemory,
+          base::BindOnce(StubResultCallback))));
   EXPECT_TRUE(surface_observer_->IsSurfaceDamaged(id1));
 
   // Send an exact CopyOutputRequest for Surface1. It can only be picked up by
   // Surface1.
-  support_->RequestCopyOfOutput(
-      {local_surface_id1, SubtreeCaptureId(),
-       std::make_unique<CopyOutputRequest>(
-           CopyOutputRequest::ResultFormat::RGBA,
-           CopyOutputRequest::ResultDestination::kSystemMemory,
-           base::BindOnce(StubResultCallback)),
-       /*capture_exact_id=*/true});
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id1, SubtreeCaptureId(),
+      std::make_unique<CopyOutputRequest>(
+          CopyOutputRequest::ResultFormat::RGBA,
+          CopyOutputRequest::ResultDestination::kSystemMemory,
+          base::BindOnce(StubResultCallback)),
+      /*capture_exact_id=*/true));
   EXPECT_TRUE(surface_observer_->IsSurfaceDamaged(id2));
 
   // Surface2 picks up the non-exact CopyOutputRequest.

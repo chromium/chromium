@@ -461,11 +461,11 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
 
   void OnClientCaptureStopped() override { --number_clients_capturing_; }
 
-  void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request) override {
-    auto& request = pending_copy_output_request.copy_output_request;
+  void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
+                               pending_copy_output_request) override {
+    auto& request = pending_copy_output_request->copy_output_request;
     EXPECT_NE(base::UnguessableToken(), request->source());
-    if (pending_copy_output_request.subtree_capture_id.is_valid()) {
+    if (pending_copy_output_request->subtree_capture_id.is_valid()) {
       EXPECT_EQ(capture_bounds_, request->area());
     } else {
       EXPECT_TRUE(gfx::Rect(size_set_.source_size).Contains(request->area()));

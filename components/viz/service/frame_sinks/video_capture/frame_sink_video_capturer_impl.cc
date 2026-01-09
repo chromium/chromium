@@ -1239,7 +1239,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           : SubtreeCaptureId();
 
   resolved_target_->RequestCopyOfOutput(
-      {LocalSurfaceId(), subtree_id, std::move(request)});
+      std::make_unique<PendingCopyOutputRequest>(LocalSurfaceId(), subtree_id,
+                                                 std::move(request)));
 }
 
 void FrameSinkVideoCapturerImpl::DidCopyFrame(
