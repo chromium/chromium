@@ -642,7 +642,7 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
 
       // Compute the concrete object size in DIP based on the
       // default cursor size obtained from the OS.
-      gfx::SizeF size =
+      const gfx::SizeF size_in_css_pixels =
           style_image->ImageSize(1,
                                  gfx::SizeF(page->GetChromeClient()
                                                 .GetScreenInfos(*frame_)
@@ -651,37 +651,73 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
 
       float scale = style_image->ImageScaleFactor();
       Image* image = style_image->CachedImage()->GetImage();
-      if (image->IsSVGImage()) {
-        // `StyleImage::ImageSize` does not take `StyleImage::ImageScaleFactor`
-        // into account when computing the size for SVG images.
-        size.Scale(1 / scale);
-      }
-
-      if (size.IsEmpty() ||
-          !ui::Cursor::AreDimensionsValidForWeb(
-              gfx::ToCeiledSize(gfx::ScaleSize(size, scale)), scale)) {
-        continue;
-      }
 
       const float device_scale_factor =
           page->GetChromeClient().GetScreenInfo(*frame_).device_scale_factor;
 
-      // If the image is an SVG, then adjust the scale to reflect the device
-      // scale factor so that the SVG can be rasterized in the native
-      // resolution and scaled down to the correct size for the cursor.
       scoped_refptr<Image> svg_image_holder;
-      if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-        scale *= device_scale_factor;
-        // Re-scale back from DIP to device pixels.
-        size.Scale(scale);
+      if (RuntimeEnabledFeatures::CSSCursorSizeCheckFixEnabled()) {
+        // If the image is an SVG, then adjust the scale to reflect the device
+        // scale factor so that the SVG can be rasterized in the native
+        // resolution and scaled down to the correct size for the cursor.
+        if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+          // Adjust the total scale factor. The image scale factor doesn't
+          // really affect SVG images though (as is evident below), so this
+          // should probably be dropped (scale should be set to the DPR).
+          scale *= device_scale_factor;
 
-        // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
-        svg_image_holder = SVGImageForContainer::Create(
-            *svg_image, size, device_scale_factor, nullptr,
-            frame_->GetDocument()
-                ->GetStyleEngine()
-                .ResolveColorSchemeForEmbedding(&style));
-        image = svg_image_holder.get();
+          // Scale from DIP to device pixels.
+          const gfx::SizeF size_in_device_pixels =
+              gfx::ScaleSize(size_in_css_pixels, device_scale_factor);
+
+          // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
+          svg_image_holder = SVGImageForContainer::Create(
+              *svg_image, size_in_device_pixels, device_scale_factor, nullptr,
+              frame_->GetDocument()
+                  ->GetStyleEngine()
+                  .ResolveColorSchemeForEmbedding(&style));
+          image = svg_image_holder.get();
+        }
+
+        // Reject empty and too large cursors.
+        const gfx::Size size_in_device_pixels =
+            image->Size(kRespectImageOrientation);
+        if (size_in_device_pixels.IsEmpty() ||
+            !ui::Cursor::AreDimensionsValidForWeb(size_in_device_pixels,
+                                                  scale)) {
+          continue;
+        }
+      } else {
+        gfx::SizeF size = size_in_css_pixels;
+        if (image->IsSVGImage()) {
+          // `StyleImage::ImageSize` does not take
+          // `StyleImage::ImageScaleFactor` into account when computing the size
+          // for SVG images.
+          size.Scale(1 / scale);
+        }
+
+        if (size.IsEmpty() ||
+            !ui::Cursor::AreDimensionsValidForWeb(
+                gfx::ToCeiledSize(gfx::ScaleSize(size, scale)), scale)) {
+          continue;
+        }
+
+        // If the image is an SVG, then adjust the scale to reflect the device
+        // scale factor so that the SVG can be rasterized in the native
+        // resolution and scaled down to the correct size for the cursor.
+        if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+          scale *= device_scale_factor;
+          // Re-scale back from DIP to device pixels.
+          size.Scale(scale);
+
+          // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
+          svg_image_holder = SVGImageForContainer::Create(
+              *svg_image, size, device_scale_factor, nullptr,
+              frame_->GetDocument()
+                  ->GetStyleEngine()
+                  .ResolveColorSchemeForEmbedding(&style));
+          image = svg_image_holder.get();
+        }
       }
 
       // Convert from DIP to physical pixels.
