@@ -524,9 +524,9 @@ bool TabGroupHeader::ShouldShowHeaderIcon() const {
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_slot_controller_->GetBrowser()
+      tab_slot_controller_->GetBrowserWindowInterface()
           ? tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                tab_slot_controller_->GetBrowser()->profile())
+                tab_slot_controller_->GetBrowserWindowInterface()->GetProfile())
           : nullptr;
   if (!tab_group_service) {
     return false;

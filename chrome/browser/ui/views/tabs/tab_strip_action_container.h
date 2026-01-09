@@ -245,8 +245,6 @@ class TabStripActionContainer : public views::View,
   raw_ptr<glic::GlicButton> glic_button_ = nullptr;
   raw_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
 
-  raw_ptr<const Browser> browser_;
-
   const raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
   // Timer for hiding tab_strip_nudge_button_ after show.

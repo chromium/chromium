@@ -18,7 +18,6 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/range/range.h"
 
-class Browser;
 class BrowserWindowInterface;
 class ScopedTabStripModalUI;
 class Tab;
@@ -236,10 +235,6 @@ class TabStripController {
 
   // Returns the interface for the browser hosting the tab strip.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
-
-  // TODO(tluk): Migrate use of Browser to BrowserWindowInterface and remove
-  // this method.
-  virtual Browser* GetBrowser() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only

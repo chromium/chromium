@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -120,10 +121,12 @@ base::TimeDelta GetShowDelay(int tab_width) {
   return delay;
 }
 
-bool IsBrowserForSystemWebApp(const Browser* browser) {
+bool IsBrowserForSystemWebApp(
+    const BrowserWindowInterface* browser_window_interface) {
 #if BUILDFLAG(IS_CHROMEOS)
-  CHECK(browser);
-  const auto* const app_controller = browser->app_controller();
+  CHECK(browser_window_interface);
+  const auto* const app_controller =
+      web_app::AppBrowserController::From(browser_window_interface);
   if (app_controller && app_controller->system_app()) {
     return true;
   }
@@ -209,10 +212,11 @@ TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
 
     // Register for memory usage enabled pref change events. Exclude
     // tracking them for system web apps (e.g. ChromeOS terminal app).
-    Browser* browser = tab_strip_->GetBrowser();
-    if (!browser) {
+    BrowserWindowInterface* browser_window_interface =
+        tab_strip_->GetBrowserWindowInterface();
+    if (!browser_window_interface) {
       CHECK_IS_TEST();
-    } else if (!IsBrowserForSystemWebApp(browser)) {
+    } else if (!IsBrowserForSystemWebApp(browser_window_interface)) {
       OnHovercardMemoryUsageEnabledChanged();
       pref_change_registrar_.Add(
           prefs::kHoverCardMemoryUsageEnabled,
@@ -513,7 +517,8 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
   TabHoverCardBubbleView::InitParams params;
   params.use_animation = UseAnimations();
   // In some browser types (e.g. ChromeOS terminal app) hide the domain label.
-  params.show_domain = !IsBrowserForSystemWebApp(tab_strip_->GetBrowser());
+  params.show_domain =
+      !IsBrowserForSystemWebApp(tab_strip_->GetBrowserWindowInterface());
   params.show_memory_usage = hover_card_memory_usage_enabled_;
   params.show_image_preview = hover_card_image_previews_enabled_;
 

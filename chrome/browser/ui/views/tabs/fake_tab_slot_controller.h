@@ -12,6 +12,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/color_palette.h"
 
+class BrowserWindowInterface;
 class TabContainer;
 class TabStripController;
 

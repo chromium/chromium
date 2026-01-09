@@ -22,8 +22,8 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
 
-class Browser;
 class BrowserFrameView;
+class BrowserWindowInterface;
 class Tab;
 class TabGroup;
 
@@ -120,12 +120,9 @@ class BrowserTabStripController : public TabStripController,
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  Browser* GetBrowser() override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 #endif
-
-  const Browser* browser() const { return browser_view_->browser(); }
 
   // Test-specific methods.
   void CloseContextMenuForTesting();

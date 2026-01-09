@@ -321,10 +321,6 @@ FakeBaseTabStripController::GetBrowserWindowInterface() {
   return nullptr;
 }
 
-Browser* FakeBaseTabStripController::GetBrowser() {
-  return nullptr;
-}
-
 bool FakeBaseTabStripController::CanShowModalUI() const {
   return false;
 }

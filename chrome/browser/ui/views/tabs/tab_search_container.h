@@ -19,6 +19,7 @@
 #include "ui/views/view.h"
 
 enum class Edge;
+class BrowserWindowInterface;
 class TabStripNudgeButton;
 class TabOrganizationService;
 class TabSearchButton;
@@ -172,7 +173,7 @@ class TabSearchContainer : public views::View,
   raw_ptr<TabOrganizationService, DanglingUntriaged> tab_organization_service_ =
       nullptr;
 
-  raw_ptr<const Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // Timer for hiding tab_organization_button_ after show.
   base::OneShotTimer hide_tab_organization_timer_;

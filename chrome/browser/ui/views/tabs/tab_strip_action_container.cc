@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -270,17 +271,13 @@ TabStripActionContainer::TabStripActionContainer(
       AddChildView(CreateAutoTabGroupButton(tab_strip_controller));
 
   SetupButtonProperties(auto_tab_group_button_);
-
-  browser_ = tab_strip_controller->GetBrowser();
-  BrowserWindowInterface* browser_window_interface =
-      tab_strip_controller->GetBrowserWindowInterface();
   if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
     product_specifications_button =
         std::make_unique<ProductSpecificationsButton>(
-            tab_strip_controller, browser_window_interface->GetTabStripModel(),
+            tab_strip_controller, browser_window_interface_->GetTabStripModel(),
             commerce::ProductSpecificationsEntryPointController::From(
-                browser_window_interface),
+                browser_window_interface_),
             /*render_tab_search_before_tab_strip_*/ false, this);
     product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
                                                views::LayoutAlignment::kCenter);
@@ -316,11 +313,11 @@ TabStripActionContainer::TabStripActionContainer(
 
     separator->SetProperty(views::kMarginsKey, margin);
 
-    subscriptions_.push_back(browser_window_interface->RegisterDidBecomeActive(
+    subscriptions_.push_back(browser_window_interface_->RegisterDidBecomeActive(
         base::BindRepeating(&TabStripActionContainer::DidBecomeActive,
                             base::Unretained(this))));
     subscriptions_.push_back(
-        browser_window_interface->RegisterDidBecomeInactive(
+        browser_window_interface_->RegisterDidBecomeInactive(
             base::BindRepeating(&TabStripActionContainer::DidBecomeInactive,
                                 base::Unretained(this))));
     separator_ = AddChildView(std::move(separator));
@@ -497,7 +494,7 @@ void TabStripActionContainer::OnToggleActionUIState(const Browser* browser,
     return;
   }
 
-  if (should_show && browser_ == browser) {
+  if (should_show && browser_window_interface_ == browser) {
     ShowTabStripNudge(auto_tab_group_button_);
   } else {
     HideTabStripNudge(auto_tab_group_button_);
@@ -505,9 +502,10 @@ void TabStripActionContainer::OnToggleActionUIState(const Browser* browser,
 }
 
 void TabStripActionContainer::OnTabDeclutterButtonClicked() {
-  browser_->window()->CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection::kOrganize,
-      tab_search::mojom::TabOrganizationFeature::kDeclutter);
+  BrowserView::GetBrowserViewForBrowser(browser_window_interface_)
+      ->CreateTabSearchBubble(
+          tab_search::mojom::TabSearchSection::kOrganize,
+          tab_search::mojom::TabOrganizationFeature::kDeclutter);
 
   ExecuteHideTabStripNudge(tab_declutter_button_);
 }
@@ -771,8 +769,9 @@ void TabStripActionContainer::HideTabStripNudge(TabStripNudgeButton* button) {
 
 void TabStripActionContainer::ExecuteShowTabStripNudge(
     TabStripNudgeButton* button) {
-  if (browser_ && (button == auto_tab_group_button_) &&
-      !TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
+  if (browser_window_interface_ && (button == auto_tab_group_button_) &&
+      !TabOrganizationUtils::GetInstance()->IsEnabled(
+          browser_window_interface_->GetProfile())) {
     return;
   }
 
@@ -877,14 +876,16 @@ void TabStripActionContainer::SetLockedExpansionMode(
 }
 
 void TabStripActionContainer::OnAutoTabGroupButtonClicked() {
-  tab_organization_service_->OnActionUIAccepted(browser_);
+  tab_organization_service_->OnActionUIAccepted(
+      browser_window_interface_->GetBrowserForMigrationOnly());
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(auto_tab_group_button_);
 }
 
 void TabStripActionContainer::OnAutoTabGroupButtonDismissed() {
-  tab_organization_service_->OnActionUIDismissed(browser_);
+  tab_organization_service_->OnActionUIDismissed(
+      browser_window_interface_->GetBrowserForMigrationOnly());
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(auto_tab_group_button_);

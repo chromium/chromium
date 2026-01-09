@@ -382,7 +382,7 @@ void BrowserTabStripController::CloseTab(int model_index) {
 
   // Try to show reading list IPH if needed.
   if (tabstrip_->GetTabCount() >= 7) {
-    BrowserUserEducationInterface::From(browser_view_->browser())
+    BrowserUserEducationInterface::From(GetBrowserWindowInterface())
         ->MaybeShowFeaturePromo(
             feature_engagement::kIPHReadingListEntryPointFeature);
   }
@@ -527,7 +527,7 @@ void BrowserTabStripController::OnDropIndexUpdate(
 }
 
 void BrowserTabStripController::CreateNewTab(NewTabTypes context) {
-  chrome::NewTab(GetBrowser(), context);
+  chrome::NewTab(browser_view_->browser(), context);
 }
 
 void BrowserTabStripController::OnStartedDragging() {
@@ -537,7 +537,7 @@ void BrowserTabStripController::OnStartedDragging() {
     // revealed if the user is attempting to attach a tab to a tabstrip
     // belonging to an immersive fullscreen window.
     immersive_reveal_lock_ =
-        ImmersiveModeController::From(browser_view_->browser())
+        ImmersiveModeController::From(GetBrowserWindowInterface())
             ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_NO);
   }
 }
@@ -653,16 +653,12 @@ std::u16string BrowserTabStripController::GetAccessibleTabName(
 }
 
 BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
-  return GetBrowser();
-}
-
-Browser* BrowserTabStripController::GetBrowser() {
   return browser_view_->browser();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool BrowserTabStripController::IsLockedForOnTask() {
-  return GetBrowser()->IsLockedForOnTask();
+  return browser_view_->browser()->IsLockedForOnTask();
 }
 #endif
 
@@ -954,7 +950,7 @@ void BrowserTabStripController::AddTabs(
   // Try to show tab search IPH if needed.
   constexpr int kTabSearchIPHTriggerThreshold = 8;
   if (tabstrip_->GetTabCount() >= kTabSearchIPHTriggerThreshold) {
-    BrowserUserEducationInterface::From(browser_view_->browser())
+    BrowserUserEducationInterface::From(GetBrowserWindowInterface())
         ->MaybeShowFeaturePromo(feature_engagement::kIPHTabSearchFeature);
   }
 }
@@ -995,12 +991,12 @@ bool BrowserTabStripController::GetContextMenuAccelerator(
     int command_id,
     ui::Accelerator* accelerator) {
 #if BUILDFLAG(IS_CHROMEOS)
-  auto* browser = GetBrowser();
-  auto* system_app = browser->app_controller()
-                         ? browser->app_controller()->system_app()
-                         : nullptr;
-  if (system_app && !system_app->ShouldShowTabContextMenuShortcut(
-                        browser->profile(), command_id)) {
+  auto* const app_controller =
+      web_app::AppBrowserController::From(GetBrowserWindowInterface());
+  auto* system_app = app_controller ? app_controller->system_app() : nullptr;
+  if (system_app &&
+      !system_app->ShouldShowTabContextMenuShortcut(
+          GetBrowserWindowInterface()->GetProfile(), command_id)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
