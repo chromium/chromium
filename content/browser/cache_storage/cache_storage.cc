@@ -359,11 +359,11 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
 
   void CleanUpDeletedCache(CacheStorageCache* cache) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(doomed_cache_to_path_.contains(cache));
+    auto it = doomed_cache_to_path_.find(cache);
+    CHECK(it != doomed_cache_to_path_.end());
 
-    base::FilePath cache_path =
-        directory_path_.AppendASCII(doomed_cache_to_path_[cache]);
-    doomed_cache_to_path_.erase(cache);
+    base::FilePath cache_path = directory_path_.AppendASCII(it->second);
+    doomed_cache_to_path_.erase(it);
 
     cache_task_runner_->PostTask(
         FROM_HERE,
@@ -526,9 +526,9 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
 
   void NotifyCacheDoomed(CacheStorageCacheHandle cache_handle) override {
     auto* impl = CacheStorageCache::From(cache_handle);
-    DCHECK(cache_name_to_cache_dir_.contains(impl->cache_name()));
     auto iter = cache_name_to_cache_dir_.find(impl->cache_name());
-    doomed_cache_to_path_[cache_handle.value()] = iter->second;
+    CHECK(iter != cache_name_to_cache_dir_.end());
+    doomed_cache_to_path_[cache_handle.value()] = std::move(iter->second);
     cache_name_to_cache_dir_.erase(iter);
   }
 
