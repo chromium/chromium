@@ -48,7 +48,7 @@ enum class GlicUnpinTrigger {
   kConversationChangeBeforeContextShared,
   kContextMenu,
   kTabClose,
-  kTabNavigationWhileInstanceFrozen,
+  kBackgroundTabNavigation,
   kCandidatesToggle,
   kChip,
   kActuation,

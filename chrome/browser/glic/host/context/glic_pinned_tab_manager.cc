@@ -596,7 +596,7 @@ void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
       !IsGlicWindowShowing()) {
     base::RecordAction(
         base::UserMetricsAction("Glic.PinnedTab.OriginChanged.Unpinned"));
-    UnpinTabs({tab_handle});
+    UnpinTabs({tab_handle}, GlicUnpinTrigger::kBackgroundTabNavigation);
   }
 }
 
