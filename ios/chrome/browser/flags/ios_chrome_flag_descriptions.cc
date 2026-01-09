@@ -1445,11 +1445,6 @@ const char kSafeBrowsingTrustedURLName[] =
 const char kSafeBrowsingTrustedURLDescription[] =
     "When enabled, chrome://safe-browsing will be accessible.";
 
-const char kSafetyCheckNotificationsName[] =
-    "Enable Safety Check Push Notifications";
-const char kSafetyCheckNotificationsDescription[] =
-    "Enables push notifications for important Safety Check findings.";
-
 const char kSegmentationPlatformEphemeralCardRankerName[] =
     "Enable Segmentation Ranking for Ephemeral Cards";
 const char kSegmentationPlatformEphemeralCardRankerDescription[] =

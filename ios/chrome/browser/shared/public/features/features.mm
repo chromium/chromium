@@ -16,7 +16,6 @@
 #import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ui/base/device_form_factor.h"
 
@@ -28,65 +27,7 @@ BASE_FEATURE(kSafetyCheckAutorunByManagerKillswitch,
 BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafetyCheckNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kSafetyCheckNotificationsExperimentType[] =
-    "SafetyCheckNotificationsExperimentType";
-
-const char kSafetyCheckAllowPasswordsNotifications[] =
-    "SafetyCheckAllowPasswordsNotifications";
-
-const char kSafetyCheckAllowSafeBrowsingNotifications[] =
-    "SafetyCheckAllowSafeBrowsingNotifications";
-
-const char kSafetyCheckAllowUpdateChromeNotifications[] =
-    "SafetyCheckAllowUpdateChromeNotifications";
-
-const char kSafetyCheckNotificationsSuppressDelayIfPresent[] =
-    "SafetyCheckNotificationsSuppressDelayIfPresent";
-
-const char kSafetyCheckNotificationsUserInactiveThreshold[] =
-    "SafetyCheckNotificationsUserInactiveThreshold";
-
-// This helper should return true by default, as this parameter primarily serves
-// as a killswitch.
-bool AreSafetyCheckPasswordsNotificationsAllowed() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSafetyCheckNotifications, kSafetyCheckAllowPasswordsNotifications,
-      /*default_value=*/true);
-}
-
-// This helper should return true by default, as this parameter primarily serves
-// as a killswitch.
-bool AreSafetyCheckSafeBrowsingNotificationsAllowed() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSafetyCheckNotifications, kSafetyCheckAllowSafeBrowsingNotifications,
-      /*default_value=*/true);
-}
-
-// This helper should return true by default, as this parameter primarily serves
-// as a killswitch.
-bool AreSafetyCheckUpdateChromeNotificationsAllowed() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSafetyCheckNotifications, kSafetyCheckAllowUpdateChromeNotifications,
-      /*default_value=*/true);
-}
-
-const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kSafetyCheckNotifications,
-      kSafetyCheckNotificationsSuppressDelayIfPresent,
-      /*default_value=*/kSafetyCheckNotificationSuppressDelayIfPresent);
-}
-
-const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kSafetyCheckNotifications, kSafetyCheckNotificationsUserInactiveThreshold,
-      /*default_value=*/
-      kSafetyCheckNotificationDefaultDelay);
-}
 
 BASE_FEATURE(kHideToolbarsInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -289,21 +230,8 @@ bool ShouldHideSafetyCheckModuleIfNoIssues() {
       kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 }
 
-bool IsSafetyCheckNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kSafetyCheckNotifications);
-}
-
 bool IsOmahaServiceRefactorEnabled() {
   return base::FeatureList::IsEnabled(kOmahaServiceRefactor);
-}
-
-SafetyCheckNotificationsExperimentalArm
-SafetyCheckNotificationsExperimentTypeEnabled() {
-  return static_cast<SafetyCheckNotificationsExperimentalArm>(
-      base::GetFieldTrialParamByFeatureAsInt(
-          kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
-          /*default_value=*/
-          (int)SafetyCheckNotificationsExperimentalArm::kSuccinct));
 }
 
 // TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.

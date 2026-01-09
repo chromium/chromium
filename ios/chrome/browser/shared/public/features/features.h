@@ -32,56 +32,9 @@ BASE_DECLARE_FEATURE(kSafetyCheckAutorunByManagerKillswitch);
 // Stack if no issues are found.
 BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 
-// Feature to enable Safety Check Push Notifications.
-BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
-
-// A parameter defining the duration to suppress scheduling new Safety Check
-// notifications if one is already present in the notification center.
-extern const char kSafetyCheckNotificationsSuppressDelayIfPresent[];
-
-// A parameter defining the duration of user inactivity required before
-// displaying Safety Check push notifications.
-extern const char kSafetyCheckNotificationsUserInactiveThreshold[];
-
-// Returns the duration of time to suppress scheduling new Safety Check
-// notifications if one is already present in the notification center.
-const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent();
-
-// Returns the time duration of user inactivity that must elapse before Safety
-// Check notifications are displayed.
-const base::TimeDelta InactiveThresholdForSafetyCheckNotifications();
-
 // Feature to enable the refactored implementation of the `OmahaService`, using
 // new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.
 BASE_DECLARE_FEATURE(kOmahaServiceRefactor);
-
-// Safety Check Notifications experiment variations.
-
-// Name of the experiment that controls how Safety Check notifications
-// are presented to the user (e.g., `kVerbose`, `kSuccinct`).
-extern const char kSafetyCheckNotificationsExperimentType[];
-
-// Name of the parameter that controls whether Passwords notifications
-// are permitted to be sent to the user for Safety Check.
-extern const char kSafetyCheckAllowPasswordsNotifications[];
-
-// Name of the parameter that controls whether Safe Browsing notifications
-// are permitted to be sent to the user for Safety Check.
-extern const char kSafetyCheckAllowSafeBrowsingNotifications[];
-
-// Name of the parameter that controls whether Update Chrome notifications
-// are permitted to be sent to the user for Safety Check.
-extern const char kSafetyCheckAllowUpdateChromeNotifications[];
-
-// Defines param values for the Safety Check Notifications feature,
-// controlling how notifications are presented to the user.
-enum class SafetyCheckNotificationsExperimentalArm {
-  // Arm that displays multiple Safety Check notifications at any given time.
-  kVerbose = 0,
-  // Arm that displays only a single Safety Check notification at any given
-  // time.
-  kSuccinct = 1,
-};
 
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
@@ -339,30 +292,8 @@ bool IsSafetyCheckAutorunByManagerEnabled();
 // Whether the Safety Check module is hidden when no issues are found.
 bool ShouldHideSafetyCheckModuleIfNoIssues();
 
-// Whether Safety Check Push Notifications should be sent to the user.
-bool IsSafetyCheckNotificationsEnabled();
-
-// Checks if Passwords notifications are permitted to be sent to the user
-// for Safety Check, based on the Finch parameter
-// `kSafetyCheckAllowPasswordsNotifications`.
-bool AreSafetyCheckPasswordsNotificationsAllowed();
-
-// Checks if Safe Browsing notifications are permitted to be sent to the user
-// for Safety Check, based on the Finch parameter
-// `kSafetyCheckAllowSafeBrowsingNotifications`.
-bool AreSafetyCheckSafeBrowsingNotificationsAllowed();
-
-// Checks if Update Chrome notifications are permitted to be sent to the user
-// for Safety Check, based on the Finch parameter
-// `kSafetyCheckAllowUpdateChromeNotifications`.
-bool AreSafetyCheckUpdateChromeNotificationsAllowed();
-
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();
-
-// Returns the experiment type for the Safety Check Notifications feature.
-SafetyCheckNotificationsExperimentalArm
-SafetyCheckNotificationsExperimentTypeEnabled();
 
 // Feature flag enabling Choose from Drive.
 // TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.

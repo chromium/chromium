@@ -441,8 +441,7 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   std::optional<ScheduledNotificationRequest> password_request =
       GetPasswordNotificationRequest(password_state, insecure_password_counts);
 
-  if (password_request.has_value() &&
-      AreSafetyCheckPasswordsNotificationsAllowed()) {
+  if (password_request.has_value()) {
     base::OnceCallback<void(NSError*)> schedule_completion_callback =
         base::BindOnce(log_safety_check_notification_requested,
                        SafetyCheckNotificationType::kPasswords);
@@ -479,8 +478,7 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   std::optional<ScheduledNotificationRequest> safe_browsing_request =
       GetSafeBrowsingNotificationRequest(safe_browsing_state);
 
-  if (safe_browsing_request.has_value() &&
-      AreSafetyCheckSafeBrowsingNotificationsAllowed()) {
+  if (safe_browsing_request.has_value()) {
     base::OnceCallback<void(NSError*)> schedule_completion_callback =
         base::BindOnce(log_safety_check_notification_requested,
                        SafetyCheckNotificationType::kSafeBrowsing);
@@ -517,8 +515,7 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   std::optional<ScheduledNotificationRequest> update_chrome_request =
       GetUpdateChromeNotificationRequest(update_chrome_state);
 
-  if (update_chrome_request.has_value() &&
-      AreSafetyCheckUpdateChromeNotificationsAllowed()) {
+  if (update_chrome_request.has_value()) {
     GetApplicationContext()->GetLocalState()->SetInteger(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kUpdateChrome));
@@ -881,17 +878,16 @@ bool SafetyCheckNotificationClient::CheckAndResetIfSchedulingIsAllowed() {
     return true;
   }
 
-  // If the duration defined by
-  // `SuppressDelayForSafetyCheckNotificationsIfPresent()` has not elapsed since
-  // the timestamp was set, scheduling is not allowed.
+  // If the duration defined by `kSafetyCheckNotificationSuppressDelayIfPresent`
+  // has not elapsed since the timestamp was set, scheduling is not allowed.
   if (base::Time::Now() - first_present_time <
-      SuppressDelayForSafetyCheckNotificationsIfPresent()) {
+      kSafetyCheckNotificationSuppressDelayIfPresent) {
     return false;
   }
 
-  // If the duration defined by
-  // `SuppressDelayForSafetyCheckNotificationsIfPresent()` has elapsed since the
-  // timestamp was set, we reset the timestamp and allow scheduling.
+  // If the duration defined by `kSafetyCheckNotificationSuppressDelayIfPresent`
+  // has elapsed since the timestamp was set, we reset the timestamp and allow
+  // scheduling.
   local_pref_service->ClearPref(
       prefs::kIosSafetyCheckNotificationFirstPresentTimestamp);
 
