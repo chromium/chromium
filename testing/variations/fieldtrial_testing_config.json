@@ -19806,26 +19806,6 @@
             ]
         }
     ],
-    "PrerenderSiteInstanceProcessPerDSE": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConsiderDSEWarmUpPageAsSRP",
-                        "CreatePrerenderSiteInstanceWithURL"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "PreserveDiscardableImageMapQuality": [
         {
             "platforms": [
