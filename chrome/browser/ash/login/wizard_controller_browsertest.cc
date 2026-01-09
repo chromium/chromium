@@ -38,8 +38,6 @@
 #include "chrome/browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_state_manager.h"
-#include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -1417,12 +1415,7 @@ class WizardControllerFjordOOBETest
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kFjordOobeForceEnabled);
-    FjordOobeStateManager::Initialize();
     WizardControllerUnifiedEnrollmentTest::SetUp();
-  }
-
-  ~WizardControllerFjordOOBETest() override {
-    FjordOobeStateManager::Shutdown();
   }
 
  private:
@@ -1449,9 +1442,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kEnrollment);
 
-  EXPECT_EQ(
-      FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_START);
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
 
@@ -1462,9 +1452,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   CheckCurrentScreen(FjordTouchControllerScreenView::kScreenId);
 
   EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
-  EXPECT_EQ(FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
-            fjord_oobe_state::proto::FjordOobeStateInfo::
-                FJORD_OOBE_STATE_ENROLLMENT_DONE);
   CheckCurrentScreen(FjordStationSetupScreenView::kScreenId);
   EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
 }
@@ -1490,31 +1477,10 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
       policy::AutoEnrollmentResult::kEnrollment);
 
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
-  EXPECT_EQ(
-      FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_START);
 
   // Expect that Exit has no affect since TC setup screen is not showing.
   EXPECT_FALSE(wizard_controller->ExitFjordTouchControllerScreen());
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
-  EXPECT_EQ(
-      FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_START);
-}
-
-IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
-                       AppSplashLaunchScreenNotifiesStateManager) {
-  EXPECT_EQ(
-      FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_START);
-
-  WizardController::default_controller()->AdvanceToScreen(
-      AppLaunchSplashScreenView::kScreenId);
-  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
-
-  EXPECT_EQ(
-      FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_COMPLETE);
 }
 
 class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {

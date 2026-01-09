@@ -59,7 +59,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/logging",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode",
-    "//chrome/browser/ash/login/fjord_oobe",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/osauth",
     "//chrome/browser/ash/login/session",

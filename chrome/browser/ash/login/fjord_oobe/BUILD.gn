@@ -6,8 +6,6 @@ assert(is_chromeos)
 
 static_library("fjord_oobe") {
   sources = [
-    "fjord_oobe_state_manager.cc",
-    "fjord_oobe_state_manager.h",
     "fjord_oobe_util.cc",
     "fjord_oobe_util.h",
   ]
@@ -16,19 +14,6 @@ static_library("fjord_oobe") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser/ash/login/fjord_oobe/proto",
     "//chrome/browser/ash/policy/enrollment",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "fjord_oobe_state_manager_unittest.cc" ]
-
-  deps = [
-    ":fjord_oobe",
-    "//ash/constants",
-    "//base/test:test_support",
-    "//chrome/browser/ash/login/fjord_oobe/proto",
   ]
 }

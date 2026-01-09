@@ -45,9 +45,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_state_manager.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
-#include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 #include "chrome/browser/ash/login/hwid_checker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -492,9 +490,6 @@ void WizardController::Init(OobeScreenId first_screen) {
 
   wizard_context_->is_add_person_flow =
       oobe_complete && StartupUtils::IsDeviceOwned();
-
-  MaybeNotifyFjordOobeStateManager(
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_START);
 
   // This is a hacky way to check for local state corruption, because
   // it depends on the fact that the local state is loaded
@@ -1399,8 +1394,6 @@ void WizardController::ShowAccountSelectionScreen() {
 
 void WizardController::ShowAppLaunchSplashScreen() {
   SetCurrentScreen(GetScreen(AppLaunchSplashScreenView::kScreenId));
-  MaybeNotifyFjordOobeStateManager(
-      fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_COMPLETE);
 }
 
 void WizardController::ShowFjordTouchControllerScreen() {
@@ -2979,9 +2972,6 @@ void WizardController::OnFjordStationSetupScreenExit() {
 bool WizardController::ExitFjordTouchControllerScreen() {
   if (current_screen()->screen_id() ==
       FjordTouchControllerScreenView::kScreenId) {
-    MaybeNotifyFjordOobeStateManager(
-        fjord_oobe_state::proto::FjordOobeStateInfo::
-            FJORD_OOBE_STATE_ENROLLMENT_DONE);
     OnScreenExit(FjordTouchControllerScreenView::kScreenId, kDefaultExitReason);
     ShowFjordStationSetupScreen();
     return true;
@@ -3803,20 +3793,6 @@ void WizardController::MaybeEnablePreConsentMetrics() {
         ProfileManager::GetActiveUserProfile(), true);
     metrics::CrOSPreConsentMetricsManager::Get()->Enable();
   }
-}
-
-void WizardController::MaybeNotifyFjordOobeStateManager(
-    fjord_oobe_state::proto::FjordOobeStateInfo::FjordOobeState state) {
-  if (!fjord_util::ShouldShowFjordOobe()) {
-    return;
-  }
-  FjordOobeStateManager* state_manager = FjordOobeStateManager::Get();
-  if (!state_manager) {
-    LOG(ERROR) << "FjordOobeStateManager does not exist";
-    return;
-  }
-
-  state_manager->OnFjordOobeStateChanged(state);
 }
 
 }  // namespace ash
