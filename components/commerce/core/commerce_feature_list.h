@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -199,8 +200,8 @@ bool IsShoppingListAllowedForEnterprise(PrefService* prefs);
 // Check if commerce features are allowed to run for the specified country
 // and locale.
 bool IsEnabledForCountryAndLocale(const base::Feature& feature,
-                                  std::string country,
-                                  std::string locale);
+                                  std::string_view country,
+                                  std::string_view locale);
 
 // A feature check for the specified |feature|, which will return true if the
 // user has the feature flag enabled or (if applicable) is in an enabled
