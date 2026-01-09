@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/location/android/location_settings_impl.h"
+#include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -236,18 +237,25 @@ static void JNI_PermissionUtil_ResolvePermissionRequest(
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
           static_cast<ContentSettingsType>(content_settings_type)) {
     if (setting == CONTENT_SETTING_ALLOW) {
-      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
-                                true);
+      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
+                                  true);
+      }
       permission_request_manager->Accept();
     } else if (setting == CONTENT_SETTING_BLOCK) {
       // There are multiple ways to deny the permission request. This histogram
       // will track the number of times the user denied the permission request
       // by closing the PageInfo.
-      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
-                                true);
+      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
+                                  true);
+      }
       permission_request_manager->Deny();
     } else if (setting == CONTENT_SETTING_DEFAULT) {
-      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset", true);
+      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset",
+                                  true);
+      }
       // After the user interacts with the reset permission button in PageInfo,
       // all previously decided permissions are reset by setting them to
       // DEFAULT. There is no a default action or a state for permission
@@ -257,6 +265,32 @@ static void JNI_PermissionUtil_ResolvePermissionRequest(
       // Currently, only ALLOW and BLOCK are supported. In case other actions
       // are added in the future, this should be updated.
       NOTREACHED();
+    }
+  }
+}
+// TODO(crbug.com/463333225): Clean this provisional function name up if
+// Clapper is launched or removed.
+//
+// This is called when the quiet icon is replaced by another icon in the
+// omnibox.
+static void JNI_PermissionUtil_NotifyQuietIconDismissed(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return;
+  }
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  if (permission_request_manager &&
+      permission_request_manager->IsRequestInProgress()) {
+    auto* prompt = permission_request_manager->GetCurrentPrompt();
+    if (prompt && prompt->GetPromptDisposition() ==
+                      permissions::PermissionPromptDisposition::
+                          LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON) {
+      permission_request_manager->Ignore();
     }
   }
 }

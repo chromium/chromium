@@ -21,8 +21,8 @@
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
 #include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
+#include "components/permissions/android/permission_prompt/permission_dialog_controller.h"
 
 using base::android::ConvertUTF16ToJavaString;
 
@@ -63,7 +63,7 @@ void PermissionDialogJavaDelegate::CreateDialog(
   // Send the Java delegate to the Java PermissionDialogController for display.
   // When the Java delegate is no longer needed it will in turn reset the native
   // java delegate (PermissionDialogJavaDelegate).
-  Java_PermissionDialogController_createDialog(env, j_delegate_);
+  PermissionDialogController::CreateDialog(env, j_delegate_);
 
   if (permission_prompt_->ShouldUseRequestingOriginFavicon()) {
     // In order to update the dialog, we need to make sure it has been created
@@ -200,8 +200,7 @@ void PermissionDialogDelegate::SystemPermissionResolved(JNIEnv* env,
   permission_prompt_->SystemPermissionResolved(accepted);
 }
 
-void PermissionDialogDelegate::Dismissed(JNIEnv* env,
-                                         int dismissalType) {
+void PermissionDialogDelegate::Dismissed(JNIEnv* env, int dismissalType) {
   CHECK(permission_prompt_);
   std::vector<ContentSettingsType> content_settings_types;
   for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
@@ -312,5 +311,4 @@ jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
 
 }  // namespace permissions
 
-DEFINE_JNI(PermissionDialogController)
 DEFINE_JNI(PermissionDialogDelegate)
