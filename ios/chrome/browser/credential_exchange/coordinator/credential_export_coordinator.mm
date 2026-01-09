@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
@@ -95,7 +96,8 @@
                 passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)
                faviconLoader:faviconLoader
       reauthenticationModule:_reauthModule
-               exportHandler:self];
+               exportHandler:self
+                 syncService:SyncServiceFactory::GetForProfile(self.profile)];
   _affiliatedGroups = {};
   _viewController.delegate = _mediator;
   _mediator.delegate = self;

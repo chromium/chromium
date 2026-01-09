@@ -9,11 +9,13 @@
 #import "components/favicon_base/favicon_types.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/coordinator/password_exporter.h"
+#import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
@@ -50,6 +52,9 @@ const CGFloat kMinFaviconSize = 16.0;
 
   // Delegate capable of showing alerts needed in the password export flow.
   __weak id<PasswordExportHandler> _exportHandler;
+
+  // Service to know whether passwords are synced.
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
@@ -58,7 +63,8 @@ const CGFloat kMinFaviconSize = 16.0;
                   passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                  faviconLoader:(FaviconLoader*)faviconLoader
         reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
-                 exportHandler:(id<PasswordExportHandler>)exportHandler {
+                 exportHandler:(id<PasswordExportHandler>)exportHandler
+                   syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _window = window;
@@ -66,6 +72,7 @@ const CGFloat kMinFaviconSize = 16.0;
     _passkeyModel = passkeyModel;
     _faviconLoader = faviconLoader;
     _exportHandler = exportHandler;
+    _syncService = syncService;
 
     _passwordExporter =
         [[PasswordExporter alloc] initWithReauthenticationModule:reauthModule
@@ -202,9 +209,14 @@ const CGFloat kMinFaviconSize = 16.0;
     return;
   }
 
+  // Only fallback to Google server if the user is syncing passwords, ensuring
+  // privacy for non-syncing users.
+  bool fallbackToGoogleServer =
+      password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
+          _syncService);
+
   _faviconLoader->FaviconForPageUrl(
-      URL, kFaviconSize, kMinFaviconSize,
-      /*fallback_to_google_server=*/false,
+      URL, kFaviconSize, kMinFaviconSize, fallbackToGoogleServer,
       ^(FaviconAttributes* attributes, bool cached) {
         completion(attributes, cached);
       });
