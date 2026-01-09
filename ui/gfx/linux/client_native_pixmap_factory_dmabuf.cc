@@ -45,9 +45,6 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
   NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(pixmap_handle_);
   }
-  uint64_t GetPlaneSize(size_t plane) const override {
-    return pixmap_handle_.planes[plane].size;
-  }
 
  private:
   NativePixmapHandle pixmap_handle_;

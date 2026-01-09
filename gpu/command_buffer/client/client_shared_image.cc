@@ -164,8 +164,7 @@ base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
   // tightening here for NativePixmap.
   if (buffer_->GetType() == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     span_length =
-        static_cast<MappableBufferNativePixmap*>(buffer_)->GetPlaneSize(
-            plane_index);
+        buffer_->CloneHandle().native_pixmap_handle().planes[plane_index].size;
   }
 #endif
 

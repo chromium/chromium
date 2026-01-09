@@ -282,9 +282,4 @@ int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {
 NativePixmapHandle ClientNativePixmapDmaBuf::CloneHandleForIPC() const {
   return gfx::CloneHandleForIPC(pixmap_handle_);
 }
-
-uint64_t ClientNativePixmapDmaBuf::GetPlaneSize(size_t plane) const {
-  return pixmap_handle_.planes[plane].size;
-}
-
 }  // namespace gfx
