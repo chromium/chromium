@@ -974,9 +974,9 @@ public class ProxyTest {
             // This cannot be tested when HttpEngine is used under the hood:
             // android.net.http.UrlResponseInfo does not expose the proxy used for a request.
             if (mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
-                // TODO(https://crbug.com/460426595): Change this to check for the correct proxy
-                // server value once BidirectionalStream correctly reports proxy servers.
-                assertThat(callback.getResponseInfoWithChecks()).hasProxyServerThat().isNull();
+                assertThat(callback.getResponseInfoWithChecks())
+                        .hasProxyServerThat()
+                        .isEqualTo("localhost:" + proxyServer.getPort());
             }
 
             assertThat(callback.mResponseAsString).isEqualTo("GET");
@@ -999,9 +999,8 @@ public class ProxyTest {
         // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
         // logger injection.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
-            // TODO(https://crbug.com/460426595): Change this to check for the correct proxy
-            // server value once BidirectionalStream correctly reports proxy servers.
-            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isNull();
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isTrue();
         }
     }
 

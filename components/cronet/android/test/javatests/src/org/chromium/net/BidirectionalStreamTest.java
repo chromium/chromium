@@ -126,7 +126,12 @@ public class BidirectionalStreamTest {
     }
 
     private static UrlResponseInfo createUrlResponseInfo(
-            String[] urls, String message, int statusCode, int receivedBytes, String... headers) {
+            String[] urls,
+            String message,
+            int statusCode,
+            int receivedBytes,
+            CronetImplementation implementationUnderTest,
+            String... headers) {
         ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
         for (int i = 0; i < headers.length; i += 2) {
             headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
@@ -139,7 +144,11 @@ public class BidirectionalStreamTest {
                         headersList,
                         false,
                         "h2",
-                        null,
+                        /* proxyServer= */ switch (implementationUnderTest) {
+                            case STATICALLY_LINKED -> ":0";
+                            case AOSP_PLATFORM -> null;
+                            default -> throw new AssertionError("Unexpected implementation");
+                        },
                         receivedBytes,
                         /* isProxied= */ false);
         return urlResponseInfo;
@@ -165,7 +174,13 @@ public class BidirectionalStreamTest {
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         UrlResponseInfo urlResponseInfo =
                 createUrlResponseInfo(
-                        new String[] {url}, "", 200, expectedReceivedBytes, ":status", "200");
+                        new String[] {url},
+                        "",
+                        200,
+                        expectedReceivedBytes,
+                        mTestRule.implementationUnderTest(),
+                        ":status",
+                        "200");
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
@@ -295,7 +310,13 @@ public class BidirectionalStreamTest {
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         UrlResponseInfo urlResponseInfo =
                 createUrlResponseInfo(
-                        new String[] {url}, "", 200, expectedReceivedBytes, ":status", "200");
+                        new String[] {url},
+                        "",
+                        200,
+                        expectedReceivedBytes,
+                        mTestRule.implementationUnderTest(),
+                        ":status",
+                        "200");
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
@@ -357,7 +378,16 @@ public class BidirectionalStreamTest {
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         UrlResponseInfo urlResponseInfo =
                 createUrlResponseInfo(
-                        new String[] {url}, "", 200, expectedReceivedBytes, ":status", "200");
+                        new String[] {url},
+                        "",
+                        200,
+                        expectedReceivedBytes,
+                        // This test is always instantiating a JavaCronetEngine regardless of what
+                        // CronetTestRule tells it to do. At the same time, this test is enabling
+                        // FORCE_HTTPENGINE_FLAG, meaning that HttpEngine will always be used.
+                        CronetImplementation.AOSP_PLATFORM,
+                        ":status",
+                        "200");
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
@@ -404,7 +434,14 @@ public class BidirectionalStreamTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("HEAD");
         UrlResponseInfo urlResponseInfo =
-                createUrlResponseInfo(new String[] {url}, "", 200, 32, ":status", "200");
+                createUrlResponseInfo(
+                        new String[] {url},
+                        "",
+                        200,
+                        32,
+                        mTestRule.implementationUnderTest(),
+                        ":status",
+                        "200");
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");

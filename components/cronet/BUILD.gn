@@ -56,6 +56,7 @@ source_set("cronet_common") {
   ]
   deps = [
     ":cronet_version_header",
+    ":metrics_util",
     ":request_context_config_proto",
     "//base",
     "//components/prefs",
@@ -70,7 +71,10 @@ source_set("metrics_util") {
     "metrics_util.cc",
     "metrics_util.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//net:net",
+  ]
 }
 
 # Unit tests for Cronet common implementation.

@@ -182,8 +182,8 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
 
   // net::BidirectionalStream::Delegate implementations:
   void OnStreamReady(bool request_headers_sent) override;
-  void OnHeadersReceived(
-      const quiche::HttpHeaderBlock& response_headers) override;
+  void OnHeadersReceived(const quiche::HttpHeaderBlock& response_headers,
+                         const net::ProxyInfo& used_proxy_info) override;
   void OnDataRead(int bytes_read) override;
   void OnDataSent() override;
   void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override;

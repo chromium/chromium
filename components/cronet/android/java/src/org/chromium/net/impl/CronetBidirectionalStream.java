@@ -618,11 +618,18 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             int httpStatusCode,
             String negotiatedProtocol,
             String[] headers,
-            long receivedByteCount) {
+            long receivedByteCount,
+            @JniType("std::string") String proxyServer,
+            @JniType("bool") boolean isProxied) {
         try {
             mResponseInfo =
                     prepareResponseInfoOnNetworkThread(
-                            httpStatusCode, negotiatedProtocol, headers, receivedByteCount);
+                            httpStatusCode,
+                            negotiatedProtocol,
+                            headers,
+                            receivedByteCount,
+                            proxyServer,
+                            isProxied);
         } catch (Exception e) {
             failWithException(new CronetExceptionImpl("Cannot prepare ResponseInfo", null));
             return;
@@ -948,6 +955,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         final String negotiatedProtocol;
         final int httpStatusCode;
         final boolean wasCached;
+        final Boolean isProxied = mResponseInfo != null ? mResponseInfo.isProxied() : null;
         if (mResponseInfo != null) {
             responseHeaders = mResponseInfo.getAllHeaders();
             negotiatedProtocol = mResponseInfo.getNegotiatedProtocol();
@@ -1058,10 +1066,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mMetrics.getConnectDurationInMicroseconds(),
                 mMetrics.getTimeToWriteFirstByteInMicroseconds(),
                 mMetrics.getTimeToReceiveHeaderLastByteMicroseconds(),
-                // TODO(https://crbug.com/460092135): Report this for bidi streams.
-                // TODO(https://crbug.com/460426595): This requires knowing whether a bidi stream is
-                // being proxied or not. Cronet currently does not know.
-                /* isProxied= */ null);
+                isProxied);
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {
@@ -1145,7 +1150,9 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             int httpStatusCode,
             String negotiatedProtocol,
             String[] headers,
-            long receivedByteCount) {
+            long receivedByteCount,
+            String proxyServer,
+            boolean isProxied) {
         UrlResponseInfoImpl responseInfo =
                 new UrlResponseInfoImpl(
                         Arrays.asList(mInitialUrl),
@@ -1154,9 +1161,9 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                         headersListFromStrings(headers),
                         false,
                         negotiatedProtocol,
-                        null,
+                        proxyServer,
                         receivedByteCount,
-                        /* isProxied= */ false);
+                        isProxied);
         return responseInfo;
     }
 

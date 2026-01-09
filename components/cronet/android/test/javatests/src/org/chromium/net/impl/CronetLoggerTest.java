@@ -704,7 +704,10 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
             assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
             assertThat(trafficInfo.getTimeToSendFirstByteMicros()).isGreaterThan(0);
-            assertThat(trafficInfo.isProxied()).isNull();
+            switch (mTestRule.implementationUnderTest()) {
+                case STATICALLY_LINKED -> assertThat(trafficInfo.isProxied()).isFalse();
+                default -> throw new AssertionError("Unexpected implementation");
+            }
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
         } finally {

@@ -169,7 +169,8 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const quiche::HttpHeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers,
+    const net::ProxyInfo& used_proxy_info) {
   DCHECK(IsOnNetworkThread());
   DCHECK_EQ(STARTED, read_state_);
   if (!bidi_stream_)

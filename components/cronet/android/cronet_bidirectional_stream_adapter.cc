@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/cronet/android/cronet_bidirectional_stream_adapter.h"
+
 #include <cstddef>
 #include <optional>
 #include <tuple>
@@ -9,8 +11,6 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "cronet_bidirectional_stream_adapter.h"
 
 #include <string>
 #include <utility>
@@ -26,6 +26,7 @@
 #include "components/cronet/android/url_request_close_source.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -276,7 +277,8 @@ void CronetBidirectionalStreamAdapter::OnStreamReady(
 }
 
 void CronetBidirectionalStreamAdapter::OnHeadersReceived(
-    const quiche::HttpHeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers,
+    const net::ProxyInfo& used_proxy_info) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   // Get http status code from response headers.
@@ -298,10 +300,16 @@ void CronetBidirectionalStreamAdapter::OnHeadersReceived(
       break;
   }
 
+  net::ProxyChain invalid_proxy_chain = net::ProxyChain();
+  const net::ProxyChain& proxy_chain = used_proxy_info.is_empty()
+                                           ? invalid_proxy_chain
+                                           : used_proxy_info.proxy_chain();
   cronet::Java_CronetBidirectionalStream_onResponseHeadersReceived(
       env, owner_, http_status_code, ConvertUTF8ToJavaString(env, protocol),
       GetHeadersArray(env, response_headers),
-      bidi_stream_->GetTotalReceivedBytes());
+      bidi_stream_->GetTotalReceivedBytes(),
+      metrics_util::GetProxy(proxy_chain),
+      metrics_util::IsProxied(proxy_chain));
 }
 
 void CronetBidirectionalStreamAdapter::OnDataRead(int bytes_read) {

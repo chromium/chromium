@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "net/base/proxy_chain.h"
 
 namespace cronet {
 
@@ -38,6 +39,11 @@ constexpr int64_t kNullTime = -1;
 int64_t ConvertTime(const base::TimeTicks& ticks,
                     const base::TimeTicks& start_ticks,
                     const base::Time& start_time);
+
+// Returns the string representation of the HostPortPair of `proxy_chain`.
+std::string GetProxy(const net::ProxyChain& proxy_chain);
+
+bool IsProxied(const net::ProxyChain& proxy_chain);
 
 }  // namespace metrics_util
 
