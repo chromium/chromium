@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
@@ -15,6 +14,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -177,10 +177,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
         toSectionWithIdentifier:SectionIdentifierActivity];
     [model setFooter:BWGAppActivityFooterItem
         forSectionWithIdentifier:SectionIdentifierActivity];
+    RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kGeminiAppsActivity);
 
     [model addSectionWithIdentifier:SectionIdentifierExtensions];
     [model addItem:[self BWGExtensionsItem]
         toSectionWithIdentifier:SectionIdentifierExtensions];
+    RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kExtensions);
   }
 }
 
@@ -195,6 +197,43 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 }
 
 #pragma mark - Private
+
+- (void)recordItemShownForContext:(GeminiSettingsContext)context {
+  switch (context) {
+    case GeminiSettingsContextGeminiAppsActivity:
+      RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kGeminiAppsActivity);
+      break;
+    case GeminiSettingsContextPersonalization:
+      RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kPersonalization);
+      break;
+    case GeminiSettingsContextExtensions:
+      RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kExtensions);
+      break;
+    default:
+      RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kUnknown);
+      break;
+  }
+}
+
+- (void)recordItemUsedForContext:(GeminiSettingsContext)context {
+  switch (context) {
+    case GeminiSettingsContextGeminiAppsActivity:
+      RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kGeminiAppsActivity);
+      RecordGeminiSettingsAppsActivity();
+      break;
+    case GeminiSettingsContextPersonalization:
+      RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kPersonalization);
+      RecordGeminiSettingsPersonalization();
+      break;
+    case GeminiSettingsContextExtensions:
+      RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kExtensions);
+      RecordGeminiSettingsExtensions();
+      break;
+    default:
+      RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kUnknown);
+      break;
+  }
+}
 
 // Creates a multi detail item with multiple options.
 - (TableViewMultiDetailTextItem*)detailItemWithType:(NSInteger)type
@@ -309,12 +348,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeAppActivity) {
-    RecordGeminiSettingsAppActivity();
+    RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kGeminiAppsActivity);
+    RecordGeminiSettingsAppsActivity();
     [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
   }
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeExtensions) {
+    RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kExtensions);
     RecordGeminiSettingsExtensions();
     [self.mutator openNewTabWithURL:GURL(kBWGExtensionsURL)];
   }
@@ -345,6 +386,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
         case GeminiSettingsActionTypeUnknown:
           break;
       }
+
+      [self recordItemUsedForContext:dynamicSettingsItem.metadata.context];
     }
   }
 
@@ -405,6 +448,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
   // Add a new section, item and optional footer for each dynamic setting.
   for (GeminiDynamicSettingsItem* newItem in newItems) {
+    [self recordItemShownForContext:newItem.metadata.context];
+
     NSInteger settingIdentifier = newItem.type;
 
     [self.tableViewModel addSectionWithIdentifier:settingIdentifier];

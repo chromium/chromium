@@ -241,25 +241,3 @@ void RecordAIHubIconTapped() {
 void RecordGeminiPromptSent() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiPromptSent"));
 }
-
-void RecordGeminiSettingsOpened() {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsOpened"));
-}
-
-void RecordGeminiSettingsClose() {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsClose"));
-}
-
-void RecordGeminiSettingsBack() {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsBack"));
-}
-
-void RecordGeminiSettingsAppActivity() {
-  base::RecordAction(
-      base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
-}
-
-void RecordGeminiSettingsExtensions() {
-  base::RecordAction(
-      base::UserMetricsAction("Settings.BWGSettings.BWGExtensions"));
-}

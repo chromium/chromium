@@ -39319,6 +39319,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.BWGSettings">
+  <obsolete>Renamed to Settings.GeminiSettings.</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user navigates to BWG Settings. iOS only.
@@ -39326,6 +39327,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.BWGSettings.BWGAppActivity">
+  <obsolete>Renamed to Settings.GeminiSettings.GeminiAppsActivity.</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user tap BWG App Activity row in Settings. iOS only.
@@ -39333,6 +39335,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.BWGSettings.BWGExtensions">
+  <obsolete>Renamed to Settings.GeminiSettings.GeminiExtensions.</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user tap BWG Extensions row in Settings. iOS only.
@@ -39454,6 +39457,38 @@ should be able to be added at any place in this file.
   <owner>koilos@google.com</owner>
   <description>
     User enables the Fingerprinting Protection in the Privacy settings page.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user navigates to Gemini Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings.GeminiAppsActivity">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user taps Gemini Apps Activity row in Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings.GeminiExtensions">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user taps Gemini Extensions row in Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings.GeminiPersonalization">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user taps Gemini Personalization row in Settings. iOS only.
   </description>
 </action>
 

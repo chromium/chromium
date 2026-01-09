@@ -2304,6 +2304,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.DynamicSettings.ItemShown"
+    enum="IOSGeminiSettingsItem" expires_after="2027-01-05">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>Records when an item is shown in Gemini Settings.</summary>
+</histogram>
+
+<histogram name="IOS.Gemini.DynamicSettings.ItemUsed"
+    enum="IOSGeminiSettingsItem" expires_after="2027-01-05">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>Records when the user taps an item in Gemini Settings.</summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Eligibility" enum="Boolean"
     expires_after="2026-06-07">
   <owner>sebsg@chromium.org</owner>

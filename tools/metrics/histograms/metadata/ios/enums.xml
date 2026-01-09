@@ -721,6 +721,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFREAction) -->
 
+<!-- LINT.IfChange(IOSGeminiSettingsItem) -->
+
+<enum name="IOSGeminiSettingsItem">
+  <int value="0" label="GeminiAppsActivity"/>
+  <int value="1" label="Personalization"/>
+  <int value="2" label="Extensions"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h:IOSGeminiSettingsItem) -->
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>

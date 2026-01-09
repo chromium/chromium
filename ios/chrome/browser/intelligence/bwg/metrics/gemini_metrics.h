@@ -185,19 +185,4 @@ void RecordAIHubIconTapped();
 // Records that the user sent a prompt in a Gemini session.
 void RecordGeminiPromptSent();
 
-// Records that the user opened the Gemini settings page.
-void RecordGeminiSettingsOpened();
-
-// Records that the user tapped the close button on the Gemini settings page.
-void RecordGeminiSettingsClose();
-
-// Records that the user tapped the back button on the Gemini settings page.
-void RecordGeminiSettingsBack();
-
-// Records that the user tapped on the Gemini App Activity link.
-void RecordGeminiSettingsAppActivity();
-
-// Records that the user tapped on the Gemini Extensions link.
-void RecordGeminiSettingsExtensions();
-
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_
