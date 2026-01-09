@@ -689,6 +689,15 @@ struct CommitNavigationParams {
   // the navigation commit will actually occur. For more details, see
   // `NavigationRequest::ReuseRequestNavigationClientForCommitIfNeeded()`.
   blink.mojom.LocalFrameToken? commit_target_frame_token;
+
+  // Set to true if the navigation commits an initial WebUI, which is a subset
+  // of topchrome WebUIs that are loaded and shown from the initial browser
+  // startup, e.g. the reload button.
+  // TODO(crbug.com/7409013): Consider passing info about whether the
+  // navigation commits a more general topchrome WebUI instead, if all the
+  // optimizations and code path for initial WebUI should apply for general
+  // topchrome WebUI as well.
+  bool is_initial_webui = false;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

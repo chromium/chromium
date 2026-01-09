@@ -2583,6 +2583,15 @@ void RenderFrameImpl::CommitNavigation(
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
+  if (commit_params->is_initial_webui) {
+    // Immediately mark the RenderFrame with its is-initial-WebUI-ness.
+    is_initial_webui_ = true;
+  } else {
+    // Once an initial WebUI is committed in a RenderFrame, it shouldn't be able
+    // to be used to commit non-initial WebUIs.
+    CHECK(!is_initial_webui_);
+  }
+
   RendererNavigationMetricsManager::Instance().MarkCommitStart(
       commit_params->navigation_metrics_token);
   if (!response_head->client_side_content_decoding_types.empty()) {
@@ -6971,14 +6980,7 @@ RenderFrameImpl::CreateScopedClientNavigationThrottler() {
 }
 
 bool RenderFrameImpl::IsForInitialWebUI() const {
-#if !BUILDFLAG(IS_ANDROID)
-  static const bool is_for_initial_webui =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kRendererForInitialWebUI);
-  return is_for_initial_webui;
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  return is_initial_webui_;
 }
 
 void RenderFrameImpl::ResetMembersUsedForDurationOfCommit() {
