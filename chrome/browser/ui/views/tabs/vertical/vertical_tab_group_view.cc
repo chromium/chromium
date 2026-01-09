@@ -63,6 +63,9 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
               std::make_unique<views::DelegatingLayoutManager>(this)))) {
+  collection_node->set_remove_child_from_node(base::BindRepeating(
+      &TabCollectionAnimatingLayoutManager::AnimateAndRemoveChildView,
+      base::Unretained(&layout_manager_.get())));
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabGroupView::ResetCollectionNode, base::Unretained(this)));

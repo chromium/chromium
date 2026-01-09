@@ -24,8 +24,13 @@ constexpr int kTabPadding = 4;
 VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
     TabCollectionNode* collection_node)
     : collection_node_(collection_node) {
-  SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
-      std::make_unique<views::DelegatingLayoutManager>(this)));
+  auto* layout_manager =
+      SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<views::DelegatingLayoutManager>(this)));
+  collection_node->set_remove_child_from_node(base::BindRepeating(
+      &TabCollectionAnimatingLayoutManager::AnimateAndRemoveChildView,
+      base::Unretained(layout_manager)));
+
   node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
       base::BindOnce(&VerticalPinnedTabContainerView::ResetCollectionNode,
                      base::Unretained(this)));

@@ -44,6 +44,11 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // Snaps the container to the target layout.
   void ResetToTargetLayout();
 
+  // Animates the removal of `child_view` from the `host_view()` associated with
+  // this layout manager. `child_view` will be destroyed by the layout manager
+  // asynchronously.
+  void AnimateAndRemoveChildView(views::View* child_view);
+
   const views::ProposedLayout& target_layout() const { return target_layout_; }
 
  protected:
@@ -64,6 +69,11 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // Interpolates between `starting_layout_` and `target_layout_` based on
   // current `animation_` value.
   views::ProposedLayout InterpolateLayout(double value) const;
+
+  // Removes and destroys any views marked for deletion that are no longer
+  // needed for animated effects. This is called after a new layout has been
+  // calculated.
+  void RemoveNonAnimatingPendingDeleteViews();
 
   // The layout manager that defines the goal state.
   const raw_ref<LayoutManagerBase> target_layout_manager_;
