@@ -236,6 +236,8 @@ class ReadAnythingController {
   // managed.
   base::ScopedClosureRunner main_contents_capturer_handle_;
 
+  raw_ptr<ReadAnythingImmersiveOverlayView> active_overlay_view_ = nullptr;
+
   base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };
 

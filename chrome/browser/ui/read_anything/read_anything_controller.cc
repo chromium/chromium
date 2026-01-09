@@ -316,6 +316,8 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
   if (!immersive_overlay_view) {
     return;
   }
+  active_overlay_view_ = immersive_overlay_view;
+
   immersive_overlay_view->ShowUI(
       GetOrCreateWebUIWrapper(PresentationState::kInImmersiveOverlay), trigger);
 }
@@ -338,13 +340,17 @@ void ReadAnythingController::CloseImmersiveUI(bool closed_by_tab_switch) {
     return;
   }
 
-  auto* immersive_overlay_view = GetImmersiveOverlayView();
+  auto* immersive_overlay_view = active_overlay_view_
+                                     ? active_overlay_view_.get()
+                                     : GetImmersiveOverlayView();
+
   if (!immersive_overlay_view) {
     return;
   }
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
       immersive_overlay_view->CloseUI();
+  active_overlay_view_ = nullptr;
   // If a tab switch is the reason we're closing immersive mode, we want to
   // set should_show_immersive_on_tab_reactivate_ so we know to activate
   // immersive mode again if the tab becomes active.

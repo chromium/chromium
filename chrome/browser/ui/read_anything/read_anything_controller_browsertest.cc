@@ -1244,3 +1244,41 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->OnEntryHidden();
   testing::Mock::VerifyAndClearExpectations(service);
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseTabWithIrmInSplitView_NoCrash) {
+  // Setup 2 tabs
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  // Tab B is active
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(1, tab_strip_model->active_index());
+
+  tabs::TabInterface* tab_b = tab_strip_model->GetActiveTab();
+  ReadAnythingController* ra_controller_tab_b =
+      ReadAnythingController::From(tab_b);
+  ASSERT_TRUE(ra_controller_tab_b);
+
+  // Open IRM on Tab B.
+  ra_controller_tab_b->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Verify IRM is shown.
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Add Tab A (index 0) to split view with current window (Tab B).
+  // This simulates right-clicking Tab A and selecting "Add to split view".
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToSplit));
+  tab_strip_model->ExecuteContextMenuCommand(0,
+                                             TabStripModel::CommandAddToSplit);
+  // Verify split creation
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_strip_model->GetSplitForTab(1);
+  EXPECT_TRUE(split_id.has_value());
+  EXPECT_EQ(split_id, tab_strip_model->GetSplitForTab(0));
+
+  // Verify that closing Tab B (the tab with IRM) does not crash
+  tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(1, tab_strip_model->count());
+}
