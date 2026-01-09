@@ -505,8 +505,8 @@ void PrintfPrepareFmt(const wchar *Org,std::wstring &Cvt)
     if (Org[Src]=='%' && (Src==0 || Org[Src-1]!='%'))
     {
       size_t SPos=Src+1;
-      // Skipping a possible width specifier like %-50s.
-      while (IsDigit(Org[SPos]) || Org[SPos]=='-')
+      // Skipping a possible width specifier like %-50s or %.3s.
+      while (IsDigit(Org[SPos]) || Org[SPos]=='-' || Org[SPos]=='.')
         SPos++;
       if (Org[SPos]=='s')
       {

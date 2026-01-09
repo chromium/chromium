@@ -55,7 +55,10 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
   wchar PwdW[MAXPASSWORD];
   Password->Get(PwdW,ASIZE(PwdW));
 
-  if (wcslen(PwdW)>=MAXPASSWORD_RAR)
+  // Display this warning only when encrypting. Users complained that
+  // it is distracting when decrypting. It still can be useful when encrypting,
+  // so users do not waste time to excessively long passwords.
+  if (Encrypt && wcslen(PwdW)>=MAXPASSWORD_RAR)
     uiMsg(UIERROR_TRUNCPSW,MAXPASSWORD_RAR-1);
 
   PwdW[Min(MAXPASSWORD_RAR,MAXPASSWORD)-1]=0; // For compatibility with existing archives.

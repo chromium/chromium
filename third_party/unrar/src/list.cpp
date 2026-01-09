@@ -141,15 +141,15 @@ void ListArchive(CommandData *Cmd)
         
             if (Verbose)
             {
-              mprintf(L"\n----------- ---------  -------- ----- ---------- -----  --------  ----");
-              mprintf(L"\n%21ls %9ls %3d%%  %-27ls %u",UnpSizeText,
+              mprintf(L"\n----------- ---------- ---------- ----- ---------- -----  --------  ----");
+              mprintf(L"\n%22ls %10ls %3d%%  %-27ls %u",UnpSizeText,
                       PackSizeText,ToPercentUnlim(TotalPackSize,TotalUnpSize),
                       VolNumText,FileCount);
             }
             else
             {
-              mprintf(L"\n----------- ---------  ---------- -----  ----");
-              mprintf(L"\n%21ls  %-16ls  %u",UnpSizeText,VolNumText,FileCount);
+              mprintf(L"\n----------- ----------  ---------- -----  ----");
+              mprintf(L"\n%22ls  %-16ls  %u",UnpSizeText,VolNumText,FileCount);
             }
 
             SumFileCount+=FileCount;
@@ -212,13 +212,13 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
     {
       mprintf(L"\n%ls",St(MListTitleV));
       if (!DisableNames)
-        mprintf(L"\n----------- ---------  -------- ----- ---------- -----  --------  ----");
+        mprintf(L"\n----------- ---------- ---------- ----- ---------- -----  --------  ----");
     }
     else
     {
       mprintf(L"\n%ls",St(MListTitleL));
       if (!DisableNames)
-        mprintf(L"\n----------- ---------  ---------- -----  ----");
+        mprintf(L"\n----------- ----------  ---------- -----  ----");
     }
     // Must be set even in DisableNames mode to suppress "0 files" output
     // unless no files are matched.
@@ -432,10 +432,11 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
     return;
   }
 
-  mprintf(L"\n%c%10ls %9ls ",hd.Encrypted ? '*' : ' ',AttrStr,UnpSizeText);
+  // 2025.12.01: Size field width incremented to properly align 1+ GB sizes.
+  mprintf(L"\n%c%10ls %10ls ",hd.Encrypted ? '*' : ' ',AttrStr,UnpSizeText);
 
   if (Verbose)
-    mprintf(L"%9ls %4ls ",PackSizeText,RatioStr);
+    mprintf(L"%10ls %4ls ",PackSizeText,RatioStr);
 
   mprintf(L" %ls  ",DateStr);
 

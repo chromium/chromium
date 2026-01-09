@@ -152,7 +152,7 @@ index 065350f94af55..5c539faf0d82a 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index e74c9d2e0a2e2..87d9fc4b603bb 100644
+index 096b608995a2e..79ef6daf60381 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
 @@ -901,6 +901,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
@@ -664,7 +664,7 @@ index 8d8f298609a76..a32ea40e3ac25 100644
    if (GlobalCryptLoader.pCryptProtectMemory==NULL)
      GlobalCryptLoader.Load();
 diff --git a/third_party/unrar/src/strfn.cpp b/third_party/unrar/src/strfn.cpp
-index 3a254aa878ce4..acee3e2459a73 100644
+index ed8f91fe2c04c..2f21dfdc5bc10 100644
 --- a/third_party/unrar/src/strfn.cpp
 +++ b/third_party/unrar/src/strfn.cpp
 @@ -61,6 +61,27 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)

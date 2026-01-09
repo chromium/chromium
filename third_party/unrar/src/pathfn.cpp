@@ -926,11 +926,7 @@ static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,ui
   swprintf(Field[7],FieldSize,L"%u",(uint)WeekDay+1);
   swprintf(Field[8],FieldSize,L"%03u",rlt.yDay+1);
   swprintf(Field[9],FieldSize,L"%05u",ArcNumber);
-
-  const wchar *WeekDayName[]={L"Sunday",L"Monday",L"Tuesday",L"Wednesday",
-                              L"Thursday",L"Friday",L"Saturday"};
-
-  wcsncpyz(Field[10],WeekDayName[rlt.wDay],FieldSize);
+  wcsncpyz(Field[10],uiGetWeekDayName(rlt.wDay),FieldSize);
   wcsncpyz(Field[11],GetMonthName(rlt.Month-1),FieldSize);
 
   int LField[sizeof(Field)/sizeof(Field[0])]; // Field lengths.
