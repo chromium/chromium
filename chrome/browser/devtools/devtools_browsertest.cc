@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/cancelable_callback.h"
+#include "base/cfi_buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -2156,8 +2157,10 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
 };
 
 // This test is flaky on Linux MSAN.
-// TODO(htt ps://crbug.com/463490299): Enable the test.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/463490299): Enable the test.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CanGetFileResourceWithFileAccess \
   DISABLED_CanGetFileResourceWithFileAccess
 #else
@@ -2169,7 +2172,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CantGetFileResourceWithoutFileAccess \
   DISABLED_CantGetFileResourceWithoutFileAccess
 #else
@@ -2182,7 +2187,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CantGetFileResourceWithoutFileAccessNoSlashes \
   DISABLED_CantGetFileResourceWithoutFileAccessNoSlashes
 #else
@@ -2195,7 +2202,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CantGetFileResourceWithoutFileAccessMixedCase \
   DISABLED_CantGetFileResourceWithoutFileAccessMixedCase
 #else
