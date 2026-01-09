@@ -11,6 +11,8 @@ import androidx.activity.result.ActivityResult;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
 
@@ -55,14 +57,14 @@ public class MediaCapturePickerInvoker {
             MediaCapturePickerDelegate impl) {
         if (action == CaptureAction.CAPTURE_CANCELLED) {
             delegate.onCancel();
-            return;
-        }
-
-        if (action == CaptureAction.CAPTURE_WINDOW) {
-            WebContents tabWebContents = impl.getPickedWebContents();
-            if (tabWebContents != null) {
+        } else if (action == CaptureAction.CAPTURE_WINDOW) {
+            Tab tab = impl.getPickedTab();
+            if (tab != null) {
                 // User selected from app provided contents, i.e. a tab.
-                delegate.onPickTab(tabWebContents, impl.shouldShareAudio());
+                tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
+                WebContents pickedTabwebContents = tab.getWebContents();
+                assert pickedTabwebContents != null;
+                delegate.onPickTab(pickedTabwebContents, impl.shouldShareAudio());
             } else {
                 // User selected a window or screen.
                 ScreenCapture.onPick(webContents, result);
@@ -71,5 +73,6 @@ public class MediaCapturePickerInvoker {
         } else if (action == CaptureAction.CAPTURE_SCREEN) {
             delegate.onPickScreen();
         }
+        impl.onFinish();
     }
 }

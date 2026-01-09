@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -30,6 +31,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager.Delegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager.Params;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
 import org.chromium.ui.base.TestActivity;
@@ -52,7 +55,7 @@ public class MediaCapturePickerInvokerTest {
 
     private static class FakeMediaCapturePickerDelegate implements MediaCapturePickerDelegate {
         private Intent mIntent;
-        private WebContents mWebContents;
+        private Tab mTab;
         private boolean mShouldShareAudio;
 
         @Override
@@ -62,7 +65,12 @@ public class MediaCapturePickerInvokerTest {
 
         @Override
         public WebContents getPickedWebContents() {
-            return mWebContents;
+            return null;
+        }
+
+        @Override
+        public Tab getPickedTab() {
+            return mTab;
         }
 
         @Override
@@ -74,8 +82,8 @@ public class MediaCapturePickerInvokerTest {
             mIntent = intent;
         }
 
-        private void setPickedWebContents(WebContents webContents) {
-            mWebContents = webContents;
+        private void setPickedTab(Tab tab) {
+            mTab = tab;
         }
 
         public void setShouldShareAudio(boolean shouldShareAudio) {
@@ -126,28 +134,36 @@ public class MediaCapturePickerInvokerTest {
     @Test
     @SmallTest
     public void testShow_tabWithAudio() {
+        Tab tab = mock(Tab.class);
+        doReturn(mTabWebContents).when(tab).getWebContents();
+
         mPickerDelegate.setIntent(new Intent());
-        mPickerDelegate.setPickedWebContents(mTabWebContents);
+        mPickerDelegate.setPickedTab(tab);
         mPickerDelegate.setShouldShareAudio(true);
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
         MediaCapturePickerHeadlessFragment fragment =
                 MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
+        verify(tab).loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
         verify(mDelegate).onPickTab(mTabWebContents, true);
     }
 
     @Test
     @SmallTest
     public void testShow_tabWithoutAudio() {
+        Tab tab = mock(Tab.class);
+        doReturn(mTabWebContents).when(tab).getWebContents();
+
         mPickerDelegate.setIntent(new Intent());
-        mPickerDelegate.setPickedWebContents(mTabWebContents);
+        mPickerDelegate.setPickedTab(tab);
         mPickerDelegate.setShouldShareAudio(false);
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
         MediaCapturePickerHeadlessFragment fragment =
                 MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
+        verify(tab).loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
         verify(mDelegate).onPickTab(mTabWebContents, false);
     }
 
