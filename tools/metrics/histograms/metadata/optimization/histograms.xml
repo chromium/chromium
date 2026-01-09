@@ -513,6 +513,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ShoppingPageTypes"
       summary="This optimization provides information about shopping page
                types of this page."/>
+  <variant name="Skills"
+      summary="Provides the set of Skills to display on the current page."/>
   <variant name="TextClassifierEntityDetection"
       summary="Provides information about whether about whether a page is
                eligible for text classifier entity detection - iOS only."/>
