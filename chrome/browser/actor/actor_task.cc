@@ -363,23 +363,7 @@ void ActorTask::Stop(StoppedReason stop_reason) {
     execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
   }
   end_time_ = base::Time::Now();
-  State final_state;
-  switch (stop_reason) {
-    case StoppedReason::kUserStartedNewChat:
-    case StoppedReason::kUserLoadedPreviousChat:
-    case StoppedReason::kStoppedByUser:
-    case StoppedReason::kTabDetached:
-    case StoppedReason::kShutdown:
-      final_state = State::kCancelled;
-      break;
-    case StoppedReason::kTaskComplete:
-      final_state = State::kFinished;
-      break;
-    case StoppedReason::kModelError:
-    case StoppedReason::kChromeFailure:
-      final_state = State::kFailed;
-      break;
-  }
+  State final_state = GetTaskStateFromStoppedReason(stop_reason);
   stopped_reason_ = stop_reason;
   // Remove all the tabs from the task.
   tabs::TabHandle last_tab_handle;
@@ -388,6 +372,8 @@ void ActorTask::Stop(StoppedReason stop_reason) {
     RemoveTab(controlled_tabs_.begin()->first);
   }
 
+  SetState(final_state);
+
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     ui_event_dispatcher_->OnActorTaskSyncChange(ui::UiEventDispatcher::StopTask{
         .task_id = id_,
@@ -395,7 +381,6 @@ void ActorTask::Stop(StoppedReason stop_reason) {
         .title = title_,
         .last_acted_on_tab_handle = last_tab_handle});
   }
-  SetState(final_state);
 }
 
 void ActorTask::Pause(bool from_actor) {
@@ -816,6 +801,29 @@ void ActorTask::SetExecutionEngineForTesting(
     std::unique_ptr<ExecutionEngine> engine) {
   execution_engine_.reset(std::move(engine.release()));
   execution_engine_->SetOwner(this);
+}
+
+// static
+ActorTask::State ActorTask::GetTaskStateFromStoppedReason(
+    StoppedReason stopped_reason) {
+  State final_state;
+  switch (stopped_reason) {
+    case StoppedReason::kUserStartedNewChat:
+    case StoppedReason::kUserLoadedPreviousChat:
+    case StoppedReason::kStoppedByUser:
+    case StoppedReason::kTabDetached:
+    case StoppedReason::kShutdown:
+      final_state = State::kCancelled;
+      break;
+    case StoppedReason::kTaskComplete:
+      final_state = State::kFinished;
+      break;
+    case StoppedReason::kModelError:
+    case StoppedReason::kChromeFailure:
+      final_state = State::kFailed;
+      break;
+  }
+  return final_state;
 }
 
 }  // namespace actor

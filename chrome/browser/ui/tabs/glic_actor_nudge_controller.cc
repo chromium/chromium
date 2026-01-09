@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -65,12 +67,16 @@ void GlicActorNudgeController::OnStateUpdateImpl(
       GlicActorTaskIconManagerFactory::GetForProfile(profile_);
   DCHECK(manager);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
-      manager->GetActorTaskListBubbleRows().empty()) {
+      manager->actor_task_list_bubble_rows().empty()) {
     tab_strip_action_container_->HideGlicActorTaskIcon();
     CloseBubble();
     return;
   }
 
+  size_t num_tasks_need_processing =
+      base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)
+          ? manager->GetNumActorTasksNeedProcessing()
+          : manager->actor_task_list_bubble_rows().size();
   switch (actor_task_nudge_state.text) {
     case ActorTaskNudgeState::Text::kDefault:
       if (base::FeatureList::IsEnabled(
@@ -85,12 +91,17 @@ void GlicActorNudgeController::OnStateUpdateImpl(
       break;
     case ActorTaskNudgeState::Text::kNeedsAttention:
       UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
-          IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL,
-          manager->GetActorTaskListBubbleRows().size()));
+          IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, num_tasks_need_processing));
       break;
-      // TODO(crbug.com/458391262) revisit or cleanup implementation here for
-      // m144.
     case ActorTaskNudgeState::Text::kCompleteTasks:
+      if (base::FeatureList::IsEnabled(
+              features::kGlicActorUiGlobalTaskIndicator)) {
+        UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
+            IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL,
+            actor::ActorKeyedService::Get(profile_)
+                ->GetActorUiStateManager()
+                ->GetInactiveTaskCount()));
+      }
       break;
     default:
       NOTREACHED();
@@ -109,6 +120,8 @@ void GlicActorNudgeController::UpdateNudgeLabelOrRetrigger(
   } else {
     tab_strip_action_container_->TriggerGlicActorNudge(nudge_label_text);
   }
+  // TODO(crbug.com/473593979): The bubble should not always be triggered in
+  // this case.
   ActorTaskListBubbleController::From(browser_)->ShowBubble(
       tab_strip_action_container_->glic_actor_button_container());
 }

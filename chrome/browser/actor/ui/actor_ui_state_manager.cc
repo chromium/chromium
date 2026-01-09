@@ -247,7 +247,6 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                 NotifyActorTaskStopped(e.task_id);
                 return;
               }
-
               stopped_task_info_.emplace(
                   e.task_id,
                   StoppedTaskInfo{
@@ -370,6 +369,10 @@ std::optional<actor::ActorTask::State> ActorUiStateManager::GetActorTaskState(
     return it->second.final_state;
   }
   return std::nullopt;
+}
+
+size_t ActorUiStateManager::GetInactiveTaskCount() {
+  return stopped_task_info_.size();
 }
 
 }  // namespace actor::ui

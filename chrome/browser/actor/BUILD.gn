@@ -284,6 +284,7 @@ if (!skip_android_unmigrated_actor_files) {
       "//base",
       "//chrome/browser/actor/ui:event_dispatcher",
       "//chrome/browser/actor/ui:test_support",
+      "//chrome/browser/actor/ui:ui_event_types",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//content/test:test_support",
     ]

@@ -128,6 +128,9 @@ class ActorTask {
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
+  // Converts stopped_reason to the final state of the task.
+  static State GetTaskStateFromStoppedReason(StoppedReason stopped_reason);
+
   // Sets State to `stop_reason` and cancels any pending actions.
   // TODO(bokan): It's important that Stop only be called from ActorKeyedService
   // since that has to clean up actor tasks. Add a PassKey.

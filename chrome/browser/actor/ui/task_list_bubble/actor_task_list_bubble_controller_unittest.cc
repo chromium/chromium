@@ -152,7 +152,7 @@ TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
   views::View* content_view = GetContentViewInActorTaskListBubble(
       actor_task_list_bubble_controller_->GetBubbleWidget());
 
-  EXPECT_EQ(1u, manager->GetActorTaskListBubbleRows().size());
+  EXPECT_EQ(1u, manager->actor_task_list_bubble_rows().size());
   EXPECT_EQ(1u, content_view->children().size());
 
   RichHoverButton* button =
@@ -163,14 +163,11 @@ TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
 
   // Bubble should be reset after click.
   EXPECT_EQ(nullptr, actor_task_list_bubble_controller_->GetBubbleWidget());
-  EXPECT_EQ(0u, manager->GetActorTaskListBubbleRows().size());
+  EXPECT_EQ(0u, manager->actor_task_list_bubble_rows().size());
 
   actor_task_list_bubble_controller_->ShowBubble(
       anchor_widget_->GetContentsView());
-  content_view = GetContentViewInActorTaskListBubble(
-      actor_task_list_bubble_controller_->GetBubbleWidget());
-
-  EXPECT_EQ(0u, content_view->children().size());
+  EXPECT_EQ(nullptr, actor_task_list_bubble_controller_->GetBubbleWidget());
 #endif
 }
 

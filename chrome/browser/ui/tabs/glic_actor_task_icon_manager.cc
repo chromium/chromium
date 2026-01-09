@@ -7,29 +7,28 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-
-namespace {
-bool RequiresTaskProcessing(actor::ActorTask::State state) {
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
-    return state == actor::ActorTask::State::kPausedByActor ||
-           state == actor::ActorTask::State::kWaitingOnUser ||
-           state == actor::ActorTask::State::kFinished ||
-           state == actor::ActorTask::State::kFailed;
-  } else {
-    return state == actor::ActorTask::State::kPausedByActor ||
-           state == actor::ActorTask::State::kWaitingOnUser;
-  }
-}
-}  // namespace
-
 namespace tabs {
-
+namespace {
 using actor::ActorKeyedService;
 using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
 using actor::ActorTask;
+using TaskState = actor::ActorTask::State;
+using Text = ActorTaskNudgeState::Text;
+
+bool RequiresTaskProcessing(TaskState state) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    return GlicActorTaskIconManager::RequiresAttention(state) ||
+           state == TaskState::kFinished || state == TaskState::kFailed;
+  } else {
+    return GlicActorTaskIconManager::RequiresAttention(state);
+  }
+}
+
+}  // namespace
 
 GlicActorTaskIconManager::GlicActorTaskIconManager(
     Profile* profile,
@@ -79,30 +78,50 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   // TODO(mjenn): Remove this once kGlicActorUiGlobalTaskIndicator is removed.
   auto paused_or_yielded_actor_tasks =
       actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
-        return (task.GetState() == actor::ActorTask::State::kPausedByActor ||
-                task.GetState() == actor::ActorTask::State::kWaitingOnUser);
+        return (task.GetState() == TaskState::kPausedByActor ||
+                task.GetState() == TaskState::kWaitingOnUser);
       });
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
 
-  // TODO(crbug.com/469817191): Separate tasks that need attention from those
-  // that are stopped.
-  bool has_unprocessed_tasks = std::any_of(
-      actor_task_list_bubble_rows_.begin(), actor_task_list_bubble_rows_.end(),
-      [](const auto& pair) { return pair.second; });
+  bool needs_attention = false;
+  bool tasks_complete = false;
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    for (const auto [task_id, requires_processing] :
+         actor_task_list_bubble_rows_) {
+      // Tasks that are processed will show the default nudge.
+      if (!requires_processing) {
+        continue;
+      }
 
-  bool needs_attention =
-      base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)
-          ? has_unprocessed_tasks
-          : !paused_or_yielded_actor_tasks.empty() &&
-                !actor_task_list_bubble_rows_.empty();
-  if (needs_attention) {
-    current_actor_task_nudge_state_.text =
-        ActorTaskNudgeState::Text::kNeedsAttention;
+      const std::optional<TaskState> state =
+          actor_service_->GetActorUiStateManager()->GetActorTaskState(task_id);
+
+      // Tasks that have no state no longer exist and should not be processed.
+      if (!state) {
+        actor::ui::RecordTaskIconError(
+            actor::ui::ActorUiTaskIconError::kNudgeTaskDoesntExist);
+        continue;
+      }
+
+      if (tabs::GlicActorTaskIconManager::RequiresAttention(*state)) {
+        // Needs attention prioritized over other text
+        needs_attention = true;
+        break;
+      }
+
+      if (*state == TaskState::kFinished || *state == TaskState::kFailed) {
+        tasks_complete = true;
+      }
+    }
   } else {
-    // If no tasks needing attention, hide the nudge.
-    current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;
+    needs_attention = !paused_or_yielded_actor_tasks.empty() &&
+                      !actor_task_list_bubble_rows_.empty();
   }
+
+  current_actor_task_nudge_state_.text = needs_attention ? Text::kNeedsAttention
+                                         : tasks_complete ? Text::kCompleteTasks
+                                                          : Text::kDefault;
 
   // If either the state or number of tasks in the bubble changes, we want to
   // notify the nudge.
@@ -173,6 +192,17 @@ GlicActorTaskIconManager::RegisterTaskListBubbleStateChange(
 ActorTaskNudgeState GlicActorTaskIconManager::GetCurrentActorTaskNudgeState()
     const {
   return current_actor_task_nudge_state_;
+}
+size_t GlicActorTaskIconManager::GetNumActorTasksNeedProcessing() const {
+  return std::ranges::count_if(
+      actor_task_list_bubble_rows_,
+      [](const auto& task) { return /*requires_processing=*/task.second; });
+}
+
+// static
+bool GlicActorTaskIconManager::RequiresAttention(TaskState state) {
+  return state == TaskState::kPausedByActor ||
+         state == TaskState::kWaitingOnUser;
 }
 
 }  // namespace tabs

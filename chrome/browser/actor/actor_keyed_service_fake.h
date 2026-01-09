@@ -17,6 +17,9 @@ class ActorKeyedServiceFake : public ActorKeyedService {
   ~ActorKeyedServiceFake() override;
 
   TaskId CreateTaskForTesting();
+  void PauseTaskForTesting(TaskId task_id, bool from_actor);
+  void StopTaskForTesting(TaskId task_id,
+                          actor::ActorTask::StoppedReason stopped_reason);
 
  private:
   base::WeakPtrFactory<ActorKeyedServiceFake> weak_ptr_factory_{this};

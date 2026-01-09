@@ -58,6 +58,10 @@ class ActorUiStateManagerInterface {
   virtual std::optional<actor::ActorTask::State> GetActorTaskState(
       TaskId id) = 0;
 
+  // Gets the number of inactive tasks (finished and failed). Cancelled tasks
+  // are not included in this count.
+  virtual size_t GetInactiveTaskCount() = 0;
+
   // Register for this callback to be notified whenever the actor task state
   // changes. This callback may be debounced by a delay.
   using ActorTaskStateChangeCallback = base::RepeatingCallback<void(TaskId)>;

@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,6 +41,11 @@ views::Widget* ActorTaskListBubble::ShowBubble(
     base::RepeatingCallback<void(actor::TaskId)> on_row_clicked) {
   auto contents_view =
       CreateContentsView(profile, task_list, std::move(on_row_clicked));
+
+  // If there are no rows, don't show the bubble.
+  if (contents_view->children().empty()) {
+    return nullptr;
+  }
 
   auto dialog_model =
       ui::DialogModel::Builder()
@@ -75,7 +81,7 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build();
 
-  auto* actor_ui_state_manager =
+  actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =
       actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
   for (auto [task_id, requires_processing] : task_list) {
     if (!actor_ui_state_manager->GetActorTaskState(task_id)) {

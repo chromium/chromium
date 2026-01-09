@@ -34,6 +34,10 @@ class GlicActorTaskIconManager : public KeyedService {
   // Called whenever updates are needed to the task icon components.
   void UpdateTaskIconComponents(actor::TaskId task_id);
 
+  // Returns true if the task was paused by the actor or in an interrupt state
+  // waiting for user action.
+  static bool RequiresAttention(actor::ActorTask::State state);
+
   // Register for this callback to get task nudge state change notifications.
   using TaskNudgeChangeCallback = base::RepeatingCallback<void(
       actor::ui::ActorTaskNudgeState actor_task_nudge_state)>;
@@ -47,8 +51,8 @@ class GlicActorTaskIconManager : public KeyedService {
       TaskListBubbleChangeCallback callback);
 
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
-
-  const absl::flat_hash_map<actor::TaskId, bool>& GetActorTaskListBubbleRows()
+  size_t GetNumActorTasksNeedProcessing() const;
+  const absl::flat_hash_map<actor::TaskId, bool>& actor_task_list_bubble_rows()
       const {
     return actor_task_list_bubble_rows_;
   }

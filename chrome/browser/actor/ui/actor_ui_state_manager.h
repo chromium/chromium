@@ -29,6 +29,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
       TaskId id) override;
   std::optional<actor::ActorTask::State> GetActorTaskState(TaskId id) override;
+  size_t GetInactiveTaskCount() override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) override;

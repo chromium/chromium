@@ -52,10 +52,11 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
     // Only show the bubble in the active window.
     return;
   }
+
   const auto& task_id_to_state =
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(
           browser_->GetProfile())
-          ->GetActorTaskListBubbleRows();
+          ->actor_task_list_bubble_rows();
   // Do not show bubble if there are no rows to show.
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
       task_id_to_state.empty()) {
@@ -65,6 +66,12 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
       browser_->GetProfile(), anchor_view, task_id_to_state,
       base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  // All rows may be skipped, in which case the bubble will not be shown.
+  if (!bubble_widget_) {
+    return;
+  }
+
   if (widget_observation_.IsObserving()) {
     widget_observation_.Reset();
   }

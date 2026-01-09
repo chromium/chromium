@@ -46,7 +46,10 @@ enum class ActorUiTaskIconError {
   // Counts the number of times we try to create a task list bubble row for an
   // invalid task id. Invalid meaning not in active or inactive task records.
   kBubbleTaskDoesntExist = 0,
-  kMaxValue = kBubbleTaskDoesntExist,
+  // Counts the number of times we try to create a task icon/nudge for an
+  // invalid task id. Invalid meaning not in active or inactive task records.
+  kNudgeTaskDoesntExist = 1,
+  kMaxValue = kNudgeTaskDoesntExist,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorUiTaskIconError)
 

@@ -48,6 +48,7 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               GetActorTaskState,
               (TaskId task_id),
               (override));
+  MOCK_METHOD(size_t, GetInactiveTaskCount, (), (override));
 };
 
 }  // namespace actor::ui

@@ -97,11 +97,11 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
             {contextual_cueing::kContextualCueing, {}},
         },
         {});
-    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
   void SetUp() override {
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     // This will temporarily disable preloading.
     glic::GlicProfileManager::SetPrewarmingEnabledForTesting(false);
     fre_server_.ServeFilesFromDirectory(
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(
       [&] { return !GlicActorTaskIcon()->GetIsShowingNudge(); }));
   auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
       browser()->GetProfile());
-  EXPECT_EQ(0u, manager->GetActorTaskListBubbleRows().size());
+  EXPECT_EQ(0u, manager->actor_task_list_bubble_rows().size());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -741,11 +741,63 @@ IN_PROC_BROWSER_TEST_F(
   auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
       browser()->GetProfile());
   EXPECT_TRUE(RunUntil(
-      [&]() { return manager->GetActorTaskListBubbleRows().size() == 2; }));
+      [&]() { return manager->actor_task_list_bubble_rows().size() == 2; }));
   EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 2));
+}
+
+class GlicActorGlobalFlagEnabledBrowserTest
+    : public TabStripActionContainerBrowserTest {
+ public:
+  GlicActorGlobalFlagEnabledBrowserTest() {
+    features_.InitWithFeaturesAndParameters(
+        {
+            {features::kTabOrganization, {}},
+            {features::kGlicRollout, {}},
+            {features::kGlicFreWarming, {}},
+            {features::kGlicActorUiGlobalTaskIndicator, {}},
+            {features::kGlicActor, {}},
+            {features::kGlicActorUi,
+             {{features::kGlicActorUiTaskIconName, "true"}}},
+            {features::kTabstripComboButton, {}},
+            {features::kTabstripDeclutter, {}},
+            {contextual_cueing::kContextualCueing, {}},
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorGlobalFlagEnabledBrowserTest,
+                       GlicActorCompleteShowsNudgeWithGlobalFlagEnabled) {
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
+  EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
+
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
+  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
+  actor::TaskId task_id = actor_service->CreateTask();
+  actor::ui::StartTask start_task_event(task_id);
+  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+
+  ASSERT_TRUE(RunUntil([&]() {
+    return GlicActorTaskIcon()->GetText() ==
+           l10n_util::GetPluralStringFUTF16(
+               IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL, 1);
+  }));
+  EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                "Actor.Ui.TaskNudge.Shown",
+                ActorTaskNudgeState::Text::kCompleteTasks),
+            1);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

@@ -133,6 +133,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ActorUiTaskIconError">
   <int value="0" label="kBubbleTaskDoesntExist"/>
+  <int value="1" label="kNudgeTaskDoesntExist"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTaskIconError) -->
