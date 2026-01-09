@@ -251,8 +251,7 @@ void ExtensionAllowlist::OnExtensionInstalled(const ExtensionId& extension_id,
 
 void ExtensionAllowlist::SetAllowlistEnforcementFields() {
   if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
-    warnings_enabled_ = base::FeatureList::IsEnabled(
-        extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
+    warnings_enabled_ = true;
     should_auto_disable_extensions_ = base::FeatureList::IsEnabled(
         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable);
   } else {

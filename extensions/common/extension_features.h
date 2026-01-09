@@ -189,12 +189,6 @@ BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 // out of the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 
-// Controls whether we show an install friction dialog when an Enhanced Safe
-// Browsing user tries to install an extension that is not included in the
-// Safe Browsing CRX allowlist. This feature also controls if we show a warning
-// in 'chrome://extensions' for extensions not included in the allowlist.
-BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings);
-
 // When enabled, cause extensions to use structured cloning (instead of JSON
 // serialization) for extension messaging, except when communicating with native
 // messaging hosts.

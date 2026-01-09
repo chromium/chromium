@@ -3298,19 +3298,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       api::developer_private::EventType::kPinnedActionsChanged));
 }
 
-class DeveloperPrivateApiAllowlistUnitTest
-    : public DeveloperPrivateApiUnitTest {
- public:
-  DeveloperPrivateApiAllowlistUnitTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DeveloperPrivateApiAllowlistUnitTest,
+TEST_F(DeveloperPrivateApiUnitTest,
        ExtensionUpdatedEventOnAllowlistWarningChange) {
   // We need to call DeveloperPrivateAPI::Get() in order to instantiate the
   // keyed service, since it's not created by default in unit tests.

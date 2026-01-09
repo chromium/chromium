@@ -750,10 +750,7 @@ class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
     : public WebstorePrivateBeginInstallWithManifest3Test,
       public testing::WithParamInterface<FrictionDialogTestCase> {
  public:
-  WebstorePrivateBeginInstallWithManifest3FrictionDialogTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
-  }
+  WebstorePrivateBeginInstallWithManifest3FrictionDialogTest() = default;
 
   void SetUp() override {
     WebstorePrivateBeginInstallWithManifest3Test::SetUp();
@@ -763,9 +760,6 @@ class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
     // without calling `webstorePrivate.completeInstall`.
     WebstorePrivateApi::ClearPendingApprovalsForTesting();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,

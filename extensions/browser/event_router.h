@@ -373,7 +373,7 @@ class EventRouter : public KeyedService,
                            OnUserSiteSettingsChanged);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
                            ExtensionUpdatedEventOnPinnedActionsChange);
-  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiAllowlistUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
                            ExtensionUpdatedEventOnAllowlistWarningChange);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiWithPermittedSitesUnitTest,
                            OnUserSiteSettingsChanged);
