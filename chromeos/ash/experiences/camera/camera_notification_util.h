@@ -14,6 +14,12 @@ struct SignInNotificationIds {
   int message;
 };
 
+struct UploadErrorIds {
+  int title;
+  int message;
+  int retake_button;
+};
+
 // Takes the file name and returns title and message string IDs for camera
 // OneDrive sign-in notification. File name is expected to have a supported
 // extension.
@@ -23,5 +29,9 @@ SignInNotificationIds GetCameraSignInStringsFromFilename(
 // Returns the title string ID for camera upload done notification based on
 // the type of `file` and whether it is uploaded to `onedrive` or Google Drive.
 int GetCameraUploadDoneTitleId(bool onedrive, const base::FilePath& file);
+
+// Returns the upload error notification string IDs based on the type of `file`.
+UploadErrorIds GetCameraUploadErrorStringsFromFilename(
+    const base::FilePath& file);
 
 #endif  // CHROMEOS_ASH_EXPERIENCES_CAMERA_CAMERA_NOTIFICATION_UTIL_H_

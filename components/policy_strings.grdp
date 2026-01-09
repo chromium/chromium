@@ -1437,6 +1437,36 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_DELETE_BUTTON" desc="The delete button in the notification which shows when the file is successfully saved to cloud storage.">
     Delete
   </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_TITLE" desc="The title of the notification which shows when the file upload to cloud storage failed.">
+    Unable to save photo
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_MESSAGE" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Photo is lost due to an unknown error
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_RETAKE_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Retake photo
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_TITLE" desc="The title of the notification which shows when the file upload to cloud storage failed.">
+    Unable to save video
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_MESSAGE" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Video is lost due to an unknown error
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_RETAKE_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Retake video
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_TITLE" desc="The title of the notification which shows when the file upload to cloud storage failed.">
+    Unable to save scan
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_MESSAGE" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Scan is lost due to an unknown error
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_RETAKE_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Retake scan
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_ERROR_DISMISS_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Dismiss
+  </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
     Sign in to OneDrive to continue downloading
   </message>

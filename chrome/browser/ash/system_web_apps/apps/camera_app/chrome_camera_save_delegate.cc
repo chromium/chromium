@@ -154,6 +154,11 @@ void ChromeCameraSaveDelegate::DeleteFileOnOneDrive(
   ash::cloud_upload::OdfsFileDeleter::Delete(file_path, std::move(callback));
 }
 
+void ChromeCameraSaveDelegate::OpenCameraApp() {
+  ash::LaunchSystemWebAppAsync(Profile::FromBrowserContext(context_),
+                               ash::SystemWebAppType::CAMERA);
+}
+
 void ChromeCameraSaveDelegate::OnOnedriveUploadDone(
     const std::string& file_name,
     base::OnceCallback<void(bool)> callback,

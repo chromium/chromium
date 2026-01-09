@@ -47,6 +47,7 @@ class ChromeCameraSaveDelegate : public CameraSaveHandler::Delegate {
   void OpenFileInImageEditor(const base::FilePath& file_path) override;
   void DeleteFileOnOneDrive(const base::FilePath& file_path,
                             base::OnceCallback<void(bool)> callback) override;
+  void OpenCameraApp() override;
 
   bool is_onedrive() const {
     return destination_ ==

@@ -27,6 +27,8 @@ source_set("camera_save_handler") {
     "cancel_camera_upload_dialog.h",
     "upload_done_notification.cc",
     "upload_done_notification.h",
+    "upload_error_notification.cc",
+    "upload_error_notification.h",
   ]
 
   deps = [

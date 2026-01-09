@@ -17,6 +17,7 @@
 #include "chromeos/ash/experiences/camera/camera_upload_notification.h"
 #include "chromeos/ash/experiences/camera/cancel_camera_upload_dialog.h"
 #include "chromeos/ash/experiences/camera/upload_done_notification.h"
+#include "chromeos/ash/experiences/camera/upload_error_notification.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
@@ -273,7 +274,10 @@ void CameraSaveHandler::OnUploadDone(const base::FilePath& upload_from_path,
                             weak_ptr_factory_.GetWeakPtr(),
                             uploaded_file_path));
   } else {
-    // TODO(crbug.com/454152412): Show error notification.
+    CreateUploadErrorNotification(
+        thumbnail, upload_from_path,
+        base::BindRepeating(&CameraSaveHandler::OnUploadErrorRetake,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
   if (!success &&
       delegate_->GetDestination() == FileSaveDestination::kOneDrive) {
@@ -304,4 +308,9 @@ void CameraSaveHandler::DeleteFileAfterUpload(const base::FilePath& file_path) {
         base::BindOnce(&base::DeleteFile, file_path),
         base::BindOnce(std::move(callback), file_path));
   }
+}
+
+void CameraSaveHandler::OnUploadErrorRetake() {
+  CHECK(delegate_);
+  delegate_->OpenCameraApp();
 }

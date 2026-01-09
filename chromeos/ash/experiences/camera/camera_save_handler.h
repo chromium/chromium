@@ -81,6 +81,9 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
 
     // Opens the file for editing from the upload done notification.
     virtual void OpenFileInImageEditor(const base::FilePath& file_path) = 0;
+
+    // Opens the camera app from the upload error notification retake button.
+    virtual void OpenCameraApp() = 0;
   };
 
   CameraSaveHandler(const CameraSaveHandler&) = delete;
@@ -165,6 +168,7 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
                     bool success) VALID_CONTEXT_REQUIRED(sequence_checker_);
   void OpenFileInImageEditor(const base::FilePath& file_path);
   void DeleteFileAfterUpload(const base::FilePath& file_path);
+  void OnUploadErrorRetake();
 
   std::unique_ptr<Delegate> delegate_;
   // TODO(crbug.com/454152412) Add unit tests for progress notification and

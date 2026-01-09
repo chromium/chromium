@@ -31,13 +31,13 @@ constexpr auto kCameraSigninStringsMap =
           {IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_SCAN,
            IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_SCAN}}});
 
-struct ResourceIds {
+struct UploadDoneNotificationTitleIds {
   int onedrive_id;
   int google_drive_id;
 };
 
 constexpr auto kCameraUploadDoneTitleMap =
-    base::MakeFixedFlatMap<std::string_view, ResourceIds>(
+    base::MakeFixedFlatMap<std::string_view, UploadDoneNotificationTitleIds>(
         {{"image/jpeg",
           {IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_ONEDRIVE,
            IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_GOOGLE_DRIVE}},
@@ -51,6 +51,24 @@ constexpr auto kCameraUploadDoneTitleMap =
           {IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_ONEDRIVE,
            IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_GOOGLE_DRIVE}}});
 
+constexpr auto kCameraUploadErrorMap =
+    base::MakeFixedFlatMap<std::string_view, UploadErrorIds>(
+        {{"image/jpeg",
+          {IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_TITLE,
+           IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_MESSAGE,
+           IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_RETAKE_BUTTON}},
+         {"image/gif",
+          {IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_TITLE,
+           IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_MESSAGE,
+           IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_RETAKE_BUTTON}},
+         {"video/mp4",
+          {IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_TITLE,
+           IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_MESSAGE,
+           IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_RETAKE_BUTTON}},
+         {"application/pdf",
+          {IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_TITLE,
+           IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_MESSAGE,
+           IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_RETAKE_BUTTON}}});
 }  // namespace
 
 SignInNotificationIds GetCameraSignInStringsFromFilename(
@@ -81,4 +99,20 @@ int GetCameraUploadDoneTitleId(bool onedrive, const base::FilePath& file) {
   return onedrive
              ? IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_ONEDRIVE
              : IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_GOOGLE_DRIVE;
+}
+
+UploadErrorIds GetCameraUploadErrorStringsFromFilename(
+    const base::FilePath& file) {
+  std::string mime_type;
+  if (net::GetWellKnownMimeTypeFromFile(file, &mime_type)) {
+    if (const auto it = kCameraUploadErrorMap.find(mime_type);
+        it != kCameraUploadErrorMap.end()) {
+      return it->second;
+    }
+  }
+  DLOG(FATAL) << "Unsupported extension: " << file.Extension();
+  // Use "photo" as fallback.
+  return {IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_TITLE,
+          IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_MESSAGE,
+          IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_RETAKE_BUTTON};
 }
