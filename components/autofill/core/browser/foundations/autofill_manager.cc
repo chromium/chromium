@@ -184,16 +184,13 @@ void AutofillManager::OnLanguageDetermined(
 
   NotifyObservers(&Observer::OnBeforeLanguageDetermined);
 
-  std::vector<FormData> forms;
-  forms.reserve(form_structures_.size());
-  for (const auto& [id, form_structure] : form_structures_) {
-    forms.push_back(form_structure->ToFormData());
-  }
-  ParseFormsAsync(forms,
-                  base::BindOnce([](AutofillManager& self,
-                                    const std::vector<FormData>& parsed_forms) {
-                    self.NotifyObservers(&Observer::OnAfterLanguageDetermined);
-                  }));
+  ParseFormsAsync(
+      base::ToVector(form_structures_,
+                     [](const auto& p) { return p.second->ToFormData(); }),
+      base::BindOnce(
+          [](AutofillManager& self, const std::vector<FormData>& parsed_forms) {
+            self.NotifyObservers(&Observer::OnAfterLanguageDetermined);
+          }));
 }
 
 void AutofillManager::OnTranslateDriverDestroyed(
@@ -540,18 +537,16 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
 }
 
 void AutofillManager::ReparseKnownForms() {
-  std::vector<FormData> forms;
-  forms.reserve(form_structures_.size());
-  for (const auto& [id, form_structure] : form_structures_) {
-    forms.push_back(form_structure->ToFormData());
-  }
   auto ProcessParsedForms = [](AutofillManager& self,
                                const std::vector<FormData>& parsed_forms) {
     if (!parsed_forms.empty()) {
       self.OnFormsParsed(parsed_forms);
     }
   };
-  ParseFormsAsync(forms, base::BindOnce(ProcessParsedForms));
+  ParseFormsAsync(
+      base::ToVector(form_structures_,
+                     [](const auto& p) { return p.second->ToFormData(); }),
+      base::BindOnce(ProcessParsedForms));
 }
 
 base::flat_map<FieldGlobalId, AutofillServerPrediction>
