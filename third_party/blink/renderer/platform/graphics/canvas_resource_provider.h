@@ -304,7 +304,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
-  void DisableLineDrawingAsPathsIfNecessary();
+  virtual void DisableLineDrawingAsPathsIfNecessary() {}
 
  protected:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
@@ -554,6 +554,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   }
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
+  void DisableLineDrawingAsPathsIfNecessary() override;
   ScopedRasterTimer CreateScopedRasterTimer() override;
 
   // Returns true iff the resource provider is (a) using a GPU channel for

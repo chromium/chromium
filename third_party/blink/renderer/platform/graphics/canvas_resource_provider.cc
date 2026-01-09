@@ -1775,7 +1775,7 @@ size_t CanvasResourceProvider::GetSize() const {
   return ComputeSurfaceSize();
 }
 
-void CanvasResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
+void CanvasResourceProviderSharedImage::DisableLineDrawingAsPathsIfNecessary() {
   if (context_provider_wrapper_ &&
       context_provider_wrapper_->ContextProvider()
               .GetGpuFeatureInfo()
