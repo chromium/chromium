@@ -12,6 +12,7 @@
   --color-composebox-file-chip-background: var(--color-omnibox-composebox-chip-background);
   --color-composebox-file-chip-favicon-background: var(--color-omnibox-composebox-favicon-background);
   --color-composebox-file-chip-text: var(--color-omnibox-text);
+  --color-composebox-pdf-chip-icon-border: var(--color-sys-on-surface-subtle);
   --cr-composebox-font-size: 14px;
 
   --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
