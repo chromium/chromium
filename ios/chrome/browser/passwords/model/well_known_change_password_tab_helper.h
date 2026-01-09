@@ -15,9 +15,6 @@ namespace affiliations {
 class AffiliationService;
 }  // namespace affiliations
 
-// TODO(b/324553078): Move out of namespace.
-namespace password_manager {
-
 // This TabHelper checks whether a site supports the .well-known/change-password
 // url. To check whether a site supports the change-password url the TabHelper
 // also request a .well-known path that is defined to return a 404. When that
@@ -76,7 +73,7 @@ class WellKnownChangePasswordTabHelper
   // Redirects to a given URL in the same tab.
   void Redirect(const GURL& url);
   // Records the given UKM metric.
-  void RecordMetric(WellKnownChangePasswordResult result);
+  void RecordMetric(password_manager::WellKnownChangePasswordResult result);
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   ProcessingState processing_state_ = kWaitingForFirstRequest;
@@ -90,7 +87,5 @@ class WellKnownChangePasswordTabHelper
       well_known_change_password_state_{this};
   raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
 };
-
-}  // namespace password_manager
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_WELL_KNOWN_CHANGE_PASSWORD_TAB_HELPER_H_

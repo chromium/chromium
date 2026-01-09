@@ -316,7 +316,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       .WithFactory<DistillerServiceFactory>(profile);
 
   attacher.Create<security_interstitials::IOSBlockingPageTabHelper>();
-  attacher.Create<password_manager::WellKnownChangePasswordTabHelper>();
+  attacher.Create<WellKnownChangePasswordTabHelper>();
   attacher.Create<InvalidUrlTabHelper>();
 
   attacher.CreateWhen<InfobarOverlayRequestInserter>(
