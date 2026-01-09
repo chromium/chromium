@@ -13747,6 +13747,21 @@
             ]
         }
     ],
+    "IOSMostVisitedTilesCustomization": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MostVisitedTilesCustomizationIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSNewTabGridTransitions": [
         {
             "platforms": [
