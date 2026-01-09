@@ -2494,6 +2494,7 @@ suite('NewTabPageComposeboxTest', () => {
         createComposeboxElement();
         await microtasksFinished();
         assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+        searchboxHandler.reset();
 
         const voiceQuery = 'hello';
         composeboxElement.$.voiceSearch.dispatchEvent(new CustomEvent(
@@ -2502,15 +2503,63 @@ suite('NewTabPageComposeboxTest', () => {
         await microtasksFinished();
 
         // Assertions.
-        assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
         assertEquals(composeboxElement.$.input.value, voiceQuery);
-        assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+        assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 0);
+        assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
         assertFalse(composeboxElement.$.input.hidden);
         assertEquals(
             composeboxElement.shadowRoot.activeElement,
             composeboxElement.$.input);
         assertTrue((composeboxElement as any).submitEnabled_);
+
+        // Simulate submit button click.
+        composeboxElement.$.submitOverlay.click();
+        await searchboxHandler.whenCalled('submitQuery');
+        await microtasksFinished();
+
+        assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
+        assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+        const query = searchboxHandler.getArgs('submitQuery')[0][0];
+        assertEquals(query, voiceQuery);
       });
+
+  test('editing voice search result does not query autocomplete', async () => {
+    // Set loadTimeData so that voice search does not auto submit.
+    loadTimeData.overrideValues({
+      autoSubmitVoiceSearchQuery: false,
+      expandedComposeboxShowVoiceSearch: true,
+      steadyComposeboxShowVoiceSearch: true,
+      composeboxShowZps: true,  // For predictable queryAutocomplete count.
+    });
+    createComposeboxElement();
+    await microtasksFinished();
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    searchboxHandler.reset();
+
+    const voiceQuery = 'hello';
+    composeboxElement.$.voiceSearch.dispatchEvent(new CustomEvent(
+        'voice-search-final-result',
+        {detail: voiceQuery, bubbles: true, composed: true}));
+    await microtasksFinished();
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 0);
+
+    // Simulate editing the voice search result.
+    composeboxElement.$.input.value = `${voiceQuery} and edited`;
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // queryAutocomplete should not be called because the input might still have
+    // part or all of a voice search result.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 0);
+
+    // Clear the input.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // Autocomplete can be queried again, since there's no voice search result in the input.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+  });
 
   suite('Context menu', () => {
     suiteSetup(() => {
