@@ -733,7 +733,7 @@ public class StripLayoutHelperTest {
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         mModel.addTab("New tab");
         stripLayoutHelperSpy.tabCreated(
-                TIMESTAMP, mModel.getTabAt(mModel.getCount() - 1).getId(), 0, true, false, false);
+                TIMESTAMP, mModel.getTabAt(mModel.getCount() - 1).getId(), true, false, false);
 
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
@@ -1857,7 +1857,7 @@ public class StripLayoutHelperTest {
 
         // Act: Create new tab in model and trigger update in tab strip.
         mModel.addTab("new tab");
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, true, false, false);
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, true, false, false);
 
         // Assert: Animation is running.
         assertNotNull(
@@ -1877,7 +1877,7 @@ public class StripLayoutHelperTest {
         // Act: Tab was restored after undoing a tab closure.
         boolean closureCancelled = true;
         mModel.addTab("new tab");
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, false, closureCancelled, false);
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, false, closureCancelled, false);
 
         // Assert: scroller position is not modified.
         assertEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
@@ -1905,7 +1905,7 @@ public class StripLayoutHelperTest {
         // Act: Tab was not restored after undoing a tab closure.
         boolean closureCancelled = false;
         mModel.addTab("new tab");
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, false, closureCancelled, false);
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, false, closureCancelled, false);
 
         // Assert: scroller position is modified.
         assertNotEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
@@ -1952,7 +1952,7 @@ public class StripLayoutHelperTest {
         // Act: Tab was restored during startup.
         mModel.addTab("new tab");
         mStripLayoutHelper.tabCreated(
-                TIMESTAMP, 12, 12, /* selected= */ false, false, /* onStartup= */ true);
+                TIMESTAMP, 12, /* selected= */ false, false, /* onStartup= */ true);
 
         // Assert: We don't scroll to the newly created tab because the selected tab is not visible,
         // so we should scroll to the selected tab.
@@ -4373,8 +4373,7 @@ public class StripLayoutHelperTest {
                 0,
                 TabLaunchType.FROM_RESTORE,
                 TabCreationState.FROZEN_ON_RESTORE);
-        mStripLayoutHelper.tabCreated(
-                TIMESTAMP, expectedRestoredTabId, Tab.INVALID_TAB_ID, false, false, true);
+        mStripLayoutHelper.tabCreated(TIMESTAMP, expectedRestoredTabId, false, false, true);
 
         // Verify that the third (active) and first tab are real.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -5516,12 +5515,7 @@ public class StripLayoutHelperTest {
         Tab tab = mModel.getTabById(tabId);
         when(tab.getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
         mStripLayoutHelper.tabCreated(
-                TIMESTAMP,
-                tabId,
-                tabId,
-                selected,
-                /* closureCancelled */ false,
-                /* onStartup= */ false);
+                TIMESTAMP, tabId, selected, /* closureCancelled= */ false, /* onStartup= */ false);
 
         // Verify we only auto-expand if selected.
         verify(mTabGroupModelFilter, times(selected ? 1 : 0))
@@ -5707,7 +5701,7 @@ public class StripLayoutHelperTest {
 
         // Create a new tab.
         mModel.addTab("new tab");
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 1, 0, true, false, false);
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 1, true, false, false);
 
         // Trigger show iph.
         mStripLayoutHelper.finishAnimations();
@@ -6128,7 +6122,7 @@ public class StripLayoutHelperTest {
 
         // Act: Create new tab in model and trigger update in tab strip.
         mModel.addTab("new tab");
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, true, false, false);
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, true, false, false);
     }
 
     @Test
