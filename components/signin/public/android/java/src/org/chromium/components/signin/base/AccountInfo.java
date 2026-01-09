@@ -176,11 +176,13 @@ public class AccountInfo extends CoreAccountInfo {
     }
 
     /** Gets the account's image. It can be the image user uploaded, monogram or null. */
+    @CalledByNative
     public @Nullable Bitmap getAccountImage() {
         return mAccountImage;
     }
 
     /** Returns the capability values associated with the account. */
+    @CalledByNative
     public AccountCapabilities getAccountCapabilities() {
         return mAccountCapabilities;
     }
