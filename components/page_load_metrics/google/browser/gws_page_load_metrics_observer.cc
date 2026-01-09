@@ -61,6 +61,8 @@ const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
 const char kHistogramGWSNavigationStartToOnComplete[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToOnComplete";
+const char kHistogramGWSNavigationStartToFirstFetchStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstFetchStart";
 const char kHistogramGWSFirstFetchStartToFirstRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.FirstFetchStartToFirstRequestStart";
 const char kHistogramGWSCreateStreamDelay[] =
@@ -836,6 +838,8 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
     PAGE_LOAD_SHORT_HISTOGRAM(
         internal::kHistogramGWSFirstFetchStartToFirstRequestStart,
         timing.first_request_start_time - *timing.first_fetch_start_time);
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToFirstFetchStart,
+                        *timing.first_fetch_start_time - navigation_start_time);
   }
 
   auto protocol = GetProtocolSuffix(http_connection_info_);
