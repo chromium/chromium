@@ -102,9 +102,7 @@ ActionTracker::ActionTracker(content::BrowserContext* browser_context)
   StartTrimRulesTask();
 }
 
-ActionTracker::~ActionTracker() {
-  DCHECK(pending_navigation_actions_.empty());
-}
+ActionTracker::~ActionTracker() = default;
 
 void ActionTracker::SetClockForTests(const base::Clock* clock) {
   g_test_clock = clock;
