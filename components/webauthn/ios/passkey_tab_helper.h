@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
+#import <variant>
+
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/passkey_request_params.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -26,7 +29,8 @@ namespace webauthn {
 // Handles script messages received from PasskeyJavaScriptFeature related to
 // interactions with WebAuthn credentials and for now logs appropriate metrics.
 class PasskeyTabHelper : public web::WebStateObserver,
-                         public web::WebStateUserData<PasskeyTabHelper> {
+                         public web::WebStateUserData<PasskeyTabHelper>,
+                         public web::WebFramesManager::Observer {
  public:
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -51,10 +55,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Logs metric indicating that an event of the given type occurred.
   void LogEvent(WebAuthenticationIOSContentAreaEvent event_type);
 
-  // Handles passkey assertion requests. Yields if any parameter is missing.
+  // Handles passkey assertion requests. Yields if the request ID is missing.
   void HandleGetRequestedEvent(AssertionRequestParams params);
 
-  // Handles passkey registration requests. Yields if any parameter is missing.
+  // Handles passkey registration requests. Yields if the request ID is missing.
   void HandleCreateRequestedEvent(RegistrationRequestParams params);
 
   // Returns whether the tab helper's passkey model contains a passkey matching
@@ -83,6 +87,14 @@ class PasskeyTabHelper : public web::WebStateObserver,
   explicit PasskeyTabHelper(web::WebState* web_state,
                             PasskeyModel* passkey_model,
                             std::unique_ptr<IOSPasskeyClient> client);
+
+  // Handles passkey assertion requests. Defers if the rp ID is invalid.
+  void HandleGetRequestedEvent(web::WebFrame* web_frame,
+                               AssertionRequestParams params);
+
+  // Handles passkey registration requests. Defers if the rp ID is invalid.
+  void HandleCreateRequestedEvent(web::WebFrame* web_frame,
+                                  RegistrationRequestParams params);
 
   // Returns whether the passkey model contains a passkey from the
   // exclude credentials list from the provided parameters.
@@ -134,6 +146,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // WebFramesManager::Observer:
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override;
+
   // Gets a weak pointer to this object.
   base::WeakPtr<PasskeyTabHelper> AsWeakPtr();
 
@@ -152,6 +168,12 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // A map of request IDs (as std::string) to registration request parameters.
   absl::flat_hash_map<std::string, RegistrationRequestParams>
       registration_requests_;
+
+  // Pending requests keyed by frame ID when a WebFrame isn't yet available.
+  using PendingRequest =
+      std::variant<AssertionRequestParams, RegistrationRequestParams>;
+  absl::flat_hash_map<std::string, std::vector<PendingRequest>>
+      pending_requests_by_frame_;
 
   // This is necessary because this object could be deleted during any callback,
   // and we don't want to risk a UAF if that happens.

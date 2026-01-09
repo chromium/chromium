@@ -168,16 +168,27 @@ void PasskeyTabHelper::LogEvent(
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   // If the request is invalid, the request can't be processed.
-  const IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
-  const std::string& passkey_request_id = request_info.request_id;
-  if (passkey_request_id.empty()) {
+  const IOSPasskeyClient::RequestInfo& request_info = params.RequestInfo();
+  if (request_info.request_id.empty()) {
     return;
   }
 
   web::WebFrame* web_frame = GetWebFrame(request_info.frame_id);
   if (!web_frame) {
+    // Buffer this request until the frame becomes available.
+    pending_requests_by_frame_[request_info.frame_id].emplace_back(
+        std::move(params));
     return;
   }
+
+  HandleGetRequestedEvent(web_frame, std::move(params));
+}
+
+void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
+                                               AssertionRequestParams params) {
+  const std::string& passkey_request_id = params.RequestId();
+  CHECK(!passkey_request_id.empty());
+  CHECK(web_frame);
 
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
                                       params.RpId())) {
@@ -206,23 +217,36 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
 
   // Open the suggestion bottom sheet. The delegate's suggestions will be
   // presented in it and will be selectable by the user.
+  IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
   assertion_requests_.emplace(passkey_request_id, std::move(params));
-  client_->ShowSuggestionBottomSheet(request_info);
+  client_->ShowSuggestionBottomSheet(std::move(request_info));
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
     RegistrationRequestParams params) {
   // If the request ID is invalid, the request can't be processed.
-  const IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
-  const std::string& passkey_request_id = request_info.request_id;
-  if (passkey_request_id.empty()) {
+  const IOSPasskeyClient::RequestInfo& request_info = params.RequestInfo();
+  if (request_info.request_id.empty()) {
     return;
   }
 
   web::WebFrame* web_frame = GetWebFrame(request_info.frame_id);
   if (!web_frame) {
+    // Buffer this request until the frame becomes available.
+    pending_requests_by_frame_[request_info.frame_id].emplace_back(
+        std::move(params));
     return;
   }
+
+  HandleCreateRequestedEvent(web_frame, std::move(params));
+}
+
+void PasskeyTabHelper::HandleCreateRequestedEvent(
+    web::WebFrame* web_frame,
+    RegistrationRequestParams params) {
+  const std::string& passkey_request_id = params.RequestId();
+  CHECK(!passkey_request_id.empty());
+  CHECK(web_frame);
 
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
                                       params.RpId()) ||
@@ -234,8 +258,9 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   // Open the creation confirmation bottom sheet. A passkey will end up being
   // created by PasskeyTabHelper::StartPasskeyCreation() upon confirmation by
   // the user.
+  IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
   registration_requests_.emplace(passkey_request_id, std::move(params));
-  client_->ShowCreationBottomSheet(request_info);
+  client_->ShowCreationBottomSheet(std::move(request_info));
 }
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
@@ -254,6 +279,13 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
       client_(std::move(client)) {
   CHECK(client_);
   web_state->AddObserver(this);
+
+  // Observe WebFramesManager to be notified when frames become available.
+  if (web::WebFramesManager* web_frames_manager =
+          PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+              web_state)) {
+    web_frames_manager->AddObserver(this);
+  }
 }
 
 web::WebFrame* PasskeyTabHelper::GetWebFrame(
@@ -509,6 +541,41 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
 
 void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  if (web::WebFramesManager* web_frames_manager =
+          PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+              web_state)) {
+    web_frames_manager->RemoveObserver(this);
+  }
+}
+
+// WebFramesManager::Observer
+
+void PasskeyTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
+  if (!web_frame) {
+    return;
+  }
+  const std::string frame_id = web_frame->GetFrameId();
+
+  auto it = pending_requests_by_frame_.find(frame_id);
+  if (it == pending_requests_by_frame_.end()) {
+    return;
+  }
+
+  // Move out the pending vector to process without reentrancy issues.
+  std::vector<PendingRequest> pending = std::move(it->second);
+  pending_requests_by_frame_.erase(it);
+
+  for (auto& request : pending) {
+    if (std::holds_alternative<AssertionRequestParams>(request)) {
+      HandleGetRequestedEvent(
+          web_frame, std::move(std::get<AssertionRequestParams>(request)));
+    } else {
+      HandleCreateRequestedEvent(
+          web_frame, std::move(std::get<RegistrationRequestParams>(request)));
+    }
+  }
 }
 
 base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
