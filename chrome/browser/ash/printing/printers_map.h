@@ -8,12 +8,12 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 
@@ -84,9 +84,10 @@ class PrintersMap {
       const chromeos::CupsPrinterStatus& cups_printer_status);
 
  private:
-  using PrintersInClassMap = std::unordered_map<std::string, chromeos::Printer>;
+  using PrintersInClassMap =
+      absl::flat_hash_map<std::string, chromeos::Printer>;
   using PrinterClassesMap =
-      std::unordered_map<chromeos::PrinterClass, PrintersInClassMap>;
+      absl::flat_hash_map<chromeos::PrinterClass, PrintersInClassMap>;
 
   // Returns true if |printer_id| exists in any class. Used only for DCHECKs.
   bool IsExistingPrinter(const std::string& printer_id) const;

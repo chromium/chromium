@@ -6,6 +6,7 @@
 
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 
@@ -16,7 +17,7 @@ using ::chromeos::PrinterClass;
 namespace {
 
 std::vector<Printer> GetPrintersAsVector(
-    const std::unordered_map<std::string, Printer>& printers_map,
+    const absl::flat_hash_map<std::string, Printer>& printers_map,
     bool only_secure) {
   std::vector<Printer> printers;
   for (const auto& [printer_id, printer] : printers_map) {
