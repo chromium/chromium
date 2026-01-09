@@ -58,13 +58,15 @@ std::vector<const extensions::Extension*> GetExtensions(
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     Browser* browser,
-    ExtensionsContainerViews* extensions_container)
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views)
     : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this)),
           ToolbarChipButton::Edge::kRight),
       browser_(browser),
       extensions_container_(extensions_container),
+      extensions_container_views_(extensions_container_views),
       hover_card_coordinator_(
           std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {
   // Set button for IPH.
@@ -228,7 +230,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
       base::BindOnce(&ExtensionsContainerViews::CollapseConfirmation,
-                     base::Unretained(extensions_container_)));
+                     base::Unretained(extensions_container_views_)));
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));

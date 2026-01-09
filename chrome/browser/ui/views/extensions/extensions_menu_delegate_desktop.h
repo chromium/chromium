@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
@@ -35,9 +36,11 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
                                       public ExtensionsMenuViewModel::Observer,
                                       public ExtensionsMenuHandler {
  public:
-  ExtensionsMenuDelegateDesktop(Browser* browser,
-                                ExtensionsContainerViews* extensions_container,
-                                views::View* bubble_contents);
+  ExtensionsMenuDelegateDesktop(
+      Browser* browser,
+      ExtensionsContainer* extensions_container,
+      ExtensionsContainerViews* extensions_container_views,
+      views::View* bubble_contents);
   ExtensionsMenuDelegateDesktop(const ExtensionsMenuDelegateDesktop&) = delete;
   const ExtensionsMenuDelegateDesktop& operator=(
       const ExtensionsMenuDelegateDesktop&) = delete;
@@ -126,7 +129,8 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ExtensionsContainerViews> extensions_container_;
+  const raw_ref<ExtensionsContainer> extensions_container_;
+  const raw_ptr<ExtensionsContainerViews> extensions_container_views_;
   const raw_ptr<views::View> bubble_contents_;
 
   // The platform-agnostic menu view model.

@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_DELEGATE_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -32,7 +34,8 @@ class ExtensionActionDelegateDesktop
  public:
   ExtensionActionDelegateDesktop(
       BrowserWindowInterface* browser,
-      ExtensionsContainerViews* extensions_container);
+      ExtensionsContainer* extensions_container,
+      ExtensionsContainerViews* extensions_container_views);
 
   ExtensionActionDelegateDesktop(const ExtensionActionDelegateDesktop&) =
       delete;
@@ -90,8 +93,11 @@ class ExtensionActionDelegateDesktop
   // The corresponding browser window.
   const raw_ptr<BrowserWindowInterface> browser_;
 
+  // The corresponding ExtensionsContainer on the toolbar.
+  const raw_ref<ExtensionsContainer> extensions_container_;
+
   // The corresponding ExtensionsContainerViews on the toolbar.
-  const raw_ptr<ExtensionsContainerViews> extensions_container_;
+  const raw_ptr<ExtensionsContainerViews> extensions_container_views_;
 
   // The platform-agnostic view model.
   raw_ptr<ExtensionActionViewModel> model_{nullptr};

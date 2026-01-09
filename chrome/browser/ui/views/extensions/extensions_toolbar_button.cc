@@ -64,7 +64,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     ExtensionsMenuCoordinator* extensions_menu_coordinator)
     : ToolbarChipButton(PressedCallback()),
       browser_(browser),
-      extensions_container_(extensions_container),
+      extensions_toolbar_container_(extensions_container),
       extensions_menu_coordinator_(extensions_menu_coordinator) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
@@ -116,7 +116,7 @@ ExtensionsToolbarButton::~ExtensionsToolbarButton() {
 
 gfx::Size ExtensionsToolbarButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return extensions_container_->GetToolbarActionSize();
+  return extensions_toolbar_container_->GetToolbarActionSize();
 }
 
 gfx::Size ExtensionsToolbarButton::GetMinimumSize() const {
@@ -168,7 +168,7 @@ void ExtensionsToolbarButton::UpdateState(State state) {
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   extension_menu_observation_.Reset();
   pressed_lock_.reset();
-  extensions_container_->OnMenuClosed();
+  extensions_toolbar_container_->OnMenuClosed();
 }
 
 bool ExtensionsToolbarButton::ShouldShowInkdropAfterIphInteraction() {
@@ -186,23 +186,25 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   }
 
   pressed_lock_ = menu_button_controller_->TakeLock();
-  extensions_container_->OnMenuOpening();
+  extensions_toolbar_container_->OnMenuOpening();
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    if (extensions_container_->GetRequestAccessButton()->GetVisible()) {
+    if (extensions_toolbar_container_->GetRequestAccessButton()->GetVisible()) {
       base::RecordAction(base::UserMetricsAction(
           "Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess"));
     }
-    extensions_menu_coordinator_->Show(this, extensions_container_);
+    extensions_menu_coordinator_->Show(this, extensions_toolbar_container_,
+                                       extensions_toolbar_container_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
     // Desktop Android will use the
     // extensions_features::kExtensionsMenuAccessControl menu, therefore we can
     // use Browser for the other menu until the feature is rolled out.
     menu = ExtensionsMenuView::ShowBubble(
-        this, browser_->GetBrowserForMigrationOnly(), extensions_container_);
+        this, browser_->GetBrowserForMigrationOnly(),
+        extensions_toolbar_container_, extensions_toolbar_container_);
   }
   extensions_menu_widget_ = menu->GetWeakPtr();
   extension_menu_observation_.Observe(menu);

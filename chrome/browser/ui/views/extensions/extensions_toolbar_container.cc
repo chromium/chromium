@@ -122,7 +122,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     auto request_access_button =
-        std::make_unique<ExtensionsRequestAccessButton>(browser_, this);
+        std::make_unique<ExtensionsRequestAccessButton>(browser_, this, this);
     request_access_button->SetVisible(false);
     request_access_button_ = AddChildView(std::move(request_access_button));
   }
@@ -474,6 +474,46 @@ ToolbarActionViewModel* ExtensionsToolbarContainer::GetActionForId(
   return toolbar_view_model_->GetActionModelForId(action_id);
 }
 
+void ExtensionsToolbarContainer::HideActivePopup() {
+  if (popup_owner_) {
+    popup_owner_->HidePopup();
+  }
+  DCHECK(!popup_owner_);
+  UpdateContainerVisibilityAfterAnimation();
+}
+
+bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
+  if (IsExtensionsMenuShowing()) {
+    HideExtensionsMenu();
+    return true;
+  }
+  return false;
+}
+
+bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
+    const std::string& action_id,
+    ShowPopupCallback callback) {
+  // Don't override another popup, and only show in the active window.
+  if (popped_out_action_ || !browser_->window()->IsActive()) {
+    return false;
+  }
+
+  ToolbarActionViewModel* action =
+      toolbar_view_model_->GetActionModelForId(action_id);
+  DCHECK(action);
+  action->TriggerPopupForAPI(std::move(callback));
+
+  return true;
+}
+
+void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
+  GetExtensionsButton()->ToggleExtensionsMenu();
+}
+
+bool ExtensionsToolbarContainer::HasAnyExtensions() const {
+  return !toolbar_view_model_->GetAllActionIds().empty();
+}
+
 std::optional<extensions::ExtensionId>
 ExtensionsToolbarContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
@@ -509,22 +549,6 @@ void ExtensionsToolbarContainer::SetPopupOwner(
   }
 }
 
-void ExtensionsToolbarContainer::HideActivePopup() {
-  if (popup_owner_) {
-    popup_owner_->HidePopup();
-  }
-  DCHECK(!popup_owner_);
-  UpdateContainerVisibilityAfterAnimation();
-}
-
-bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
-  if (IsExtensionsMenuShowing()) {
-    HideExtensionsMenu();
-    return true;
-  }
-  return false;
-}
-
 void ExtensionsToolbarContainer::PopOutAction(
     const extensions::ExtensionId& action_id,
     base::OnceClosure closure) {
@@ -534,30 +558,6 @@ void ExtensionsToolbarContainer::PopOutAction(
   UpdateIconVisibility(action_id);
   GetAnimatingLayoutManager()->PostOrQueueAction(std::move(closure));
   UpdateContainerVisibility();
-}
-
-bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
-    const std::string& action_id,
-    ShowPopupCallback callback) {
-  // Don't override another popup, and only show in the active window.
-  if (popped_out_action_ || !browser_->window()->IsActive()) {
-    return false;
-  }
-
-  ToolbarActionViewModel* action =
-      toolbar_view_model_->GetActionModelForId(action_id);
-  DCHECK(action);
-  action->TriggerPopupForAPI(std::move(callback));
-
-  return true;
-}
-
-void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
-  GetExtensionsButton()->ToggleExtensionsMenu();
-}
-
-bool ExtensionsToolbarContainer::HasAnyExtensions() const {
-  return !toolbar_view_model_->GetAllActionIds().empty();
 }
 
 void ExtensionsToolbarContainer::ReorderAllChildViews() {
@@ -714,7 +714,8 @@ ExtensionsToolbarContainer::CreateActionViewModel(
     const ToolbarActionsModel::ActionId& action_id) {
   return ExtensionActionViewModel::Create(
       action_id, browser_,
-      std::make_unique<ExtensionActionDelegateDesktop>(browser_.get(), this));
+      std::make_unique<ExtensionActionDelegateDesktop>(browser_.get(), this,
+                                                       this));
 }
 
 void ExtensionsToolbarContainer::OnActionsInitialized() {

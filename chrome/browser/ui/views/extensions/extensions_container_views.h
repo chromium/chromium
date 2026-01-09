@@ -21,12 +21,12 @@ namespace views {
 class FocusManager;
 }  // namespace views
 
-// ExtensionsContainer with views-specific additional methods.
+// An interface with views-specific methods for the toolbar.
 //
 // While ExtensionsContainer provides a minimal set of APIs for non-UI code,
-// this interface provides additional methods for views-specific extension UI
-// subcomponents to interact with the extension toolbar.
-class ExtensionsContainerViews : public ExtensionsContainer {
+// this interface provides methods for views-specific extension UI subcomponents
+// to interact with the extension toolbar.
+class ExtensionsContainerViews {
  public:
   // Get the currently popped out action id, if any.
   // TODO(pbos): Consider supporting multiple popped out actions for bubbles

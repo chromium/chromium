@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
@@ -68,10 +69,12 @@ ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
 
 ExtensionsMenuDelegateDesktop::ExtensionsMenuDelegateDesktop(
     Browser* browser,
-    ExtensionsContainerViews* extensions_container,
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views,
     views::View* bubble_contents)
     : browser_(browser),
-      extensions_container_(extensions_container),
+      extensions_container_(CHECK_DEREF(extensions_container)),
+      extensions_container_views_(extensions_container_views),
       bubble_contents_(bubble_contents),
       menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser_,
                                                             /*delegate=*/this)),
@@ -86,8 +89,8 @@ ExtensionsMenuDelegateDesktop::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {
   return ExtensionActionViewModel::Create(
       extension_id, browser_,
-      std::make_unique<ExtensionActionDelegateDesktop>(browser_,
-                                                       extensions_container_));
+      std::make_unique<ExtensionActionDelegateDesktop>(
+          browser_, &extensions_container_.get(), extensions_container_views_));
 }
 
 void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(

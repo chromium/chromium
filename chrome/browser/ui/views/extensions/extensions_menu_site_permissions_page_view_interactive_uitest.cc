@@ -61,7 +61,7 @@ ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
 
 void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     ShowSitePermissionsPage(extensions::ExtensionId extension_id) {
-  menu_coordinator()->Show(extensions_button(),
+  menu_coordinator()->Show(extensions_button(), GetExtensionsToolbarContainer(),
                            GetExtensionsToolbarContainer());
   menu_coordinator()->GetDelegateForTesting()->OpenSitePermissionsPage(
       extension_id);

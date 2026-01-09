@@ -72,7 +72,7 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<views::MenuButtonController> menu_button_controller_;
-  const raw_ptr<ExtensionsToolbarContainer> extensions_container_;
+  const raw_ptr<ExtensionsToolbarContainer> extensions_toolbar_container_;
   // This can be nullptr before `kExtensionsMenuAccessControl` feature is fully
   // rolled out.
   // TODO(crbug.com/40811196): Remove this disclaimer once feature is rolled

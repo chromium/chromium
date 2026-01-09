@@ -47,9 +47,10 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser)
     : scoped_allow_extensions_menu_instances_(
           ExtensionsMenuView::AllowInstancesForTesting()),
       browser_(browser) {
-  extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
-                              ->toolbar()
-                              ->extensions_container();
+  extensions_toolbar_container_ =
+      BrowserView::GetBrowserViewForBrowser(browser_)
+          ->toolbar()
+          ->extensions_container();
 }
 
 ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
@@ -59,7 +60,8 @@ ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    extensions_container_->GetExtensionsMenuCoordinatorForTesting()->Hide();
+    extensions_toolbar_container_->GetExtensionsMenuCoordinatorForTesting()
+        ->Hide();
   } else {
     menu_view_->GetWidget()->CloseNow();
   }
@@ -71,22 +73,23 @@ void ExtensionsMenuTestUtil::OnViewIsDeleting(views::View* observed_view) {
 }
 
 int ExtensionsMenuTestUtil::NumberOfBrowserActions() {
-  return extensions_container_->GetNumberOfActionsForTesting();
+  return extensions_toolbar_container_->GetNumberOfActionsForTesting();
 }
 
 bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
-  return extensions_container_->GetActionForId(id) != nullptr;
+  return extensions_toolbar_container_->GetActionForId(id) != nullptr;
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
   auto* view_model = static_cast<ExtensionActionViewModel*>(
-      extensions_container_->GetActionForId(id));
+      extensions_toolbar_container_->GetActionForId(id));
   DCHECK(view_model);
   view_model->InspectPopup();
 }
 
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
-  ToolbarActionView* action_view = extensions_container_->GetViewForId(id);
+  ToolbarActionView* action_view =
+      extensions_toolbar_container_->GetViewForId(id);
   DCHECK(action_view);
   return gfx::Image(action_view->GetIconForTest());
 }
@@ -102,7 +105,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
 
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
   ToolbarActionViewModel* popup_owner =
-      extensions_container_->popup_owner_for_testing();
+      extensions_toolbar_container_->popup_owner_for_testing();
   return popup_owner ? popup_owner->GetPopupNativeView() : gfx::NativeView();
 }
 
@@ -113,13 +116,14 @@ bool ExtensionsMenuTestUtil::HasPopup() {
 bool ExtensionsMenuTestUtil::HidePopup() {
   // ExtensionsToolbarContainer::HideActivePopup() is private. Get around it by
   // casting to an ExtensionsContainer.
-  static_cast<ExtensionsContainer*>(extensions_container_)->HideActivePopup();
+  static_cast<ExtensionsContainer*>(extensions_toolbar_container_)
+      ->HideActivePopup();
   return !HasPopup();
 }
 
 void ExtensionsMenuTestUtil::WaitForExtensionsContainerLayout() {
   views::test::WaitForAnimatingLayoutManager(
-      static_cast<views::View*>(extensions_container_));
+      static_cast<views::View*>(extensions_toolbar_container_));
 }
 
 gfx::Size ExtensionsMenuTestUtil::GetMinPopupSize() {
@@ -140,7 +144,7 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
   }
 #endif
   return views::BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
-      extensions_container_->GetReferenceButtonForPopup(id),
+      extensions_toolbar_container_->GetReferenceButtonForPopup(id),
       views::BubbleBorder::TOP_RIGHT,
       views::PlatformStyle::kAdjustBubbleIfOffscreen,
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
@@ -155,14 +159,14 @@ void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     bubble_dialog =
-        extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+        extensions_toolbar_container_->GetExtensionsMenuCoordinatorForTesting()
             ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
-                extensions_container_->GetExtensionsButton(),
-                extensions_container_);
+                extensions_toolbar_container_->GetExtensionsButton(),
+                extensions_toolbar_container_, extensions_toolbar_container_);
   } else {
     bubble_dialog = std::make_unique<ExtensionsMenuView>(
-        extensions_container_->GetExtensionsButton(), browser_,
-        extensions_container_);
+        extensions_toolbar_container_->GetExtensionsButton(), browser_,
+        extensions_toolbar_container_, extensions_toolbar_container_);
     menu_view_ = views::AsViewClass<ExtensionsMenuView>(
         bubble_dialog->GetContentsView());
 
@@ -175,7 +179,8 @@ void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
 bool ExtensionsMenuTestUtil::IsExtensionsMenuShowing() {
   return base::FeatureList::IsEnabled(
              extensions_features::kExtensionsMenuAccessControl)
-             ? extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+             ? extensions_toolbar_container_
+                   ->GetExtensionsMenuCoordinatorForTesting()
                    ->IsShowing()
              : menu_view_;
 }
@@ -185,7 +190,7 @@ ExtensionsMenuButton* ExtensionsMenuTestUtil::GetPrimaryButton(
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     ExtensionsMenuMainPageView* main_page =
-        extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+        extensions_toolbar_container_->GetExtensionsMenuCoordinatorForTesting()
             ->GetDelegateForTesting()
             ->GetMainPageViewForTesting();
     DCHECK(main_page);

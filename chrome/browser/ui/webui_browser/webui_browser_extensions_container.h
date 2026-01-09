@@ -22,27 +22,30 @@ class Browser;
 class WebUIBrowserWindow;
 
 class WebUIBrowserExtensionsContainer
-    : public ExtensionsContainerViews,
+    : public ExtensionsContainer,
+      public ExtensionsContainerViews,
       public ToolbarActionsModel::Observer,
       public extensions_bar::mojom::PageHandler {
  public:
   WebUIBrowserExtensionsContainer(Browser& browser, WebUIBrowserWindow& window);
   ~WebUIBrowserExtensionsContainer() override;
 
-  // ExtensionsContainerViews:
+  // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
-  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
-  bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
-  void UndoPopOut() override;
-  void SetPopupOwner(ToolbarActionViewModel* popup_owner) override;
   void HideActivePopup() override;
   bool CloseOverflowMenuIfOpen() override;
-  void PopOutAction(const extensions::ExtensionId& action_id,
-                    base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
+
+  // ExtensionsContainerViews:
+  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
+  bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
+  void UndoPopOut() override;
+  void SetPopupOwner(ToolbarActionViewModel* popup_owner) override;
+  void PopOutAction(const extensions::ExtensionId& action_id,
+                    base::OnceClosure closure) override;
   void ShowContextMenuAsFallback(
       const extensions::ExtensionId& action_id) override;
   void OnPopupShown(const extensions::ExtensionId& action_id,

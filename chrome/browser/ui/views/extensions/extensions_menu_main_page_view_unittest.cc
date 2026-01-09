@@ -117,7 +117,8 @@ ExtensionsMenuMainPageViewUnitTest::ExtensionsMenuMainPageViewUnitTest() {
 }
 
 void ExtensionsMenuMainPageViewUnitTest::ShowMenu() {
-  menu_coordinator()->Show(extensions_button(), extensions_container());
+  menu_coordinator()->Show(extensions_button(), extensions_container(),
+                           extensions_container());
 }
 
 ExtensionsMenuEntryView*

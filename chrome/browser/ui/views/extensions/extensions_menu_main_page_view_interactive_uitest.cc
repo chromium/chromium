@@ -193,7 +193,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
-  menu_coordinator()->Show(extensions_button(),
+  menu_coordinator()->Show(extensions_button(), GetExtensionsToolbarContainer(),
                            GetExtensionsToolbarContainer());
   DCHECK(main_page());
 }

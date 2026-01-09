@@ -33,11 +33,13 @@ ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
 
 void ExtensionsMenuCoordinator::Show(
     views::BubbleAnchor anchor,
-    ExtensionsContainerViews* extensions_container) {
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-      CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container);
+      CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container,
+                                               extensions_container_views);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
@@ -64,14 +66,17 @@ views::Widget* ExtensionsMenuCoordinator::GetExtensionsMenuWidget() {
 std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegateForTesting(
     views::BubbleAnchor anchor,
-    ExtensionsContainerViews* extensions_container) {
-  return CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container);
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views) {
+  return CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container,
+                                                  extensions_container_views);
 }
 
 std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
     views::BubbleAnchor anchor,
-    ExtensionsContainerViews* extensions_container) {
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
@@ -94,7 +99,8 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_tracker_.SetView(bubble_contents);
 
   menu_delegate_ = std::make_unique<ExtensionsMenuDelegateDesktop>(
-      browser_, extensions_container, bubble_contents);
+      browser_, extensions_container, extensions_container_views,
+      bubble_contents);
   menu_delegate_->OpenMainPage();
 
   return bubble_delegate;

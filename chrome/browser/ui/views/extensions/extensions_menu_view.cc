@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
@@ -72,11 +73,13 @@ ExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
 ExtensionsMenuView::ExtensionsMenuView(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainerViews* extensions_container)
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
-      extensions_container_(extensions_container),
+      extensions_container_(CHECK_DEREF(extensions_container)),
+      extensions_container_views_(extensions_container_views),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
       cant_access_{nullptr, nullptr,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA_SHORT,
@@ -310,7 +313,8 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
       ExtensionActionViewModel::Create(
           id, browser_,
           std::make_unique<ExtensionActionDelegateDesktop>(
-              browser_, extensions_container_));
+              browser_, &extensions_container_.get(),
+              extensions_container_views_));
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.
@@ -504,14 +508,15 @@ base::AutoReset<bool> ExtensionsMenuView::AllowInstancesForTesting() {
 views::Widget* ExtensionsMenuView::ShowBubble(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainerViews* extensions_container) {
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views) {
   DCHECK(!g_extensions_dialog);
   // Experiment `kExtensionsMenuAccessControl` is introducing a new menu. Check
   // `ExtensionsMenuView` is only constructed when the experiment is disabled.
   DCHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
-  g_extensions_dialog =
-      new ExtensionsMenuView(anchor_view, browser, extensions_container);
+  g_extensions_dialog = new ExtensionsMenuView(
+      anchor_view, browser, extensions_container, extensions_container_views);
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(g_extensions_dialog);
   widget->Show();

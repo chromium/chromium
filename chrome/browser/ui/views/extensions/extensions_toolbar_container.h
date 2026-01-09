@@ -37,6 +37,7 @@ class ExtensionsMenuCoordinator;
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
 class ExtensionsToolbarContainer : public ToolbarIconContainerView,
+                                   public ExtensionsContainer,
                                    public ExtensionsContainerViews,
                                    public ToolbarActionView::Delegate,
                                    public views::WidgetObserver,
@@ -192,18 +193,20 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
-  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
-  bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
-  void UndoPopOut() override;
-  void SetPopupOwner(ToolbarActionViewModel* popup_owner) override;
   void HideActivePopup() override;
   bool CloseOverflowMenuIfOpen() override;
-  void PopOutAction(const extensions::ExtensionId& action_id,
-                    base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
+
+  // ExtensionsContainerViews:
+  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
+  bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
+  void UndoPopOut() override;
+  void SetPopupOwner(ToolbarActionViewModel* popup_owner) override;
+  void PopOutAction(const extensions::ExtensionId& action_id,
+                    base::OnceClosure closure) override;
   void CollapseConfirmation() override;
   void ShowContextMenuAsFallback(
       const extensions::ExtensionId& action_id) override;
