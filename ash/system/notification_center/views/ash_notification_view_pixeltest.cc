@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "ash/style/counter_expand_button.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -110,12 +111,14 @@ class AshNotificationViewPixelTest
     notification_control_buttons_view_tooltip_enabled_resetter_ =
         message_center::NotificationControlButtonsView::
             SetTooltipEnabledForTesting(false);
-
+    counter_expand_button_tooltip_disable_resetter_ =
+        CounterExpandButton::SetTooltipEnabledForTesting(false);
     AshPixelTestBase::SetUp();
   }
 
   void TearDown() override {
     AshPixelTestBase::TearDown();
+    counter_expand_button_tooltip_disable_resetter_.reset();
     notification_control_buttons_view_tooltip_enabled_resetter_.reset();
   }
 
@@ -123,6 +126,8 @@ class AshNotificationViewPixelTest
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::optional<base::AutoReset<std::optional<bool>>>
       notification_control_buttons_view_tooltip_enabled_resetter_;
+  std::optional<base::AutoReset<std::optional<bool>>>
+      counter_expand_button_tooltip_disable_resetter_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
