@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
-<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}3"
+<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}4"
     enum="KeyboardShortcutsSemanticMeaning" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
   <owner>katie@chromium.org</owner>

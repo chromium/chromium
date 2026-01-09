@@ -5715,6 +5715,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_NEW_INCOGNITO_TAB" desc="A text label that appears next to a keyboard shortcut to open a new tab in Incognito mode in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open a new tab in Incognito mode
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_NEW_INCOGNITO_WINDOW" desc="A text label that appears next to a keyboard shortcut to open a new window in Incognito mode in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Open a new window in Incognito mode
+      </message>
        <message name="IDS_KEYBOARD_SHORTCUT_SPECIFIC_TAB" desc="A text label that appears next to the keyboard shortcut that will move the user to a specific tab in the Chrome app. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Jump to a specific tab (1&#8211;8)
       </message>
