@@ -40,16 +40,25 @@ public class SetupListManager {
             mIsSetupListActive = false;
             return;
         }
-        long firstCtaStartTimestamp =
+        long setupListFirstShownTimestamp =
                 ChromeSharedPreferences.getInstance()
-                        .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
-        if (firstCtaStartTimestamp == -1L) {
-            mIsSetupListActive = false;
-            return;
+                        .readLong(ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP, -1L);
+
+        if (setupListFirstShownTimestamp != -1L) {
+            // If the setup list has been shown before, check if it's within the active window.
+            mIsSetupListActive =
+                    (TimeUtils.currentTimeMillis() - setupListFirstShownTimestamp)
+                            < SETUP_LIST_ACTIVE_WINDOW_MILLIS;
+        } else {
+            // If the timestamp is not set, this is the first time SetupListManager is
+            // instantiated after the first run. Mark the list as active and record the
+            // current time as the start of the 14-day window.
+            mIsSetupListActive = true;
+            ChromeSharedPreferences.getInstance()
+                    .writeLong(
+                            ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                            TimeUtils.currentTimeMillis());
         }
-        mIsSetupListActive =
-                (TimeUtils.currentTimeMillis() - firstCtaStartTimestamp)
-                        < SETUP_LIST_ACTIVE_WINDOW_MILLIS;
     }
 
     /** Returns the singleton instance of SetupListManager. */

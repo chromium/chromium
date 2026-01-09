@@ -895,6 +895,10 @@ public final class ChromePreferenceKeys {
     // Segmentation platform related prefs.
     public static final String SEGMENTATION_FEED_ACTIVE_USER = "Chrome.Segmentation.FeedActiveUser";
 
+    /** Timestamp for when the user first saw the Setup List on the New Tab Page. */
+    public static final String SETUP_LIST_FIRST_SHOWN_TIMESTAMP =
+            "Chrome.SetupList.FirstShownTimestamp";
+
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =
             "send_tab_to_self.notification.active";
@@ -1308,6 +1312,7 @@ public final class ChromePreferenceKeys {
                 SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SERIAL_NOTIFICATION_IDS,
+                SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,

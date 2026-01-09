@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.setup_list;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -47,6 +48,7 @@ public class SetupListManagerUnitTest {
     public void setUp() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         FirstRunStatus.setFirstRunTriggeredForTesting(false);
+        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP);
     }
 
     @Test
@@ -56,6 +58,9 @@ public class SetupListManagerUnitTest {
         // Re-create instance after feature flag is disabled.
         SetupListManager.setInstanceForTesting(new SetupListManager());
         assertFalse(SetupListManager.getInstance().isSetupListActive());
+        assertFalse(
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
     }
 
     @Test
@@ -64,25 +69,40 @@ public class SetupListManagerUnitTest {
         FirstRunStatus.setFirstRunTriggeredForTesting(true);
         // Re-create instance after FirstRunStatus is set.
         SetupListManager.setInstanceForTesting(new SetupListManager());
-        mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         assertFalse(SetupListManager.getInstance().isSetupListActive());
+        assertFalse(
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
     }
 
     @Test
     @SmallTest
-    public void testIsSetupListActive_ReturnsFalseWhenNoTimestamp() {
-        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP);
-        // Re-create instance after shared pref is removed.
+    public void testIsSetupListActive_TrueAndSetsTimestampWhenNotSet() {
+        // Ensure the timestamp is not set initially.
+        assertFalse(
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
+
+        // Re-create instance.
         SetupListManager.setInstanceForTesting(new SetupListManager());
-        assertFalse(SetupListManager.getInstance().isSetupListActive());
+        assertTrue(SetupListManager.getInstance().isSetupListActive());
+        // Check that the timestamp is now set.
+        assertTrue(
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
+        assertEquals(
+                TimeUtils.currentTimeMillis(),
+                mSharedPreferencesManager.readLong(
+                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP, -1L));
     }
 
     @Test
     @SmallTest
     public void testIsSetupListActive_ReturnsTrueWithinActiveWindow() {
+        // Set the timestamp to be within the active window.
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
+                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
                 SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS - ONE_MINUTE_IN_MILLIS);
         // Re-create instance after time is advanced.
@@ -93,8 +113,10 @@ public class SetupListManagerUnitTest {
     @Test
     @SmallTest
     public void testIsSetupListActive_ReturnsFalseOutsideActiveWindow() {
+        // Set the timestamp to be outside the active window.
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
+                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
                 SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS + ONE_MINUTE_IN_MILLIS);
         // Re-create instance after time is advanced.
