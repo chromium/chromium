@@ -260,11 +260,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                                 int x,
                                 int y);
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const {
-    return context_provider_wrapper_;
-  }
-
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
       ImageOrientation);
 
@@ -553,6 +548,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnContextDestroyed() override;
 
  private:
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
+      const {
+    return context_provider_wrapper_;
+  }
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
   ScopedRasterTimer CreateScopedRasterTimer() override;
