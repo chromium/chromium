@@ -641,11 +641,6 @@ bool BrowserTabStripController::EverHasVisibleBackgroundTabShapes() const {
              BrowserFrameActiveState::kInactive);
 }
 
-SkColor BrowserTabStripController::GetFrameColor(
-    BrowserFrameActiveState active_state) const {
-  return GetFrameView()->GetFrameColor(active_state);
-}
-
 std::optional<int> BrowserTabStripController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   return GetFrameView()->GetCustomBackgroundId(active_state);

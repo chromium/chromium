@@ -226,10 +226,6 @@ class TabStripController {
   // frame for either active or inactive windows.
   virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
 
-  // Returns the color of the browser frame for the given window activation
-  // state.
-  virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const = 0;
-
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
   virtual std::optional<int> GetCustomBackgroundId(

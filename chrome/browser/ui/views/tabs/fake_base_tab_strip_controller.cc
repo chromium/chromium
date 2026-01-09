@@ -296,11 +296,6 @@ bool FakeBaseTabStripController::EverHasVisibleBackgroundTabShapes() const {
   return false;
 }
 
-SkColor FakeBaseTabStripController::GetFrameColor(
-    BrowserFrameActiveState active_state) const {
-  return gfx::kPlaceholderColor;
-}
-
 std::optional<int> FakeBaseTabStripController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   return std::nullopt;
