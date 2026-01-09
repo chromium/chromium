@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="sort-unicode.xsl"?>
 <catalog>
+    <script xmlns="http://www.w3.org/1999/xhtml"><![CDATA[
+    if (window.testRunner)
+        testRunner.dumpAsText();
+    ]]></script>
     <cd>
         <title>Brads Title</title>
         <artist>B</artist>

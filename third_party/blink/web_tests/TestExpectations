@@ -1905,11 +1905,6 @@ crbug.com/421650040 fast/xsl/xslt/xmlviewer/long-multi-byte-char.xml [ Failure ]
 crbug.com/421650040 virtual/xslt-enabled/fast/xsl/xslt/xmlviewer/long-multi-byte-char.xml [ Pass ]
 crbug.com/440374744 external/wpt/content-security-policy/xslt/document-function-blocked.html [ Timeout ]
 crbug.com/421650040 external/wpt/content-security-policy/xslt/xsltprocessor-include-blocked.html [ Timeout ]
-# Disabling these while I sort through some flakiness (crbug.com/474311228):
-crbug.com/474311228 fast/xsl/xslt/parser/open-comment-in-textarea-quirk.html [ Pass Failure Timeout Crash ]
-crbug.com/474311228 fast/xsl/xslt/sort-unicode.xml [ Pass Failure Timeout Crash ]
-crbug.com/474311228 fast/xsl/xslt/utf8-chunks.xml [ Pass Failure Timeout Crash ]
-crbug.com/474311228 virtual/xslt-enabled/http/tests/xsl/xslt/xslt-transform-with-javascript-disabled-quirk.html [ Pass Failure Timeout Crash ]
 
 # Rust XML related failures that still need work:
 crbug.com/441911594 virtual/rust-xml/http/tests/security/contentTypeOptions/xml-external-entity.xml [ Failure ]

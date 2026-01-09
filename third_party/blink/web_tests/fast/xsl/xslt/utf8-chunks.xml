@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="utf8-chunks.xsl"?>
-<test>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae sem id augue malesuada vulputate. Morbi non quam vitae magna tempus tristique eget in sapien. In rhoncus blandit commodo. Vivamus hendrerit leo ut ante convallis rutrum. Suspendisse adipiscing elementum diam eu auctor. Ut gravida, mauris ut egestas euismod, nunc dui iaculis lectus, at faucibus neque ante et ante. Quisque eget nibh dui. Nunc vitae mauris sed nisl elementum facilisis ut ut arcu. In hac habitasse platea dictumst. In blandit lacus non lacus egestas vel ullamcorper mauris gravida. Morbi bibendum urna eu mauris fringilla fermentum. Donec vel turpis dui, eu aliquet dolor. Aliquam ac volutpat leo. Nullam at lectus quis enim lacinia dictum. Praesent non nulla nisi. Vivamus lacinia dapibus risus, a pretium eros condimentum ut.
+
+<test>
+<script xmlns="http://www.w3.org/1999/xhtml"><![CDATA[
+  if (window.testRunner)
+    testRunner.dumpAsText();
+]]></script>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae sem id augue malesuada vulputate. Morbi non quam vitae magna tempus tristique eget in sapien. In rhoncus blandit commodo. Vivamus hendrerit leo ut ante convallis rutrum. Suspendisse adipiscing elementum diam eu auctor. Ut gravida, mauris ut egestas euismod, nunc dui iaculis lectus, at faucibus neque ante et ante. Quisque eget nibh dui. Nunc vitae mauris sed nisl elementum facilisis ut ut arcu. In hac habitasse platea dictumst. In blandit lacus non lacus egestas vel ullamcorper mauris gravida. Morbi bibendum urna eu mauris fringilla fermentum. Donec vel turpis dui, eu aliquet dolor. Aliquam ac volutpat leo. Nullam at lectus quis enim lacinia dictum. Praesent non nulla nisi. Vivamus lacinia dapibus risus, a pretium eros condimentum ut.
 
 Sed vitae turpis eros. Vestibulum in purus odio. In hac habitasse platea dictumst. Donec non nisi nisl, ut sagittis orci. Sed porttitor tristique sem scelerisque consectetur. Duis ac orci in lorem vulputate tincidunt. Suspendisse vel libero dui. Phasellus erat sem, placerat quis iaculis non, ornare nec urna. Cras a sem sed lectus sollicitudin rhoncus id vitae nulla. Suspendisse auctor justo a purus fringilla vitae suscipit nibh eleifend. Nam vel tellus ligula. Vestibulum eu mattis sapien.
 
