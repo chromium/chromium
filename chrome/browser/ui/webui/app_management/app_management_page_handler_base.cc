@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 
+#include <limits>
 #include <memory>
 #include <set>
 #include <string>
@@ -109,8 +110,21 @@ std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   if (!bytes) {
     return std::nullopt;
   }
-  return base::UTF16ToUTF8(ui::FormatBytes(
-      base::ByteSize(base::checked_cast<uint64_t>(bytes.value()))));
+
+  if (bytes.value() > std::numeric_limits<int64_t>::max()) {
+    // ui::FormatBytes() takes a base::ByteSize, which is unsigned but capped in
+    // size to the signed range. We would expect the value passed into this
+    // function to fit in that range.
+    //
+    // Something is going wrong if values this big are being passed in.
+    // TODO(http://b/40063212): Investigate why ARC apps have these implausible
+    // and surely incorrect values and fix it.
+    LOG(ERROR) << "Invalid app size: " << bytes.value();
+    base::debug::DumpWithoutCrashing();
+    return std::nullopt;
+  }
+
+  return base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(bytes.value())));
 }
 
 }  // namespace
