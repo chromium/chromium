@@ -27,6 +27,8 @@
 
 namespace blink {
 
+BASE_FEATURE(kSoftNavigationTraceEvents, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
@@ -134,13 +136,16 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
       /*element=*/image_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
-    TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        kTraceCategories,
-        delegate_->IsHardNavigation() ? kLCPCandidate
-                                      : kLCPCandidateForSoftNavs,
-        largest_image.PaintTime(), "data",
-        CreateWebExposedCandidateTraceData(largest_image), "frame",
-        GetFrameIdForTracing(window->GetFrame()));
+    if (delegate_->IsHardNavigation() ||
+        base::FeatureList::IsEnabled(kSoftNavigationTraceEvents)) {
+      TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+          kTraceCategories,
+          delegate_->IsHardNavigation() ? kLCPCandidate
+                                        : kLCPCandidateForSoftNavs,
+          largest_image.PaintTime(), "data",
+          CreateWebExposedCandidateTraceData(largest_image), "frame",
+          GetFrameIdForTracing(window->GetFrame()));
+    }
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -169,10 +170,10 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
       lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged();
   std::pair<ImageRecord*, bool> image_result =
       lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged();
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
-        text_result.first, image_result.first);
-  }
+
+  lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
+      text_result.first, image_result.first);
+
   return text_result.second || image_result.second;
 }
 
@@ -215,14 +216,16 @@ void SoftNavigationContext::EmitSoftNavigation() {
   CHECK(HasFirstContentfulPaint());
   was_emitted_ = true;
 
+  if (base::FeatureList::IsEnabled(kSoftNavigationTraceEvents)) {
+    TRACE_EVENT_INSTANT(
+        "scheduler,devtools.timeline,loading", "SoftNavigationStart",
+        perfetto::Track::FromPointer(this), TimeOrigin(), "context", *this,
+        "frame", GetFrameIdForTracing(window_->GetFrame()));
+  }
+
   if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
     return;
   }
-
-  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                      "SoftNavigationStart", perfetto::Track::FromPointer(this),
-                      TimeOrigin(), "context", *this, "frame",
-                      GetFrameIdForTracing(window_->GetFrame()));
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
@@ -270,7 +273,9 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
     const AtomicString& id,
     const String& url,
     Element* element) {
-  CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_));
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    return;
+  }
 
   // This should not be called after we've been shut down.
   CHECK(window_);

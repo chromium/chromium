@@ -13,6 +13,9 @@
 
 namespace blink {
 
+// Kill switch for Soft Nav/LCP trace events.
+BASE_DECLARE_FEATURE(kSoftNavigationTraceEvents);
+
 class ImageRecord;
 class PaintTimingRecord;
 class TextRecord;
