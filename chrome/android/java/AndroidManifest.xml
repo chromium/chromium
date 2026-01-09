@@ -554,9 +554,6 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.TabbedMode"
             android:exported="true"
             android:launchMode="singleTask"
-            {% if is_desktop_android == "true" %}
-            android:persistableMode="persistAcrossReboots"
-            {% endif %}
             {# We can only use blocks once in Jinja, for future substitutions we use
             self.supports_video_persistence(). #}
             {% block supports_video_persistence %}
@@ -593,9 +590,6 @@ by a child template that "extends" this file.
         </activity>
         <activity-alias android:name="com.google.android.apps.chrome.Main"
             android:targetActivity="org.chromium.chrome.browser.ChromeTabbedActivity"
-            {% if is_desktop_android == "true" %}
-            android:persistableMode="persistAcrossReboots"
-            {% endif %}
             android:exported="true">
             <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />
