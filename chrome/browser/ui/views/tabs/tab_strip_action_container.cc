@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/glic_and_actor_buttons_container.h"
 #include "chrome/grit/branded_strings.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
@@ -440,20 +441,10 @@ TabStripActionContainer::CreateGlicActorTaskIcon(
 
 // TODO(crbug.com/431015299): Clean up when GlicButton and GlicActorTaskIcon
 // have been combined.
-std::unique_ptr<views::FlexLayoutView>
+std::unique_ptr<GlicAndActorButtonsContainer>
 TabStripActionContainer::CreateGlicActorButtonContainer() {
-  auto glic_actor_button_container = std::make_unique<views::FlexLayoutView>();
-  glic_actor_button_container->SetCollapseMargins(true);
-  glic_actor_button_container->SetCrossAxisAlignment(
-      views::LayoutAlignment::kCenter);
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicActorUiGlobalTaskIndicator)) {
-    // Remove background for global task indicator.
-    glic_actor_button_container->SetBackground(
-        views::CreateRoundedRectBackground(
-            kColorNewTabButtonCRBackgroundFrameActive, gfx::RoundedCornersF(12),
-            gfx::Insets::VH(4, 8)));
-  }
+  auto glic_actor_button_container =
+      std::make_unique<GlicAndActorButtonsContainer>();
 
   // Should be hidden until a task starts.
   glic_actor_button_container->SetVisible(false);
@@ -668,6 +659,10 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+views::FlexLayoutView* TabStripActionContainer::glic_actor_button_container() {
+  return glic_actor_button_container_;
+}
+
 #if BUILDFLAG(ENABLE_GLIC)
 void TabStripActionContainer::TriggerGlicActorNudge(
     const std::u16string nudge_text) {
@@ -703,10 +698,9 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
     HideTabStripNudge(glic_actor_task_icon_);
     glic_actor_task_icon_->SetTaskIconToDefault();
   }
-  glic_button_ =
-      glic_actor_button_container_->AddChildView(std::move(glic_button_));
-    glic_actor_task_icon_->SetVisible(true);
-    glic_actor_button_container_->ReorderChildView(glic_button_, 0u);
+
+  glic_button_ = glic_actor_button_container_->InsertGlicButton(glic_button_);
+  glic_actor_task_icon_->SetVisible(true);
 
   glic_actor_button_container_->SetVisible(true);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
@@ -990,9 +984,17 @@ void TabStripActionContainer::SetGlicShowState(bool show) {
 
 void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic_button_) {
-    glic_button_->SetGlicPanelIsOpen(open);
+  if (!base::FeatureList::IsEnabled(features::kGlicButtonPressedState) ||
+      !glic_button_) {
+    return;
   }
+
+  // Update glic_button_ first, then have the container match its background
+  // color.
+  glic_button_->SetGlicPanelIsOpen(open);
+  glic_actor_button_container_->SetBackgroundColor(
+      glic_button_->GetBackgroundColor());
+  glic_actor_button_container_->SetHighlighted(open);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

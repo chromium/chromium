@@ -32,6 +32,7 @@ class GlicActorTaskIcon;
 }
 class BrowserWindowInterface;
 class ProductSpecificationsButton;
+class GlicAndActorButtonsContainer;
 
 class TabStripActionContainer : public views::View,
                                 public TabDeclutterObserver,
@@ -119,9 +120,7 @@ class TabStripActionContainer : public views::View,
     return glic_actor_task_icon_;
   }
 
-  views::FlexLayoutView* glic_actor_button_container() {
-    return glic_actor_button_container_;
-  }
+  views::FlexLayoutView* glic_actor_button_container();
 
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;
@@ -187,7 +186,8 @@ class TabStripActionContainer : public views::View,
   // Container to store the GlicButton and GlicActorTaskIcon when a task is
   // active.
   // Adds a toggle-like background.
-  std::unique_ptr<views::FlexLayoutView> CreateGlicActorButtonContainer();
+  std::unique_ptr<GlicAndActorButtonsContainer>
+  CreateGlicActorButtonContainer();
   // Update the Glic and GlicActor button borders when showing or hiding the
   // task icon container.
   void UpdateGlicActorButtonContainerBorders();
@@ -241,7 +241,7 @@ class TabStripActionContainer : public views::View,
 
   raw_ptr<views::Separator> separator_ = nullptr;
 
-  raw_ptr<views::FlexLayoutView> glic_actor_button_container_ = nullptr;
+  raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
   raw_ptr<glic::GlicButton> glic_button_ = nullptr;
   raw_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
 

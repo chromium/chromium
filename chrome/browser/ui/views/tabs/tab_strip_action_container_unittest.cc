@@ -257,10 +257,10 @@ TEST_F(TabStripActionContainerTest,
 
   ASSERT_THAT(
       tab_strip_action_container_->glic_actor_button_container()->children(),
-      SizeIs(1));
+      SizeIs(2));
   ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
             tab_strip_action_container_->glic_actor_button_container()
-                ->children()[0]);
+                ->children()[1]);
 
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
             tab_strip_action_container_->children()[3]);
@@ -287,14 +287,14 @@ TEST_F(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
 
   ASSERT_THAT(
       tab_strip_action_container_->glic_actor_button_container()->children(),
-      SizeIs(2));
+      SizeIs(3));
 
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
             tab_strip_action_container_->glic_actor_button_container()
-                ->children()[0]);
+                ->children()[1]);
   ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
             tab_strip_action_container_->glic_actor_button_container()
-                ->children()[1]);
+                ->children()[2]);
 
 #endif  // !BUILDFLAG(IS_MAC)
 }
@@ -358,10 +358,10 @@ TEST_F(TabStripActionContainerTestWithProduct, MAYBE(OrdersButtonsCorrectly)) {
 
   ASSERT_THAT(
       tab_strip_action_container_->glic_actor_button_container()->children(),
-      SizeIs(1));
+      SizeIs(2));
   ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
             tab_strip_action_container_->glic_actor_button_container()
-                ->children()[0]);
+                ->children()[1]);
 
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
             tab_strip_action_container_->children()[4]);

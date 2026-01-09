@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicActorTaskNudgeClicked) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
-  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
+  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(2));
 
   actor::TaskId task_id = CreateTask();
 
@@ -708,8 +708,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                                       ActorTaskNudgeState::Text::kDefault),
       0);
   // Check that GlicButton was removed from the GlicActorButtonContainer.
-  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
-  EXPECT_EQ(GlicActorTaskIcon(), GlicActorButtonContainer()->children()[0]);
+  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(2));
+  EXPECT_EQ(GlicActorTaskIcon(), GlicActorButtonContainer()->children()[1]);
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
 }

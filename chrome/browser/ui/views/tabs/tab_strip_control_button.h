@@ -107,11 +107,11 @@ class TabStripControlButton : public views::LabelButton,
   // views::LabelButton
   void SetText(std::u16string_view text) override;
 
- protected:
   // Returns colors based on the Frame active status.
   ui::ColorId GetBackgroundColor();
   ui::ColorId GetForegroundColor();
 
+ protected:
   // Called whenever a color change occurs (theming/frame state). By default
   // this only changes the hover color and updates the icon. Override for any
   // additional changes.
