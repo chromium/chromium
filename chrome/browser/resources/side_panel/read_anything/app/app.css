@@ -10,6 +10,17 @@
  * #include=sp-shared-style-lit cr-hidden-style-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+:host #appFlexParent {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
 
 #lineFocus {
   position: absolute;
