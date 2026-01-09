@@ -123,6 +123,8 @@ bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
       options_.check_span_fields = true;
     } else if (arg == "enable-match-profiling") {
       options_.enable_match_profiling = true;
+    } else if (arg == "no-special-treatment-for-oilpanized-paths") {
+      options_.explicitly_ignore_oilpanized_paths = false;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

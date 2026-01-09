@@ -374,7 +374,8 @@ void FindBadRawPtrPatterns(const Options& options,
   std::vector<std::string> paths_to_exclude_lines;
   std::vector<std::string> check_bad_raw_ptr_cast_exclude_paths;
 
-  AddManualPathsToIgnore(paths_to_exclude_lines);
+  AddManualPathsToIgnore(paths_to_exclude_lines,
+                         options.explicitly_ignore_oilpanized_paths);
   for (auto* const line : kSeparateRepositoryPaths) {
     paths_to_exclude_lines.push_back(line);
     check_bad_raw_ptr_cast_exclude_paths.push_back(line);
