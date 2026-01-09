@@ -441,7 +441,8 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
   int ignores_before_block = kDefaultIgnoresBeforeBlock;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          permissions::kPermissionsAndroidClapperLoud)) {
+          permissions::kPermissionsAndroidClapperLoud) &&
+      !ignored_prompt_was_quiet) {
     ignores_before_block = kClapperIgnoresBeforeBlock;
   }
 #endif
