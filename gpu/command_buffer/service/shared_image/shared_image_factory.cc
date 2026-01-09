@@ -101,7 +101,7 @@ namespace gpu {
 namespace {
 
 BASE_FEATURE(kUseCompoundImageBackingAsDefault,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
