@@ -106,7 +106,7 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
-                                            DefaultState.ENABLED),
+                                            DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION,
                                             DefaultState.DISABLED),
