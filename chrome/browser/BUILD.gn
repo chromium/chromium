@@ -6577,6 +6577,8 @@ static_library("browser") {
       "enterprise/platform_auth/extensible_enterprise_sso_entra.mm",
       "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.cc",
       "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h",
+      "enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.cc",
+      "enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h",
       "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h",
       "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.mm",
       "enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h",

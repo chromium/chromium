@@ -4268,6 +4268,13 @@ inline constexpr char kExtensibleEnterpriseSSOEnabled[] =
 // This is based on the ExtensibleEnterpriseSSOBlocklist policy.
 inline constexpr char kExtensibleEnterpriseSSOEnabledIdps[] =
     "extensible_enterprise_sso.enabled_idps";
+
+// The list value of hosts for which the extensible enterprise SSO has been
+// configured. This is based on the CFPreferences under key
+// com.apple.extensiblesso
+inline constexpr char kExtensibleEnterpriseSSOConfiguredHosts[] =
+    "extensible_enterprise_sso.configured_hosts";
+
 #endif  //  BUILDFLAG(IS_MAC)
 
 // Allow or don't allow bypassing WebAudio output buffering

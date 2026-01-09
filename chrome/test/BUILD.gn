@@ -7704,6 +7704,7 @@ test("unit_tests") {
       "../browser/chrome_browser_application_mac_unittest.mm",
       "../browser/device_reauth/mac/device_authenticator_mac_unittest.mm",
       "../browser/enterprise/platform_auth/extensible_enterprise_sso_entra_unittest.mm",
+      "../browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler_unittest.cc",
       "../browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory_unittest.cc",
       "../browser/enterprise/platform_auth/url_session_helper_unittest.mm",
       "../browser/enterprise/platform_auth/url_session_url_loader_unittest.mm",
