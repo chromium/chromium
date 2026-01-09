@@ -217,6 +217,8 @@ chromium-metrics-reviews@google.com.
       summary="Classifies images on the page"/>
   <variant name="WebAppInstallationPromo"
       summary="PWA: Show web app installation promotion"/>
+  <variant name="WebRTCNeuralResidualEchoEstimator"
+      summary="WebRTC Neural Residual Echo Estimator"/>
 </variants>
 
 <variants name="OptimizationType">
