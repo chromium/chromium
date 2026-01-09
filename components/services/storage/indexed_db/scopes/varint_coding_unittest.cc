@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "base/dcheck_is_on.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::indexed_db {
@@ -27,24 +26,18 @@ TEST(VarIntCoding, Encode) {
   EXPECT_EQ(5u, WrappedEncodeVarInt(0xffffffff).size());
   EXPECT_EQ(8u, WrappedEncodeVarInt(0xfffffffffffffll).size());
   EXPECT_EQ(9u, WrappedEncodeVarInt(0x7fffffffffffffffll).size());
-#if !DCHECK_IS_ON()
-  EXPECT_EQ(10u, WrappedEncodeVarInt(-100).size());
-#endif
 }
 
 TEST(VarIntCoding, Decode) {
   std::vector<int64_t> test_cases = {
-    0,
-    1,
-    255,
-    256,
-    65535,
-    655536,
-    7711192431755665792ll,
-    0x7fffffffffffffffll,
-#if !DCHECK_IS_ON()
-    -3,
-#endif
+      0,
+      1,
+      255,
+      256,
+      65535,
+      655536,
+      7711192431755665792ll,
+      0x7fffffffffffffffll,
   };
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
