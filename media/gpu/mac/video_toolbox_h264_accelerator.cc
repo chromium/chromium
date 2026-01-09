@@ -12,6 +12,7 @@
 #include <array>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -20,7 +21,12 @@
 namespace media {
 
 namespace {
+
 constexpr size_t kNALUHeaderLength = 4;
+
+// Kill-switch: Remove after M145 is stable.
+BASE_FEATURE(kResetDecoderForNonIDR, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 VideoToolboxH264Accelerator::VideoToolboxH264Accelerator(
@@ -215,6 +221,17 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
+  if (!pic->idr && first_decode_ &&
+      base::FeatureList::IsEnabled(kResetDecoderForNonIDR)) {
+    // Flag the sample if it's non-IDR and the first sample provided. This was
+    // recommended by Apple to prevent corruption when seeking to SEI
+    // recovery points. See https://crbug.com/451536366.
+    CMSetAttachment(sample.get(),
+                    kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding,
+                    kCFBooleanTrue, kCMAttachmentMode_ShouldNotPropagate);
+  }
+  first_decode_ = false;
+
   VideoToolboxDecompressionSessionMetadata session_metadata = {
 #if defined(ARCH_CPU_X86_FAMILY)
       // Allow software decoding on Intel hardware where the cutoff is around
@@ -249,6 +266,7 @@ void VideoToolboxH264Accelerator::Reset() {
   active_pps_data_.clear();
   active_format_.reset();
   slice_nalu_data_.clear();
+  first_decode_ = true;
 }
 
 }  // namespace media
