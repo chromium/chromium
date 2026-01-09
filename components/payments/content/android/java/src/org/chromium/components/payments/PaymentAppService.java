@@ -16,10 +16,11 @@ import java.util.Set;
 
 /** Creates payment apps. */
 @NullMarked
-public class PaymentAppService implements PaymentAppFactoryInterface {
+public class PaymentAppService {
     /**
      * The identity of the Google Pay internal app.
-     * TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+     *
+     * <p>TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
      */
     public static final String GOOGLE_PAY_INTERNAL_APP_IDENTITY = "Google_Pay_Internal";
 
@@ -53,13 +54,64 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         sInstance = null;
     }
 
-    // PaymentAppFactoryInterface implementation.
-    @Override
-    public void create(PaymentAppFactoryDelegate delegate) {
+    /** Trigger creation of payment apps by the factories owned by this class. */
+    public void createPaymentApps(PaymentAppServiceDelegate delegate) {
         Collector collector = new Collector(new HashSet<>(mFactories.values()), delegate);
         for (PaymentAppFactoryInterface factory : mFactories.values()) {
             factory.create(/* delegate= */ collector);
         }
+    }
+
+    /**
+     * Trigger creation of payment apps by the factories owned by this class.
+     *
+     * <p>Deprecated: Use {@link createPaymentApps(PaymentAppServiceDelegate)} instead.
+     */
+    public void create(PaymentAppFactoryDelegate delegate) {
+        createPaymentApps(
+                new PaymentAppServiceDelegate() {
+                    @Override
+                    public PaymentAppFactoryParams getParams() {
+                        return delegate.getParams();
+                    }
+
+                    @Override
+                    public void onCanMakePaymentCalculated(boolean canMakePayment) {
+                        delegate.onCanMakePaymentCalculated(canMakePayment);
+                    }
+
+                    @Override
+                    public void onPaymentAppCreationError(
+                            String errorMessage, @AppCreationFailureReason int errorReason) {
+                        delegate.onPaymentAppCreationError(errorMessage, errorReason);
+                    }
+
+                    @Override
+                    public void onDoneCreatingPaymentApps(List<PaymentApp> apps) {
+                        for (PaymentApp app : apps) {
+                            delegate.onPaymentAppCreated(app);
+                        }
+                        // This method is only used in a single internal test, which will shortly be
+                        // migrated to use createPaymentApps(). The test doesn't care about the
+                        // passed-in factory here, so we just create one. We cannot pass null as
+                        // this field is @NonNull.
+                        delegate.onDoneCreatingPaymentApps(
+                                new PaymentAppFactoryInterface() {
+                                    @Override
+                                    public void create(PaymentAppFactoryDelegate delegate) {}
+                                });
+                    }
+
+                    @Override
+                    public void setCanMakePaymentEvenWithoutApps() {
+                        delegate.setCanMakePaymentEvenWithoutApps();
+                    }
+
+                    @Override
+                    public void setOptOutOffered() {
+                        delegate.setOptOutOffered();
+                    }
+                });
     }
 
     /**
@@ -86,16 +138,16 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
      * Collects payment apps from multiple factories and invokes
      * delegate.onDoneCreatingPaymentApps() and delegate.onCanMakePaymentCalculated() only once.
      */
-    private final class Collector implements PaymentAppFactoryDelegate {
+    private static final class Collector implements PaymentAppFactoryDelegate {
         private final Set<PaymentAppFactoryInterface> mPendingFactories;
         private final List<PaymentApp> mPossiblyDuplicatePaymentApps = new ArrayList<>();
-        private final PaymentAppFactoryDelegate mDelegate;
+        private final PaymentAppServiceDelegate mDelegate;
 
         /** Whether at least one payment app factory has calculated canMakePayment to be true. */
         private boolean mCanMakePayment;
 
         private Collector(
-                Set<PaymentAppFactoryInterface> pendingTasks, PaymentAppFactoryDelegate delegate) {
+                Set<PaymentAppFactoryInterface> pendingTasks, PaymentAppServiceDelegate delegate) {
             mPendingFactories = pendingTasks;
             mDelegate = delegate;
         }
@@ -136,17 +188,18 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
             mPendingFactories.remove(factory);
             if (!mPendingFactories.isEmpty()) return;
 
+            // At this point all factories have created any apps that they are going to create. We
+            // can now proceed to let our delegate know we are done.
+
+            // If all payment app factories returned false for canMakePayment, then we can now let
+            // the delegate know that the answer is definitely false.
             if (!mCanMakePayment) mDelegate.onCanMakePaymentCalculated(false);
 
             Set<PaymentApp> uniquePaymentApps =
                     deduplicatePaymentApps(mPossiblyDuplicatePaymentApps);
             mPossiblyDuplicatePaymentApps.clear();
 
-            for (PaymentApp app : uniquePaymentApps) {
-                mDelegate.onPaymentAppCreated(app);
-            }
-
-            mDelegate.onDoneCreatingPaymentApps(PaymentAppService.this);
+            mDelegate.onDoneCreatingPaymentApps(new ArrayList<>(uniquePaymentApps));
         }
 
         @Override
