@@ -583,13 +583,6 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return true;
   }
 
-  // Mark clickable elements as interesting, for parity with visual rendering.
-  // kListBoxOption is excluded so it can fall through to the redundancy
-  // check at the end to prevent double focus (reading both container and text).
-  if (IsClickable() && GetRole() != ax::mojom::Role::kListBoxOption) {
-    return true;
-  }
-
   // If we are the direct descendant of a link and have no siblings/children,
   // then we are not interesting, return false
   parent = PlatformGetParent();
