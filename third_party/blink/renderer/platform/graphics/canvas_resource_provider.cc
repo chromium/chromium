@@ -148,7 +148,6 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
                              format,
                              alpha_type,
                              color_space,
-                             /*context_provider_wrapper=*/nullptr,
                              delegate) {}
 
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
@@ -228,8 +227,8 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              format,
                              alpha_type,
                              color_space,
-                             std::move(context_provider_wrapper),
                              delegate),
+      context_provider_wrapper_(std::move(context_provider_wrapper)),
       raster_context_provider_(base::WrapRefCounted(
           ContextProviderWrapper()->ContextProvider().RasterContextProvider())),
       is_accelerated_(is_accelerated),
@@ -273,7 +272,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              format,
                              alpha_type,
                              color_space,
-                             /*context_provider_wrapper=*/nullptr,
                              delegate),
       shared_image_interface_provider_(
           shared_image_interface_provider
@@ -1401,10 +1399,8 @@ CanvasResourceProvider::CanvasResourceProvider(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     Delegate* delegate)
     : type_(type),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
       info_(SkImageInfo::Make(size.width(),
                               size.height(),
                               viz::ToClosestSkColorType(format),

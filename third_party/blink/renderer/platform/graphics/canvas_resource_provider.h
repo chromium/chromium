@@ -268,8 +268,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                          viz::SharedImageFormat format,
                          SkAlphaType alpha_type,
                          const gfx::ColorSpace& color_space,
-                         base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-                             context_provider_wrapper,
                          Delegate* delegate);
 
   virtual void RasterRecord(cc::PaintRecord) = 0;
@@ -307,8 +305,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void DisableLineDrawingAsPathsIfNecessary() {}
 
  protected:
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
@@ -602,6 +598,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   // BitmapGpuChannelLostObserver:
   void OnGpuChannelLost() final;
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |unused_resources_| will be empty.
