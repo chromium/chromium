@@ -56,7 +56,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
     private @Nullable Params mParams;
 
     // UI Elements.
-    private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyIncognitoButton;
+    private RadioButtonWithDescriptionAndAuxButton mAllowThirdPartyButton;
     private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyButton;
     private @Nullable RadioGroup mRadioGroup;
     private TextViewWithCompoundDrawables mManagedView;
@@ -95,7 +95,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
             return getActiveState(mParams);
         }
 
-        if (mBlockThirdPartyIncognitoButton.isChecked()) {
+        if (mAllowThirdPartyButton.isChecked()) {
             return CookieControlsMode.INCOGNITO_ONLY;
         } else {
             assert mBlockThirdPartyButton.isChecked();
@@ -109,7 +109,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
         if (checkedId == mBlockThirdPartyButton.getId()) {
             RecordUserAction.record("Settings.ThirdPartyCookies.Block");
             state = CookieControlsMode.BLOCK_THIRD_PARTY;
-        } else if (checkedId == mBlockThirdPartyIncognitoButton.getId()) {
+        } else if (checkedId == mAllowThirdPartyButton.getId()) {
             RecordUserAction.record("Settings.ThirdPartyCookies.Allow");
             state = CookieControlsMode.INCOGNITO_ONLY;
         } else {
@@ -128,10 +128,10 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mBlockThirdPartyIncognitoButton =
+        mAllowThirdPartyButton =
                 (RadioButtonWithDescriptionAndAuxButton)
-                        holder.findViewById(R.id.block_third_party_incognito_with_aux);
-        mBlockThirdPartyIncognitoButton.setAuxButtonClickedListener(this);
+                        holder.findViewById(R.id.allow_third_party_with_aux);
+        mAllowThirdPartyButton.setAuxButtonClickedListener(this);
         mBlockThirdPartyButton =
                 (RadioButtonWithDescriptionAndAuxButton)
                         holder.findViewById(R.id.block_third_party_with_aux);
@@ -170,7 +170,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
 
     @Override
     public void onAuxButtonClicked(int clickedButtonId) {
-        if (clickedButtonId == mBlockThirdPartyIncognitoButton.getId()) {
+        if (clickedButtonId == mAllowThirdPartyButton.getId()) {
             mListener.onCookiesDetailsRequested(CookieControlsMode.INCOGNITO_ONLY);
         } else if (clickedButtonId == mBlockThirdPartyButton.getId()) {
             mListener.onCookiesDetailsRequested(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -187,7 +187,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
 
     private void configureRadioButtons(Params params) {
         assert (mRadioGroup != null);
-        mBlockThirdPartyIncognitoButton.setEnabled(true);
+        mAllowThirdPartyButton.setEnabled(true);
         mBlockThirdPartyButton.setEnabled(true);
         for (RadioButtonWithDescription button : getEnforcedButtons(params)) {
             button.setEnabled(false);
@@ -210,7 +210,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
         switch (state) {
             case CookieControlsMode.OFF:
             case CookieControlsMode.INCOGNITO_ONLY:
-                return mBlockThirdPartyIncognitoButton;
+                return mAllowThirdPartyButton;
             case CookieControlsMode.BLOCK_THIRD_PARTY:
                 return mBlockThirdPartyButton;
         }
@@ -224,7 +224,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
      */
     private RadioButtonWithDescription[] getEnforcedButtons(Params params) {
         if (params.cookieControlsModeEnforced) {
-            return buttons(mBlockThirdPartyIncognitoButton, mBlockThirdPartyButton);
+            return buttons(mAllowThirdPartyButton, mBlockThirdPartyButton);
         }
         return buttons();
     }
