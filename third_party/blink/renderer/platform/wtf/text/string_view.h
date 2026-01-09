@@ -272,6 +272,8 @@ class WTF_EXPORT StringView {
   // appends double-quotes, and escapes characters other than ASCII printables.
   [[nodiscard]] String EncodeForDebugging() const;
 
+  // Find a character. Returns the index of the match, or `kNotFound`.
+  wtf_size_t find(UChar ch, wtf_size_t start = 0) const;
   // Find characters. Returns the index of the match, or `kNotFound`.
   wtf_size_t Find(CharacterMatchFunctionPtr match_function,
                   wtf_size_t start = 0) const;

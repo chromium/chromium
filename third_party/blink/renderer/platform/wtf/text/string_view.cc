@@ -197,14 +197,16 @@ bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
   });
 }
 
-bool StringView::contains(UChar ch) const {
+wtf_size_t StringView::find(UChar ch, wtf_size_t start) const {
   if (empty()) {
-    return false;
+    return kNotFound;
   }
-  if (!Is8Bit()) {
-    return blink::Find(Span16(), ch) != kNotFound;
-  }
-  return ch < 0x100 && blink::Find(Span8(), ch) != kNotFound;
+  return Is8Bit() ? blink::Find(Span8(), ch, start)
+                  : blink::Find(Span16(), ch, start);
+}
+
+bool StringView::contains(UChar ch) const {
+  return find(ch) != kNotFound;
 }
 
 String StringView::ToString() const {
