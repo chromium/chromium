@@ -307,11 +307,6 @@ ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
       // this wasn't the last nested RunLevel, this is ignored and will be
       // applied on the final pop().
       time_keeper_->RecordEndOfPhase(kNested, *exit_lazy_now_);
-
-      // TODO(crbug.com/458682617): Remove this.
-      // This one is surprisingly necessary as a single racy test fails without
-      // (GamepadServiceSimulationTest.SurfaceIdNotFound).
-      PerformFortuitousMemoryBarrierIfNecessary();
     }
   }
 }
@@ -483,11 +478,10 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
                       [&](perfetto::EventContext& ctx) {
                         time_keeper_->MaybeEmitIncomingWakeupFlow(ctx);
                       });
-
-    // TODO(crbug.com/458682617): Remove this.
-    PerformFortuitousMemoryBarrierIfNecessary();
   } else {
-    // TODO(crbug.com/458682617): Remove this.
+    // TODO(crbug.com/458682617): Remove this after fixing
+    // HeadlessBrowserUAHeaderTest.* (which only need the memory barrier when
+    // ThreadControllerActive ends).
     PerformFortuitousMemoryBarrierIfNecessary();
 
     LogOnIdleMetrics(lazy_now);

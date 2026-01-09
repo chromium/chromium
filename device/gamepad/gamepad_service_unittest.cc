@@ -13,10 +13,12 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/thread_annotations.h"
 #include "device/gamepad/gamepad_consumer.h"
 #include "device/gamepad/gamepad_test_helpers.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
@@ -557,7 +559,6 @@ TEST_F(GamepadServiceTest, RemoveUnregisteredConsumer) {
   // ConsumerBecameActive. RemoveConsumer should fail.
   EXPECT_FALSE(service()->RemoveConsumer(consumer));
 }
-
 class GamepadServiceSimulationTest : public GamepadServiceTest {
  public:
   std::unique_ptr<GamepadDataFetcher> CreateTestDataFetcher() override {
@@ -568,15 +569,22 @@ class GamepadServiceSimulationTest : public GamepadServiceTest {
   }
 
   void OnPoll() {
-    if (poll_loop_.has_value()) {
-      poll_loop_.value().Quit();
+    base::AutoLock lock(poll_loop_lock_);
+    if (poll_loop_ptr_) {
+      poll_loop_ptr_->Quit();
+      poll_loop_ptr_ = nullptr;
     }
   }
 
   void WaitForPoll() {
-    poll_loop_.emplace();
-    poll_loop_.value().Run();
-    poll_loop_.reset();
+    base::RunLoop poll_loop;
+    {
+      // Do not hold the lock while in Run() as that would cause a livelock. Let
+      // OnPoll() cleanup the state after it unblocks this.
+      base::AutoLock lock(poll_loop_lock_);
+      poll_loop_ptr_ = &poll_loop;
+    }
+    poll_loop.Run();
   }
 
  protected:
@@ -614,7 +622,8 @@ class GamepadServiceSimulationTest : public GamepadServiceTest {
   }
 
  private:
-  std::optional<base::RunLoop> poll_loop_;
+  base::Lock poll_loop_lock_;
+  raw_ptr<base::RunLoop> poll_loop_ptr_ GUARDED_BY(poll_loop_lock_);
 };
 
 TEST_F(GamepadServiceSimulationTest, ConnectDisconnect) {
@@ -1252,11 +1261,19 @@ TEST_F(GamepadServiceSimulationTest, SurfaceIdNotFound) {
   EXPECT_EQ(disconnected_gamepad.touch_events_length, 0u);
 }
 
-TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionButton) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kGamepadRawInputChangeEvent);
+class GamepadServiceSimulationTestWithRawInputChange
+    : public GamepadServiceSimulationTest {
+ public:
+  GamepadServiceSimulationTestWithRawInputChange() {
+    scoped_feature_list.InitAndEnableFeature(
+        features::kGamepadRawInputChangeEvent);
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+TEST_F(GamepadServiceSimulationTestWithRawInputChange, DetectionButton) {
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
 
@@ -1281,11 +1298,7 @@ TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionButton) {
   CleanupRawInputGamepad(consumer, token);
 }
 
-TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionAxis) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kGamepadRawInputChangeEvent);
-
+TEST_F(GamepadServiceSimulationTestWithRawInputChange, DetectionAxis) {
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
 
@@ -1311,11 +1324,7 @@ TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionAxis) {
   CleanupRawInputGamepad(consumer, token);
 }
 
-TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionTouch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kGamepadRawInputChangeEvent);
-
+TEST_F(GamepadServiceSimulationTestWithRawInputChange, DetectionTouch) {
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
 
@@ -1382,12 +1391,8 @@ TEST_F(GamepadServiceSimulationTest, RawInputChangeDetectionTouch) {
   CleanupRawInputGamepad(consumer, token);
 }
 
-TEST_F(GamepadServiceSimulationTest,
-       RawInputChangeDetectionMultipleInputTypes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kGamepadRawInputChangeEvent);
-
+TEST_F(GamepadServiceSimulationTestWithRawInputChange,
+       DetectionMultipleInputTypes) {
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
 
@@ -1428,11 +1433,7 @@ TEST_F(GamepadServiceSimulationTest,
   CleanupRawInputGamepad(consumer, token);
 }
 
-TEST_F(GamepadServiceSimulationTest, RawInputChangeRequiresUserGesture) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kGamepadRawInputChangeEvent);
-
+TEST_F(GamepadServiceSimulationTestWithRawInputChange, RequiresUserGesture) {
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
 
@@ -1484,11 +1485,19 @@ TEST_F(GamepadServiceSimulationTest, RawInputChangeRequiresUserGesture) {
   CleanupRawInputGamepad(consumer, token);
 }
 
-TEST_F(GamepadServiceSimulationTest, RawInputChangeDisabledByFeatureFlag) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kGamepadRawInputChangeEvent);
+class GamepadServiceSimulationTestWithoutRawInputChange
+    : public GamepadServiceSimulationTest {
+ public:
+  GamepadServiceSimulationTestWithoutRawInputChange() {
+    scoped_feature_list.InitAndDisableFeature(
+        features::kGamepadRawInputChangeEvent);
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+TEST_F(GamepadServiceSimulationTestWithoutRawInputChange,
+       DisabledByFeatureFlag) {
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
 
