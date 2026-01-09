@@ -19,6 +19,7 @@
 
 #include "base/bits.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -1218,6 +1219,25 @@ bool VideoFrame::IsSameAllocation(VideoPixelFormat format,
 
 gfx::ColorSpace VideoFrame::ColorSpace() const {
   return color_space_;
+}
+
+void VideoFrame::set_color_space(const gfx::ColorSpace& color_space) {
+  // Check color spaces are same for video frames created from shared image
+  // from WrapSharedImage codepaths.
+  if (HasSharedImage() && !HasMappableSharedImage() &&
+      color_space != shared_image()->color_space()) {
+    SCOPED_CRASH_KEY_STRING256("video_frame", "si_color_space",
+                               shared_image()->color_space().ToString());
+    SCOPED_CRASH_KEY_STRING256("video_frame", "color_space",
+                               color_space.ToString());
+    SCOPED_CRASH_KEY_STRING256("video_frame", "si_label",
+                               shared_image()->debug_label());
+    DUMP_WILL_BE_CHECK(false)
+        << "VideoFrame color space (" << color_space.ToString()
+        << ") does not match SharedImage color_space ("
+        << shared_image()->color_space().ToString() << ")";
+  }
+  color_space_ = color_space;
 }
 
 gfx::ColorSpace VideoFrame::CompatRGBColorSpace() const {
