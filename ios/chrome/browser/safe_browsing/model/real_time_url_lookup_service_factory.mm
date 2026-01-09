@@ -84,5 +84,5 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(), base::BindRepeating(&GetVariationsService),
       min_allowed_timestamp_for_referrer_chains_getter, referrer_chain_provider,
-      /*webui_delegate=*/nullptr);
+      /*webui_delegate=*/nullptr, /*intelligent_scan_delegate=*/nullptr);
 }

@@ -18,6 +18,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -75,7 +76,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       base::RepeatingCallback<base::Time()>
           min_allowed_timestamp_for_referrer_chains_getter,
       ReferrerChainProvider* referrer_chain_provider,
-      WebUIDelegate* delegate);
+      WebUIDelegate* delegate,
+      IntelligentScanDelegate* intelligent_scan_delegate);
 
   RealTimeUrlLookupService(const RealTimeUrlLookupService&) = delete;
   RealTimeUrlLookupService& operator=(const RealTimeUrlLookupService&) = delete;

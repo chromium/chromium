@@ -22,6 +22,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -171,7 +172,8 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     ReferrerChainProvider* referrer_chain_provider,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     PrefService* pref_service,
-    WebUIDelegate* delegate)
+    WebUIDelegate* delegate,
+    IntelligentScanDelegate* intelligent_scan_delegate)
     : token_fetcher_(std::move(token_fetcher)),
       url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
@@ -184,7 +186,8 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
           kMaxBackOffResetDurationInSeconds)),
-      webui_delegate_(delegate) {}
+      webui_delegate_(delegate),
+      intelligent_scan_delegate_(intelligent_scan_delegate) {}
 
 RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
@@ -633,6 +636,30 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
   return resource_request;
 }
 
+RTLookupRequest::LlamaForcedTriggerCapability
+RealTimeUrlLookupServiceBase::MaybeGetLlamaForcedTriggerCapability() const {
+  auto model_type = IntelligentScanModelType::NOT_SUPPORTED;
+  if (pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
+      intelligent_scan_delegate_) {
+    switch (intelligent_scan_delegate_->GetIntelligentScanModelType(
+        /*log_failed_eligibility_reason=*/false)) {
+      case IntelligentScanDelegate::ModelType::kNotSupportedOnDevice:
+      case IntelligentScanDelegate::ModelType::kNotSupportedServerSide:
+        model_type = IntelligentScanModelType::NOT_SUPPORTED;
+        break;
+      case IntelligentScanDelegate::ModelType::kOnDevice:
+        model_type = IntelligentScanModelType::ON_DEVICE_MODEL;
+        break;
+      case IntelligentScanDelegate::ModelType::kServerSide:
+        model_type = IntelligentScanModelType::SERVER_SIDE_MODEL;
+        break;
+    }
+  }
+  RTLookupRequest::LlamaForcedTriggerCapability capability;
+  capability.set_supported_model_type(model_type);
+  return capability;
+}
+
 void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     const GURL& url,
     bool is_sampled_report,
@@ -659,6 +686,8 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
         std::move(referring_app_info_proto);
     MaybeFillReferringWebApk(*referring_app_info, *request);
   }
+  *request->mutable_llama_forced_trigger_capability() =
+      MaybeGetLlamaForcedTriggerCapability();
 
   std::string browser_dm_token = GetBrowserDMTokenString();
   if (!browser_dm_token.empty()) {
@@ -821,6 +850,7 @@ void RealTimeUrlLookupServiceBase::Shutdown() {
   // Clear references to other KeyedServices.
   cache_manager_ = nullptr;
   referrer_chain_provider_ = nullptr;
+  intelligent_scan_delegate_ = nullptr;
 
   token_fetcher_.reset();
 }

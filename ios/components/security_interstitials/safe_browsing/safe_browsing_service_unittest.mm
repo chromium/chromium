@@ -180,7 +180,8 @@ class TestRealtimeUrlLookupService
             variations_service_getter,
             min_allowed_timestamp_for_referrer_chains_getter,
             referrer_chain_provider,
-            delegate) {}
+            delegate,
+            /*intelligent_scan_delegate=*/nullptr) {}
 
   bool CanCheckSafeBrowsingDb() const override {
     return can_check_safe_browsing_db_;

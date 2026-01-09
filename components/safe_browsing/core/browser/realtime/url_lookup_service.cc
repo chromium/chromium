@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
@@ -66,14 +67,16 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
     base::RepeatingCallback<base::Time()>
         min_allowed_timestamp_for_referrer_chains_getter,
     ReferrerChainProvider* referrer_chain_provider,
-    WebUIDelegate* delegate)
+    WebUIDelegate* delegate,
+    IntelligentScanDelegate* intelligent_scan_delegate)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
                                    get_user_population_callback,
                                    referrer_chain_provider,
                                    std::move(token_fetcher),
                                    pref_service,
-                                   delegate),
+                                   delegate,
+                                   intelligent_scan_delegate),
       pref_service_(pref_service),
       client_token_config_callback_(client_token_config_callback),
       is_off_the_record_(is_off_the_record),

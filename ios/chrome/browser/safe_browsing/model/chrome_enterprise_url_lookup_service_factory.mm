@@ -118,7 +118,8 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
           &enterprise_connectors::GetNavigationActiveContentAreaUser,
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&IsProfileAffiliated, profile),
-      IsCommandLineSwitchEnabled());
+      IsCommandLineSwitchEnabled(),
+      /*intelligent_scan_delegate=*/nullptr);
 }
 
 }  // namespace safe_browsing
