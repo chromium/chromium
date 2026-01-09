@@ -184,6 +184,7 @@ if (current_toolchain == default_toolchain) {
       "password_manager_off.icon",
       "pause.icon",
       "pause_chrome_refresh.icon",
+      "payments.icon",
       "person_check.icon",
       "person_text.icon",
       "photo.icon",
