@@ -37,8 +37,6 @@ class CORE_EXPORT ListMarker {
   // Marker text with suffix, e.g. "1. ", for use in accessibility.
   String TextAlternative(const LayoutObject&) const;
 
-  bool IsMarkerImage(const LayoutObject&) const;
-
   void UpdateMarkerTextIfNeeded(LayoutObject& marker) {
     DCHECK_EQ(Get(&marker), this);
     if (marker_text_type_ == kUnresolved)
