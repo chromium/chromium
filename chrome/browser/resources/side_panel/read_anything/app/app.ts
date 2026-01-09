@@ -241,7 +241,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     document.onkeydown = this.onKeyDown_.bind(this);
 
     /////////////////////////////////////////////////////////////////////
-    // Called by ReadAnythingUntrustedPageHandler via callback router. //
+    // Called by ReadAnythingAppController via callback router. //
     /////////////////////////////////////////////////////////////////////
     chrome.readingMode.updateContent = () => {
       this.updateContent();
