@@ -1253,7 +1253,7 @@ bool BrowserView::GetTabStripVisible() const {
   return immersive_mode_controller->IsRevealed();
 }
 
-bool BrowserView::ShouldDrawStrokes() const {
+bool BrowserView::ShouldDrawTabStrokes() const {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else   // BUILDFLAG(IS_CHROMEOS)

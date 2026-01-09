@@ -2019,7 +2019,7 @@ void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
 
 int TabStrip::GetStrokeThickness() const {
   Browser* browser = controller_->GetBrowser();
-  return browser && browser->GetBrowserView().ShouldDrawStrokes() ? 1 : 0;
+  return browser && browser->GetBrowserView().ShouldDrawTabStrokes() ? 1 : 0;
 }
 
 bool TabStrip::CanPaintThrobberToLayer() const {

@@ -419,7 +419,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   // offset from the widget by a few DIPs, which is troublesome for computing a
   // subpixel offset when using fractional scale factors.  So we're forced to
   // put this drawing in the BrowserRootView.
-  if (!browser_view_->ShouldDrawStrokes() ||
+  if (!browser_view_->ShouldDrawTabStrokes() ||
       !browser_view_->IsToolbarVisible() ||
       !browser_view_->ShouldDrawTabStrip() || browser_view_->IsFullscreen()) {
     return;

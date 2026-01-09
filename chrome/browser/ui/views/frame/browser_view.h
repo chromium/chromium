@@ -343,7 +343,7 @@ class BrowserView : public BrowserWindow,
   bool ShouldDrawVerticalTabStrip() const;
 
   // Returns whether or not strokes should be drawn around and under the tabs.
-  bool ShouldDrawStrokes() const;
+  bool ShouldDrawTabStrokes() const;
 
   // Returns whether the vertical tabstrip is collapsed.
   bool IsVerticalTabStripCollapsed() const;
