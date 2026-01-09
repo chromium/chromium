@@ -222,7 +222,6 @@ Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
 Vector<LayoutUnit, 1> LayoutGrid::CollectTrackSizesForComputedStyle(
     const GridLayoutData* grid_layout_data,
     GridTrackSizingDirection track_direction) {
-  CHECK(grid_layout_data);
   Vector<LayoutUnit, 1> track_sizes;
   if (!grid_layout_data)
     return track_sizes;
