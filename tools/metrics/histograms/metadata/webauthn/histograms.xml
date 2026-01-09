@@ -91,6 +91,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Android.GmsCoreSkippedCacheReason"
+    enum="GmsCoreSkippedCacheReason" expires_after="2026-06-30">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    When a credential enumeration is being done for a Webauthn Get request, and
+    the GMSCore API is being used (that is, not the CredentialManager API), and
+    the credential metadata cache is not in use, then this records the reason
+    why the cache is not being used.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Android.NonDiscoverableCredentialsFound"
     enum="Boolean" expires_after="2026-04-26">
   <owner>derinel@google.com</owner>
