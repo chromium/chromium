@@ -58,6 +58,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -134,6 +135,11 @@ std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
       testing::NiceMock<feature_engagement::test::MockTracker>>();
 }
 }  // namespace
+
+@interface LocationBarBadgeMediator (Testing)
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigationContext;
+@end
 
 // Test fixture for LocationBarBadgeMediator.
 class LocationBarBadgeMediatorTest : public PlatformTest {
@@ -683,5 +689,31 @@ TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelWebStateListChanged) {
       WebStateList::InsertionParams::Automatic().Activate(true));
 
   EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that the consumer is not updated when there is a same-page navigation.
+TEST_F(LocationBarBadgeMediatorTest, TestDidStartNavigationSamePage) {
+  OCMReject([mock_consumer_ hideBadge]);
+
+  web::WebState* activeWebState = web_state_list_->GetActiveWebState();
+  auto navigation_context = std::make_unique<web::FakeNavigationContext>();
+  navigation_context->SetIsSameDocument(true);
+  [mediator_ webState:activeWebState
+      didStartNavigation:navigation_context.get()];
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that the consumer is updated when there is a different-page navigation.
+TEST_F(LocationBarBadgeMediatorTest, TestDidStartNavigationDifferentPage) {
+  OCMExpect([mock_consumer_ hideBadge]);
+
+  web::WebState* activeWebState = web_state_list_->GetActiveWebState();
+  auto navigation_context = std::make_unique<web::FakeNavigationContext>();
+  navigation_context->SetIsSameDocument(false);
+  [mediator_ webState:activeWebState
+      didStartNavigation:navigation_context.get()];
+
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -198,7 +199,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigationContext {
-  [self.consumer hideBadge];
+  // Do not modify badge state if the navigation is on the same document.
+  if (!navigationContext->IsSameDocument()) {
+    [self.consumer hideBadge];
+  }
 }
 
 - (void)webStateWasDestroyed:(web::WebState*)webState {
