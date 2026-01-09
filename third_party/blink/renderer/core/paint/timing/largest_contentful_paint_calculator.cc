@@ -373,15 +373,17 @@ LargestContentfulPaintCalculator::CreateWebExposedCandidateTraceData(
   std::unique_ptr<TracedValue> value =
       CreateWebExposedCandidateTraceDataCommon(largest_image);
   value->SetString("type", "image");
-  value->SetDouble("imageDiscoveryTime",
-                   window_performance_->MonotonicTimeToDOMHighResTimeStamp(
-                       largest_image.GetMediaTiming()->DiscoveryTime()));
-  value->SetDouble("imageLoadStart",
-                   window_performance_->MonotonicTimeToDOMHighResTimeStamp(
-                       largest_image.GetMediaTiming()->LoadStart()));
-  value->SetDouble("imageLoadEnd",
-                   window_performance_->MonotonicTimeToDOMHighResTimeStamp(
-                       largest_image.GetMediaTiming()->LoadEnd()));
+  if (const MediaTiming* media_timing = largest_image.GetMediaTiming()) {
+    value->SetDouble("imageDiscoveryTime",
+                     window_performance_->MonotonicTimeToDOMHighResTimeStamp(
+                         media_timing->DiscoveryTime()));
+    value->SetDouble("imageLoadStart",
+                     window_performance_->MonotonicTimeToDOMHighResTimeStamp(
+                         media_timing->LoadStart()));
+    value->SetDouble("imageLoadEnd",
+                     window_performance_->MonotonicTimeToDOMHighResTimeStamp(
+                         media_timing->LoadEnd()));
+  }
   if (auto* html_image_element =
           DynamicTo<HTMLImageElement>(largest_image.GetNode())) {
     const AtomicString& loadingAttr =
