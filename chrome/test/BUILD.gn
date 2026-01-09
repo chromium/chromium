@@ -6948,6 +6948,7 @@ test("unit_tests") {
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser:primitives",
+    "//chrome/browser/actor/ui:unit_tests",
     "//chrome/browser/ai",
     "//chrome/browser/ai:test_support",
     "//chrome/browser/ai:unit_tests",
@@ -8414,7 +8415,6 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/actor:unit_tests",
-      "//chrome/browser/actor/ui:unit_tests",
       "//chrome/browser/actor/ui/task_list_bubble:unit_tests",
       "//chrome/browser/autofill/glic:unit_tests",
       "//chrome/browser/bluetooth",
