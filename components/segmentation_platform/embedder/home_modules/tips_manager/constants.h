@@ -68,6 +68,10 @@ enum class TipPresentationContext {
 // Returns the string representation of `context`.
 std::string NameForTipPresentationContext(TipPresentationContext context);
 
+// The maximum number of times an ephemeral tips card can be visible to the
+// user.
+inline constexpr int kTipsEphemeralCardModuleMaxImpressionCount = 3;
+
 // Key for the timestamp representing the first time a signal was observed
 // (`base::Value`).
 extern const char kFirstObservedTime[];

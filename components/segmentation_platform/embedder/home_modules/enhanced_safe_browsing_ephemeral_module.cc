@@ -58,10 +58,7 @@ bool EnhancedSafeBrowsingEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
-  int max_impression_count =
-      features::GetTipsEphemeralCardModuleMaxImpressionCount();
-
-  return impression_count < max_impression_count;
+  return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
 }
 
 // Defines the input signals required by this module.
