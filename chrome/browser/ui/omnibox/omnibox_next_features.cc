@@ -48,6 +48,9 @@ const base::FeatureParam<AddContextButtonVariant>
 // g.com/aimode, e.g. instead of opening the AI Mode popup
 // (`omnibox::internal::kWebUIOmniboxAimPopup`).
 BASE_FEATURE(kAiModeEntryPointAlwaysNavigates, DISABLED);
+// If enabled, there will no longer be animation when opening the WebUI Omnibox
+// AIM popup.
+BASE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation, DISABLED);
 // If enabled, removes the cutout for the location bar and fills the entire
 // popup content with the WebUI WebView.
 BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);

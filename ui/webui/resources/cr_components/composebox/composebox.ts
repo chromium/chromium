@@ -195,11 +195,13 @@ export class ComposeboxElement extends I18nMixinLit
       receivedSpeech_: {type: Boolean},
       maxSuggestions: {type: Number},
       disableVoiceSearchAnimation: {type: Boolean},
+      disableComposeboxAnimation: {type: Boolean},
       fileUploadsComplete: {type: Boolean},
       inComposebox: {type: Boolean},
     };
   }
 
+  accessor disableComposeboxAnimation: boolean = false;
   accessor inComposebox: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor fileUploadsComplete: boolean = true;
