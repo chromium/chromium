@@ -33,12 +33,6 @@ class ExtensionInstallUIDesktop : public ExtensionInstallUI {
   void OnInstallSuccess(scoped_refptr<const extensions::Extension> extension,
                         const SkBitmap* icon) override;
   void OnInstallFailure(const extensions::CrxInstallError& error) override;
-
-  // Shows the install bubble UI.
-  static void ShowBubble(scoped_refptr<const extensions::Extension> extension,
-                         BrowserWindowInterface* browser_window,
-                         Profile* profile,
-                         const SkBitmap& icon);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DESKTOP_H_

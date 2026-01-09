@@ -21,13 +21,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_view_utils.h"
 #endif
 
 namespace extensions {
@@ -132,8 +133,19 @@ void ShowExtensionPostInstallDialog(
   extensions::ConfigurePostInstallDialogModel(
       dialog_model_builder, weak_delegate->model(), manage_shortcuts_callback);
 
-  // TODO(crbug.com/450296898): Add a sync or sign in promo in the footer if it
-  // should be shown.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  // Add a sync or sign in promo in the footer if it should be shown.
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  const extensions::Extension* extension =
+      registry->enabled_extensions().GetByID(
+          weak_delegate->model()->extension_id());
+
+  if (extension) {
+    extensions::MaybeAddSigninPromoFootnoteView(
+        profile, web_contents, *extension, dialog_model_builder);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_model_builder.Build();
   ShowDialog(native_window, weak_delegate->model()->extension_id(),

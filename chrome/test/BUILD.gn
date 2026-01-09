@@ -2587,6 +2587,7 @@ if (!is_android) {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:browser_tests",
       "//chrome/browser/ui/extensions:browser_tests",
+      "//chrome/browser/ui/extensions:extension_post_install_dialog_utils",
       "//chrome/browser/ui/feature_first_run:browser_tests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:browser_tests",
@@ -5150,7 +5151,7 @@ if (!is_android) {
         "../browser/ui/views/extensions/device_chooser_extension_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_reenable_dialog_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_dialog_view_browsertest.cc",
-        "../browser/ui/views/extensions/extension_post_install_dialog_delegate_browsertest.cc",
+        "../browser/ui/views/extensions/extension_post_install_dialog_view_utils_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.h",
         "../browser/ui/views/extensions/extensions_request_access_hover_card_coordinator_browsertest.cc",
@@ -5298,7 +5299,7 @@ if (!is_android) {
       } else {
         sources += [
           "../browser/ui/views/extensions/dialogs/upload_extension_to_account_dialog_browsertest.cc",
-          "../browser/ui/views/extensions/extension_post_install_dialog_delegate_signin_browsertest.cc",
+          "../browser/ui/views/extensions/extension_post_install_dialog_view_utils_signin_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
           "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",
@@ -11948,6 +11949,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/actions",
         "//chrome/browser/ui/commerce",
         "//chrome/browser/ui/commerce:test_support",
+        "//chrome/browser/ui/extensions:extension_post_install_dialog_utils",
         "//chrome/browser/ui/extensions:test_support",
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/hats",

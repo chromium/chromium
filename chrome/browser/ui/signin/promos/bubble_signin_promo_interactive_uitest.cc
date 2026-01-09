@@ -18,7 +18,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_utils.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_sign_in_promo_bubble_view.h"
-#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_view_utils.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
@@ -1174,8 +1174,13 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
             AccountExtensionTracker::Get(browser()->profile())
                 ->GetAccountExtensionType(extension->id()));
 
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
-                                        browser()->profile(), SkBitmap());
+  extensions::TriggerPostInstallDialog(
+      browser()->profile(), extension, SkBitmap(),
+      base::BindOnce(
+          [](Browser* b) {
+            return b->tab_strip_model()->GetActiveWebContents();
+          },
+          browser()));
 
   // Click the sign in button.
   RunTestSequence(
@@ -1256,9 +1261,13 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             AccountExtensionTracker::Get(browser()->profile())
                 ->GetAccountExtensionType(extension->id()));
-
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
-                                        browser()->profile(), SkBitmap());
+  extensions::TriggerPostInstallDialog(
+      browser()->profile(), extension, SkBitmap(),
+      base::BindOnce(
+          [](Browser* b) {
+            return b->tab_strip_model()->GetActiveWebContents();
+          },
+          browser()));
 
   // This would move the extension to account storage.
   std::vector<syncer::LocalDataItemModel::DataId> items{extension->id()};
@@ -1342,9 +1351,13 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       AccountExtensionTracker::Get(browser()->profile())
           ->GetAccountExtensionType(extension->id()));
 
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
-                                        browser()->profile(), SkBitmap());
-
+  extensions::TriggerPostInstallDialog(
+      browser()->profile(), extension, SkBitmap(),
+      base::BindOnce(
+          [](Browser* b) {
+            return b->tab_strip_model()->GetActiveWebContents();
+          },
+          browser()));
   // Click the sign in button.
   RunTestSequence(
       // We cannot add an element identifier to the dialog when it's built using
@@ -1430,8 +1443,13 @@ IN_PROC_BROWSER_TEST_F(
             AccountExtensionTracker::Get(browser()->profile())
                 ->GetAccountExtensionType(extension->id()));
 
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
-                                        browser()->profile(), SkBitmap());
+  extensions::TriggerPostInstallDialog(
+      browser()->profile(), extension, SkBitmap(),
+      base::BindOnce(
+          [](Browser* b) {
+            return b->tab_strip_model()->GetActiveWebContents();
+          },
+          browser()));
 
   // Expect extensions to be enabled before the reauth is completed.
   EXPECT_CALL(*sync_service_mock().GetMockUserSettings(),

@@ -16,7 +16,12 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extension_installed_watcher.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_utils.h"
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -114,7 +119,14 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
   CHECK(browser_window);
 
   if (!extension->is_app()) {
-    ShowBubble(extension, browser_window, profile(), *icon);
+    SkBitmap icon_to_use = icon ? *icon : SkBitmap();
+    extensions::TriggerPostInstallDialog(
+        profile(), extension, icon_to_use,
+        base::BindOnce(
+            [](BrowserWindowInterface* bwi) {
+              return bwi->GetActiveTabInterface()->GetContents();
+            },
+            browser_window));
     return;
   }
 

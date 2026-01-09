@@ -15,10 +15,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_utils.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_view_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -35,15 +35,15 @@
 #include "ui/views/widget/widget.h"
 
 // Tests sign in behavior from the extension post-install bubble.
-class ExtensionPostInstallDialogDelegateSignInBrowserTest
+class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionPostInstallDialogDelegateSignInBrowserTest() {
+  ExtensionPostInstallDialogViewUtilsSignInBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
   }
-  ~ExtensionPostInstallDialogDelegateSignInBrowserTest() override = default;
+  ~ExtensionPostInstallDialogViewUtilsSignInBrowserTest() override = default;
 
  protected:
   extensions::AccountExtensionTracker* account_extension_tracker() {
@@ -65,8 +65,13 @@ class ExtensionPostInstallDialogDelegateSignInBrowserTest
     views::Widget::Widgets old_widgets =
         views::test::WidgetTest::GetAllWidgets();
 
-    ExtensionInstallUIDesktop::ShowBubble(extension, browser(), profile(),
-                                          SkBitmap());
+    extensions::TriggerPostInstallDialog(
+        profile(), extension, SkBitmap(),
+        base::BindOnce(
+            [](Browser* b) {
+              return b->tab_strip_model()->GetActiveWebContents();
+            },
+            browser()));
 
     // Wait for the ExtensionInstalledWatcher to fire and the dialog to be
     // created.
@@ -125,7 +130,7 @@ class ExtensionPostInstallDialogDelegateSignInBrowserTest
 
 // Test that by default, signing in from the extension post-install bubble will
 // sign the user into sync.
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsSignInBrowserTest,
                        BubbleSignsIntoSync) {
   // The default browser created for tests start with one tab open on
   // about:blank.  The sign-in page is a singleton that will replace this tab.
@@ -160,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
 
 // Test that users can perform an explicit sign in through the extension
 // installed promo in transport mode.
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsSignInBrowserTest,
                        BubbleExplicitSignin) {
   // Load three extensions.
   auto old_extension = LoadPackedExtension("simple_with_file");
@@ -233,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
 // extension post-install promo should still promote the extension to an account
 // extension.
 // This tests the fix for crbug.com/400522723
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsSignInBrowserTest,
                        BubbleExplicitSigninWithAccount) {
   auto extension = LoadPackedExtension("simple_with_file");
   ASSERT_TRUE(extension);

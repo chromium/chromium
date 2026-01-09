@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
@@ -19,11 +19,11 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-class ExtensionPostInstallDialogDelegateBrowserTest
+class ExtensionPostInstallDialogViewUtilsBrowserTest
     : public SupportsTestDialog<extensions::ExtensionBrowserTest> {
  public:
-  ExtensionPostInstallDialogDelegateBrowserTest() = default;
-  ~ExtensionPostInstallDialogDelegateBrowserTest() override = default;
+  ExtensionPostInstallDialogViewUtilsBrowserTest() = default;
+  ~ExtensionPostInstallDialogViewUtilsBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override;
   bool VerifyUi() override;
@@ -46,14 +46,19 @@ class ExtensionPostInstallDialogDelegateBrowserTest
   raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> bubble_widget_;
 };
 
-void ExtensionPostInstallDialogDelegateBrowserTest::ShowUi(
+void ExtensionPostInstallDialogViewUtilsBrowserTest::ShowUi(
     const std::string& name) {
   scoped_refptr<const extensions::Extension> extension =
       MakeExtensionOfType(name);
 
   views::Widget::Widgets old_widgets = views::test::WidgetTest::GetAllWidgets();
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), profile(),
-                                        SkBitmap());
+  extensions::TriggerPostInstallDialog(
+      profile(), extension, SkBitmap(),
+      base::BindOnce(
+          [](Browser* b) {
+            return b->tab_strip_model()->GetActiveWebContents();
+          },
+          browser()));
 
   // In the real world, the extension would be installed now, triggering the
   // watcher. Simulate that by adding the extension to the registrar.
@@ -78,11 +83,11 @@ void ExtensionPostInstallDialogDelegateBrowserTest::ShowUi(
   views::test::WidgetVisibleWaiter(bubble_widget_).Wait();
 }
 
-bool ExtensionPostInstallDialogDelegateBrowserTest::VerifyUi() {
+bool ExtensionPostInstallDialogViewUtilsBrowserTest::VerifyUi() {
   return bubble_widget_->IsVisible();
 }
 
-void ExtensionPostInstallDialogDelegateBrowserTest::WaitForUserDismissal() {
+void ExtensionPostInstallDialogViewUtilsBrowserTest::WaitForUserDismissal() {
   views::test::WidgetDestroyedWaiter observer(bubble_widget_);
   observer.Wait();
 }
@@ -99,12 +104,12 @@ void ExtensionPostInstallDialogDelegateBrowserTest::WaitForUserDismissal() {
 #define MAYBE_InvokeUi_SignInPromo InvokeUi_SignInPromo
 #endif
 
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsBrowserTest,
                        MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsBrowserTest,
                        MAYBE_InvokeUi_SignInPromo) {
   ShowAndVerifyUi();
 }
