@@ -145,7 +145,7 @@ std::unique_ptr<PermissionDialogDelegate> PermissionDialogDelegate::Create(
   CHECK(web_contents);
   // If we don't have a window, just act as though the prompt was dismissed.
   if (!web_contents->GetTopLevelNativeWindow()) {
-    permission_prompt->Closing();
+    permission_prompt->Dismiss();
     return nullptr;
   }
   std::unique_ptr<PermissionDialogJavaDelegate> java_delegate(
@@ -228,7 +228,7 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env, int dismissalType) {
     // signal as a way to tell if the `PermissionPrompt` creation failed.
     DestroyJavaDelegate();
   }
-  permission_prompt_->Closing();
+  permission_prompt_->Dismiss();
 }
 
 void PermissionDialogDelegate::Destroy(JNIEnv* env) {

@@ -43,7 +43,7 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
   // PermissionPromptAndroid:
   EmbeddedPermissionPromptFlowModel::Variant GetEmbeddedPromptVariant()
       const override;
-  void Closing() override;
+  void Dismiss() override;
   void Accept() override;
   void AcceptThisTime() override;
   void Acknowledge() override;

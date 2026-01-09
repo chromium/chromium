@@ -95,7 +95,7 @@ Variant EmbeddedPermissionPromptAndroid::GetEmbeddedPromptVariant() const {
   return prompt_model_->prompt_variant();
 }
 
-void EmbeddedPermissionPromptAndroid::Closing() {
+void EmbeddedPermissionPromptAndroid::Dismiss() {
   prompt_model_->PrecalculateVariantsForMetrics();
   // TODO(crbug.com/388408021): in Android, there will be no x button and more
   // than only one dismiss reason of clicking outside the dialog. We are

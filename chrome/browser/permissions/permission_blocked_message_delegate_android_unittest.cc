@@ -60,7 +60,7 @@ class MockDelegate : public PermissionBlockedMessageDelegate::Delegate {
   MOCK_METHOD(void, Accept, (), (override));
   MOCK_METHOD(void, Deny, (), (override));
 
-  MOCK_METHOD(void, Closing, (), (override));
+  MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void, Ignore, (), (override));
 
   MOCK_METHOD(bool, ShouldUseQuietUI, (), (override));
@@ -221,7 +221,7 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest, DismissByDialogDismissed) {
 
   EXPECT_CALL(*delegate, Accept).Times(0);
   EXPECT_CALL(*delegate, Deny).Times(0);
-  EXPECT_CALL(*delegate, Closing);
+  EXPECT_CALL(*delegate, Dismiss);
 
   ShowMessage(std::move(delegate));
 

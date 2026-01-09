@@ -77,7 +77,7 @@ PermissionPromptAndroid::GetEmbeddedPromptVariant() const {
   return EmbeddedPermissionPromptFlowModel::Variant::kUninitialized;
 }
 
-void PermissionPromptAndroid::Closing() {
+void PermissionPromptAndroid::Dismiss() {
   delegate_->Dismiss();
 }
 

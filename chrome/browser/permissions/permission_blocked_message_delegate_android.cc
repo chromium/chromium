@@ -85,8 +85,8 @@ void PermissionBlockedMessageDelegate::OnDialogDismissed() {
   // If |has_interacted_with_dialog_| is true, |Allow| or |Deny| should be
   // recorded instead.
   if (!has_interacted_with_dialog_) {
-    // call Closing destroys the current object.
-    delegate_->Closing();
+    // Calling Dismiss destroys the current object.
+    delegate_->Dismiss();
   }
 }
 
@@ -212,15 +212,15 @@ void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
   dialog_controller_.reset();
 
   if (reason == messages::DismissReason::GESTURE) {
-    delegate_->Closing();
+    delegate_->Dismiss();
   }
 
   if (reason == messages::DismissReason::TIMER) {
     delegate_->Ignore();
   }
 
-  // Other un-tracked actions will be recorded as "Ignored" by
-  // |permission_prompt_|.
+  // TODO(crbug.com/474574239): Investigate if we should manager other
+  // DismissReasons as well.
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
@@ -265,8 +265,8 @@ void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     delegate_->Ignore();
   }
 
-  // Other un-tracked actions will be recorded as "Ignored" by
-  // |permission_prompt_|.
+  // TODO(crbug.com/474574239): Investigate if we should manager other
+  // DismissReasons as well.
 }
 
 void PermissionBlockedMessageDelegate::DismissInternal() {
@@ -290,11 +290,11 @@ void PermissionBlockedMessageDelegate::Delegate::Deny() {
   permission_prompt_->Deny();
 }
 
-void PermissionBlockedMessageDelegate::Delegate::Closing() {
+void PermissionBlockedMessageDelegate::Delegate::Dismiss() {
   if (!permission_prompt_) {
     return;
   }
-  permission_prompt_->Closing();
+  permission_prompt_->Dismiss();
 }
 
 void PermissionBlockedMessageDelegate::Delegate::Ignore() {
@@ -334,7 +334,7 @@ PermissionBlockedMessageDelegate::Delegate::GetContentSettingsType() {
   return permission_prompt_->GetContentSettingType(0);
 }
 PermissionBlockedMessageDelegate::Delegate::~Delegate() {
-  Closing();
+  Dismiss();
 }
 
 PermissionBlockedMessageDelegate::Delegate::Delegate() = default;
