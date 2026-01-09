@@ -310,7 +310,11 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (NSAttributedString*)attributedMarkedText {
-  return nil;
+  NSString* text = [self markedText];
+  if (!text) {
+    return nil;
+  }
+  return [[NSAttributedString alloc] initWithString:text];
 }
 
 - (CGRect)textFirstRect {
@@ -357,11 +361,14 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (BOOL)hasMarkedText {
-  return NO;
+  return _markedText.length() > 0;
 }
 
 - (NSString*)markedText {
-  return nil;
+  if (![self hasMarkedText]) {
+    return nil;
+  }
+  return base::SysUTF16ToNSString(_markedText);
 }
 
 - (NSString*)selectedText {
@@ -374,6 +381,13 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (void)unmarkText {
+  if (![self hasMarkedText]) {
+    return;
+  }
+
+  CHECK(_view);
+  _view->ImeFinishComposingText(false);
+  _markedText.clear();
 }
 
 - (CGRect)selectionClipRect {
@@ -914,6 +928,7 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)setAttributedMarkedText:(nullable NSAttributedString*)markedText
                   selectedRange:(NSRange)selectedRange {
+  [self setMarkedText:markedText.string selectedRange:selectedRange];
 }
 
 - (BOOL)isPointNearMarkedText:(CGPoint)point {
@@ -1011,6 +1026,8 @@ static void* kObservingContext = &kObservingContext;
   if (text.length == 0) {
     return;
   }
+
+  _markedText.clear();
   _view->ImeCommitText(base::SysNSStringToUTF16(text),
                        gfx::Range::InvalidRange(), 0);
 }
@@ -1039,6 +1056,27 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)setMarkedText:(nullable NSString*)markedText
         selectedRange:(NSRange)selectedRange {
+  _markedText = base::SysNSStringToUTF16(markedText);
+  std::vector<ui::ImeTextSpan> imeTextSpans;
+  if (_markedText.length() > 0) {
+    ui::ImeTextSpan span;
+    span.start_offset = 0;
+    span.end_offset = _markedText.length();
+    span.underline_style = ui::ImeTextSpan::UnderlineStyle::kSolid;
+    imeTextSpans.push_back(span);
+  }
+
+  CHECK(_view);
+  if (auto event = std::exchange(_currentKeyDownEvent, std::nullopt)) {
+    // If an Input Method Editor is processing key input and the event is
+    // keydown, keyCode should return 229, see:
+    // https://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html
+    event->windows_key_code = 0xE5;  // VKEY_PROCESSKEY
+    _view->SendKeyEvent(*event);
+  }
+  _view->ImeSetComposition(_markedText, imeTextSpans,
+                           gfx::Range::InvalidRange(), selectedRange.location,
+                           selectedRange.location + selectedRange.length);
 }
 
 - (nullable UITextRange*)textRangeFromPosition:(UITextPosition*)fromPosition
