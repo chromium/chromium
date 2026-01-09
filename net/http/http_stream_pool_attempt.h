@@ -63,6 +63,9 @@ class HttpStreamPool::Attempt {
     // Returns the base SSLConfig associated with this attempt.
     virtual SSLConfig GetBaseSSLConfig() const = 0;
 
+    // Returns the ALPNs to be used with ALPN.
+    virtual const NextProtoVector& GetAlpnProtos() const = 0;
+
     // Callback methods. Only one of these methods will be called. Once one of
     // these methods is called, the Attempt must immediately be deleted, or it
     // will enter an undefined state.
@@ -123,8 +126,6 @@ class HttpStreamPool::Attempt {
 
   void OnTcpHandshakeComplete(TcpAttempt* attempt);
 
-  int OnWaitForTlsHandshakeReady(TcpAttempt* attempt);
-
   void OnTcpAttemptComplete(TcpAttempt* attempt, int rv);
 
   void HandleSingleFailure(std::unique_ptr<TcpAttempt> attempt, int rv);
@@ -137,6 +138,10 @@ class HttpStreamPool::Attempt {
 
   std::unique_ptr<TcpAttempt> ipv4_attempt_;
   std::unique_ptr<TcpAttempt> ipv6_attempt_;
+
+  // Set to true when the associated ServiceEndpointRequest indicates that
+  // endpoints are ready for crypto (TLS) handshake.
+  bool is_crypto_ready_ = false;
 
   base::OneShotTimer slow_timer_;
   bool slow_timer_expired_ = false;

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -38,6 +39,8 @@
 namespace net {
 
 // A single inner TCP-based attempt.
+// TODO(crbug.com/457478038): Figure out better name for this class. Too many
+// "Attempt" classes.
 class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
  public:
   TcpAttempt(Attempt& owner, IPEndPoint ip_endpoint)
@@ -68,18 +71,38 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
     return attempt_->Start(std::move(callback));
   }
 
+  // Called when the delegate's service endpoint request is updated or finished
+  // and endpoints are ready to start the TLS handshake. Note that this method
+  // can be called multiple times, even after the TLS handshake has already
+  // started.
+  void MaybeStartTlsHandshake() {
+    DCHECK(delegate().GetServiceEndpointRequest().EndpointsCryptoReady());
+    if (tls_handshake_ready_callback_) {
+      std::move(tls_handshake_ready_callback_).Run(OK);
+    }
+  }
+
+  // TlsStreamAttempt::Delegate implementation.
+
   void OnTcpHandshakeComplete() override {
     owner_->OnTcpHandshakeComplete(this);
   }
 
+  // Called from TlsStreamAttempt when it is ready to start the TLS handshake
+  // (i.e., TCP handshake is complete). If the endpoint is ready to start TLS
+  // handshake, returns OK. Otherwise, returns ERR_IO_PENDING and stores the
+  // callback to be called when the endpoint is ready to start TLS handshake.
   int WaitForTlsHandshakeReady(CompletionOnceCallback callback) override {
-    int rv = owner_->OnWaitForTlsHandshakeReady(this);
-    // TODO(crbug.com/457478038): Handle cases where TLS handshake is not
-    // ready yet.
-    CHECK_EQ(rv, OK);
-    return rv;
+    if (owner_->is_crypto_ready_) {
+      return OK;
+    }
+    tls_handshake_ready_callback_ = std::move(callback);
+    return ERR_IO_PENDING;
   }
 
+  // Called from TlsStreamAttempt to get the service endpoint for TLS
+  // handshake. Always called after the endpoint is ready to start TLS
+  // handshake.
   base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
   GetServiceEndpointForTlsHandshake() override {
     CHECK(delegate().GetServiceEndpointRequest().EndpointsCryptoReady());
@@ -93,6 +116,7 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
   const IPEndPoint ip_endpoint_;
 
   std::unique_ptr<StreamAttempt> attempt_;
+  CompletionOnceCallback tls_handshake_ready_callback_;
 };
 
 HttpStreamPool::Attempt::Attempt(
@@ -102,7 +126,11 @@ HttpStreamPool::Attempt::Attempt(
       stream_attempt_params_(stream_attempt_params),
       using_tls_(GURL::SchemeIsCryptographic(
           delegate_->GetHttpStreamKey().destination().scheme())),
-      track_(base::trace_event::GetNextGlobalTraceId()) {}
+      track_(base::trace_event::GetNextGlobalTraceId()) {
+  if (delegate_->GetServiceEndpointRequest().EndpointsCryptoReady()) {
+    is_crypto_ready_ = true;
+  }
+}
 
 HttpStreamPool::Attempt::~Attempt() = default;
 
@@ -111,6 +139,32 @@ void HttpStreamPool::Attempt::Start() {
 }
 
 void HttpStreamPool::Attempt::ProcessServiceEndpointChanges() {
+  // First, trigger TLS handshakes for existing attempts if endpoints are ready
+  // to start TLS handshakes.
+  HostResolver::ServiceEndpointRequest& service_endpoint_request =
+      delegate_->GetServiceEndpointRequest();
+  if (!is_crypto_ready_ && service_endpoint_request.EndpointsCryptoReady()) {
+    is_crypto_ready_ = true;
+    // Starting TLS handshake may fail synchronously (also may succeed
+    // synchronously, unlikely to happen in reality though). Synchronous
+    // completion of an attempt could end up deleting `this`. Use WeakPtr to
+    // detect whether `this` is deleted. Alternatively, we can use PostTask to
+    // schedule `this` to be deleted when an attempt succeeds or fails. However,
+    // scheduling tasks does have some overhead so we use WeakPtr here.
+    base::WeakPtr<Attempt> weak_self = weak_ptr_factory_.GetWeakPtr();
+    for (auto& attempt : {ipv6_attempt_.get(), ipv4_attempt_.get()}) {
+      if (!attempt) {
+        continue;
+      }
+      attempt->MaybeStartTlsHandshake();
+      if (!weak_self) {
+        // `this` is deleted. Have to return immediately.
+        return;
+      }
+    }
+  }
+
+  // Second, try to start new attempts if possible.
   MaybeAttempt();
 }
 
@@ -170,9 +224,23 @@ void HttpStreamPool::Attempt::StartAttempt(IPEndPoint ip_endpoint) {
 
 bool HttpStreamPool::Attempt::IsEndpointUsable(const ServiceEndpoint& endpoint,
                                                bool svcb_optional) const {
-  // TODO(crbug.com/457478038): Implement logic similar to
-  // AttemptManager::IsEndpointUsableForTcpBasedAttempt().
-  return true;
+  // No ALPNs means that the endpoint is an authority A/AAAA endpoint, even if
+  // we are still in the middle of DNS resolution.
+  if (endpoint.metadata.supported_protocol_alpns.empty()) {
+    return svcb_optional;
+  }
+
+  // See https://www.rfc-editor.org/rfc/rfc9460.html#section-9.3. Endpoints are
+  // usable if there is an overlap between the endpoint's ALPNs and the
+  // configured ones.
+  return std::ranges::any_of(
+      endpoint.metadata.supported_protocol_alpns, [&](const auto& alpn) {
+        NextProto next_proto = NextProtoFromString(alpn);
+        if (!kTcpBasedProtocols.Has(next_proto)) {
+          return false;
+        }
+        return base::Contains(delegate_->GetAlpnProtos(), next_proto);
+      });
 }
 
 std::optional<IPEndPoint> HttpStreamPool::Attempt::GetIPEndPointToAttempt()
@@ -206,7 +274,6 @@ std::optional<IPEndPoint> HttpStreamPool::Attempt::GetIPEndPointToAttempt()
 
     for (const auto& service_endpoint : endpoint_results) {
       if (!IsEndpointUsable(service_endpoint, svcb_optional)) {
-        // TODO(crbug.com/457478038): Add tests for this case.
         continue;
       }
 
@@ -236,7 +303,6 @@ HttpStreamPool::Attempt::GetServiceEndpointForTlsHandshake(
   for (const auto& service_endpoint :
        service_endpoint_request.GetEndpointResults()) {
     if (!IsEndpointUsable(service_endpoint, svcb_optional)) {
-      // TODO(crbug.com/457478038): Add tests for this case.
       continue;
     }
     const std::vector<IPEndPoint>& ip_endpoints =
@@ -244,7 +310,6 @@ HttpStreamPool::Attempt::GetServiceEndpointForTlsHandshake(
                                        : service_endpoint.ipv6_endpoints;
 
     if (!base::Contains(ip_endpoints, ip_endpoint)) {
-      // TODO(crbug.com/457478038): Add tests for this case.
       continue;
     }
     return service_endpoint;
@@ -266,18 +331,6 @@ void HttpStreamPool::Attempt::OnTcpHandshakeComplete(TcpAttempt* attempt) {
   // TODO(crbug.com/457478038): Consider pausing the timer when the endpoints
   // are not ready for TLS handshake. The timer should be resumed when the
   // endpoints are ready for TLS handshake.
-}
-
-int HttpStreamPool::Attempt::OnWaitForTlsHandshakeReady(TcpAttempt* attempt) {
-  CHECK(attempt == ipv4_attempt_.get() || attempt == ipv6_attempt_.get());
-  CHECK(using_tls_);
-
-  if (!delegate_->GetServiceEndpointRequest().EndpointsCryptoReady()) {
-    // TODO(crbug.com/457478038): Add tests for this case.
-    return ERR_IO_PENDING;
-  }
-
-  return OK;
 }
 
 void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,

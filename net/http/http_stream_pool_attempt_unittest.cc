@@ -29,6 +29,7 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/scheme_host_port.h"
@@ -63,6 +64,11 @@ class TestAttemptDelegate final
 
   FakeServiceEndpointRequest* fake_service_endpoint_request() {
     return fake_service_endpoint_request_.get();
+  }
+
+  TestAttemptDelegate& set_is_svcb_optional(bool is_svcb_optional) {
+    is_svcb_optional_ = is_svcb_optional;
+    return *this;
   }
 
   HttpStreamPool::Attempt* attempt() const { return attempt_.get(); }
@@ -123,9 +129,13 @@ class TestAttemptDelegate final
     return service_endpoint_request_result_.has_value();
   }
 
-  bool IsSvcbOptional() const override { return true; }
+  bool IsSvcbOptional() const override { return is_svcb_optional_; }
 
   SSLConfig GetBaseSSLConfig() const override { return ssl_config_; }
+
+  const NextProtoVector& GetAlpnProtos() const override {
+    return pool_->http_network_session()->GetAlpnProtos();
+  }
 
   void OnStreamSocketReady(HttpStreamPool::Attempt* attempt,
                            std::unique_ptr<StreamSocket> stream) override {
@@ -177,6 +187,7 @@ class TestAttemptDelegate final
 
   std::unique_ptr<FakeServiceEndpointRequest> fake_service_endpoint_request_;
   std::optional<int> service_endpoint_request_result_;
+  bool is_svcb_optional_ = true;
 
   SSLConfig ssl_config_;
 
@@ -878,6 +889,360 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowFailIpv4AnsweredLater) {
   connect_completer_v6_2.Complete(OK);
   ASSERT_EQ(delegate.WaitForResult(), OK);
   EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint2);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, EndpointIpv6NotUsableForTcp) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  // Set up endpoints. The IPv6 endpoint is only usable for H3, while the IPv4
+  // endpoint is usable for all protocols.
+  delegate.fake_service_endpoint_request()->set_endpoints(
+      {ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv6_endpoint)
+           .set_alpns({"h3"})
+           .endpoint(),
+       ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv4_endpoint)
+           // Empty alpns means all protocols are usable.
+           .set_alpns({})
+           .endpoint()});
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, EndpointIpv4NotUsableForTcp) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  // Set up endpoints. The IPv6 endpoint is usable for H1/H2, while the IPv4
+  // endpoint is only usable for H3.
+  delegate.fake_service_endpoint_request()->set_endpoints(
+      {ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv6_endpoint)
+           .set_alpns({"h2", "http/1.1"})
+           .endpoint(),
+       ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv4_endpoint)
+           .set_alpns({"h3"})
+           .endpoint()});
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  // The IPv6 attempt fails. Since the IPv4 endpoint is not usable, the whole
+  // attempt fails without attempting IPv4.
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  delegate.Start();
+
+  ASSERT_EQ(delegate.WaitForResult(), ERR_CONNECTION_REFUSED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, EndpointNotUsableForTcp) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  // Set up endpoints. These endpoints are only usable for H3.
+  delegate.fake_service_endpoint_request()->set_endpoints(
+      {ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv6_endpoint)
+           .set_alpns({"h3"})
+           .endpoint(),
+       ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv4_endpoint)
+           .set_alpns({"h3"})
+           .endpoint()});
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  delegate.Start();
+
+  ASSERT_EQ(delegate.WaitForResult(), ERR_NAME_NOT_RESOLVED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, EndpointDisappearsAfterTcpHandshake) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  SequencedSocketData data_v6;
+  MockConnectCompleter connect_completer;
+  data_v6.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+
+  SequencedSocketData data_v4;
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Notify intermediate endpoint.
+  delegate.fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Complete TCP handshake. The attempt should not start TLS handshake yet
+  // since the endpoint isn't ready for cryptographic handshake.
+  connect_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Simulate a case where the previous endpoint disappears. The attempt should
+  // attempt the new endpoint.
+  delegate.fake_service_endpoint_request()->set_endpoints(
+      {ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint()});
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest,
+       SvcbReliantNoUsableEndpointsBeforeTcpHandshake) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  // The attempt is SVCB-reliant (non-optional), but all endpoints don't have
+  // ALPN. These endpoints are not usable.
+  delegate.set_is_svcb_optional(false)
+      .fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint())
+      .add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  delegate.Start();
+  ASSERT_EQ(delegate.WaitForResult(), ERR_NAME_NOT_RESOLVED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, SvcbReliantAbortAfterTcpHandshake) {
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  SequencedSocketData data;
+  MockConnectCompleter connect_completer;
+  data.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Notify intermediate endpoint. This simulates a case where AAAA is answered
+  // but HTTPS RR isn't yet. So far, the attempt is SVCB-optional so the attempt
+  // starts TCP handshake but waits for HTTPS RR to be answered before starting
+  // TLS handshake.
+  delegate.fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Complete TCP handshake. The attempt should not start TLS handshake yet
+  // since the endpoint isn't ready for cryptographic handshake.
+  connect_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Simulate a case where the attempt becomes SVCB-reliant (non-optional) and
+  // the endpoint is only available for H3 (non-TCP). The in-flight attempt
+  // should be aborted.
+  delegate.set_is_svcb_optional(false);
+  delegate.fake_service_endpoint_request()->set_endpoints(
+      {ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv6_endpoint)
+           .set_alpns({"h3"})
+           .endpoint()});
+  delegate.CompleteServiceEndpointRequest(OK);
+  ASSERT_EQ(delegate.WaitForResult(), ERR_ABORTED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, SvcbReliantIpv6AbortIpv4Ok) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(
+      MakeTestEchKeys("a.test", /*max_name_len=*/128, &ech_config_list));
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  // Data for IPv6 endpoint. This stalls forever (and gets aborted).
+  SequencedSocketData data_v6;
+  data_v6.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+
+  // Data for IPv4 endpoint.
+  SequencedSocketData data_v4;
+  MockConnectCompleter connect_completer;
+  data_v4.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.expected_ech_config_list = ech_config_list;
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Notify intermediate endpoints. This starts IPv6 attempt.
+  delegate.fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint())
+      .add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Simulate the connection attempt delay to start IPv4 attempt.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+
+  // Complete TCP handshake. The attempt should not start TLS handshake yet
+  // since the endpoint isn't ready for cryptographic handshake.
+  connect_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Simulate a case where the attempt becomes SVCB-reliant (non-optional) and
+  // the IPv4 endpoint is usable but the IPv6 endpoint is not. The IPv6 attempt
+  // should be aborted.
+  delegate.set_is_svcb_optional(false);
+  delegate.fake_service_endpoint_request()->set_endpoints(
+      {ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint(),
+       ServiceEndpointBuilder()
+           .add_ip_endpoint(ipv4_endpoint)
+           .set_alpns({"http/1.1"})
+           .set_ech_config_list(ech_config_list)
+           .endpoint()});
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, Ipv6TlsHandshakeFailSynchronously) {
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  SequencedSocketData data;
+  MockConnectCompleter connect_completer;
+  data.set_connect_data(MockConnect(&connect_completer));
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, ERR_FAILED);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+  socket_factory()->AddSocketDataProvider(&data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Notify intermediate endpoint.
+  delegate.fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Complete TCP handshake. The attempt should not start TLS handshake yet
+  // since the endpoint isn't ready for cryptographic handshake.
+  connect_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  delegate.set_is_svcb_optional(true);
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), ERR_FAILED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, Ipv4TlsHandshakeFailSynchronously) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  SequencedSocketData data;
+  MockConnectCompleter connect_completer;
+  data.set_connect_data(MockConnect(&connect_completer));
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, ERR_FAILED);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+  socket_factory()->AddSocketDataProvider(&data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Notify intermediate endpoint.
+  delegate.fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Complete TCP handshake. The attempt should not start TLS handshake yet
+  // since the endpoint isn't ready for cryptographic handshake.
+  connect_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  delegate.set_is_svcb_optional(true);
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), ERR_FAILED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, Ipv6Ipv4TlsHandshakeFailSynchronously) {
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+
+  SequencedSocketData data_v6;
+  MockConnectCompleter connect_completer_v6;
+  data_v6.set_connect_data(MockConnect(&connect_completer_v6));
+  SSLSocketDataProvider ssl_data_v6(SYNCHRONOUS, ERR_FAILED);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v6);
+  socket_factory()->AddSocketDataProvider(&data_v6);
+
+  SequencedSocketData data_v4;
+  MockConnectCompleter connect_completer_v4;
+  data_v4.set_connect_data(MockConnect(&connect_completer_v4));
+  SSLSocketDataProvider ssl_data_v4(SYNCHRONOUS, ERR_FAILED);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v4);
+  socket_factory()->AddSocketDataProvider(&data_v4);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Notify intermediate endpoint.
+  delegate.fake_service_endpoint_request()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint())
+      .add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Simulate the connection attempt delay to start IPv4 attempt.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+
+  // Complete TCP handshakes. Attempts should not start TLS handshakes yet
+  // since the endpoints aren't ready for cryptographic handshakes.
+  connect_completer_v6.Complete(OK);
+  connect_completer_v4.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  delegate.set_is_svcb_optional(true);
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), ERR_FAILED);
 }
 
 }  // namespace net
