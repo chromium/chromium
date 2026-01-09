@@ -153,12 +153,15 @@ bool BookmarkNodeData::ReadFromVector(
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
   Clear();
 
-  if (nodes.empty())
+  if (nodes.empty()) {
     return false;
+  }
 
-  for (size_t i = 0; i < nodes.size(); ++i)
-    elements.push_back(Element(nodes[i]));
+  for (const auto& node : nodes) {
+    elements.emplace_back(node);
+  }
 
+  CHECK(is_valid());
   return true;
 }
 
@@ -166,8 +169,9 @@ bool BookmarkNodeData::ReadFromTuple(const GURL& url,
                                      const std::u16string& title) {
   Clear();
 
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   Element element;
   element.title = title;
@@ -176,6 +180,7 @@ bool BookmarkNodeData::ReadFromTuple(const GURL& url,
 
   elements.push_back(element);
 
+  CHECK(is_valid());
   return true;
 }
 
@@ -238,8 +243,10 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
   if (!data.empty()) {
     base::Pickle pickle =
         base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
-    if (ReadFromPickle(&pickle))
+    if (ReadFromPickle(&pickle)) {
+      CHECK(is_valid());
       return true;
+    }
   }
 
   std::u16string title;
@@ -270,30 +277,33 @@ void BookmarkNodeData::WriteToPickle(const base::FilePath& profile_path,
 
 bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
   base::PickleIterator data_iterator(*pickle);
-  uint32_t element_count_tmp;
-  if (profile_path_.ReadFromPickle(&data_iterator) &&
-      data_iterator.ReadUInt32(&element_count_tmp)) {
-    if (!base::IsValueInRangeForNumericType<size_t>(element_count_tmp)) {
-      LOG(WARNING) << "element_count failed bounds check";
-      return false;
-    }
-    const size_t element_count = base::checked_cast<size_t>(element_count_tmp);
-    // Restrict vector preallocation to prevent OOM crashes on invalid or
-    // malicious pickles.
-    if (element_count > kMaxVectorPreallocateSize)
-      LOG(WARNING) << "element_count exceeds kMaxVectorPreallocateSize";
-    std::vector<Element> tmp_elements;
-    tmp_elements.reserve(std::min(element_count, kMaxVectorPreallocateSize));
-    for (size_t i = 0; i < element_count; ++i) {
-      tmp_elements.emplace_back();
-      if (!tmp_elements.back().ReadFromPickle(&data_iterator)) {
-        return false;
-      }
-    }
-    elements.swap(tmp_elements);
+  uint32_t element_count_tmp = 0;
+  if (!profile_path_.ReadFromPickle(&data_iterator) ||
+      !data_iterator.ReadUInt32(&element_count_tmp)) {
+    return false;
   }
 
-  return true;
+  if (!base::IsValueInRangeForNumericType<size_t>(element_count_tmp)) {
+    LOG(WARNING) << "element_count failed bounds check";
+    return false;
+  }
+  const size_t element_count = base::checked_cast<size_t>(element_count_tmp);
+  // Restrict vector preallocation to prevent OOM crashes on invalid or
+  // malicious pickles.
+  if (element_count > kMaxVectorPreallocateSize) {
+    LOG(WARNING) << "element_count exceeds kMaxVectorPreallocateSize";
+  }
+  std::vector<Element> tmp_elements;
+  tmp_elements.reserve(std::min(element_count, kMaxVectorPreallocateSize));
+  for (size_t i = 0; i < element_count; ++i) {
+    tmp_elements.emplace_back();
+    if (!tmp_elements.back().ReadFromPickle(&data_iterator)) {
+      return false;
+    }
+  }
+  elements.swap(tmp_elements);
+
+  return is_valid();
 }
 
 #endif  // BUILDFLAG(IS_APPLE)

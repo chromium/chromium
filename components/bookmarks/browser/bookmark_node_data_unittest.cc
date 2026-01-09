@@ -487,6 +487,21 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleTooManyNodes) {
   BookmarkNodeData bookmark_node_data;
   EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
 }
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickleNoNodes) {
+  base::Pickle pickle;
+  BookmarkNodeData().WriteToPickle(base::FilePath(), &pickle);
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickleInvalidData) {
+  base::Pickle pickle;
+  pickle.WriteInt(1);
+  pickle.WriteString("somevalue");
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+}
 #endif
 
 }  // namespace bookmarks
