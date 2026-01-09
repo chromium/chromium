@@ -551,7 +551,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private final MainIntentBehaviorMetrics mMainIntentMetrics;
     private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
 
-    private @Nullable MultiInstanceManager mMultiInstanceManager;
+    private MultiInstanceManager mMultiInstanceManager;
     private TabUndoBarController mUndoBarPopupController;
     private LayoutManagerChrome mLayoutManager;
     private ViewGroup mContentContainer;
@@ -3602,12 +3602,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mWindowId = persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID);
             assert mWindowId != INVALID_WINDOW_ID;
             if (mWindowId == INVALID_WINDOW_ID) mWindowId = 0;
+            mSupportedProfileType = MultiWindowUtils.readProfileType(mWindowId);
         } else if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
             // Activity is recreated after destruction. |windowId| must not be valid in this case.
             assert windowId == INVALID_WINDOW_ID;
             Log.i(TAG_MULTI_INSTANCE, "Retrieved windowId from saved instance state.");
             mWindowId = savedInstanceState.getInt(WINDOW_INDEX, 0);
-        } else if (mMultiInstanceManager != null) {
+            mSupportedProfileType = MultiWindowUtils.readProfileType(mWindowId);
+        } else {
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task
             // to pre-inflation startup.
             boolean preferNew = MultiWindowUtils.getExtraPreferNewFromIntent(intent);

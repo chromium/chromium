@@ -655,6 +655,14 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
+     * @param instanceId The id of the instance.
+     * @return The {@link SupportedProfileType} of the instance.
+     */
+    public static @SupportedProfileType int readProfileType(int instanceId) {
+        return MultiInstancePersistentStore.readProfileType(instanceId);
+    }
+
+    /**
      * Determines if multiple instances of Chrome are running.
      *
      * @param context The current Context, used to retrieve the ActivityManager system service.
