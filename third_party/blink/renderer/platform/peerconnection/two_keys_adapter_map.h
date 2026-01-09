@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -38,7 +37,7 @@ class TwoKeysAdapterMap {
   // map. There must not already exist a mapping for this primary key, in other
   // words |!FindByPrimary(primary)| must hold.
   Value* Insert(PrimaryKey primary, Value value) {
-    DCHECK(!base::Contains(entries_by_primary_, primary));
+    DCHECK(!entries_by_primary_.Contains(primary));
     auto* add_result =
         entries_by_primary_
             .insert(std::move(primary),

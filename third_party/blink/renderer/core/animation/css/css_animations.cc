@@ -34,7 +34,6 @@
 #include <bitset>
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
@@ -2332,7 +2331,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     Animation* animation = transitions_.Take(property)->animation;
     auto* effect = To<KeyframeEffect>(animation->effect());
     if (effect && effect->HasActiveAnimationsOnCompositor(property) &&
-        base::Contains(pending_update_.NewTransitions(), property) &&
+        pending_update_.NewTransitions().Contains(property) &&
         !animation->Limited()) {
       retargeted_compositor_transitions.insert(property);
     }
