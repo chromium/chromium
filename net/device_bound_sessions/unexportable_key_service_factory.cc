@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -97,7 +98,10 @@ UnexportableKeyServiceFactory::GetShared() {
     if (task_manager) {
       unexportable_key_service_ =
           std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
-              *task_manager, GetConfig());
+              *task_manager,
+              unexportable_keys::BackgroundTaskOrigin::
+                  kDeviceBoundSessionCredentials,
+              GetConfig());
     }
   }
 

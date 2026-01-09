@@ -8,6 +8,7 @@ component("unexportable_keys") {
     "background_long_task_scheduler.h",
     "background_task.h",
     "background_task_impl.h",
+    "background_task_origin.h",
     "background_task_priority.cc",
     "background_task_priority.h",
     "background_task_type.cc",

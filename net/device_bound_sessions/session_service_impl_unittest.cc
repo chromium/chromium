@@ -22,6 +22,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
@@ -57,6 +58,9 @@ using ::testing::UnorderedElementsAre;
 namespace net::device_bound_sessions {
 
 namespace {
+
+constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
+    unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 
 constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
@@ -210,7 +214,7 @@ class SessionServiceImplTest : public ::testing::Test,
   std::unique_ptr<URLRequestContext> context_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   std::unique_ptr<SessionServiceImpl> service_;
 };
@@ -2298,7 +2302,7 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
  private:
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                unexportable_keys::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;

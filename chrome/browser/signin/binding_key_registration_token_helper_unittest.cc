@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -89,7 +90,10 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::
+          kDeviceBoundSessionCredentialsPrototype,
+      crypto::UnexportableKeyProvider::Config()};
   base::HistogramTester histogram_tester_;
 };
 

@@ -34,6 +34,7 @@
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -345,6 +346,8 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       unexportable_key_task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::
+          kDeviceBoundSessionCredentialsPrototype,
       crypto::UnexportableKeyProvider::Config()};
   UnexportableKeyId binding_key_id_;
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;

@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -69,6 +70,8 @@ class SessionBindingHelperTest : public testing::Test {
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       unexportable_key_task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::
+          kDeviceBoundSessionCredentialsPrototype,
       crypto::UnexportableKeyProvider::Config()};
 };
 

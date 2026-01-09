@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -99,6 +100,9 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
 constexpr char kSessionResponseHeaderName[] = "Secure-Session-Response";
 constexpr char kSessionIdHeaderName[] = "Sec-Secure-Session-Id";
+
+constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
+    unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 
 std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
   return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
@@ -241,7 +245,7 @@ class RegistrationTest : public TestWithTaskEnvironment {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
   SessionServiceMock session_service_;
   scoped_refptr<net::RuleBasedHostResolverProc> host_resolver_;
 };
@@ -2946,7 +2950,7 @@ class RegistrationTokenHelperTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(RegistrationTokenHelperTest, CreateSuccess) {

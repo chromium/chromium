@@ -209,6 +209,19 @@ chromium-metrics-reviews@google.com.
       summary="SRR attachment and outgoing request signing"/>
 </variants>
 
+<!-- LINT.IfChange(UnexportableKeysBackgroundTaskOrigin) -->
+
+<variants name="UnexportableKeysBackgroundTaskOrigin">
+  <variant name="" summary="any origin"/>
+  <variant name=".BoundSessionCredentials" summary="DBSC prototype"/>
+  <variant name=".DeviceBoundSessions" summary="DBSC standard"/>
+  <variant name=".OrphanedKeyGarbageCollection"
+      summary="orphaned key garbage collection"/>
+  <variant name=".RefreshTokenBinding" summary="refresh token binding"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/unexportable_keys/unexportable_key_task_manager.cc:BackgroundTaskOriginSuffixForHistograms) -->
+
 <!-- LINT.IfChange(UnexportableKeysBackgroundTaskType) -->
 
 <variants name="UnexportableKeysBackgroundTaskType">
@@ -533,7 +546,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Crypto.UnexportableKeys.BackgroundTaskResult{TaskType}"
+<histogram
+    name="Crypto.UnexportableKeys.BackgroundTaskResult{TaskOrigin}{TaskType}"
     enum="UnexportableKeyServiceResult" expires_after="2026-06-07">
   <owner>alexilin@chromium.org</owner>
   <owner>drubery@chromium.org</owner>
@@ -543,9 +557,10 @@ chromium-metrics-reviews@google.com.
     asynchronously through unexportable_keys::UnexportableKeyService. In some
     error cases, the result might be returned synchronously.
 
-    Recorded right after a TPM operation completes. Recorded only for
-    {TaskType}.
+    Recorded right after a TPM operation completes. Recorded only for {TaskType}
+    originating from {TaskOrigin}.
   </summary>
+  <token key="TaskOrigin" variants="UnexportableKeysBackgroundTaskOrigin"/>
   <token key="TaskType" variants="UnexportableKeysBackgroundTaskType"/>
 </histogram>
 

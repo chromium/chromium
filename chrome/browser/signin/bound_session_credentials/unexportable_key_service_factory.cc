@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -59,9 +60,9 @@ unexportable_keys::UnexportableKeyTaskManager* GetSharedTaskManagerInstance() {
 
 // Returns a newly created `UnexportableKeyService` instance, or nullptr if
 // unexportable keys are not available.
-std::unique_ptr<unexportable_keys::UnexportableKeyService>
-CreateServiceForConfig(
+std::unique_ptr<unexportable_keys::UnexportableKeyService> CreateService(
     const UnexportableKeyServiceFactory::ServiceFactory& service_factory,
+    unexportable_keys::BackgroundTaskOrigin task_origin,
     crypto::UnexportableKeyProvider::Config config) {
   if (!service_factory.is_null()) {
     return service_factory.Run(std::move(config));
@@ -70,10 +71,24 @@ CreateServiceForConfig(
   if (unexportable_keys::UnexportableKeyTaskManager* task_manager =
           GetSharedTaskManagerInstance()) {
     return std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
-        *task_manager, std::move(config));
+        *task_manager, task_origin, std::move(config));
   }
 
   return nullptr;
+}
+
+unexportable_keys::BackgroundTaskOrigin GetTaskOriginForPurpose(
+    unexportable_keys::KeyPurpose purpose) {
+  using FromEnum = unexportable_keys::KeyPurpose;
+  using ToEnum = unexportable_keys::BackgroundTaskOrigin;
+  switch (purpose) {
+    case FromEnum::kRefreshTokenBinding:
+      return ToEnum::kRefreshTokenBinding;
+    case FromEnum::kDeviceBoundSessionCredentials:
+      return ToEnum::kDeviceBoundSessionCredentials;
+    case FromEnum::kDeviceBoundSessionCredentialsPrototype:
+      return ToEnum::kDeviceBoundSessionCredentialsPrototype;
+  }
 }
 
 // Manages `UnexportableKeyService` instances for different purposes.
@@ -91,8 +106,9 @@ class UnexportableKeyServiceManager : public KeyedService {
       unexportable_keys::KeyPurpose purpose) {
     const auto& [_, service] =
         *services_.lazy_emplace(purpose, [&](const auto& ctor) {
-          ctor(purpose, CreateServiceForConfig(
+          ctor(purpose, CreateService(
                             service_factory_for_testing_,
+                            GetTaskOriginForPurpose(purpose),
                             GetConfigForProfileAndPurpose(*profile_, purpose)));
         });
     return service.get();
@@ -142,8 +158,10 @@ class UnexportableKeyServiceManager : public KeyedService {
 std::unique_ptr<unexportable_keys::UnexportableKeyService>
 UnexportableKeyServiceFactory::CreateForGarbageCollection(
     crypto::UnexportableKeyProvider::Config config) {
-  return CreateServiceForConfig(GetInstance()->service_factory_for_testing_,
-                                std::move(config));
+  return CreateService(
+      GetInstance()->service_factory_for_testing_,
+      unexportable_keys::BackgroundTaskOrigin::kOrphanedKeyGarbageCollection,
+      std::move(config));
 }
 
 // static

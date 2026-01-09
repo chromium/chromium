@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/service_error.h"
@@ -35,6 +36,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // `task_manager` must outlive `UnexportableKeyServiceImpl`.
   explicit UnexportableKeyServiceImpl(
       UnexportableKeyTaskManager& task_manager,
+      BackgroundTaskOrigin task_origin,
       crypto::UnexportableKeyProvider::Config config);
 
   ~UnexportableKeyServiceImpl() override;
@@ -157,6 +159,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   }
 
   const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
+  const BackgroundTaskOrigin task_origin_;
 
   const crypto::UnexportableKeyProvider::Config config_;
 

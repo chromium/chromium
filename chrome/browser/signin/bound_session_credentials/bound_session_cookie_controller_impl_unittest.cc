@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/common/renderer_configuration.mojom-shared.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
@@ -408,6 +409,8 @@ class BoundSessionCookieControllerImplTest
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       unexportable_key_task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::
+          kDeviceBoundSessionCredentialsPrototype,
       crypto::UnexportableKeyProvider::Config()};
   BoundSessionTestCookieManager cookie_manager_;
   content::TestStoragePartition storage_partition_;

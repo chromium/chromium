@@ -8,6 +8,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
@@ -182,7 +183,9 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
   std::unique_ptr<net::URLRequestContext> context_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials,
+      crypto::UnexportableKeyProvider::Config()};
   std::unique_ptr<SessionServiceImpl> service_;
   std::unique_ptr<CookieManager> cookie_manager_;
   std::unique_ptr<DeviceBoundSessionManager> manager_;

@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
 #include "components/unexportable_keys/background_long_task_scheduler.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/service_error.h"
@@ -58,6 +59,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // Invokes `callback` with a list of all keys, or `ServiceError` if an error
   // occurs during retrieval.
   void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       BackgroundTaskPriority priority,
       base::OnceCallback<
@@ -74,6 +76,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   //   `acceptable_algorithms` is supported, or if there was an error creating
   //   the key.
   void GenerateSigningKeySlowlyAsync(
+      BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
@@ -89,6 +92,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // - non-null unexportable signing key if it was imported successfully, or
   // - `ServiceError` if `wrapped_key` import failed.
   void FromWrappedSigningKeySlowlyAsync(
+      BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       base::span<const uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
@@ -103,6 +107,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // Invokes `callback` with a signature of `data`, or `ServiceError` if an
   // error occurs during signing.
   void SignSlowlyAsync(
+      BackgroundTaskOrigin origin,
       scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
@@ -112,6 +117,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // Invokes `callback` with a `ServiceError` if an error occurs during deletion
   // and `base::ok()` otherwise.
   void DeleteSigningKeySlowlyAsync(
+      BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       std::vector<uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
@@ -121,6 +127,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // Invokes `callback` with a `ServiceError` if an error occurs during deletion
   // and the number of deleted keys otherwise.
   void DeleteAllSigningKeysSlowlyAsync(
+      BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback);

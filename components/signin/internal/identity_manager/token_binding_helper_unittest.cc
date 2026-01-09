@@ -20,6 +20,7 @@
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/mock_unexportable_key_provider.h"
@@ -103,6 +104,7 @@ class TokenBindingHelperTest : public testing::Test {
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       unexportable_key_task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::kRefreshTokenBinding,
       crypto::UnexportableKeyProvider::Config(),
   };
   TokenBindingHelper helper_{unexportable_key_service_};

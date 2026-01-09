@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -40,6 +41,8 @@ constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
+constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
+    unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 
 unexportable_keys::UnexportableKeyId GenerateNewKey(
     unexportable_keys::UnexportableKeyService& key_service) {
@@ -215,7 +218,7 @@ class SessionStoreImplTest : public testing::Test {
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      unexportable_key_task_manager_,
+      unexportable_key_task_manager_, kTaskOrigin,
       crypto::UnexportableKeyProvider::Config()};
   std::unique_ptr<SessionStoreImpl> store_;
 };
