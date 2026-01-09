@@ -197,6 +197,7 @@ public class TabClosureParams {
     public static class CloseAllTabsBuilder {
         private boolean mUponExit;
         private boolean mAllowUndo = true;
+        private boolean mSaveToTabRestoreService = true;
         private boolean mHideTabGroups;
         private @TabClosingSource int mTabClosingSource = TabClosingSource.UNKNOWN;
         private @Nullable Runnable mUndoRunnable;
@@ -212,6 +213,12 @@ public class TabClosureParams {
         /** Set whether to allow undo. Default is true. */
         public CloseAllTabsBuilder allowUndo(boolean allowUndo) {
             mAllowUndo = allowUndo;
+            return this;
+        }
+
+        /** Set whether to save closure to the tab restore service. Default is true. */
+        public CloseAllTabsBuilder saveToTabRestoreService(boolean saveToTabRestoreService) {
+            mSaveToTabRestoreService = saveToTabRestoreService;
             return this;
         }
 
@@ -242,7 +249,7 @@ public class TabClosureParams {
                     mUponExit,
                     mAllowUndo,
                     mHideTabGroups,
-                    /* saveToTabRestoreService= */ true,
+                    mSaveToTabRestoreService,
                     mTabClosingSource,
                     TabCloseType.ALL,
                     mUndoRunnable,

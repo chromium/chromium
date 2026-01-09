@@ -1380,16 +1380,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     // complete and we don't get back-from-the-dead tabs.
                     selector.commitAllTabClosures();
 
-                    // Close all tabs as the window is closing. This ensures the tabs are added to
-                    // the recent tabs page.
-                    //
-                    // TODO(crbug.com/40826734): This only works for windows with live activities.
-                    // It is non-trivial to add recent tab entries without an active {@link Tab}
-                    // instance.
+                    // Close all tabs as the window is closing. Avoid saving closure to the
+                    // TabRestoreService as this closure is intended to be permanent.
                     TabClosureParams params =
                             TabClosureParams.closeAllTabs()
                                     .uponExit(true)
                                     .hideTabGroups(true)
+                                    .saveToTabRestoreService(false)
                                     .build();
                     selector.getModel(true)
                             .getTabRemover()
