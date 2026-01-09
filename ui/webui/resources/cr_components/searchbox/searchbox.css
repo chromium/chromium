@@ -391,7 +391,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
   padding-inline-end: 6px;
-  z-index: 101;
+  z-index: 100;
 }
 
 :host-context([ntp-realbox-next-enabled][context-menu-glif-animation-state="ineligible"]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
