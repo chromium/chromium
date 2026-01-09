@@ -14,7 +14,6 @@
 namespace payments {
 
 class PaymentRequest;
-class SecurePaymentConfirmationApp;
 
 // LINT.IfChange(SecurePaymentRequestOutcome)
 enum class SecurePaymentRequestOutcome {
@@ -74,8 +73,6 @@ class SecurePaymentConfirmationController
 
  private:
   void SetupModelAndShowDialogIfApplicable();
-  void CreateTransactionView(SecurePaymentConfirmationApp* app);
-  void CreateErrorView(SecurePaymentConfirmationApp* app);
 
   // Can be null when the webpage closes or the iframe refreshes or navigates.
   base::WeakPtr<PaymentRequest> request_;

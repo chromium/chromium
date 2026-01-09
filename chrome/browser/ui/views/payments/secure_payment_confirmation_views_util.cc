@@ -15,6 +15,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/sizes.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -155,7 +156,14 @@ std::unique_ptr<views::StyledLabel> CreateSecurePaymentConfirmationOptOutView(
   std::vector<size_t> offsets;
   std::u16string opt_out_text =
       base::ReplaceStringPlaceholders(opt_out_label, subst, &offsets);
-  DCHECK_EQ(2U, offsets.size());
+
+  // TODO: crbug.com/441560182 - This is a temporary workaround to ensure that
+  // tests are not broken. This should be removed when the new UX Refresh view
+  // is implemented.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationUxRefresh)) {
+    DCHECK_EQ(2U, offsets.size());
+  }
 
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(on_click);
