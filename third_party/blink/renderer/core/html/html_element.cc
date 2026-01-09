@@ -2269,7 +2269,14 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 5. A custom element button with `ElementInternals.type=button`
+        // Case 5. A customizable combobox whose picker is a popover.
+        if (auto* input = DynamicTo<HTMLInputElement>(test_node)) {
+          if (input->IsBaseAppearanceCombobox()) {
+            return input->DataList();
+          }
+        }
+
+        // Case 6. A custom element button with `ElementInternals.type=button`
         // with the `popovertarget` attribute or the `commandfor` attribute.
         if (auto* html_element = DynamicTo<HTMLElement>(test_node);
             html_element &&

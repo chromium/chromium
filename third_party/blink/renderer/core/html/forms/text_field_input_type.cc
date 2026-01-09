@@ -60,22 +60,6 @@
 
 namespace blink {
 
-namespace {
-
-// TODO(crbug.com/453705243): Disable the autofill popup when this returns true.
-bool IsBaseAppearanceCombobox(HTMLInputElement& input) {
-  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
-    return false;
-  }
-  CHECK(input.IsTextField());
-  if (auto* datalist = input.DataList()) {
-    return input.IsAppearanceBase() && datalist->IsAppearanceBase();
-  }
-  return false;
-}
-
-}  // namespace
-
 class DataListIndicatorElement final : public HTMLDivElement {
  private:
   inline HTMLInputElement* HostInput() const {
@@ -88,7 +72,7 @@ class DataListIndicatorElement final : public HTMLDivElement {
       return;
     HTMLInputElement* host = HostInput();
     if (host && !host->IsDisabledOrReadOnly() &&
-        !IsBaseAppearanceCombobox(*host)) {
+        !host->IsBaseAppearanceCombobox()) {
       GetDocument().GetPage()->GetChromeClient().OpenTextDataListChooser(*host);
       event.SetDefaultHandled();
     }
@@ -648,7 +632,7 @@ void TextFieldInputType::SubtreeHasChanged() {
 
 void TextFieldInputType::OpenPopupView() {
   if (GetElement().IsDisabledOrReadOnly() ||
-      IsBaseAppearanceCombobox(GetElement())) {
+      GetElement().IsBaseAppearanceCombobox()) {
     return;
   }
   if (ChromeClient* chrome_client = GetChromeClient())
@@ -711,14 +695,8 @@ void TextFieldInputType::HandleFocusInEvent(
     Element* old_focused_element,
     mojom::blink::FocusType focus_type) {
   HTMLInputElement& input = GetElement();
-  if (IsBaseAppearanceCombobox(input)) {
+  if (input.IsBaseAppearanceCombobox()) {
     if (auto* datalist = input.DataList()) {
-      if (focus_type == mojom::blink::FocusType::kMouse) {
-        // Prevents the datalist from showing on mousedown and then getting
-        // light dismissed on mouseup. Same as the fix in
-        // MenuListSelectType::DefaultEventHandler.
-        GetElement().GetDocument().SetPopoverPointerdownTarget(datalist);
-      }
       datalist->ShowPopoverInternal(&input, /*exception_state=*/nullptr);
     }
   }

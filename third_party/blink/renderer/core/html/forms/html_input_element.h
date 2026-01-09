@@ -386,6 +386,8 @@ class CORE_EXPORT HTMLInputElement
   bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior =
                                    UpdateBehavior::kStyleAndLayout) const final;
 
+  bool IsBaseAppearanceCombobox() const;
+
  protected:
   void DefaultEventHandler(Event&) override;
   bool IsInnerEditorValueEmpty() const final;

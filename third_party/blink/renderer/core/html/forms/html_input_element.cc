@@ -189,6 +189,12 @@ Vector<String> HTMLInputElement::FilesFromFileInputFormControlState(
 }
 
 bool HTMLInputElement::ShouldAutocomplete() const {
+  if (IsBaseAppearanceCombobox()) {
+    // If we are rendering the combobox's options inside the document using a
+    // popover, then we don't need to show the same options in the browser
+    // autofill popup.
+    return false;
+  }
   if (autocomplete_ != kUninitialized)
     return autocomplete_ == kOn;
   return TextControlElement::ShouldAutocomplete();
@@ -2505,6 +2511,16 @@ void HTMLInputElement::SetFocused(bool is_focused,
 bool HTMLInputElement::SupportsBaseAppearanceInternal(
     BaseAppearanceValue value) const {
   return input_type_->SupportsBaseAppearance(value);
+}
+
+bool HTMLInputElement::IsBaseAppearanceCombobox() const {
+  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled() || !IsTextField()) {
+    return false;
+  }
+  if (HTMLDataListElement* datalist = DataList()) {
+    return IsAppearanceBase() && datalist->IsAppearanceBase();
+  }
+  return false;
 }
 
 }  // namespace blink
