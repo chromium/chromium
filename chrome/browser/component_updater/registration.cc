@@ -25,7 +25,7 @@
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/masked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
-#include "chrome/browser/component_updater/open_cookie_database_component_installer.h"
+#include "chrome/browser/component_updater/open_cookie_database_component_remover.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
 #include "chrome/browser/component_updater/probabilistic_reveal_token_component_remover.h"
@@ -157,6 +157,11 @@ void RegisterComponentsForUpdate() {
     // TODO(crbug.com/456488732): Delete this call in M156.
     UnregisterAntiFingerprintingBlockedDomainListComponent(cus, path);
 
+    // Clean up remaining state for Open Cookie Database component.
+    //
+    // TODO(crbug.com/473796598): Remove this code in M146+.
+    DeleteOpenCookieDatabase(path);
+
 #if BUILDFLAG(IS_CHROMEOS)
     // Lacros is sunsetted. While rootfs Lacros was already taken care of,
     // stateful Lacros needs to be cleaned up just like a regular component.
@@ -226,8 +231,6 @@ void RegisterComponentsForUpdate() {
   RegisterTranslateKitLanguagePackComponentsForUpdate(
       cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-
-  RegisterOpenCookieDatabaseComponent(cus);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
