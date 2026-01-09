@@ -9,8 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "components/on_device_translation/public/language_pack.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace on_device_translation {

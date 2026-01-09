@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/test/gtest_util.h"
+#include "components/on_device_translation/public/language_pack.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
