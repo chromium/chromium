@@ -229,11 +229,13 @@ bool IsAimURL(const GURL& url);
 // `aim_entrypoint` (aep) is required as it identifies the source of the
 // request. `query_start_time` is the time that the user clicked the submit
 // button.
-GURL GetUrlForAim(TemplateURLService* turl_service,
-                  omnibox::ChromeAimEntryPoint aim_entrypoint,
-                  const base::Time& query_start_time,
-                  const std::u16string& query_text = std::u16string(),
-                  std::map<std::string, std::string> additional_params = {});
+GURL GetUrlForAim(
+    TemplateURLService* turl_service,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
+    const base::Time& query_start_time,
+    const std::u16string& query_text,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source,
+    std::map<std::string, std::string> additional_params);
 
 // Retrieves the URL for the AIM web page if the a file was uploaded as part
 // of the input.

@@ -498,6 +498,7 @@ source_set("utils") {
   deps = [
     ":feature_flags",
     ":theme",
+    "//components/lens:lens_url_utils",
     "//components/search_engines",
     "//ios/chrome/browser/first_run/public:utils",
     "//ios/chrome/common/ui/colors",
