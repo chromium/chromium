@@ -16,9 +16,11 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -31,12 +33,21 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #endif
 
-class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
+class ActorTaskListBubbleControllerTest
+    : public ChromeViewsTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   ActorTaskListBubbleControllerTest() = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kGlicActorUiGlobalTaskIndicator);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kGlicActorUiGlobalTaskIndicator);
+    }
 #if BUILDFLAG(ENABLE_GLIC)
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -131,9 +142,13 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   ui::UnownedUserDataHost user_data_host_;
   views::UniqueWidgetPtr anchor_widget_;
 #endif
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
+TEST_P(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
+  if (ActorTaskListBubbleControllerTest::GetParam()) {
+    GTEST_SKIP() << "Not relevant to the GlobalTaskIndicator";
+  }
 #if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_.get());
@@ -171,7 +186,7 @@ TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
 #endif
 }
 
-TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
+TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
 #if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_.get());
@@ -205,9 +220,23 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       anchor_widget_->GetContentsView());
 
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
-  histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 3, 1);
+  if (ActorTaskListBubbleControllerTest::GetParam()) {
+    histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 4, 1);
+  } else {
+    // Row will be removed on stop if GlicActorUiGlobalTaskIndicator is
+    // disabled.
+    histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 3, 1);
+  }
   EXPECT_EQ(
       2u,
       histogram_tester.GetAllSamples("Actor.Ui.TaskListBubble.Rows").size());
 #endif
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorTaskListBubbleControllerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "GlobalIndicatorEnabled"
+                                             : "GlobalIndicatorDisabled";
+                         });

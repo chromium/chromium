@@ -38,13 +38,21 @@ class MockTaskListBubbleChangeSubscriber {
   MOCK_METHOD(void, OnStateChanged, ());
 };
 
-class GlicActorTaskIconManagerTest : public testing::Test {
+class GlicActorTaskIconManagerTest : public testing::Test,
+                                     public testing::WithParamInterface<bool> {
  public:
   GlicActorTaskIconManagerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // testing::Test:
   void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kGlicActorUiGlobalTaskIndicator);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kGlicActorUiGlobalTaskIndicator);
+    }
     profile_ = std::make_unique<TestingProfile>();
     actor_service_ = std::make_unique<ActorKeyedServiceFake>(profile_.get());
     manager_ = std::make_unique<GlicActorTaskIconManager>(profile_.get(),
@@ -84,19 +92,20 @@ class GlicActorTaskIconManagerTest : public testing::Test {
   base::CallbackListSubscription bubble_subscription_;
   MockTaskNudgeStateChangeSubscriber mock_nudge_subscriber_;
   MockTaskListBubbleChangeSubscriber mock_bubble_subscriber_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(GlicActorTaskIconManagerTest, DefaultState) {
+TEST_P(GlicActorTaskIconManagerTest, DefaultState) {
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, NoActiveTasks_ReturnDefaultState) {
+TEST_P(GlicActorTaskIconManagerTest, NoActiveTasks_ReturnDefaultState) {
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
+TEST_P(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
   EXPECT_CALL(
       mock_nudge_subscriber_,
       OnStateChanged(AllOf(Field(&ActorTaskNudgeState::text,
@@ -127,7 +136,7 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
+TEST_P(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
   EXPECT_CALL(mock_nudge_subscriber_, OnStateChanged(testing::_)).Times(0);
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
@@ -138,7 +147,7 @@ TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_P(GlicActorTaskIconManagerTest,
        PausedTaskUpdatesNudgeAndBubbleSubscribers) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
@@ -159,8 +168,8 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetNumActorTasksNeedProcessing(), 1u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
-       RemovingTaskFromBubbleAlsoUpdatesTaskNudge) {
+TEST_P(GlicActorTaskIconManagerTest,
+       ProcessingTaskInBubbleAlsoUpdatesTaskNudge) {
   EXPECT_CALL(mock_nudge_subscriber_,
               OnStateChanged(ActorTaskNudgeState{
                   .text = ActorTaskNudgeState::Text::kNeedsAttention}));
@@ -180,10 +189,15 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->ProcessRowInTaskListBubble(task_id_1);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
-  EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 0u);
+  if (GetParam()) {
+    EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 1u);
+  } else {
+    // If GlicActorUiGlobalTaskIndicator is disabled, row will be removed.
+    EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 0u);
+  }
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_P(GlicActorTaskIconManagerTest,
        MultipleTasksNeedAttentionNudgeShowsMultipleTasksText) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
@@ -206,7 +220,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetNumActorTasksNeedProcessing(), 1u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_P(GlicActorTaskIconManagerTest,
        MultipleTasksNeedAttentionRemainsInPopoverUntilAllClicked) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
@@ -246,7 +260,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 2u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_P(GlicActorTaskIconManagerTest,
        OnActorTaskRemoved_RemovesTaskAndUpdatesBubbleAndNudge) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
@@ -272,7 +286,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 0u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_P(GlicActorTaskIconManagerTest,
        OnActorTaskStopped_ProcessStoppedTasksAndUpdatesBubbleAndNudge) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
@@ -310,7 +324,7 @@ TEST_F(GlicActorTaskIconManagerTest,
             ActorTaskNudgeState::Text::kCompleteTasks);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_P(GlicActorTaskIconManagerTest,
        NeedsAttentionNudgePrioritizesCompleteTasksNudge) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
@@ -327,5 +341,13 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicActorTaskIconManagerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "GlobalIndicatorEnabled"
+                                             : "GlobalIndicatorDisabled";
+                         });
 
 }  // namespace tabs
