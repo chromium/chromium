@@ -30,8 +30,10 @@ int GetYForDraggedTab(const views::View& view, const gfx::Point& point) {
 }  // namespace
 
 VerticalDraggedTabsContainer::VerticalDraggedTabsContainer(
-    const views::View& host_view)
-    : host_view_(host_view) {}
+    views::View& host_view)
+    : host_view_(host_view) {
+  host_view_observation_.Observe(&host_view);
+}
 
 VerticalDraggedTabsContainer::~VerticalDraggedTabsContainer() {
   on_will_destroy_callback_list_.Notify();
@@ -62,6 +64,7 @@ VerticalDraggedTabsContainer& VerticalDraggedTabsContainer::GetTabDragTarget(
 TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
     TabDragTarget::DragController& drag_controller,
     const gfx::Point& point_in_screen) {
+  last_drag_point_in_screen_ = point_in_screen;
   if (drag_controller.GetAttachedContext() !=
       GetDragHandler().GetDragContext()) {
     // Do nothing until the drag attaches to this window's context.
@@ -74,7 +77,6 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
   // dragged tabs.
   gfx::Point point_in_container = views::View::ConvertPointFromScreen(
       base::to_address(host_view_), point_in_screen);
-  last_drag_point_ = point_in_container;
 
   HandleTabDragInContainer(point_in_container);
 
@@ -86,14 +88,7 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
     is_initial_drag = true;
   }
 
-  for (views::View* tab_view : dragging_views_) {
-    // Use a transformation to render the dragged views, offset from the
-    // container's origin.
-    gfx::Transform transform;
-    transform.Translate(0, GetYForDraggedTab(*tab_view, point_in_container));
-    tab_view->SetTransform(transform);
-    tab_view->SetClipPath(tab_view->clip_path());
-  }
+  UpdateDraggingViewTransforms(point_in_container);
 
   if (is_initial_drag) {
     // This is needed so that the transformation takes over without animating
@@ -124,6 +119,16 @@ VerticalDraggedTabsContainer::RegisterWillDestroyCallback(
   return on_will_destroy_callback_list_.Add(std::move(callback));
 }
 
+void VerticalDraggedTabsContainer::OnViewBoundsChanged(
+    views::View* observed_view) {
+  CHECK_EQ(observed_view, base::to_address(host_view_));
+  // The transformation coordinates are relative to the host view's coordinates,
+  // so they must be updated as the bounds change to ensure the dragged tabs
+  // remain at the same point in the screen.
+  UpdateDraggingViewTransforms(views::View::ConvertPointFromScreen(
+      base::to_address(host_view_), last_drag_point_in_screen_));
+}
+
 void VerticalDraggedTabsContainer::InitializeDragState(
     TabDragTarget::DragController& controller) {
   // Move each dragged tab to the origin position. Transformations will be used
@@ -146,6 +151,20 @@ void VerticalDraggedTabsContainer::ResetDragState() {
   dragging_views_.clear();
 }
 
+void VerticalDraggedTabsContainer::UpdateDraggingViewTransforms(
+    const gfx::Point& point_in_container) {
+  for (views::View* tab_view : dragging_views_) {
+    // Use a transformation to render the dragged views, offset from the
+    // container's origin.
+    gfx::Transform transform;
+    transform.Translate(0, GetYForDraggedTab(*tab_view, point_in_container));
+    tab_view->SetTransform(transform);
+    // Applying a transformation for the first time destroys the clip mask
+    // layer. Reapply the clip path in case.
+    tab_view->SetClipPath(tab_view->clip_path());
+  }
+}
+
 std::optional<int> VerticalDraggedTabsContainer::GetYForDraggedTabBounds(
     const views::View& view) const {
   if (!dragging_views_.contains(&view)) {
@@ -155,7 +174,9 @@ std::optional<int> VerticalDraggedTabsContainer::GetYForDraggedTabBounds(
     // If a drag recently ended the child will still be in
     // `dragging_views_` but will not have a transformation, which let's
     // the tab view animate into its correct slot.
-    return GetYForDraggedTab(view, last_drag_point_);
+    return GetYForDraggedTab(
+        view, views::View::ConvertPointFromScreen(base::to_address(host_view_),
+                                                  last_drag_point_in_screen_));
   }
   // If the tab is being dragged, then it is rendered using
   // transformations, offset from the container's origin.

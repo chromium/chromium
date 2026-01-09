@@ -7,7 +7,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
+#include "ui/views/view_observer.h"
 
 class VerticalTabDragHandler;
 
@@ -21,9 +23,10 @@ struct ProposedLayout;
 // hierarchy. The class implements the `TabDragTarget` interface, allowing it to
 // be targeted by the core tab dragging logic. It also supports nested targets,
 // allowing the dragged tab view to be reparented into child views of this.
-class VerticalDraggedTabsContainer : public TabDragTarget {
+class VerticalDraggedTabsContainer : public TabDragTarget,
+                                     public views::ViewObserver {
  public:
-  explicit VerticalDraggedTabsContainer(const views::View& host_view);
+  explicit VerticalDraggedTabsContainer(views::View& host_view);
   VerticalDraggedTabsContainer(const VerticalDraggedTabsContainer& other) =
       delete;
   VerticalDraggedTabsContainer& operator=(const VerticalDraggedTabsContainer&) =
@@ -46,11 +49,14 @@ class VerticalDraggedTabsContainer : public TabDragTarget {
   base::CallbackListSubscription RegisterWillDestroyCallback(
       base::OnceClosure callback) final;
 
- protected:
+  // ViewObserver
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
   // Returns the expected Y coordinate for a dragged tab view's bounds, or null
   // if the view isn't being dragged in this.
   std::optional<int> GetYForDraggedTabBounds(const views::View& view) const;
 
+ protected:
   // Helper for getting the view at a given point, excluding dragged views.
   views::View* GetViewAtPoint(const views::ProposedLayout& layout,
                               const gfx::Point& point);
@@ -74,11 +80,18 @@ class VerticalDraggedTabsContainer : public TabDragTarget {
   // the drag.
   void ResetDragState();
 
+  // Updates the transformations applied to dragging views, according to
+  // the last drag point.
+  void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
+
   const raw_ref<const views::View> host_view_;
 
   // Child views that are being dragged.
   base::flat_set<raw_ptr<views::View>> dragging_views_;
-  gfx::Point last_drag_point_;
+  gfx::Point last_drag_point_in_screen_;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      host_view_observation_{this};
 
   base::OnceClosureList on_will_destroy_callback_list_;
 };

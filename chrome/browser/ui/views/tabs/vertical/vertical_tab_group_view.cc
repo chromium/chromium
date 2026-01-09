@@ -52,7 +52,7 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
 }  // namespace
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
-    : VerticalDraggedTabsContainer(static_cast<const views::View&>(*this)),
+    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this)),
       collection_node_(collection_node),
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),

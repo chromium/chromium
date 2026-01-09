@@ -26,7 +26,7 @@ constexpr int kTabVerticalPadding = 2;
 
 VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
     TabCollectionNode* collection_node)
-    : VerticalDraggedTabsContainer(static_cast<const views::View&>(*this)),
+    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this)),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
