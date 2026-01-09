@@ -1197,6 +1197,7 @@ int ScopedFocusNavigation::ReadingFlowAdjustedTabIndex(const Element& element) {
 
 Element* ScopedFocusNavigation::NextFocusableElement() {
   Element* current = CurrentElement();
+  Element* initial_current = current;
   if (current) {
     int tab_index = ReadingFlowAdjustedTabIndex(*current);
     // If an element is excluded from the normal tabbing cycle, the next
@@ -1221,6 +1222,18 @@ Element* ScopedFocusNavigation::NextFocusableElement() {
     if (!tab_index) {
       // We've reached the last element in the document with a tabindex of 0.
       // This is the end of the tabbing order.
+      return nullptr;
+    }
+    const bool initial_element_is_non_focusable_with_scroll_marker =
+        initial_current && !ShouldVisit(*initial_current) &&
+        initial_current->GetPseudoElement(kPseudoIdScrollMarker);
+    if (initial_element_is_non_focusable_with_scroll_marker) {
+      // If the initial starting element is a non-focusable element with
+      // scroll-marker pseudo-element, we should not continue to
+      // search for next focusable element, as we reach that non-focusable
+      // element from the ::scroll-marker pseudo-element via a special path
+      // in Document::SequentialFocusNavigationStartingPoint, and once we
+      // reach here, it's basically the same condition as tab_index being 0.
       return nullptr;
     }
   }
