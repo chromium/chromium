@@ -254,6 +254,10 @@ public class SettingsIndexData {
             throw new IllegalStateException("Duplicate ID found: " + id);
         }
         mEntries.put(id, entry);
+
+        if (!TextUtils.isEmpty(entry.fragment)) {
+            addChildParentLink(entry.fragment, id);
+        }
     }
 
     /**
@@ -298,6 +302,27 @@ public class SettingsIndexData {
     }
 
     /**
+     * Adds a new searchable preference entry that launches a specific fragment.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param summaryId String resource ID of the summary.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     */
+    public void addEntryForKey(
+            String prefFragment, String key, int titleId, int summaryId, String targetFragment) {
+        Context context = ContextUtils.getApplicationContext();
+        addEntryForKey(
+                prefFragment,
+                key,
+                context.getString(titleId),
+                summaryId != 0 ? context.getString(summaryId) : null,
+                /* extras= */ null,
+                targetFragment);
+    }
+
+    /**
      * Adds a new searchable preference entry to the index.
      *
      * @param prefFragment Full class name of the Fragment where the entry belongs.
@@ -305,6 +330,7 @@ public class SettingsIndexData {
      * @param title Title text.
      * @param summary Summary text.
      * @param extras Extra bundle to pass to the Fragment.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
      */
     public void addEntryForKey(
             String prefFragment,
@@ -312,10 +338,37 @@ public class SettingsIndexData {
             String title,
             @Nullable String summary,
             @Nullable Bundle extras) {
+        addEntryForKey(
+                prefFragment,
+                key,
+                title,
+                summary,
+                /* extras= */ extras,
+                /* targetFragment= */ null);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param title Title text.
+     * @param summary Summary text.
+     * @param extras Extra bundle to pass to the Fragment.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     */
+    public void addEntryForKey(
+            String prefFragment,
+            String key,
+            String title,
+            @Nullable String summary,
+            @Nullable Bundle extras,
+            @Nullable String targetFragment) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
         var builder = new Entry.Builder(id, key, title, prefFragment);
         if (summary != null) builder.setSummary(summary);
         if (extras != null) builder.setArguments(extras);
+        if (targetFragment != null) builder.setFragment(targetFragment);
         addEntry(id, builder.build());
     }
 
@@ -459,9 +512,13 @@ public class SettingsIndexData {
      * @param parentId The ID of the preference that links to the child fragment.
      */
     public void addChildParentLink(String childFragmentName, String parentId) {
-        mChildFragmentToParentKeys
-                .computeIfAbsent(childFragmentName, k -> new ArrayList<>())
-                .add(parentId);
+        List<String> parents =
+                mChildFragmentToParentKeys.computeIfAbsent(
+                        childFragmentName, k -> new ArrayList<>());
+
+        if (!parents.contains(parentId)) {
+            parents.add(parentId);
+        }
     }
 
     /**
