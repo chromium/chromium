@@ -279,7 +279,7 @@ void InvalidatableInterpolation::ApplyIterationAccumulation() const {
   if (current_iteration_ <= 0 ||
       current_iteration_composite_ !=
           EffectModel::kIterationCompositeAccumulate ||
-      !cached_end_value_) {
+      !cached_end_value_ || !cached_value_) {
     return;
   }
 
