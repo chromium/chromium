@@ -283,9 +283,9 @@ void ManifestDemuxer::OnChunkDemuxerTracksChangeComplete(
   DCHECK(stream);
 
   if (type == DemuxerStream::AUDIO) {
-    impl_->SelectAudioTrack(*track_id);
+    impl_->SelectAudioRendition(*track_id);
   } else if (type == DemuxerStream::VIDEO) {
-    impl_->SelectVideoTrack(*track_id);
+    impl_->SelectVideoVariant(*track_id);
   } else {
     NOTREACHED();
   }

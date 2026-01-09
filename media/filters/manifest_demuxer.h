@@ -169,8 +169,8 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
     // Handle track changes. Only one audio or video track is allowed to be
     // enabled at once.
-    virtual void SelectAudioTrack(const MediaTrack::Id&) = 0;
-    virtual void SelectVideoTrack(const MediaTrack::Id&) = 0;
+    virtual void SelectVideoVariant(const MediaTrack::Id&) = 0;
+    virtual void SelectAudioRendition(const MediaTrack::Id&) = 0;
   };
 
   // ManifestDemuxer takes and keeps ownership of `impl` for the lifetime of

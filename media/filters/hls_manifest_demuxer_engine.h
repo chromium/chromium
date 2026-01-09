@@ -67,8 +67,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   int64_t GetMemoryUsage() const override;
   void Stop() override;
 
-  void SelectVideoTrack(const MediaTrack::Id&) override;
-  void SelectAudioTrack(const MediaTrack::Id&) override;
+  void SelectVideoVariant(const MediaTrack::Id&) override;
+  void SelectAudioRendition(const MediaTrack::Id&) override;
 
   // HlsRenditionHost implementation.
   void ReadKey(const hls::MediaSegment::EncryptionData& data,
@@ -249,7 +249,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       const hls::VariantStream* variant,
       std::optional<hls::RenditionGroup::RenditionTrack> video,
       std::optional<hls::RenditionGroup::RenditionTrack> audio);
-  void UpdateSelectableTrackLists();
 
   void LoadPlaylist(PlaylistParseInfo parse_info,
                     HlsDemuxerStatusCallback on_complete);
@@ -303,14 +302,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   std::unique_ptr<hls::RenditionManager> rendition_manager_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
   std::vector<std::string> selected_variant_codecs_
-      GUARDED_BY_CONTEXT(media_sequence_checker_);
-
-  // Keep track of tracks :)
-  // If tracks change, we have to know which ones to delete and which ones to
-  // add via `add_track_` and `remove_track_`.
-  std::vector<MediaTrack> audio_tracks_
-      GUARDED_BY_CONTEXT(media_sequence_checker_);
-  std::vector<MediaTrack> video_tracks_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // Multiple renditions are allowed, and have to be synchronized.
