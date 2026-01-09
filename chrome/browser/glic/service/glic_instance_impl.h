@@ -169,6 +169,9 @@ class GlicInstanceImpl : public GlicInstance,
   void PerformActions(
       const std::vector<uint8_t>& actions_proto,
       mojom::WebClientHandler::PerformActionsCallback callback) override;
+  void CancelActions(
+      actor::TaskId task_id,
+      mojom::WebClientHandler::CancelActionsCallback callback) override;
   void StopActorTask(actor::TaskId task_id,
                      mojom::ActorTaskStopReason stop_reason) override;
   void PauseActorTask(actor::TaskId task_id,

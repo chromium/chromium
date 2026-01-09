@@ -307,6 +307,16 @@ export declare interface GlicBrowserHost {
   performActions?(actions: ArrayBuffer): Promise<ArrayBuffer>;
 
   /**
+   * Cancel the actions for the specified actor task. It does not revert actions
+   * already taken. Returns an error if the task is not found.
+   *
+   * @param taskId - The ID of the target actor task.
+   * @returns A promise resolving to a {@link CancelActionsResult}
+   *     indicating the outcome.
+   */
+  cancelActions?(taskId: number): Promise<CancelActionsResult>;
+
+  /**
    * Stops the actor task with the given ID in the browser if it exists. No-op
    * otherwise.
    *
@@ -2311,6 +2321,7 @@ export interface ExtensibleEnums {
   UserGrantedPermissionDuration: typeof UserGrantedPermissionDuration;
   webUseCounter: typeof WebUseCounter;
   platform: typeof Platform;
+  cancelActionsResult: typeof CancelActionsResult;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2490,6 +2501,22 @@ export enum UnpinTrigger {
   CHIP = 2,
   // The unpin was triggered as part of actor/actuation behavior.
   ACTUATION = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Result of CancelActions().
+export enum CancelActionsResult {
+  // Do not manually use this value. Fail safe when an old client receives an
+  // extended new enum.
+  UNKNOWN = 0,
+  // Actions were successfully cancelled.
+  SUCCESS = 1,
+  // The task was not found.
+  TASK_NOT_FOUND = 2,
+  // Could not cancel the actions for other reasons (e.g., the task is already
+  // completed).
+  FAILED = 3,
 }
 
 ///////////////////////////////////////////////

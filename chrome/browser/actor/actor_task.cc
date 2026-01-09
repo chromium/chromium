@@ -458,6 +458,15 @@ void ActorTask::Uninterrupt(State resumed_state) {
   }
 }
 
+bool ActorTask::CancelOngoingActions() {
+  if (!execution_engine_ || IsCompleted()) {
+    return false;
+  }
+  execution_engine_->CancelOngoingActions(
+      mojom::ActionResultCode::kActionsCancelled);
+  return true;
+}
+
 bool ActorTask::IsUnderUserControl() const {
   return GetState() == State::kPausedByActor ||
          GetState() == State::kPausedByUser;

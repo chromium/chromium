@@ -1154,8 +1154,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void PerformActions(const std::vector<uint8_t>& actions_proto,
                       PerformActionsCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "PerformActions cannot be called without GlicActor enabled.");
+      return;
+    }
     host().instance_delegate().PerformActions(actions_proto,
                                               std::move(callback));
+  }
+
+  void CancelActions(int32_t task_id, CancelActionsCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "CancelActions cannot be called without GlicActor enabled.");
+      return;
+    }
+    host().instance_delegate().CancelActions(actor::TaskId(task_id),
+                                             std::move(callback));
   }
 
   void StopActorTask(int32_t task_id,

@@ -260,6 +260,9 @@ enum ActionResultCode {
   // The task is in an invalid state for an Act request.
   kInvalidTaskStateForAct = 42,
 
+  // The remaining actions were cancelled.
+  kActionsCancelled = 43,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

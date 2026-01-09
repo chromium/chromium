@@ -677,6 +677,22 @@ struct UnpinTabsOptions {
   UnpinTrigger unpin_trigger;
 };
 
+// @generate glic_api
+// Result of CancelActions().
+[Stable, Extensible]
+enum CancelActionsResult {
+  // Do not manually use this value. Fail safe when an old client receives an
+  // extended new enum.
+  [Default] kUnknown = 0,
+  // Actions were successfully cancelled.
+  kSuccess = 1,
+  // The task was not found.
+  kTaskNotFound = 2,
+  // Could not cancel the actions for other reasons (e.g., the task is already
+  // completed).
+  kFailed = 3,
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -813,6 +829,10 @@ interface WebClientHandler {
   // It is an error to act with a paused task.
   PerformActions(array<uint8> actions_proto)
       => result<mojo_base.mojom.ProtoWrapper, PerformActionsErrorReason>;
+
+  // Cancel the actions for the specified actor task. Does not revert actions
+  // already taken. Returns an error if the task is not found.
+  CancelActions(int32 task_id) => (CancelActionsResult result);
 
   // Immediately stops the actor from taking any further actions associated with
   // the given id and exits acting mode. The stop_reason indicates the reason

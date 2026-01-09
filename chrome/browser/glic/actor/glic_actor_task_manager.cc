@@ -312,6 +312,22 @@ void GlicActorTaskManager::PerformActions(
                      skip_async_observation_information));
 }
 
+void GlicActorTaskManager::CancelActions(
+    actor::TaskId task_id,
+    mojom::WebClientHandler::CancelActionsCallback callback) {
+  actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
+  if (!task) {
+    std::move(callback).Run(mojom::CancelActionsResult::kTaskNotFound);
+    return;
+  }
+
+  bool success = task->CancelOngoingActions();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                success ? mojom::CancelActionsResult::kSuccess
+                                        : mojom::CancelActionsResult::kFailed));
+}
+
 void GlicActorTaskManager::StopActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskStopReason stop_reason) {

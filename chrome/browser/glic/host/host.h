@@ -97,6 +97,9 @@ class Host : public GlicSharingManagerProvider {
     virtual void PerformActions(
         const std::vector<uint8_t>& actions_proto,
         mojom::WebClientHandler::PerformActionsCallback callback) = 0;
+    virtual void CancelActions(
+        actor::TaskId task_id,
+        mojom::WebClientHandler::CancelActionsCallback callback) = 0;
     virtual void StopActorTask(actor::TaskId task_id,
                                mojom::ActorTaskStopReason stop_reason) = 0;
     virtual void PauseActorTask(actor::TaskId task_id,

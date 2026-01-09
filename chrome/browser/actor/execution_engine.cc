@@ -408,7 +408,7 @@ void ExecutionEngine::OnNavigationBlocklistDecision(
   }
 
   // We use `kGlicPromptUserForSensitiveNavigations` to toggle user
-  // confirmations when navigationg to a URL on the optimization guide
+  // confirmations when navigating to a URL on the optimization guide
   // blocklist.
   if (!kGlicPromptUserForSensitiveNavigations.Get()) {
     std::move(callback).Run(/*may_continue=*/false);

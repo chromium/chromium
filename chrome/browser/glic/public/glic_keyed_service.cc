@@ -541,6 +541,12 @@ void GlicKeyedService::PerformActions(
   actor_task_manager_->PerformActions(actions_proto, std::move(callback));
 }
 
+void GlicKeyedService::CancelActions(
+    actor::TaskId task_id,
+    mojom::WebClientHandler::CancelActionsCallback callback) {
+  actor_task_manager_->CancelActions(task_id, std::move(callback));
+}
+
 void GlicKeyedService::StopActorTask(actor::TaskId task_id,
                                      mojom::ActorTaskStopReason stop_reason) {
   actor_task_manager_->StopActorTask(task_id, stop_reason);

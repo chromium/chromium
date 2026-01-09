@@ -484,6 +484,12 @@ void GlicInstanceImpl::PerformActions(
   actor_task_manager_->PerformActions(actions_proto, std::move(callback));
 }
 
+void GlicInstanceImpl::CancelActions(
+    actor::TaskId task_id,
+    mojom::WebClientHandler::CancelActionsCallback callback) {
+  actor_task_manager_->CancelActions(task_id, std::move(callback));
+}
+
 void GlicInstanceImpl::StopActorTask(actor::TaskId task_id,
                                      mojom::ActorTaskStopReason stop_reason) {
   instance_metrics_.OnStopActorTask();

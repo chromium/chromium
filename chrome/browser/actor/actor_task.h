@@ -149,6 +149,10 @@ class ActorTask {
   // Uninterrupt from waiting on user input.
   void Uninterrupt(State resumed_state);
 
+  // Cancels any pending actions. Returns true if the task is still running, and
+  // false otherwise.
+  bool CancelOngoingActions();
+
   // Returns true if the task hasn't completed and is under control of the user.
   // That is, the actor cannot send actions and the user is able to interact
   // with the task's tabs. i.e. the task is "paused".

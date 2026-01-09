@@ -119,7 +119,7 @@ class ExecutionEngine : public ToolDelegate {
   // ExecutionEngine, then the ActorTask.
   void SetOwner(ActorTask* task);
 
-  // Cancels any in-progress actions with the reason: "kTaskPaused".
+  // Cancels any ongoing actions.
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
   // If there is an ongoing tool request, treat it as having failed with the

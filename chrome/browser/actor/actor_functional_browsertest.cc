@@ -251,6 +251,14 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     return base::unexpected("Expected a string value from JavaScript.");
   }
 
+  base::expected<glic::mojom::CancelActionsResult, std::string> CancelActions(
+      TaskId task_id) {
+    std::string script = "window.client.browser.cancelActions($1)";
+    ASSIGN_OR_RETURN(int result_int, EvalJsInGlicForInt(content::JsReplace(
+                                         script, task_id.value())));
+    return base::ok(static_cast<glic::mojom::CancelActionsResult>(result_int));
+  }
+
   // Helper for JavaScript calls that return a Base64 encoded string
   // representing a serialized protobuf of type `ProtoType`.
   template <typename ProtoType>
@@ -737,6 +745,49 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
             TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
 
   EXPECT_EQ(num_calls, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, CancelActions) {
+  // Makes sure we are on about:blank so the browser won't open a new tab to
+  // navigate.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  ASSERT_NE(task_id, TaskId());
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationManager navigation_manager(web_contents(), target_url);
+
+  optimization_guide::proto::Actions action =
+      MakeNavigate(active_tab()->GetHandle(), target_url.spec());
+  action.set_task_id(task_id.value());
+  std::unique_ptr<AsyncActionWaiter> waiter = PerformActionsAsync(action);
+
+  // WaitForRequestStart() also pauses the navigation.
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  EXPECT_EQ(actor_keyed_service()->GetTask(task_id)->GetState(),
+            ActorTask::State::kActing);
+  EXPECT_THAT(CancelActions(task_id),
+              base::test::ValueIs(glic::mojom::CancelActionsResult::kSuccess));
+  EXPECT_FALSE(navigation_manager.was_committed());
+  EXPECT_EQ(actor_keyed_service()->GetTask(task_id)->GetState(),
+            ActorTask::State::kReflecting);
+  auto result = waiter->Wait();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_THAT(result.value(),
+              HasResultCode(mojom::ActionResultCode::kActionsCancelled));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       CancelActionsNoActionsToCancel) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+  EXPECT_EQ(actor_keyed_service()->GetTask(task_id)->GetState(),
+            ActorTask::State::kCreated);
+  EXPECT_THAT(CancelActions(task_id),
+              base::test::ValueIs(glic::mojom::CancelActionsResult::kSuccess));
+  EXPECT_EQ(actor_keyed_service()->GetTask(task_id)->GetState(),
+            ActorTask::State::kCreated);
 }
 
 class ActorFunctionalBrowserTestCreateActorTab

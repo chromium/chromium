@@ -3540,6 +3540,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
+// A smoke test to verify the cancelActions API works end-to-end.
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testCancelActions) {
+  // Task with id 12345 does not exist.
+  ExecuteJsTest({.params = base::Value(12345)});
+  EXPECT_EQ(std::to_underlying(mojom::CancelActionsResult::kTaskNotFound),
+            step_data()->GetInt());
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithGeminiActOnWebPolicy,
                        testNotifyActOnWebCapabilityChanged) {
   policy::ScopedManagementServiceOverrideForTesting
