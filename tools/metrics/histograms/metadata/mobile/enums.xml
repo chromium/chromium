@@ -437,16 +437,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dismissed"/>
 </enum>
 
-<enum name="MobileMessagesInfobarType">
-  <int value="0" label="Confirm"/>
-  <int value="1" label="Save Password"/>
-  <int value="2" label="Update Password"/>
-  <int value="3" label="Save Card"/>
-  <int value="4" label="Translate"/>
-  <int value="5" label="Permissions"/>
-  <int value="6" label="Autofill Save Address Profile"/>
-</enum>
-
 <enum name="MobileMessagesModalEvent">
   <int value="0" label="Accepted"/>
   <int value="1" label="Canceled"/>
@@ -471,13 +461,6 @@ chromium-metrics-reviews@google.com.
 <enum name="MobileMessagesPasswordsModalPresent">
   <int value="0" label="PresentedAfterSaveBanner"/>
   <int value="1" label="PresentedAfterUpdateBanner"/>
-</enum>
-
-<enum name="MobileMessagesSaveCardModalEvent">
-  <int value="0" label="EditedCardHolderName"/>
-  <int value="1" label="EditedExpirationMonth"/>
-  <int value="2" label="EditedExpirationYear"/>
-  <int value="3" label="EditedCvc"/>
 </enum>
 
 <enum name="MobileMessagesTranslateBannerEvent">

@@ -6582,7 +6582,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2026-02-01">
+<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2027-02-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <summary>

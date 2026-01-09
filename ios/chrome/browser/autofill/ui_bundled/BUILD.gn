@@ -146,14 +146,6 @@ source_set("ui_type") {
   ]
 }
 
-source_set("autofill_metrics") {
-  sources = [
-    "save_card_infobar_metrics_recorder.h",
-    "save_card_infobar_metrics_recorder.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("common") {
   sources = [
     "scoped_autofill_payment_reauth_module_override.h",

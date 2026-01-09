@@ -8,8 +8,6 @@ source_set("public") {
     "badge_constants.mm",
     "badge_item.h",
     "badge_type.h",
-    "badges_histograms.h",
-    "badges_histograms.mm",
   ]
   deps = [ "//ios/chrome/browser/infobars/model:badge_state_public" ]
 }
