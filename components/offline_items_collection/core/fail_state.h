@@ -128,6 +128,9 @@ enum class FailState {
 
   // The browser crashed.
   CRASH,
+
+  // Enterprise Force Save to Cloud triggered
+  LOCAL_DOWNLOAD_BLOCKED,
 };
 
 bool ToFailState(int value, FailState* fail_state);

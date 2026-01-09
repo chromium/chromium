@@ -222,6 +222,8 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
   }
 
   switch (model.GetLastFailState()) {
+    // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately.
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
     case FailState::FILE_BLOCKED:
       warning_summary_ = l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION);

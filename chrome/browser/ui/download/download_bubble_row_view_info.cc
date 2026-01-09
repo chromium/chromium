@@ -282,6 +282,8 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
   }
 
   switch (fail_state) {
+    // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
     case FailState::FILE_BLOCKED: {
       has_subpage_ = true;
       return;

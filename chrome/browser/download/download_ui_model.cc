@@ -83,6 +83,8 @@ std::u16string FailStateDescription(FailState fail_state) {
     case FailState::FILE_TRANSIENT_ERROR:
       string_id = IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_TEMPORARY_PROBLEM;
       break;
+    // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
     case FailState::FILE_BLOCKED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_BLOCKED;
       break;
@@ -1211,6 +1213,8 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
     case FailState::FILE_VIRUS_INFECTED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_VIRUS;
       break;
+    // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately.
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
     case FailState::FILE_BLOCKED:
       string_id = IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION;
       break;

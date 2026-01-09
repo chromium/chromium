@@ -678,6 +678,7 @@ ResumeMode GetDownloadResumeMode(const GURL& url,
     case DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN:
     case DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT:
     case DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE:
+    case DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED:
       return ResumeMode::INVALID;
   }
   if (user_action_required && restart_required)

@@ -265,6 +265,7 @@ extensions::api::downloads::InterruptReason ConvertInterruptReason(
       return extensions::api::downloads::InterruptReason::kFileVirusInfected;
     case download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR:
       return extensions::api::downloads::InterruptReason::kFileTransientError;
+    case download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED:
     case download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED:
       return extensions::api::downloads::InterruptReason::kFileBlocked;
     case download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED:

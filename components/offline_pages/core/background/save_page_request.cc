@@ -105,6 +105,7 @@ void SavePageRequest::UpdateFailState(FailState fail_state) {
     case FailState::SERVER_CROSS_ORIGIN_REDIRECT:
     case FailState::FILE_FAILED:
     case FailState::FILE_HASH_MISMATCH:
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
       fail_state_ = fail_state;
       break;
     case FailState::FILE_TRANSIENT_ERROR:  // Intentional fallthrough.
