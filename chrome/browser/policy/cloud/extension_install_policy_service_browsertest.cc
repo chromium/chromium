@@ -17,9 +17,12 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
@@ -27,25 +30,36 @@
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/pref_names.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
+
+using testing::_;
+using testing::InvokeWithoutArgs;
+using testing::Mock;
+
 namespace {
 constexpr char kExtensionId1[] = "extension1";
 constexpr char kExtensionVersion1[] = "1.0.0.0";
 constexpr char kExtensionId2[] = "extension2";
 constexpr char kExtensionVersion2[] = "2.0.0.0";
 constexpr char kEnrollmentToken[] = "enrollment_token";
-constexpr char kClientID[] = "fake_client_id";
+constexpr char kMachineClientID[] = "fake_browser_client_id";
+constexpr char kUserClientID[] = "fake_user_client_id";
 constexpr char kDMToken[] = "fake_dm_token";
+constexpr char kTestUser[] = "test@example.com";
 
 ClientStorage::ClientInfo CreateTestClientInfo() {
   ClientStorage::ClientInfo client_info;
-  client_info.device_id = kClientID;
+  client_info.device_id = kMachineClientID;
   client_info.device_token = kDMToken;
   client_info.allowed_policy_types.insert(
       {dm_protocol::kChromeMachineLevelUserCloudPolicyType,
@@ -53,17 +67,145 @@ ClientStorage::ClientInfo CreateTestClientInfo() {
        dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType});
   return client_info;
 }
+
 }  // namespace
 
+#if !BUILDFLAG(IS_CHROMEOS)
 class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
  public:
+  ExtensionInstallPolicyServiceTest() {
+    BrowserDMTokenStorage::SetForTesting(&storage_);
+    storage_.SetEnrollmentToken(kEnrollmentToken);
+    storage_.SetClientId(kMachineClientID);
+    storage_.EnableStorage(true);
+    storage_.SetDMToken(kDMToken);
+  }
+  ExtensionInstallPolicyServiceTest(const ExtensionInstallPolicyServiceTest&) =
+      delete;
+  ExtensionInstallPolicyServiceTest& operator=(
+      const ExtensionInstallPolicyServiceTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    ASSERT_TRUE(policy_server_->Start());
+    PlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+
+    test_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
+    test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
+    ASSERT_TRUE(test_server_->Start());
+    test_server_->policy_storage()->add_managed_user("*");
+    test_server_->policy_storage()->set_policy_user(kTestUser);
+    test_server_->policy_storage()
+        ->signature_provider()
+        ->SetUniversalSigningKeys();
+
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(switches::kDeviceManagementUrl,
+                                    test_server_->GetServiceURL().spec());
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
   }
 
-  std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_ =
-      std::make_unique<policy::EmbeddedPolicyTestServer>();
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
+  }
+#endif
+
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+
+    policy::BrowserPolicyConnector* connector =
+        g_browser_process->browser_policy_connector();
+    connector->ScheduleServiceInitialization(0);
+
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_env_->MakePrimaryAccountAvailable(
+        kTestUser, signin::ConsentLevel::kSignin);
+
+    policy::UserCloudPolicyManager* policy_manager =
+        browser()->profile()->GetUserCloudPolicyManager();
+    policy_manager->Connect(
+        g_browser_process->local_state(),
+        std::make_unique<policy::CloudPolicyClient>(
+            g_browser_process->browser_policy_connector()
+                ->device_management_service(),
+            g_browser_process->shared_url_loader_factory()));
+
+    // Prevent auto policy fetch after register as we don't need to test that.
+    policy_manager->core()->client()->RemoveObserver(
+        policy_manager->core()->refresh_scheduler());
+
+    ASSERT_NO_FATAL_FAILURE(RegisterUser(policy_manager->core()->client()));
+  }
+
+  // Register the user with fake DM Server.
+  void RegisterUser(policy::CloudPolicyClient* client) {
+    base::test::TestFuture<void> registered_signal;
+    policy::MockCloudPolicyClientObserver observer;
+    EXPECT_CALL(observer, OnRegistrationStateChanged(_))
+        .WillOnce(InvokeWithoutArgs(
+            [&registered_signal]() { registered_signal.SetValue(); }));
+    client->AddObserver(&observer);
+
+    ASSERT_FALSE(client->is_registered());
+    policy::CloudPolicyClient::RegistrationParameters parameters(
+        em::DeviceRegisterRequest::BROWSER,
+        em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
+    client->Register(parameters, kUserClientID, "oauth_token_unused");
+    EXPECT_TRUE(registered_signal.Wait());
+
+    Mock::VerifyAndClearExpectations(&observer);
+
+    client->RemoveObserver(&observer);
+    EXPECT_TRUE(client->is_registered());
+
+    ClientStorage::ClientInfo user_client_info =
+        test_server_->client_storage()->GetClient(kUserClientID);
+    user_client_info.allowed_policy_types.insert(
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
+    test_server_->client_storage()->RegisterClient(user_client_info);
+  }
+
+  void SetExtensionInstallPolicy(
+      const std::string& extension_id,
+      const std::string& extension_version,
+      enterprise_management::ExtensionInstallPolicy::Action action,
+      const std::vector<enterprise_management::ExtensionInstallPolicy::Reason>&
+          reasons,
+      bool is_machine_level) {
+    enterprise_management::ExtensionInstallPolicies extension_install_policies;
+    enterprise_management::ExtensionInstallPolicy* policy =
+        extension_install_policies.add_policies();
+    policy->set_extension_id(extension_id);
+    policy->set_extension_version(extension_version);
+    policy->set_action(action);
+    for (const auto& allowed_reason : reasons) {
+      policy->add_reasons(allowed_reason);
+    }
+    test_server_->policy_storage()->SetPolicyPayload(
+        is_machine_level
+            ? dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType
+            : dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+        base::StrCat({extension_id, "@", extension_version}),
+        extension_install_policies.SerializeAsString());
+  }
+
+  void CheckCanInstallExtension(const std::string& extension_id,
+                                const std::string& extension_version,
+                                bool expected_result) {
+    ExtensionInstallPolicyService service(browser()->profile());
+    base::test::TestFuture<bool> future;
+    service.CanInstallExtension(
+        ExtensionIdAndVersion(extension_id, extension_version),
+        future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(future.Get(), expected_result);
+  }
+
+ protected:
+  std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
+  FakeBrowserDMTokenStorage storage_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kEnableExtensionInstallPolicyFetching};
 };
@@ -79,110 +221,199 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
   EXPECT_TRUE(future.Get());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-class MachineLevelExtensionInstallPolicyFetchTest : public PlatformBrowserTest {
- public:
-  MachineLevelExtensionInstallPolicyFetchTest() {
-    BrowserDMTokenStorage::SetForTesting(&storage_);
-    storage_.SetEnrollmentToken(kEnrollmentToken);
-    storage_.SetClientId(kClientID);
-    storage_.EnableStorage(true);
-    storage_.SetDMToken(kDMToken);
-  }
-  MachineLevelExtensionInstallPolicyFetchTest(
-      const MachineLevelExtensionInstallPolicyFetchTest&) = delete;
-  MachineLevelExtensionInstallPolicyFetchTest& operator=(
-      const MachineLevelExtensionInstallPolicyFetchTest&) = delete;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SetUpTestServer();
-    ASSERT_TRUE(test_server_->Start());
-
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(switches::kDeviceManagementUrl,
-                                    test_server_->GetServiceURL().spec());
-    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
-  }
-
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
-  }
-#endif
-
-  void SetUpTestServer() {
-    test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
-    test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
-  }
-
-  DMToken retrieve_dm_token() { return storage_.RetrieveDMToken(); }
-
- protected:
-  base::HistogramTester histogram_tester_;
-  std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
-  FakeBrowserDMTokenStorage storage_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kEnableExtensionInstallPolicyFetching};
-};
-
-IN_PROC_BROWSER_TEST_F(MachineLevelExtensionInstallPolicyFetchTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                        CanInstallExtensionBlockedByMachineLevelPolicy) {
-  MachineLevelUserCloudPolicyManager* manager =
-      g_browser_process->browser_policy_connector()
-          ->machine_level_user_cloud_policy_manager();
-  ASSERT_TRUE(manager);
   browser()->profile()->GetPrefs()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
 
-  enterprise_management::ExtensionInstallPolicies extension_install_policies;
-  {
-    enterprise_management::ExtensionInstallPolicy* policy =
-        extension_install_policies.add_policies();
-    policy->set_extension_id(kExtensionId1);
-    policy->set_extension_version(kExtensionVersion1);
-    policy->set_action(
-        enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK);
-    policy->add_reasons(
-        enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
-  }
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/true);
 
-  test_server_->policy_storage()->SetPolicyPayload(
-      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
-      base::StrCat({kExtensionId1, "@", kExtensionVersion1}),
-      extension_install_policies.SerializeAsString());
-  test_server_->policy_storage()->set_robot_api_auth_code("fake_auth_code");
-  test_server_->policy_storage()->set_service_account_identity("foo@bar.com");
-
-  ExtensionInstallPolicyService service(browser()->profile());
-  // Blocked extension and version should not be allowed to install.
-  {
-    base::test::TestFuture<bool> future;
-    service.CanInstallExtension(
-        ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1),
-        future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_FALSE(future.Get());
-  }
-  // Allowed extension should be allowed to install.
-  {
-    base::test::TestFuture<bool> future;
-    service.CanInstallExtension(
-        ExtensionIdAndVersion(kExtensionId2, kExtensionVersion1),
-        future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_TRUE(future.Get());
-  }
-  // Allowed extension and version should be allowed to install.
-  {
-    base::test::TestFuture<bool> future;
-    service.CanInstallExtension(
-        ExtensionIdAndVersion(kExtensionId1, kExtensionVersion2),
-        future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_TRUE(future.Get());
-  }
+  CheckCanInstallExtension(kExtensionId1, kExtensionVersion1,
+                           /*expected_result=*/false);
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
+                       CanInstallExtensionBlockedByUserLevelPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/false);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/false));
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
+                       CanInstallExtensionBlockedInBothLevels) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/false);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/false));
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionInstallPolicyServiceTest,
+    CanInstallExtensionBlockedByUserLevelPolicyAllowedByMachineLevelPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW, {},
+      /*is_machine_level=*/true);
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/false);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/false));
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionInstallPolicyServiceTest,
+    CanInstallExtensionAllowedByUserLevelPolicyBlockedByMachineLevelPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/true);
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW, {},
+      /*is_machine_level=*/false);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/false));
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
+                       CanInstallExtensionAllowedByMachineLevelPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW, {},
+      /*is_machine_level=*/false);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
+                       CanInstallExtensionAllowedByUserLevelPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW, {},
+      /*is_machine_level=*/true);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  // Unrelated extension versions are not blocked.
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
+                                                   kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

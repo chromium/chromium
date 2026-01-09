@@ -846,9 +846,9 @@ void CloudPolicyClient::FetchPolicyInternal(
   }
 #endif  // BUILDFLAG(IS_WIN)
   if (reason == PolicyFetchReason::kExtensionInstall) {
-    unique_request_job_ = service_->CreateJob(std::move(config));
-  } else {
     request_jobs_.push_back(service_->CreateJob(std::move(config)));
+  } else {
+    unique_request_job_ = service_->CreateJob(std::move(config));
   }
 }
 
