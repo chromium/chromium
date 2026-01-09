@@ -16961,7 +16961,19 @@
                     "name": "Enabled",
                     "params": {
                         "CyclingPlaceholders": "true",
-                        "RealboxLayoutMode": "TallBottomContext"
+                        "RealboxLayoutMode": "TallTopContext"
+                    },
+                    "enable_features": [
+                        "IPH_DesktopRealboxContextualSearchFeature",
+                        "NtpRealboxNext"
+                    ]
+                },
+                {
+                    "name": "Enabled_Compact_Multiline",
+                    "params": {
+                        "CyclingPlaceholders": "true",
+                        "MultiLineEnabled": "true",
+                        "RealboxLayoutMode": "Compact"
                     },
                     "enable_features": [
                         "NtpRealboxNext"
