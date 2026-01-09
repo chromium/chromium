@@ -81,10 +81,13 @@ std::map<PlatformThreadId, std::string> ThreadNames(pid_t pid) {
     }
 
     char buffer[4096 + 1];
-    int bytes_read = stat_file.ReadAtCurrentPos(buffer, 4096);
-    if (bytes_read <= 0)
+    base::span<uint8_t> buffer_span = base::as_writable_byte_span(buffer);
+    std::optional<size_t> bytes_read =
+        stat_file.ReadAtCurrentPos(buffer_span.first(4096u));
+    if (!bytes_read || *bytes_read == 0) {
       continue;
-    buffer[bytes_read] = '\0';
+    }
+    buffer_span[*bytes_read] = 0;
 
     int process_id, ppid, pgrp;
     char name[256];
@@ -98,10 +101,11 @@ std::map<PlatformThreadId, std::string> ThreadNames(pid_t pid) {
       LOG(WARNING) << "Invalid file: " << status_path.value();
       continue;
     }
-    bytes_read = status_file.ReadAtCurrentPos(buffer, 4096);
-    if (bytes_read <= 0)
+    bytes_read = status_file.ReadAtCurrentPos(buffer_span.first(4096u));
+    if (!bytes_read || *bytes_read == 0) {
       continue;
-    buffer[bytes_read] = '\0';
+    }
+    buffer_span[*bytes_read] = 0;
     auto lines = SplitString(buffer, "\n", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
     for (std::string_view sp : lines) {
