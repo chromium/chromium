@@ -33,6 +33,10 @@ class LocalizedError {
     // Strings used within the error page HTML/JS.
     base::Value::Dict strings;
 
+    // Sets whether the error is an offline error. Updates both the C++
+    // boolean and the "isOfflineError" string for JavaScript.
+    void SetIsOfflineError(bool value);
+
     bool is_offline_error = false;
     bool reload_button_shown = false;
     bool download_button_shown = false;

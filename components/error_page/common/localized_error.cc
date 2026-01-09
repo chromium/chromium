@@ -945,6 +945,13 @@ LocalizedError::PageState::PageState(PageState&& other) = default;
 LocalizedError::PageState& LocalizedError::PageState::operator=(
     PageState&& other) = default;
 
+void LocalizedError::PageState::SetIsOfflineError(bool value) {
+  // We set this value twice: once for C++ consumers of PageState and once for
+  // the 'strings' dictionary which is sent to the JavaScript context.
+  is_offline_error = value;
+  strings.Set("isOfflineError", value);
+}
+
 LocalizedError::PageState LocalizedError::GetPageState(
     int error_code,
     const std::string& error_domain,
@@ -960,9 +967,10 @@ LocalizedError::PageState LocalizedError::GetPageState(
     bool is_blocked_by_extension,
     const base::Value::Dict* error_page_params) {
   LocalizedError::PageState result;
-  if (LocalizedError::IsOfflineError(error_domain, error_code)) {
-    result.is_offline_error = true;
+  result.SetIsOfflineError(
+      LocalizedError::IsOfflineError(error_domain, error_code));
 
+  if (result.is_offline_error) {
     // These strings are to be read by a screen reader during the dino game.
     result.strings.Set(
         "dinoGameA11yAriaLabel",
@@ -983,6 +991,24 @@ LocalizedError::PageState LocalizedError::GetPageState(
     result.strings.Set(
         "dinoGameA11yDescription",
         l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_GAME_DESCRIPTION));
+    result.strings.Set(
+        "dinoGameInstructionsTouch",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGES_GAME_INSTRUCTIONS_TOUCH));
+    result.strings.Set(
+        "dinoGameInstructionsKeyboard",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGES_GAME_INSTRUCTIONS_KEYBOARD));
+    result.strings.Set(
+        "dinoGameInstructionsHybrid",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGES_GAME_INSTRUCTIONS_HYBRID));
+    result.strings.Set(
+        "dinoGameA11yAriaLabelTouch",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_ARIA_LABEL_TOUCH));
+    result.strings.Set(
+        "dinoGameA11yAriaLabelKeyboard",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_ARIA_LABEL_KEYBOARD));
+    result.strings.Set(
+        "dinoGameA11yAriaLabelHybrid",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_ARIA_LABEL_HYBRID));
 
     if (EnableAltGameMode()) {
       result.strings.Set("enableAltGameMode", true);
