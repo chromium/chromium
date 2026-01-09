@@ -34,6 +34,7 @@ class ToolbarActionViewModel {
  public:
   // The source for the action invocation. Used in UMA; do not reorder or delete
   // entries.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.toolbar
   enum class InvocationSource {
     // The action was invoked from a command (keyboard shortcut).
     kCommand = 0,
