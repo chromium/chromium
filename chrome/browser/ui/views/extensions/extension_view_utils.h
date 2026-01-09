@@ -7,7 +7,6 @@
 
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
 class ExtensionsToolbarContainer;
 class ToolbarActionViewModel;
 
@@ -19,9 +18,7 @@ namespace ui {
 class ImageModel;
 }
 
-// Returns the extensions toolbar container in `browser` or `parent`, if
-// existent.
-ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser);
+// Returns the extensions toolbar container in `parent`, if existent.
 ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
     gfx::NativeWindow parent);
 
