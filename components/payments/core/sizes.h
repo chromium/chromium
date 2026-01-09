@@ -18,6 +18,15 @@ inline constexpr int kSecurePaymentConfirmationIconMaximumWidthPx = 32;
 // The default height of icons for the SPC Transaction UX.
 inline constexpr int kSecurePaymentConfirmationIconHeightPx = 20;
 
+// The height of the default header logo in the SPC Transaction UX.
+inline constexpr int kSecurePaymentConfirmationDefaultHeaderLogoHeight = 80;
+
+// The width of the header logo in the SPC Transaction UX.
+inline constexpr int kSecurePaymentConfirmationHeaderLogoWidth = 63;
+
+// The height of the header logo in the SPC Transaction UX.
+inline constexpr int kSecurePaymentConfirmationHeaderLogoHeight = 30;
+
 }  // namespace payments
 
 #endif  // COMPONENTS_PAYMENTS_CORE_SIZES_H_

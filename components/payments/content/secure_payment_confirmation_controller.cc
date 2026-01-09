@@ -335,6 +335,11 @@ void SecurePaymentConfirmationController::
 
     model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
 
+    model_.set_footer_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_TEXT));
+    model_.set_footer_link_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_LINK_TEXT));
+
     if (is_error_dialog_) {
       model_.set_title(l10n_util::GetStringUTF16(
           IDS_SECURE_PAYMENT_CONFIRMATION_INFORM_ONLY_TITLE));
@@ -345,10 +350,6 @@ void SecurePaymentConfirmationController::
       model_.set_title(
           l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TITLE));
       model_.set_footer_visible(true);
-      model_.set_footer_label(l10n_util::GetStringUTF16(
-          IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_TEXT));
-      model_.set_footer_link_label(l10n_util::GetStringUTF16(
-          IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_LINK_TEXT));
       model_.set_verify_button_label(l10n_util::GetStringUTF16(
           IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
     }

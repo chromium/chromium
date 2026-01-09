@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
@@ -111,11 +112,17 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
 
 std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
     const gfx::ImageSkia& image) {
+  return CreateSecurePaymentConfirmationIconView(
+      ui::ImageModel::FromImageSkia(image));
+}
+
+std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
+    const ui::ImageModel& image) {
   std::unique_ptr<views::ImageView> icon_view =
       std::make_unique<views::ImageView>();
-  icon_view->SetImage(ui::ImageModel::FromImageSkia(image));
+  icon_view->SetImage(image);
 
-  gfx::Size image_size = image.size();
+  gfx::Size image_size = image.Size();
   // Resize to a constant height, with a variable width in the acceptable range
   // based on the aspect ratio.
   float aspect_ratio =
