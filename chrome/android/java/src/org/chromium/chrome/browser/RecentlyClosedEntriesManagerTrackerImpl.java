@@ -63,6 +63,13 @@ final class RecentlyClosedEntriesManagerTrackerImpl
         }
     }
 
+    @Override
+    public void onInstanceRestored(int instanceId) {
+        for (RecentlyClosedEntriesManager manager : mManagers) {
+            manager.onWindowRestored(instanceId);
+        }
+    }
+
     public Set<RecentlyClosedEntriesManager> getManagersForTesting() {
         return mManagers;
     }

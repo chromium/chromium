@@ -515,8 +515,16 @@ public class RecentTabsPageTest {
                         title2,
                         activeTabTitle2,
                         tabCount);
-        setRecentlyClosedEntries(Arrays.asList(window1, window2));
-        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
+        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
+                mActivity.getRecentlyClosedEntriesManagerForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    recentlyClosedEntriesManager.onWindowClosed(
+                            window2, /* isPermanentDeletion= */ false);
+                    recentlyClosedEntriesManager.onWindowClosed(
+                            window1, /* isPermanentDeletion= */ false);
+                });
+        assertEquals(2, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
 
         final String eventDescriptionString1 = "google.com and " + (tabCount - 1) + " other tabs";
         final String eventDescriptionString2 =
@@ -528,15 +536,11 @@ public class RecentTabsPageTest {
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_windows");
 
-        final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
+        // Simulate restoration of a window.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPage.onChildClick(null, null, groupIdx, 0, 0);
-                });
+                () -> recentlyClosedEntriesManager.onWindowRestored(window1.getInstanceId()));
 
         // Verify that the entry for the restored window is removed.
-        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
-                mActivity.getRecentlyClosedEntriesManagerForTesting();
         assertEquals(1, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         waitForViewToDisappear(eventDescriptionString1);
     }

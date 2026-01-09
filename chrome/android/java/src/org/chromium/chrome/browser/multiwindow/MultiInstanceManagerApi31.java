@@ -1360,6 +1360,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         MultiInstancePersistentStore.writeMarkedForDeletion(
                 instanceId, /* markedForDeletion= */ false);
         mActivity.startActivity(intent);
+
+        // If a new activity was started, it implies that an inactive instance was restored.
+        for (InstanceStateObserver observer : mInstanceStateObservers) {
+            observer.onInstanceRestored(instanceId);
+        }
     }
 
     @Override

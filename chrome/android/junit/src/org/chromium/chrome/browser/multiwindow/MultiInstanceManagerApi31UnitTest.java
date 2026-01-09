@@ -2373,6 +2373,10 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
         multiInstanceManager63.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
 
+        // Setup InstanceStateObserver for testing.
+        InstanceStateObserver instanceStateObserver = Mockito.mock(InstanceStateObserver.class);
+        multiInstanceManager62.addInstanceStateObserver(instanceStateObserver);
+
         // Setup AppTask's for both activities. Clear test AppTask ids that are set during the test
         // manager instantiation so that ids from the current mocked AppTasks are used.
         MultiInstanceManagerApi31.setAppTaskIdsForTesting(null);
@@ -2400,6 +2404,7 @@ public class MultiInstanceManagerApi31UnitTest {
             verify(mTabbedActivityTask62).startActivity(any());
             verify(appTasks.get(1)).finishAndRemoveTask();
             verify(mActivityManager, never()).moveTaskToFront(TASK_ID_63, 0);
+            verify(instanceStateObserver).onInstanceRestored(1);
         }
     }
 

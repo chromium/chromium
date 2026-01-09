@@ -133,7 +133,8 @@ public class RecentlyClosedEntriesManager {
         if (entry instanceof SessionRecentlyClosedEntry) {
             mRecentlyClosedTabManager.openRecentlyClosedEntry(mRegularTabModel, entry);
         } else if (entry instanceof RecentlyClosedWindow closedWindow) {
-            openRecentlyClosedWindow(closedWindow.getInstanceId());
+            mMultiInstanceManager.openWindow(
+                    closedWindow.getInstanceId(), NewWindowAppSource.RECENT_TABS);
         }
     }
 
@@ -225,7 +226,7 @@ public class RecentlyClosedEntriesManager {
     }
 
     /**
-     * Notify relevant listeners (for e.g. Recent Tabs page) when a window is closed.
+     * Notifies relevant listeners (for e.g. Recent Tabs page) when a window is closed.
      *
      * @param window The window that was just closed.
      * @param isPermanentDeletion Whether the window is permanently deleted. If {@code false}, the
@@ -246,22 +247,26 @@ public class RecentlyClosedEntriesManager {
         }
     }
 
-    private boolean removeWindowEntry(int instanceId) {
+    /**
+     * Notifies relevant listeners (for e.g. Recent Tabs page) when a window is restored.
+     *
+     * @param instanceId The id of the instance that was restored.
+     */
+    @VisibleForTesting
+    public void onWindowRestored(int instanceId) {
+        removeWindowEntry(instanceId);
+        if (mEntriesUpdatedCallback != null) {
+            mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
+        }
+    }
+
+    private void removeWindowEntry(int instanceId) {
         for (RecentlyClosedEntry entry : mRecentlyClosedEntries) {
             if (entry instanceof RecentlyClosedWindow window
                     && window.getInstanceId() == instanceId) {
                 mRecentlyClosedEntries.remove(entry);
-                return true;
+                return;
             }
-        }
-        return false;
-    }
-
-    private void openRecentlyClosedWindow(int instanceId) {
-        mMultiInstanceManager.openWindow(instanceId, NewWindowAppSource.RECENT_TABS);
-        boolean removed = removeWindowEntry(instanceId);
-        if (removed && mEntriesUpdatedCallback != null) {
-            mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
         }
     }
 

@@ -479,7 +479,7 @@ public abstract class MultiInstanceManager {
 
     protected ObserverList<InstanceStateObserver> mInstanceStateObservers = new ObserverList<>();
 
-    /** Observer interface to notify about instance closure events. */
+    /** Observer interface to notify about instance closure and restoration events. */
     public interface InstanceStateObserver {
         /**
          * Notifies when an instance is closed. Closure can be system-initiated (for e.g. low-memory
@@ -490,6 +490,13 @@ public abstract class MultiInstanceManager {
          * @param isPermanentDeletion Whether the closed instance is permanently deleted.
          */
         void onInstanceClosed(InstanceInfo instanceInfo, boolean isPermanentDeletion);
+
+        /**
+         * Notifies when an inactive instance is restored.
+         *
+         * @param instanceId The id for the restored instance.
+         */
+        void onInstanceRestored(int instanceId);
     }
 
     /**

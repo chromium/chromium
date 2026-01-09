@@ -583,18 +583,16 @@ public class RecentlyClosedEntriesManagerUnitTest {
     }
 
     @Test
-    public void testOpenRecentlyClosedWindow_RemovesEntry() {
+    public void testOnWindowRestored_RemovesEntry() {
         createRecentlyClosedWindows(/* numOfWindows= */ 1);
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
         List<RecentlyClosedEntry> entries =
                 mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
         assertEquals(1, entries.size());
-        RecentlyClosedWindow window = (RecentlyClosedWindow) entries.get(0);
         int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
 
-        mRecentlyClosedEntriesManager.openRecentlyClosedEntry(window);
+        mRecentlyClosedEntriesManager.onWindowRestored(/* instanceId= */ 2);
 
-        verify(mMultiInstanceManager).openWindow(2, NewWindowAppSource.RECENT_TABS);
         assertEquals(0, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
     }

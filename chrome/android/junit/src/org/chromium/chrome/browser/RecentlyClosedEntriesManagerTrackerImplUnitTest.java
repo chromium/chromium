@@ -75,7 +75,7 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
         RecentlyClosedEntriesManager manager2 =
                 mTracker.obtainManager(mMultiInstanceManager, mTabModelSelector);
 
-        // Simulate a window closure on the first manager
+        // Simulate window closure.
         InstanceInfo info =
                 new InstanceInfo(
                         /* instanceId= */ 2,
@@ -93,5 +93,37 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
 
         assertEquals(1, manager1.getRecentlyClosedEntries().size());
         assertEquals(1, manager2.getRecentlyClosedEntries().size());
+    }
+
+    @Test
+    public void testOnWindowRestored_NotifiesAllManagers() {
+        // Create two managers.
+        RecentlyClosedEntriesManager manager1 =
+                mTracker.obtainManager(mMultiInstanceManager, mTabModelSelector);
+        RecentlyClosedEntriesManager manager2 =
+                mTracker.obtainManager(mMultiInstanceManager, mTabModelSelector);
+        // Simulate window closure.
+        InstanceInfo info =
+                new InstanceInfo(
+                        /* instanceId= */ 2,
+                        /* taskId= */ -1,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "",
+                        /* title= */ "",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 1,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 3,
+                        /* markedForDeletion= */ true);
+        mTracker.onInstanceClosed(info, /* isPermanentDeletion= */ false);
+        assertEquals(1, manager1.getRecentlyClosedEntries().size());
+        assertEquals(1, manager2.getRecentlyClosedEntries().size());
+
+        // Simulate window restoration.
+        mTracker.onInstanceRestored(/* instanceId= */ 2);
+
+        assertEquals(0, manager1.getRecentlyClosedEntries().size());
+        assertEquals(0, manager2.getRecentlyClosedEntries().size());
     }
 }

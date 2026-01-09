@@ -400,7 +400,8 @@ public class MultiInstanceManagerApi31Test {
         RecentlyClosedWindow window = (RecentlyClosedWindow) entries.get(0);
 
         // Restore window.
-        recentlyClosedEntriesManager.openRecentlyClosedEntry(window);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> recentlyClosedEntriesManager.openRecentlyClosedEntry(window));
 
         // Verify window is restored and removed from recentlyClosedEntries.
         entries = recentlyClosedEntriesManager.getRecentlyClosedEntries();
