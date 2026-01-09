@@ -93,6 +93,10 @@ void PermissionPromptAndroid::Deny() {
   delegate_->Deny();
 }
 
+void PermissionPromptAndroid::Ignore() {
+  delegate_->Ignore();
+}
+
 void PermissionPromptAndroid::SetManageClicked() {
   delegate_->SetManageClicked();
 }

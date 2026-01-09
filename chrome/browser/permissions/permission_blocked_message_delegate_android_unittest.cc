@@ -61,6 +61,7 @@ class MockDelegate : public PermissionBlockedMessageDelegate::Delegate {
   MOCK_METHOD(void, Deny, (), (override));
 
   MOCK_METHOD(void, Closing, (), (override));
+  MOCK_METHOD(void, Ignore, (), (override));
 
   MOCK_METHOD(bool, ShouldUseQuietUI, (), (override));
   MOCK_METHOD(std::optional<QuietUiReason>,
@@ -177,6 +178,7 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest, DismissByTimeout) {
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*delegate, Accept).Times(0);
   EXPECT_CALL(*delegate, Deny).Times(0);
+  EXPECT_CALL(*delegate, Ignore).Times(1);
   EXPECT_CALL(*delegate, GetContentSettingsType)
       .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
 
@@ -361,4 +363,36 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_DismissByGesture) {
   // Verify Histogram
   histogram_tester.ExpectBucketCount(
       "Permissions.ClapperLoud.MessageUI.Dismiss", true, 1);
+}
+
+TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_DismissByTimeout) {
+  // Setup request
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE);
+  std::vector<base::WeakPtr<permissions::PermissionRequest>> requests;
+  requests.push_back(request->GetWeakPtr());
+
+  std::unique_ptr<MockPermissionPromptAndroid> mock_prompt;
+  auto delegate = CreateDelegateWithPrompt(mock_prompt, requests);
+
+  EXPECT_CALL(*delegate, ShouldUseQuietUI)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
+
+  // Expect Ignore() to be called on timer dismiss
+  EXPECT_CALL(*delegate, Ignore()).Times(1);
+  EXPECT_CALL(*delegate, Accept()).Times(0);
+  EXPECT_CALL(*delegate, Deny()).Times(0);
+
+  ExpectEnqueued();
+
+  ShowMessage(std::move(delegate));
+
+  // Trigger Dismiss by Timer
+  TriggerDismiss(messages::DismissReason::TIMER);
+
+  // Message should be dismissed
+  EXPECT_EQ(nullptr, GetMessageWrapper());
 }

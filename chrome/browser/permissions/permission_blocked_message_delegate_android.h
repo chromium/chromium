@@ -41,6 +41,7 @@ class PermissionBlockedMessageDelegate
     virtual void Accept();
     virtual void Deny();
     virtual void Closing();
+    virtual void Ignore();
     virtual void SetManageClicked();
     virtual void SetLearnMoreClicked();
     virtual bool ShouldUseQuietUI();

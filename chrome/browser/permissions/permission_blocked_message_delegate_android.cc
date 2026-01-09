@@ -214,6 +214,11 @@ void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
   if (reason == messages::DismissReason::GESTURE) {
     delegate_->Closing();
   }
+
+  if (reason == messages::DismissReason::TIMER) {
+    delegate_->Ignore();
+  }
+
   // Other un-tracked actions will be recorded as "Ignored" by
   // |permission_prompt_|.
 }
@@ -256,6 +261,10 @@ void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     delegate_->Deny();
   }
 
+  if (reason == messages::DismissReason::TIMER) {
+    delegate_->Ignore();
+  }
+
   // Other un-tracked actions will be recorded as "Ignored" by
   // |permission_prompt_|.
 }
@@ -286,6 +295,13 @@ void PermissionBlockedMessageDelegate::Delegate::Closing() {
     return;
   }
   permission_prompt_->Closing();
+}
+
+void PermissionBlockedMessageDelegate::Delegate::Ignore() {
+  if (!permission_prompt_) {
+    return;
+  }
+  permission_prompt_->Ignore();
 }
 
 void PermissionBlockedMessageDelegate::Delegate::SetManageClicked() {

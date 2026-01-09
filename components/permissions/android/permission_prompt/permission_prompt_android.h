@@ -60,6 +60,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
   virtual void AcceptThisTime();
   virtual void Acknowledge() {}
   virtual void Deny();
+  virtual void Ignore();
   virtual void Resumed() {}
   virtual void SystemSettingsShown() {}
   virtual void SystemPermissionResolved(bool accepted) {}
