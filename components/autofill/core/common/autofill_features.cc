@@ -142,6 +142,11 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
 BASE_FEATURE(kAutofillAiAlwaysTriggerServerModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled Autofill AI becomes available by default and the previous enable
+// toggle controls whether online model runs are allowed.
+// TODO(crbug.com/440488776): Remove once clean up happens.
+BASE_FEATURE(kAutofillAiAvailableByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch. If enabled, the EntityDataManager is created irrespective of
 // whether other features are enabled. This is necessary so that cleaning up the
 // browsing data also removes data if the user left the study.
