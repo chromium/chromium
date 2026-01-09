@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace gl {
@@ -160,11 +161,10 @@ void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
 
 void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
-  TRACE_EVENT_WITH_FLOW1(
-      "delegated_ink_trails",
-      "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
-      TRACE_ID_GLOBAL(metadata->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
-      "metadata", metadata->ToString());
+  TRACE_EVENT("delegated_ink_trails",
+              "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
+              perfetto::TerminatingFlow::Global(metadata->trace_id()),
+              "metadata", metadata->ToString());
 
   DCHECK(delegated_ink_trail_);
 
@@ -253,11 +253,10 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
 
 void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
     const gfx::DelegatedInkPoint& point) {
-  TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
-                         "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
-                         TRACE_ID_GLOBAL(point.trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "point", point.ToString());
+  TRACE_EVENT("delegated_ink_trails",
+              "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
+              perfetto::Flow::Global(point.trace_id()), "point",
+              point.ToString());
 
   const int32_t pointer_id = point.pointer_id();
 
@@ -521,11 +520,12 @@ bool DelegatedInkPointRendererGpu::DrawDelegatedInkPoint(
     return false;
   }
 
-  TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
-                         "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint "
-                         "- Point added to trail",
-                         TRACE_ID_GLOBAL(point.trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
+  TRACE_EVENT(
+      "delegated_ink_trails",
+      "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint - Point added to "
+      "trail",
+      perfetto::TerminatingFlow::Global(point.trace_id()), "point",
+      point.ToString());
 
   if (point.timestamp().IsHighResolution() &&
       point.timestamp().IsConsistentAcrossProcesses()) {
