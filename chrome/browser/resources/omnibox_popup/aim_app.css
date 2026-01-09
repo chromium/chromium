@@ -111,6 +111,10 @@ cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode="TallTopConte
   margin-inline-end: -8px;
 }
 
+cr-composebox[searchbox-layout-mode="TallBottomContext"][show-dropdown_]::part(voice-icon) {
+  bottom: 9px;
+}
+
 cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(carousel-divider) {
   display: none;
 }
