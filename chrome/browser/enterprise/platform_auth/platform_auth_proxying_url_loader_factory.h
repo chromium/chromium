@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_PLATFORM_AUTH_PROXYING_URL_LOADER_FACTORY_H_
 
 #include "base/check_is_test.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,12 +60,14 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
  private:
   ProxyingURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory);
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
+      base::flat_set<std::string> configured_hosts);
 
   void OnTargetFactoryDisconnect();
 
   void OnProxyDisconnect();
 
+  base::flat_set<std::string> configured_hosts_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
 

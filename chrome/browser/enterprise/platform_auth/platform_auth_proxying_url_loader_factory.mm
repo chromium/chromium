@@ -4,10 +4,10 @@
 
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 
-#include <string>
-
-#include "base/check_is_test.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
@@ -33,7 +33,9 @@ constexpr size_t kMinPathLength = kPrefix.length() + kSuffix.length() + 1;
 
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
+    base::flat_set<std::string> configured_hosts)
+    : configured_hosts_(std::move(configured_hosts)) {
   DCHECK(!target_factory_.is_bound());
   // base::Unretained here is safe because the callbacks are owned by this, so
   // when this destroys itself, the callbacks will also get destroyed.
@@ -59,10 +61,24 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
                   kDocumentSubResource &&
       g_browser_process->local_state()
           ->GetList(prefs::kExtensibleEnterpriseSSOEnabledIdps)
-          .contains(kOktaIdentityProvider)) {
+          .contains(kOktaIdentityProvider) &&
+      g_browser_process->local_state()
+          ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+          .contains(request_initiator.host())) {
     auto [loader_receiver, target_factory] = factory_builder.Append();
+
+    // Cache configured hosts for a quicker lookup later on.
+    const base::Value::List& configured_hosts_pref =
+        g_browser_process->local_state()->GetList(
+            prefs::kExtensibleEnterpriseSSOConfiguredHosts);
+    base::flat_set<std::string> configured_hosts;
+    configured_hosts.reserve(configured_hosts_pref.size());
+    for (const base::Value& host : configured_hosts_pref) {
+      configured_hosts.insert(host.GetString());
+    }
     new ProxyingURLLoaderFactory(std::move(loader_receiver),
-                                 std::move(target_factory));
+                                 std::move(target_factory),
+                                 std::move(configured_hosts));
   }
 }
 
@@ -73,7 +89,8 @@ void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  if (IsOktaSSORequest(request)) {
+  if (configured_hosts_.contains(request.url.host()) &&
+      IsOktaSSORequest(request)) {
     if (intercepted_request_callback_for_testing_) {
       std::move(intercepted_request_callback_for_testing_).Run(request);
     } else {
@@ -122,6 +139,12 @@ bool ProxyingURLLoaderFactory::IsOktaSSORequest(
     return false;
   }
 
+  // Reject URLs with query parameters, fragments, or user credentials.
+  if (gurl.has_query() || gurl.has_ref() || gurl.has_username() ||
+      gurl.has_password()) {
+    return false;
+  }
+
   // Matching the path against pattern: prefix<ID>suffix
   std::string_view path = gurl.path();
 
@@ -144,12 +167,6 @@ bool ProxyingURLLoaderFactory::IsOktaSSORequest(
   size_t id_len = path.length() - kPrefix.length() - kSuffix.length();
   const std::string_view id_part = path.substr(kPrefix.length(), id_len);
   if (id_part.find('/') != std::string_view::npos) {
-    return false;
-  }
-
-  // Reject URLs with query parameters, fragments, or user credentials.
-  if (gurl.has_query() || gurl.has_ref() || gurl.has_username() ||
-      gurl.has_password()) {
     return false;
   }
 

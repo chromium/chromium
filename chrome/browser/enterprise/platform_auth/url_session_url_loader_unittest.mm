@@ -21,6 +21,9 @@
 #include "base/test/test_future.h"
 #include "base/test/test_suite.h"
 #include "base/time/time.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -193,6 +196,12 @@ class URLSessionURLLoaderTest : public testing::Test {
     network::ResourceRequest request;
     request.url = GURL(url);
     request.method = "POST";
+
+    base::Value::List hosts;
+    hosts.Append(request.url.host());
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
+        prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));
+
     url_loader_->Start(request, loader_remote_.BindNewPipeAndPassReceiver(),
                        std::move(client_remote_), timeout);
   }
