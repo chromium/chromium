@@ -18,6 +18,7 @@
 ../../web_tests/external/wpt/fonts/**/*.woff
 ../../web_tests/external/wpt/fonts/**/*.woff2
 -../../web_tests/external/wpt/fonts/CSSTest/**
+../../web_tests/external/wpt/jpegxl/resources/*.jxl
 ../../web_tests/images/resources/**
 ../../web_tests/images/bmp-suite/**/*.bmp
 ../../web_tests/images/bmp-suite/**/*.png

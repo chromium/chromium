@@ -2632,6 +2632,11 @@ group("blink_platform_unittests_data") {
     "//third_party/blink/web_tests/third_party/",
   ]
 
+  if (enable_jxl_decoder) {
+    # Required by JXL image decoder tests.
+    data += [ "//third_party/blink/web_tests/external/wpt/jpegxl/" ]
+  }
+
   data_deps = [
     "//testing/buildbot/filters:blink_platform_unittests",
     "//third_party/hyphenation-patterns:test_data",
@@ -2709,6 +2714,9 @@ source_set("blink_image_decoder_fuzzer_test_support") {
     "image-decoders/image_decoder_fuzzer_utils.h",
   ]
   deps = [ ":platform" ]
+  if (enable_jxl_decoder) {
+    deps += [ "//third_party/rust/jxl/v0_2/wrapper:jxl_rs" ]
+  }
 }
 
 # Fuzzer for blink::unicode::MathVariant.
@@ -2832,6 +2840,23 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
+}
+
+if (enable_jxl_decoder) {
+  # Fuzzer for blink::JXLImageDecoder
+  fuzzer_test("blink_jxl_decoder_fuzzer") {
+    sources = [ "image-decoders/jxl/jxl_image_decoder_fuzzer.cc" ]
+    deps = [
+      ":blink_fuzzer_test_support",
+      ":blink_image_decoder_fuzzer_test_support",
+      ":platform",
+      "//third_party/rust/jxl/v0_2/wrapper:jxl_rs",
+    ]
+    seed_corpuses =
+        [ "//third_party/blink/web_tests/external/wpt/jpegxl/resources" ]
+    libfuzzer_options = [ "rss_limit_mb=8192" ]
+    additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
+  }
 }
 
 # Fuzzer for blink::ICOImageDecoder.

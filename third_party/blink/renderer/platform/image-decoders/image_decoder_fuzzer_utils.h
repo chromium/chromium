@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 namespace blink {
@@ -16,6 +17,9 @@ enum class DecoderType {
   kJpegDecoder,
   kPngDecoder,
   kAvifDecoder,
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  kJxlDecoder,
+#endif
 };
 
 std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,

@@ -141,6 +141,12 @@
 ../../web_tests/external/wpt/fonts/pass.woff
 ../../web_tests/external/wpt/fonts/sileot-webfont.woff
 ../../web_tests/external/wpt/fonts/tcu-font.woff
+../../web_tests/external/wpt/jpegxl/resources/3x3_jpeg_recompression.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3_srgb_lossless.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3_srgb_lossy.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossless.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossy.jxl
+../../web_tests/external/wpt/jpegxl/resources/5_frames_numbered.jxl
 ../../web_tests/images/bmp-suite/bad/badbitcount.bmp
 ../../web_tests/images/bmp-suite/bad/badbitssize.bmp
 ../../web_tests/images/bmp-suite/bad/baddens1.bmp
@@ -488,6 +494,7 @@
 ../../web_tests/images/resources/missing-plte-before-trns.png
 ../../web_tests/images/resources/motion-jpeg-single-frame.jpg
 ../../web_tests/images/resources/mu.png
+../../web_tests/images/resources/newtons_cradle.jxl
 ../../web_tests/images/resources/non-interleaved_progressive-1.jpg
 ../../web_tests/images/resources/non-interleaved_progressive.jpg
 ../../web_tests/images/resources/oval.png
@@ -627,6 +634,7 @@
 ../../web_tests/images/resources/ycbcr-progressive-003.jpg
 ../../web_tests/images/resources/ycbcr-with-cmyk-color-profile.jpg
 ../../web_tests/images/resources/ycbcr-with-no-color-profile.jpg
+../../web_tests/images/resources/zoltan.jxl
 ../../web_tests/third_party/AdobeVF/AdobeVFPrototype.otf
 ../../web_tests/third_party/Amstelvar/Amstelvar.ttf
 ../../web_tests/third_party/DroidSans/DroidSans.ttf.subset-U002E-U0041-42.ttf
