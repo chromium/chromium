@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SKILLS_CONTENT_SKILLS_SERVICE_FACTORY_H_
-#define COMPONENTS_SKILLS_CONTENT_SKILLS_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_SKILLS_SKILLS_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_SKILLS_SKILLS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -35,4 +35,4 @@ class SkillsServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace skills
 
-#endif  // COMPONENTS_SKILLS_CONTENT_SKILLS_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_SKILLS_SKILLS_SERVICE_FACTORY_H_

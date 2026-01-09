@@ -331,6 +331,7 @@ include_rules = [
   "+components/signin/public",
   "+components/site_engagement",
   "+components/site_isolation",
+  "+components/skills",
   "+components/soda",
   "+components/spellcheck",
   "+components/sqlite_proto",
