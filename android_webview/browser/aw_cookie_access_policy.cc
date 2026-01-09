@@ -81,18 +81,33 @@ PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
     const net::SiteForCookies& site_for_cookies,
     bool accept_third_party_cookies,
     net::StorageAccessApiStatus storage_access_api_status) {
-  if (!accept_cookies_)
-    return PrivacySetting::kStateDisallowed;
+  return CanAccessCookies(url, site_for_cookies, accept_cookies_,
+                          accept_third_party_cookies,
+                          storage_access_api_status);
+}
 
-  if (accept_third_party_cookies)
+// static
+PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    bool accept_cookies,
+    bool accept_third_party_cookies,
+    net::StorageAccessApiStatus storage_access_api_status) {
+  if (!accept_cookies) {
+    return PrivacySetting::kStateDisallowed;
+  }
+
+  if (accept_third_party_cookies) {
     return PrivacySetting::kStateAllowed;
+  }
 
   // File URLs are a special case. We want file URLs to be able to set cookies
   // but (for the purpose of cookies) Chrome considers different file URLs to
   // come from different origins so we use the 'allow all' cookie policy for
   // file URLs.
-  if (url.SchemeIsFile())
+  if (url.SchemeIsFile()) {
     return PrivacySetting::kStateAllowed;
+  }
 
   switch (storage_access_api_status) {
     case net::StorageAccessApiStatus::kNone:

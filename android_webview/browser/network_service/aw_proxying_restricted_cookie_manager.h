@@ -138,6 +138,12 @@ class AwProxyingRestrictedCookieManager
 
   raw_ref<AwCookieAccessPolicy> cookie_access_policy_;
 
+  // Latched cookie policy state (used when kWebViewLatchedCookiePolicy
+  // enabled). These values are captured at construction time and used
+  // throughout the RCM's lifetime to enable shared memory cookie versioning.
+  bool latched_accept_cookies_ = true;
+  bool latched_accept_third_party_ = false;
+
   base::WeakPtrFactory<AwProxyingRestrictedCookieManager> weak_factory_{this};
 };
 

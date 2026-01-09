@@ -920,6 +920,11 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the communication between renderer and network service is "
                         + "asynchronous when setting cookies."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_LATCHED_COOKIE_POLICY,
+                "When enabled, cookie policy settings are captured at RestrictedCookieManager "
+                        + "creation time and used throughout its lifetime. This enables shared "
+                        + "memory cookie versioning to reduce IPC overhead."),
+        Flag.baseFeature(
                 NetworkServiceFeatures.GET_COOKIES_ON_SET,
                 "When enabled, the network service returns all the cookies when setting a new "
                         + "cookie, so that it can be cached."),
