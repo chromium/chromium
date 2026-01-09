@@ -15,9 +15,17 @@
 
 class Profile;
 
+namespace extensions {
+class Extension;
+}  // namespace extensions
+
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 // The controller for a settings overridden dialog that manages settings
 // overridden by an extension. The user has the option to acknowledge or
@@ -25,6 +33,11 @@ struct VectorIcon;
 class ExtensionSettingsOverriddenDialog
     : public SettingsOverriddenDialogController {
  public:
+  // Preference key to store the timestamp when the simple override enforcement
+  // began. Used to grandfather in existing installations.
+  static constexpr char kSimpleOverrideBeginConfirmationTimestamp[] =
+      "extensions.simple_override_begin_confirmation_timestamp";
+
   struct Params {
     // Chromium style requires an explicit ctor - which means we need more than
     // one : (
@@ -63,6 +76,8 @@ class ExtensionSettingsOverriddenDialog
       const ExtensionSettingsOverriddenDialog&) = delete;
   ~ExtensionSettingsOverriddenDialog() override;
 
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   // SettingsOverriddenDialogController:
   bool ShouldShow() override;
   ShowParams GetShowParams() override;
@@ -80,6 +95,10 @@ class ExtensionSettingsOverriddenDialog
   // Returns true if the extension with the given |id| has already been
   // acknowledged.
   bool HasAcknowledgedExtension(const extensions::ExtensionId& id);
+
+  // Returns true if a simple overridden extension should get a dialog shown.
+  bool ShouldShowForSimpleOverrideExtension(
+      const extensions::Extension& extension);
 
   const Params params_;
 

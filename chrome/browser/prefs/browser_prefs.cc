@@ -224,6 +224,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1772,6 +1773,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   // were nested in either a class or separate namespace with a simple
   // Register[Profile]Prefs() name.
   extensions::RegisterSettingsOverriddenUiPrefs(registry);
+  ExtensionSettingsOverriddenDialog::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
