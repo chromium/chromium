@@ -26903,6 +26903,30 @@
             ]
         }
     ],
+    "VariationsStickyPersistence": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PersistViaCommitWrite_20260107",
+                    "params": {
+                        "persistence_type": "commit"
+                    },
+                    "enable_features": [
+                        "VariationsStickyPersistence"
+                    ]
+                }
+            ]
+        }
+    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [
