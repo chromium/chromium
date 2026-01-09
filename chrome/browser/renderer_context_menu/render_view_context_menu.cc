@@ -2633,7 +2633,11 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
                                     IDS_CONTENT_CONTEXT_SELECTALL);
   }
 
-  AppendReadAnythingItem();
+  if (!menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE)
+           .has_value()) {
+    AppendReadAnythingItem();
+  }
+
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
