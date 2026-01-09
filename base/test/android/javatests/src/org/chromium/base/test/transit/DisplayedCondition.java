@@ -15,7 +15,6 @@ import androidx.test.espresso.Root;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.ViewPrinter;
 import org.chromium.build.annotations.Nullable;
 
@@ -76,10 +75,6 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
 
     @Override
     protected ConditionStatusWithResult<ViewT> resolveWithSuppliers() {
-        if (!ApplicationStatus.hasVisibleActivities()) {
-            return awaiting("No visible activities").withoutResult();
-        }
-
         // Match even views that are not visible so that visibility checking can be done with
         // more details later in this method.
         ArrayList<String> messages = new ArrayList<>();

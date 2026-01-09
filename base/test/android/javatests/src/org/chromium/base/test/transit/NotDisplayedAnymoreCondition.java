@@ -11,7 +11,6 @@ import androidx.test.espresso.Root;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,10 +35,6 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        if (!ApplicationStatus.hasVisibleActivities()) {
-            return fulfilled("No visible activities");
-        }
-
         List<Root> rootsToSearch;
         if (mViewElement != null) {
             // If created by a ViewElement, search the root which it was matched.
