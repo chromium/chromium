@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
@@ -340,21 +339,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         if (!shouldShowAppearancePref()) {
             removePreferenceIfPresent(PREF_APPEARANCE);
-
-            // LINT.IfChange(InitPrefToolbarShortcut)
-            new AdaptiveToolbarStatePredictor(
-                            getContext(),
-                            getProfile(),
-                            /* androidPermissionDelegate= */ null,
-                            /* behavior= */ null)
-                    .recomputeUiState(
-                            uiState -> {
-                                // Don't show toolbar shortcut settings if disabled from finch.
-                                if (!uiState.canShowUi) {
-                                    removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
-                                }
-                            });
-            // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java:InitPrefToolbarShortcut)
+            AppearanceSettingsFragment.shouldShowToolbarShortcutPrefAsync(
+                    getContext(),
+                    getProfile(),
+                    (shouldShow) -> {
+                        if (!shouldShow) removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
+                    });
 
             // LINT.IfChange(InitPrefUiTheme)
             findPreference(PREF_UI_THEME)
@@ -964,6 +954,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowAppearancePref()) {
                         indexData.removeEntry(getUniqueId(PREF_APPEARANCE));
+                        AppearanceSettingsFragment.shouldShowToolbarShortcutPrefAsync(
+                                context,
+                                profile,
+                                (shouldShow) -> {
+                                    if (!shouldShow) {
+                                        String prefFragment = MainSettings.class.getName();
+                                        indexData.removeEntryForKey(
+                                                prefFragment, PREF_TOOLBAR_SHORTCUT);
+                                    }
+                                });
+
                     } else {
                         indexData.removeEntry(getUniqueId(PREF_TOOLBAR_SHORTCUT));
                         indexData.removeEntry(getUniqueId(PREF_UI_THEME));
