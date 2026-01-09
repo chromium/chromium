@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -45,10 +45,10 @@ class MockWebAuthFlowDelegate : public WebAuthFlow::Delegate {
   MOCK_METHOD(void, OnAuthFlowFailure, (WebAuthFlow::Failure), (override));
 };
 
-class WebAuthFlowBrowserTest : public InProcessBrowserTest {
+class WebAuthFlowBrowserTest : public PlatformBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Delete the flow early if OnAuthFlowFailure is called. Simulates real
@@ -74,7 +74,7 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
     // in |DeleteWebAuthFlow| as it can be called from `timeout_task_runner_`'s
     // loop.
     base::RunLoop().RunUntilIdle();
-    InProcessBrowserTest::TearDownOnMainThread();
+    PlatformBrowserTest::TearDownOnMainThread();
   }
 
   void StartWebAuthFlow(
@@ -106,6 +106,18 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
       return nullptr;
     }
     return web_auth_flow_->web_contents();
+  }
+
+  BrowserWindowInterface* GetFirstActivatedBrowser() {
+    BrowserWindowInterface* first_activated_browser = nullptr;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&first_activated_browser](
+            BrowserWindowInterface* browser_window_interface) {
+          // The first activated browser is the one at the end of the vector.
+          first_activated_browser = browser_window_interface;
+          return true;
+        });
+    return first_activated_browser;
   }
 
   MockWebAuthFlowDelegate& mock() { return mock_web_auth_flow_delegate_; }
@@ -470,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
   EXPECT_EQ(popup_browser->GetType(), BrowserWindowInterface::TYPE_POPUP);
-  EXPECT_NE(browser(), popup_browser);
+  EXPECT_NE(GetFirstActivatedBrowser(), popup_browser);
   TabListInterface* tabs = TabListInterface::From(popup_browser);
   EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetLastCommittedURL(),
             auth_url);
@@ -522,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
   EXPECT_EQ(popup_browser->GetType(), BrowserWindowInterface::TYPE_POPUP);
-  EXPECT_NE(browser(), popup_browser);
+  EXPECT_NE(GetFirstActivatedBrowser(), popup_browser);
 
   // Simulate an internal navigation, such as an authentication that needs an
   // input of username and password on two different pages/urls.
@@ -561,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(
       profile, ProfileKeepAliveOrigin::kBackgroundMode);
   ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED};
-  CloseBrowserSynchronously(browser());
+  CloseBrowserSynchronously(GetFirstActivatedBrowser());
   ASSERT_FALSE(extensions::browser_window_util::GetLastActiveBrowserWithProfile(
       *profile, /*include_incognito_or_parent=*/false));
 
@@ -601,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
       profile, ProfileKeepAliveOrigin::kBackgroundMode);
   ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED};
-  CloseBrowserSynchronously(browser());
+  CloseBrowserSynchronously(GetFirstActivatedBrowser());
   ASSERT_FALSE(extensions::browser_window_util::GetLastActiveBrowserWithProfile(
       *profile, /*include_incognito_or_parent*/false));
 
@@ -668,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
   TabListInterface* tabs = TabListInterface::From(popup_browser);
-  EXPECT_NE(browser(), popup_browser);
+  EXPECT_NE(GetFirstActivatedBrowser(), popup_browser);
   EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetLastCommittedURL(),
             auth_url);
 
@@ -699,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   BrowserWindowInterface* popup_window_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
-  EXPECT_NE(popup_window_browser, browser());
+  EXPECT_NE(popup_window_browser, GetFirstActivatedBrowser());
 
   TabListInterface* popup_tabs = TabListInterface::From(popup_window_browser);
   EXPECT_EQ(popup_tabs->GetTabCount(), 1);
@@ -710,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   // Closing the browser popup window, simulating declining the consent.
   //---------------------------------------------------------------------
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
-  CloseBrowserSynchronously(popup_window_browser);
+  popup_window_browser->GetWindow()->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -754,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   BrowserWindowInterface* popup_window_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
-  EXPECT_NE(popup_window_browser, browser());
+  EXPECT_NE(popup_window_browser, GetFirstActivatedBrowser());
 
   gfx::Rect bounds = popup_window_browser->GetWindow()->GetBounds();
   EXPECT_EQ(bounds.x(), test_bounds.x());
