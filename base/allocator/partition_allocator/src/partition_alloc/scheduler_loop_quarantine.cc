@@ -199,28 +199,20 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Destroy() {
 template <bool thread_bound>
 void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
     SlotStart slot_start,
-    SlotSpanMetadata* slot_span) {
-  auto size_details = allocator_root_->SlotSpanToBucketSizeDetails(slot_span);
-  return QuarantineWithSize(slot_start, slot_span, size_details);
-}
-
-template <bool thread_bound>
-void SchedulerLoopQuarantineBranch<thread_bound>::QuarantineWithSize(
-    SlotStart slot_start,
     SlotSpanMetadata* slot_span,
     const internal::BucketSizeDetails& size_details) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   if (!enable_quarantine_ || pause_quarantine_) [[unlikely]] {
-    return allocator_root_->RawFreeWithThreadCacheWithSize(
-        slot_start, size_details, slot_span);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
+                                                   slot_span);
   }
   if (size_details.slot_size > BucketIndexLookup::kMaxBucketSize ||
       largest_bucket_index_ < size_details.bucket_index) [[unlikely]] {
     // The allocation is direct-mapped or larger than `largest_bucket_index_`.
-    return allocator_root_->RawFreeWithThreadCacheWithSize(
-        slot_start, size_details, slot_span);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
+                                                   slot_span);
   }
   PA_DCHECK(!allocator_root_->IsDirectMapped(slot_span));
   PA_DCHECK(
@@ -234,8 +226,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::QuarantineWithSize(
   if (capacity_in_bytes < slot_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
-    allocator_root_->RawFreeWithThreadCacheWithSize(slot_start, size_details,
-                                                    slot_span);
+    allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
+                                            slot_span);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return;
   }

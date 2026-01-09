@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
-
 #include "partition_alloc/scheduler_loop_quarantine.h"
 
 #include "partition_alloc/extended_api.h"
@@ -13,6 +11,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
+#include "partition_alloc/slot_start.h"
 #include "partition_alloc/thread_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,7 +85,9 @@ class SchedulerLoopQuarantineTest : public testing::Test {
     internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
     auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
         slot_start.Untag(), GetPartitionRoot());
-    GetQuarantineBranch()->Quarantine(slot_start, slot_span);
+    auto size_details =
+        GetPartitionRoot()->SlotSpanToBucketSizeDetails(slot_span);
+    GetQuarantineBranch()->Quarantine(slot_start, slot_span, size_details);
   }
 
   size_t GetObjectSize(void* object) {
