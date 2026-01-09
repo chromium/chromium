@@ -6,7 +6,9 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -45,6 +47,11 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
 
   // Default horizontal spacing between control buttons.
   constexpr static int kDefaultBetweenButtonSpacing = 0;
+
+  // Forcibly enable/disable tooltip for testing.
+  // Destroying the return object unsets the state.
+  [[nodiscard]] static base::AutoReset<std::optional<bool>>
+  SetTooltipEnabledForTesting(bool value);
 
   void OnThemeChanged() override;
 

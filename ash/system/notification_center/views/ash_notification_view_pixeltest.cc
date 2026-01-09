@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -12,6 +14,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -102,11 +105,24 @@ class AshNotificationViewPixelTest
     scoped_feature_list_->InitWithFeatureState(
         chromeos::features::kNotificationWidthIncrease,
         IsNotificationWidthIncreaseEnabled());
+
+    // Forcibly disable the tooltip for pixel diff stability.
+    notification_control_buttons_view_tooltip_enabled_resetter_ =
+        message_center::NotificationControlButtonsView::
+            SetTooltipEnabledForTesting(false);
+
     AshPixelTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    AshPixelTestBase::TearDown();
+    notification_control_buttons_view_tooltip_enabled_resetter_.reset();
   }
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  std::optional<base::AutoReset<std::optional<bool>>>
+      notification_control_buttons_view_tooltip_enabled_resetter_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
