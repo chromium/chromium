@@ -32,17 +32,8 @@ const char kMockStaticTestToken[] = "CHROMIUM_MOCK_XDG_ACTIVATION_TOKEN";
 
 using XdgActivationTest = WaylandTestSimple;
 
-#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
-    (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
-#define MAYBE_RequestNewToken DISABLED_RequestNewToken
-#else
-#define MAYBE_RequestNewToken RequestNewToken
-#endif
-
 // Tests that XdgActivation uses the proper surface to request token.
-// TODO(crbug.com/454227184): Flaky in general, mostly under
-// linux_chromium_tsan_rel_ng.
-TEST_F(XdgActivationTest, MAYBE_RequestNewToken) {
+TEST_F(XdgActivationTest, RequestNewToken) {
   MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
