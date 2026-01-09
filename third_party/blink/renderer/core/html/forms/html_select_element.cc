@@ -92,12 +92,7 @@ const int kDefaultListBoxSize = 4;
 
 HTMLSelectElement::HTMLSelectElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectTag, document),
-      type_ahead_(this),
-      size_(0),
-      last_on_change_option_(nullptr),
-      is_multiple_(false),
-      should_recalc_list_items_(false),
-      index_to_select_on_cancel_(-1) {
+      type_ahead_(this) {
   // Make sure SelectType is created after initializing |uses_menu_list_|.
   select_type_ = SelectType::Create(*this);
   SetHasCustomStyleCallbacks();
