@@ -495,25 +495,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.IOS.Experimental.Counts2"
-    enum="IOSStabilityUserVisibleTerminationType" expires_after="2026-02-12">
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    Recorded when iOS app has started after a crash caused by system signal or
-    hang. Not recorded when app has started after UTE / XTE or started after
-    Chrome update. See go/bling-stability-101 for information about signal
-    crashes, hangs, UTEs and XTEs. This metric intends to complement
-    Stability.Counts. Stability.Counts does include UTEs / XTEs and thus is a
-    noisy metric which significantly overcounts user-visible crashes.
-    Stability.IOS.Experimental.Counts2 is not recorded on OOM crashes, so it
-    does not represent all user-visible crashes, but OOMs are so rare in Chrome
-    for iOS that Stability.IOS.Experimental.Counts2 is still a good proxy for
-    user-visible crashes. IOS.MetricKit.ForegroundExitData includes OOM crashes
-    (iOS 14 and higher) and can be used in conjunction with this metric.
-  </summary>
-</histogram>
-
 <histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
     expires_after="2026-12-14">
   <owner>justincohen@chromium.org</owner>
