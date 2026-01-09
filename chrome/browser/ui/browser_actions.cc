@@ -642,10 +642,6 @@ void BrowserActions::InitializeBrowserActions() {
                 },
                 bwi))
             .SetActionId(kActionToggleCollapseVertical)
-            .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
-            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
             .Build());
   }
 

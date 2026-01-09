@@ -12,13 +12,16 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
 
 namespace tabs {
@@ -152,6 +155,8 @@ void VerticalTabStripStateController::UpdateSessionService() {
 void VerticalTabStripStateController::UpdateCollapseActionItem() {
   const gfx::VectorIcon& icon =
       IsCollapsed() ? views::kMenuCloseIcon : views::kMenuOpenIcon;
+  const auto& text =
+      IsCollapsed() ? IDS_EXPAND_VERTICAL_TABS : IDS_COLLAPSE_VERTICAL_TABS;
 
   actions::ActionItem* collapse_action =
       actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical,
@@ -159,6 +164,10 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
   if (collapse_action) {
     collapse_action->SetImage(
         ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
+    collapse_action->SetText(BrowserActions::GetCleanTitleAndTooltipText(
+        l10n_util::GetStringUTF16(text)));
+    collapse_action->SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+        l10n_util::GetStringUTF16(text)));
   }
 }
 
