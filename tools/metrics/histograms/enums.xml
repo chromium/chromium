@@ -20887,28 +20887,46 @@ from previous Chrome versions.
   <int value="2561" label="UnsupportedFrameFormatError"/>
 </enum>
 
-<enum name="MediaStreamRequestResult2">
+<enum name="MediaStreamRequestResult">
   <int value="0" label="OK"/>
-  <int value="1" label="Permission Denied (NotAllowedError)"/>
-  <int value="2" label="Permission Dismissed (NotAllowedError)"/>
-  <int value="3" label="Invalid State (NotAllowedError)"/>
-  <int value="4" label="No Hardware (NotFoundError)"/>
-  <int value="5" label="Invalid Security Origin (SecurityError)"/>
-  <int value="6" label="Tab Capture Failure (AbortError)"/>
-  <int value="7" label="Screen Capture Failure (AbortError)"/>
-  <int value="8" label="Capture Failure (AbortError)"/>
-  <int value="9" label="Constraint Not Satisfied (OverconstrainedError)"/>
-  <int value="10" label="Audio Track Start Failure (NotReadableError)"/>
-  <int value="11" label="Video Track Start Failure (NotReadableError)"/>
-  <int value="12" label="Not Supported (NotSupportedError)"/>
-  <int value="13" label="Failed Due To Shutdown (NotAllowedError)"/>
-  <int value="14" label="Kill Switch On (NotAllowedError)"/>
-  <int value="15" label="Permission Denied By System (NotAllowedError)"/>
-  <int value="16" label="Device In Use (NotReadableError)"/>
-  <int value="17" label="Request cancelled (?)"/>
+  <int value="1" label="Permission denied (NotAllowedError)"/>
+  <int value="2" label="Permission dismissed (NotAllowedError)"/>
+  <int value="3" label="Invalid state (AbortError)"/>
+  <int value="4" label="No hardware (NotFoundError)"/>
+  <int value="5" label="Invalid security origin (SecurityError)"/>
+  <int value="9" label="Constraint not satisfied (?)"/>
+  <int value="10" label="Audio track start failure (NotReadableError)"/>
+  <int value="11" label="Video track start failure (NotReadableError)"/>
+  <int value="12" label="Not supported (NotSupportedError)"/>
+  <int value="13" label="Failed due to shutdown (AbortError)"/>
+  <int value="14" label="KillSwitch on (NotAllowedError)"/>
+  <int value="15" label="Permission denied by System (NotAllowedError)"/>
+  <int value="16" label="Device in use (NotReadableError)"/>
   <int value="18" label="Start timeout (AbortError)"/>
   <int value="19" label="Permission denied by user (NotAllowedError)"/>
   <int value="20" label="Audio device socket error (NotReadableError)"/>
+  <int value="21" label="No Transient activation (NotAllowedError)"/>
+  <int value="22" label="Capture not allowed by Policy (NotAllowedError)"/>
+  <int value="23" label="Invalid Display capture constraints (AbortError)"/>
+  <int value="24"
+      label="Invalid Extension Tab capture constraints (AbortError)"/>
+  <int value="25"
+      label="Invalid Extension Screen capture constraints (AbortError)"/>
+  <int value="26" label="Invalid Video Device ID (AbortError)"/>
+  <int value="27" label="Stream not found in registry (AbortError)"/>
+  <int value="28" label="Android can't request Permission (NotAllowedError)"/>
+  <int value="29" label="MultiCapture not supported (NotAllowedError)"/>
+  <int value="30" label="Permission denied by Embedder (NotAllowedError)"/>
+  <int value="31" label="DLP Permission denied (NotAllowedError)"/>
+  <int value="32" label="Registry Request unverified (AbortError)"/>
+  <int value="33" label="Invalid Device type request (NotAllowedError)"/>
+  <int value="34" label="Invalid Extension type request (AbortError)"/>
+  <int value="35" label="Captured tab destroyed (AbortError)"/>
+  <int value="36" label="Capture not enabled (AbortError)"/>
+  <int value="37" label="Safe browsing observer (NotAllowedError)"/>
+  <int value="38" label="Capture from background page (Mac) (AbortError)"/>
+  <int value="39" label="Capture not allowed for long domains (AbortError)"/>
+  <int value="40" label="Permission Denied By Controller (NotAllowedError)"/>
 </enum>
 
 <enum name="MediaStreamType">

@@ -92,22 +92,22 @@ void UpdateRequestResult(UserMediaRequest* request,
     case UserMediaRequestType::kUserMedia: {
       if (request->IsGumExtensionRequest()) {
         base::UmaHistogramEnumeration(
-            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result", result);
+            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result2", result);
         return;
       } else {
         base::UmaHistogramEnumeration(
-            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result",
+            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result2",
             result);
         return;
       }
     }
     case UserMediaRequestType::kDisplayMedia:
       base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetDisplayMedia.Result", result);
+          "WebRTC.UserMediaRequest.GetDisplayMedia.Result2", result);
       return;
     case UserMediaRequestType::kAllScreensMedia:
       base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result", result);
+          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result2", result);
       return;
   }
 }
@@ -284,14 +284,9 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Requested device not found";
     case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
       return "Invalid security origin";
-    case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
     case MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
     case MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
       return "Error starting tab capture";
-    case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
-      return "Error starting screen capture";
-    case MediaStreamRequestResult::CAPTURE_FAILURE:
-      return "Error starting capture";
     case MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
       return "Could not start audio source";
     case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
@@ -307,8 +302,6 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Permission denied by system";
     case MediaStreamRequestResult::DEVICE_IN_USE:
       return "Device in use";
-    case MediaStreamRequestResult::REQUEST_CANCELLED:
-      return "Request was cancelled";
     case MediaStreamRequestResult::START_TIMEOUT:
       return "Timeout starting video source";
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:

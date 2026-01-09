@@ -15430,11 +15430,12 @@ be describing additional metrics about the same event.
     screen capture or opening a webcam or microphone, and the result of that
     request.
   </summary>
-  <metric name="VideoCaptureGenerateStreamResult"
-      enum="MediaStreamRequestResult2">
+  <metric name="VideoCaptureGenerateStreamResult2"
+      enum="MediaStreamRequestResult">
     <summary>
       The result of a page's request to open a video capture device (e.g.,
-      webcam).
+      webcam). The suffix 2 was added when the MediaStreamRequestResult enum was
+      updated with new entries.
     </summary>
     <aggregation>
       <history>

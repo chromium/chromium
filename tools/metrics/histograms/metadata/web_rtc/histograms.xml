@@ -1961,14 +1961,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.UserMediaRequest.{RequestType}.Result"
-    enum="MediaStreamRequestResult2" expires_after="2026-11-26">
+<histogram name="WebRTC.UserMediaRequest.{RequestType}.Result2"
+    enum="MediaStreamRequestResult" expires_after="2026-11-26">
   <owner>tovep@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Counters for UserMediaRequests results for type {RequestType} such as
     failure reasons. The standard specification error names are in parenthesis.
+    The suffix 2 to the histogram name was added when the new enum
+    MediaStreamRequestResult was added.
   </summary>
   <token key="RequestType">
     <variant name="GetAllScreensMedia"/>
