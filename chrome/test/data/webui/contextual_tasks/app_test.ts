@@ -131,6 +131,30 @@ suite('ContextualTasksAppTest', function() {
     assertEquals(title, threadUrl.searchParams.get('q'));
   });
 
+  test('history requested if url param set', async () => {
+    // Make sure the history panel is requested in the URL.
+    window.history.replaceState({}, '', `?open_history=true`);
+
+    const proxy = new TestContextualTasksBrowserProxy('http://example.com');
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const threadUrl = new URL(appElement.getPendingUrlForTesting());
+
+    // The param to open history should have been added to the initial thread
+    // URL.
+    assertEquals('1', threadUrl.searchParams.get('atvm'));
+
+    // The URL param asking to open history should have been removed.
+    const currentUrl = new URL(window.location.href);
+    assertFalse(currentUrl.searchParams.has('open_history'));
+
+    await microtasksFinished();
+  });
+
   test('toolbar visibility changes for tab and side panel', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
