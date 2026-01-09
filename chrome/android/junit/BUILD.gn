@@ -947,6 +947,16 @@ if (is_android) {
   }
 
   robolectric_library(
+      "chrome_junit_tests_org.chromium.chrome.browser.permissions") {
+    sources = [ "src/org/chromium/chrome/browser/permissions/PermissionBlockedDialogTest.java" ]
+
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//ui/android:ui_java_test_support",
+    ]
+  }
+
+  robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.price_tracking") {
     sources = [
       "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/CurrentTabPriceTrackingStateSupplierUnitTest.java",
