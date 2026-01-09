@@ -1280,6 +1280,14 @@ class ComputedStyle final : public ComputedStyleBase {
   using ComputedStyleBase::GetTextAlign;
   ETextAlign GetTextAlign(bool is_last_line) const;
 
+  // text-indent utility functions.
+  bool IsTextIndentEachLine() const {
+    return EnumHasFlags(GetTextIndentFlags(), TextIndentFlags::kEachLine);
+  }
+  bool IsTextIndentHanging() const {
+    return EnumHasFlags(GetTextIndentFlags(), TextIndentFlags::kHanging);
+  }
+
   // text-transform utility functions.
   [[nodiscard]] String ApplyTextTransform(
       const String&,
