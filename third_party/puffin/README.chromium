@@ -66,3 +66,4 @@ issue in nonembedded android component_updater.
 - Updated puffdiff.cc to use spans for endian conversion and memcpy.
 - Replaced LOG with VLOG to avoid unnecessary logging unless logging is enabled.
 - Add missing includes to common.h and stream.h.
+- Changed the chromium base::File invocations to use the span-based API.

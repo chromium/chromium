@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -67,26 +68,21 @@ bool FileStream::Seek(uint64_t u_offset) {
 }
 
 bool FileStream::Read(void* buffer, size_t length) {
-  auto c_bytes = static_cast<char*>(buffer);
-  size_t total_bytes_read = 0;
-  while (total_bytes_read < length) {
-    auto bytes_read = file_.ReadAtCurrentPos(c_bytes + total_bytes_read,
-                                             length - total_bytes_read);
-    // if bytes_read is zero then EOF is reached and we should not be here.
+  base::span<uint8_t> bytes(static_cast<uint8_t*>(buffer), length);
+  while (!bytes.empty()) {
+    std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(bytes);
     TEST_AND_RETURN_FALSE(bytes_read > 0);
-    total_bytes_read += bytes_read;
+    bytes.take_first(*bytes_read);
   }
   return true;
 }
 
 bool FileStream::Write(const void* buffer, size_t length) {
-  auto c_bytes = static_cast<const char*>(buffer);
-  size_t total_bytes_wrote = 0;
-  while (total_bytes_wrote < length) {
-    auto bytes_wrote = file_.WriteAtCurrentPos(c_bytes + total_bytes_wrote,
-                                               length - total_bytes_wrote);
-    TEST_AND_RETURN_FALSE(bytes_wrote >= 0);
-    total_bytes_wrote += bytes_wrote;
+  base::span<const uint8_t> bytes(static_cast<const uint8_t*>(buffer), length);
+  while (!bytes.empty()) {
+    std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(bytes);
+    TEST_AND_RETURN_FALSE(bytes_written.has_value());
+    bytes.take_first(*bytes_written);
   }
   return true;
 }
