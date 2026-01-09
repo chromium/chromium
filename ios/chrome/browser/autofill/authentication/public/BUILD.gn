@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "card_unmask_authentication_selection_constants.h",
+    "card_unmask_authentication_selection_constants.mm",
+    "card_unmask_challenge_option_ios.h",
+    "card_unmask_challenge_option_ios.mm",
+    "otp_input_dialog_view_constants.h",
+    "otp_input_dialog_view_constants.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser/payments:card_unmask_challenge_option",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "card_unmask_challenge_option_ios_unittest.mm" ]
+  deps = [
+    ":public",
+    "//testing/gtest",
+  ]
+}
