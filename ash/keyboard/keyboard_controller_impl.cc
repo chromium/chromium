@@ -456,9 +456,12 @@ void KeyboardControllerImpl::TransferGestureEventToShelf(
       ash::Shelf::ForWindow(keyboard_ui_controller_->GetKeyboardWindow());
   if (shelf) {
     shelf->ProcessGestureEvent(e);
-    aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
-        keyboard_ui_controller_->GetGestureConsumer(), shelf->GetWindow(),
-        ui::TransferTouchesBehavior::kCancel);
+    auto* current_consumer = keyboard_ui_controller_->GetGestureConsumer();
+    if (current_consumer) {
+      aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+          current_consumer, shelf->GetWindow(),
+          ui::TransferTouchesBehavior::kCancel);
+    }
     HideKeyboard(HideReason::kUser);
   }
 }
