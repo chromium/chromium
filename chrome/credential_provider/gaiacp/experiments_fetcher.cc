@@ -11,6 +11,7 @@
 
 #include <windows.h>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -215,17 +216,13 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
     return E_FAIL;
   }
 
-  int num_bytes_written = experiments_file->Write(0, experiments_data.c_str(),
-                                                  experiments_data.size());
-
-  experiments_file.reset();
-
-  if (size_t(num_bytes_written) != experiments_data.size()) {
-    LOGFN(ERROR) << "Failed writing experiments data to file! Only "
-                 << num_bytes_written << " bytes written out of "
-                 << experiments_data.size();
+  if (!experiments_file->WriteAndCheck(0,
+                                       base::as_byte_span(experiments_data))) {
+    LOGFN(ERROR) << "Failed writing experiments data to file!";
     return E_FAIL;
   }
+
+  experiments_file.reset();
 
   base::Time fetch_time = base::Time::Now();
   std::wstring fetch_time_millis = base::NumberToWString(
