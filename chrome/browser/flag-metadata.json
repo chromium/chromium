@@ -8256,7 +8256,7 @@
       "elklm@chromium.org",
       "//components/permissions/PERMISSIONS_OWNERS"
     ],
-    "expiry_milestone": 149
+    "expiry_milestone": 155
   },
   {
     "name": "permissions-android-clapper-quiet",
