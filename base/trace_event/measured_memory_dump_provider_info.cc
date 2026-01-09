@@ -26,10 +26,11 @@ MeasuredMemoryDumpProviderInfo::MeasuredMemoryDumpProviderInfo(
 MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
   if (provider_info_) {
     const base::TimeDelta total_time = elapsed_timer_.Elapsed();
-    base::UmaHistogramExactLinear(
-        base::StrCat({"Memory.DumpProvider.FollowingProviders.",
+
+    base::UmaHistogramCounts1000(
+        base::StrCat({"Memory.DumpProvider.FollowingProviders2.",
                       provider_info_->name.histogram_name()}),
-        static_cast<int>(num_following_providers_), 101);
+        static_cast<int>(num_following_providers_));
     base::UmaHistogramEnumeration(
         base::StrCat({"Memory.DumpProvider.FinalStatus.",
                       provider_info_->name.histogram_name()}),
@@ -38,6 +39,13 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
         base::StrCat({"Memory.DumpProvider.TotalTime.",
                       provider_info_->name.histogram_name()}),
         total_time);
+
+    // Aggregate all providers together without a suffix.
+    base::UmaHistogramCounts1000("Memory.DumpProvider.FollowingProviders2",
+                                 static_cast<int>(num_following_providers_));
+    base::UmaHistogramEnumeration("Memory.DumpProvider.FinalStatus", status_);
+    base::UmaHistogramMicrosecondsTimes("Memory.DumpProvider.TotalTime",
+                                        total_time);
   }
 }
 
