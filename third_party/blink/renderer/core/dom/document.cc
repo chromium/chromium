@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/cssom/caret_position.h"
 #include "third_party/blink/renderer/core/css/cssom/computed_style_property_map.h"
+#include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
@@ -8348,6 +8349,23 @@ void Document::SetTextScaleMetaTagPresent(bool present) {
     UseCounter::CountWebDXFeature(this, WebDXFeature::kDRAFT_MetaTextScale);
   }
   GetStyleEngine().InitialStyleChanged();
+  GetStyleEngine()
+      .EnsureEnvironmentVariables()
+      .UpdatePreferredTextScaleFromDocument();
+
+  if (LocalFrame* frame = GetFrame()) {
+    if (Settings* settings = GetSettings()) {
+      // If we are in a WebView and the meta tag is being flipped, we need to
+      // change the system font scale.
+      // No matter if the page just added or just removed meta,
+      // SetTextZoomFactor will do the right thing if we give it the original
+      // font scale factor here.
+      if (settings->GetScaleAllFontsIfNoMetaTextScaleTag() &&
+          !settings->GetTextAutosizingEnabled()) {
+        frame->SetTextZoomFactor(settings->GetAccessibilityFontScaleFactor());
+      }
+    }
+  }
 }
 
 void Document::TextScaleMetaChanged() {

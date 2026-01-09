@@ -95,13 +95,40 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
 }
 
 void DocumentStyleEnvironmentVariables::UpdatePreferredTextScaleFromDocument() {
-  double combined_factor = FontSizeFunctions::SnapToClosestFontScaleBucket(
-      document_->GetSettings()->GetAccessibilityFontScaleFactor());
+  double scale_factor;
+
+  // For compat, we don't expose env(preferred-text-scale)'s true value to pages
+  // in WebView if the page has no meta text-scale tag and the app does not
+  // enable autosizing.
+  //
+  // WebView defaults to inflating ALL text on the page, so if there's a page
+  // that uses env(preferred-text-scale) to inflate *parts* of the page, those
+  // parts will get double-scaled (once along with everything else, then once
+  // again by env()).
+
   if (document_->TextScaleMetaTagPresent()) {
-    combined_factor *= document_->GetSettings()->GetDefaultFontSize() / 16.0;
+    // But if a page includes meta, they are signaling to us that the page will
+    // handle scaling themselves, so we populate env() to let them use it.
+    // Elsewhere, in response to meta, we have disabled Webview inflating all
+    // text.
+    scale_factor =
+        FontSizeFunctions::SnapToClosestFontScaleBucket(
+            document_->GetSettings()->GetAccessibilityFontScaleFactor()) *
+        (document_->GetSettings()->GetDefaultFontSize() / 16.0);
+  } else {
+    const bool should_hide_env_to_prevent_double_scaling =
+        document_->GetSettings()->GetScaleAllFontsIfNoMetaTextScaleTag() &&
+        !document_->GetSettings()->GetTextAutosizingEnabled();
+
+    scale_factor =
+        should_hide_env_to_prevent_double_scaling
+            ? 1.0
+            : FontSizeFunctions::SnapToClosestFontScaleBucket(
+                  document_->GetSettings()->GetAccessibilityFontScaleFactor());
   }
+
   SetVariable(UADefinedVariable::kPreferredTextScale,
-              String::Number(combined_factor));
+              String::Number(scale_factor));
 }
 
 }  // namespace blink

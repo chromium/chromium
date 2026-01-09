@@ -792,10 +792,42 @@ float WebViewImpl::MaximumLegiblePageScale() const {
   // need to zoom in further when automatically determining zoom level
   // (after double tap, find in page, etc), though the user should still
   // be allowed to manually pinch zoom in further if they desire.
-  if (GetPage()) {
-    return maximum_legible_scale_ *
-           GetPage()->GetSettings().GetAccessibilityFontScaleFactor();
+  if (!GetPage()) {
+    return maximum_legible_scale_;
   }
+
+  const Settings& settings = GetPage()->GetSettings();
+  if (settings.GetAccessibilityFontScaleFactor() == 1.0) {
+    // If the user's OS-level font size preferences are the default, we're done.
+    return maximum_legible_scale_;
+  }
+
+  // For compat, the following code determines the circumstances under which the
+  // user's OS-level font size preferences affects how far they can zoom in.
+  // Chrome currently only sets a non-default AccessibilityFontScaleFactor on
+  // mobile.
+
+  // Allow the user to always zoom more on Chrome Android.. Allow on WebView if
+  // the Java developer has enabled autosizing.
+  const bool is_webview = settings.GetWideViewportQuirkEnabled();
+  if (!is_webview || settings.GetTextAutosizingEnabled()) {
+    return maximum_legible_scale_ * settings.GetAccessibilityFontScaleFactor();
+  }
+
+  // Getting here means we are in Android WebView, which has already enlarged
+  // the text so we don't need to allow further zooming. Unless the page has a
+  // meta text-scale tag, which means WebView has NOT enlarged the text, so we
+  // allow further zooming in that case.
+  if (WebLocalFrameImpl* main_frame = MainFrameImpl()) {
+    if (Document* document = main_frame->GetFrame()->GetDocument()) {
+      if (document->TextScaleMetaTagPresent()) {
+        return maximum_legible_scale_ *
+               settings.GetAccessibilityFontScaleFactor();
+      }
+    }
+  }
+
+  // In WebView, without a meta tag, we use the default.
   return maximum_legible_scale_;
 }
 
@@ -1787,6 +1819,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetSupportDeprecatedTargetDensityDPI(
       prefs.support_deprecated_target_density_dpi);
   settings->SetWideViewportQuirkEnabled(prefs.wide_viewport_quirk);
+  settings->SetScaleAllFontsIfNoMetaTextScaleTag(
+      prefs.scale_all_fonts_if_no_meta_text_scale_tag);
   settings->SetUseWideViewport(prefs.use_wide_viewport);
   settings->SetForceZeroLayoutHeight(prefs.force_zero_layout_height);
   settings->SetViewportMetaMergeContentQuirk(

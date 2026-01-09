@@ -4076,4 +4076,190 @@ public class AwSettingsTest {
     private boolean isTablet() {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity());
     }
+
+    class AwSettingsTextScaleMetaTagTestHelper extends AwSettingsTextAutosizingTestHelper<Integer> {
+        protected final float mInitialActualFontSize;
+        protected static final int INITIAL_TEXT_ZOOM = 100;
+
+        AwSettingsTextScaleMetaTagTestHelper(
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
+            super(
+                    containerView,
+                    contentViewClient,
+                    !AwFeatureMap.isEnabled(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING));
+            // Enable JavaScript for reading font size.
+            mAwSettings.setJavaScriptEnabled(true);
+            // Always set autosizing here, but we control it via flags later.
+            mAwSettings.setLayoutAlgorithm(AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING);
+            mInitialActualFontSize = getActualFontSize();
+        }
+
+        @Override
+        protected String getData() {
+            return "<html>"
+                    + "<head>"
+                    + "<meta name=\"text-scale\" content=\"scale\">"
+                    + "<script>"
+                    + "function setTitleToActualFontSize() {"
+                    + "  document.title = parseFloat(getComputedStyle("
+                    + "    document.getElementById('par'))"
+                    + ".getPropertyValue('font-size'));"
+                    + "}</script></head>"
+                    + "<body>"
+                    + "<p id=\"par\">"
+                    + "Hello, World! Hello, World! "
+                    + "</p>"
+                    + "<p id=\"fixed\" style=\"font-size: 20px\">Fixed Text</p>"
+                    + "<div id=\"env-test\" style=\"width: calc(100px *"
+                    + " env(preferred-text-scale));\"></div>"
+                    + "</body></html>";
+        }
+
+        @Override
+        protected Integer getAlteredValue() {
+            return INITIAL_TEXT_ZOOM * 2;
+        }
+
+        @Override
+        protected Integer getInitialValue() {
+            return INITIAL_TEXT_ZOOM;
+        }
+
+        @Override
+        protected Integer getCurrentValue() {
+            return mAwSettings.getTextZoom();
+        }
+
+        @Override
+        protected void setCurrentValue(Integer value) throws Throwable {
+            super.setCurrentValue(value);
+            mAwSettings.setTextZoom(value);
+            // If the meta tag is disabled but autosizing is enabled, the font size will not change
+            // at all in this scenario, so we skip the wait to avoid timeouts.
+            if (!AwFeatureMap.isEnabled(BlinkFeatures.TEXT_SCALE_META_TAG) && mAutosizingEnabled) {
+                mNeedToWaitForFontSizeChange = false;
+            }
+        }
+
+        @Override
+        protected void doEnsureSettingHasValue(Integer value) throws Throwable {
+            final float actualFontSize = getActualFontSize();
+            // With OR without the meta tag, setTextZoom should scale the default font size of
+            // medium.
+            float expectedRatio = value / (float) INITIAL_TEXT_ZOOM;
+            if (!AwFeatureMap.isEnabled(BlinkFeatures.TEXT_SCALE_META_TAG) && mAutosizingEnabled) {
+                expectedRatio = 1.0f;
+            }
+
+            final float ratiosDelta =
+                    Math.abs((actualFontSize / mInitialActualFontSize) - expectedRatio);
+            Assert.assertTrue(
+                    "|("
+                            + actualFontSize
+                            + " / "
+                            + mInitialActualFontSize
+                            + ") - ("
+                            + expectedRatio
+                            + ")| = "
+                            + ratiosDelta,
+                    ratiosDelta <= 0.2f);
+
+            // Retrieve the size of the text that had a fixed font size.
+            String fixedSizeStr =
+                    executeJavaScriptAndWaitForResult(
+                            "parseFloat(getComputedStyle(document.getElementById('fixed'))"
+                                    + ".getPropertyValue('font-size'))");
+            float fixedSize = Float.parseFloat(fixedSizeStr);
+
+            // Retrieve the value of the environment variable.
+            String envWidthStr =
+                    executeJavaScriptAndWaitForResult(
+                            "parseFloat(getComputedStyle(document.getElementById"
+                                    + "('env-test')).width)");
+            float envWidth = Float.parseFloat(envWidthStr);
+
+            if (AwFeatureMap.isEnabled(BlinkFeatures.TEXT_SCALE_META_TAG)) {
+                Assert.assertEquals("Fixed font size should NOT scale", 20.0f, fixedSize, 0.5f);
+
+                // The meta tag makes us populate env(preferred-text-scale).
+                float expectedWidth = value;
+                Assert.assertEquals(
+                        "env(preferred-text-scale) width", expectedWidth, envWidth, 1.0f);
+
+            } else {
+                // TextScaleMetaTag Disabled: Fixed font size SHOULD scale (legacy behavior).
+                float expectedFixedSize = 20.0f * (value / (float) INITIAL_TEXT_ZOOM);
+                if (mAutosizingEnabled) {
+                    expectedFixedSize = 20.0f;
+                }
+                Assert.assertEquals(
+                        "Fixed font size should scale", expectedFixedSize, fixedSize, 2.0f);
+
+                if (mAutosizingEnabled) {
+                    float expectedWidth = value;
+                    Assert.assertEquals(
+                            "env() should track scale when autosizing on",
+                            expectedWidth,
+                            envWidth,
+                            1.0f);
+                } else {
+                    Assert.assertEquals(
+                            "no meta & no autosizing? env(preferred-text-scale) should be 1 ",
+                            100.0f,
+                            envWidth,
+                            1.0f);
+                }
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.TEXT_SCALE_META_TAG)
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testTextScaleMetaTagWithTwoViews() throws Throwable {
+        ViewPair views = createViews();
+        runPerViewSettingsTest(
+                new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),
+                new AwSettingsTextScaleMetaTagTestHelper(
+                        views.getContainer1(), views.getClient1()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.TEXT_SCALE_META_TAG)
+    @DisableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testTextScaleMetaTagWithTwoViewsWithAutosizingEnabled() throws Throwable {
+        ViewPair views = createViews();
+        runPerViewSettingsTest(
+                new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),
+                new AwSettingsTextScaleMetaTagTestHelper(
+                        views.getContainer1(), views.getClient1()));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(BlinkFeatures.TEXT_SCALE_META_TAG)
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testTextScaleMetaTagWithTwoViewsDisabled() throws Throwable {
+        ViewPair views = createViews();
+        runPerViewSettingsTest(
+                new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),
+                new AwSettingsTextScaleMetaTagTestHelper(
+                        views.getContainer1(), views.getClient1()));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({BlinkFeatures.TEXT_SCALE_META_TAG, BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING})
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testTextScaleMetaTagWithTwoViewsWithAutosizingEnabledDisabled() throws Throwable {
+        ViewPair views = createViews();
+        runPerViewSettingsTest(
+                new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),
+                new AwSettingsTextScaleMetaTagTestHelper(
+                        views.getContainer1(), views.getClient1()));
+    }
 }

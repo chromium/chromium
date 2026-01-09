@@ -661,6 +661,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.long_press_link_select_text;
   }
 
+  static bool scale_all_fonts_if_no_meta_text_scale_tag(
+      const blink::web_pref::WebPreferences& r) {
+    return r.scale_all_fonts_if_no_meta_text_scale_tag;
+  }
+
   static bool should_screenshot_on_mainframe_same_doc_navigation(
       const blink::web_pref::WebPreferences& r) {
     return r.should_screenshot_on_mainframe_same_doc_navigation;

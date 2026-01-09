@@ -290,6 +290,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Long press on links selects text instead of triggering context menu.
   bool long_press_link_select_text = false;
+  // Support WebView font scaling behavior that differs from Chrome.
+  bool scale_all_fonts_if_no_meta_text_scale_tag = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1284805): Remove IS_ANDROID once WebView supports WebAuthn.

@@ -370,6 +370,10 @@ struct WebPreferences {
   [EnableIf=is_android]
   bool long_press_link_select_text;
 
+  // Support WebView font scaling behavior that differs from Chrome.
+  [EnableIf=is_android]
+  bool scale_all_fonts_if_no_meta_text_scale_tag;
+
   // Disable the Web Authentication (WebAuthn) API.
   // TODO(crbug.com/1284805): Remove once WebView supports WebAuthn.
   [EnableIf=is_android]

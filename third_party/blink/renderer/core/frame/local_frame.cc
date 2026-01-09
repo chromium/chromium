@@ -1676,6 +1676,9 @@ void LocalFrame::SetLayoutZoomFactor(float factor) {
 }
 
 void LocalFrame::SetTextZoomFactor(float factor) {
+  if (GetDocument() && GetDocument()->TextScaleMetaTagPresent()) {
+    factor = 1.0f;
+  }
   SetZoomFactors(layout_zoom_factor_, factor, css_zoom_factor_);
 }
 

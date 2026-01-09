@@ -198,6 +198,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->disable_accelerated_small_canvases =
       data.disable_accelerated_small_canvases();
   out->long_press_link_select_text = data.long_press_link_select_text();
+  out->scale_all_fonts_if_no_meta_text_scale_tag =
+      data.scale_all_fonts_if_no_meta_text_scale_tag();
   out->dynamic_safe_area_insets_enabled =
       data.dynamic_safe_area_insets_enabled();
 #endif  // BUILDFLAG(IS_ANDROID)

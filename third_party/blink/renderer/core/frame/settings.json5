@@ -456,6 +456,11 @@
     },
 
     {
+      name: "scaleAllFontsIfNoMetaTextScaleTag",
+      initial: false,
+    },
+
+    {
       name: "mainFrameClipsContent",
       initial: true,
       invalidate: ["ViewportPaintProperties"],

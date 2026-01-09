@@ -1147,6 +1147,9 @@ public final class ProductionSupportedFlagList {
                     + " Note: The actual behavior is controlled by a feature param, but disabling"
                     + " the feature will use the default param value (no special persistence)."),
         Flag.baseFeature(
+                BlinkFeatures.TEXT_SCALE_META_TAG,
+                "When enabled, <meta name=\"text-scale\" content=\"scale\"> takes effect"),
+        Flag.baseFeature(
                 CcFeatures.DROP_METRICS_FROM_NON_PRODUCED_FRAMES_ONLY_IF_THEY_HAD_NO_DAMAGE,
                 "Whether LayerTreeHostImpl::DidNotProduceFrame() should only drop event metrics"
                         + " from frames that weren't produced due to no damage (but preserve event"
