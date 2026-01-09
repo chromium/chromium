@@ -2509,6 +2509,11 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testPanelWillOpenHasPromptSuggestion() {
+    const openData = await observeSequence(this.client.panelOpenData).next();
+    assertEquals('Prompt Suggestion', openData.promptSuggestion);
+  }
+
   async testGetTabById() {
     assertDefined(this.host.getTabById);
 

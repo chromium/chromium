@@ -2223,6 +2223,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ExecuteJsTest({.params = base::Value("verify")});
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenHasPromptSuggestion) {
+  // Simulate click on contextual cue with prompt suggestion.
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(),
+                 /*prevent_close=*/false, glic::mojom::InvocationSource::kNudge,
+                 "Prompt Suggestion");
+
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetTabById) {
   NavigateTabAndOpenGlic();
   ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));

@@ -138,7 +138,8 @@ class GlicInstanceImpl : public GlicInstance,
   // Returns true when toggle shows the instance and false when it is closed.
   bool Toggle(ShowOptions&& options,
               bool prevent_close,
-              glic::mojom::InvocationSource source);
+              glic::mojom::InvocationSource source,
+              std::optional<std::string> prompt_suggestion);
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
@@ -305,7 +306,8 @@ class GlicInstanceImpl : public GlicInstance,
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
-  void MaybeShowHostUi(GlicUiEmbedder* embedder);
+  void MaybeShowHostUi(GlicUiEmbedder* embedder,
+                       std::optional<std::string> prompt_suggestion);
   void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
   bool ShouldDoAutomaticActivation() const;
@@ -325,7 +327,8 @@ class GlicInstanceImpl : public GlicInstance,
   EmbedderEntry& BindTab(tabs::TabInterface* tab, GlicPinTrigger pin_trigger);
   // For any pinned tab not already bound to a conversation bind it to this one.
   void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool pinned);
-  void NotifyPanelWillOpen(mojom::InvocationSource invocation_source);
+  void NotifyPanelWillOpen(mojom::InvocationSource invocation_source,
+                           std::optional<std::string> prompt_suggestion);
 
   void UpdateSharingManagerDelegate();
 

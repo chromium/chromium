@@ -72,6 +72,7 @@ struct ShowOptions {
   // Shared show options
   bool focus_on_show = false;
   bool reinitialize_if_already_active = false;
+  std::optional<std::string> prompt_suggestion = std::nullopt;
 
   // Container for options that are different between side panel and floaty.
   EmbedderOptions embedder_options;

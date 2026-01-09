@@ -175,10 +175,13 @@ class GlicInstanceCoordinatorImpl
   std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl();
   void CreateWarmedInstance();
 
-  void ToggleFloaty(bool prevent_close, glic::mojom::InvocationSource source);
+  void ToggleFloaty(bool prevent_close,
+                    glic::mojom::InvocationSource source,
+                    std::optional<std::string> prompt_suggestion);
   void ToggleSidePanel(BrowserWindowInterface* browser,
                        bool prevent_close,
-                       glic::mojom::InvocationSource source);
+                       glic::mojom::InvocationSource source,
+                       std::optional<std::string> prompt_suggestion);
 
   void CloseFloaty();
 
