@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
@@ -147,12 +148,11 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 // Encodes the list of `forms` and their fields that are valid into an
 // `AutofillPageQueryRequest` proto. The queried FormSignatures and
 // FieldSignatures are also returned in the same order as in `query`. In case
-// multiple FormStructures have the same FormSignature, only the first one is
+// multiple FormData have the same FormSignature, only the first one is
 // included in `AutofillPageQueryRequest` and the returned queried form
 // signatures.
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
-EncodeAutofillPageQueryRequest(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms);
+EncodeAutofillPageQueryRequest(const std::vector<FormData>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
 // `ProcessServerPredictionsQueryResponse`.

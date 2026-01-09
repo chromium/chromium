@@ -1156,10 +1156,10 @@ void ExpectFilledCreditCardFormElvis(const FormData& filled_form,
   ExpectFilledForm(filled_form, expected_address_fill_data, kElvisCardFillData);
 }
 
-// Returns a matcher that checks a `FormStructure`'s renderer id.
-auto FormStructureHasRendererId(FormRendererId form_renderer_id) {
-  return Pointee(Property(&FormStructure::global_id,
-                          Field(&FormGlobalId::renderer_id, form_renderer_id)));
+// Returns a matcher that checks a `FormData`'s renderer id.
+auto FormHasRendererId(FormRendererId form_renderer_id) {
+  return Property(&FormData::global_id,
+                  Field(&FormGlobalId::renderer_id, form_renderer_id));
 }
 
 Suggestion CreateUndoOrClearFormSuggestion() {
@@ -1632,14 +1632,12 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
        CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
 
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
-  EXPECT_CALL(
-      crowdsourcing_manager(),
-      StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form.renderer_id())), _, _));
-  EXPECT_CALL(
-      crowdsourcing_manager(),
-      StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form2.renderer_id())), _, _));
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartQueryRequest(
+                  ElementsAre(FormHasRendererId(form.renderer_id())), _, _));
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartQueryRequest(
+                  ElementsAre(FormHasRendererId(form2.renderer_id())), _, _));
   FormsSeen({form});
   FormsSeen({form2});
 }
@@ -3649,10 +3647,9 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_client().SetAutofillProfileEnabled(false);
   // If the password manager is enabled, that's enough to parse the form.
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
-  EXPECT_CALL(
-      crowdsourcing_manager(),
-      StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form.renderer_id())), _, _));
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartQueryRequest(
+                  ElementsAre(FormHasRendererId(form.renderer_id())), _, _));
   FormsSeen({form});
 }
 

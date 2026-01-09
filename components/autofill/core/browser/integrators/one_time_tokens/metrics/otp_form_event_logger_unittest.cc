@@ -77,9 +77,7 @@ class OtpFormEventLoggerIntegrationTest
     // Default action: always run the callback with a default/empty response
     ON_CALL(*mock_crowdsourcing_manager, StartQueryRequest)
         .WillByDefault(
-            [](const std::vector<
-                   raw_ptr<const FormStructure, VectorExperimental>>&,
-               std::optional<net::IsolationInfo>,
+            [](const std::vector<FormData>&, std::optional<net::IsolationInfo>,
                base::OnceCallback<void(
                    std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
                    callback) {
@@ -106,9 +104,7 @@ class OtpFormEventLoggerIntegrationTest
         .Times(testing::AtLeast(0))
         .WillRepeatedly(
             [response, form_signature](
-                const std::vector<
-                    raw_ptr<const FormStructure, VectorExperimental>>&,
-                std::optional<net::IsolationInfo>,
+                const std::vector<FormData>&, std::optional<net::IsolationInfo>,
                 base::OnceCallback<void(
                     std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
                     callback) {

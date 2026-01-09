@@ -92,15 +92,6 @@ constexpr int METHOD_POST = 1;
 constexpr int CACHE_MISS = 0;
 constexpr int CACHE_HIT = 1;
 
-std::vector<raw_ptr<const FormStructure, VectorExperimental>>
-ToRawPointerVector(const std::vector<std::unique_ptr<FormStructure>>& list) {
-  std::vector<raw_ptr<const FormStructure, VectorExperimental>> result;
-  for (const auto& item : list) {
-    result.push_back(item.get());
-  }
-  return result;
-}
-
 // Sets the `host_form_signature` member of all fields contained in
 // `form_structure` to the signature of the `form_structure`.
 void SetCorrectFieldHostFormSignatures(FormStructure& form_structure) {
@@ -243,10 +234,12 @@ class AutofillCrowdsourcingManagerTest
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // TODO(crbug.com/470949499): Switch to std::vector<FormData> to
+  // match the interface of `AutofillCrowdsourcingManager::StartQueryRequest`.
   bool StartQueryRequest(
       const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
     return crowdsourcing_manager().StartQueryRequest(
-        ToRawPointerVector(form_structures),
+        base::ToVector(form_structures, &FormStructure::ToFormData),
         autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
@@ -318,7 +311,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -413,7 +407,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 4, not successful.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -430,7 +425,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -467,7 +463,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   // Start the query and check its success. No response has been received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -551,7 +548,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -1189,7 +1187,7 @@ class AutofillServerCommunicationTest
     AutofillCrowdsourcingManager crowdsourcing_manager(
         &autofill_client(), version_info::Channel::UNKNOWN);
     bool succeeded = crowdsourcing_manager.StartQueryRequest(
-        ToRawPointerVector(form_structures),
+        base::ToVector(form_structures, &FormStructure::ToFormData),
         autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillServerCommunicationTest::OnLoadedServerPredictions,
@@ -2137,7 +2135,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
                          base::NumberToString(request_index))}}})));
     base::RunLoop run_loop;
     bool result = crowdsourcing_manager->StartQueryRequest(
-        ToRawPointerVector(form_structures),
+        base::ToVector(form_structures, &FormStructure::ToFormData),
         autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,

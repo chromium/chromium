@@ -45,6 +45,9 @@
 namespace autofill {
 namespace {
 
+template <typename T>
+concept IsForm = std::same_as<T, FormStructure> || std::same_as<T, FormData>;
+
 std::ostream& operator<<(std::ostream& out,
                          const AutofillQueryResponse& response) {
   for (const auto& form : response.form_suggestions()) {
@@ -194,12 +197,14 @@ FieldType FirstNonCapturedType(const FormStructure& form,
 }
 
 // Returns true if the form has no fields, or too many.
-bool IsMalformed(const FormStructure& form) {
+template <typename T>
+  requires IsForm<T>
+bool IsMalformed(const T& form) {
   // Some badly formatted web sites repeat fields - limit number of fields to
   // 250, which is far larger than any valid form and proto still fits into 10K.
   // Do not send requests for forms with more than this many fields, as they are
   // near certainly not valid/auto-fillable.
-  return form.field_count() == 0 || form.field_count() > 250;
+  return form.fields().empty() || form.fields().size() > 250;
 }
 
 void EncodeRandomizedValue(const RandomizedEncoder& encoder,
@@ -358,8 +363,10 @@ void PopulateRandomizedFieldMetadata(
 }
 
 // Populates the three-bit hashes for a given `form`.
+template <typename T>
+  requires IsForm<T>
 void PopulateThreeBitHashedFormMetadata(
-    const FormStructure& form,
+    const T& form,
     ThreeBitHashedFormMetadata* form_metadata) {
   if (!form.id_attribute().empty()) {
     form_metadata->set_id(StrToHash3Bit(form.id_attribute()));
@@ -380,7 +387,7 @@ void PopulateThreeBitHashedFormMetadata(
 
 // Populates the three-bit hashes for a single field.
 void PopulateThreeBitHashedFieldMetadata(
-    const AutofillField& field,
+    const FormFieldData& field,
     ThreeBitHashedFieldMetadata* field_metadata) {
   if (!field.id_attribute().empty()) {
     field_metadata->set_id(StrToHash3Bit(field.id_attribute()));
@@ -518,7 +525,7 @@ void EncodeFormFieldsForUpload(
   }
 }
 
-void EncodeFormForQuery(const FormStructure& form,
+void EncodeFormForQuery(const FormData& form,
                         AutofillPageQueryRequest& query,
                         std::vector<FormSignature>& queried_form_signatures,
                         std::set<FormSignature>& processed_forms) {
@@ -528,21 +535,21 @@ void EncodeFormForQuery(const FormStructure& form,
   // the same `form` have no effect (early return if `processed_forms` contains
   // `form`).
   auto AddFormIf =
-      [&](const std::vector<std::unique_ptr<AutofillField>>& fields,
-          FormSignature form_signature, FormSignature alternative_signature,
-          auto necessary_condition) mutable {
+      [&](const std::vector<FormFieldData>& fields,
+          FormSignature form_signature, auto necessary_condition) mutable {
         if (!processed_forms.insert(form_signature).second) {
           return;
         }
 
         AutofillPageQueryRequest::Form* query_form = query.add_forms();
         query_form->set_signature(form_signature.value());
-        query_form->set_alternative_signature(alternative_signature.value());
+        query_form->set_alternative_signature(
+            CalculateAlternativeFormSignature(form).value());
 
         if (base::FeatureList::IsEnabled(
                 features::kAutofillServerExperimentalSignatures)) {
           query_form->set_structural_signature(
-              form.structural_form_signature().value());
+              CalculateStructuralFormSignature(form).value());
           PopulateThreeBitHashedFormMetadata(
               form, query_form->mutable_three_bit_hashed_form_metadata());
         }
@@ -550,32 +557,32 @@ void EncodeFormForQuery(const FormStructure& form,
         queried_form_signatures.push_back(form_signature);
 
         for (const auto& field : fields) {
-          if (IsCheckable(field->check_status()) ||
+          if (IsCheckable(field.check_status()) ||
               !necessary_condition(field)) {
             continue;
           }
 
           AutofillPageQueryRequest::Form::Field* added_field =
               query_form->add_fields();
-          added_field->set_signature(field->GetFieldSignature().value());
+          added_field->set_signature(
+              CalculateFieldSignatureForField(field).value());
 
           if (base::FeatureList::IsEnabled(
                   features::kAutofillServerExperimentalSignatures)) {
             PopulateThreeBitHashedFieldMetadata(
-                *field, added_field->mutable_three_bit_hashed_field_metadata());
+                field, added_field->mutable_three_bit_hashed_field_metadata());
           }
         }
       };
 
-  AddFormIf(form.fields(), form.form_signature(),
-            form.alternative_form_signature(), [](auto& f) { return true; });
+  AddFormIf(form.fields(), CalculateFormSignature(form),
+            [](auto& f) { return true; });
 
-  for (const auto& field : form.fields()) {
-    if (field->host_form_signature()) {
-      AddFormIf(form.fields(), field->host_form_signature(),
-                form.alternative_form_signature(), [&](const auto& f) {
-                  return f->host_form_signature() ==
-                         field->host_form_signature();
+  for (const FormFieldData& field : form.fields()) {
+    if (field.host_form_signature()) {
+      AddFormIf(form.fields(), field.host_form_signature(),
+                [&](const FormFieldData& f) {
+                  return f.host_form_signature() == field.host_form_signature();
                 });
     }
   }
@@ -932,9 +939,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 }
 
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
-EncodeAutofillPageQueryRequest(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
-        forms) {
+EncodeAutofillPageQueryRequest(const std::vector<FormData>& forms) {
   AutofillPageQueryRequest query;
   std::vector<FormSignature> queried_form_signatures;
   queried_form_signatures.reserve(forms.size());
@@ -949,16 +954,16 @@ EncodeAutofillPageQueryRequest(
   // considered for field signatures; (2) for dynamic forms we will hold on to
   // the original form signature.
   std::set<FormSignature> processed_forms;
-  for (const FormStructure* form : forms) {
-    if (processed_forms.contains(form->form_signature())) {
+  for (const FormData& form : forms) {
+    if (processed_forms.contains(CalculateFormSignature(form))) {
       continue;
     }
-    UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form->field_count());
-    if (IsMalformed(*form)) {
+    UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form.fields().size());
+    if (IsMalformed(form)) {
       continue;
     }
 
-    EncodeFormForQuery(*form, query, queried_form_signatures, processed_forms);
+    EncodeFormForQuery(form, query, queried_form_signatures, processed_forms);
   }
 
   return std::make_pair(std::move(query), std::move(queried_form_signatures));

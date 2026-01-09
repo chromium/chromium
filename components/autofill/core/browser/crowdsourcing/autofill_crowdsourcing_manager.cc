@@ -308,14 +308,13 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 
 // A field is active if it contributes to the form signature and it is are
 // included in queries to the Autofill server.
-size_t CountActiveFieldsInForms(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
-        forms) {
+size_t CountActiveFieldsInForms(const std::vector<FormData>& forms) {
   size_t active_field_count = 0;
-  for (const FormStructure* form : forms) {
-    active_field_count += std::ranges::count_if(
-        form->fields(),
-        [](const auto& field) { return !IsCheckable(field->check_status()); });
+  for (const FormData& form : forms) {
+    active_field_count +=
+        std::ranges::count_if(form.fields(), [](const FormFieldData& field) {
+          return !IsCheckable(field.check_status());
+        });
   }
   return active_field_count;
 }
@@ -715,7 +714,7 @@ bool AutofillCrowdsourcingManager::IsEnabled() const {
 }
 
 bool AutofillCrowdsourcingManager::StartQueryRequest(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms,
+    const std::vector<FormData>& forms,
     std::optional<net::IsolationInfo> isolation_info,
     base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
   ScopedCallbackRunner<void(std::optional<QueryResponse>)>

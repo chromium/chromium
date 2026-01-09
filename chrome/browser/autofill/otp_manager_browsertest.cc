@@ -78,8 +78,7 @@ class FakeAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
   ~FakeAutofillCrowdsourcingManager() override = default;
 
   bool StartQueryRequest(
-      const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
-          forms,
+      const std::vector<FormData>& forms,
       std::optional<net::IsolationInfo> isolation_info,
       base::OnceCallback<void(std::optional<QueryResponse>)> callback) override;
 
@@ -94,19 +93,19 @@ FakeAutofillCrowdsourcingManager::FakeAutofillCrowdsourcingManager(
     : AutofillCrowdsourcingManager(autofill_client, channel) {}
 
 bool FakeAutofillCrowdsourcingManager::StartQueryRequest(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms,
+    const std::vector<FormData>& forms,
     std::optional<net::IsolationInfo> isolation_info,
     base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
   // Generate a response that classifies each field as a ONE_TIME_CODE field.
   std::vector<FormSignature> queried_form_signatures;
   AutofillQueryResponse response;
-  for (const FormStructure* form : forms) {
-    queried_form_signatures.push_back(form->form_signature());
+  for (const FormData& form : forms) {
+    queried_form_signatures.push_back(CalculateFormSignature(form));
     auto* form_suggestion = response.add_form_suggestions();
-    for (const auto& field : form->fields()) {
+    for (const FormFieldData& field : form.fields()) {
       auto* field_suggestion = form_suggestion->add_field_suggestions();
       field_suggestion->set_field_signature(
-          CalculateFieldSignatureForField(*field).value());
+          CalculateFieldSignatureForField(field).value());
       *field_suggestion->add_predictions() =
           test::CreateFieldPrediction(ONE_TIME_CODE, /*is_override=*/false);
     }

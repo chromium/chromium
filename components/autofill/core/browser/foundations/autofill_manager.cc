@@ -279,11 +279,13 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
-  std::vector<raw_ptr<const FormStructure, VectorExperimental>> queryable_forms;
+  std::vector<FormData> queryable_forms;
   for (const FormData& form : forms) {
     // The FormStructure might not exist if the form cache hit its capacity of
     // `kAutofillManagerMaxFormCacheSize` and due to race conditions the initial
     // check in ParseFormsAsync() was passed.
+    // TODO(crbug.com/470949499): Remove this check behind a feature
+    // flag.
     const FormStructure* form_structure = FindCachedFormById(form.global_id());
     if (!form_structure) {
       continue;
@@ -292,7 +294,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
     if (ShouldBeQueried(form)) {
-      queryable_forms.push_back(form_structure);
+      queryable_forms.push_back(form);
     }
 
     OnFormProcessed(form, *form_structure);
