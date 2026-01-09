@@ -91,11 +91,16 @@ void MayActOnUrl(const GURL& url,
 
 // Checks if navigation to `url` should be blocked using
 // OptimizationGuideService. If the callback is invoked with `may_act` set to
-// `true`, then the actor is allowed to navigate to the URL. Otherwise, the
-// actor should block navigation or ask the user to confirm.
-bool ShouldBlockNavigationUrlForOriginGating(const GURL& url,
-                                             Profile* profile,
-                                             DecisionCallback callback);
+// `true`, then the actor is allowed to navigate to the URL. If `callback` is
+// invoked with `false`, the actor should block navigation or ask the user to
+// confirm.
+//
+// Returns true if this function will eventually invoke `callback`, false
+// otherwise (maybe because the feature was disabled, or OptimizationGuide is
+// not available for some other reason).
+bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
+                                                Profile* profile,
+                                                DecisionCallback callback);
 
 }  // namespace actor
 

@@ -358,16 +358,13 @@ void ExecutionEngine::CheckNavigationBlocklist(
     return;
   }
   auto [callback1, callback2] = base::SplitOnceCallback(std::move(callback));
-  if (ShouldBlockNavigationUrlForOriginGating(
+  if (MaybeCheckOptimizationGuideForSensitiveUrl(
           navigation_url, profile_,
           base::BindOnce(&ExecutionEngine::OnNavigationBlocklistDecision,
                          GetWeakPtr(), initiator_origin, navigation_url,
                          skip_prompt, std::move(callback1)))) {
     return;
   }
-  // If `ShouldBlockNavigationUrlForOriginGating` returns false, it means the
-  // Optimization Guide was not available to check the blocklist, so we
-  // continue to the next step.
   OnNavigationBlocklistDecision(initiator_origin, navigation_url, skip_prompt,
                                 std::move(callback2),
                                 /*not_on_blocklist=*/true);
