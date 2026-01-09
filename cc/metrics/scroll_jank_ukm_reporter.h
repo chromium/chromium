@@ -27,7 +27,6 @@ class CC_EXPORT ScrollJankUkmReporter {
   void AddVsyncs(int vsyncs);
   void AddMissedVsyncs(int missed_vsyncs);
   void IncrementPredictorJankyFrames();
-  void SetEarliestScrollEvent(ScrollUpdateEventMetrics& earliest_event);
 
   void EmitScrollJankUkm();
   void UpdateLatestFrameAndEmitPredictorJank(base::TimeTicks latest_timestamp);
@@ -49,17 +48,9 @@ class CC_EXPORT ScrollJankUkmReporter {
 
   void set_ukm_manager(UkmManager* manager) { ukm_manager_ = manager; }
 
-  void set_first_frame_timestamp_for_testing(base::TimeTicks timestamp) {
-    first_frame_timestamp_ = timestamp;
-  }
 
-  void set_latest_frame_timestamp_for_testing(base::TimeTicks timestamp) {
-    final_frame_presentation_timestamp_ = timestamp;
-  }
 
  private:
-  void WriteScrollTraceEvent();
-
   // Scroll metrics
   int num_frames_ = 0;
   int num_vsyncs_ = 0;
@@ -80,10 +71,6 @@ class CC_EXPORT ScrollJankUkmReporter {
   // are only recorded if they are larger than the jank threshold.
   int frame_with_missed_vsync_ = 0;
   int frame_with_no_missed_vsync_ = 0;
-
-  // Top level scroll trace event values.
-  base::TimeTicks first_frame_timestamp_ = base::TimeTicks::Min();
-  base::TimeTicks final_frame_presentation_timestamp_ = base::TimeTicks::Min();
 
   // This is pointing to the LayerTreeHostImpl::ukm_manager_, which is
   // initialized right after the LayerTreeHostImpl is created. So when this

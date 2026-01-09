@@ -112,10 +112,6 @@ TEST_F(ScrollJankUkmReporterTest, NoJankyFrames) {
       base_time_ + base::Milliseconds(127),
       base_time_ + base::Milliseconds(164));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
-  scroll_jank_ukm_reporter_->set_latest_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(164));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
 
   auto entries = test_ukm_recorder_->GetEntriesByName(
@@ -145,10 +141,6 @@ TEST_F(ScrollJankUkmReporterTest, JankyFrames) {
       base_time_ + base::Milliseconds(143),
       base_time_ + base::Milliseconds(228));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
-  scroll_jank_ukm_reporter_->set_latest_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(228));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
 
   auto entries = test_ukm_recorder_->GetEntriesByName(
@@ -174,10 +166,6 @@ TEST_F(ScrollJankUkmReporterTest, NoMissedVsyncs) {
       base_time_ + base::Milliseconds(127),
       base_time_ + base::Milliseconds(164));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
-  scroll_jank_ukm_reporter_->set_latest_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(164));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
 
   auto entries = test_ukm_recorder_->GetEntriesByName(
@@ -211,10 +199,6 @@ TEST_F(ScrollJankUkmReporterTest, OneMissedVsync) {
       base_time_ + base::Milliseconds(143),
       base_time_ + base::Milliseconds(196));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
-  scroll_jank_ukm_reporter_->set_latest_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(196));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
 
   auto entries = test_ukm_recorder_->GetEntriesByName(
@@ -248,10 +232,6 @@ TEST_F(ScrollJankUkmReporterTest, MultipleMissedVsyncs) {
       base_time_ + base::Milliseconds(151),
       base_time_ + base::Milliseconds(228));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
-  scroll_jank_ukm_reporter_->set_latest_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(228));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
 
   auto entries = test_ukm_recorder_->GetEntriesByName(
@@ -276,9 +256,7 @@ TEST_F(ScrollJankUkmReporterTest, NoPredictorJank) {
                                      base_time_ + base::Milliseconds(119));
   ReportFramesToPredictorJankTracker(10, base_time_,
                                      base_time_ + base::Milliseconds(135));
-
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
+  scroll_jank_ukm_reporter_->IncrementFrameCount();
   scroll_jank_ukm_reporter_->UpdateLatestFrameAndEmitPredictorJank(
       base_time_ + base::Milliseconds(135));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
@@ -304,8 +282,7 @@ TEST_F(ScrollJankUkmReporterTest, PredictorJankMissedVsync) {
   ReportFramesToPredictorJankTracker(10, base_time_,
                                      base_time_ + base::Milliseconds(151));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base_time_ + base::Milliseconds(103));
+  scroll_jank_ukm_reporter_->IncrementFrameCount();
   scroll_jank_ukm_reporter_->UpdateLatestFrameAndEmitPredictorJank(
       base_time_ + base::Milliseconds(151));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
@@ -348,8 +325,7 @@ TEST_F(ScrollJankUkmReporterTest, PredictorJankNoMissedVsync) {
       50, base::TimeTicks::Now(),
       base::TimeTicks::Now() + base::Milliseconds(32));
 
-  scroll_jank_ukm_reporter_->set_first_frame_timestamp_for_testing(
-      base::TimeTicks::Now());
+  scroll_jank_ukm_reporter_->IncrementFrameCount();
   scroll_jank_ukm_reporter_->UpdateLatestFrameAndEmitPredictorJank(
       base::TimeTicks::Now() + base::Milliseconds(32));
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
