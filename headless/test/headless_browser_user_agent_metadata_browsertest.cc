@@ -251,8 +251,11 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     auto path = request.GetURL().GetPath();
-    if (path == capture_headers_for_path_) {
-      got_headers_ = request.headers;
+    {
+      base::AutoLock lock(headers_lock_);
+      if (path == capture_headers_for_path_) {
+        got_headers_ = request.headers;
+      }
     }
 
     auto http_response = std::make_unique<BasicHttpResponse>();
@@ -281,12 +284,14 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
   void CaptureHeadersForPath(const std::string path) {
+    base::AutoLock lock(headers_lock_);
     capture_headers_for_path_ = path;
   }
 
   bool IsRequestHeaderSet(
       const std::string header,
       const std::optional<std::string> value = std::nullopt) {
+    base::AutoLock lock(headers_lock_);
     if (!got_headers_.contains(header)) {
       return false;
     }
@@ -410,10 +415,12 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
  protected:
   raw_ptr<HeadlessWebContents, AcrossTasksDanglingUntriaged> web_contents_;
   SimpleDevToolsProtocolClient devtools_client_;
+
+  base::Lock headers_lock_;
   // HandleRequest will capture headers with this path in `got_headers_`.
-  std::string capture_headers_for_path_;
+  std::string capture_headers_for_path_ GUARDED_BY(headers_lock_);
   // Captured headers from the last request to `capture_headers_for_path_`.
-  HttpRequest::HeaderMap got_headers_;
+  HttpRequest::HeaderMap got_headers_ GUARDED_BY(headers_lock_);
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserUAHeaderTest, OnInitialNavigation) {
