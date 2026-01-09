@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 /// The padding for the close button.
@@ -120,6 +121,10 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   _closeButton.accessibilityIdentifier =
       kOmniboxCancelButtonAccessibilityIdentifier;
   _closeButton.configuration = config;
+  if (IsComposeboxIpadEnabled() &&
+      IsRegularXRegularSizeClass(self.traitCollection)) {
+    _closeButton.hidden = YES;
+  }
   _closeButton.configurationUpdateHandler = ^(UIButton* button) {
     UIButtonConfiguration* updatedConfig = button.configuration;
     BOOL isHighlighted = button.state == UIControlStateHighlighted;
@@ -138,7 +143,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                    action:@selector(closeButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
   [self.view addSubview:_closeButton];
-  _closeButton.hidden = self.hidesCloseButton;
 
   // Omnibox popup container.
   _omniboxPopupContainer = [[UIView alloc] init];
@@ -175,11 +179,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   _viewVisible = NO;
-}
-
-- (void)setHidesCloseButton:(BOOL)hidesCloseButton {
-  _hidesCloseButton = hidesCloseButton;
-  _closeButton.hidden = hidesCloseButton;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -553,6 +552,46 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 - (ComposeboxInputPlatePosition)currentInputPlatePosition {
   return _inputViewController.view ? _theme.inputPlatePosition
                                    : ComposeboxInputPlatePosition::kMissing;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (UIModalPresentationStyle)
+    adaptivePresentationStyleForPresentationController:
+        (UIPresentationController*)controller
+                                       traitCollection:
+                                           (UITraitCollection*)traitCollection {
+  if (IsRegularXRegularSizeClass(traitCollection)) {
+    _closeButton.hidden = YES;
+    return UIModalPresentationNone;
+  }
+  _closeButton.hidden = NO;
+  return UIModalPresentationOverFullScreen;
+}
+
+#pragma mark - UIContentContainer
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:
+    (id<UIContentContainer>)container {
+  [super preferredContentSizeDidChangeForChildContentContainer:container];
+  if (IsComposeboxIpadEnabled() &&
+      IsRegularXRegularSizeClass(self.traitCollection)) {
+    [self updatePreferredContentSize:container.preferredContentSize.height +
+                                     kOmniboxPopupTopPadding];
+  }
+}
+
+- (void)updatePreferredContentSize:(CGFloat)height {
+  // Use the omnibox popup preferring content size if it is taller than the
+  // minimum bottom margin.
+  CGFloat popupHeight =
+      _inputViewController.inputHeight + std::max(height, kBlurBottomMargin);
+
+  CGFloat totalHeight = popupHeight + kInputPlatePadding;
+  if (self.preferredContentSize.height != totalHeight) {
+    self.preferredContentSize =
+        CGSizeMake(self.view.bounds.size.width, totalHeight);
+  }
 }
 
 #pragma mark - ComposeboxNavigationConsumer

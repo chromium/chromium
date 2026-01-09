@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+/// The minimum height of the omnibox.
+extern const CGFloat kOmniboxMinHeight;
+
 // Accessibility identifier for the composebox.
 extern NSString* const kComposeboxAccessibilityIdentifier;
 

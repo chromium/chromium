@@ -9,6 +9,7 @@
 - (void)setContentSize:(CGSize)contentSize {
   [super setContentSize:contentSize];
   [self invalidateIntrinsicContentSize];
+  [self.contentSizeDelegate tableViewContentSizeDidChange:contentSize];
 }
 
 - (CGSize)intrinsicContentSize {

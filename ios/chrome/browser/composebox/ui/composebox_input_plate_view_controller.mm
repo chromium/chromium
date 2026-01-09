@@ -60,8 +60,6 @@ const CGFloat kButtonsStackViewSpacing = 6.0f;
 const CGFloat kShortcutsSpacing = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
-/// The minimum height of the omnibox.
-const CGFloat kOmniboxMinHeight = 44.0;
 /// The default vertical padding for the input plate. When the text view is the
 /// top most element the padding must be 0. Otherwise, it won't extend to the
 /// top edge when scrolling (crbug.com/464259064).
