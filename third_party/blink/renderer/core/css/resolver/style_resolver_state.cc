@@ -41,6 +41,16 @@ namespace blink {
 
 namespace {
 
+bool MayReturnNullRenderingStyleForPseudoElement(
+    PseudoId pseudo_id,
+    const ComputedStyle* parent_style) {
+  if (pseudo_id != kPseudoIdScrollMarkerGroup) {
+    return true;
+  }
+  CHECK(parent_style);
+  return parent_style->ScrollMarkerGroupNone();
+}
+
 Element* ComputeStyledElement(const StyleRequest& style_request,
                               Element& element) {
   Element* styled_element = style_request.styled_element;
@@ -135,6 +145,9 @@ EInsideLink StyleResolverState::InsideLink() const {
 
 const ComputedStyle* StyleResolverState::TakeStyle() {
   if (had_no_matched_properties_ &&
+      MayReturnNullRenderingStyleForPseudoElement(
+          element_context_.GetElement().GetPseudoIdForStyling(),
+          parent_style_) &&
       pseudo_request_type_ == StyleRequest::kForRenderer) {
     return nullptr;
   }

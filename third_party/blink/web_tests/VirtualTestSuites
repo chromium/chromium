@@ -2406,6 +2406,11 @@
       "Linux"
     ],
     "bases": [
+      "external/wpt/css/css-overflow/nested-scroll-markers-under-content-visibility-auto.html",
+      "external/wpt/css/css-overflow/root-scroll-marker-activation-in-iframe.html",
+      "external/wpt/css/css-overflow/scroll-marker-group-015.html",
+      "external/wpt/css/css-overflow/scroll-target-group-003.html",
+      "external/wpt/css/css-pseudo/events-on-pseudo-element.tentative.html",
       "external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-overlay.html",
       "external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-overlay-re-add-during-transition.html",
       "external/wpt/html/semantics/popovers/chrome-392042073-crash.html",
