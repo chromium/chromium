@@ -9189,21 +9189,6 @@
             ]
         }
     ],
-    "DisplayEdgeToEdgeFullscreen": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisplayEdgeToEdgeFullscreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "DlpRegionalizedEndpoints": [
         {
             "platforms": [
