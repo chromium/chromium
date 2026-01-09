@@ -239,12 +239,10 @@ constexpr NSInteger kExpectedItemsCount = 4;
 }
 
 - (void)resetToInitialImportStage:(DataImportResetReason)reason {
-  SafariDataImportStage currentStage = self.importStage;
-  CHECK_EQ(currentStage, SafariDataImportStage::kFileLoading)
-      << "Not supported for stage: " << static_cast<int>(currentStage);
-
+  if (self.importStage == SafariDataImportStage::kNotStarted) {
+    return;
+  }
   UIAlertController* alert = nil;
-
   switch (reason) {
     case DataImportResetReason::kUserInitiated:
       break;
