@@ -52,6 +52,7 @@ source_set("browser_tests") {
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//net:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
