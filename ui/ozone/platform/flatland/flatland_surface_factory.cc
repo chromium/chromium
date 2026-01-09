@@ -204,16 +204,17 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
       allow_protected_memory);
 }
 
-bool FlatlandSurfaceFactory::IsFormatSupportedForTexturing(
-    viz::SharedImageFormat format) const {
-  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
-      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
-          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-           viz::SinglePlaneFormat::kRGBA_8888,
-           viz::SinglePlaneFormat::kBGRA_8888,
-           viz::SinglePlaneFormat::kRGBX_8888,
-           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
-  return kSupportedFormats.contains(format);
+std::vector<gfx::BufferFormat>
+FlatlandSurfaceFactory::GetSupportedFormatsForTexturing() const {
+  return {
+      gfx::BufferFormat::R_8,
+      gfx::BufferFormat::RG_88,
+      gfx::BufferFormat::RGBA_8888,
+      gfx::BufferFormat::RGBX_8888,
+      gfx::BufferFormat::BGRA_8888,
+      gfx::BufferFormat::BGRX_8888,
+      gfx::BufferFormat::YUV_420_BIPLANAR,
+  };
 }
 
 void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,

@@ -60,8 +60,8 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
 
   bool SupportsNativePixmaps() const;
 
-  bool IsFormatSupportedForTexturing(
-      viz::SharedImageFormat format) const override;
+  std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
+      const override;
 
   void SetBufferManagerForTesting(WaylandBufferManagerGpu* buffer_manager);
 

@@ -61,8 +61,8 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,
       bool allow_protected_memory) override;
-  bool IsFormatSupportedForTexturing(
-      viz::SharedImageFormat format) const override;
+  std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
+      const override;
 
   // Registers a surface for a |widget|.
   //

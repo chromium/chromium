@@ -783,18 +783,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   // We need to get supported formats before sandboxing to avoid an known
   // issue which breaks the camera preview. (b/166850715)
-  bool supports_nv12_for_allocation_and_texturing;
-  bool supports_p010_for_allocation_and_texturing;
+  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing;
   {
-    TRACE_EVENT("gpu,startup", "ui::ozone::IsFormatSupportedForTexturing");
-    supports_nv12_for_allocation_and_texturing =
+    TRACE_EVENT("gpu,startup", "ui::ozone::GetSupportedFormatsForTexturing");
+    supported_buffer_formats_for_texturing =
         ui::OzonePlatform::GetInstance()
             ->GetSurfaceFactoryOzone()
-            ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kNV12);
-    supports_p010_for_allocation_and_texturing =
-        ui::OzonePlatform::GetInstance()
-            ->GetSurfaceFactoryOzone()
-            ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kP010);
+            ->GetSupportedFormatsForTexturing();
   }
   std::vector<viz::SharedImageFormat>
       supported_formats_for_gl_native_pixmap_import =
@@ -936,9 +931,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      supports_nv12_for_allocation_and_texturing;
-  gpu_feature_info_.supports_p010_for_allocation_and_texturing =
-      supports_p010_for_allocation_and_texturing;
+      base::Contains(supported_buffer_formats_for_texturing,
+                     gfx::BufferFormat::YUV_420_BIPLANAR);
+  gpu_feature_info_.supports_p010_for_allocation_and_texturing = base::Contains(
+      supported_buffer_formats_for_texturing, gfx::BufferFormat::P010);
+  gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
+      std::move(supported_buffer_formats_for_texturing);
   gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
       std::move(supported_formats_for_gl_native_pixmap_import);
   [[maybe_unused]] auto* factory =
@@ -1144,19 +1142,22 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 
 #if BUILDFLAG(IS_OZONE)
+  const std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->GetSupportedFormatsForTexturing();
   const std::vector<viz::SharedImageFormat>
       supported_formats_for_gl_native_pixmap_import =
           ui::OzonePlatform::GetInstance()
               ->GetSurfaceFactoryOzone()
               ->GetSupportedFormatsForGLNativePixmapImport();
   gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kNV12);
-  gpu_feature_info_.supports_p010_for_allocation_and_texturing =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kP010);
+      base::Contains(supported_buffer_formats_for_texturing,
+                     gfx::BufferFormat::YUV_420_BIPLANAR);
+  gpu_feature_info_.supports_p010_for_allocation_and_texturing = base::Contains(
+      supported_buffer_formats_for_texturing, gfx::BufferFormat::P010);
+  gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
+      std::move(supported_buffer_formats_for_texturing);
   gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
       std::move(supported_formats_for_gl_native_pixmap_import);
 #endif  // BUILDFLAG(IS_OZONE)
