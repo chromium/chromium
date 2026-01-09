@@ -301,14 +301,14 @@ void StringBuilder::AppendFormat(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = base::VSpanPrintf(buffer, format, args);
+  int length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
   va_end(args);
   DCHECK_GE(length, 0);
 
   if (length >= static_cast<int>(kDefaultSize)) {
     buffer.Grow(length + 1);
     va_start(args, format);
-    length = base::VSpanPrintf(buffer, format, args);
+    length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
     va_end(args);
   }
 

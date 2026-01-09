@@ -94,7 +94,7 @@ CanvasRenderingContext::GetEnclosingContextForDrawElement(
     ExceptionState& exception_state) {
   auto build_error = [&func_name](const char* format) {
     StringBuilder builder;
-    builder.AppendFormat(format, func_name.Utf8().c_str());
+    UNSAFE_TODO(builder.AppendFormat(format, func_name.Utf8().c_str()));
     return builder.ToString();
   };
 
@@ -145,7 +145,7 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
 
   auto build_error = [&func_name](const char* format) {
     StringBuilder builder;
-    builder.AppendFormat(format, func_name.Utf8().c_str());
+    UNSAFE_TODO(builder.AppendFormat(format, func_name.Utf8().c_str()));
     return builder.ToString();
   };
 

@@ -7036,14 +7036,14 @@ void Element::SetIsEligibleForElementCapture(bool value) {
         HasElementFlag(ElementFlags::kIsEligibleForElementCapture);
 
     if (value != old_value) {
-      AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kInfo,
-          String::Format("restrictTo(): Element %s restriction eligibility. "
-                         "For eligibility conditions, see "
-                         "https://screen-share.github.io/element-capture/"
-                         "#elements-eligible-for-restriction",
-                         value ? "gained" : "lost"));
+      AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
+                        mojom::blink::ConsoleMessageLevel::kInfo,
+                        UNSAFE_TODO(String::Format(
+                            "restrictTo(): Element %s restriction eligibility. "
+                            "For eligibility conditions, see "
+                            "https://screen-share.github.io/element-capture/"
+                            "#elements-eligible-for-restriction",
+                            value ? "gained" : "lost")));
     }
   } else {
     // We want to issue a different log message if the element is not eligible

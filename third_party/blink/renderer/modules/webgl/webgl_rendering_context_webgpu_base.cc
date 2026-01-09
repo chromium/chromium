@@ -3739,14 +3739,14 @@ void WebGLRenderingContextWebGPUBase::OnDebugMessage(GLenum source,
                                                      const GLchar* message) {
   if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
     had_error_callback_ = true;
-    String formatted_message =
-        String::Format("WebGL: %s: %s", GetErrorString(id), message);
+    String formatted_message = UNSAFE_TODO(
+        String::Format("WebGL: %s: %s", GetErrorString(id), message));
     PrintGLErrorToConsole(formatted_message);
   } else {
-    String formatted_message = String::Format(
+    String formatted_message = UNSAFE_TODO(String::Format(
         "WebGL: (%s, %s, %s, %d): %s", gl::GetDebugSourceString(source),
         gl::GetDebugTypeString(type), gl::GetDebugSeverityString(severity), id,
-        message);
+        message));
     PrintWarningToConsole(formatted_message);
   }
 }

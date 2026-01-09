@@ -74,8 +74,8 @@ const String SerializeComputedStyleForProperty(const ComputedStyle& style,
   const CSSProperty& property = CSSProperty::Get(id);
   const CSSValue* value = property.CSSValueFromComputedStyle(
       style, nullptr, false, CSSValuePhase::kResolvedValue);
-  return String::Format("%s : %s;\n", property.GetPropertyName(),
-                        value->CssText().Utf8().c_str());
+  return UNSAFE_TODO(String::Format("%s : %s;\n", property.GetPropertyName(),
+                                    value->CssText().Utf8().c_str()));
 }
 
 const String SerializeColorScheme(const ComputedStyle& style) {

@@ -24,7 +24,7 @@ static void StringAppendVTestHelper(std::basic_string<CharT>* out,
                                     ...) {
   va_list ap;
   va_start(ap, format);
-  StringAppendV(out, format, ap);
+  UNSAFE_TODO(StringAppendV(out, format, ap));
   va_end(ap);
 }
 

@@ -427,9 +427,9 @@ UserMediaRequest* UserMediaRequest::Create(
       };
       for (const BaseConstraint* constraint : constraints) {
         if (constraint->HasMandatory()) {
-          exception_state.ThrowTypeError(
+          exception_state.ThrowTypeError(UNSAFE_TODO(
               String::Format("Mandatory %s constraints are not supported",
-                             constraint->GetName()));
+                             constraint->GetName())));
           return nullptr;
         }
       }

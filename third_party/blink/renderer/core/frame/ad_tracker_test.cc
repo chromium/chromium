@@ -1061,14 +1061,14 @@ TEST_P(AdTrackerVanillaOrAdSimTest, StyleTagAddedByScript) {
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
-  script.Complete(String::Format(
+  script.Complete(UNSAFE_TODO(String::Format(
       R"SCRIPT(
         let style = document.createElement("style");
         let text = document.createTextNode(`%s`);
         style.appendChild(text);
         document.head.appendChild(style);
       )SCRIPT",
-      kStylesheetWithVanillaResources));
+      kStylesheetWithVanillaResources)));
 
   // Wait for stylesheet to fetch resources.
   ad_tracker_->WaitForSubresource(vanilla_font_url);

@@ -42,9 +42,10 @@ base::Value::Dict LoadSchemaDictionary(const std::string& name,
 
   // Tracking down http://crbug.com/121424
   char buf[128];
-  base::SpanPrintf(buf, "%s: (%d) '%s'", name.c_str(),
-                   result.has_value() ? static_cast<int>(result->type()) : -1,
-                   !result.has_value() ? result.error().message.c_str() : "");
+  UNSAFE_TODO(base::SpanPrintf(
+      buf, "%s: (%d) '%s'", name.c_str(),
+      result.has_value() ? static_cast<int>(result->type()) : -1,
+      !result.has_value() ? result.error().message.c_str() : ""));
 
   CHECK(result.has_value())
       << result.error().message << " for schema " << schema;

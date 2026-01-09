@@ -38,7 +38,7 @@ void EventLogger::Log(logging::LogSeverity severity, const char* format, ...) {
 
   va_list args;
   va_start(args, format);
-  base::StringAppendV(&what, format, args);
+  UNSAFE_TODO(base::StringAppendV(&what, format, args));
   va_end(args);
 
   DVLOG(1) << what;

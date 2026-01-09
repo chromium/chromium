@@ -867,8 +867,9 @@ v8::Local<v8::String> WritableStream::CreateCannotActionOnStateStreamMessage(
     v8::Isolate* isolate,
     const char* action,
     const char* state_name) {
-  return V8String(isolate, String::Format("Cannot %s a %s writable stream",
-                                          action, state_name));
+  return V8String(isolate,
+                  UNSAFE_TODO(String::Format("Cannot %s a %s writable stream",
+                                             action, state_name)));
 }
 
 // static

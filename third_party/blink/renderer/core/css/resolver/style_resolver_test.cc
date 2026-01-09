@@ -421,8 +421,8 @@ class StyleResolverFontRelativeUnitTest
 
 TEST_P(StyleResolverFontRelativeUnitTest,
        BaseNotReusableIfFontRelativeUnitPresent) {
-  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(UNSAFE_TODO(
+      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam())));
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("div"));
@@ -445,8 +445,8 @@ TEST_P(StyleResolverFontRelativeUnitTest,
 
 TEST_P(StyleResolverFontRelativeUnitTest,
        BaseReusableIfNoFontAffectingAnimation) {
-  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(UNSAFE_TODO(
+      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam())));
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("div"));

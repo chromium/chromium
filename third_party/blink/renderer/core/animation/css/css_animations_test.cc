@@ -374,9 +374,12 @@ String GenerateTransitionHTMLFrom(const FlagData& data) {
 
   StringBuilder builder;
   builder.Append("<style>");
-  builder.Append(String::Format("#test { transition:%s 1s; }", property));
-  builder.Append(String::Format("#test.before { %s:%s; }", property, before));
-  builder.Append(String::Format("#test.after { %s:%s; }", property, after));
+  builder.Append(
+      UNSAFE_TODO(String::Format("#test { transition:%s 1s; }", property)));
+  builder.Append(
+      UNSAFE_TODO(String::Format("#test.before { %s:%s; }", property, before)));
+  builder.Append(
+      UNSAFE_TODO(String::Format("#test.after { %s:%s; }", property, after)));
   builder.Append("</style>");
   builder.Append("<div id=test class=before>Test</div>");
   return builder.ToString();
@@ -390,8 +393,9 @@ String GenerateCSSAnimationHTMLFrom(const FlagData& data) {
   StringBuilder builder;
   builder.Append("<style>");
   builder.Append("@keyframes anim {");
-  builder.Append(String::Format("from { %s:%s; }", property, before));
-  builder.Append(String::Format("to { %s:%s; }", property, after));
+  builder.Append(
+      UNSAFE_TODO(String::Format("from { %s:%s; }", property, before)));
+  builder.Append(UNSAFE_TODO(String::Format("to { %s:%s; }", property, after)));
   builder.Append("}");
   builder.Append("#test.after { animation:anim 1s; }");
   builder.Append("</style>");

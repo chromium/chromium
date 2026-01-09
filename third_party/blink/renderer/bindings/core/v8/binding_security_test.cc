@@ -62,20 +62,20 @@ class BindingSecurityCounterTest
 
     SimRequest main(kMainFrame, "text/html");
     SimRequest target(target_url, "text/html");
-    const String& document = String::Format(
-        "<!DOCTYPE html>"
-        "<script>"
-        "  %s"
-        "  window.addEventListener('message', e => {"
-        "    window.other = e.source.%s;"
-        "    console.log('yay');"
-        "  });"
-        "  var w = window.open('%s');"
-        "</script>",
-        which_origin == OriginDisposition::SameOriginDomain
-            ? "document.domain = 'example.com';"
-            : "",
-        property.Utf8().c_str(), target_url);
+    const String& document = UNSAFE_TODO(
+        String::Format("<!DOCTYPE html>"
+                       "<script>"
+                       "  %s"
+                       "  window.addEventListener('message', e => {"
+                       "    window.other = e.source.%s;"
+                       "    console.log('yay');"
+                       "  });"
+                       "  var w = window.open('%s');"
+                       "</script>",
+                       which_origin == OriginDisposition::SameOriginDomain
+                           ? "document.domain = 'example.com';"
+                           : "",
+                       property.Utf8().c_str(), target_url));
 
     LoadURL(kMainFrame);
     main.Complete(document);
@@ -103,23 +103,23 @@ class BindingSecurityCounterTest
     }
     SimRequest main(kMainFrame, "text/html");
     SimRequest target(target_url, "text/html");
-    const String& document = String::Format(
-        "<!DOCTYPE html>"
-        "<body>"
-        "<script>"
-        "  %s"
-        "  var i = document.createElement('iframe');"
-        "  window.addEventListener('message', e => {"
-        "    window.other = e.source.%s;"
-        "    console.log('yay');"
-        "  });"
-        "  i.src = '%s';"
-        "  document.body.appendChild(i);"
-        "</script>",
-        which_origin == OriginDisposition::SameOriginDomain
-            ? "document.domain = 'example.com';"
-            : "",
-        property.Utf8().c_str(), target_url);
+    const String& document = UNSAFE_TODO(
+        String::Format("<!DOCTYPE html>"
+                       "<body>"
+                       "<script>"
+                       "  %s"
+                       "  var i = document.createElement('iframe');"
+                       "  window.addEventListener('message', e => {"
+                       "    window.other = e.source.%s;"
+                       "    console.log('yay');"
+                       "  });"
+                       "  i.src = '%s';"
+                       "  document.body.appendChild(i);"
+                       "</script>",
+                       which_origin == OriginDisposition::SameOriginDomain
+                           ? "document.domain = 'example.com';"
+                           : "",
+                       property.Utf8().c_str(), target_url));
 
     LoadURL(kMainFrame);
     main.Complete(document);

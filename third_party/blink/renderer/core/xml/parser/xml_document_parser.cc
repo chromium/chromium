@@ -1490,7 +1490,8 @@ PRINTF_FORMAT(2, 3)
 static void WarningHandler(void* closure, const char* message, ...) {
   va_list args;
   va_start(args, message);
-  GetParser(closure)->GetError(XMLErrors::kErrorTypeWarning, message, args);
+  UNSAFE_TODO(GetParser(closure))
+      ->GetError(XMLErrors::kErrorTypeWarning, message, args);
   va_end(args);
 }
 
@@ -1498,7 +1499,8 @@ PRINTF_FORMAT(2, 3)
 static void NormalErrorHandler(void* closure, const char* message, ...) {
   va_list args;
   va_start(args, message);
-  GetParser(closure)->GetError(XMLErrors::kErrorTypeNonFatal, message, args);
+  UNSAFE_TODO(GetParser(closure))
+      ->GetError(XMLErrors::kErrorTypeNonFatal, message, args);
   va_end(args);
 }
 

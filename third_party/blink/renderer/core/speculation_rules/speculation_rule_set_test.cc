@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -205,7 +206,7 @@ class SpeculationRuleSetTest : public ::testing::Test {
 
   SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
       const char* target_hint) {
-    return CreateRuleSet(String::Format(R"({
+    return CreateRuleSet(UNSAFE_TODO(String::Format(R"({
         "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/hint.html"],
@@ -217,7 +218,7 @@ class SpeculationRuleSetTest : public ::testing::Test {
           "target_hint": "%s"
         }]
       })",
-                                        target_hint, target_hint),
+                                                    target_hint, target_hint)),
                          KURL("https://example.com/"), execution_context_);
   }
 
@@ -4469,13 +4470,13 @@ TEST_F(SpeculationRuleSetTest, InvalidTag) {
   const char* tag =
       "Qu\xe9"
       "bec";
-  rule_set = CreateRuleSet(String::Format(R"({
+  rule_set = CreateRuleSet(UNSAFE_TODO(String::Format(R"({
         "tag": "%s",
         "prefetch": [{
           "where": {"href_matches": "/foo"}
         }]
       })",
-                                          tag),
+                                                      tag)),
                            KURL("https://example.com/"), execution_context());
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesetLevelTag);

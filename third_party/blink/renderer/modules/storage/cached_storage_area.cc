@@ -506,10 +506,10 @@ bool CachedStorageArea::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
 
-  String dump_name =
+  String dump_name = UNSAFE_TODO(
       String::Format("site_storage/%s/0x%" PRIXPTR "/cache_size",
                      IsSessionStorage() ? "session_storage" : "local_storage",
-                     reinterpret_cast<uintptr_t>(this));
+                     reinterpret_cast<uintptr_t>(this)));
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name.Utf8());
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, memory_used());

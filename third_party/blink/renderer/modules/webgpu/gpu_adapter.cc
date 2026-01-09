@@ -282,7 +282,7 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
       // If the feature is not a valid feature reject with a type error.
       if (!features_->Has(f.AsEnum())) {
         resolver->RejectWithTypeError(
-            String::Format("Unsupported feature: %s", f.AsCStr()));
+            UNSAFE_TODO(String::Format("Unsupported feature: %s", f.AsCStr())));
         return promise;
       }
       required_features_set.insert(AsDawnEnum(f));

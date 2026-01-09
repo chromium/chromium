@@ -128,11 +128,12 @@ String MediaControlsSharedHelpers::FormatTime(double time) {
   // etc.
 
   if (hours > 0) {
-    return String::Format("%s%d:%02d:%02d", negative_sign, hours, minutes,
-                          seconds);
+    return UNSAFE_TODO(String::Format("%s%d:%02d:%02d", negative_sign, hours,
+                                      minutes, seconds));
   }
 
-  return String::Format("%s%d:%02d", negative_sign, minutes, seconds);
+  return UNSAFE_TODO(
+      String::Format("%s%d:%02d", negative_sign, minutes, seconds));
 }
 
 bool MediaControlsSharedHelpers::ShouldShowFullscreenButton(

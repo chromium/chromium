@@ -298,8 +298,9 @@ String InlineItem::ToString() const {
   } else if (GetLayoutObject()) {
     object_info = GetLayoutObject()->ToString();
   }
-  return String::Format("InlineItem %s. %s", InlineItemTypeToString(Type()),
-                        object_info.Ascii().c_str());
+  return UNSAFE_TODO(String::Format("InlineItem %s. %s",
+                                    InlineItemTypeToString(Type()),
+                                    object_info.Ascii().c_str()));
 }
 
 // Split |items[index]| to 2 items at |offset|.

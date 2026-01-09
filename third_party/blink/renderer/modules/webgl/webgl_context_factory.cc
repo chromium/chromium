@@ -79,8 +79,8 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
   std::unique_ptr<Extensions3DUtil> extensions_util =
       Extensions3DUtil::Create(gl);
   if (extensions_util->SupportsExtension("GL_EXT_debug_marker")) {
-    String context_label(
-        String::Format("%s-%p", GetContextName(), context_provider.get()));
+    String context_label(UNSAFE_TODO(
+        String::Format("%s-%p", GetContextName(), context_provider.get())));
     gl->PushGroupMarkerEXT(0, context_label.Ascii().c_str());
   }
 
@@ -93,7 +93,8 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
 
       host->HostDispatchEvent(WebGLContextEvent::Create(
           event_type_names::kWebglcontextcreationerror,
-          String::Format("Failed to create %s.", GetContextName())));
+          UNSAFE_TODO(
+              String::Format("Failed to create %s.", GetContextName()))));
       return nullptr;
     }
 
@@ -140,7 +141,7 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternalWebGPU(
   if (!context->Initialize(execution_context, &init_error)) {
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
-        String::Format("Failed to create %s: ", GetContextName()) +
+        UNSAFE_TODO(String::Format("Failed to create %s: ", GetContextName())) +
             init_error));
     return nullptr;
   }

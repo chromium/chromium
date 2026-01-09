@@ -495,8 +495,8 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     Vector<String> allowlist;
     for (const auto& parameterized_item : value.member) {
       if (!parameterized_item.params.empty()) {
-        logger_.Warn(String::Format("Feature %s's parameters are ignored.",
-                                    feature_name));
+        logger_.Warn(UNSAFE_TODO(String::Format(
+            "Feature %s's parameters are ignored.", feature_name)));
       }
 
       String allowlist_item;
@@ -504,10 +504,10 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
         // All special keyword appears as token, i.e. self, src and *.
         const std::string& token_value = parameterized_item.item.GetString();
         if (token_value != "*" && token_value != "self") {
-          logger_.Warn(String::Format(
+          logger_.Warn(UNSAFE_TODO(String::Format(
               "Invalid allowlist item(%s) for feature %s. Allowlist item "
               "must be *, self or quoted url.",
-              token_value.c_str(), feature_name));
+              token_value.c_str(), feature_name)));
           continue;
         }
 
@@ -519,10 +519,10 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
       } else if (parameterized_item.item.is_string()) {
         allowlist_item = parameterized_item.item.GetString().c_str();
       } else {
-        logger_.Warn(
+        logger_.Warn(UNSAFE_TODO(
             String::Format("Invalid allowlist item for feature %s. Allowlist "
                            "item must be *, self, or quoted url.",
-                           feature_name));
+                           feature_name)));
         continue;
       }
       if (!allowlist_item.empty()) {

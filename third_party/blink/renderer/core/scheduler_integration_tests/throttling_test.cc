@@ -423,8 +423,8 @@ String BuildRepeatingTimerPage(const char* console_message,
       "</body>"
       "</html>";
 
-  return String::Format(kRepeatingTimerPageTemplate, console_message,
-                        communicate_script);
+  return UNSAFE_TODO(String::Format(kRepeatingTimerPageTemplate,
+                                    console_message, communicate_script));
 }
 
 }  // namespace
@@ -578,8 +578,8 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_LongUnalignedTimeout) {
   LoadURL("https://example.com/");
 
   const String console_message = BuildTimerConsoleMessage();
-  main_resource.Complete(String::Format(kLongUnalignedTimerScriptTemplate,
-                                        console_message.Utf8().c_str()));
+  main_resource.Complete(UNSAFE_TODO(String::Format(
+      kLongUnalignedTimerScriptTemplate, console_message.Utf8().c_str())));
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
@@ -603,8 +603,8 @@ TEST_F(IntensiveWakeUpThrottlingTest,
   platform_->RunUntilIdle();
 
   const String console_message = BuildTimerConsoleMessage();
-  subframe_resource.Complete(String::Format(kLongUnalignedTimerScriptTemplate,
-                                            console_message.Utf8().c_str()));
+  subframe_resource.Complete(UNSAFE_TODO(String::Format(
+      kLongUnalignedTimerScriptTemplate, console_message.Utf8().c_str())));
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
@@ -631,8 +631,8 @@ TEST_F(IntensiveWakeUpThrottlingTest,
   platform_->RunUntilIdle();
 
   const String console_message = BuildTimerConsoleMessage();
-  subframe_resource.Complete(String::Format(kLongUnalignedTimerScriptTemplate,
-                                            console_message.Utf8().c_str()));
+  subframe_resource.Complete(UNSAFE_TODO(String::Format(
+      kLongUnalignedTimerScriptTemplate, console_message.Utf8().c_str())));
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
@@ -656,8 +656,8 @@ TEST_F(IntensiveWakeUpThrottlingTest,
   LoadURL("https://example.com/");
 
   const String console_message = BuildTimerConsoleMessage();
-  const String script = String::Format(kLongUnalignedTimerScriptTemplate,
-                                       console_message.Utf8().c_str());
+  const String script = UNSAFE_TODO(String::Format(
+      kLongUnalignedTimerScriptTemplate, console_message.Utf8().c_str()));
 
   main_resource.Complete(
       script +

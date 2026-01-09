@@ -125,7 +125,7 @@ void CaptureXmlErrors(void* context, const char* message, ...) {
   va_list args;
   va_start(args, message);
   std::string* error = static_cast<std::string*>(context);
-  base::StringAppendV(error, message, args);
+  UNSAFE_TODO(base::StringAppendV(error, message, args));
   va_end(args);
 }
 

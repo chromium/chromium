@@ -153,9 +153,9 @@ MediaStreamAudioSourceNode::GetMediaStreamAudioSourceHandler() const {
 
 void MediaStreamAudioSourceNode::SendLogMessage(const char* const function_name,
                                                 const String& message) {
-  WebRtcLogMessage(
+  WebRtcLogMessage(UNSAFE_TODO(
       String::Format("[WA]MSASN::%s %s", function_name, message.Utf8().c_str())
-          .Utf8());
+          .Utf8()));
 }
 
 }  // namespace blink

@@ -208,7 +208,7 @@ String String::Format(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = base::VSpanPrintf(buffer, format, args);
+  int length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
   va_end(args);
 
   // TODO(esprehn): Negative result can only happen if there's an encoding
@@ -235,7 +235,7 @@ String String::Format(const char* format, ...) {
     // Not calling va_end/va_start here happens to work on lots of systems, but
     // fails e.g. on 64bit Linux.
     va_start(args, format);
-    length = base::VSpanPrintf(buffer, format, args);
+    length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
     va_end(args);
 
     // TODO(tsepez): can we get an error the second time around if

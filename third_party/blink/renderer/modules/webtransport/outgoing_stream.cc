@@ -462,9 +462,9 @@ ScriptValue OutgoingStream::CreateAbortException(IsLocalAbort is_local_abort) {
 
   DOMExceptionCode code = is_local_abort ? DOMExceptionCode::kAbortError
                                          : DOMExceptionCode::kNetworkError;
-  String message =
+  String message = UNSAFE_TODO(
       String::Format("The stream was aborted %s",
-                     is_local_abort ? "locally" : "by the remote server");
+                     is_local_abort ? "locally" : "by the remote server"));
 
   return ScriptValue(script_state_->GetIsolate(),
                      V8ThrowDOMException::CreateOrEmpty(

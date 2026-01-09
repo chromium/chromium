@@ -276,8 +276,8 @@ void InputStream::OnError(InputController::ErrorCode error_code) {
   client_->OnError(InputControllerErrorToStreamError(error_code));
   if (log_)
     log_->OnError();
-  SendLogMessage("%s({error_code=%s})", __func__,
-                 ErrorCodeToString(error_code));
+  UNSAFE_TODO(SendLogMessage("%s({error_code=%s})", __func__,
+                             ErrorCodeToString(error_code)));
   OnStreamError(InputErrorToDisconnectReason(error_code));
 }
 
@@ -329,8 +329,9 @@ void InputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_->OnLogMessage("audio::IS::" + base::StringPrintV(format, args) +
-                     base::StringPrintf(" [id=%s]", id_.ToString().c_str()));
+  log_->OnLogMessage(
+      "audio::IS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
+      base::StringPrintf(" [id=%s]", id_.ToString().c_str()));
   va_end(args);
 }
 

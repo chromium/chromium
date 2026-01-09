@@ -209,8 +209,8 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   if (start > text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The %s index is out of bounds.",
-                       start > text_.length() ? "start" : "end"));
+        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
+                                   start > text_.length() ? "start" : "end")));
     return selection_rects;
   }
 
@@ -325,8 +325,8 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
   if (start >= text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The %s index is out of bounds.",
-                       start >= text_.length() ? "start" : "end"));
+        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
+                                   start >= text_.length() ? "start" : "end")));
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
 
@@ -435,8 +435,8 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     CHECK(exception_state != nullptr);
     exception_state->ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The %s index is out of bounds.",
-                       start >= text_.length() ? "start" : "end"));
+        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
+                                   start >= text_.length() ? "start" : "end")));
     return clusters_for_range;
   }
 

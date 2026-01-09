@@ -34,8 +34,8 @@ struct ScriptExpectedRun {
 };
 
 std::ostream& operator<<(std::ostream& output, const ScriptExpectedRun& run) {
-  return output << String::Format("%d:%d (%s)", run.limit, run.code,
-                                  uscript_getName(run.code));
+  return output << UNSAFE_TODO(String::Format("%d:%d (%s)", run.limit, run.code,
+                                              uscript_getName(run.code)));
 }
 
 class MockScriptData : public ScriptData {

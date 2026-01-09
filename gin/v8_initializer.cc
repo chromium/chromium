@@ -197,7 +197,7 @@ void SetV8FlagsFormatted(const char* format, ...) {
   char buffer[128];
   va_list args;
   va_start(args, format);
-  int length = base::VSpanPrintf(buffer, format, args);
+  int length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
   if (length <= 0 || sizeof(buffer) <= static_cast<unsigned>(length)) {
     PLOG(ERROR) << "Invalid formatted V8 flag: " << format;
     return;

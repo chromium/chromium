@@ -1257,8 +1257,8 @@ ScriptPromise<XRSession> XRSystem::requestSession(
   if (session_mode == device::mojom::blink::XRSessionMode::kImmersiveAr &&
       !IsImmersiveArAllowed()) {
     DVLOG(1) << __func__ << ": Immersive AR not allowed";
-    exception_state.ThrowTypeError(
-        String::Format(kImmersiveArModeNotValid, "requestSession"));
+    exception_state.ThrowTypeError(UNSAFE_TODO(
+        String::Format(kImmersiveArModeNotValid, "requestSession")));
 
     // We haven't created the query yet, so we can't use it to implicitly log
     // our metrics for us, so explicitly log it here, as the query requires the
@@ -1347,7 +1347,8 @@ ScriptPromise<XRSession> XRSystem::requestSession(
       DCHECK(image->hasWidthInMeters()) << "required in IDL";
       if (std::isnan(image->widthInMeters()) ||
           image->widthInMeters() <= 0.0f) {
-        String message = String::Format(kTrackedImageWidthInvalid, index);
+        String message =
+            UNSAFE_TODO(String::Format(kTrackedImageWidthInvalid, index));
         query->RejectWithTypeError(message, &exception_state);
         return promise;
       }
@@ -1562,9 +1563,9 @@ void XRSystem::FinishSessionCreation(
       return;
     }
 
-    String error_message =
+    String error_message = UNSAFE_TODO(
         String::Format("Could not create a session because: %s",
-                       GetConsoleMessage(result->get_failure_reason()));
+                       GetConsoleMessage(result->get_failure_reason())));
     AddConsoleMessage(mojom::blink::ConsoleMessageLevel::kError, error_message);
     query->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                   kSessionNotSupported, nullptr);

@@ -423,9 +423,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   if (!IsContextFormatSupported(descriptor->format().AsEnum())) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowTypeError(UNSAFE_TODO(
         String::Format("Unsupported canvas context format '%s'.",
-                       V8GPUTextureFormat(descriptor->format()).AsCStr()));
+                       V8GPUTextureFormat(descriptor->format()).AsCStr())));
     return;
   }
 

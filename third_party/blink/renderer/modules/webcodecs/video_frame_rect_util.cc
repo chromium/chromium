@@ -25,8 +25,8 @@ int32_t ToInt31(double value,
                 ExceptionState& exception_state) {
   // Reject NaN and +/- Infinity.
   if (!std::isfinite(value)) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid %s. %s must be finite.", object_name, property_name));
+    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
+        "Invalid %s. %s must be finite.", object_name, property_name)));
     return 0;
   }
 
@@ -34,15 +34,15 @@ int32_t ToInt31(double value,
   value = std::trunc(value);
 
   if (value < 0) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid %s. %s cannot be negative.", object_name, property_name));
+    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
+        "Invalid %s. %s cannot be negative.", object_name, property_name)));
     return 0;
   }
 
   if (value > std::numeric_limits<int32_t>::max()) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowTypeError(UNSAFE_TODO(
         String::Format("Invalid %s. %s exceeds implementation limit.",
-                       object_name, property_name));
+                       object_name, property_name)));
     return 0;
   }
 
@@ -73,41 +73,41 @@ gfx::Rect ToGfxRect(const DOMRectInit* rect,
     return gfx::Rect();
 
   if (width == 0) {
-    exception_state.ThrowTypeError(
-        String::Format("Invalid %s. width must be nonzero.", rect_name));
+    exception_state.ThrowTypeError(UNSAFE_TODO(
+        String::Format("Invalid %s. width must be nonzero.", rect_name)));
     return gfx::Rect();
   }
 
   if (height == 0) {
-    exception_state.ThrowTypeError(
-        String::Format("Invalid %s. height must be nonzero.", rect_name));
+    exception_state.ThrowTypeError(UNSAFE_TODO(
+        String::Format("Invalid %s. height must be nonzero.", rect_name)));
     return gfx::Rect();
   }
 
   if (static_cast<int64_t>(x) + width > std::numeric_limits<int32_t>::max()) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid %s. right exceeds implementation limit.", rect_name));
+    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
+        "Invalid %s. right exceeds implementation limit.", rect_name)));
     return gfx::Rect();
   }
 
   if (static_cast<int64_t>(y) + height > std::numeric_limits<int32_t>::max()) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid %s. bottom exceeds implementation limit.", rect_name));
+    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
+        "Invalid %s. bottom exceeds implementation limit.", rect_name)));
     return gfx::Rect();
   }
 
   gfx::Rect gfx_rect = gfx::Rect(x, y, width, height);
   if (gfx_rect.right() > coded_size.width()) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowTypeError(UNSAFE_TODO(
         String::Format("Invalid %s. right %i exceeds codedWidth %i.", rect_name,
-                       gfx_rect.right(), coded_size.width()));
+                       gfx_rect.right(), coded_size.width())));
     return gfx::Rect();
   }
 
   if (gfx_rect.bottom() > coded_size.height()) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowTypeError(UNSAFE_TODO(
         String::Format("Invalid %s. bottom %u exceeds codedHeight %u.",
-                       rect_name, gfx_rect.bottom(), coded_size.height()));
+                       rect_name, gfx_rect.bottom(), coded_size.height())));
     return gfx::Rect();
   }
 
@@ -123,13 +123,13 @@ bool ValidateOffsetAlignment(media::VideoPixelFormat format,
   for (wtf_size_t i = 0; i < num_planes; i++) {
     const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
     if (rect.x() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. x is not sample-aligned in plane %u.", rect_name, i));
+      exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
+          "Invalid %s. x is not sample-aligned in plane %u.", rect_name, i)));
       return false;
     }
     if (rect.y() % sample_size.height() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. y is not sample-aligned in plane %u.", rect_name, i));
+      exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
+          "Invalid %s. y is not sample-aligned in plane %u.", rect_name, i)));
       return false;
     }
   }

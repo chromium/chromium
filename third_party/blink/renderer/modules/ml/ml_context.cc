@@ -184,8 +184,8 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
     // Default case is for new format types added to MLTensor.
     default:
       return base::unexpected(
-          String::Format("Invalid operand data type: %s",
-                         ToBlinkDataType(data_type).AsCStr()));
+          UNSAFE_TODO(String::Format("Invalid operand data type: %s",
+                                     ToBlinkDataType(data_type).AsCStr())));
   }
 #endif  // BUILDFLAG(IS_MAC)
 }

@@ -4118,13 +4118,13 @@ TEST_F(StyleEngineTest, HasViewportUnitFlags) {
     auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     Document& document = holder->GetDocument();
     document.body()->SetInnerHTMLWithoutTrustedTypes(
-        String::Format(R"HTML(
+        UNSAFE_TODO(String::Format(R"HTML(
       <style>
         div { width: %s; }
       </style>
       <div id=target></div>
     )HTML",
-                       data.value));
+                                   data.value)));
     document.View()->UpdateAllLifecyclePhasesForTest();
 
     Element* target = document.getElementById(AtomicString("target"));

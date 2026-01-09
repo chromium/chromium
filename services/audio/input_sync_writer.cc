@@ -439,7 +439,7 @@ void InputSyncWriter::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log_callback_.Run(
-      base::StrCat({"AISW::", base::StringPrintV(format, args),
+      base::StrCat({"AISW::", UNSAFE_TODO(base::StringPrintV(format, args)),
                     base::StringPrintf(" [this=0x%" PRIXPTR "]",
                                        reinterpret_cast<uintptr_t>(this))}));
   va_end(args);

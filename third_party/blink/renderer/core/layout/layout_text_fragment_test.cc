@@ -20,14 +20,14 @@ class LayoutTextFragmentTest : public RenderingTest {
   }
 
   void SetBasicBody(const char* message) {
-    SetBodyInnerHTML(String::Format(
-        "<div id='target' style='font-size: 10px;'>%s</div>", message));
+    SetBodyInnerHTML(UNSAFE_TODO(String::Format(
+        "<div id='target' style='font-size: 10px;'>%s</div>", message)));
   }
 
   void SetAhemBody(const char* message, const unsigned width) {
-    SetBodyInnerHTML(String::Format(
+    SetBodyInnerHTML(UNSAFE_TODO(String::Format(
         "<div id='target' style='font: 10px Ahem; width: %uem'>%s</div>", width,
-        message));
+        message)));
   }
 
   const LayoutTextFragment* GetRemainingText() const {

@@ -96,7 +96,7 @@ void SendLogMessage(const AudioManagerBase::LogCallback& callback,
     return;
   va_list args;
   va_start(args, format);
-  callback.Run("AMB::" + base::StringPrintV(format, args));
+  callback.Run("AMB::" + UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 

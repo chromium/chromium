@@ -61,14 +61,14 @@ const ConstraintSpace& ConstraintSpace::CloneForBlockInInlineIfNeeded(
 }
 
 String ConstraintSpace::ToString() const {
-  return String::Format("Offset: %s,%s Size: %sx%s Clearance: %s",
-                        BfcOffset().line_offset.ToString().Ascii().c_str(),
-                        BfcOffset().block_offset.ToString().Ascii().c_str(),
-                        AvailableSize().inline_size.ToString().Ascii().c_str(),
-                        AvailableSize().block_size.ToString().Ascii().c_str(),
-                        HasClearanceOffset()
-                            ? ClearanceOffset().ToString().Ascii().c_str()
-                            : "none");
+  return UNSAFE_TODO(String::Format(
+      "Offset: %s,%s Size: %sx%s Clearance: %s",
+      BfcOffset().line_offset.ToString().Ascii().c_str(),
+      BfcOffset().block_offset.ToString().Ascii().c_str(),
+      AvailableSize().inline_size.ToString().Ascii().c_str(),
+      AvailableSize().block_size.ToString().Ascii().c_str(),
+      HasClearanceOffset() ? ClearanceOffset().ToString().Ascii().c_str()
+                           : "none"));
 }
 
 }  // namespace blink

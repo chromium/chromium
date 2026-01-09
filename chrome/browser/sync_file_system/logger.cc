@@ -46,7 +46,7 @@ void Log(logging::LogSeverity severity,
 
   va_list args;
   va_start(args, format);
-  base::StringAppendV(&what, format, args);
+  UNSAFE_TODO(base::StringAppendV(&what, format, args));
   va_end(args);
 
   // Log to WebUI regardless of LogSeverity (e.g. ignores command line flags).

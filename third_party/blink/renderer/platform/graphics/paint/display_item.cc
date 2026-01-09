@@ -242,7 +242,7 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
   return String::Format("%p:%s:%d", reinterpret_cast<void*>(client_id),
-                        DisplayItem::TypeAsDebugString(type).Utf8().data(),
+                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
                         fragment);
 #else
   return String::Format("%p:%d:%d", reinterpret_cast<void*>(client_id),

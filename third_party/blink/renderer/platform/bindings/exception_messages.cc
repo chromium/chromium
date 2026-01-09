@@ -238,8 +238,8 @@ String ExceptionMessages::ArgumentNullOrIncorrectType(
 
 String ExceptionMessages::ArgumentNotOfType(int argument_index,
                                             const char* expected_type) {
-  return String::Format("parameter %d is not of type '%s'.", argument_index + 1,
-                        expected_type);
+  return UNSAFE_TODO(String::Format("parameter %d is not of type '%s'.",
+                                    argument_index + 1, expected_type));
 }
 
 String ExceptionMessages::NotASequenceTypeProperty(

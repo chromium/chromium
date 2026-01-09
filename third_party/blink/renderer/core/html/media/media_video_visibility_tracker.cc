@@ -300,14 +300,14 @@ void RecordVideoOcclusionState(
                            video_element_rect.Width().ToInt(),
                            video_element_rect.Height().ToInt());
 
-  const String occlusion_state_string = String::Format(
+  const String occlusion_state_string = UNSAFE_TODO(String::Format(
       "has sufficiently visible video: {%s}, occluded area: {%.2f}, occluding "
       "rects: {%s}, intersection rect: {%s}, video element rect: {%s}, "
       "visibility threshold: {%d}",
       has_sufficiently_visible_video ? "True" : "False",
       occlusion_state.occluded_area, occluding_rects_stream.str().c_str(),
       intersection_rect_string.Ascii().c_str(),
-      video_element_rect_string.Ascii().c_str(), visibility_threshold);
+      video_element_rect_string.Ascii().c_str(), visibility_threshold));
 
   video_element.RecordVideoOcclusionState(
       occlusion_state_string.Ascii().c_str());

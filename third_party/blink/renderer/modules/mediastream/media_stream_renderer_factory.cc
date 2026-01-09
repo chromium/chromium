@@ -132,9 +132,9 @@ MediaStreamRendererFactory::GetAudioRenderer(
   if (!PeerConnectionRemoteAudioTrack::From(audio_track)) {
     // TODO(xians): Add support for the case where the media stream contains
     // multiple audio tracks.
-    SendLogMessage(String::Format(
+    SendLogMessage(UNSAFE_TODO(String::Format(
         "%s => (creating TrackAudioRenderer for %s audio track)", __func__,
-        audio_track->is_local_track() ? "local" : "remote"));
+        audio_track->is_local_track() ? "local" : "remote")));
 
     return base::MakeRefCounted<TrackAudioRenderer>(
         audio_components[0].Get(), *frame, String(device_id),

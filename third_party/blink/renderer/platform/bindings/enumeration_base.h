@@ -35,7 +35,8 @@ class PLATFORM_EXPORT EnumerationBase {
   // Returns the string representation to be used by CHECK_OP family.
   // This member function is meant only for CHECK_EQ, etc.
   String ToString() const {
-    return String::Format("IDL enum value \"%s\"", string_literal_);
+    return UNSAFE_TODO(
+        String::Format("IDL enum value \"%s\"", string_literal_));
   }
 
   // Returns true if the value is invalid.  The instance in this state must be

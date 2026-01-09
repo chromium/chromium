@@ -294,10 +294,10 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
 
   V8GPUFeatureName requiredFeature = V8GPUFeatureName(requiredFeatureEnum);
 
-  exception_state.ThrowTypeError(String::Format(
+  exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
       "Use of the '%s' texture format requires the '%s' feature "
       "to be enabled on %s.",
-      format.AsCStr(), requiredFeature.AsCStr(), GetFormattedLabel().c_str()));
+      format.AsCStr(), requiredFeature.AsCStr(), GetFormattedLabel().c_str())));
   return false;
 }
 
@@ -321,11 +321,11 @@ bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
 
   V8GPUFeatureName requiredFeature = V8GPUFeatureName(requiredFeatureEnum);
 
-  exception_state.ThrowTypeError(
+  exception_state.ThrowTypeError(UNSAFE_TODO(
       String::Format("Use of the '%s' blend factor requires the '%s' feature "
                      "to be enabled on %s.",
                      blend_factor.AsCStr(), requiredFeature.AsCStr(),
-                     GetFormattedLabel().c_str()));
+                     GetFormattedLabel().c_str())));
   return false;
 }
 
@@ -643,12 +643,12 @@ GPUQuerySet* GPUDevice::createQuerySet(const GPUQuerySetDescriptor* descriptor,
   if (descriptor->type() == V8GPUQueryType::Enum::kTimestamp &&
       !features_->Has(kTimestampQuery) &&
       !features_->Has(kTimestampQueryInsidePasses)) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowTypeError(UNSAFE_TODO(
         String::Format("Use of timestamp queries requires the '%s' or '%s' "
                        "feature to be enabled on %s.",
                        V8GPUFeatureName(kTimestampQuery).AsCStr(),
                        V8GPUFeatureName(kTimestampQueryInsidePasses).AsCStr(),
-                       GetFormattedLabel().c_str()));
+                       GetFormattedLabel().c_str())));
     return nullptr;
   }
   return GPUQuerySet::Create(this, descriptor);

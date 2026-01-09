@@ -155,7 +155,7 @@ void PulseAudioOutputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_callback_.Run("PAOS::" + base::StringPrintV(format, args) +
+  log_callback_.Run("PAOS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
                     base::StringPrintf(" [this=%p]", this));
   va_end(args);
 }

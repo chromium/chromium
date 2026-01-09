@@ -106,7 +106,7 @@ static void ReleaseDecoderBuffer(const uint8_t* buffer, void* opaque) {
 }
 
 static void LogDav1dMessage(void* cookie, const char* format, va_list ap) {
-  auto log = base::StringPrintV(format, ap);
+  auto log = UNSAFE_TODO(base::StringPrintV(format, ap));
   if (log.empty())
     return;
 

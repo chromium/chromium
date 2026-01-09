@@ -28,14 +28,14 @@ namespace {
 class LayoutTextTest : public RenderingTest {
  public:
   void SetBasicBody(const char* message) {
-    SetBodyInnerHTML(String::Format(
-        "<div id='target' style='font-size: 10px;'>%s</div>", message));
+    SetBodyInnerHTML(UNSAFE_TODO(String::Format(
+        "<div id='target' style='font-size: 10px;'>%s</div>", message)));
   }
 
   void SetAhemBody(const char* message, const unsigned width) {
-    SetBodyInnerHTML(String::Format(
+    SetBodyInnerHTML(UNSAFE_TODO(String::Format(
         "<div id='target' style='font: 10px Ahem; width: %uem'>%s</div>", width,
-        message));
+        message)));
   }
 
   LayoutText* GetLayoutTextById(const char* id) {

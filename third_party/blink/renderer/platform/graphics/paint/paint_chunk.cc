@@ -77,13 +77,13 @@ static String ToStringImpl(const PaintChunk& c,
                   c.is_cacheable, c.bounds.ToString().c_str(),
                   c.is_moved_from_cached_subsequence);
   if (!concise) {
-    sb.AppendFormat(
+    UNSAFE_TODO(sb.AppendFormat(
         " props=(%s) rect_known_to_be_opaque=%s hit_test_opaqueness=%s "
         "effectively_invisible=%d drawscontent=%d",
         c.properties.ToString().Utf8().c_str(),
         c.rect_known_to_be_opaque.ToString().c_str(),
         cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
-        c.effectively_invisible, c.DrawsContent());
+        c.effectively_invisible, c.DrawsContent()));
     if (c.hit_test_data) {
       sb.Append(" hit_test_data=");
       sb.Append(c.hit_test_data->ToString());

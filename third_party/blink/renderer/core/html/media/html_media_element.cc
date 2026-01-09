@@ -4718,9 +4718,9 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
   }
   RejectPlayPromisesInternal(
       DOMExceptionCode::kAbortError,
-      String::Format(
+      UNSAFE_TODO(String::Format(
           "The play() request was interrupted%s. https://goo.gl/LdLk22",
-          reason));
+          reason)));
 }
 
 void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,

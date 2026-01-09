@@ -314,8 +314,8 @@ InputController::InputController(
   DCHECK(event_handler_);
   DCHECK(sync_writer_);
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
-  SendLogMessage("%s => (delay reporter uses %s as AEC type)", __func__,
-                 delay_reporter_->GetAECTypeAsString());
+  UNSAFE_TODO(SendLogMessage("%s => (delay reporter uses %s as AEC type)",
+                             __func__, delay_reporter_->GetAECTypeAsString()));
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   MaybeSetUpAudioProcessing(std::move(processing_config), output_params,
@@ -332,14 +332,14 @@ void InputController::MaybeSetUpAudioProcessing(
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     raw_ptr<MlModelManager> ml_model_manager) {
-  SendLogMessage(
+  UNSAFE_TODO(SendLogMessage(
       "%s({processing_config=[%s]}, {processing_output_params=[%s]}, "
       "{device_params=[%s]})",
       __func__,
       processing_config ? processing_config->settings.ToString().c_str()
                         : "nullptr",
       processing_output_params.AsHumanReadableString().c_str(),
-      device_params.AsHumanReadableString().c_str());
+      device_params.AsHumanReadableString().c_str()));
   if (!processing_config) {
     SendLogMessage("%s => (WARNING: undefined audio processing config)",
                    __func__);
@@ -350,8 +350,9 @@ void InputController::MaybeSetUpAudioProcessing(
   CHECK(reference_signal_provider);
   const bool needs_webrtc_audio_processing =
       processing_config->settings.NeedWebrtcAudioProcessing();
-  SendLogMessage("%s => (needs WebRTC audio processing: %s)", __func__,
-                 needs_webrtc_audio_processing ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s => (needs WebRTC audio processing: %s)",
+                             __func__,
+                             needs_webrtc_audio_processing ? "true" : "false"));
   if (!needs_webrtc_audio_processing) {
     return;
   }
@@ -389,8 +390,9 @@ void InputController::MaybeSetUpAudioProcessing(
   // there is no need to offload work to a new thread.
   const bool echo_cancellation_is_enabled =
       audio_processor_handler_->needs_playout_reference();
-  SendLogMessage("%s => (echo cancellation is: %s)", __func__,
-                 (echo_cancellation_is_enabled ? "enabled" : "disabled"));
+  UNSAFE_TODO(
+      SendLogMessage("%s => (echo cancellation is: %s)", __func__,
+                     (echo_cancellation_is_enabled ? "enabled" : "disabled")));
   if (!echo_cancellation_is_enabled) {
     return;
   }
@@ -557,11 +559,11 @@ void InputController::Close() {
                    : CAPTURE_STARTUP_NEVER_GOT_DATA);
     LogCaptureStartupResult(capture_startup_result);
     LogCallbackError();
-    SendLogMessage("%s => (stream duration=%" PRId64 " seconds%s", __func__,
-                   duration.InSeconds(),
-                   audio_callback_->received_callback()
-                       ? ")"
-                       : " - no callbacks received)");
+    UNSAFE_TODO(SendLogMessage("%s => (stream duration=%" PRId64 " seconds%s",
+                               __func__, duration.InSeconds(),
+                               audio_callback_->received_callback()
+                                   ? ")"
+                                   : " - no callbacks received)"));
     if (type_ == LOW_LATENCY) {
       if (audio_callback_->received_callback()) {
         UMA_HISTOGRAM_LONG_TIMES("Media.InputStreamDuration", duration);
@@ -585,8 +587,8 @@ void InputController::Close() {
 #if defined(AUDIO_POWER_MONITORING)
   // Send stats if enabled.
   if (power_measurement_is_enabled_) {
-    SendLogMessage("%s => (silence_state=%s)", __func__,
-                   SilenceStateToString(silence_state_));
+    UNSAFE_TODO(SendLogMessage("%s => (silence_state=%s)", __func__,
+                               SilenceStateToString(silence_state_)));
   }
 #endif
 
@@ -739,18 +741,18 @@ void InputController::DoLogAudioLevels(float level_dbfs,
   }
 
   static const float kSilenceThresholdDBFS = -72.24719896f;
-  SendLogMessage(
+  UNSAFE_TODO(SendLogMessage(
       "%s => (average audio level=%.2f dBFS%s)", __func__, level_dbfs,
-      level_dbfs < kSilenceThresholdDBFS ? " <=> low audio input level" : "");
+      level_dbfs < kSilenceThresholdDBFS ? " <=> low audio input level" : ""));
 
   if (!microphone_is_muted) {
     UpdateSilenceState(level_dbfs < kSilenceThresholdDBFS);
   }
-  SendLogMessage("%s => (microphone volume=%d%%%s)", __func__,
-                 microphone_volume_percent,
-                 microphone_volume_percent < kLowLevelMicrophoneLevelPercent
-                     ? " <=> low microphone level"
-                     : "");
+  UNSAFE_TODO(SendLogMessage(
+      "%s => (microphone volume=%d%%%s)", __func__, microphone_volume_percent,
+      microphone_volume_percent < kLowLevelMicrophoneLevelPercent
+          ? " <=> low microphone level"
+          : ""));
 #endif
 }
 
@@ -803,7 +805,7 @@ void InputController::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   event_handler_->OnLog(
-      base::StrCat({"AIC::", base::StringPrintV(format, args)}));
+      base::StrCat({"AIC::", UNSAFE_TODO(base::StringPrintV(format, args))}));
   va_end(args);
 }
 
@@ -842,8 +844,8 @@ void InputController::CheckMutedState() {
   if (new_state != is_muted_) {
     is_muted_ = new_state;
     event_handler_->OnMuted(is_muted_);
-    SendLogMessage("%s => (is_muted=%s)", __func__,
-                   is_muted_ ? "true" : "false");
+    UNSAFE_TODO(SendLogMessage("%s => (is_muted=%s)", __func__,
+                               is_muted_ ? "true" : "false"));
   }
 }
 

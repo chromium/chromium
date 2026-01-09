@@ -126,8 +126,9 @@ String RuntimeCallStats::ToString() const {
       "Name                                                    Count     Time "
       "(ms)\n\n");
   for (const auto& counter : counters_) {
-    builder.AppendFormat(row_format, counter.GetName(), counter.GetCount(),
-                         counter.GetTime().InMillisecondsF());
+    UNSAFE_TODO(builder.AppendFormat(row_format, counter.GetName(),
+                                     counter.GetCount(),
+                                     counter.GetTime().InMillisecondsF()));
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)

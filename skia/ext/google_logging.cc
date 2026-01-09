@@ -23,7 +23,7 @@ void SkDebugf_FileLine(const char* file, int line, const char* format, ...) {
   va_start(ap, format);
 
   std::string msg;
-  base::StringAppendV(&msg, format, ap);
+  UNSAFE_TODO(base::StringAppendV(&msg, format, ap));
   va_end(ap);
 
   logging::LogMessage(file, line, severity).stream() << msg;
@@ -36,7 +36,7 @@ void SkAbort_FileLine(const char* file, int line, const char* format, ...) {
   va_start(ap, format);
 
   std::string msg;
-  base::StringAppendV(&msg, format, ap);
+  UNSAFE_TODO(base::StringAppendV(&msg, format, ap));
   va_end(ap);
 
   logging::LogMessage(file, line, severity).stream() << msg;

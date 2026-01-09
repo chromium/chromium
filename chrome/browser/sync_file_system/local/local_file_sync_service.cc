@@ -402,9 +402,9 @@ void LocalFileSyncService::DidInitializeForRemoteSync(
 
 void LocalFileSyncService::DidApplyRemoteChange(SyncStatusCallback callback,
                                                 SyncStatusCode status) {
-  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
-            "[Remote -> Local] ApplyRemoteChange finished --> %s",
-            SyncStatusCodeToString(status));
+  UNSAFE_TODO(util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
+                        "[Remote -> Local] ApplyRemoteChange finished --> %s",
+                        SyncStatusCodeToString(status)));
   std::move(callback).Run(status);
 }
 

@@ -99,10 +99,10 @@ std::optional<ParsedFeature> ParseFeature(
   std::optional<PolicyValue> policy_value =
       ItemToPolicyValue(item, expected_policy_value_type);
   if (!policy_value) {
-    logger.Warn(String::Format(
+    logger.Warn(UNSAFE_TODO(String::Format(
         "Parameter for feature %s should be %s, not %s.", feature_name.c_str(),
         PolicyValueTypeToString(expected_policy_value_type),
-        net::structured_headers::ItemTypeToString(item.Type()).data()));
+        net::structured_headers::ItemTypeToString(item.Type()).data())));
     return std::nullopt;
   }
   parsed_feature.policy_value = *policy_value;

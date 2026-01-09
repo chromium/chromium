@@ -399,10 +399,10 @@ WebMediaPlayerMS::WebMediaPlayerMS(
   DCHECK(delegate_);
   weak_this_ = weak_factory_.GetWeakPtr();
   delegate_id_ = delegate_->AddObserver(this);
-  SendLogMessage(String::Format(
+  SendLogMessage(UNSAFE_TODO(String::Format(
       "%s({delegate_id=%d}, {is_audio_element=%s}, {sink_id=%s})", __func__,
       delegate_id_, client_->IsAudioElement() ? "true" : "false",
-      sink_id.Utf8().c_str()));
+      sink_id.Utf8().c_str())));
 
   // TODO(tmathmeyer) WebMediaPlayerImpl gets the URL from the WebLocalFrame.
   // doing that here causes a nullptr deref.
@@ -483,8 +483,8 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     CorsMode /*cors_mode*/,
     bool is_cache_disabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s({load_type=%s})", __func__,
-                                LoadTypeToString(load_type)));
+  SendLogMessage(UNSAFE_TODO(String::Format("%s({load_type=%s})", __func__,
+                                            LoadTypeToString(load_type))));
 
   // TODO(acolwell): Change this to DCHECK_EQ(load_type, LoadTypeMediaStream)
   // once Blink-side changes land.
@@ -1382,8 +1382,8 @@ void WebMediaPlayerMS::RepaintInternal() {
 
 void WebMediaPlayerMS::SetNetworkState(WebMediaPlayer::NetworkState state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s => (state=%s)", __func__,
-                                NetworkStateToString(network_state_)));
+  SendLogMessage(UNSAFE_TODO(String::Format(
+      "%s => (state=%s)", __func__, NetworkStateToString(network_state_))));
   network_state_ = state;
   // Always notify to ensure client has the latest value.
   get_client()->NetworkStateChanged();
@@ -1391,8 +1391,8 @@ void WebMediaPlayerMS::SetNetworkState(WebMediaPlayer::NetworkState state) {
 
 void WebMediaPlayerMS::SetReadyState(WebMediaPlayer::ReadyState state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s => (state=%s)", __func__,
-                                ReadyStateToString(ready_state_)));
+  SendLogMessage(UNSAFE_TODO(String::Format("%s => (state=%s)", __func__,
+                                            ReadyStateToString(ready_state_))));
   ready_state_ = state;
   // Always notify to ensure client has the latest value.
   get_client()->ReadyStateChanged();

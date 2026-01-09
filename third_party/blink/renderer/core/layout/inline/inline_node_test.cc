@@ -568,20 +568,20 @@ TEST_P(MinMaxTest, Data) {
   const MinMaxData& data = GetParam();
   LoadAhem();
   StringBuilder html;
-  html.AppendFormat(R"HTML("
+  UNSAFE_TODO(html.AppendFormat(R"HTML("
     <!DOCTYPE html>
     <style>
     #target { font: 10px Ahem;%s }
     %s
     </style>
     <div id="target")HTML",
-                    data.target_style, data.style);
+                                data.target_style, data.style));
   if (data.lang) {
-    html.AppendFormat(" lang='%s'", data.lang);
+    UNSAFE_TODO(html.AppendFormat(" lang='%s'", data.lang));
     LayoutLocale::SetHyphenationForTesting(AtomicString(data.lang),
                                            MockHyphenation::Create());
   }
-  html.AppendFormat(">%s</div>", data.content);
+  UNSAFE_TODO(html.AppendFormat(">%s</div>", data.content));
   SetupHtml("target", html.ToString());
   InlineNodeForTest node = CreateInlineNode();
   const MinMaxSizes actual_sizes = ComputeMinMaxSizes(node);

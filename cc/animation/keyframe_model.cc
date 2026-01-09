@@ -141,8 +141,8 @@ int KeyframeModel::TargetProperty() const {
 void KeyframeModel::SetRunState(RunState new_run_state,
                                 base::TimeTicks monotonic_time) {
   char name_buffer[256];
-  base::SpanPrintf(name_buffer, "%s-%d-%d", curve()->TypeName(),
-                   TargetProperty(), group_);
+  UNSAFE_TODO(base::SpanPrintf(name_buffer, "%s-%d-%d", curve()->TypeName(),
+                               TargetProperty(), group_));
 
   bool is_waiting_to_start =
       run_state() == WAITING_FOR_TARGET_AVAILABILITY || run_state() == STARTING;

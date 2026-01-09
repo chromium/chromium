@@ -150,10 +150,10 @@ class LocalSyncRunner : public SyncProcessRunner,
   void DidProcessLocalChange(SyncStatusCallback callback,
                              SyncStatusCode status,
                              const FileSystemURL& url) {
-    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
-              "ProcessLocalChange finished with status=%d (%s) for url=%s",
-              status, SyncStatusCodeToString(status),
-              url.DebugString().c_str());
+    UNSAFE_TODO(util::Log(
+        logging::LOGGING_VERBOSE, FROM_HERE,
+        "ProcessLocalChange finished with status=%d (%s) for url=%s", status,
+        SyncStatusCodeToString(status), url.DebugString().c_str()));
     std::move(callback).Run(status);
   }
 
@@ -208,10 +208,10 @@ class RemoteSyncRunner : public SyncProcessRunner,
   void DidProcessRemoteChange(SyncStatusCallback callback,
                               SyncStatusCode status,
                               const FileSystemURL& url) {
-    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
-              "ProcessRemoteChange finished with status=%d (%s) for url=%s",
-              status, SyncStatusCodeToString(status),
-              url.DebugString().c_str());
+    UNSAFE_TODO(util::Log(
+        logging::LOGGING_VERBOSE, FROM_HERE,
+        "ProcessRemoteChange finished with status=%d (%s) for url=%s", status,
+        SyncStatusCodeToString(status), url.DebugString().c_str()));
 
     if (status == SYNC_STATUS_FILE_BUSY) {
       GetSyncService()->local_service_->RegisterURLForWaitingSync(
@@ -447,9 +447,10 @@ void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,
 void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
                                               SyncStatusCallback callback,
                                               SyncStatusCode status) {
-  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
-            "DidInitializeForApp (registered the origin): %s: %s",
-            app_origin.spec().c_str(), SyncStatusCodeToString(status));
+  UNSAFE_TODO(util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
+                        "DidInitializeForApp (registered the origin): %s: %s",
+                        app_origin.spec().c_str(),
+                        SyncStatusCodeToString(status)));
 
   if (!remote_service_) {
     std::move(callback).Run(SYNC_STATUS_ABORT);

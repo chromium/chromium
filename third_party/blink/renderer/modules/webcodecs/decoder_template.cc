@@ -98,7 +98,8 @@ template <typename Traits>
 DecoderTemplate<Traits>::~DecoderTemplate() {
   DVLOG(1) << __func__;
   base::UmaHistogramSparse(
-      String::Format("Blink.WebCodecs.%s.FinalStatus", Traits::GetName())
+      UNSAFE_TODO(
+          String::Format("Blink.WebCodecs.%s.FinalStatus", Traits::GetName()))
           .Ascii()
           .c_str(),
       static_cast<int>(logger_->status_code()));

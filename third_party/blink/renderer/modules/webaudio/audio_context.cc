@@ -128,8 +128,8 @@ const char* LatencyCategoryToString(
 String GetAudioContextLogString(const WebAudioLatencyHint& latency_hint,
                                 std::optional<float> sample_rate) {
   StringBuilder builder;
-  builder.AppendFormat("({latency_hint=%s}",
-                       LatencyCategoryToString(latency_hint.Category()));
+  UNSAFE_TODO(builder.AppendFormat(
+      "({latency_hint=%s}", LatencyCategoryToString(latency_hint.Category())));
   if (latency_hint.Category() == WebAudioLatencyHint::kCategoryExact) {
     builder.AppendFormat(", {seconds=%.3f}", latency_hint.Seconds());
   }
