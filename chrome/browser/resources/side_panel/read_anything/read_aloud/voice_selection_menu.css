@@ -43,6 +43,7 @@ cr-action-menu::part(dialog) {
   max-height: calc(90% - 36px);
   /* Prevent jank due to overscrolling from the dialog */
   overscroll-behavior: contain;
+  z-index: 9999;
 }
 
 .clickable-false {
