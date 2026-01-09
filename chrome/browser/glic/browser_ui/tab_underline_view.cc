@@ -75,6 +75,11 @@ TabUnderlineView::TabUnderlineView(
   // `glic_tab_underline_view_` should never receive input events.
   SetCanProcessEventsWithinSubtree(false);
 
+  // Register for active tab changes.
+  active_tab_subscription_ =
+      browser_window_interface->RegisterActiveTabDidChange(base::BindRepeating(
+          &TabUnderlineView::OnActiveTabChanged, base::Unretained(this)));
+
   // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time TabUnderlineView isn't fully initialized, which
   // can lead to undefined behavior.
@@ -135,6 +140,7 @@ void TabUnderlineView::PopulateShaderUniforms(
 void TabUnderlineView::OnThemeChanged() {
   View::OnThemeChanged();
   colors_ = GetEffectColors();
+  SchedulePaint();
 }
 
 std::vector<SkColor> TabUnderlineView::GetEffectColors() {
@@ -142,10 +148,21 @@ std::vector<SkColor> TabUnderlineView::GetEffectColors() {
   // kGlicParameterizedShader feature values.
   const ui::ColorProvider* color_provider = GetColorProvider();
   std::vector<SkColor> colors;
-  if (color_provider) {
-    colors = {color_provider->GetColor(ui::kColorRefPrimary50),
-              color_provider->GetColor(ui::kColorRefPrimary60),
-              color_provider->GetColor(ui::kColorRefPrimary70)};
+
+  // Different sets of colors are used for underlines on active vs inactive tabs
+  // if a custom theme is being used.
+  if (color_provider && GetTabInterface()) {
+    bool is_tab_active = GetTabInterface()->IsActivated();
+    colors = {
+        color_provider->GetColor(is_tab_active
+                                     ? kColorGlicActiveTabUnderlineGradient1
+                                     : kColorGlicInactiveTabUnderlineGradient1),
+        color_provider->GetColor(is_tab_active
+                                     ? kColorGlicActiveTabUnderlineGradient2
+                                     : kColorGlicInactiveTabUnderlineGradient2),
+        color_provider->GetColor(
+            is_tab_active ? kColorGlicActiveTabUnderlineGradient3
+                          : kColorGlicInactiveTabUnderlineGradient3)};
   } else {
     // If there is no ColorProvider available, fall back to
     // -gem-sys-color--brand-blue.
@@ -214,6 +231,12 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
   }
 
   canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);
+}
+
+void TabUnderlineView::OnActiveTabChanged(
+    BrowserWindowInterface* browser_window_interface) {
+  colors_ = GetEffectColors();
+  SchedulePaint();
 }
 
 BEGIN_METADATA(TabUnderlineView)

@@ -103,6 +103,8 @@ class TabUnderlineView : public AnimatedEffectView {
 
   int ComputeDimension();
 
+  void OnActiveTabChanged(BrowserWindowInterface* browser_window_interface);
+
   // The controller responsible for notifying the view about various browser
   // UI status changes that affect showing and animating of the tab underlines.
   const std::unique_ptr<TabUnderlineViewController> controller_;
@@ -110,6 +112,8 @@ class TabUnderlineView : public AnimatedEffectView {
   tabs::TabHandle tab_handle_;
 
   Orientation orientation_ = Orientation::kHorizontal;
+
+  base::CallbackListSubscription active_tab_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(, TabUnderlineView, AnimatedEffectView)

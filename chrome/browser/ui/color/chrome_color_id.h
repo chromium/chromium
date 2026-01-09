@@ -196,6 +196,12 @@
   E_CPONLY(kColorGlicBackground) \
   E_CPONLY(kColorGlicModalBackground) \
   E_CPONLY(kColorGlicModalForeground) \
+  E_CPONLY(kColorGlicActiveTabUnderlineGradient1) \
+  E_CPONLY(kColorGlicActiveTabUnderlineGradient2) \
+  E_CPONLY(kColorGlicActiveTabUnderlineGradient3) \
+  E_CPONLY(kColorGlicInactiveTabUnderlineGradient1) \
+  E_CPONLY(kColorGlicInactiveTabUnderlineGradient2) \
+  E_CPONLY(kColorGlicInactiveTabUnderlineGradient3) \
   /* Hover Button colors */ \
   E_CPONLY(kColorHoverButtonBackgroundHovered) \
   /* Lens overlay colors. */ \
