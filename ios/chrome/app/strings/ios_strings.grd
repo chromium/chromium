@@ -3006,6 +3006,30 @@
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE" desc="The title of the welcome screen presented to the user on First Run when on iPhone [iOS only]">
         Built for Your iPhone
       </message>
+      <message name="IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can create an image with Gemini.">
+        Create an image with Gemini
+      </message>
+      <message name="IDS_IOS_GEMINI_IMAGE_REMIX_TOOL_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can upload an image to remix with Nano Banana.">
+        Upload an image to remix with Nano Banana
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_BODY" desc="Text body of the Gemini-specific camera permission prompt when camera is already disabled.">
+        To let Gemini use your camera, turn on Camera in iOS settings
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_GO_TO_SETTINGS" desc="Label for action button to bring user to iOS settings in the camera permission prompt when camera is already disabled.">
+        Go to Settings
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_NO_THANKS" desc="Label for decline button in the camera permission prompt when camera is already disabled.">
+        No thanks
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_TITLE" desc="Title of the Gemini-specific camera permission prompt when camera is already disabled.">
+        Turn on Camera
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_PROMPT_BODY" desc="Text body of the Gemini-specific camera permission prompt.">
+        Let Gemini use your camera to take photos
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_PROMPT_TITLE" desc="Title of the Gemini-specific camera permission prompt.">
+        Allow “Gemini” to use your camera
+      </message>
       <message name="IDS_IOS_GEMINI_SETTINGS_CAMERA_FOOTER_TEXT" desc="The footer text of a camera permission row in the Gemini settings pages.">
         Take photos and share with Gemini to create and remix images.
       </message>
@@ -5176,7 +5200,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Use keyboard
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY" desc="Button text to deny access to permissions. This should match the iOS built-in alert for permissions access.">
-        Don't allow
+        Don't Allow
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT" desc="Button text to allow access to permissions. This should match the iOS built-in alert for permissions access.">
         Allow
