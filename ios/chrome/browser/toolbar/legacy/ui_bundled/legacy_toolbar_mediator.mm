@@ -69,10 +69,6 @@
   BOOL _isNTP;
   /// Last trait collection of the toolbars.
   UITraitCollection* _toolbarTraitCollection;
-  /// Whether SafariSwitcher should be checked on FRE.
-  BOOL _shouldCheckSafariSwitcherOnFRE;
-  /// Whether the NTP was shown in FRE.
-  BOOL _hasEnteredNTPOnFRE;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -91,9 +87,6 @@
     _webStateList->AddObserver(_webStateListObserverBridge.get());
 
     if (IsBottomOmniboxAvailable()) {
-      // Device switcher data is not available in incognito.
-      _shouldCheckSafariSwitcherOnFRE = !isIncognito && IsFirstRun();
-
       _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
           initWithPrefService:GetApplicationContext()->GetLocalState()
                      prefName:omnibox::kIsOmniboxInBottomPosition];
@@ -212,9 +205,6 @@
   [self.delegate updateToolbar];
   _isNTP = IsVisibleURLNewTabPage(webState);
   if (IsBottomOmniboxAvailable()) {
-    if (_shouldCheckSafariSwitcherOnFRE) {
-      [self checkSafariSwitcherOnFRE];
-    }
     [self updateOmniboxPosition];
     [self.omniboxConsumer setIsNTP:_isNTP];
   }
@@ -279,37 +269,6 @@
 }
 
 #pragma mark Default omnibox position
-
-/// Verifies if the user is a safari switcher on FRE.
-- (void)checkSafariSwitcherOnFRE {
-  CHECK(_shouldCheckSafariSwitcherOnFRE);
-  CHECK(self.deviceSwitcherResultDispatcher);
-
-  if (_isNTP) {
-    _hasEnteredNTPOnFRE = YES;
-  } else if (_hasEnteredNTPOnFRE) {
-    // Check device switcher data when the user leaves NTP on FRE, as data is
-    // only available on sync and takes time to fetch. This is only executed
-    // once, if the data is unavailable user may still see the bottom omnibox on
-    // next restart (see. `updateOmniboxDefaultPosition`).
-    _shouldCheckSafariSwitcherOnFRE = NO;
-    segmentation_platform::ClassificationResult result =
-        self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
-    if (result.status == segmentation_platform::PredictionStatus::kSucceeded) {
-      if (omnibox::IsSafariSwitcher(result)) {
-        base::UmaHistogramEnumeration(
-            kOmniboxDeviceSwitcherResultAtFRE,
-            OmniboxDeviceSwitcherResult::kBottomOmnibox);
-      } else {
-        base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtFRE,
-                                      OmniboxDeviceSwitcherResult::kTopOmnibox);
-      }
-    } else {
-      base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtFRE,
-                                    OmniboxDeviceSwitcherResult::kUnavailable);
-    }
-  }
-}
 
 /// Records user is a safari switcher at startup.
 /// Used to set the default omnibox position to bottom for `IsNewUser`

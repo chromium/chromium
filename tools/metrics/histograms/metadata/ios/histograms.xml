@@ -4162,18 +4162,14 @@ chromium-metrics-reviews@google.com.
   <summary>Records copy event in the omnibox with the type of copy.</summary>
 </histogram>
 
-<histogram name="IOS.Omnibox.DeviceSwitcherResult.{Context}"
+<histogram name="IOS.Omnibox.DeviceSwitcherResult.AtStartup"
     enum="OmniboxDeviceSwitcherResult" expires_after="2026-07-05">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
-    Log device switcher result checked at {Context}. When results are available,
+    Log device switcher result checked at startup. When results are available,
     logs the resuling default omnibox position. Otherwise, logs the reason.
   </summary>
-  <token key="Context">
-    <variant name="AtFRE" summary="FRE"/>
-    <variant name="AtStartup" summary="startup"/>
-  </token>
 </histogram>
 
 <histogram name="IOS.Omnibox.NumberOfLines" units="count"

@@ -26,10 +26,6 @@ enum class OmniboxPositionType {
 // determines if the bottom omnibox is presented by default.
 extern const char kOmniboxDeviceSwitcherResultAtStartup[];
 
-// Logs the device switcher result when the users leaves NTP after FRE. Device
-// switcher result determines if the bottom omnibox is presented by default.
-extern const char kOmniboxDeviceSwitcherResultAtFRE[];
-
 // Enum for IOS.Omnibox.DeviceSwitcherResult.* histograms.
 // Keep in sync with "OmniboxDeviceSwitcherResult" in
 // src/tools/metrics/histograms/enums.xml.
