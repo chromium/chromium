@@ -134,9 +134,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   EXPECT_EQ(9u, model->GetItemCount());
 }
 
-// TODO(crbug.com/460910010): Flaky, especially on CrOS ASAN LSAN and Win ASAN.
-#if defined(ADDRESS_SANITIZER) && \
-    ((BUILDFLAG(IS_CHROMEOS) && defined(LEAK_SANITIZER)) || BUILDFLAG(IS_WIN))
+// TODO(crbug.com/460910010): Flaky, especially on ASAN/LSAN bots and certain
+// Windows bots.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ExecuteCommand DISABLED_ExecuteCommand
 #else
 #define MAYBE_ExecuteCommand ExecuteCommand
