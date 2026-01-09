@@ -328,29 +328,6 @@ TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverrideOptedOut) {
       is_allowed);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
-// Tests that enabling `kAutofillAiIgnoreSignInState` skips the check whether a
-// client is signed in.
-TEST_P(AutofillAiMayPerformActionTest, IgnoreSignInStatus) {
-  using enum EntityTypeName;
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoreSignInState};
-
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  client().identity_test_environment().ClearPrimaryAccount();
-  ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
-
-  EXPECT_TRUE(
-      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
-  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
-
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 // Tests that only filling and cache use are allowed off-the-record.
 TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
   using enum EntityTypeName;
@@ -592,25 +569,6 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatus) {
   EXPECT_TRUE(
       SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut));
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
-}
-
-// Tests that signing in an opted-in user retains the opt-in status.
-TEST_F(AutofillAiPermissionUtilsTest, SignInAfterOptIn) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoreSignInState};
-
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  client().identity_test_environment().ClearPrimaryAccount();
-  ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
-
-  EXPECT_TRUE(
-      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
-  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
-
-  // The opt-in status is retained after sign-in.
-  client().identity_test_environment().MakePrimaryAccountAvailable(
-      "foo@gmail.com", signin::ConsentLevel::kSignin);
-  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

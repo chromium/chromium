@@ -362,10 +362,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     bool has_entity_data_saved,
     AutofillAiAction action,
     std::string* debug_message) {
-  if (base::FeatureList::IsEnabled(features::kAutofillAiIgnoreSignInState)) {
-    return true;
-  }
-
   if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
     return true;
   }
