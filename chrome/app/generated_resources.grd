@@ -13543,6 +13543,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
   Would you like to start <ph name="CONTROL_PANEL_APPLET_NAME">$1<ex>Add/Remove Programs</ex></ph>?
         </message>
       </if>
+      <message name="IDS_DEFAULT_BROWSER_CHANGED_TITLE" desc="Title of the notification shown when the default browser setting changes.">
+        Your default browser was changed
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_CHANGED_YES_BUTTON" desc="Label of the yes button on the notification shown when the default browser setting changes.">
+        Yes
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_CHANGED_NO_THANKS_BUTTON" desc="Label of the no button on the notification shown when the default browser setting changes.">
+        No, thanks
+      </message>
 
       <!-- chrome://help -->
       <if expr="not is_android">

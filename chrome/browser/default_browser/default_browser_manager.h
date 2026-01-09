@@ -20,9 +20,12 @@ class BrowserProcess;
 namespace default_browser {
 
 class DefaultBrowserMonitor;
+class DefaultBrowserNotificationHandler;
 
 using DefaultBrowserCheckCompletionCallback =
     base::OnceCallback<void(DefaultBrowserState)>;
+using DefaultBrowserChangedCallback =
+    base::RepeatingCallback<void(DefaultBrowserState)>;
 
 // DefaultBrowserManager is the long-lived central coordinator and the public
 // API for the default browser framework. It is responsible for selecting the
@@ -76,11 +79,7 @@ class DefaultBrowserManager {
   //
   // For now, only Windows platform will notify when a change occur.
   base::CallbackListSubscription RegisterDefaultBrowserChanged(
-      base::RepeatingClosure callback);
-
-  ShellDelegate* GetShellDelegateForTesting() {
-    return const_cast<ShellDelegate*>(shell_delegate_.get());
-  }
+      DefaultBrowserChangedCallback callback);
 
  private:
   void OnDefaultBrowserCheckResult(
@@ -92,6 +91,13 @@ class DefaultBrowserManager {
   void PerformDefaultBrowserCheckValidations(
       default_browser::DefaultBrowserState default_state);
 
+  // Called by the DefaultBrowserMonitor when a system-level change is detected.
+  // Triggers a re-verification to get the latest browser default state.
+  void OnMonitorDetectedChange();
+
+  // Callback for when the async state check is completed.
+  void NotifyObservers(DefaultBrowserState state);
+
   // Delegate for handling shell operations, such as checking and setting
   // default browser.
   const std::unique_ptr<ShellDelegate> shell_delegate_;
@@ -99,6 +105,15 @@ class DefaultBrowserManager {
   // The platform default browser change monitor that handles the low-level
   // logic for detecting when the system's default browser has changed.
   std::unique_ptr<DefaultBrowserMonitor> monitor_;
+
+  // The handler responsible for showing system notifications.
+  std::unique_ptr<DefaultBrowserNotificationHandler> notification_handler_;
+
+  // List of high-level observers (Notification, UI handlers, etc.)
+  base::RepeatingCallbackList<void(DefaultBrowserState)> observers_;
+
+  // The subscription to signals from the low-level `monitor_`.
+  base::CallbackListSubscription monitor_subscription_;
 
   ui::ScopedUnownedUserData<DefaultBrowserManager> scoped_unowned_user_data_;
 };

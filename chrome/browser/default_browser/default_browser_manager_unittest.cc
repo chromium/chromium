@@ -4,11 +4,13 @@
 
 #include "chrome/browser/default_browser/default_browser_manager.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -68,10 +70,12 @@ class DefaultBrowserManagerTest : public testing::Test {
 
     global_feature_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-            base::BindRepeating([](BrowserProcess& browser_process) {
+            base::BindLambdaForTesting([&](BrowserProcess& browser_process) {
+              auto fake_shell_delegate = std::make_unique<FakeShellDelegate>();
+              fake_shell_delegate_ptr_ = fake_shell_delegate.get();
               return std::make_unique<DefaultBrowserManager>(
                   TestingBrowserProcess::GetGlobal(),
-                  std::make_unique<FakeShellDelegate>());
+                  std::move(fake_shell_delegate));
             }));
 
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
@@ -79,6 +83,7 @@ class DefaultBrowserManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    fake_shell_delegate_ptr_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
@@ -86,11 +91,7 @@ class DefaultBrowserManagerTest : public testing::Test {
     return *DefaultBrowserManager::From(TestingBrowserProcess::GetGlobal());
   }
 
-  FakeShellDelegate& shell_delegate() {
-    return *static_cast<FakeShellDelegate*>(
-        DefaultBrowserManager::From(TestingBrowserProcess::GetGlobal())
-            ->GetShellDelegateForTesting());
-  }
+  FakeShellDelegate& shell_delegate() { return *fake_shell_delegate_ptr_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -100,6 +101,7 @@ class DefaultBrowserManagerTest : public testing::Test {
 #endif
 
   ui::UserDataFactory::ScopedOverride global_feature_override_;
+  raw_ptr<FakeShellDelegate> fake_shell_delegate_ptr_;
 };
 
 TEST_F(DefaultBrowserManagerTest, GetDefaultBrowserState) {

@@ -24,6 +24,8 @@ source_set("default_browser") {
     "default_browser_manager.cc",
     "default_browser_monitor.cc",
     "default_browser_monitor.h",
+    "default_browser_notification_handler.cc",
+    "default_browser_notification_handler.h",
     "default_browser_setter.h",
     "setters/shell_integration_default_browser_setter.cc",
     "setters/shell_integration_default_browser_setter.h",
@@ -32,9 +34,16 @@ source_set("default_browser") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/notifications",
+    "//chrome/browser/notifications:system_notification_helper",
+    "//ui/base",
     "//ui/base/unowned_user_data",
+    "//ui/message_center/public/cpp",
     "//url",
   ]
 
@@ -96,6 +105,7 @@ source_set("browser_tests") {
 
   deps = [
     ":default_browser",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
