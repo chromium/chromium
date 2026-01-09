@@ -163,6 +163,9 @@ export class ActorOverlayAppElement extends CrLitElement {
         '--actor-scrim-background-val2', skColorToRgba(theme.scrimColors[1]!));
     this.style.setProperty(
         '--actor-scrim-background-val3', skColorToRgba(theme.scrimColors[2]!));
+    this.style.setProperty(
+        '--actor-magic-cursor-filter',
+        `drop-shadow(0px 3px 5px ${skColorToRgba(theme.magicCursorColor)})`);
   }
 
   private async triggerClickAnimation(): Promise<void> {

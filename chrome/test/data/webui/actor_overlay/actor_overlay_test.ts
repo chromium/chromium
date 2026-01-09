@@ -70,6 +70,7 @@ suite('Scrim', function() {
         {value: 0xFFFFFF00},
         {value: 0xFF00FFFF},
       ],
+      magicCursorColor: {value: 0xFFFF00FF},
     };
     testRemote.setTheme(mockTheme);
     await microtasksFinished();
@@ -89,6 +90,9 @@ suite('Scrim', function() {
     assertEquals(
         'rgba(0, 255, 255, 1.00)',
         page.style.getPropertyValue('--actor-scrim-background-val3'));
+    assertEquals(
+        'drop-shadow(0px 3px 5px rgba(255, 0, 255, 1.00))',
+        page.style.getPropertyValue('--actor-magic-cursor-filter'));
   });
 
   test('MagicCursorDisabled', async function() {

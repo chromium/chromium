@@ -149,6 +149,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       /*alpha=*/0x00);
   mixer[kColorActorUiScrimEnd] = GetActorUiScrimColor(
       /*alpha=*/0x26);
+  mixer[kColorActorUiMagicCursor] = SelectActorUiColorBasedOnNearWhiteInput();
   mixer[kColorAppMenuHighlightSeverityLow] = AdjustHighlightColorForContrast(
       ui::kColorAlertLowSeverity, kColorToolbar);
   mixer[kColorAppMenuHighlightSeverityHigh] = {

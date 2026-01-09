@@ -33,6 +33,7 @@
   E_CPONLY(kColorActorUiScrimStart) \
   E_CPONLY(kColorActorUiScrimMiddle) \
   E_CPONLY(kColorActorUiScrimEnd) \
+  E_CPONLY(kColorActorUiMagicCursor) \
   /* Content settings activity indicators popup dialog colors */ \
   E_CPONLY(kColorActivityIndicatorForeground) \
   E_CPONLY(kColorActivityIndicatorSubtitleForeground) \

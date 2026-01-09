@@ -92,6 +92,8 @@ void ActorOverlayHandler::OnThemeChanged() {
         web_contents_->GetColorProvider().GetColor(kColorActorUiOverlayBorder);
     theme->border_glow_color = web_contents_->GetColorProvider().GetColor(
         kColorActorUiOverlayBorderGlow);
+    theme->magic_cursor_color =
+        web_contents_->GetColorProvider().GetColor(kColorActorUiMagicCursor);
 
     page_->SetTheme(std::move(theme));
   }
