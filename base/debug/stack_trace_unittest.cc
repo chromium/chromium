@@ -466,14 +466,14 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 #if BUILDFLAG(IS_WIN)
 TEST(StackTraceTest, EnabledStackTraces) {
   // This is slightly pointless as this is also enabled by the test harness, but
-  // it ensures we are exercising the InProcessStackDumpingEnabled() path.
+  // it ensures we are exercising the enabled path.
   EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
-  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabled());
+  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabledForTesting());
 }
 
 TEST(StackTraceTest, UnsymbolizedStackTraces) {
   EXPECT_TRUE(base::debug::DisableInProcessStackDumpingForTesting());
-  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabled());
+  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabledForTesting());
 
   StackTrace trace;
   auto as_string = trace.ToString();
