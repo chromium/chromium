@@ -6,9 +6,12 @@
 
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
+load("./config.star", "config")
 load("./platform.star", "platform")
 
 def __step_config(ctx, step_config):
+    remote_run = config.get(ctx, "googlechrome")
+
     # mojom_bindings_generator.py will run faster on n2-highmem-8 than
     # n2-custom-2-3840
     # e.g.
@@ -20,7 +23,7 @@ def __step_config(ctx, step_config):
             "name": "mojo/mojom_bindings_generator",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
             "restat": True,
-            "remote": True,
+            "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
             "output_local": True,
@@ -29,7 +32,7 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_parser",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
-            "remote": runtime.os != "windows",
+            "remote": remote_run and runtime.os != "windows",
             "canonicalize_dir": True,
             "timeout": "2m",
             "output_local": True,
@@ -38,7 +41,7 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/validate_typemap_config",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/validate_typemap_config.py",
-            "remote": True,
+            "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
             "output_local": True,
@@ -47,7 +50,7 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/generate_type_mappings",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/generate_type_mappings.py",
-            "remote": True,
+            "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
             "output_local": True,

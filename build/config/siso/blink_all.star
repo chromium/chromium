@@ -6,6 +6,7 @@
 
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
+load("./config.star", "config")
 load("./platform.star", "platform")
 
 def __filegroups(ctx):
@@ -15,11 +16,12 @@ __handlers = {
 }
 
 def __step_config(ctx, step_config):
+    remote_run = config.get(ctx, "googlechrome")
     step_config["rules"].extend([
         {
             "name": "blink/generate_bindings",
             "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/generate_bindings.py",
-            "remote": True,
+            "remote": remote_run,
             "timeout": "2m",
             "platform_ref": "large",
         },
@@ -31,7 +33,7 @@ def __step_config(ctx, step_config):
             {
                 "name": "blink/run_with_pythonpath",
                 "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/build/scripts/run_with_pythonpath.py -I ../../third_party/blink/renderer/build/scripts -I ../../third_party -I ../../third_party/pyjson5/src -I ../../tools ../../third_party/blink/renderer/build/scripts/",
-                "remote": True,
+                "remote": remote_run,
                 "timeout": "2m",
                 # crbug.com/372628498:
                 # chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py
@@ -42,7 +44,7 @@ def __step_config(ctx, step_config):
             {
                 "name": "blink/build_web_idl_database",
                 "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/build_web_idl_database.py",
-                "remote": True,
+                "remote": remote_run,
                 "timeout": "2m",
             },
         ])

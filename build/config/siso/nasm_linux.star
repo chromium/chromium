@@ -6,6 +6,7 @@
 
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
+load("./config.star", "config")
 
 def __filegroups(ctx):
     return {}
@@ -13,7 +14,7 @@ def __filegroups(ctx):
 __handlers = {}
 
 def __step_config(ctx, step_config):
-    remote_run = True  # Turn this to False when you do file access trace.
+    remote_run = config.get(ctx, "googlechrome")  # Turn this to False when you do file access trace.
     rules = []
     for toolchain in ["", "clang_x64"]:
         nasm_path = path.join(toolchain, "nasm")

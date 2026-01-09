@@ -165,7 +165,7 @@ __handlers = {
 def __step_config(ctx, step_config):
     platform_ref = "large"  # Rust actions run faster on large workers.
 
-    remote = True
+    remote = config.get(ctx, "googlechrome")
 
     # TODO(crbug.com/434857701): fix link for target_arch="x86"
     remote_link = False

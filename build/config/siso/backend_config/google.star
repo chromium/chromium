@@ -30,4 +30,7 @@ def __platform_properties(ctx):
 backend = module(
     "backend",
     platform_properties = __platform_properties,
+    configs = [
+        "googlechrome",
+    ],
 )

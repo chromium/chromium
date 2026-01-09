@@ -5,13 +5,14 @@
 """Siso configuration for typescript on Unix."""
 
 load("@builtin//struct.star", "module")
+load("./config.star", "config")
 load("./typescript_all.star", "typescript_all")
 
 __handlers = {}
 __handlers.update(typescript_all.handlers)
 
 def __step_config(ctx, step_config):
-    remote_run = True
+    remote_run = config.get(ctx, "googlechrome")
     step_config["input_deps"].update(typescript_all.input_deps)
 
     # crbug.com/345528247 - use_javascript_coverage

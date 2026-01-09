@@ -40,7 +40,7 @@ def __filegroups(ctx):
     return fg
 
 def __step_config(ctx, step_config):
-    remote_run = True  # Turn this to False when you do file access trace.
+    remote_run = config.get(ctx, "googlechrome")  # Turn this to False when you do file access trace.
 
     # Run static analysis steps locally when build server is enabled.
     # android_static_analysis = "build_server" by default.
