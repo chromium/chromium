@@ -153,13 +153,6 @@ void GlicFloatingUi::Resize(const gfx::Size& size,
   }
 }
 
-void GlicFloatingUi::SetDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  if (auto* glic_view = GetGlicView()) {
-    glic_view->SetDraggableAreas(draggable_areas);
-  }
-}
-
 GlicWindowAnimator* GlicFloatingUi::window_animator() {
   return glic_window_animator_.get();
 }
@@ -382,10 +375,6 @@ void GlicFloatingUi::OnWidgetUserResizeEnded() {
   instance_metrics_->OnUserResizeEnded(GetPanelSize());
   if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
     client->ManualResizeChanged(false);
-  }
-
-  if (GetGlicView()) {
-    GetGlicView()->UpdatePrimaryDraggableAreaOnResize();
   }
 
   glic_window_animator_->ResetLastTargetSize();

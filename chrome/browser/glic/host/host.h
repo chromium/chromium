@@ -52,9 +52,7 @@ class Host : public GlicSharingManagerProvider {
     virtual void Resize(const gfx::Size& size,
                         base::TimeDelta duration,
                         base::OnceClosure callback) = 0;
-    // Sets the areas of the view from which it should be draggable.
-    virtual void SetDraggableAreas(
-        const std::vector<gfx::Rect>& draggable_areas) = 0;
+
     // Allows the user to manually resize the widget by dragging. If the widget
     // hasn't been created yet, apply this setting when it is created. No effect
     // if the widget doesn't exist or the feature flag is disabled.
@@ -64,12 +62,13 @@ class Host : public GlicSharingManagerProvider {
     virtual void Attach() = 0;
     virtual void Detach() = 0;
     virtual void ClosePanel() = 0;
+
     // Sets the minimum widget size that the widget will allow the user to
-    // resize
-    // to.
+    // resize to.
     virtual void SetMinimumWidgetSize(const gfx::Size& size) = 0;
     virtual void CaptureScreenshot(
         glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) = 0;
+
     // Returns true if the glic widget is visible.
     virtual bool IsShowing() const = 0;
 
@@ -465,8 +464,6 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
               base::OnceClosure callback) override;
-  void SetDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) override {}
   void EnableDragResize(bool enabled) override {}
   void Attach() override {}
   void Detach() override {}

@@ -133,11 +133,6 @@ void GlicSidePanelUi::Resize(const gfx::Size& size,
   std::move(callback).Run();
 }
 
-void GlicSidePanelUi::SetDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  NOTIMPLEMENTED();
-}
-
 void GlicSidePanelUi::EnableDragResize(bool enabled) {
   NOTIMPLEMENTED();
 }

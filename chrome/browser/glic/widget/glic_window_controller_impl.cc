@@ -247,11 +247,6 @@ void GlicWindowControllerImpl::OnWidgetUserResizeEnded() {
     client->ManualResizeChanged(false);
   }
 
-  if (GetGlicView() &&
-      !base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
-    GetGlicView()->UpdatePrimaryDraggableAreaOnResize();
-  }
-
   if (GetGlicWidget()) {
     glic_size_ = GetGlicWidget()->GetClientAreaBoundsInScreen().size();
     SaveWidgetPosition(/*user_modified=*/true);
@@ -927,16 +922,6 @@ gfx::Size GlicWindowControllerImpl::GetPanelSize() {
   // This returns the size of the entire side panel (including content,
   // heading, and surrounding padding).
   return browser_view->contents_height_side_panel()->size();
-}
-
-void GlicWindowControllerImpl::SetDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  GlicView* glic_view = GetGlicView();
-  if (!glic_view) {
-    return;
-  }
-
-  glic_view->SetDraggableAreas(draggable_areas);
 }
 
 void GlicWindowControllerImpl::SetMinimumWidgetSize(const gfx::Size& size) {

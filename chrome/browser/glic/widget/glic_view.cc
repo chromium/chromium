@@ -112,30 +112,8 @@ void GlicView::DraggableRegionsChanged(
   SetDraggableRegion(sk_region);
 }
 
-void GlicView::SetDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  draggable_areas_.assign(draggable_areas.begin(), draggable_areas.end());
-}
-
-bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
-  if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
-    return draggable_region_.contains(point.x(), point.y());
-  }
-
-  for (const gfx::Rect& rect : draggable_areas_) {
-    if (rect.Contains(point)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void GlicView::UpdatePrimaryDraggableAreaOnResize() {
-  if (draggable_areas_.empty()) {
-    return;
-  }
-
-  draggable_areas_[0].set_width(width());
+bool GlicView::IsPointWithinDraggableRegion(const gfx::Point& point) {
+  return draggable_region_.contains(point.x(), point.y());
 }
 
 void GlicView::UpdateBackgroundColor() {

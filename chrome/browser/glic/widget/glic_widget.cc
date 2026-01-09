@@ -119,7 +119,7 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
       gfx::NativeView child,
       const gfx::Point& location) override {
     if (base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
-      return !glic_view()->IsPointWithinDraggableArea(location);
+      return !glic_view()->IsPointWithinDraggableRegion(location);
     }
 
     return true;
@@ -152,7 +152,7 @@ class GlicFrameViewChromeOS : public ash::FrameViewAsh {
     // If point falls into the client area (i.e web-contents), check if it
     // within the draggable regions of web-contents.
     if (component == HTCLIENT &&
-        glic_view()->IsPointWithinDraggableArea(point)) {
+        glic_view()->IsPointWithinDraggableRegion(point)) {
       return HTCAPTION;
     }
 
