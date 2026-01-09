@@ -10,8 +10,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
-
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
 #define SECURITY_WIN32 1
@@ -19,8 +17,10 @@
 #undef SECURITY_WIN32
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
@@ -132,8 +132,10 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   LUID luid;
   HANDLE token = INVALID_HANDLE_VALUE;
 
-  UNSAFE_TODO(
-      strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome"));
+  std::string_view source_str = "Chrome";
+  auto source_name_span = base::span(source.SourceName);
+  source_name_span.copy_prefix_from(base::as_chars(base::span(source_str)));
+  source_name_span[source_str.size()] = '\0';
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier)) {
     return GetLastError();
   }
@@ -220,12 +222,15 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
   // If the user name has a backslash, then it is of the form DOMAIN\username.
   // NetUserGetInfo() (called from GetPasswordLastChanged()) as well as
   // LogonUser() below only wants the username portion.
-  LPCWSTR backslash = UNSAFE_TODO(wcschr(username, L'\\'));
-  if (backslash) {
-    username = UNSAFE_TODO(backslash + 1);
+  std::wstring_view username_view(username);
+
+  size_t backslash_pos = username_view.find(L'\\');
+
+  if (backslash_pos != std::wstring_view::npos) {
+    username_view = username_view.substr(backslash_pos + 1);
   }
 
-  int64_t last_changed = GetPasswordLastChanged(username);
+  int64_t last_changed = GetPasswordLastChanged(username_view.data());
 
   // If we cannot determine when the password was last changed
   // then assume the password is not blank
@@ -249,7 +254,7 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
 
     // Attempt to login using blank password.
     DWORD logon_result =
-        LogonUser(username, L".", L"", LOGON32_LOGON_INTERACTIVE,
+        LogonUser(username_view.data(), L".", L"", LOGON32_LOGON_INTERACTIVE,
                   LOGON32_PROVIDER_DEFAULT, &handle);
 
     auto last_error = GetLastError();
