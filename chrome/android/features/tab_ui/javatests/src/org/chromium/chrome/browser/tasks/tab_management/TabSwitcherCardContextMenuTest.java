@@ -118,7 +118,7 @@ public class TabSwitcherCardContextMenuTest {
     @Test
     @MediumTest
     public void testTabCardMenuInTabSwitcher_shareIsAbsentForNtp() {
-        RegularNewTabPageStation ntp = mFirstPage.openRegularTabSwitcher().openNewTab();
+        RegularNewTabPageStation ntp = mFirstPage.openNewTabFast();
         Tab secondTab = ntp.loadedTabElement.value();
         @TabId int secondTabId = secondTab.getId();
 
@@ -134,11 +134,10 @@ public class TabSwitcherCardContextMenuTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testTabCardMenuInTabSwitcher_pinAndUnpinTab() {
-        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        Tab firstTab = firstPage.loadedTabElement.value();
+        Tab firstTab = mFirstPage.loadedTabElement.value();
         int firstTabId = firstTab.getId();
 
-        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
+        RegularTabSwitcherStation tabSwitcher = mFirstPage.openRegularTabSwitcher();
 
         tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().pinTab();
         tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().unpinTab();
@@ -148,7 +147,7 @@ public class TabSwitcherCardContextMenuTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testTabCardMenuInTabSwitcher_pinnedTabsDisabled() {
-        RegularNewTabPageStation ntp = mFirstPage.openRegularTabSwitcher().openNewTab();
+        RegularNewTabPageStation ntp = mFirstPage.openNewTabFast();
         Tab secondTab = ntp.loadedTabElement.value();
         @TabId int secondTabId = secondTab.getId();
 
@@ -164,11 +163,11 @@ public class TabSwitcherCardContextMenuTest {
     @Test
     @MediumTest
     public void testTabCardMenuInTabSwitcher_selectTabs() {
-        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        Tab firstTab = firstPage.loadedTabElement.value();
+        Tab firstTab = mFirstPage.loadedTabElement.value();
         @TabId int firstTabId = firstTab.getId();
 
-        RegularTabSwitcherStation tabSwitcher = firstPage.openNewTabFast().openRegularTabSwitcher();
+        RegularTabSwitcherStation tabSwitcher =
+                mFirstPage.openNewTabFast().openRegularTabSwitcher();
 
         TabSwitcherListEditorFacility<TabSwitcherStation> editor =
                 tabSwitcher
@@ -186,11 +185,11 @@ public class TabSwitcherCardContextMenuTest {
     @Test
     @MediumTest
     public void testTabCardMenuInTabSwitcher_closeTab() {
-        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        Tab firstTab = firstPage.loadedTabElement.value();
+        Tab firstTab = mFirstPage.loadedTabElement.value();
         @TabId int firstTabId = firstTab.getId();
 
-        RegularTabSwitcherStation tabSwitcher = firstPage.openNewTabFast().openRegularTabSwitcher();
+        RegularTabSwitcherStation tabSwitcher =
+                mFirstPage.openNewTabFast().openRegularTabSwitcher();
 
         tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().closeTab();
     }
