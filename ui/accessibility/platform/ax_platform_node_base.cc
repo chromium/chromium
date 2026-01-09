@@ -2208,6 +2208,17 @@ int AXPlatformNodeBase::FindTextBoundary(
     ax::mojom::TextAffinity affinity) const {
   DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
 
+  // TODO(crbug.com/40887363): AXPosition support for sentences is broken. Rely
+  // upon known working utility method below.
+  if (boundary == ax::mojom::TextBoundary::kSentenceStart ||
+      boundary == ax::mojom::TextBoundary::kSentenceEnd ||
+      boundary == ax::mojom::TextBoundary::kSentenceStartOrEnd) {
+    std::vector<int32_t> unused_line_start_offsets;
+    return static_cast<int>(
+        FindAccessibleTextBoundary(GetHypertext(), unused_line_start_offsets,
+                                   boundary, offset, direction, affinity));
+  }
+
   const AXPosition position =
       GetDelegate()->CreateTextPositionAt(offset, affinity);
   // On Windows and Linux ATK, searching for a text boundary should always stop
