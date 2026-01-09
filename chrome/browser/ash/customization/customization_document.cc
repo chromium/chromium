@@ -857,8 +857,12 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
     NOTREACHED();
   }
 
+  // TODO(crbug.com/404131632): Avoid g_browser_process usage.
+  auto shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
+
   wallpaper_downloader_ = std::make_unique<CustomizationWallpaperDownloader>(
-      wallpaper_url, dir, file,
+      shared_url_loader_factory, wallpaper_url, dir, file,
       base::BindOnce(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(applying)));
 
@@ -978,8 +982,12 @@ void ServicesCustomizationDocument::OnOEMWallpaperDownloaded(
     VLOG(1) << "Setting default wallpaper to '"
             << GetCustomizedWallpaperDownloadedFileName().value() << "' ('"
             << wallpaper_url.spec() << "')";
+
+    // TODO(crbug.com/404131632): Avoid g_browser_process usage.
+    PrefService* local_state = g_browser_process->local_state();
+
     customization_wallpaper_util::StartSettingCustomizedDefaultWallpaper(
-        wallpaper_url, GetCustomizedWallpaperDownloadedFileName());
+        local_state, wallpaper_url, GetCustomizedWallpaperDownloadedFileName());
   }
   wallpaper_downloader_.reset();
   applying->Finished(success);

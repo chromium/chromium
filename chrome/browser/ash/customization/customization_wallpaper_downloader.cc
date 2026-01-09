@@ -5,18 +5,21 @@
 #include "chrome/browser/ash/customization/customization_wallpaper_downloader.h"
 
 #include <math.h>
+
 #include <algorithm>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace ash {
@@ -89,12 +92,14 @@ void RenameTemporaryFile(const base::FilePath& from,
 }  // namespace
 
 CustomizationWallpaperDownloader::CustomizationWallpaperDownloader(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const GURL& wallpaper_url,
     const base::FilePath& wallpaper_dir,
     const base::FilePath& wallpaper_downloaded_file,
     base::OnceCallback<void(bool success, const GURL&)>
         on_wallpaper_fetch_completed)
-    : wallpaper_url_(wallpaper_url),
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      wallpaper_url_(wallpaper_url),
       wallpaper_dir_(wallpaper_dir),
       wallpaper_downloaded_file_(wallpaper_downloaded_file),
       wallpaper_temporary_file_(wallpaper_downloaded_file.value() +
@@ -121,17 +126,15 @@ void CustomizationWallpaperDownloader::StartRequest() {
   simple_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kCustomizationWallPaperDownloaderNetworkTag);
 
-  SystemNetworkContextManager* system_network_context_manager =
-      g_browser_process->system_network_context_manager();
-  // In unit tests, the browser process can return a null context manager
-  if (!system_network_context_manager)
+  // In unit tests, the browser process can return a null
+  // SharedURLLoaderFactory.
+  if (!shared_url_loader_factory_) {
+    CHECK_IS_TEST();
     return;
-
-  network::mojom::URLLoaderFactory* loader_factory =
-      system_network_context_manager->GetURLLoaderFactory();
+  }
 
   simple_loader_->DownloadToFile(
-      loader_factory,
+      shared_url_loader_factory_.get(),
       base::BindOnce(&CustomizationWallpaperDownloader::OnSimpleLoaderComplete,
                      base::Unretained(this)),
       wallpaper_temporary_file_);
