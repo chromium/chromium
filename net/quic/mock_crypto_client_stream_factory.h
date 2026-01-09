@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -16,9 +17,14 @@
 #include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 
+namespace base {
+class RunLoop;
+}  // namespace base
+
 namespace quic {
 class QuicCryptoClientStream;
 }  // namespace quic
+
 namespace net {
 
 class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
@@ -52,6 +58,9 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
     proof_verify_details_queue_.push(proof_verify_details);
   }
 
+  // Waits until `streams_` has a length of `count`.
+  void WaitForStreams(size_t count);
+
   MockCryptoClientStream* last_stream() const;
   const std::vector<base::WeakPtr<MockCryptoClientStream>>& streams() const {
     return streams_;
@@ -75,6 +84,11 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
   std::map<quic::QuicServerId, std::unique_ptr<quic::QuicConfig>>
       config_for_server_;
   bool use_mock_crypter_ = false;
+
+  // When populated, `wait_for_stream_run_loop_` will be quit once
+  // `streams_.size()` reaches `wait_for_stream_count_`.
+  std::optional<size_t> wait_for_stream_count_;
+  raw_ptr<base::RunLoop> wait_for_stream_run_loop_;
 };
 
 }  // namespace net

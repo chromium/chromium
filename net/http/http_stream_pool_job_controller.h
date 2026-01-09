@@ -136,7 +136,6 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Calculate an alternative endpoint for the request.
   static std::optional<Alternative> CalculateAlternative(
       HttpStreamPool* pool,
-      const HttpStreamKey& origin_stream_key,
       const HttpStreamPoolRequestInfo& request_info,
       bool enable_alternative_services);
 

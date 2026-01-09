@@ -1080,9 +1080,10 @@ void HttpStreamPool::AttemptManager::ResolveServiceEndpoint(
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = initial_priority;
   parameters.secure_dns_policy = stream_key().secure_dns_policy();
+
   service_endpoint_request_ =
       http_network_session()->host_resolver()->CreateServiceEndpointRequest(
-          HostResolver::Host(stream_key().destination()),
+          stream_key().GetHostToResolve(),
           stream_key().network_anonymization_key(), net_log(),
           std::move(parameters));
 

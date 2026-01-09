@@ -58,9 +58,7 @@ class HttpStreamPool::Group {
   static constexpr base::TimeDelta kUnusedIdleStreamSocketTimeout =
       base::Seconds(60);
 
-  Group(HttpStreamPool* pool,
-        HttpStreamKey stream_key,
-        std::optional<QuicSessionAliasKey> quic_session_alias_key);
+  Group(HttpStreamPool* pool, HttpStreamKey stream_key);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;

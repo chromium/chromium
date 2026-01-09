@@ -22084,6 +22084,14 @@ TEST_P(HttpNetworkTransactionTest, FailedAlternativeServiceIsNotUserVisible) {
 // HTTP/1.1 socket open to the alternative server.  That socket should not be
 // used.
 TEST_P(HttpNetworkTransactionTest, AlternativeServiceShouldNotPoolToHttp11) {
+  // HEv3 won't use HTTP/1.x to service the request, but it does currently not
+  // merge its connection attempts with the non-alt-service requests, so will
+  // ignore the existence of HTTP/1.1 sockets and try to establish a new H2
+  // connection.
+  if (HappyEyeballsV3Enabled()) {
+    GTEST_SKIP();
+  }
+
   url::SchemeHostPort server("https", "origin.example.org", 443);
   HostPortPair alternative("alternative.example.org", 443);
   std::string origin_url = "https://origin.example.org:443";

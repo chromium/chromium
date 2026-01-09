@@ -514,10 +514,8 @@ HttpStreamPool::Group* HttpStreamPool::GetGroupForTesting(
 }
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
-    const HttpStreamKey& stream_key,
-    const std::optional<QuicSessionAliasKey>& quic_session_alias_key) {
-  auto [result, inserted] =
-      groups_.try_emplace(stream_key, this, stream_key, quic_session_alias_key);
+    const HttpStreamKey& stream_key) {
+  auto [result, inserted] = groups_.try_emplace(stream_key, this, stream_key);
   return result->second;
 }
 

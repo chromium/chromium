@@ -196,7 +196,11 @@ void FakeServiceEndpointRequest::ChangeRequestPriority(
 
 FakeServiceEndpointResolver::FakeServiceEndpointResolver() = default;
 
-FakeServiceEndpointResolver::~FakeServiceEndpointResolver() = default;
+FakeServiceEndpointResolver::~FakeServiceEndpointResolver() {
+  if (expect_all_fake_requests_consumed_) {
+    EXPECT_TRUE(requests_.empty());
+  }
+}
 
 base::WeakPtr<FakeServiceEndpointRequest>
 FakeServiceEndpointResolver::AddFakeRequest() {
@@ -379,6 +383,11 @@ void FakeStreamSocket::DisconnectAfterIsConnectedCall(int count) {
   disconnect_after_is_connected_call_count_ = count;
 }
 
+StreamKeyBuilder::StreamKeyBuilder(std::string_view destination)
+    : destination_(url::SchemeHostPort(GURL(destination))) {}
+
+StreamKeyBuilder::~StreamKeyBuilder() = default;
+
 StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
   destination_ = key.destination();
   privacy_mode_ = key.privacy_mode();
@@ -390,7 +399,7 @@ StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
 HttpStreamKey StreamKeyBuilder::Build() const {
   return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
                        NetworkAnonymizationKey(), secure_dns_policy_,
-                       disable_cert_network_fetches_);
+                       disable_cert_network_fetches_, alt_service_);
 }
 
 HttpStreamKey GroupIdToHttpStreamKey(

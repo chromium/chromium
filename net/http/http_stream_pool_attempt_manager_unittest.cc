@@ -6542,11 +6542,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
   ASSERT_TRUE(origin_manager);
   EXPECT_EQ(origin_manager->GetPriority(), RequestPriority::LOW);
 
-  HttpStreamKey alt_stream_key =
-      StreamKeyBuilder()
-          .set_destination(url::SchemeHostPort(
-              url::kHttpsScheme, kAlternative.host(), kAlternative.port()))
-          .Build();
+  HttpStreamKey alt_stream_key = StreamKeyBuilder()
+                                     .set_destination(kOrigin)
+                                     .set_alt_service(alternative_service)
+                                     .Build();
   AttemptManager* alt_manager =
       pool().GetOrCreateGroupForTesting(alt_stream_key).attempt_manager();
   ASSERT_TRUE(alt_manager);

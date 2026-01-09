@@ -363,9 +363,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // JobControllers), always return true.
   bool EnsureTotalActiveStreamCountBelowLimit() const;
 
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
-                          const std::optional<QuicSessionAliasKey>&
-                              quic_session_alias_key = std::nullopt);
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
   Group* GetGroup(const HttpStreamKey& stream_key);
 

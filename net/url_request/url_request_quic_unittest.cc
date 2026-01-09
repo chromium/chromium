@@ -572,12 +572,6 @@ TEST_P(URLRequestQuicWithTcpTest, AltServiceRightCert) {
 // connection attempts are both alive at once.
 TEST_P(URLRequestQuicWithTcpTest,
        AltServiceWrongCertSimultaneousNonAltServiceQuicAttempt) {
-  if (happy_eyeballs_v3_enabled()) {
-    // TODO(crbug.com/455891789): This case is currently broken in the HEv3
-    // case. Fix case and enable test.
-    GTEST_SKIP();
-  }
-
   SetUpHttpsRecord();
   auto context = BuildContext();
   ConfigureAltService(*context, kOtherHost, kTestServerHost);
@@ -613,12 +607,6 @@ TEST_P(URLRequestQuicWithTcpTest,
 // destination started first.
 TEST_P(URLRequestQuicWithTcpTest,
        AltServiceWrongCertSimultaneousNonAltServiceQuicAttemptReverseOrder) {
-  if (happy_eyeballs_v3_enabled()) {
-    // TODO(crbug.com/455891789): This case is currently broken in the HEv3
-    // case. Fix case and enable test.
-    GTEST_SKIP();
-  }
-
   SetUpHttpsRecord();
   auto context = BuildContext();
   ConfigureAltService(*context, kOtherHost, kTestServerHost);
@@ -687,12 +675,6 @@ TEST_P(URLRequestQuicWithTcpTest,
 // Tests the case where two hosts have the same QUIC alt service destination,
 // but the server only serves a response that's valid for one of the two hosts.
 TEST_P(URLRequestQuicWithTcpTest, TwoAltServiceRequestsOneWrongCert) {
-  if (happy_eyeballs_v3_enabled()) {
-    // TODO(crbug.com/455891789): This case is currently broken in the HEv3
-    // case. Fix case and enable test.
-    GTEST_SKIP();
-  }
-
   SetUpLocalhostDnsRecord(kOtherHost2);
   auto context = BuildContext();
   ConfigureAltService(*context, kTestServerHost, kOtherHost2);
@@ -728,12 +710,6 @@ TEST_P(URLRequestQuicWithTcpTest, TwoAltServiceRequestsOneWrongCert) {
 // Same as above, but with the order flipped.
 TEST_P(URLRequestQuicWithTcpTest,
        TwoAltServiceRequestsOneWrongCertReverseOrder) {
-  if (happy_eyeballs_v3_enabled()) {
-    // TODO(crbug.com/455891789): This case is currently broken in the HEv3
-    // case. Fix case and enable test.
-    GTEST_SKIP();
-  }
-
   SetUpLocalhostDnsRecord(kOtherHost2);
   auto context = BuildContext();
   ConfigureAltService(*context, kTestServerHost, kOtherHost2);
