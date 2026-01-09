@@ -11,6 +11,7 @@ group("all") {
   testonly = true
   deps = [
     ":mojo_c_system_bindings",
+    ":mojo_rust_bindings_api",
     ":rust_mojo_tests",
     "mojom_parser",
     "sequences",
@@ -42,6 +43,19 @@ rust_static_library("mojo_rust_system_api") {
   deps = [
     ":mojo_ffi",
     "//third_party/rust/bitflags/v2:lib",
+  ]
+}
+
+rust_static_library("mojo_rust_bindings_api") {
+  crate_root = "bindings/lib.rs"
+  sources = [
+    "bindings/lib.rs",
+    "bindings/message_pipe_watcher.rs",
+  ]
+
+  deps = [
+    ":mojo_rust_system_api",
+    "sequences",
   ]
 }
 
