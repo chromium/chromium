@@ -892,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.SyncResult" enum="PlatformFileError"
-    expires_after="2024-08-06">
+    expires_after="2026-08-06">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -900,6 +900,9 @@ chromium-metrics-reviews@google.com.
     system calls of fsync(), FlushFileBuffers(), etc). Sync() is only called if
     the client requests it (e.g. for a strict durability IndexedDB transaction)
     and after an otherwise successful write.
+
+    Warning: this histogram was expired from 2024/04 to 2026/01; data is
+    missing.
   </summary>
 </histogram>
 
