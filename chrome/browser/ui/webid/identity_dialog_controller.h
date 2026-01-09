@@ -179,9 +179,8 @@ class IdentityDialogController
 
     const GURL& idp_url() const { return idp_url_; }
     const std::string& account_id() const { return account_id_; }
-    const OnFederatedTokenReceivedCallback&
-    on_federated_token_received_callback() const {
-      return on_federated_token_received_callback_;
+    OnFederatedTokenReceivedCallback on_federated_token_received_callback() {
+      return std::move(on_federated_token_received_callback_);
     }
 
     PAGE_USER_DATA_KEY_DECL();

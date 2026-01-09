@@ -110,9 +110,38 @@ bool IdentityDialogController::ShowAccountsDialog(
   rp_mode_ = rp_mode;
 
   // If there is an actor login request, we will not show the accounts
-  // dialog. Pretend that we did for the caller.
+  // dialog. Pretend that we did for the caller and automatically select the
+  // account.
   if (!ShouldShowFedCmUi()) {
-    return true;
+    auto* actor_login_request = GetActorLoginRequest();
+    GURL idp_config_url = actor_login_request->idp_url();
+    std::string account_id = actor_login_request->account_id();
+    for (const auto& account : accounts) {
+      if (account->id != account_id ||
+          account->identity_provider->idp_metadata.config_url !=
+              idp_config_url) {
+        continue;
+      }
+      bool is_sign_in = account->idp_claimed_login_state.value_or(
+                            account->browser_trusted_login_state) ==
+                        content::IdentityRequestAccount::LoginState::kSignIn;
+      if (is_sign_in) {
+        std::move(on_account_selection_)
+            .Run(idp_config_url, account_id, /*is_sign_in=*/true);
+        return true;
+      } else {
+        // It is possible that the account is a sign up even though the actor
+        // explicitly requested an account to be automatically selected. This
+        // could happen if the account was revoked between being shown to the
+        // user and the actor login request being sent.
+        std::move(actor_login_request->on_federated_token_received_callback())
+            .Run(/*token_received=*/false);
+        return false;
+      }
+    }
+    std::move(actor_login_request->on_federated_token_received_callback())
+        .Run(/*token_received=*/false);
+    return false;
   }
 
   if (!TrySetAccountView()) {
