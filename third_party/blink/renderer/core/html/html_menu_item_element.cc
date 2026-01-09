@@ -80,7 +80,7 @@ bool HTMLMenuItemElement::IsCheckable() const {
   return HasOwnerMenuList() && nearest_ancestor_field_set_ &&
          nearest_ancestor_field_set_->FastGetAttribute(
              html_names::kCheckableAttr) &&
-         !GetInvokedSubmenu();
+         !InvokesSubmenu();
 }
 
 bool HTMLMenuItemElement::checked() const {
@@ -117,7 +117,7 @@ bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
   return SelectorChecker::MatchesFocusVisiblePseudoClass(*this);
 }
 
-HTMLMenuListElement* HTMLMenuItemElement::GetInvokedSubmenu() const {
+HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
   auto* invoked_element = DynamicTo<HTMLMenuListElement>(commandForElement());
   if (!invoked_element || !invoked_element->IsPopover()) {
     return nullptr;
@@ -150,9 +150,9 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
   if (!checkable) {
     // Not checkable - close the containing menulist unless this item invokes
     // a sub-menu.
-    return !GetInvokedSubmenu();
+    return !InvokesSubmenu();
   }
-  DCHECK(!GetInvokedSubmenu());
+  DCHECK(!InvokesSubmenu());
 
   is_default_checkedness_overridden_ = true;
 
@@ -185,10 +185,10 @@ void HTMLMenuItemElement::ActivateMenuItem() {
   // If this menu item isn't a submenu invoker, or it's a checkable menu item
   // that wants us to close after changing, then close the containing menu.
   if (close_containing_menulist) {
-    DCHECK(IsCheckable() || !GetInvokedSubmenu());
+    DCHECK(IsCheckable() || !InvokesSubmenu());
     CloseOutermostContainingMenuList();
   }
-  if (GetInvokedSubmenu()) {
+  if (InvokesSubmenu()) {
     DCHECK(!IsCheckable());
     HandleCommandForActivation();
   }
@@ -272,7 +272,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       // If this invokes a menulist and is itself in a menulist, then
       // arrow right should open the invoked menulist and focus its first
       // menuitem.
-      if (auto* invoked_menulist = GetInvokedSubmenu()) {
+      if (auto* invoked_menulist = InvokesSubmenu()) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
@@ -373,7 +373,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     } else if (key == keywords::kArrowDown || key == keywords::kArrowUp) {
       // If this invokes a menulist and is in a menubar, then arrow down/up
       // should open the menulist and go to first/last menuitem in it.
-      if (auto* invoked_menulist = GetInvokedSubmenu()) {
+      if (auto* invoked_menulist = InvokesSubmenu()) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
@@ -454,7 +454,7 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
     DCHECK_EQ(event.type(), event_type_names::kMousedown);
     GetDocument().SetPopoverPickerPointerdown(
         {.target = this, .location = mouse_event->AbsoluteLocation()});
-    if (!GetInvokedSubmenu()) {
+    if (!InvokesSubmenu()) {
       return;
     }
     // Activate sub-menus on mouse *down*, so that the user can drag and
@@ -469,7 +469,7 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
 
 bool HTMLMenuItemElement::HandleCommandForActivation() {
   if (ignore_next_command_) {
-    DCHECK(GetInvokedSubmenu());
+    DCHECK(InvokesSubmenu());
     ignore_next_command_ = false;
     return false;
   }
@@ -477,7 +477,7 @@ bool HTMLMenuItemElement::HandleCommandForActivation() {
 }
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate && !GetInvokedSubmenu()) {
+  if (event.type() == event_type_names::kDOMActivate && !InvokesSubmenu()) {
     // If this isn't a submenu invoker, activate it now. If it is a command
     // invoker of any kind, HTMLElement::DefaultEventHandler() will take care of
     // it, so we can't early-return here.

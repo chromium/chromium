@@ -200,7 +200,6 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
-#include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -12090,20 +12089,8 @@ Element* Element::InterestForElement() const {
           GetDocument().GetExecutionContext())) {
     return nullptr;
   }
-
   Element* target =
       GetElementAttributeResolvingReferenceTarget(html_names::kInterestforAttr);
-
-  // A `<menuitem>` can be an implicit interest invoker, if it has a command
-  // invoker pointing to a `<menulist>`. If the element has an explicit
-  // `interestfor` attribute, that overrides the implicit one provided by menus.
-  if (!target) {
-    if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(this)) {
-      if (HTMLMenuListElement* sub_menu = menu_item->GetInvokedSubmenu()) {
-        target = sub_menu;
-      }
-    }
-  }
   if (!target) {
     return nullptr;
   }
