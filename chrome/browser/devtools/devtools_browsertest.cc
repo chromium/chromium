@@ -2121,43 +2121,19 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
         FILE_PATH_LITERAL("devtools.html"),
         "<html><head><script src='devtools.js'></script></head></html>");
     dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
-                  base::StringPrintf(
-                      R"(
+                  base::StringPrintf(R"(
         Object.defineProperty(URL.prototype, "protocol", {
           get: function() { return "http:"; }
         });
 
-        const testDone = (result) => {
-          if (window.testDone) {
-            return;
-          }
-          window.testDone = true;
-          clearInterval(window.interval);
-          clearTimeout(window.timeout);
-          top.postMessage({testOutput: result}, '*');
-        };
-
-        const hasFile = (resources) =>
-            !!resources.find(r => r.url.startsWith('file:'));
-
-        window.interval = setInterval(() => {
-            chrome.devtools.inspectedWindow.getResources(resources => {
-                if (hasFile(resources)) {
-                    if (%d) {
-                        testDone('PASS');
-                    } else {
-                        testDone('FAIL');
-                    }
-                }
-            });
-        }, 100);
-
-        if (%d) {
-          window.timeout = setTimeout(() => testDone('FAIL'), 5000);
-        } else {
-          window.timeout = setTimeout(() => testDone('PASS'), 3000);
-        })",
-                      allow_file_access, allow_file_access));
+        chrome.devtools.inspectedWindow.getResources((resources) => {
+          const hasFile = !!resources.find(r => r.url.startsWith('file:'));
+          setInterval(() => {
+            top.postMessage(
+                {testOutput: (hasFile == %d) ? 'PASS' : 'FAIL'}, '*');
+          }, 10);
+        });)",
+                                     allow_file_access));
 
     std::string file_url =
         net::FilePathToFileURL(
