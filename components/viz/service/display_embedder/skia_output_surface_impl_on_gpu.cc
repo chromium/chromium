@@ -2473,15 +2473,6 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     gpu::SwapBuffersCompleteParams params,
     const gfx::Size& pixel_size,
     gfx::GpuFenceHandle release_fence) {
-  if (params.swap_response.result ==
-      gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
-    DLOG(WARNING)
-        << "Receiving gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED is not "
-           "expected as it "
-           "requires special treatment on the OverlayProcessor level.";
-    params.swap_response.result = gfx::SwapResult::SWAP_FAILED;
-  }
-
   if (params.swap_response.result == gfx::SwapResult::SWAP_FAILED) {
     DLOG(ERROR) << "Context lost on SWAP_FAILED";
     if (!context_state_->IsCurrent(nullptr) ||
@@ -2490,18 +2481,14 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
       MarkContextLost(ContextLostReason::CONTEXT_LOST_SWAP_FAILED);
     }
   } else if (params.swap_response.result ==
-                 gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS ||
-             params.swap_response.result ==
-                 gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
-    // 1) We shouldn't present newly reallocated buffers until we have fully
+             gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
+    // We shouldn't present newly reallocated buffers until we have fully
     // initialized their contents. SWAP_NAK_RECREAETE_BUFFERS should trigger a
     // full-screen damage in DirectRenderer, but there is no guarantee that it
     // will happen immediately since the SwapBuffersComplete task gets posted
     // back to the Viz thread and will race with the next invocation of
     // DrawFrame. To ensure we do not display uninitialized memory, we hold
     // off on submitting new frames until we have received a full damage.
-    // 2) If non-simple overlays failed, full damage is expected as the frame is
-    // repeated. This simplifies handling of damage for this case.
     waiting_for_full_damage_ = true;
   }
 
