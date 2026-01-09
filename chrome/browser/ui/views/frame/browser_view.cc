@@ -101,11 +101,14 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -246,6 +249,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -3866,12 +3870,15 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   std::u16string title = is_for_tab ? browser_->GetTitleForTab(index)
                                     : browser_->GetWindowTitleForTab(index);
 
-  Tab* tab = horizontal_tab_strip_region_view_->tab_strip()->tab_at(index);
+  TabStripModel* tab_strip_model = browser_->GetTabStripModel();
+  tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
 
-  std::optional<split_tabs::SplitTabId> split = tab->split();
-  if (split.has_value()) {
-    std::vector<Tab*> tabs_in_split =
-        horizontal_tab_strip_region_view_->tab_strip()->GetTabsInSplit(tab);
+  if (const std::optional<split_tabs::SplitTabId> split = tab->GetSplit()) {
+    const split_tabs::SplitTabData* split_data =
+        tab_strip_model->GetSplitData(split.value());
+    const std::vector<tabs::TabInterface*> tabs_in_split =
+        split_data->ListTabs();
+
     int tab_index_in_split = std::distance(
         tabs_in_split.begin(),
         std::find(tabs_in_split.begin(), tabs_in_split.end(), tab));
@@ -3881,11 +3888,11 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
         title);
   }
 
-  const std::optional<tab_groups::TabGroupId> group = tab->group();
-  if (group.has_value()) {
-    std::u16string group_title =
-        horizontal_tab_strip_region_view_->tab_strip()->GetGroupTitle(
-            group.value());
+  if (const std::optional<tab_groups::TabGroupId> group = tab->GetGroup()) {
+    std::u16string group_title = tab_strip_model->group_model()
+                                     ->GetTabGroup(group.value())
+                                     ->visual_data()
+                                     ->title();
     if (group_title.empty()) {
       title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                                          title);
@@ -3896,19 +3903,22 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   // Tab is pinned.
-  if (horizontal_tab_strip_region_view_->tab_strip()->IsTabPinned(
-          horizontal_tab_strip_region_view_->tab_strip()->tab_at(index))) {
+  if (tab->IsPinned()) {
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PINNED_FORMAT, title);
   }
 
+  // TODO(dljames): Add a function to TabStripRegionView interface which returns
+  // the TabRendererData.
+  const TabRendererData& tab_data =
+      horizontal_tab_strip_region_view_->tab_strip()->tab_at(index)->data();
+
   // Tab has crashed.
-  if (horizontal_tab_strip_region_view_->tab_strip()->IsTabCrashed(index)) {
+  if (tab_data.IsCrashed()) {
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_CRASHED_FORMAT, title);
   }
 
   // Network error interstitial.
-  if (horizontal_tab_strip_region_view_->tab_strip()->TabHasNetworkError(
-          index)) {
+  if (tab_data.network_state == TabNetworkState::kError) {
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_NETWORK_ERROR_FORMAT,
                                       title);
   }
@@ -3924,15 +3934,15 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   // Alert tab states.
-  std::optional<tabs::TabAlert> alert =
-      horizontal_tab_strip_region_view_->tab_strip()->GetTabAlertState(index);
-  if (alert.has_value()) {
+  tabs::TabAlertController* alert_controller =
+      tabs::TabAlertController::From(tab);
+  CHECK(alert_controller);
+  if (const std::optional<tabs::TabAlert> alert =
+          alert_controller->GetAlertStateToShow(tab_data.alert_state)) {
     title = l10n_util::GetStringFUTF16(
         GetAccessibleTabLabelFormatStringForTabAlert(alert.value()), title);
   }
 
-  const TabRendererData& tab_data =
-      horizontal_tab_strip_region_view_->tab_strip()->tab_at(index)->data();
   if (tab_data.should_show_discard_status) {
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
     if (tab_data.discarded_memory_savings.is_positive()) {
