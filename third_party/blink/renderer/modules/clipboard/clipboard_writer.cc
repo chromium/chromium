@@ -36,6 +36,25 @@ namespace blink {
 
 namespace {  // anonymous namespace for ClipboardWriter's derived classes.
 
+// Base class for string-based clipboard writers
+class ClipboardStringWriter : public ClipboardWriter {
+ public:
+  ClipboardStringWriter(SystemClipboard* system_clipboard,
+                        ClipboardPromise* promise)
+      : ClipboardWriter(system_clipboard, promise) {}
+  ~ClipboardStringWriter() override = default;
+
+ protected:
+  // FileReaderClient implementation for string-based writers
+  void DidFinishLoading(FileReaderData contents) override {
+    if (!CleanupAfterFileReaderFinishedAndCheckIfCanProceed()) {
+      return;
+    }
+
+    WriteString(std::move(contents).AsText("UTF-8"));
+  }
+};
+
 // Writes image/png content to the System Clipboard.
 class ClipboardImageWriter final : public ClipboardWriter {
  public:
@@ -44,21 +63,28 @@ class ClipboardImageWriter final : public ClipboardWriter {
       : ClipboardWriter(system_clipboard, promise) {}
   ~ClipboardImageWriter() override = default;
 
+  // FileReaderClient implementation for binary data
+  void DidFinishLoading(FileReaderData contents) override {
+    if (!CleanupAfterFileReaderFinishedAndCheckIfCanProceed()) {
+      return;
+    }
+
+    StartBinaryWrite(std::move(contents).AsArrayBufferContents());
+  }
+
  private:
-  void StartWrite(
-      DOMArrayBuffer* raw_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+  void StartBinaryWrite(ArrayBufferContents raw_data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // ArrayBufferContents is a thread-safe smart pointer around the backing
-    // store.
-    ArrayBufferContents contents = *raw_data->Content();
+    // store
     worker_pool::PostTask(
         FROM_HERE,
         CrossThreadBindOnce(&ClipboardImageWriter::DecodeOnBackgroundThread,
-                            std::move(contents), MakeCrossThreadHandle(this),
-                            task_runner));
+                            std::move(raw_data), MakeCrossThreadHandle(this),
+                            clipboard_task_runner()));
   }
+
   static void DecodeOnBackgroundThread(
       ArrayBufferContents png_data,
       CrossThreadHandle<ClipboardImageWriter> writer,
@@ -82,13 +108,11 @@ class ClipboardImageWriter final : public ClipboardWriter {
                             MakeUnwrappingCrossThreadHandle(std::move(writer)),
                             std::move(image)));
   }
+
   void Write(sk_sp<SkImage> image) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!image) {
       promise_->RejectFromReadOrDecodeFailure();
-      return;
-    }
-    if (!promise_->GetLocalFrame()) {
       return;
     }
     SkBitmap bitmap;
@@ -99,118 +123,70 @@ class ClipboardImageWriter final : public ClipboardWriter {
 };
 
 // Writes text/plain content to the System Clipboard.
-class ClipboardTextWriter final : public ClipboardWriter {
+class ClipboardTextWriter final : public ClipboardStringWriter {
  public:
   ClipboardTextWriter(SystemClipboard* system_clipboard,
                       ClipboardPromise* promise)
-      : ClipboardWriter(system_clipboard, promise) {}
+      : ClipboardStringWriter(system_clipboard, promise) {}
   ~ClipboardTextWriter() override = default;
 
  private:
-  void StartWrite(
-      DOMArrayBuffer* raw_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+  void WriteString(String text) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    // ArrayBufferContents is a thread-safe smart pointer around the backing
-    // store.
-    ArrayBufferContents contents = *raw_data->Content();
-    worker_pool::PostTask(
-        FROM_HERE,
-        CrossThreadBindOnce(&ClipboardTextWriter::DecodeOnBackgroundThread,
-                            std::move(contents), MakeCrossThreadHandle(this),
-                            task_runner));
-  }
-  static void DecodeOnBackgroundThread(
-      ArrayBufferContents raw_data,
-      CrossThreadHandle<ClipboardTextWriter> writer,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-    DCHECK(!IsMainThread());
-
-    String wtf_string = String::FromUTF8(raw_data.ByteSpan());
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&ClipboardTextWriter::Write,
-                            MakeUnwrappingCrossThreadHandle(std::move(writer)),
-                            std::move(wtf_string)));
-  }
-  void Write(const String& text) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!promise_->GetLocalFrame()) {
-      return;
-    }
-    system_clipboard()->WritePlainText(text);
-
+    system_clipboard()->WritePlainText(std::move(text));
     promise_->CompleteWriteRepresentation();
   }
 };
 
 // Writes text/html content to the System Clipboard.
-class ClipboardHtmlWriter final : public ClipboardWriter {
+class ClipboardHtmlWriter final : public ClipboardStringWriter {
  public:
   ClipboardHtmlWriter(SystemClipboard* system_clipboard,
                       ClipboardPromise* promise)
-      : ClipboardWriter(system_clipboard, promise) {}
+      : ClipboardStringWriter(system_clipboard, promise) {}
   ~ClipboardHtmlWriter() override = default;
 
  private:
-  void StartWrite(
-      DOMArrayBuffer* html_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+  void WriteString(String html_string) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     LocalFrame* local_frame = promise_->GetLocalFrame();
     auto* execution_context = promise_->GetExecutionContext();
-    if (!local_frame || !execution_context) {
+    if (!execution_context) {
       return;
     }
     const KURL& url = local_frame->GetDocument()->Url();
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-    String html_string = String::FromUTF8(html_data->ByteSpan());
-    const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
-        html_string, V8SupportedType(V8SupportedType::Enum::kTextHtml));
-    DCHECK(doc);
-    String serialized_html = CreateMarkup(doc, kIncludeNode, kResolveAllURLs);
-    Write(serialized_html, url);
-  }
 
-  void Write(const String& serialized_html, const KURL& url) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    system_clipboard()->WriteHTML(serialized_html, url);
+    const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
+        std::move(html_string),
+        V8SupportedType(V8SupportedType::Enum::kTextHtml));
+    DCHECK(doc);
+
+    system_clipboard()->WriteHTML(
+        CreateMarkup(doc, kIncludeNode, kResolveAllURLs), url);
     promise_->CompleteWriteRepresentation();
   }
 };
 
 // Write image/svg+xml content to the System Clipboard.
-class ClipboardSvgWriter final : public ClipboardWriter {
+class ClipboardSvgWriter final : public ClipboardStringWriter {
  public:
   ClipboardSvgWriter(SystemClipboard* system_clipboard,
                      ClipboardPromise* promise)
-      : ClipboardWriter(system_clipboard, promise) {}
+      : ClipboardStringWriter(system_clipboard, promise) {}
   ~ClipboardSvgWriter() override = default;
 
  private:
-  void StartWrite(
-      DOMArrayBuffer* svg_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+  void WriteString(String svg_string) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    LocalFrame* local_frame = promise_->GetLocalFrame();
-    if (!local_frame) {
-      return;
-    }
-
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-    String svg_string = String::FromUTF8(svg_data->ByteSpan());
     const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
-        svg_string, V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
+        std::move(svg_string),
+        V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
     promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgWrite);
-    Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));
-  }
-
-  void Write(const String& svg_html) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    system_clipboard()->WriteSvg(svg_html);
+    system_clipboard()->WriteSvg(
+        CreateMarkup(doc, kIncludeNode, kResolveAllURLs));
     promise_->CompleteWriteRepresentation();
   }
 };
@@ -224,30 +200,33 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
       : ClipboardWriter(system_clipboard, promise), mime_type_(mime_type) {}
   ~ClipboardCustomFormatWriter() override = default;
 
- private:
-  void StartWrite(
-      DOMArrayBuffer* custom_format_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    promise_->GetExecutionContext()->CountUse(
-        WebFeature::kClipboardCustomFormatWrite);
-    Write(custom_format_data);
-  }
-
-  void Write(DOMArrayBuffer* custom_format_data) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!promise_->GetLocalFrame()) {
+  // FileReaderClient implementation for binary data
+  void DidFinishLoading(FileReaderData contents) override {
+    if (!CleanupAfterFileReaderFinishedAndCheckIfCanProceed()) {
       return;
     }
-    if (custom_format_data->ByteLength() >=
-        mojom::blink::ClipboardHost::kMaxDataSize) {
+
+    ArrayBufferContents array_buffer =
+        std::move(contents).AsArrayBufferContents();
+    Write(array_buffer.ByteSpan());
+  }
+
+ private:
+  // Handle DOM string data
+  void WriteString(String text) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    Write(base::as_byte_span(text.Utf8()));
+  }
+
+  // Common write method for both string and binary data
+  void Write(base::span<const uint8_t> data) {
+    promise_->GetExecutionContext()->CountUse(
+        WebFeature::kClipboardCustomFormatWrite);
+    if (data.size() >= mojom::blink::ClipboardHost::kMaxDataSize) {
       promise_->RejectFromReadOrDecodeFailure();
       return;
     }
-    mojo_base::BigBuffer buffer(custom_format_data->ByteSpan());
-    system_clipboard()->WriteUnsanitizedCustomFormat(mime_type_,
-                                                     std::move(buffer));
+    system_clipboard()->WriteUnsanitizedCustomFormat(mime_type_, data);
     promise_->CompleteWriteRepresentation();
   }
 
@@ -304,8 +283,20 @@ ClipboardWriter::ClipboardWriter(SystemClipboard* system_clipboard,
 
 ClipboardWriter::~ClipboardWriter() = default;
 
+bool ClipboardWriter::CleanupAfterFileReaderFinishedAndCheckIfCanProceed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  self_keep_alive_.Clear();
+  file_reader_ = nullptr;
+  return promise_->GetLocalFrame();
+}
+
+void ClipboardWriter::WriteString(String text) {
+  promise_->RejectFromReadOrDecodeFailure();
+}
+
 void ClipboardWriter::WriteToSystem(V8UnionBlobOrString* clipboard_item_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(promise_->GetLocalFrame());
   if (clipboard_item_data->IsBlob()) {
     DCHECK(!file_reader_);
     file_reader_ = MakeGarbageCollected<FileReaderLoader>(
@@ -313,24 +304,10 @@ void ClipboardWriter::WriteToSystem(V8UnionBlobOrString* clipboard_item_data) {
     file_reader_->Start(clipboard_item_data->GetAsBlob()->GetBlobDataHandle());
   } else if (clipboard_item_data->IsString()) {
     DCHECK(RuntimeEnabledFeatures::ClipboardItemWithDOMStringSupportEnabled());
-    std::string utf8_string = clipboard_item_data->GetAsString().Utf8();
-    StartWrite(DOMArrayBuffer::Create(base::as_byte_span(utf8_string)),
-               clipboard_task_runner_);
+    WriteString(clipboard_item_data->GetAsString());
   } else {
     NOTREACHED();
   }
-}
-
-// FileReaderClient implementation.
-void ClipboardWriter::DidFinishLoading(FileReaderData contents) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DOMArrayBuffer* array_buffer = std::move(contents).AsDOMArrayBuffer();
-  DCHECK(array_buffer);
-
-  self_keep_alive_.Clear();
-  file_reader_ = nullptr;
-
-  StartWrite(array_buffer, clipboard_task_runner_);
 }
 
 void ClipboardWriter::DidFail(FileErrorCode error_code) {

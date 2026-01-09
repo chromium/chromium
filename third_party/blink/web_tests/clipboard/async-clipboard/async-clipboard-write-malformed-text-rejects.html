@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async Clipboard write handles malformed text across formats</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>
+<div contenteditable="true"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+<script>
+'use strict';
+
+async function runMalformedTest(t, mimeType, testName) {
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  
+  // This base64 data represents binary data with invalid UTF-8.
+  const binary_base64 = 'iVBORw==';
+  const data_url = `data:${mimeType};base64,${binary_base64}`;
+  
+  const res = await fetch(data_url);
+  const blob = await res.blob();
+  const item = new ClipboardItem({ [blob.type]: blob });
+  
+  const div = document.querySelector('div[contenteditable="true"]');
+  div.innerHTML = '';  // Clear
+  
+  await waitForUserActivation();
+  await navigator.clipboard.write([item]);
+  
+  div.focus();
+  document.execCommand('selectAll');
+  document.execCommand('paste');
+  
+  // With fix, FileReaderData::ToTextString replaces invalid UTF-8
+  // bytes with � (U+FFFD), so pasted content should contain
+  // replacement characters instead of causing null string crashes.
+  assert_true(div.innerHTML.includes('�') || div.textContent.includes('�'),
+      `Malformed ${mimeType} should contain UTF-8 replacement chars`);
+}
+
+promise_test(t => runMalformedTest(t, 'text/html', 'text/html binary data'),
+                  'clipboard.write() text/html with binary data uses ' +
+                  'FileReaderData::ToTextString to replace invalid UTF-8 with �');
+promise_test(t => runMalformedTest(t, 'text/plain', 'text/plain binary data'),
+                  'clipboard.write() text/plain with binary data uses ' +
+                  'FileReaderData::ToTextString to replace invalid UTF-8 with �');
+</script>
