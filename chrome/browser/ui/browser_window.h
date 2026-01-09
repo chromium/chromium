@@ -657,11 +657,6 @@ class BrowserWindow : public ui::BaseWindow {
   // https://crbug.com/360163254.
   virtual BrowserView* AsBrowserView() = 0;
 
-  // If the browser window is going to use the secure embed functionality
-  // to embed user content inside an HTML-based UI, it should return the
-  // hosting WebContents here. Otherwise, it should return nullptr.
-  virtual content::WebContents* GetSecureEmbedEmbedder() = 0;
-
  protected:
   friend struct BrowserWindowDeleter;
   // Deletes `this`. Note BrowserWindow will no longer be valid after this

@@ -1099,10 +1099,6 @@ BrowserView* WebUIBrowserWindow::AsBrowserView() {
   return nullptr;
 }
 
-content::WebContents* WebUIBrowserWindow::GetSecureEmbedEmbedder() {
-  return GetUIWebContents();
-}
-
 gfx::Rect WebUIBrowserWindow::GetBounds() const {
   return widget_->GetWindowBoundsInScreen();
 }
@@ -1255,8 +1251,4 @@ void WebUIBrowserWindow::CloseSidePanel() {
 WebUIBrowserSidePanelUI* WebUIBrowserWindow::GetWebUIBrowserSidePanelUI() {
   return static_cast<WebUIBrowserSidePanelUI*>(
       browser_->browser_window_features()->side_panel_ui());
-}
-
-content::WebContents* WebUIBrowserWindow::GetUIWebContents() const {
-  return web_contents_delegate_->web_contents();
 }

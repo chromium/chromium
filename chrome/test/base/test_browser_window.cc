@@ -397,10 +397,6 @@ void TestBrowserWindow::SetIsTabModalPopupDeprecated(
   is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
 }
 
-content::WebContents* TestBrowserWindow::GetSecureEmbedEmbedder() {
-  return nullptr;
-}
-
 void TestBrowserWindow::OnBrowserAdded(Browser* browser) {
   if (browser->create_params().window == this) {
     browser_ = browser;

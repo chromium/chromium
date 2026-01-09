@@ -657,7 +657,6 @@ class BrowserView : public BrowserWindow,
   bool IsTabModalPopupDeprecated() const override;
   void SetIsTabModalPopupDeprecated(
       bool is_tab_modal_popup_deprecated) override;
-  content::WebContents* GetSecureEmbedEmbedder() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
