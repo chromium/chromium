@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"

@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"

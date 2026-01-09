@@ -50,7 +50,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu_debug_capture.h"
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"

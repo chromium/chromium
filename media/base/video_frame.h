@@ -32,7 +32,6 @@
 #include "build/build_config.h"
 #include "crypto/hash.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"

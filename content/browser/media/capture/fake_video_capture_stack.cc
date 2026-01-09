@@ -23,7 +23,6 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "content/test/gpu_browsertest_helpers.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"

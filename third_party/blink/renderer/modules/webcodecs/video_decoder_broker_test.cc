@@ -13,7 +13,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"

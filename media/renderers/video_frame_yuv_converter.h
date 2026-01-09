@@ -6,7 +6,7 @@
 #define MEDIA_RENDERERS_VIDEO_FRAME_YUV_CONVERTER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 

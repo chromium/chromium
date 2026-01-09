@@ -17,7 +17,6 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "device/vr/android/local_texture.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"

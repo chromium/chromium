@@ -12,7 +12,6 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"

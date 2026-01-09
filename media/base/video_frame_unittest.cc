@@ -25,7 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/limits.h"
 #include "media/base/simple_sync_token_client.h"
