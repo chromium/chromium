@@ -355,6 +355,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kMediaIndicatorsAndroid,
     &kMostVisitedTilesCustomization,
     &kMostVisitedTilesReselect,
+    &kMoveToFrontInLaunchIntentDispatcher,
     &kMultiInstanceApplicationStatusCleanup,
     &kMvcUpdateViewWhenModelChanged,
     &kNavBarColorAnimation,
@@ -693,6 +694,7 @@ BASE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition, base::FEATURE_DISABLED_B
 BASE_FEATURE(kMediaIndicatorsAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMostVisitedTilesCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMostVisitedTilesReselect, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMoveToFrontInLaunchIntentDispatcher, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMultiInstanceApplicationStatusCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMvcUpdateViewWhenModelChanged, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNavBarColorAnimation, base::FEATURE_ENABLED_BY_DEFAULT);

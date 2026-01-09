@@ -1004,9 +1004,10 @@ public class MultiWindowUtils implements ActivityStateListener {
      *
      * @param intent The intent to launch.
      * @param instanceId ID of the instance to launch the intent in.
+     * @return Whether the intent was launched successfully.
      */
-    public static void launchIntentInInstance(Intent intent, int instanceId) {
-        MultiInstanceManagerApi31.launchIntentInExistingActivity(intent, instanceId);
+    public static boolean launchIntentInInstance(Intent intent, int instanceId) {
+        return MultiInstanceManagerApi31.launchIntentInExistingActivity(intent, instanceId);
     }
 
     /**

@@ -483,6 +483,8 @@ public abstract class ChromeFeatureList {
     public static final String MEDIA_INDICATORS_ANDROID = "MediaIndicatorsAndroid";
     public static final String MOST_VISITED_TILES_CUSTOMIZATION = "MostVisitedTilesCustomization";
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
+    public static final String MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER =
+            "MoveToFrontInLaunchIntentDispatcher";
     public static final String MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
     public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
@@ -954,6 +956,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMostVisitedTilesReselect =
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
+    public static final CachedFlag sMoveToFrontInLaunchIntentDispatcher =
+            newCachedFlag(MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sMvcUpdateViewWhenModelChanged =
@@ -1191,6 +1195,7 @@ public abstract class ChromeFeatureList {
                     sMaliciousApkDownloadCheck,
                     sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
+                    sMoveToFrontInLaunchIntentDispatcher,
                     sMultiInstanceApplicationStatusCleanup,
                     sMvcUpdateViewWhenModelChanged,
                     sNavBarColorAnimation,

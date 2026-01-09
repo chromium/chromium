@@ -3719,8 +3719,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
-        MultiWindowUtils.launchIntentInInstance(intent, instanceId);
-        return true;
+        return MultiWindowUtils.launchIntentInInstance(intent, instanceId);
     }
 
     private void recordMaxWindowLimitExceededHistogram(boolean limitExceeded) {

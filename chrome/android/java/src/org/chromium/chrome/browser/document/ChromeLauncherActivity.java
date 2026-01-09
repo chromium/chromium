@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.document;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -26,12 +27,16 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -92,6 +97,8 @@ public class ChromeLauncherActivity extends Activity {
         // https://crbug.com/443772, https://crbug.com/522918
         if (WebappLauncherActivity.bringWebappToFront(tabId)) return;
 
+        if (bringTabActivityToFront(tabId, intent)) return;
+
         // The notification settings cog on the flipped side of Notifications and in the Android
         // Settings "App Notifications" view will open us with a specific category.
         if (intent.hasCategory(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES)) {
@@ -112,6 +119,33 @@ public class ChromeLauncherActivity extends Activity {
         if (isWebApkIntent(intent) && launchWebApk(intent)) return;
 
         LaunchIntentDispatcher.dispatchToTabbedActivity(this, intent);
+    }
+
+    /**
+     * Attempts to bring the tabbed activity instance containing the given tab to the foreground.
+     *
+     * <p>This uses {@link ActivityManager#moveTaskToFront} to reliably switch focus between
+     * activity instances in multi-window mode, which is more robust than relying on standard intent
+     * delivery via {@code startActivity()}.
+     *
+     * @param tabId The ID of the tab to bring to the foreground.
+     * @param intent The intent to pass to the activity.
+     * @return {@code true} if the activity was found and successfully brought to the front, {@code
+     *     false} otherwise (indicating that the standard intent path should be used as a fallback).
+     */
+    private boolean bringTabActivityToFront(int tabId, Intent intent) {
+        if (tabId == Tab.INVALID_TAB_ID) return false;
+
+        // Fallback to the standard intent dispatch flow if the sys-call is disabled.
+        if (!ChromeFeatureList.sMoveToFrontInLaunchIntentDispatcher.isEnabled()) {
+            return false;
+        }
+
+        TabWindowInfo windowInfo =
+                TabWindowManagerSingleton.getInstance().getTabWindowInfoById(tabId);
+        if (windowInfo == null) return false;
+
+        return MultiWindowUtils.launchIntentInInstance(intent, windowInfo.windowId);
     }
 
     @SuppressWarnings(value = "UnsafeImplicitIntentLaunch")
