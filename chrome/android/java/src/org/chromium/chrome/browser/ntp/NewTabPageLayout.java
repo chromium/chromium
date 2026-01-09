@@ -96,6 +96,7 @@ public class NewTabPageLayout extends LinearLayout
 
     private int mSearchBoxTwoSideMargin;
     private final Context mContext;
+    private final int mPaddingForShadowPx;
 
     private LogoCoordinator mLogoCoordinator;
     private LogoView mLogoView;
@@ -198,6 +199,9 @@ public class NewTabPageLayout extends LinearLayout
         mFakeSearchBoxStartPaddingWithDseLogo =
                 resources.getDimensionPixelSize(
                         R.dimen.fake_search_box_start_padding_with_dse_logo);
+        mPaddingForShadowPx =
+                resources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
     }
 
     @Override
@@ -517,7 +521,6 @@ public class NewTabPageLayout extends LinearLayout
             mComposeplateCoordinator =
                     new ComposeplateCoordinator(
                             composeplateView, mProfile, colorStateList, textStyleResId);
-
             assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
             mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
             mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
@@ -527,6 +530,12 @@ public class NewTabPageLayout extends LinearLayout
 
         ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_v2_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
+        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+            // TODO(https://crbug.com/423579377): Moves the layout parameters to
+            //  composeplate_view_layout_v2.xml after the feature NewTabPageCustomizationV2 is
+            //  launched.
+            NewTabPageUtils.applyUpdatedLayoutParamsForComposeplateView(composeplateView);
+        }
         mComposeplateCoordinator =
                 new ComposeplateCoordinator(
                         composeplateView, mProfile, colorStateList, textStyleResId);
@@ -828,18 +837,13 @@ public class NewTabPageLayout extends LinearLayout
 
     /** Updates the margins for the most visited tiles layout based on what is shown above it. */
     private void updateTilesLayoutMargins() {
-        if (!mIsTablet) {
-            return;
-        }
-
-        MarginLayoutParams marginLayoutParams =
-                (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        marginLayoutParams.topMargin =
-                getResources()
-                        .getDimensionPixelSize(
-                                shouldShowLogo()
-                                        ? R.dimen.mvt_container_top_margin
-                                        : R.dimen.tile_layout_no_logo_top_margin);
+        NewTabPageUtils.updateTilesLayoutTopMargin(
+                mMvTilesContainerLayout,
+                shouldShowLogo(),
+                mIsWhiteBackgroundOnSearchBoxApplied == null
+                        ? false
+                        : mIsWhiteBackgroundOnSearchBoxApplied,
+                mIsTablet);
     }
 
     /**
@@ -1426,6 +1430,18 @@ public class NewTabPageLayout extends LinearLayout
         if (mComposeplateCoordinator != null) {
             mComposeplateCoordinator.applyWhiteBackgroundWithShadow(
                     applyWhiteBackgroundOnSearchBox);
+        }
+
+        if (mLogoCoordinator != null) {
+            int bottomMargin = getLogoBottomMargin();
+            if (applyWhiteBackgroundOnSearchBox) {
+                bottomMargin -= mPaddingForShadowPx;
+            }
+            mLogoCoordinator.setBottomMargin(bottomMargin);
+        }
+
+        if (mMostVisitedTilesCoordinator != null) {
+            updateTilesLayoutMargins();
         }
     }
 

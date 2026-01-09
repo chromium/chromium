@@ -178,6 +178,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/auxiliary_search:java_resources",
       "//chrome/browser/commerce/price_change/android:java_resources",
       "//chrome/browser/commerce/price_insights/android:java_resources",
+      "//chrome/browser/composeplate/android:java_resources",
       "//chrome/browser/download/android:java_resources",
       "//chrome/browser/educational_tip:java_resources",
       "//chrome/browser/feed/android:feed_java_resources",

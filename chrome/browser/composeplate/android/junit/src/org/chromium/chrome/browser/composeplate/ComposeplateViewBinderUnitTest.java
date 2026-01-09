@@ -22,6 +22,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.StyleRes;
@@ -67,6 +68,7 @@ public class ComposeplateViewBinderUnitTest {
                 (ComposeplateView)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.composeplate_view_layout_v2, null);
+        mView.setLayoutParams(new ViewGroup.MarginLayoutParams(120, 120));
 
         mPropertyModel = new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
@@ -132,9 +134,14 @@ public class ComposeplateViewBinderUnitTest {
         assertNotEquals(0, Float.compare(0f, expectedElevation));
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
-        int paddingForShadowPx =
+        int paddingForShadowLateralPx =
                 mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.composeplate_view_button_padding_for_shadow);
+                        .getDimensionPixelSize(
+                                R.dimen.composeplate_view_button_padding_for_shadow_lateral);
+        int paddingForShadowBottomPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.composeplate_view_button_padding_for_shadow_bottom);
 
         View composeplateButton = mView.findViewById(R.id.composeplate_button);
         View incognitoButton = mView.findViewById(R.id.incognito_button);
@@ -142,14 +149,19 @@ public class ComposeplateViewBinderUnitTest {
         mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, true);
         verifyApplyBackground(composeplateButton, expectedElevation);
         verifyApplyBackground(incognitoButton, expectedElevation);
-        assertEquals(paddingForShadowPx, mView.getPaddingStart());
-        assertEquals(paddingForShadowPx, mView.getPaddingEnd());
+        assertEquals(paddingForShadowLateralPx, mView.getPaddingStart());
+        assertEquals(paddingForShadowLateralPx, mView.getPaddingEnd());
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(0, marginLayoutParams.topMargin);
 
         mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
         verifyResetBackground(composeplateButton, defaultBackground);
         verifyResetBackground(incognitoButton, defaultBackground);
         assertEquals(0, mView.getPaddingStart());
         assertEquals(0, mView.getPaddingEnd());
+        marginLayoutParams = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(paddingForShadowBottomPx, marginLayoutParams.topMargin);
     }
 
     @Test
