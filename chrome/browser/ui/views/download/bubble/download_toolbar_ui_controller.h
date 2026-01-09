@@ -11,8 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
@@ -30,12 +29,13 @@ struct ContentId;
 namespace views {
 class EventMonitor;
 class Widget;
-}
+}  // namespace views
 
 class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleContentsView;
 class DownloadBubbleUIController;
+class ProfileBrowserCollection;
 
 // DownloadToolbarUIController is a controller for the downloads button shown in
 // the trusted area of the toolbar. This controller manages state, animations,
@@ -45,7 +45,7 @@ class DownloadBubbleUIController;
 class DownloadToolbarUIController
     : public DownloadDisplay,
       public DownloadBubbleNavigationHandler,
-      public BrowserListObserver,
+      public BrowserCollectionObserver,
       public DownloadBubbleRowListViewInfoObserver {
  public:
   // Identifies the bubble dialog widget for testing.
@@ -94,9 +94,9 @@ class DownloadToolbarUIController
   PreventDialogCloseOnDeactivate() override;
   base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserNoLongerActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
 
   // Deactivates the automatic closing of the partial bubble.
   void DeactivateAutoClose();
@@ -239,8 +239,8 @@ class DownloadToolbarUIController
   // if needed, when performing layout.
   bool has_pending_download_started_animation_ = false;
 
-// Overrides whether we are allowed to show the download started animation,
-// may be false in tests.
+  // Overrides whether we are allowed to show the download started animation,
+  // may be false in tests.
   bool show_download_started_animation_ = true;
 
   // Tracks the task to automatically close the partial view after some amount
@@ -251,8 +251,8 @@ class DownloadToolbarUIController
 
   base::TimeTicks button_click_time_;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // Maps number of in-progress downloads to the corresponding tooltip text, to
   // avoid having to create the strings repeatedly. The entry for 0 is the
