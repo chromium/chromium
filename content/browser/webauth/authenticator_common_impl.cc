@@ -1475,9 +1475,9 @@ void AuthenticatorCommonImpl::GetCredential(
   if (!public_key_options) {
     if (!options->password) {
       mojo::ReportBadMessage("At least one credential type must be requested.");
-      req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
-      CompleteGetAssertionRequest(
-          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      std::move(callback).Run(AuthenticatorImpl::MakeGetAssertionResponse(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+          nullptr));
       return;
     }
 
@@ -1485,9 +1485,9 @@ void AuthenticatorCommonImpl::GetCredential(
       mojo::ReportBadMessage(
           "Password-only credentials can only be requested with immediate "
           "mediation");
-      req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
-      CompleteGetAssertionRequest(
-          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      std::move(callback).Run(AuthenticatorImpl::MakeGetAssertionResponse(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+          nullptr));
       return;
     }
 
