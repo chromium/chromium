@@ -1640,15 +1640,13 @@ std::string ReadAnythingAppController::GetTextDirection(
 std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  const char* url =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl).c_str();
+  const std::string& url =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
 
   // Prevent XSS from href attribute, which could be set to a script instead
   // of a valid website.
-  if (url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "http",
-                                nullptr) ||
-      url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "https",
-                                nullptr)) {
+  if (url::FindAndCompareScheme(url, "http", nullptr) ||
+      url::FindAndCompareScheme(url, "https", nullptr)) {
     return url;
   }
   return "";

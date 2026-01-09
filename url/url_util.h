@@ -150,14 +150,6 @@ COMPONENT_EXPORT(URL)
 bool FindAndCompareScheme(std::string_view str,
                           const char* compare,
                           Component* found_scheme);
-inline bool FindAndCompareScheme(const char* str,
-                                 int str_len,
-                                 const char* compare,
-                                 Component* found_scheme) {
-  return FindAndCompareScheme(
-      std::string_view(str, static_cast<size_t>(str_len)), compare,
-      found_scheme);
-}
 COMPONENT_EXPORT(URL)
 bool FindAndCompareScheme(std::u16string_view str,
                           const char* compare,
