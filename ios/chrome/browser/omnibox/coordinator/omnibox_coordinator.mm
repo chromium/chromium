@@ -352,6 +352,11 @@
   }
 }
 
+/// Toggle visibility of the omnibox debugger view.
+- (void)toggleOmniboxDebuggerView {
+  [self.popupCoordinator toggleOmniboxDebuggerView];
+}
+
 - (id<EditViewAnimatee>)animatee {
   return self.viewController;
 }
@@ -382,7 +387,7 @@
 #pragma mark - OmniboxAssistiveKeyboardMediatorDelegate
 
 - (void)omniboxAssistiveKeyboardDidTapDebuggerButton {
-  [self.popupCoordinator toggleOmniboxDebuggerView];
+  [self toggleOmniboxDebuggerView];
 }
 
 - (void)presentLensKeyboardInProductHelper {
@@ -401,9 +406,8 @@
 
 - (void)updateInputAccessoryView {
   BOOL showKeyboardAccessory =
-      experimental_flags::IsOmniboxDebuggingEnabled() ||
-      (!self.searchOnlyUI &&
-       _presentationContext != OmniboxPresentationContext::kComposebox);
+      !self.searchOnlyUI &&
+      _presentationContext != OmniboxPresentationContext::kComposebox;
 
   if (!self.keyboardAccessoryView && showKeyboardAccessory) {
     TemplateURLService* templateURLService =

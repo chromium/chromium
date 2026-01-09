@@ -240,6 +240,11 @@ const CGFloat kSnackbarBottomMargin = 10;
   return _viewController;
 }
 
+/// Shows the debug UI.
+- (void)showOmniboxDebugUI {
+  [_omniboxCoordinator toggleOmniboxDebuggerView];
+}
+
 #pragma mark - ComposeboxInputPlateViewControllerDelegate
 
 - (void)composeboxViewController:

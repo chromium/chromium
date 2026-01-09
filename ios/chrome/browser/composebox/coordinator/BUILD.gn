@@ -50,6 +50,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:model_utils",
+    "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/composebox/public:constants",

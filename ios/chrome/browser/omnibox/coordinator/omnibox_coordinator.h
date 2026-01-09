@@ -97,6 +97,9 @@ class OmniboxClient;
 // Clears the omnibox suggestions and optionally restarts autocomplete.
 - (void)clearSuggestionsWithRestartAutocomplete:(BOOL)restartAutocomplete;
 
+/// Toggle visibility of the omnibox debugger view.
+- (void)toggleOmniboxDebuggerView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_COORDINATOR_OMNIBOX_COORDINATOR_H_

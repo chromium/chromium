@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_navigation_mediator.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -42,6 +44,7 @@
 @interface ComposeboxCoordinator () <ComposeboxViewControllerDelegate,
                                      ComposeboxNavigationMediatorDelegate,
                                      ComposeboxAnimationContext,
+                                     ComposeboxDebuggerCoordinatorDelegate,
                                      UIViewControllerTransitioningDelegate>
 
 @end
@@ -61,6 +64,8 @@
   __weak id<ComposeboxAnimationBase> _animationBase;
   // The holder for the composebox mode.
   ComposeboxModeHolder* _modeHolder;
+  // Coordinator for the debugging UI of the composebox.
+  ComposeboxDebuggerCoordinator* _debuggerCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -121,6 +126,14 @@
 
   if (theme.useIncognitoViewFallback) {
     [self checkClipboardContent];
+  }
+
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    _debuggerCoordinator = [[ComposeboxDebuggerCoordinator alloc]
+        initWithBaseViewController:_viewController
+                           browser:self.browser];
+    _debuggerCoordinator.delegate = self;
+    [_debuggerCoordinator start];
   }
 
   [self.baseViewController presentViewController:_viewController
@@ -353,6 +366,12 @@
 
 - (BOOL)inputPlateIsCompact {
   return _aimComposeboxCoordinator.inputViewController.compact;
+}
+
+#pragma mark - ComposeboxDebuggerCoordinatorDelegate
+
+- (void)composeboxDebuggerDidRequestOmniboxDebugging {
+  [_aimComposeboxCoordinator showOmniboxDebugUI];
 }
 
 @end
