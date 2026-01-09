@@ -11,24 +11,37 @@ source_set("internal") {
   sources = [
     "skills_service_impl.cc",
     "skills_service_impl.h",
+    "skills_sync_bridge.cc",
+    "skills_sync_bridge.h",
   ]
 
   public_deps = [
     "//base",
     "//components/skills/public",
   ]
+
+  deps = [
+    "//components/sync/model",
+    "//components/sync/protocol",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "skills_service_impl_unittest.cc" ]
+  sources = [
+    "skills_service_impl_unittest.cc",
+    "skills_sync_bridge_unittest.cc",
+  ]
 
   deps = [
     ":internal",
     "//base",
     "//base/test:test_support",
     "//components/skills/public",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
     "//testing/gtest",
   ]
 
