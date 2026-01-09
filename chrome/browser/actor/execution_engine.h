@@ -265,15 +265,10 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  // `GatingDecision::kNeedsAsyncCheck` is returned when the decision to gate
-  // the navigation will be answered asynchronously.
-  GatingDecision ShouldGateNavigationInternal(
-      content::NavigationHandle& navigation_handle,
-      NavigationDecisionCallback callback);
   void LogNavigationGating(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL& navigation_url,
-      bool applied_gate);
+      bool applied_gate) const;
 
   // Returns the highest-priority navigation gating decision. Prioritizes
   // blocking navigations over allowing (except on same origin navigations).

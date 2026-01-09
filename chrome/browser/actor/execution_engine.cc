@@ -235,53 +235,53 @@ bool ExecutionEngine::ShouldDeferNavigation(
             content::FrameType::kPrimaryMainFrame ||
         navigation_handle.GetNavigatingFrameType() ==
             content::FrameType::kPrerenderMainFrame);
-
-  GatingDecision decision =
-      ShouldGateNavigationInternal(navigation_handle, std::move(callback));
-  if (decision == GatingDecision::kNeedsAsyncCheck) {
-    return true;
-  }
-
-  bool applied_gate = decision == GatingDecision::kBlockByStaticList;
-  LogNavigationGating(
-      /*initiator_origin=*/GetPrimaryMainFrame(navigation_handle)
-          ->GetLastCommittedOrigin(),
-      navigation_handle.GetURL(), applied_gate);
-  return applied_gate;
-}
-
-ExecutionEngine::GatingDecision ExecutionEngine::ShouldGateNavigationInternal(
-    content::NavigationHandle& navigation_handle,
-    ExecutionEngine::NavigationDecisionCallback callback) {
   CHECK(!navigation_handle.HasCommitted());
+
   base::ScopedUmaHistogramTimer timer(
       "Actor.NavigationGating.TimeElapsedForGating");
 
-  const GURL source_url =
-      GetPrimaryMainFrame(navigation_handle)->GetLastCommittedURL();
-  const GURL& destination_url = navigation_handle.GetURL();
-  const GatingDecision decision =
-      DetermineGatingDecision(source_url, destination_url);
+  const GatingDecision decision = DetermineGatingDecision(
+      /*source_url=*/GetPrimaryMainFrame(navigation_handle)
+          ->GetLastCommittedURL(),
+      /*destination_url=*/navigation_handle.GetURL());
   RecordNavigationGatingDecision(decision);
-  if (decision == GatingDecision::kBlockByStaticList) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*may_continue=*/false));
-  } else if (decision == GatingDecision::kNeedsAsyncCheck) {
-    bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExecutionEngine::CheckNavigationBlocklist, GetWeakPtr(),
-                       navigation_handle.GetInitiatorOrigin(), destination_url,
-                       skip_prompt, std::move(callback)));
+
+  switch (decision) {
+    case GatingDecision::kAllowSameOrigin:
+    case GatingDecision::kAllowByStaticList:
+      LogNavigationGating(
+          /*initiator_origin=*/GetPrimaryMainFrame(navigation_handle)
+              ->GetLastCommittedOrigin(),
+          navigation_handle.GetURL(), /*applied_gate=*/false);
+      return false;
+    case GatingDecision::kBlockByStaticList:
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), /*may_continue=*/false));
+      LogNavigationGating(
+          /*initiator_origin=*/GetPrimaryMainFrame(navigation_handle)
+              ->GetLastCommittedOrigin(),
+          navigation_handle.GetURL(), /*applied_gate=*/true);
+      return true;
+    case GatingDecision::kNeedsAsyncCheck: {
+      bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ExecutionEngine::CheckNavigationBlocklist,
+                         GetWeakPtr(), navigation_handle.GetInitiatorOrigin(),
+                         navigation_handle.GetURL(), skip_prompt,
+                         std::move(callback)));
+      return true;
+    }
   }
 
-  return decision;
+  NOTREACHED();
 }
 
 void ExecutionEngine::LogNavigationGating(
     base::optional_ref<const url::Origin> initiator_origin,
     const GURL& navigation_url,
-    bool applied_gate) {
+    bool applied_gate) const {
   UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.AppliedGate", applied_gate);
 
   if (initiator_origin) {
