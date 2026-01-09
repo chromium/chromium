@@ -161,6 +161,11 @@ class ReadAnythingController {
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
           web_ui_wrapper);
 
+  // Recreates the WebUI on the next GetOrCreateWebUIWrapper() call. This should
+  // be called if Reading mode crashes so that we don't get stuck in a crashed
+  // state.
+  void RecreateWebUIWrapper();
+
  private:
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,

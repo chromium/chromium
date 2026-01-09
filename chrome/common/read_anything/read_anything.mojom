@@ -299,6 +299,11 @@ interface UntrustedPageHandler {
 
   // Informs the browser that the user clicked the toggle presentation button.
   TogglePresentation();
+
+  // Informs the browser that it received the OnReadingModeHidden signal. Used
+  // to determine whether the browser and renderer are still connected when RM
+  // is closed before the actual connection timeout.
+  AckReadingModeHidden();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

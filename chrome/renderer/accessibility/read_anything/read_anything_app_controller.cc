@@ -2241,6 +2241,7 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
 #endif
 
 void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
+  page_handler_->AckReadingModeHidden();
   model_.set_will_hide(true);
   // If the tab is not active but RM is hidden, then the tab was switched and
   // speech was not stopped. If the tab is still active and RM is hidden, then

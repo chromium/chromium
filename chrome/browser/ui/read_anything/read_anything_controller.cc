@@ -239,6 +239,7 @@ ReadAnythingController::GetOrCreateWebUIWrapper(
   SetPresentationState(web_ui_new_presentation_state);
   if (should_recreate_web_ui_ || !web_ui_wrapper_) {
     should_recreate_web_ui_ = false;
+    has_shown_ui_ = false;
     Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
     web_ui_wrapper_ =
         std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
@@ -263,13 +264,17 @@ ReadAnythingController::GetOrCreateWebUIWrapper(
   return std::move(web_ui_wrapper_);
 }
 
+void ReadAnythingController::RecreateWebUIWrapper() {
+  should_recreate_web_ui_ = true;
+}
+
 void ReadAnythingController::OnRendererCrashed() {
   // If we determine that the renderer crashed, we need to recreate the WebUI
   // wrapper and ra_web_ui_observer_ the next time it's accessed. Closing the
   // WebUI ensures everything is shut down properly so that reopening will
   // then recreate without issues. This is also how WebUIContentsWrapper handles
   // crashes (see WebUIContentsWrapper::PrimaryMainFrameRenderProcessGone).
-  should_recreate_web_ui_ = true;
+  RecreateWebUIWrapper();
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI();
   } else if (GetPresentationState() == PresentationState::kInSidePanel) {

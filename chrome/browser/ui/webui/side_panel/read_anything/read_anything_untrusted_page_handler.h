@@ -15,6 +15,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
@@ -152,9 +153,12 @@ class ReadAnythingUntrustedPageHandler :
   const std::optional<std::string>& distilled_content_for_testing() const {
     return distilled_content_for_testing_;
   }
+  bool ack_timed_out_for_testing() const { return ack_timed_out_for_testing_; }
 
   static const int kMaxWordsDistilled = 25000;
   static const int kWordsDistilledBuckets = 100;
+  static constexpr base::TimeDelta kReadingModeHiddenAckTimeout =
+      base::Seconds(0);
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void AccessibilityLocationChangesReceived(
@@ -193,6 +197,7 @@ class ReadAnythingUntrustedPageHandler :
   void UninstallVoice(const std::string& language) override;
   void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
                             int word_count) override;
+  void AckReadingModeHidden() override;
   void TogglePinState() override;
   void SendPinStateRequest() override;
   bool immersive_read_anything_pin_state() {
@@ -295,6 +300,10 @@ class ReadAnythingUntrustedPageHandler :
   void SetUpPdfObserver();
 
   void OnGetPresentationState();
+
+  // Called when reading_mode_hidden_ack_timer_ times out without hearing back
+  // from the page_.
+  void OnReadingModeHiddenAckTimeout();
 
   void OnGetVoicePackInfo(read_anything::mojom::VoicePackInfoPtr info);
 
@@ -413,6 +422,10 @@ class ReadAnythingUntrustedPageHandler :
   // Otherwise, it may incorrectly return that the page is not a pdf if
   // reading mode checks if a page is a pdf immediately after loading.
   base::OneShotTimer timer_;
+  // Timer for checking that the page_ is still responsive after reading mode
+  // is hidden.
+  base::OneShotTimer reading_mode_hidden_ack_timer_;
+  bool ack_timed_out_for_testing_ = false;
 
   // Used for readability distillation tests.
   std::optional<std::string> distilled_title_for_testing_;

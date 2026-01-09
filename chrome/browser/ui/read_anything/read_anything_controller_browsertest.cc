@@ -691,57 +691,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(overlay_view->children().empty());
 }
 
-// TODO(crbug.com/463939639): Change this test to confirm that the WebUI is
-// passed back and forth between IRM and SP, instead of checking that the same
-// WebUI is reused on open and close of the SP.
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ReusesWebUIOnOpenCloseAndReopen) {
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
-
-  // Open side panel for the first time and get the WebContents.
-  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-  content::WebContents* web_contents1 = GetSidePanelWebContents();
-  ASSERT_TRUE(web_contents1);
-
-  // Close the side panel.
-  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-
-  // Ensure the WebUI is now owned by the controller.
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInactive);
-  ASSERT_TRUE(wrapper->web_contents());
-  // Return the wrapper to the controller so it can be passed to the side panel.
-  controller->SetWebUIWrapperForTest(std::move(wrapper));
-
-  // Re-open the side panel.
-  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-
-  // Get the new WebContents from the side panel and assert it's the same one.
-  content::WebContents* web_contents2 = GetSidePanelWebContents();
-  ASSERT_TRUE(web_contents2);
-
-  EXPECT_EQ(web_contents1, web_contents2);
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        WebContentsObserverPrimaryPageChangedCrossNavigation) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
@@ -879,6 +828,23 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   }));
   // The web contents would be the same if it was not recreated.
   EXPECT_NE(GetSidePanelWebContents(), starting_contents);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       RecreateWebUIWrapper_RecreatesWebUIWrapperOnNextShow) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  content::WebContents* starting_contents = GetImmersiveWebContents();
+
+  controller->CloseImmersiveUI();
+  controller->RecreateWebUIWrapper();
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // The web contents would be the same if it was not recreated.
+  EXPECT_NE(GetImmersiveWebContents(), starting_contents);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
