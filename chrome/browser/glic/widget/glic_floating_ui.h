@@ -81,6 +81,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
       override;
   void ClosePanel() override;
+  void OnReload() override;
 
   // GlicWindowEventObserver::Delegate:
   GlicWindowAnimator* window_animator() override;
@@ -122,6 +123,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void SetGlicWindowToFloatingMode(bool floating);
   void OnSourceTabDestroyed(tabs::TabInterface* tab);
   void FloatingPanelCanAttachChanged(bool can_attach);
+  void ConfigureWebContentsModalDialogs();
 
   // Whether the widget should be user resizable, kept here in case it's
   // specified before the widget is created.

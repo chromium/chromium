@@ -1010,6 +1010,12 @@ void GlicWindowControllerImpl::ClosePanel() {
   }
 }
 
+void GlicWindowControllerImpl::OnReload() {
+  if (glic_view_) {
+    glic_view_->SetWebContents(host().webui_contents());
+  }
+}
+
 void GlicWindowControllerImpl::ResetAndHidePanel() {
   if (IsDetached()) {
     SaveWidgetPosition(/*user_modified=*/false);

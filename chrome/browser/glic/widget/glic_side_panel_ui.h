@@ -75,6 +75,7 @@ class GlicSidePanelUi
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;
   void ClosePanel() override;
+  void OnReload() override;
 
   void SidePanelStateChanged(GlicSidePanelCoordinator::State state);
 

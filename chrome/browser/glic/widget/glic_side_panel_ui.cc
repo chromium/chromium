@@ -248,6 +248,12 @@ void GlicSidePanelUi::ClosePanel() {
   Close();
 }
 
+void GlicSidePanelUi::OnReload() {
+  if (glic_view_) {
+    glic_view_->SetWebContents(delegate_->host().webui_contents());
+  }
+}
+
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::CreateForVisibleTab(tab_, delegate_.get());

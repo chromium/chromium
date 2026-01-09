@@ -62,7 +62,7 @@ class Host : public GlicSharingManagerProvider {
     virtual void Attach() = 0;
     virtual void Detach() = 0;
     virtual void ClosePanel() = 0;
-
+    virtual void OnReload() = 0;
     // Sets the minimum widget size that the widget will allow the user to
     // resize to.
     virtual void SetMinimumWidgetSize(const gfx::Size& size) = 0;
@@ -471,6 +471,7 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
   void Attach() override {}
   void Detach() override {}
   void ClosePanel() override {}
+  void OnReload() override {}
   void SetMinimumWidgetSize(const gfx::Size& size) override {}
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)

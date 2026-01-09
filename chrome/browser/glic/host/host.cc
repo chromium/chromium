@@ -39,6 +39,8 @@
 
 namespace glic {
 
+BASE_FEATURE(kGlicReloadUsesFreshWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool EmptyEmbedderDelegate::IsShowing() const {
   return true;
 }
@@ -118,8 +120,16 @@ void Host::Reload() {
   if (!contents) {
     return;
   }
-  contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
-                                   /*check_for_repost=*/false);
+
+  if (GlicEnabling::IsMultiInstanceEnabled() &&
+      base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
+    Shutdown();
+    CreateContents(/*initially_hidden=*/false);
+    delegate_->OnReload();
+  } else {
+    contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                     /*check_for_repost=*/false);
+  }
 }
 
 void Host::CreateContents(bool initially_hidden) {

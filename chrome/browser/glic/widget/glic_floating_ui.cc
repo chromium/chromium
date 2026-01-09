@@ -247,6 +247,16 @@ void GlicFloatingUi::FloatingPanelCanAttachChanged(bool can_attach) {
   delegate_->host().FloatingPanelCanAttachChanged(can_attach);
 }
 
+void GlicFloatingUi::ConfigureWebContentsModalDialogs() {
+  // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
+  // enterprise users) via constrained_window APIs.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      delegate_->host().webui_contents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      delegate_->host().webui_contents())
+      ->SetDelegate(this);
+}
+
 void GlicFloatingUi::Attach() {
   if (!base::FeatureList::IsEnabled(kGlicFloatingUiReattachment)) {
     return;
@@ -286,13 +296,7 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
     window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
   }
 
-  // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
-  // enterprise users) via constrained_window APIs.
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      delegate_->host().webui_contents());
-  web_modal::WebContentsModalDialogManager::FromWebContents(
-      delegate_->host().webui_contents())
-      ->SetDelegate(this);
+  ConfigureWebContentsModalDialogs();
 }
 
 void GlicFloatingUi::Close() {
@@ -328,6 +332,13 @@ void GlicFloatingUi::ClearWebContentsDelegate() {
 
 void GlicFloatingUi::ClosePanel() {
   Close();
+}
+
+void GlicFloatingUi::OnReload() {
+  if (auto* glic_view = GetGlicView()) {
+    glic_view->SetWebContents(delegate_->host().webui_contents());
+    ConfigureWebContentsModalDialogs();
+  }
 }
 
 void GlicFloatingUi::Focus() {
