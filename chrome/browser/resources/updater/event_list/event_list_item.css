@@ -115,7 +115,7 @@ cr-expand-button {
 }
 
 .event-description {
-  flex-basis: 64%;
+  flex-basis: 54%;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -124,7 +124,7 @@ cr-expand-button {
 
 .event-app {
   font-weight: bold;
-  flex-basis: 10%;
+  flex-basis: 20%;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
