@@ -88,6 +88,40 @@ bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
   return false;
 }
 
+ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionForId(
+    const std::string& action_id) {
+  return GetActionModelForId(action_id);
+}
+
+void ExtensionsToolbarViewModel::HideActivePopup() {
+  delegate_->HideActivePopup();
+}
+
+bool ExtensionsToolbarViewModel::CloseOverflowMenuIfOpen() {
+  return delegate_->CloseOverflowMenuIfOpen();
+}
+
+bool ExtensionsToolbarViewModel::ShowToolbarActionPopupForAPICall(
+    const std::string& action_id,
+    ShowPopupCallback callback) {
+  if (!delegate_->CanShowToolbarActionPopupForAPICall(action_id)) {
+    return false;
+  }
+
+  ToolbarActionViewModel* action = GetActionModelForId(action_id);
+  DCHECK(action);
+  action->TriggerPopupForAPI(std::move(callback));
+  return true;
+}
+
+void ExtensionsToolbarViewModel::ToggleExtensionsMenu() {
+  delegate_->ToggleExtensionsMenu();
+}
+
+bool ExtensionsToolbarViewModel::HasAnyExtensions() const {
+  return !GetAllActionIds().empty();
+}
+
 void ExtensionsToolbarViewModel::OnToolbarModelInitialized() {
   CHECK(actions_.empty());
   CHECK(actions_model_->actions_initialized());
@@ -98,8 +132,8 @@ void ExtensionsToolbarViewModel::OnToolbarModelInitialized() {
       initial_actions;
   initial_actions.reserve(actions_model_->action_ids().size());
   for (const auto& action_id : actions_model_->action_ids()) {
-    initial_actions.emplace_back(action_id,
-                                 delegate_->CreateActionViewModel(action_id));
+    initial_actions.emplace_back(
+        action_id, delegate_->CreateActionViewModel(action_id, this));
   }
   actions_ = base::flat_map<ToolbarActionsModel::ActionId,
                             std::unique_ptr<ToolbarActionViewModel>>(
@@ -150,5 +184,6 @@ void ExtensionsToolbarViewModel::OnToolbarPinnedActionsChanged() {
 
 void ExtensionsToolbarViewModel::AppendActionModel(
     const ToolbarActionsModel::ActionId& action_id) {
-  actions_.emplace(action_id, delegate_->CreateActionViewModel(action_id));
+  actions_.emplace(action_id,
+                   delegate_->CreateActionViewModel(action_id, this));
 }

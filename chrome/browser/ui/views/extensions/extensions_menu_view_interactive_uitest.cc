@@ -454,7 +454,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify the context menu option, when opened from the toolbar action, is to
   // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
-      extensions_container->GetActionForId(extensions()[0]->id())
+      extensions_container->GetToolbarViewModel()
+          ->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
   std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
@@ -487,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify the context menu option, when opened from the toolbar action, is to
   // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
-      extensions_container->GetActionForId(extensions()[0]->id())
+      extensions_container->GetToolbarViewModel()
+          ->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
   std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
@@ -613,6 +615,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Change the extension permissions to run on click using the context menu.
   auto* context_menu = static_cast<extensions::ExtensionContextMenuModel*>(
       GetExtensionsToolbarContainer()
+          ->GetToolbarViewModel()
           ->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kMenuItem));

@@ -89,9 +89,9 @@ class ExtensionsMenuViewUnitTest : public ExtensionsToolbarUnitTest {
 void ExtensionsMenuViewUnitTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
 
-  ExtensionsMenuView::ShowBubble(extensions_container()->GetExtensionsButton(),
-                                 browser(), extensions_container(),
-                                 extensions_container());
+  ExtensionsMenuView::ShowBubble(
+      extensions_container()->GetExtensionsButton(), browser(),
+      extensions_container()->GetToolbarViewModel(), extensions_container());
 }
 
 scoped_refptr<const extensions::Extension>

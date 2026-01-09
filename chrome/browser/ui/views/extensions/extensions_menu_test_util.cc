@@ -77,12 +77,13 @@ int ExtensionsMenuTestUtil::NumberOfBrowserActions() {
 }
 
 bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
-  return extensions_toolbar_container_->GetActionForId(id) != nullptr;
+  return extensions_toolbar_container_->GetToolbarViewModel()->GetActionForId(
+             id) != nullptr;
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
   auto* view_model = static_cast<ExtensionActionViewModel*>(
-      extensions_toolbar_container_->GetActionForId(id));
+      extensions_toolbar_container_->GetToolbarViewModel()->GetActionForId(id));
   DCHECK(view_model);
   view_model->InspectPopup();
 }
@@ -116,7 +117,8 @@ bool ExtensionsMenuTestUtil::HasPopup() {
 bool ExtensionsMenuTestUtil::HidePopup() {
   // ExtensionsToolbarContainer::HideActivePopup() is private. Get around it by
   // casting to an ExtensionsContainer.
-  static_cast<ExtensionsContainer*>(extensions_toolbar_container_)
+  static_cast<ExtensionsContainer*>(
+      extensions_toolbar_container_->GetToolbarViewModel())
       ->HideActivePopup();
   return !HasPopup();
 }
@@ -162,11 +164,13 @@ void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
         extensions_toolbar_container_->GetExtensionsMenuCoordinatorForTesting()
             ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
                 extensions_toolbar_container_->GetExtensionsButton(),
-                extensions_toolbar_container_, extensions_toolbar_container_);
+                extensions_toolbar_container_->GetToolbarViewModel(),
+                extensions_toolbar_container_);
   } else {
     bubble_dialog = std::make_unique<ExtensionsMenuView>(
         extensions_toolbar_container_->GetExtensionsButton(), browser_,
-        extensions_toolbar_container_, extensions_toolbar_container_);
+        extensions_toolbar_container_->GetToolbarViewModel(),
+        extensions_toolbar_container_);
     menu_view_ = views::AsViewClass<ExtensionsMenuView>(
         bubble_dialog->GetContentsView());
 

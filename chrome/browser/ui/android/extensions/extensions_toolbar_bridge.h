@@ -29,7 +29,13 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
 
   // ExtensionsToolbarViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+      const ToolbarActionsModel::ActionId& action_id,
+      ExtensionsContainer* extensions_container) override;
+  void HideActivePopup() override;
+  bool CloseOverflowMenuIfOpen() override;
+  bool CanShowToolbarActionPopupForAPICall(
       const ToolbarActionsModel::ActionId& action_id) override;
+  void ToggleExtensionsMenu() override;
 
   // ExtensionsToolbarViewModel::Observer:
   void OnActionsInitialized() override;

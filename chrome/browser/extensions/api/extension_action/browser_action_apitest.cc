@@ -310,7 +310,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ToolbarActionView* action_view =
       extensions_container()->GetViewForId(extension->id());
   ToolbarActionViewModel* model =
-      extensions_container()->GetActionForId(extension->id());
+      extensions_container()->GetToolbarViewModel()->GetActionForId(
+          extension->id());
   ASSERT_TRUE(action_view);
   ASSERT_TRUE(model);
 

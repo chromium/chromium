@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/extensions/extensions_toolbar_bridge.h"
 
 #include "base/android/jni_string.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
@@ -32,10 +33,34 @@ ExtensionsToolbarBridge::~ExtensionsToolbarBridge() = default;
 
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsToolbarBridge::CreateActionViewModel(
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    ExtensionsContainer* extensions_container) {
   return ExtensionActionViewModel::Create(
       action_id, browser_,
       std::make_unique<ExtensionActionDelegateAndroid>(browser_.get()));
+}
+
+void ExtensionsToolbarBridge::HideActivePopup() {
+  // TODO(crbug.com/461981075)
+  NOTIMPLEMENTED();
+}
+
+bool ExtensionsToolbarBridge::CloseOverflowMenuIfOpen() {
+  // TODO(crbug.com/461981075)
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool ExtensionsToolbarBridge::CanShowToolbarActionPopupForAPICall(
+    const std::string& action_id) {
+  // TODO(crbug.com/461981075)
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void ExtensionsToolbarBridge::ToggleExtensionsMenu() {
+  // TODO(crbug.com/461981075)
+  NOTIMPLEMENTED();
 }
 
 void ExtensionsToolbarBridge::OnActionsInitialized() {

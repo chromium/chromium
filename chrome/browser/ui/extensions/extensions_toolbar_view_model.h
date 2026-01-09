@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/buildflags/buildflags.h"
@@ -17,14 +18,34 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 // ViewModel for the ExtensionsToolbarContainer. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves
 // as the single source of truth for the ordering of the list of actions.
-class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
+class ExtensionsToolbarViewModel : public ExtensionsContainer,
+                                   public ToolbarActionsModel::Observer {
  public:
   // Delegate used to retrieve platform-specific information.
   class Delegate {
    public:
     // Creates the platform-specific action view model.
     virtual std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+        const ToolbarActionsModel::ActionId& action_id,
+        ExtensionsContainer* extensions_container) = 0;
+    // Hides any actively showing popups.
+    // TODO(crbug.com/473701535): Determine whether this method belongs in the
+    // delegate or the observer.
+    virtual void HideActivePopup() = 0;
+
+    // Closes the overflow menu, if it was open. Returns whether or not the
+    // overflow menu was closed.
+    virtual bool CloseOverflowMenuIfOpen() = 0;
+
+    // Returns whether a popup can be shown.
+    virtual bool CanShowToolbarActionPopupForAPICall(
         const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Toggle the Extensions menu (as if the user clicked the puzzle piece
+    // icon).
+    // TODO(crbug.com/473701535): Determine whether this method belongs in the
+    // delegate or the observer.
+    virtual void ToggleExtensionsMenu() = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -83,6 +104,15 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
 
   // Returns whether any of `actions` given have access to the `web_contents`.
   bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents);
+
+  // ExtensionsContainer:
+  ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
+  void HideActivePopup() override;
+  bool CloseOverflowMenuIfOpen() override;
+  bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
+                                        ShowPopupCallback callback) override;
+  void ToggleExtensionsMenu() override;
+  bool HasAnyExtensions() const override;
 
   // ToolbarActionsModel::Observer:
   void OnToolbarModelInitialized() override;

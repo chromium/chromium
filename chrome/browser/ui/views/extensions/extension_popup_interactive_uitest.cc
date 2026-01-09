@@ -599,8 +599,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   BrowserView& browser_view = browser()->GetBrowserView();
   ExtensionsToolbarContainer* extensions_container =
       browser_view.toolbar()->extensions_container();
-  extensions_container->ShowToolbarActionPopupForAPICall(extension->id(),
-                                                         ShowPopupCallback());
+  extensions_container->GetToolbarViewModel()->ShowToolbarActionPopupForAPICall(
+      extension->id(), ShowPopupCallback());
 
   // The extension should load the image.
   slow_img_response.WaitForRequest();

@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   EXPECT_TRUE(ui_controls::SendMouseClick(ui_controls::LEFT));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   ToolbarActionViewModel* const view_model =
-      container->GetActionForId(extension->id());
+      container->GetToolbarViewModel()->GetActionForId(extension->id());
   EXPECT_TRUE(view_model->IsShowingPopup());
   EXPECT_EQ(view_model, container->popup_owner_for_testing());
 
@@ -468,7 +468,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
       extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
-  EXPECT_FALSE(container->GetActionForId(extension->id()));
+  EXPECT_FALSE(
+      container->GetToolbarViewModel()->GetActionForId(extension->id()));
 
   EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
 
@@ -516,7 +517,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
       extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
-  EXPECT_FALSE(container->GetActionForId(extension->id()));
+  EXPECT_FALSE(
+      container->GetToolbarViewModel()->GetActionForId(extension->id()));
 
   // TODO(devlin): When the extension is removed, we don't currently remove any
   // widgets associated with it. This test ensures we don't crash (yay!), but we
@@ -597,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   // Execute the action, which results in the extension sliding out while we
   // get ready to show the popup.
   ToolbarActionViewModel* const view_model =
-      container->GetActionForId(extension->id());
+      container->GetToolbarViewModel()->GetActionForId(extension->id());
   view_model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kMenuEntry);
 
@@ -606,7 +608,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   // shouldn't crash.
   RemoveExtension(ExtensionRemovalMethod::kDisable, extension->id());
 
-  EXPECT_EQ(nullptr, container->GetActionForId(extension->id()));
+  EXPECT_EQ(nullptr,
+            container->GetToolbarViewModel()->GetActionForId(extension->id()));
 }
 
 namespace {
@@ -713,7 +716,8 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
 
   extensions::ExtensionContextMenuModel* GetExtensionContextMenu() {
     ToolbarActionViewModel* const model =
-        GetExtensionsToolbarContainer()->GetActionForId(extension_->id());
+        GetExtensionsToolbarContainer()->GetToolbarViewModel()->GetActionForId(
+            extension_->id());
     return static_cast<extensions::ExtensionContextMenuModel*>(
         model->GetContextMenu(extensions::ExtensionContextMenuModel::
                                   ContextMenuSource::kToolbarAction));
@@ -974,6 +978,7 @@ class ExtensionsToolbarContainerFeatureUITest
       const extensions::ExtensionId& extension_id) {
     return static_cast<extensions::ExtensionContextMenuModel*>(
         GetExtensionsToolbarContainer()
+            ->GetToolbarViewModel()
             ->GetActionForId(extension_id)
             ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                  ContextMenuSource::kMenuItem));
@@ -1325,7 +1330,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Trigger the extension B action.
   ExtensionTestMessageListener listener("popup opened");
   ToolbarActionViewModel* const view_model =
-      GetExtensionsToolbarContainer()->GetActionForId(extensionB->id());
+      GetExtensionsToolbarContainer()->GetToolbarViewModel()->GetActionForId(
+          extensionB->id());
   view_model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kMenuEntry);
   EXPECT_TRUE(listener.WaitUntilSatisfied());

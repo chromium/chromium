@@ -2294,7 +2294,9 @@ void BrowserView::FocusToolbar() {
 }
 
 ExtensionsContainer* BrowserView::GetExtensionsContainer() {
-  return toolbar_button_provider_->GetExtensionsToolbarContainer();
+  ExtensionsToolbarContainer* container =
+      toolbar_button_provider_->GetExtensionsToolbarContainer();
+  return container ? container->GetToolbarViewModel() : nullptr;
 }
 
 void BrowserView::ToolbarSizeChanged(bool is_animating) {

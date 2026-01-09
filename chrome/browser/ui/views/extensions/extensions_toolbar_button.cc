@@ -195,8 +195,9 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
       base::RecordAction(base::UserMetricsAction(
           "Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess"));
     }
-    extensions_menu_coordinator_->Show(this, extensions_toolbar_container_,
-                                       extensions_toolbar_container_);
+    extensions_menu_coordinator_->Show(
+        this, extensions_toolbar_container_->GetToolbarViewModel(),
+        extensions_toolbar_container_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
     // Desktop Android will use the
@@ -204,7 +205,8 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     // use Browser for the other menu until the feature is rolled out.
     menu = ExtensionsMenuView::ShowBubble(
         this, browser_->GetBrowserForMigrationOnly(),
-        extensions_toolbar_container_, extensions_toolbar_container_);
+        extensions_toolbar_container_->GetToolbarViewModel(),
+        extensions_toolbar_container_);
   }
   extensions_menu_widget_ = menu->GetWeakPtr();
   extension_menu_observation_.Observe(menu);

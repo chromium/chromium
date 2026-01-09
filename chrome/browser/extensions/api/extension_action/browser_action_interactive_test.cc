@@ -995,7 +995,8 @@ class NavigatingExtensionPopupInteractiveTest
 
     // Verify extension's action exists.
     ToolbarActionViewModel* model =
-        extensions_container()->GetActionForId(popup_extension().id());
+        extensions_container()->GetToolbarViewModel()->GetActionForId(
+            popup_extension().id());
     ASSERT_TRUE(model);
 
     // Trigger the extension's popup by executing its action.

@@ -288,6 +288,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
       const ExtensionId& extension_id) {
     return static_cast<extensions::ExtensionContextMenuModel*>(
         GetExtensionsToolbarContainer()
+            ->GetToolbarViewModel()
             ->GetActionForId(extension_id)
             ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                  ContextMenuSource::kMenuItem));

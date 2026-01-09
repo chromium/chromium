@@ -193,8 +193,10 @@ ExtensionsMenuMainPageViewInteractiveUITest::
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
-  menu_coordinator()->Show(extensions_button(), GetExtensionsToolbarContainer(),
-                           GetExtensionsToolbarContainer());
+  menu_coordinator()->Show(
+      extensions_button(),
+      GetExtensionsToolbarContainer()->GetToolbarViewModel(),
+      GetExtensionsToolbarContainer());
   DCHECK(main_page());
 }
 
@@ -596,6 +598,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
           auto* context_menu =
               static_cast<extensions::ExtensionContextMenuModel*>(
                   extensions_container()
+                      ->GetToolbarViewModel()
                       ->GetActionForId(extension_id)
                       ->GetContextMenu(context_menu_source));
           std::optional<size_t> command_index =
@@ -1131,6 +1134,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                           incognito_browser->GetBrowserView()
                               .toolbar()
                               ->extensions_container()
+                              ->GetToolbarViewModel()
                               ->GetActionForId(extension->id())
                               ->GetContextMenu(
                                   extensions::ExtensionContextMenuModel::

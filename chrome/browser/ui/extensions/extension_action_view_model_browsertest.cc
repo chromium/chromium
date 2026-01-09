@@ -127,7 +127,7 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
     // It's safe to static cast here, because these tests only deal with
     // extensions.
     return static_cast<ExtensionActionViewModel*>(
-        container()->GetActionForId(action_id));
+        container()->GetToolbarViewModel()->GetActionForId(action_id));
   }
 
   scoped_refptr<const extensions::Extension> CreateAndAddExtension(
