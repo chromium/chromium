@@ -81,6 +81,10 @@
       "targets_spec_directory_relative_to_source_dir": true
     }
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
   "$build/siso": {
     "configs": [
       "builder"
@@ -99,5 +103,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
