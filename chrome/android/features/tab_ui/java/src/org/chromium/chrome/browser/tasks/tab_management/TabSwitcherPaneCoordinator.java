@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.GROUP_SUGGESTION_SERVICE;
 import static org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.recordGroupSuggestionHistogram;
 import static org.chromium.chrome.browser.tasks.tab_management.TabKeyEventHandler.onPageKeyEvent;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ALL_KEYS;
@@ -631,14 +632,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             tabListCoordinator.addDragObserver(mDragObserver);
 
             if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
-                mTabSwitcherGroupSuggestionService =
-                        TabSwitcherGroupSuggestionServiceFactory.build(
-                                activity,
-                                mTabGroupModelFilterSupplier,
-                                profile,
-                                mTabListCoordinator,
-                                assumeNonNull(
-                                        messageManager.getTabGroupSuggestionMessageService()));
+                assert ChromeFeatureList.isEnabled(GROUP_SUGGESTION_SERVICE);
+                if (ChromeFeatureList.isEnabled(GROUP_SUGGESTION_SERVICE)) {
+                    mTabSwitcherGroupSuggestionService =
+                            TabSwitcherGroupSuggestionServiceFactory.build(
+                                    activity,
+                                    mTabGroupModelFilterSupplier,
+                                    profile,
+                                    mTabListCoordinator,
+                                    assumeNonNull(
+                                            messageManager.getTabGroupSuggestionMessageService()));
+                }
             }
         }
     }
@@ -931,7 +935,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void onTabSwitcherShown() {
-        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
+        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()
+                && mTabSwitcherGroupSuggestionService != null) {
             recordGroupSuggestionHistogram(SuggestionUiEvent.TAB_SWITCHER_OPENED);
             showGroupSuggestionsAfterAnimations();
         }
