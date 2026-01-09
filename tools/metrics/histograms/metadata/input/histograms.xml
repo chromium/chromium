@@ -584,28 +584,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Type}.{Language}"
-    enum="IMEAutocorrectPrefStateTransition" expires_after="2024-11-01">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    DEPRECATED: This metric name is incorrect and deviates from the string used
-    when recorded in code. To save the data emitted from clients we add a new
-    metric below with the correct string. This histogram is recorded whenever
-    the user changes their preference for the autocorrect level enabled. Metrics
-    are split between VK and PK, and English versus non English languages.
-  </summary>
-  <token key="Type">
-    <variant name="PK" summary="Physical Keyboard"/>
-    <variant name="VK" summary="Virtual Keyboard"/>
-  </token>
-  <token key="Language">
-    <variant name="All" summary="All languages"/>
-    <variant name="English" summary="English language only"/>
-  </token>
-</histogram>
-
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
     units="ms" expires_after="2026-12-01">
   <owner>curtismcmullan@google.com</owner>
@@ -636,18 +614,6 @@ chromium-metrics-reviews@google.com.
     when the surrounding text could trigger multi word suggestions but the
     feature was disabled. Only the first applicable reason in
     IMEAssistiveDisabledReason enum is recorded per occurrence.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.Assistive.DismissedAccuracy.MultiWord" units="%"
-    expires_after="2022-05-31">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Records the accuracy of a suggestion that was dismissed by the user.
-    Accuracy is measured as the number of chars correctly predicted by the
-    suggestion, divided by the total number of chars in the suggestion. This is
-    recorded when the user dismisses the suggestion.
   </summary>
 </histogram>
 
