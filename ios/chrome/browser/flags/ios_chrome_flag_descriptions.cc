@@ -1469,11 +1469,6 @@ const char kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
     "Enables the Magic Stack module ranking to be split by surface for "
     "engagement";
 
-const char kSegmentationPlatformTipsEphemeralCardName[] =
-    "Enable Tips (Magic Stack)";
-const char kSegmentationPlatformTipsEphemeralCardDescription[] =
-    "When enabled, the Tips module will be displayed in the Magic Stack.";
-
 const char kSendTabToSelfIOSPushNotificationsName[] =
     "Send tab to self iOS push notifications";
 const char kSendTabToSelfIOSPushNotificationsDescription[] =

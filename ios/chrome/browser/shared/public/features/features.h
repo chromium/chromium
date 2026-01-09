@@ -83,34 +83,6 @@ enum class SafetyCheckNotificationsExperimentalArm {
   kSuccinct = 1,
 };
 
-// Name of the parameter that controls the experiment type for the Lens Shop
-// tip, determining whether or not a product image is displayed.
-extern const char kTipsLensShopExperimentType[];
-
-// Defines the different experiment arms for the Lens Shop tip, which
-// determine whether or not a product image is displayed (if available).
-enum class TipsLensShopExperimentType {
-  // The experiment arm that shows the product image (if available) in the
-  // Lens Shop tip.
-  kWithProductImage = 0,
-  // The experiment arm that does not show the product image in the Lens shop
-  // tip.
-  kWithoutProductImage = 1,
-};
-
-// Name of the parameter that controls the experiment type for the Enhanced Safe
-// Browsing tip, determining whether to show the animated, instructional promo
-// or the Safe Browsing settings page.
-extern const char kTipsSafeBrowsingExperimentType[];
-
-// Defines the different experiment arms for the Enhanced Safe Browsing tip.
-enum class TipsSafeBrowsingExperimentType {
-  // Shows the animated, instructional Enhanced Safe Browsing promo.
-  kShowEnhancedSafeBrowsingPromo = 0,
-  // Shows the Safe Browsing settings page.
-  kShowSafeBrowsingSettingsPage = 1,
-};
-
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
@@ -385,18 +357,6 @@ bool AreSafetyCheckSafeBrowsingNotificationsAllowed();
 // `kSafetyCheckAllowUpdateChromeNotifications`.
 bool AreSafetyCheckUpdateChromeNotificationsAllowed();
 
-// Whether the Tips module should be shown in the Magic Stack.
-bool IsTipsMagicStackEnabled();
-
-// Returns the experiment type for the Lens Shop tip, which determines
-// whether or not a product image is displayed (if available).
-TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled();
-
-// Returns the experiment type for the Enhanced Safe Browsing tip, which
-// determines whether to show the animated, instructional promo or the Safe
-// Browsing settings page.
-TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled();
-
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();
 
@@ -604,9 +564,6 @@ bool IsPinnedTabsEnabled();
 
 // Feature flag for caching the ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
-
-// Whether the Segmentation Tips Manager is enabled for Chrome iOS.
-bool IsSegmentationTipsManagerEnabled();
 
 // Flag to not keep a strong reference to the spotlight index, as a tentative
 // memory improvement measure.

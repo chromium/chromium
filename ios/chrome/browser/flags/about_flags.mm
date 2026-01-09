@@ -2001,13 +2001,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSSoftLock,
                                     kIOSSoftLockVariations,
                                     "IOSSoftLock")},
-    {"segmentation-platform-tips-ephemeral-card",
-     flag_descriptions::kSegmentationPlatformTipsEphemeralCardName,
-     flag_descriptions::kSegmentationPlatformTipsEphemeralCardDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(segmentation_platform::features::
-                            kSegmentationPlatformTipsEphemeralCard)},
-
     {"lens-unary-apis-with-http-transport-enabled",
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledName,
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledDescription,

@@ -32,10 +32,6 @@ BASE_FEATURE(kSafetyCheckNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kTipsLensShopExperimentType[] = "TipsLensShopExperimentType";
-
-const char kTipsSafeBrowsingExperimentType[] = "TipsSafeBrowsingExperimentType";
-
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
@@ -308,28 +304,6 @@ SafetyCheckNotificationsExperimentTypeEnabled() {
           kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
           /*default_value=*/
           (int)SafetyCheckNotificationsExperimentalArm::kSuccinct));
-}
-
-bool IsTipsMagicStackEnabled() {
-  return IsSegmentationTipsManagerEnabled();
-}
-
-TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled() {
-  return static_cast<
-      TipsLensShopExperimentType>(base::GetFieldTrialParamByFeatureAsInt(
-      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
-      kTipsLensShopExperimentType,
-      /*default_value=*/
-      (int)TipsLensShopExperimentType::kWithProductImage));
-}
-
-TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled() {
-  return static_cast<
-      TipsSafeBrowsingExperimentType>(base::GetFieldTrialParamByFeatureAsInt(
-      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
-      kTipsSafeBrowsingExperimentType,
-      /*default_value=*/
-      (int)TipsSafeBrowsingExperimentType::kShowEnhancedSafeBrowsingPromo));
 }
 
 // TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.
@@ -612,11 +586,6 @@ bool IsPinnedTabsEnabled() {
 
 BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsSegmentationTipsManagerEnabled() {
-  return base::FeatureList::IsEnabled(
-      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
-}
 
 BASE_FEATURE(kSpotlightNeverRetainIndex, base::FEATURE_DISABLED_BY_DEFAULT);
 
