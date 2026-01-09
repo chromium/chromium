@@ -131,18 +131,32 @@ void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
   tab_state_storage_service_->ClearWindow(window_tag);
 }
 
+void TabStateStorageServiceAndroid::ClearWindowWithOtrStatus(
+    JNIEnv* env,
+    const std::string& window_tag,
+    bool is_off_the_record) {
+  std::vector<StorageId> ids;
+  tab_state_storage_service_->ClearNodesForWindowExcept(window_tag,
+                                                        is_off_the_record, ids);
+}
+
 void TabStateStorageServiceAndroid::ClearUnusedNodesForWindow(
     JNIEnv* env,
     const std::string& window_tag,
+    bool is_off_the_record,
     const TabStripCollection* collection) {
   std::vector<StorageId> ids;
-  ids.push_back(tab_state_storage_service_->GetStorageId(collection));
-  CollectionStorageIdCrawler crawler(*tab_state_storage_service_, ids);
 
-  DirectChildWalker walker(collection, &crawler);
-  walker.Walk();
+  if (collection) {
+    ids.push_back(tab_state_storage_service_->GetStorageId(collection));
+    CollectionStorageIdCrawler crawler(*tab_state_storage_service_, ids);
 
-  tab_state_storage_service_->ClearNodesForWindowExcept(window_tag, ids);
+    DirectChildWalker walker(collection, &crawler);
+    walker.Walk();
+  }
+
+  tab_state_storage_service_->ClearNodesForWindowExcept(window_tag,
+                                                        is_off_the_record, ids);
 }
 
 void TabStateStorageServiceAndroid::PrintAll(JNIEnv* env) {

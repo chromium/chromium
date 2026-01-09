@@ -53,6 +53,7 @@ class TabStateStorageBackend {
   void ClearWindow(std::string_view window_tag);
 
   void ClearNodesForWindowExcept(std::string_view window_tag,
+                                 bool is_off_the_record,
                                  std::vector<StorageId> ids);
 
   void SetKey(std::string_view window_tag, std::vector<uint8_t> key);

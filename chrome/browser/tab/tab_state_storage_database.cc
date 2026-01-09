@@ -409,20 +409,23 @@ void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
 
 bool TabStateStorageDatabase::ClearNodesForWindowExcept(
     std::string_view window_tag,
+    bool is_off_the_record,
     const std::vector<StorageId>& ids) {
   const std::string id_placeholders =
       base::JoinString(std::vector<std::string_view>(ids.size(), "?"), ",");
 
   const std::string kDeleteNodesExceptSql =
-      base::StrCat({"DELETE FROM nodes WHERE window_tag = ? AND id NOT IN (",
+      base::StrCat({"DELETE FROM nodes WHERE window_tag = ? AND "
+                    "is_off_the_record = ? AND id NOT IN (",
                     id_placeholders, ")"});
 
   sql::Statement delete_statement(
       db_.GetUniqueStatement(kDeleteNodesExceptSql));
   delete_statement.BindString(0, window_tag);
+  delete_statement.BindBool(1, is_off_the_record);
 
   for (size_t i = 0; i < ids.size(); i++) {
-    delete_statement.BindBlob(i + 1, StorageIdToBlob(ids[i]));
+    delete_statement.BindBlob(i + 2, StorageIdToBlob(ids[i]));
   }
   return delete_statement.Run();
 }

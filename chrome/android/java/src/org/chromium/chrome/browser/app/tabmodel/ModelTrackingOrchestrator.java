@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import static org.chromium.base.task.PostTask.postTask;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -23,6 +24,8 @@ import org.chromium.chrome.browser.tab.StorageCollectionSynchronizer;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageRestoreOrchestratorFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -97,6 +100,7 @@ public class ModelTrackingOrchestrator {
         void reset();
     }
 
+    private final String mWindowTag;
     private final TabModelSelector mTabModelSelector;
     private final Map<Token, CollectionSaveForwarder> mGroupForwarderMap = new HashMap<>();
     private final IncognitoTabModelObserver mIncognitoTabModelObserver =
@@ -164,9 +168,11 @@ public class ModelTrackingOrchestrator {
             };
 
     /**
+     * @param windowTag The window tag to use for the window.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes for.
      */
-    public ModelTrackingOrchestrator(TabModelSelector tabModelSelector) {
+    public ModelTrackingOrchestrator(String windowTag, TabModelSelector tabModelSelector) {
+        mWindowTag = windowTag;
         mTabModelSelector = tabModelSelector;
 
         TabModel incognitoModel = tabModelSelector.getModel(true);
@@ -206,19 +212,22 @@ public class ModelTrackingOrchestrator {
      * Called when the {@link CombinedTabRestorer} has finished restoring all tabs for both models.
      */
     public void onRestoreFinished() {
+        ChainedTasks tasks = new ChainedTasks();
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             mRegularSynchronizerManager.onRestoreFinished();
             mIncognitoSynchronizerManager.onRestoreFinished();
+
+            assert mTabModelSelector.isTabStateInitialized();
+            Callback<TabModel> clearUnusedNodesForModel = this::clearUnusedNodesForModel;
+
+            for (TabModel model : mTabModelSelector.getModels()) {
+                tasks.add(TaskTraits.UI_DEFAULT, clearUnusedNodesForModel.bind(model));
+            }
         } else {
-            postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        mRegularSynchronizerManager.onRestoreFinished();
-                        postTask(
-                                TaskTraits.UI_DEFAULT,
-                                mIncognitoSynchronizerManager::onRestoreFinished);
-                    });
+            tasks.add(TaskTraits.UI_DEFAULT, mRegularSynchronizerManager::onRestoreFinished);
+            tasks.add(TaskTraits.UI_DEFAULT, mIncognitoSynchronizerManager::onRestoreFinished);
         }
+        tasks.start(/* coalesceTasks= */ false);
     }
 
     /** Performs the cleanup required for the synchronizers when the TabStateStore is destroyed. */
@@ -320,6 +329,17 @@ public class ModelTrackingOrchestrator {
         }
 
         filter.addTabGroupObserver(mVisualDataUpdateObserver);
+    }
+
+    private void clearUnusedNodesForModel(TabModel model) {
+        Profile profile = model.getProfile();
+        if (profile == null) return;
+
+        TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
+        if (service == null) return;
+
+        service.clearUnusedNodesForWindow(
+                mWindowTag, model.isOffTheRecord(), model.getTabStripCollection());
     }
 
     private @Nullable TabGroupModelFilter getFilter(boolean incognito) {

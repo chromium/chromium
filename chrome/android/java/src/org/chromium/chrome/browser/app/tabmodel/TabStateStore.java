@@ -133,7 +133,7 @@ public class TabStateStore implements TabPersistentStore {
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
         mTabPersistencePolicy = tabPersistencePolicy;
-        mModelTrackingManager = new ModelTrackingOrchestrator(tabModelSelector);
+        mModelTrackingManager = new ModelTrackingOrchestrator(mWindowTag, tabModelSelector);
 
         byte[] key = cipherFactory.getKeyForTabStateStorage();
         if (key == null) {

@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tabs.TabStripCollection;
 
 /** Java counterpart to keyed service in native that writes tab data to disk. */
@@ -97,12 +98,25 @@ public class TabStateStorageService {
      * child of the given collection will be deleted.
      *
      * @param windowTag The window tag to clear unused nodes for.
+     * @param isOffTheRecord Whether the nodes are off the record.
      * @param tabStripCollection The tab strip collection for a given window.
      */
-    public void clearUnusedNodesForWindow(String windowTag, TabStripCollection tabStripCollection) {
-        TabStateStorageServiceJni.get()
-                .clearUnusedNodesForWindow(
-                        mNativeTabStateStorageService, windowTag, tabStripCollection);
+    public void clearUnusedNodesForWindow(
+            String windowTag,
+            boolean isOffTheRecord,
+            @Nullable TabStripCollection tabStripCollection) {
+        if (tabStripCollection != null) {
+            TabStateStorageServiceJni.get()
+                    .clearUnusedNodesForWindow(
+                            mNativeTabStateStorageService,
+                            windowTag,
+                            isOffTheRecord,
+                            tabStripCollection);
+        } else {
+            TabStateStorageServiceJni.get()
+                    .clearWindowWithOtrStatus(
+                            mNativeTabStateStorageService, windowTag, isOffTheRecord);
+        }
     }
 
     /** Clears all the tabs for a given window from persistent storage. */
@@ -165,9 +179,15 @@ public class TabStateStorageService {
 
         long createBatch(long nativeTabStateStorageServiceAndroid);
 
+        void clearWindowWithOtrStatus(
+                long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                boolean isOffTheRecord);
+
         void clearUnusedNodesForWindow(
                 long nativeTabStateStorageServiceAndroid,
                 @JniType("std::string") String windowTag,
+                boolean isOffTheRecord,
                 @JniType("TabStripCollection*") TabStripCollection tabStripCollection);
 
         void printAll(long nativeTabStateStorageServiceAndroid);

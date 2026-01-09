@@ -113,6 +113,7 @@ class TabStateStorageDatabase {
   // Clears all nodes for a given window from the database except for the
   // provided storage IDs.
   bool ClearNodesForWindowExcept(std::string_view window_tag,
+                                 bool is_off_the_record,
                                  const std::vector<StorageId>& ids);
 
   // Sets the key to seal OTR payloads with. The window tag is moved

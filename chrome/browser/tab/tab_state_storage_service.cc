@@ -227,8 +227,10 @@ void TabStateStorageService::ClearWindow(std::string_view window_tag) {
 
 void TabStateStorageService::ClearNodesForWindowExcept(
     std::string_view window_tag,
+    bool is_off_the_record,
     std::vector<StorageId> ids) {
-  tab_backend_.ClearNodesForWindowExcept(window_tag, std::move(ids));
+  tab_backend_.ClearNodesForWindowExcept(window_tag, is_off_the_record,
+                                         std::move(ids));
 }
 
 void TabStateStorageService::SetKey(std::string_view window_tag,
