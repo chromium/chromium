@@ -29,9 +29,7 @@ bool StructTraits<gpu::mojom::GpuFeatureInfoDataView, gpu::GpuFeatureInfo>::
          data.ReadAppliedGpuDriverBugListEntries(
              &out->applied_gpu_driver_bug_list_entries) &&
          gpu::GpuDriverBugList::AreEntryIndicesValid(
-             out->applied_gpu_driver_bug_list_entries) &&
-         data.ReadSupportedBufferFormatsForAllocationAndTexturing(
-             &out->supported_buffer_formats_for_allocation_and_texturing);
+             out->applied_gpu_driver_bug_list_entries);
 }
 
 }  // namespace mojo
