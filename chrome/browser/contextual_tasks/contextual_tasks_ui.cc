@@ -278,7 +278,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                     ntp_composebox::FeatureConfig::Get()
                         .config.composebox()
                         .input_placeholder_text());
-  source->AddBoolean("composeboxSmartComposeEnabled", false);
+  source->AddBoolean("composeboxSmartComposeEnabled",
+                     contextual_tasks::GetEnableContextualTasksSmartCompose());
   AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);

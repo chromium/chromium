@@ -245,6 +245,10 @@
 
 #composebox::part(input) {
   color: var(--color-composebox-font);
+}
+
+#composebox::part(input),
+#composebox::part(smart-compose) {
   padding-inline-start: var(--g-input-left-spacing);
 }
 

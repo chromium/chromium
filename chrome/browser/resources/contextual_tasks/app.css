@@ -29,6 +29,8 @@
   --color-composebox-hover: rgba(233, 235, 240, 1);
   --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
   --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
+  --color-composebox-type-ahead: rgba(117, 117, 117, 1);
+  --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
   --color-zero-state-greeting: rgba(10, 10, 10, 1);
@@ -123,6 +125,8 @@
   --color-composebox-font-light: rgba(230, 232, 240, 1);
   --color-composebox-hover: rgba(62, 63, 67, 1);
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
+  --color-composebox-type-ahead: rgba(199, 199, 199, 1);
+  --color-composebox-type-ahead-chip: rgba(199, 199, 199, 1);
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
   --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
   --color-zero-state-greeting: rgba(230, 232, 240, 1);

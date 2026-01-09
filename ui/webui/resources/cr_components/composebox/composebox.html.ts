@@ -69,7 +69,7 @@ export function getHtml(this: ComposeboxElement) {
             @focusin="${this.handleInputFocusIn_}"
             @focusout="${this.handleInputFocusOut_}"></textarea>
           ${this.shouldShowSmartComposeInlineHint_() ? html`
-            <div id="smartCompose">
+            <div id="smartCompose" part="smart-compose">
               <!-- Comments in between spans to eliminate spacing between
                    spans -->
               <span id="invisibleText">${this.input_}</span><!--

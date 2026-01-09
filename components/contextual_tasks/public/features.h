@@ -155,6 +155,9 @@ extern std::string GetContextualTasksOnboardingTooltipHelpUrl();
 // Returns the help URL for the help center article from the toolbar.
 extern std::string GetContextualTasksHelpUrl();
 
+// Returns whether smart compose is enabled for Contextual Tasks.
+extern bool GetEnableContextualTasksSmartCompose();
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksName[];

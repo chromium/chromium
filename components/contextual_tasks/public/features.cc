@@ -160,6 +160,11 @@ const base::FeatureParam<int> kContextualTasksOnboardingTooltipDismissedCap(
     "ContextualTasksOnboardingTooltipDismissedCap",
     1);
 
+const base::FeatureParam<bool> kEnableContextualTasksSmartCompose(
+    &kContextualTasks,
+    "EnableContextualTasksSmartCompose",
+    true);
+
 int GetContextualTasksShowOnboardingTooltipSessionImpressionCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
     return 0;
@@ -267,6 +272,11 @@ std::string GetContextualTasksOnboardingTooltipHelpUrl() {
 
 std::string GetContextualTasksHelpUrl() {
   return kContextualTasksHelpUrl.Get();
+}
+
+bool GetEnableContextualTasksSmartCompose() {
+  return base::FeatureList::IsEnabled(kContextualTasks) &&
+         kEnableContextualTasksSmartCompose.Get();
 }
 
 namespace flag_descriptions {
