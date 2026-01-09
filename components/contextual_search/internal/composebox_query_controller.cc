@@ -531,6 +531,13 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
           ->mutable_additional_cgi_params())[param.first] = param.second;
   }
 
+  // Add context turn metadata.
+  for (const auto& context_turn_metadata :
+       create_client_to_aim_request_info->context_turn_metadata) {
+    (*submit_query->mutable_payload()->add_context_turn_metadata()) =
+        context_turn_metadata;
+  }
+
   // Add the request id data for each file token.
   if (!active_files_.empty() && cluster_info_.has_value()) {
     for (const auto& file_token :

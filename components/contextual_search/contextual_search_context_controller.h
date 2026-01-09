@@ -16,6 +16,7 @@
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/aim_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
@@ -169,6 +170,10 @@ class ContextualSearchContextController {
 
     // Additional CGI params to append to the search request URL.
     std::map<std::string, std::string> additional_cgi_params;
+
+    // Metadata for context that is turn-specific. There is at most one entry
+    // per context id.
+    std::vector<lens::ContextTurnMetadata> context_turn_metadata;
   };
 
   virtual ~ContextualSearchContextController() = default;

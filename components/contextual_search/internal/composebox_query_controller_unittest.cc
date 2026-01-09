@@ -2360,6 +2360,47 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequestWithContextTurnMetadata) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Create the ClientToAimRequest.
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "hello";
+  client_to_aim_request_info->query_text_source =
+      lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
+  client_to_aim_request_info->context_turn_metadata.push_back(
+      lens::ContextTurnMetadata());
+  client_to_aim_request_info->context_turn_metadata[0].set_context_id(1);
+  client_to_aim_request_info->context_turn_metadata[0]
+      .mutable_tab_metadata()
+      ->set_is_active_tab(true);
+
+  std::optional<lens::ClientToAimMessage> client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  // Assert: The ClientToAimRequest is populated correctly.
+  ASSERT_TRUE(client_to_aim_request.has_value());
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text(),
+            "hello");
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text_source(),
+            lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
+  EXPECT_EQ(client_to_aim_request->submit_query()
+                .payload()
+                .context_turn_metadata_size(),
+            1);
+  const auto& context_turn_metadata =
+      client_to_aim_request->submit_query().payload().context_turn_metadata(0);
+  EXPECT_EQ(context_turn_metadata.context_id(), 1);
+  EXPECT_TRUE(context_turn_metadata.tab_metadata().is_active_tab());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        QuerySubmittedWithUploadedPdfStandardSearch) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
