@@ -429,7 +429,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1272508081857842302">Abertura de <ph name="BEGIN_LINK" />links compatíveis<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Esta conta de usuário não pertence ao domínio no qual o dispositivo está inscrito. Para se inscrever em um domínio diferente, é preciso passar pela recuperação do dispositivo primeiro.</translation>
 <translation id="1273937721055267968">Bloquear o <ph name="DOMAIN" /></translation>
-<translation id="1274997165432133392">Cookies e outros dados do site</translation>
+<translation id="1274997165432133392">Cookies e outros dados de sites</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1275936815032730048">acesso rápido + seta para a direita</translation>
 <translation id="1275963833368139883">Quando você pesquisa no histórico de navegação, as respostas e os resultados da pesquisa são baseados no conteúdo de uma página. Isso vai melhorar os resultados</translation>
@@ -3543,7 +3543,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3408555740610481810">Câmera e microfone em uso</translation>
 <translation id="3409157109901479672">Lado esquerdo</translation>
 <translation id="3409513286451883969">&amp;Traduzir seleção para o <ph name="LANGUAGE" /></translation>
-<translation id="3410151451624226773">Gerencie no Gerenciador de senhas do Google</translation>
+<translation id="3410151451624226773">Use o Gerenciador de Senhas do Google</translation>
 <translation id="3412265149091626468">Ir para a seleção</translation>
 <translation id="3413122095806433232">Emissores de autoridades de certificação: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamanho:</translation>
@@ -12089,7 +12089,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="958571289841636277">Volte e avance usando o gesto de deslizar</translation>
 <translation id="960987915827980018">Cerca de 1 hora restante</translation>
 <translation id="961010578115289982">Trocar com a visualização à esquerda</translation>
-<translation id="961856697154696964">Excluir histórico</translation>
+<translation id="961856697154696964">Excluir dados</translation>
 <translation id="962802172452141067">Árvore de pastas de favoritos</translation>
 <translation id="963000966785016697">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Seu administrador de TI desativou os Goodies do Chrome para seu dispositivo.</translation>

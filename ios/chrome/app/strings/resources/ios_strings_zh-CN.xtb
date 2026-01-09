@@ -179,7 +179,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
-<translation id="1651260071709244114">应用</translation>
+<translation id="1651260071709244114">App</translation>
 <translation id="1652051421944182562">开启安全检查通知…</translation>
 <translation id="1652333207707886577">自定义菜单</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{剩余时间：{TIME} 秒}=1{剩余时间：{TIME} 秒}other{剩余时间：{TIME} 秒}}</translation>

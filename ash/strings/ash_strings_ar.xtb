@@ -2077,7 +2077,7 @@
         <ph name="IME" />،
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">يتم كتم صوت الإشعارات حتى <ph name="TIME" /> أثناء استخدام "وضع التركيز"</translation>
-<translation id="7901010467630324625">الأجهزة التي تم تسجيل الدخول إلى <ph name="EMAIL" /> عليها فقط</translation>
+<translation id="7901010467630324625">الأجهزة التي سجّلت الدخول إلى <ph name="EMAIL" /> عليها فقط</translation>
 <translation id="7901190436359881020">تبديل النوافذ</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">المس أداة استشعار بصمات الإصبع.</translation>

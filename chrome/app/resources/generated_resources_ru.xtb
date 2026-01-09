@@ -4240,7 +4240,7 @@
 <translation id="3856096718352044181">Убедитесь, что это действительный поставщик услуг, или повторите попытку позже.</translation>
 <translation id="3856470183388031602">Используйте аккаунт Google на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Выберите часовой пояс</translation>
-<translation id="3857807444929313943">Коснитесь несколько раз</translation>
+<translation id="3857807444929313943">Отпустите и нажмите снова</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="385939467708172187">Использовать надежный пароль</translation>
 <translation id="3859869403161297890">Оставьте отзыв об общих группах вкладок.</translation>
@@ -11506,7 +11506,7 @@
 <translation id="8875520811099717934">Обновление Linux</translation>
 <translation id="8875736897340638404">Выберите подходящий для вас вариант</translation>
 <translation id="8876307312329369159">Эту настройку нельзя изменить в демонстрационном сеансе.</translation>
-<translation id="8876965259056847565">Функция "<ph name="FEATURE_NAME" />" ищет устройства поблизости с помощью Bluetooth.</translation>
+<translation id="8876965259056847565">Чтобы находить устройства поблизости, функция "<ph name="FEATURE_NAME" />" использует Bluetooth.</translation>
 <translation id="8877448029301136595">[родительский каталог]</translation>
 <translation id="8879284080359814990">Показать как вкладку</translation>
 <translation id="8879921471468674457">Запомнить учетные данные</translation>
@@ -11836,7 +11836,7 @@
 <translation id="9088858349441302494">Под управлением <ph name="VALUE" /></translation>
 <translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9089959054554410481">Изменить направление прокрутки сенсорной панели</translation>
-<translation id="9090044809052745245">Под этим названием устройство будет отображаться у других.</translation>
+<translation id="9090044809052745245">Как другие будут видеть устройство.</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{Не удается переместить файл в сервис "<ph name="CLOUD_PROVIDER" />".}one{Не удается переместить файлы в сервис "<ph name="CLOUD_PROVIDER" />".}few{Не удается переместить файлы в сервис "<ph name="CLOUD_PROVIDER" />".}many{Не удается переместить файлы в сервис "<ph name="CLOUD_PROVIDER" />".}other{Не удается переместить файлы в сервис "<ph name="CLOUD_PROVIDER" />".}}</translation>
 <translation id="9093470422440389061">Показатели производительности Wi-Fi</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>

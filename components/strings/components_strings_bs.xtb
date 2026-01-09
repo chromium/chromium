@@ -1554,7 +1554,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3527181387426738155">Muzika i audio zapisi</translation>
 <translation id="3528171143076753409">Potvrda servera nije pouzdana.</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Najmanje jedna stavka na sihroniziranim uređajima}=1{1 stavka (i još njih na sinhroniziranim uređajima)}one{# stavka (i još njih na sinhroniziranim uređajima)}few{# stavke (i još njih na sinhroniziranim uređajima)}other{# stavki (i još njih na sinhroniziranim uređajima)}}</translation>
-<translation id="3531366304259615706">Koristi zaključavanje ekrana</translation>
+<translation id="3531366304259615706">Koristi otključavanje ekrana</translation>
 <translation id="3531780078352352885">Tabele za posao</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi koristiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Poštansko sanduče 5</translation>

@@ -5501,7 +5501,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4744268813103118742">Ves al lloc web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activa el so del lloc web}other{Activa el so dels llocs web}}</translation>
-<translation id="4745096442457817087">La contrasenya s'ha fet pública a causa d'una violació de les dades</translation>
+<translation id="4745096442457817087">La contrasenya s'ha trobat en una violació de les dades pública</translation>
 <translation id="4745500401920035244">L'administrador ha fet un canvi que desactiva alguns perfils antics en tot el sistema. Ja no pots accedir a aquest perfil, però encara el pots suprimir.</translation>
 <translation id="4746757725581505837">Estàs a punt de suprimir les dades de <ph name="BRAND" /> desades en aquest dispositiu</translation>
 <translation id="4748783296226936791">Els llocs web solen connectar-se a dispositius HID per a funcions que utilitzen teclats, comandaments de joc i altres dispositius poc habituals</translation>

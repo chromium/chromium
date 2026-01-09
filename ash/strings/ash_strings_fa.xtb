@@ -861,7 +861,7 @@
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="394485226368336402">تنظیمات صوتی</translation>
 <translation id="3945319193631853098">برای تمام کردن راه‌اندازی، تک‌ضرب بزنید</translation>
-<translation id="3945867833895287237">درحال اتصال به نقطه اتصال…</translation>
+<translation id="3945867833895287237">درحال متصل شدن به نقطه اتصال…</translation>
 <translation id="3950272133184491871">همین حالا از سیستم خارج می‌شوید؟</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3953130726459169782">هنوز تکلیفی انجام نشده است.</translation>
@@ -972,7 +972,7 @@
 <translation id="4280601795273309128">به‌روزرسانی‌های امنیتی به‌پایان رسیده است. دستگاهتان را ارتقا دهید.</translation>
 <translation id="4283888303416325161">برای ایمنی بیشتر، گذرواژه را وارد کنید</translation>
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
-<translation id="428715201724021596">درحال اتصال به نمایه. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="428715201724021596">درحال متصل شدن به نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4287250812980588583">‏پنجره Chrome</translation>
 <translation id="4291322857434980285">{NUM_APPS,plural, =1{میزان صدای میکروفون را <ph name="APP_NAME" /> کنترل می‌کند}one{میزان صدای میکروفون را # برنامه کنترل می‌کند}other{میزان صدای میکروفون را # برنامه کنترل می‌کند}}</translation>
 <translation id="4296136865091727875">پاک کردن همه <ph name="COUNT" /> اعلان</translation>
@@ -2440,7 +2440,7 @@
 <translation id="9151906066336345901">پایان</translation>
 <translation id="9159421884295554245">در «بریده‌دان» جستجو کنید</translation>
 <translation id="9161053988251441839">برنامه‌های پیشنهادشده</translation>
-<translation id="9168436347345867845">بعداً انجام شود</translation>
+<translation id="9168436347345867845">بعداً انجام دادن</translation>
 <translation id="9178475906033259337">نمایش ۱ نتیجه برای <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">این ویژگی امکان می‌دهد بدون نیاز به گذرواژه، به هر کاربری که به سیستم واردشده به‌سرعت دسترسی داشته باشید. تنها برای حساب‌های مورد اعتمادتان از این ویژگی استفاده کنید.</translation>
 <translation id="9183302530794969518">‏سندنگار Google</translation>

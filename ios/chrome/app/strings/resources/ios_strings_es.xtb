@@ -1954,7 +1954,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8282657446819506217">Abrir en un grupo de pestañas</translation>
-<translation id="828291969289324795">{count,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
+<translation id="828291969289324795">{count,plural, =1{Añadir pestaña a nuevo grupo}other{Añadir pestañas a nuevo grupo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8289930144142009940">Notificaciones de <ph name="FEATURE_NAME" /> desactivadas</translation>
 <translation id="8290077367744012649">Seguir precios de tus pestañas</translation>

@@ -238,7 +238,7 @@
 <translation id="1151917987301063366">همیشه اجازه دسترسی به حسگرها به <ph name="HOST" /> داده شود</translation>
 <translation id="1152346050262092795">برای به‌تأیید رساندن حساب، گذرواژه‌تان را دوباره وارد کنید.</translation>
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
-<translation id="1155816283571436363">درحال اتصال به تلفن</translation>
+<translation id="1155816283571436363">درحال متصل شدن به تلفن</translation>
 <translation id="1157952955648710254">‏بستن پانل کناری «جستجوی Google»</translation>
 <translation id="1158080958325422608">تبدیل به حروف بزرگ</translation>
 <translation id="1159879754517035595">مدیریت تنظیمات افزونه</translation>
@@ -599,7 +599,7 @@
 <translation id="1399261165075500043">‏«شرایط خدمات Google Play» بار نشد</translation>
 <translation id="1400243387594338234">می‌توانید از این پین برای ورود به سیستم دستگاهتان استفاده کنید</translation>
 <translation id="1401216725754314428">در برگه جدیدی درباره سایت‌های مرتبط بیشتر بدانید</translation>
-<translation id="1402426911829176748">درحال اتصال به دستگاه</translation>
+<translation id="1402426911829176748">درحال متصل شدن به دستگاه</translation>
 <translation id="1403222014593521787">امکان اتصال به پراکسی وجود ندارد</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
@@ -1978,7 +1978,7 @@
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% کامل شد</translation>
 <translation id="2318143611928805047">اندازه کاغذ</translation>
 <translation id="2318817390901984578">‏برای استفاده از برنامه‌های Android، ‏<ph name="DEVICE_TYPE" /> خود را شارژ و به‌روزرسانی کنید.</translation>
-<translation id="2319072477089403627">‏درحال اتصال به تلفن Android…</translation>
+<translation id="2319072477089403627">‏درحال متصل شدن به تلفن Android…</translation>
 <translation id="2319459402137712349">برای باز کردن صفحه‌کلید، فیلد نوشتار را انتخاب کنید. همچنین می‌توانید نماد «صفحه‌کلید» را در پایین صفحه‌نمایش انتخاب کنید.</translation>
 <translation id="2319993584768066746">عکس‌های صفحه ورود به سیستم</translation>
 <translation id="2321487076181785382">تقسیم کردن زبانه‌ها</translation>
@@ -4862,7 +4862,7 @@
 <translation id="428565720843367874">نرم‌افزار آنتی‌ویروس به‌طور غیرمنتظره‌ای در هنگام اسکن کردن این فایل متوقف شد.</translation>
 <translation id="4286409554022318832"><ph name="NUM_OF_APPS" /> برنامه نصب‌شده برداشته خواهد شد</translation>
 <translation id="4287099557599763816">صفحه‌خوان</translation>
-<translation id="428715201724021596">درحال اتصال به نمایه. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="428715201724021596">درحال متصل شدن به نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4287157641315808225">‏بله، ChromeVox فعال شود</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{نمایش}one{نمایش همه}other{نمایش همه}}</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
@@ -5945,7 +5945,7 @@
 <translation id="505347685865235222">گروه بدون نام - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{باید این گذرواژه را همین‌حالا تغییر دهید}one{باید این گذرواژه را همین‌حالا تغییر دهید}other{باید این گذرواژه‌ها را همین‌حالا تغییر دهید}}</translation>
 <translation id="5056587122125565772">ساختن تصویر</translation>
-<translation id="5056950756634735043">درحال اتصال به محتوی</translation>
+<translation id="5056950756634735043">درحال متصل شدن به محتوی</translation>
 <translation id="5057110919553308744">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="5057127674016624293">اسکن کردن بیش‌از حد معمول طول کشیده است</translation>
 <translation id="5057480703570202545">سابقه بارگیری</translation>
@@ -6651,7 +6651,7 @@
 <translation id="5541091577812545428">گذرواژه تغییر نکرد</translation>
 <translation id="5542132724887566711">نمایه</translation>
 <translation id="5542750926112347543">کوکی‌های <ph name="DOMAIN" /> مسدود شدند</translation>
-<translation id="5542949973455282971">درحال اتصال به <ph name="CARRIER_NAME" /></translation>
+<translation id="5542949973455282971">درحال متصل شدن به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
 <translation id="5544482392629385159">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">ارائه‌دهنده</translation>
@@ -7690,7 +7690,7 @@
 <translation id="62650662268452475">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از نشانک‌ها، افزونه‌ها، و سایر موارد ذخیره‌شده در «حساب Google» خود در همه دستگاه‌هایتان استفاده کنید</translation>
 <translation id="6265159465845424232">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Microsoft OneDrive سؤال شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
-<translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>
+<translation id="6266532094411434237">درحال متصل شدن به <ph name="DEVICE" /></translation>
 <translation id="6266984048393265562">سفارشی‌سازی نمایه</translation>
 <translation id="6267166720438879315">انتخاب گواهی برای راستی‌آزمایی خودتان در <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">باز کردن با <ph name="APP" /></translation>
@@ -7701,7 +7701,7 @@
 <translation id="6271348838875430303">تصحیح واگرد شد</translation>
 <translation id="6271824294945464304">هم‌رسانی گذرواژه</translation>
 <translation id="6273677812470008672">کیفیت</translation>
-<translation id="6274089201566806618">درحال اتصال به <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274089201566806618">درحال متصل شدن به <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274108044476515407">اینکه آیا آگهی‌ای که می‌بینید شخصی‌سازی شده است یا نه به عوامل زیادی بستگی دارد، ازجمله این تنظیم، <ph name="BEGIN_LINK1" />آگهی‌های پیشنهادی سایت<ph name="LINK_END1" />، <ph name="BEGIN_LINK2" />تنظیمات کوکی<ph name="LINK_END2" /> شما، و اینکه سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه. درباره <ph name="BEGIN_LINK3" />مدیریت حریم خصوصی آگهی<ph name="LINK_END3" /> بیشتر بدانید.</translation>
 <translation id="6274202259872570803">ضبط ویدیویی از صفحه</translation>
 <translation id="627581157848786026">دیدن زبانه‌های بازشده در سایر دستگاه‌ها</translation>

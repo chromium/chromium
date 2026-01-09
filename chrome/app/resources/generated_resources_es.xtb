@@ -699,7 +699,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="1468571364034902819">No se puede utilizar este perfil</translation>
 <translation id="1469702495092129863">Comprueba tu micrófono</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{Añadir pestaña a nuevo grupo}other{Añadir pestañas a nuevo grupo}}</translation>
 <translation id="1470946456740188591">Para activar o desactivar la navegación por cursor de texto, usa la combinación de teclas Ctrl + tecla de búsqueda + 7</translation>
 <translation id="1471034383866732283">El modo Lectura no puede encontrar el contenido principal de esta página</translation>
 <translation id="1472675084647422956">Mostrar más</translation>

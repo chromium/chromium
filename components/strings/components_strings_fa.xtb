@@ -1694,7 +1694,7 @@
 <translation id="3714633008798122362">تقویم وب</translation>
 <translation id="3714780639079136834">‏روشن کردن داده‌ شبکه تلفن همراه یا Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{بارگذاری فایل مسدود شده است}one{بارگذاری <ph name="FILE_COUNT" /> فایل مسدود شده است}other{بارگذاری <ph name="FILE_COUNT" /> فایل مسدود شده است}}</translation>
-<translation id="3715597595485130451">‏اتصال به Wi-Fi</translation>
+<translation id="3715597595485130451">‏متصل شدن به Wi-Fi</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />بررسی پروکسی، دیوار آتش و پیکربندی DNS<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
 <translation id="3723663469265383848">درطول به‌روزرسانی، تا ۱۰ دقیقه نمی‌توانید از دستگاهتان استفاده کنید.</translation>
@@ -3950,7 +3950,7 @@
 <translation id="7388594495505979117">{0,plural, =1{دستگاه یک دقیقه دیگر بازراه‌اندازی خواهد شد}one{دستگاه # دقیقه دیگر بازراه‌اندازی خواهد شد}other{دستگاه # دقیقه دیگر بازراه‌اندازی خواهد شد}}</translation>
 <translation id="7393161616326137353">بازی‌های ماجراجویی</translation>
 <translation id="7393475648162498734">پاداش‌ها و مزایایی که برای کارت‌هایتان دردسترس است در زمان تسویه‌حساب نشان داده می‌شود</translation>
-<translation id="7393971683644170444">درحال اتصال به ارائه‌دهنده کارت…</translation>
+<translation id="7393971683644170444">درحال متصل شدن به ارائه‌دهنده کارت…</translation>
 <translation id="739728382607845710">نماد مدیریت‌كننده پرداخت</translation>
 <translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
