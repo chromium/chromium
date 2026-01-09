@@ -54,12 +54,12 @@ media::JpegHuffmanTable ConvertToJpegHuffmanTable(
       std::min(huffman_table.code_length.size(),
                proto_huffman_table.code_length().size());
   base::span(huffman_table.code_length)
-      .copy_prefix_from(base::span(proto_huffman_table.code_value())
+      .copy_prefix_from(base::as_byte_span(proto_huffman_table.code_length())
                             .first(code_length_min_size));
   const size_t code_value_min_size = std::min(
       huffman_table.code_value.size(), proto_huffman_table.code_value().size());
   base::span(huffman_table.code_value)
-      .copy_prefix_from(base::span(proto_huffman_table.code_value())
+      .copy_prefix_from(base::as_byte_span(proto_huffman_table.code_value())
                             .first(code_value_min_size));
   return huffman_table;
 }
@@ -131,7 +131,7 @@ media::JpegParseResult ConvertToJpegParseResult(
     base::span(parse_result.q_table[i].value)
         .first(value_min_size)
         .copy_from_nonoverlapping(
-            base::span(input_q_table.value()).first(value_min_size));
+            base::as_byte_span(input_q_table.value()).first(value_min_size));
   }
 
   // Convert the scan header.
@@ -153,8 +153,7 @@ media::JpegParseResult ConvertToJpegParseResult(
   // Convert the coded data. Note that we don't do a deep copy, so we assume
   // that |proto_parse_result| will live for as long as |parse_result|.data is
   // needed.
-  parse_result.data = proto_parse_result.data().data();
-  parse_result.data_size = proto_parse_result.data().size();
+  parse_result.data = base::as_byte_span(proto_parse_result.data());
 
   // Convert the rest of the fields.
   parse_result.restart_interval =
