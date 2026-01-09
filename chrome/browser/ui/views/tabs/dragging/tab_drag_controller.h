@@ -534,6 +534,11 @@ class TabDragController : public views::WidgetObserver,
   void UpdateSelectionModel(TabStripModel* tab_strip_model,
                             ui::ListSelectionModel selection_model);
 
+  void OnContextStartedDragging(const std::vector<TabSlotView*>& views);
+  void OnContextStoppedDragging();
+  void OnContextDraggedTabsDetached();
+  void UpdateBrowserViewsForDragEnd();
+
 #if defined(USE_AURA)
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;

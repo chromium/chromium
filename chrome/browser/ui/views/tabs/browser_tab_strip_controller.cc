@@ -51,7 +51,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -109,20 +108,6 @@ using base::UserMetricsAction;
 using content::WebContents;
 
 namespace {
-
-// Gets the source browser view during a tab dragging. Returns nullptr if there
-// is none.
-BrowserView* GetSourceBrowserViewInTabDragging() {
-  auto* source_context = TabDragController::GetSourceContext();
-  if (source_context) {
-    gfx::NativeWindow source_window =
-        source_context->GetWidget()->GetNativeWindow();
-    if (source_window) {
-      return BrowserView::GetBrowserViewForNativeWindow(source_window);
-    }
-  }
-  return nullptr;
-}
 
 void DialogTimingToSource(
     base::OnceCallback<void(CloseTabSource)> callback,
@@ -545,7 +530,7 @@ void BrowserTabStripController::CreateNewTab(NewTabTypes context) {
   chrome::NewTab(GetBrowser(), context);
 }
 
-void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
+void BrowserTabStripController::OnStartedDragging() {
   if (!immersive_reveal_lock_.get()) {
     // The top-of-window views should be revealed while the user is dragging
     // tabs in immersive fullscreen. The top-of-window views may not be already
@@ -555,49 +540,10 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
         ImmersiveModeController::From(browser_view_->browser())
             ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_NO);
   }
-
-  browser_view_->browser_widget()->SetTabDragKind(
-      dragging_window ? TabDragKind::kAllTabs : TabDragKind::kTab);
-  // We also use fast resize for the source browser window as the source browser
-  // window may also change bounds during dragging.
-  BrowserView* source_browser_view = GetSourceBrowserViewInTabDragging();
-  if (source_browser_view && source_browser_view != browser_view_) {
-    source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kTab);
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  browser_view_->GetWidget()->GetNativeWindow()->SetProperty(
-      ash::kIsDraggingTabsKey, true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserTabStripController::OnStoppedDragging() {
   immersive_reveal_lock_.reset();
-
-  BrowserView* source_browser_view = GetSourceBrowserViewInTabDragging();
-  // Only reset the source window's fast resize bit after the entire drag
-  // ends.
-  if (browser_view_ != source_browser_view) {
-    browser_view_->browser_widget()->SetTabDragKind(TabDragKind::kNone);
-  }
-  if (source_browser_view && !TabDragController::IsActive()) {
-    source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kNone);
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Clear the drag properties unless the drag browser's tabs got merged into
-  // another browser, in which case SplitViewController::TabDragWindowObserver
-  // still needs to read the properties. We detect this case by checking if the
-  // tab strip model is now empty. Since it was non-empty originally and the
-  // drag browser can't have any pending downloads. we know that it's about to
-  // get destroyed anyways.
-  if (!model_->empty()) {
-    browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
-        ash::kIsDraggingTabsKey);
-    browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
-        ash::kTabDraggingSourceWindowKey);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserTabStripController::OnKeyboardFocusedTabChanged(

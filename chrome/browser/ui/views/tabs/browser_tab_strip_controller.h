@@ -91,7 +91,7 @@ class BrowserTabStripController : public TabStripController,
   int HasAvailableDragActions() const override;
   void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
   void CreateNewTab(NewTabTypes context) override;
-  void OnStartedDragging(bool dragging_window) override;
+  void OnStartedDragging() override;
   void OnStoppedDragging() override;
   void OnKeyboardFocusedTabChanged(std::optional<int> index) override;
   std::u16string GetGroupTitle(

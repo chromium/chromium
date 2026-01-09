@@ -175,6 +175,19 @@ void OffsetX(int x_offset, std::vector<gfx::Rect>* rects) {
   }
 }
 
+// Gets the source browser view during a tab dragging. Returns nullptr if there
+// is none.
+BrowserView* GetBrowserViewForContext(const TabDragContext* context) {
+  if (!context) {
+    return nullptr;
+  }
+  gfx::NativeWindow source_window = context->GetWidget()->GetNativeWindow();
+  if (source_window) {
+    return BrowserView::GetBrowserViewForNativeWindow(source_window);
+  }
+  return nullptr;
+}
+
 void UpdateSystemDnDDragImage(TabDragContext* attached_context,
                               const gfx::ImageSkia& image) {
 #if BUILDFLAG(IS_LINUX)
@@ -786,7 +799,7 @@ std::unique_ptr<tabs::TabModel> TabDragController::DetachTabAtForInsertion(
   base::AutoReset<bool> is_removing_last_tab_setter(&is_moving_last_tab_, true);
   std::unique_ptr<tabs::TabModel> detached_tab =
       attached_context_->GetTabStripModel()->DetachTabAtForInsertion(from_idx);
-  attached_context_->DraggedTabsDetached();
+  OnContextDraggedTabsDetached();
 
   return detached_tab;
 }
@@ -1395,7 +1408,7 @@ void TabDragController::AttachImpl() {
 
   // This should be called after ResetSelection() in order to generate
   // bounds correctly. http://crbug.com/836004
-  attached_context_->StartedDragging(views);
+  OnContextStartedDragging(views);
 
   // Make sure the window has capture. This is important so that if activation
   // changes the drag isn't prematurely canceled.
@@ -1477,7 +1490,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
     }
   }
 
-  attached_context_->DraggedTabsDetached();
+  OnContextDraggedTabsDetached();
   attached_context_ = nullptr;
 
   return std::make_tuple(std::move(me), std::move(owned_tabs_and_collections));
@@ -1865,9 +1878,9 @@ void TabDragController::RevertDrag() {
     MaximizeAttachedWindow();
   }
   if (attached_context_ == source_context_) {
-    source_context_->StoppedDragging();
+    OnContextStoppedDragging();
   } else {
-    attached_context_->DraggedTabsDetached();
+    OnContextDraggedTabsDetached();
   }
 
   // If tabs were closed during this drag, the initial selection might include
@@ -2127,7 +2140,7 @@ void TabDragController::CompleteDrag() {
 
   if (current_drag_target_ && current_drag_target_->CanDropTab()) {
     current_drag_target_->HandleTabDrop(*this);
-    attached_context_->StoppedDragging();
+    OnContextStoppedDragging();
 
     // The delegate is expected to handle all tab dragging finalization, and
     // therefore we return here.
@@ -2159,7 +2172,7 @@ void TabDragController::CompleteDrag() {
     }
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
   }
-  attached_context_->StoppedDragging();
+  OnContextStoppedDragging();
 
   // Tabbed PWAs with a home tab should have a home tab in every window.
   // This means when dragging tabs out to create a new window, a home tab
@@ -2819,3 +2832,70 @@ void TabDragController::OnDragDropClientDestroying() {
   drag_drop_client_observation_.Reset();
 }
 #endif  // defined(USE_AURA)
+
+void TabDragController::OnContextStartedDragging(
+    const std::vector<TabSlotView*>& views) {
+  CHECK(attached_context_);
+  const bool dragging_window =
+      views.size() ==
+      static_cast<size_t>(attached_context_->GetTabStripModel()->count());
+  BrowserView* attached_browser_view =
+      GetBrowserViewForContext(attached_context_);
+  CHECK(attached_browser_view);
+  attached_browser_view->browser_widget()->SetTabDragKind(
+      dragging_window ? TabDragKind::kAllTabs : TabDragKind::kTab);
+
+  // Update the source browser as well to ensure fast-resizing is enabled
+  // during dragging.
+  BrowserView* source_browser_view = GetBrowserViewForContext(source_context_);
+  if (source_browser_view && source_browser_view != attached_browser_view) {
+    source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kTab);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  attached_browser_view->GetWidget()->GetNativeWindow()->SetProperty(
+      ash::kIsDraggingTabsKey, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  attached_context_->StartedDragging(views);
+}
+
+void TabDragController::OnContextStoppedDragging() {
+  UpdateBrowserViewsForDragEnd();
+  attached_context_->StoppedDragging();
+}
+
+void TabDragController::OnContextDraggedTabsDetached() {
+  UpdateBrowserViewsForDragEnd();
+  attached_context_->DraggedTabsDetached();
+}
+
+void TabDragController::UpdateBrowserViewsForDragEnd() {
+  CHECK(attached_context_);
+  BrowserView* source_browser_view = GetBrowserViewForContext(source_context_);
+  BrowserView* attached_browser_view =
+      GetBrowserViewForContext(attached_context_);
+  CHECK(attached_browser_view);
+  // Only reset the source window's fast resize bit after the entire drag
+  // ends.
+  if (attached_browser_view != source_browser_view) {
+    attached_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kNone);
+  }
+  if (source_browser_view && !IsActive()) {
+    source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kNone);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Clear the drag properties unless the drag browser's tabs got merged into
+  // another browser, in which case SplitViewController::TabDragWindowObserver
+  // still needs to read the properties. We detect this case by checking if the
+  // tab strip model is now empty. Since it was non-empty originally and the
+  // drag browser can't have any pending downloads. we know that it's about to
+  // get destroyed anyways.
+  if (!attached_context_->GetTabStripModel()->empty()) {
+    attached_browser_view->GetWidget()->GetNativeWindow()->ClearProperty(
+        ash::kIsDraggingTabsKey);
+    attached_browser_view->GetWidget()->GetNativeWindow()->ClearProperty(
+        ash::kTabDraggingSourceWindowKey);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}

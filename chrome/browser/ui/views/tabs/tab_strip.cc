@@ -625,8 +625,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   void StartedDragging(const std::vector<TabSlotView*>& views) override {
     // Let the controller know that the user started dragging tabs.
-    tab_strip_->controller_->OnStartedDragging(
-        views.size() == static_cast<size_t>(tab_strip_->GetModelCount()));
+    tab_strip_->controller_->OnStartedDragging();
 
     // Complete animations to ensure that the previous drag session fully ends
     // before we start the next one. In particular this reparents the dragged
