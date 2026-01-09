@@ -21,6 +21,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/defaults.h"
@@ -72,6 +73,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -2266,10 +2268,27 @@ void BrowserCommandController::UpdateTabRestoreCommandState() {
 void BrowserCommandController::UpdateCommandsForFind() {
   TabStripModel* model = browser_->tab_strip_model();
   int active_index = model->active_index();
+  bool is_actor_overlay_visible = false;
+
+  // If the actor overlay is visible, we disable find and close it if it's open.
+  if (features::kGlicActorUiOverlay.Get()) {
+    if (BrowserView* browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser_)) {
+      if (auto* active_container =
+              browser_view->GetActiveContentsContainerView()) {
+        if (active_container->actor_overlay_web_view()->GetVisible()) {
+          is_actor_overlay_visible = true;
+          if (CanCloseFind(browser_)) {
+            CloseFind(browser_);
+          }
+        }
+      }
+    }
+  }
 
   bool enabled = active_index != TabStripModel::kNoTab &&
                  !model->IsTabBlocked(active_index) &&
-                 !browser_->is_type_devtools();
+                 !browser_->is_type_devtools() && !is_actor_overlay_visible;
 
   command_updater_.UpdateCommandEnabled(IDC_FIND, enabled);
   command_updater_.UpdateCommandEnabled(IDC_FIND_NEXT, enabled);

@@ -81,7 +81,6 @@ if (!is_android) {
       "actor_ui_tab_controller.h",
       "actor_ui_tab_controller_interface.cc",
       "actor_ui_tab_controller_interface.h",
-      "actor_ui_window_controller.cc",
       "actor_ui_window_controller.h",
       "handoff_button_controller.cc",
       "handoff_button_controller.h",
@@ -122,6 +121,22 @@ if (!is_android) {
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
     }
+  }
+
+  source_set("window_controller_impl") {
+    sources = [ "actor_ui_window_controller.cc" ]
+    deps = [
+      ":metrics",
+      ":ui",
+      "//chrome/browser/actor",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
   }
 
   source_set("event_dispatcher") {

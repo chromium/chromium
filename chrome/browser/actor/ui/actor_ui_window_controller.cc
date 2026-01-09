@@ -10,6 +10,8 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -168,6 +170,7 @@ void ActorUiContentsContainerController::OnWebContentsDetached(
 
   if (overlay_) {
     overlay_->CloseUI();
+    UpdateFindInPageCommandState();
   }
 }
 
@@ -209,11 +212,13 @@ void ActorUiContentsContainerController::EnsureOverlayReady(
   }
   if (!is_visible) {
     overlay_->CloseUI();
+    UpdateFindInPageCommandState();
     return;
   }
   overlay_->ShowUI(tabs::TabInterface::GetFromContents(
                        contents_container_view_->web_contents()),
                    runner.Release());
+  UpdateFindInPageCommandState();
 }
 
 void ActorUiContentsContainerController::ApplyOverlayState(
@@ -236,6 +241,12 @@ void ActorUiContentsContainerController::ApplyOverlayState(
     return;
   } else if (state.mouse_down) {
     overlay_->TriggerClickAnimation(runner.Release());
+  }
+}
+
+void ActorUiContentsContainerController::UpdateFindInPageCommandState() {
+  if (auto* command_controller = window_controller_->GetCommandController()) {
+    command_controller->TabStateChanged();
   }
 }
 
@@ -368,4 +379,9 @@ bool ActorUiWindowController::IsToolbarPinned() const {
 
 void ActorUiWindowController::TearDown() {
   contents_container_controllers_.clear();
+}
+
+chrome::BrowserCommandController*
+ActorUiWindowController::GetCommandController() {
+  return browser_window_interface_->GetFeatures().browser_command_controller();
 }
