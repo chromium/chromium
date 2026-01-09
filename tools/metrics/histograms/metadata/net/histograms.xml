@@ -313,6 +313,7 @@ chromium-metrics-reviews@google.com.
     be missing.
   </summary>
   <token key="Operation">
+    <variant name="KeyDeletion" summary="key deletion"/>
     <variant name="MessageSigning" summary="signing"/>
     <variant name="NewKeyCreation" summary="new key creation"/>
     <variant name="WrappedKeyCreation" summary="wrapped key creation"/>

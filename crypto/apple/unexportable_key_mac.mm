@@ -58,6 +58,27 @@ namespace {
 // that shows this value. Therefore, it is left untranslated.
 constexpr char kAttrLabel[] = "Chromium unexportable key";
 
+// Logs `status` to an error histogram capturing that `operation` failed for a
+// key backed by Secure Enclave.
+void LogKeychainOperationError(TPMOperation operation, OSStatus status) {
+  static constexpr char kKeyErrorStatusHistogramFormat[] =
+      "Crypto.SecureEnclaveOperation.Mac.%s.Error";
+  base::UmaHistogramSparse(
+      base::StringPrintf(kKeyErrorStatusHistogramFormat,
+                         OperationToString(operation).c_str()),
+      status);
+}
+
+// Logs `error` to an error histogram capturing that `operation` failed for a
+// key backed by Secure Enclave. Defaults to `errSecCoreFoundationUnknown` if
+// `error` is missing.
+void LogKeychainOperationError(
+    TPMOperation operation,
+    base::apple::ScopedCFTypeRef<CFErrorRef>& error) {
+  LogKeychainOperationError(operation, error ? CFErrorGetCode(error.get())
+                                             : errSecCoreFoundationUnknown);
+}
+
 // Returns a vector of keychain items matching the given attributes or an
 // OSStatus error code in case of failure.
 base::expected<std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>,
@@ -177,8 +198,14 @@ bool DeleteKey(CFDictionaryRef key_attributes) {
     }
   }
 
-  return crypto::apple::KeychainV2::GetInstance().ItemDelete(
-             NSToCFPtrCast(delete_query)) == errSecSuccess;
+  if (OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemDelete(
+          NSToCFPtrCast(delete_query));
+      status != errSecSuccess) {
+    LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
+    return false;
+  }
+
+  return true;
 }
 
 base::Time GetCreationTimeFromAttributes(CFDictionaryRef key_attributes) {
@@ -197,27 +224,6 @@ std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
     return std::nullopt;
   }
   return imported->ToSubjectPublicKeyInfo();
-}
-
-// Logs `status` to an error histogram capturing that `operation` failed for a
-// key backed by Secure Enclave.
-void LogKeychainOperationError(TPMOperation operation, OSStatus status) {
-  static constexpr char kKeyErrorStatusHistogramFormat[] =
-      "Crypto.SecureEnclaveOperation.Mac.%s.Error";
-  base::UmaHistogramSparse(
-      base::StringPrintf(kKeyErrorStatusHistogramFormat,
-                         OperationToString(operation).c_str()),
-      status);
-}
-
-// Logs `error` to an error histogram capturing that `operation` failed for a
-// key backed by Secure Enclave. Defaults to `errSecCoreFoundationUnknown` if
-// `error` is missing.
-void LogKeychainOperationError(
-    TPMOperation operation,
-    base::apple::ScopedCFTypeRef<CFErrorRef>& error) {
-  LogKeychainOperationError(operation, error ? CFErrorGetCode(error.get())
-                                             : errSecCoreFoundationUnknown);
 }
 
 // UnexportableSigningKeyMac is an implementation of the UnexportableSigningKey
@@ -528,7 +534,10 @@ bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
   ASSIGN_OR_RETURN(
       std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
       FindUnexportableKeys(objc_storage_->keychain_access_group_, wrapped_key),
-      [](OSStatus) { return false; });
+      [](OSStatus status) {
+        LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
+        return false;
+      });
 
   FilterKeysByApplicationTag(
       keys, base::SysNSStringToUTF8(objc_storage_->application_tag_),
@@ -536,6 +545,31 @@ bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
 
   return std::ranges::any_of(
       keys, [](const auto& key) { return DeleteKey(key.get()); });
+}
+
+std::optional<size_t> UnexportableKeyProviderMac::DeleteAllSigningKeysSlowly() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  ASSIGN_OR_RETURN(
+      std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
+      FindUnexportableKeys(objc_storage_->keychain_access_group_),
+      [](OSStatus status) {
+        LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
+        return std::nullopt;
+      });
+
+  const std::string application_tag =
+      base::SysNSStringToUTF8(objc_storage_->application_tag_);
+  FilterKeysByApplicationTag(keys, application_tag,
+                             // As a safeguard, don't perform prefix matching if
+                             // the application_tag used in the query was empty.
+                             application_tag.empty()
+                                 ? ApplicationTagMatching::kEquals
+                                 : ApplicationTagMatching::kStartsWith);
+
+  return std::ranges::count_if(
+      keys, [&](const auto& key) { return DeleteKey(key.get()); });
 }
 
 std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
@@ -556,28 +590,6 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
   }
 #endif  // !BUILDFLAG(IS_IOS)
   return std::make_unique<UnexportableKeyProviderMac>(std::move(config));
-}
-
-std::optional<size_t> UnexportableKeyProviderMac::DeleteAllSigningKeysSlowly() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  ASSIGN_OR_RETURN(
-      std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
-      FindUnexportableKeys(objc_storage_->keychain_access_group_),
-      [](OSStatus) { return std::nullopt; });
-
-  const std::string application_tag =
-      base::SysNSStringToUTF8(objc_storage_->application_tag_);
-  FilterKeysByApplicationTag(keys, application_tag,
-                             // As a safeguard, don't perform prefix matching if
-                             // the application_tag used in the query was empty.
-                             application_tag.empty()
-                                 ? ApplicationTagMatching::kEquals
-                                 : ApplicationTagMatching::kStartsWith);
-
-  return std::ranges::count_if(
-      keys, [&](const auto& key) { return DeleteKey(key.get()); });
 }
 
 }  // namespace crypto::apple

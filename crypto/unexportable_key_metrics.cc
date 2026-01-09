@@ -294,6 +294,8 @@ std::string OperationToString(TPMOperation operation) {
       return "WrappedKeyExport";
     case TPMOperation::kSelectAlgorithm:
       return "SelectAlgorithm";
+    case TPMOperation::kKeyDeletion:
+      return "KeyDeletion";
   }
 }
 
@@ -309,11 +311,11 @@ std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
 }
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
 }
 
 }  // namespace crypto
