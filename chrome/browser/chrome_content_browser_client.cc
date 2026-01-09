@@ -1306,6 +1306,12 @@ ProfileSelections GetHumanProfileSelections() {
       .Build();
 }
 
+bool IsPrewarmUrl(const GURL& url, const url::Origin& dse_origin) {
+  const GURL prewarm_url = GURL(features::kPrewarmUrl.Get());
+  return prewarm_url.is_valid() && url == prewarm_url &&
+         dse_origin.IsSameOriginWith(prewarm_url);
+}
+
 bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
@@ -1326,12 +1332,8 @@ bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
   }
 
   if (base::FeatureList::IsEnabled(features::kConsiderDSEWarmUpPageAsSRP)) {
-    const GURL prewarm_url = GURL(features::kPrewarmUrl.Get());
-    if (prewarm_url.is_valid() && url == prewarm_url &&
-        template_url_service->GetDefaultSearchProviderOrigin().IsSameOriginWith(
-            prewarm_url)) {
-      return true;
-    }
+    return IsPrewarmUrl(url,
+                        template_url_service->GetDefaultSearchProviderOrigin());
   }
 
   return false;
@@ -3671,7 +3673,21 @@ bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
     return false;
   }
 
-  return IsDefaultSearchEngine(profile, url);
+  if (!IsDefaultSearchEngine(profile, url)) {
+    return false;
+  }
+
+  // Prewarm page can be treated as a DSE. As we don't want to enable synthetic
+  // response on the prewarm page, manually exclude it.
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  CHECK(template_url_service);
+  if (IsPrewarmUrl(url,
+                   template_url_service->GetDefaultSearchProviderOrigin())) {
+    return false;
+  }
+
+  return true;
 }
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
