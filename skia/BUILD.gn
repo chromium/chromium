@@ -573,8 +573,6 @@ component("skia") {
       deps += [ ":skia_ganesh_metal" ]
     }
     deps += [ "//gpu/config:workaround_list" ]
-  } else {
-    sources += skia_no_slug_srcs
   }
 
   if (skia_support_pdf) {
