@@ -554,6 +554,9 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.TabbedMode"
             android:exported="true"
             android:launchMode="singleTask"
+            {% if is_desktop_android == "true" %}
+            android:persistableMode="persistAcrossReboots"
+            {% endif %}
             {# We can only use blocks once in Jinja, for future substitutions we use
             self.supports_video_persistence(). #}
             {% block supports_video_persistence %}
