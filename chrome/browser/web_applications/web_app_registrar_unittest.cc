@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/contains.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -464,11 +466,10 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   const std::optional<SkColor> theme_color = 0xAABBCCDD;
   const auto display_mode = DisplayMode::kMinimalUi;
   const auto user_display_mode = mojom::UserDisplayMode::kStandalone;
-  std::vector<DisplayMode> display_mode_override;
 
-
-  display_mode_override.push_back(DisplayMode::kMinimalUi);
-  display_mode_override.push_back(DisplayMode::kStandalone);
+  std::vector<DisplayOverride> display_mode_override = {
+      DisplayOverride::Create(DisplayMode::kMinimalUi),
+      DisplayOverride::Create(DisplayMode::kStandalone)};
 
   auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
   web_app->AddSource(WebAppManagement::kSync);
@@ -477,7 +478,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   web_app->SetThemeColor(theme_color);
   web_app->SetDisplayMode(display_mode);
   web_app->SetUserDisplayMode(user_display_mode);
-  web_app->SetDisplayModeOverride(display_mode_override);
+  web_app->SetDisplayModeOverride(std::move(display_mode_override));
   web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   webapps::AppId app_id = web_app->app_id();
 
@@ -1162,9 +1163,9 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeOverride) {
 
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
-  std::vector<DisplayMode> display_mode_overrides;
-  display_mode_overrides.push_back(DisplayMode::kFullscreen);
-  display_mode_overrides.push_back(DisplayMode::kMinimalUi);
+  std::vector<DisplayOverride> display_mode_overrides = {
+      DisplayOverride::Create(DisplayMode::kFullscreen),
+      DisplayOverride::Create(DisplayMode::kMinimalUi)};
 
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
@@ -1189,9 +1190,9 @@ TEST_F(WebAppRegistrarTest,
 
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
-  std::vector<DisplayMode> display_mode_overrides;
-  display_mode_overrides.push_back(DisplayMode::kFullscreen);
-  display_mode_overrides.push_back(DisplayMode::kMinimalUi);
+  std::vector<DisplayOverride> display_mode_overrides = {
+      DisplayOverride::Create(DisplayMode::kFullscreen),
+      DisplayOverride::Create(DisplayMode::kMinimalUi)};
 
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
@@ -1908,7 +1909,11 @@ class WebAppRegistrarDisplayModeTest
     web_app->SetDisplayMode(GetParam());
     web_app->SetUserDisplayMode(user_display_mode);
     web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
-    web_app->SetDisplayModeOverride(std::move(display_mode_overrides));
+    std::vector<DisplayOverride> override_items;
+    for (const auto& mode : display_mode_overrides) {
+      override_items.push_back(DisplayOverride::Create(mode));
+    }
+    web_app->SetDisplayModeOverride(std::move(override_items));
 
     if (is_isolated) {
       web_app->SetIsolationData(

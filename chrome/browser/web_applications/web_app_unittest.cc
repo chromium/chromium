@@ -20,8 +20,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -40,7 +42,10 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/liburlpattern/part.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -370,7 +375,7 @@ TEST(WebAppTest, RandomAppAsDebugValue_NoCrash) {
         test::CreateRandomWebApp(params)->AsDebugValue();
 
     EXPECT_TRUE(web_app_debug_value.is_dict());
-    EXPECT_TRUE(base::ToString(web_app_debug_value).length() > 10);
+    EXPECT_GT(base::ToString(web_app_debug_value).length(), 10ul);
   }
 }
 
@@ -546,6 +551,30 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
       debug_app.FindList("permissions_policy");
   EXPECT_TRUE(debug_permissions_policy != nullptr);
   EXPECT_EQ(*debug_permissions_policy, expected_permissions_policy);
+}
+
+TEST(WebAppTest, DisplayOverrideDebugValue) {
+  GURL start_url("https://example.com");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
+
+  blink::SafeUrlPattern pattern;
+  pattern.pathname = {liburlpattern::Part(
+      liburlpattern::PartType::kFixed, "/foo", liburlpattern::Modifier::kNone)};
+
+  app.SetDisplayModeOverride({DisplayOverride::Create(DisplayMode::kStandalone),
+                              DisplayOverride::CreateUnframed({pattern})});
+
+  base::Value debug_app = app.AsDebugValue();
+
+  base::Value::List* debug_display_override =
+      debug_app.GetDict().FindList("display_override");
+  ASSERT_THAT(debug_display_override, testing::NotNull());
+  EXPECT_THAT(*debug_display_override,
+              testing::ElementsAre("standalone", base::test::IsJson(R"({
+                "display_mode": "unframed",
+                "url_patterns": [{ "pathname": "/foo" }]
+              })")));
 }
 
 }  // namespace web_app

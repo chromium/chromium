@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -297,7 +298,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
           GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+  web_app_install_info->display_override = {
+      web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
@@ -342,7 +344,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
           GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+  web_app_install_info->display_override = {
+      web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 

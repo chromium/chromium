@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <memory>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -77,6 +78,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -3595,7 +3597,8 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+    web_app_info->display_override = {
+        web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
     web_app_info->title = u"A Web App";
     web_app_info->tab_strip = std::move(tab_strip);
     return web_app::test::InstallWebApp(profile, std::move(web_app_info));

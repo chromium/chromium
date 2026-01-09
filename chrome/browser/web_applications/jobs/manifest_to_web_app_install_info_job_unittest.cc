@@ -21,6 +21,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "third_party/liburlpattern/part.h"
@@ -260,10 +260,11 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   // Verify basic web app fields populated.
   EXPECT_EQ(u"Foo App", web_app_info->title);
   EXPECT_EQ(DisplayMode::kStandalone, web_app_info->display_mode);
-  ASSERT_EQ(3u, web_app_info->display_override.size());
-  EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info->display_override[0]);
-  EXPECT_EQ(DisplayMode::kStandalone, web_app_info->display_override[1]);
-  EXPECT_EQ(DisplayMode::kBorderless, web_app_info->display_override[2]);
+  EXPECT_THAT(
+      web_app_info->display_override,
+      testing::ElementsAre(DisplayOverride::Create(DisplayMode::kMinimalUi),
+                           DisplayOverride::Create(DisplayMode::kStandalone),
+                           DisplayOverride::CreateUnframed({FooUrlPattern()})));
   EXPECT_EQ(start_url_, web_app_info->start_url());
   EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(start_url_),
             web_app_info->manifest_id());

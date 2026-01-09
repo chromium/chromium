@@ -1836,8 +1836,14 @@ std::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
 std::vector<DisplayMode> WebAppRegistrar::GetAppDisplayModeOverride(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->display_mode_override()
-                 : std::vector<DisplayMode>();
+  if (!web_app) {
+    return std::vector<DisplayMode>();
+  }
+  std::vector<DisplayMode> display_mode_overrides;
+  for (const auto& item : web_app->display_mode_override()) {
+    display_mode_overrides.push_back(item.display_mode());
+  }
+  return display_mode_overrides;
 }
 
 base::flat_set<ScopeExtensionInfo> WebAppRegistrar::GetScopeExtensions(

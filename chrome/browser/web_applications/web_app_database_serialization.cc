@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_launch_handler.pb.h"
@@ -82,52 +83,6 @@ namespace {
 // Records the result of parsing a WebApp protobuf object into a WebApp class.
 void RecordProtoParseResult(ProtoParseResult result) {
   base::UmaHistogramEnumeration("WebAppProto.Parse.Result", result);
-}
-
-DisplayMode ToMojomDisplayMode(proto::WebApp::DisplayMode display_mode) {
-  switch (display_mode) {
-    case proto::WebApp::DISPLAY_MODE_UNSPECIFIED:
-      return DisplayMode::kUndefined;
-    case proto::WebApp::DISPLAY_MODE_BROWSER:
-      return DisplayMode::kBrowser;
-    case proto::WebApp::DISPLAY_MODE_MINIMAL_UI:
-      return DisplayMode::kMinimalUi;
-    case proto::WebApp::DISPLAY_MODE_STANDALONE:
-      return DisplayMode::kStandalone;
-    case proto::WebApp::DISPLAY_MODE_FULLSCREEN:
-      return DisplayMode::kFullscreen;
-    case proto::WebApp::DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY:
-      return DisplayMode::kWindowControlsOverlay;
-    case proto::WebApp::DISPLAY_MODE_TABBED:
-      return DisplayMode::kTabbed;
-    case proto::WebApp::DISPLAY_MODE_BORDERLESS:
-      return DisplayMode::kBorderless;
-    case proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE:
-      return DisplayMode::kPictureInPicture;
-  }
-}
-
-proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
-  switch (display_mode) {
-    case DisplayMode::kBrowser:
-      return proto::WebApp::DISPLAY_MODE_BROWSER;
-    case DisplayMode::kMinimalUi:
-      return proto::WebApp::DISPLAY_MODE_MINIMAL_UI;
-    case DisplayMode::kUndefined:
-      NOTREACHED();
-    case DisplayMode::kStandalone:
-      return proto::WebApp::DISPLAY_MODE_STANDALONE;
-    case DisplayMode::kFullscreen:
-      return proto::WebApp::DISPLAY_MODE_FULLSCREEN;
-    case DisplayMode::kWindowControlsOverlay:
-      return proto::WebApp::DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY;
-    case DisplayMode::kTabbed:
-      return proto::WebApp::DISPLAY_MODE_TABBED;
-    case DisplayMode::kBorderless:
-      return proto::WebApp::DISPLAY_MODE_BORDERLESS;
-    case DisplayMode::kPictureInPicture:
-      return proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE;
-  }
 }
 
 proto::ShareTarget_Method MethodToProto(apps::ShareTarget::Method method) {
@@ -673,10 +628,19 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     web_app->SetDisplayMode(ToMojomDisplayMode(proto.display_mode()));
   }
 
-  std::vector<DisplayMode> display_mode_override;
-  for (int i = 0; i < proto.display_mode_override_size(); i++) {
-    proto::WebApp::DisplayMode display_mode = proto.display_mode_override(i);
-    display_mode_override.push_back(ToMojomDisplayMode(display_mode));
+  std::vector<DisplayOverride> display_mode_override;
+  for (const auto& item_proto : proto.display_overrides()) {
+    if (auto item = DisplayOverride::Parse(item_proto); item.has_value()) {
+      display_mode_override.push_back(std::move(item.value()));
+    } else {
+      RecordProtoParseResult(
+          ProtoParseResult::kInvalidDisplayOverrideUrlPatterns);
+    }
+  }
+  // The deprecated `display_mode_override` should be empty after the v6
+  // migration. Fail parsing if it is not empty.
+  if (proto.display_mode_override_size() > 0) {
+    return nullptr;
   }
   web_app->SetDisplayModeOverride(std::move(display_mode_override));
 
@@ -1663,9 +1627,8 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
         ToWebAppProtoDisplayMode(web_app.display_mode()));
   }
 
-  for (const DisplayMode& display_mode : web_app.display_mode_override()) {
-    local_data->add_display_mode_override(
-        ToWebAppProtoDisplayMode(display_mode));
+  for (const DisplayOverride& item : web_app.display_mode_override()) {
+    *local_data->add_display_overrides() = item.ToProto();
   }
 
   local_data->set_description(web_app.untranslated_description());

@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -129,7 +130,8 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+    web_app_info->display_override = {
+        web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
     return test::InstallWebApp(profile, std::move(web_app_info));
   }
 

@@ -6,13 +6,17 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -26,6 +30,7 @@
 namespace web_app {
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::IsNull;
 using ::testing::NotNull;
 
@@ -1332,6 +1337,92 @@ TEST_F(WebAppDatabaseSerializationTest,
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_DeprecatedDisplayModeOverridePresent) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+
+  // Set the deprecated `display_mode_override` field. The new field is empty.
+  proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
+  proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_STANDALONE);
+  ASSERT_EQ(0, proto.display_overrides_size());
+
+  // Parse should fail as migration should have cleared the deprecated field.
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  ASSERT_THAT(web_app, IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_DisplayOverridesAndDeprecatedFieldPresent) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+
+  auto* override_item = proto.add_display_overrides();
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
+
+  proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
+
+  // Parse should fail as migration should have cleared the deprecated field.
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  EXPECT_THAT(web_app, IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_InvalidUrlPatternsInDisplayOverride) {
+  base::HistogramTester tester;
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+
+  auto* override_item = proto.add_display_overrides();
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
+  auto* pattern = override_item->add_url_patterns();
+  auto* part = pattern->add_pathname();
+  // `PART_TYPE_UNSPECIFIED` causes `ToUrlPattern` to fail.
+  part->set_part_type(proto::UrlPatternPart::PART_TYPE_UNSPECIFIED);
+  part->set_value("*");
+  part->set_modifier(proto::UrlPatternPart::MODIFIER_NONE);
+
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  ASSERT_THAT(web_app, NotNull());
+  EXPECT_EQ(0u, web_app->display_mode_override().size());
+
+  EXPECT_THAT(
+      tester.GetAllSamples("WebAppProto.Parse.Result"),
+      base::BucketsAre(
+          base::Bucket(ProtoParseResult::kInvalidDisplayOverrideUrlPatterns, 1),
+          base::Bucket(ProtoParseResult::kSuccess, 1)));
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_DisplayOverridesWithUrlPatterns) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+
+  auto* override_item = proto.add_display_overrides();
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
+  auto* pattern_proto = override_item->add_url_patterns();
+  auto* part = pattern_proto->add_pathname();
+  part->set_part_type(proto::UrlPatternPart::PART_TYPE_FULL_WILDCARD);
+  part->set_value("*");
+  part->set_modifier(proto::UrlPatternPart::MODIFIER_NONE);
+
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  ASSERT_THAT(web_app, NotNull());
+
+  const std::vector<DisplayOverride>& overrides =
+      web_app->display_mode_override();
+  ASSERT_EQ(1u, overrides.size());
+  EXPECT_EQ(DisplayMode::kBorderless, overrides[0].display_mode());
+  ASSERT_EQ(1u, overrides[0].url_patterns().size());
+
+  std::unique_ptr<proto::WebApp> round_trip_proto = WebAppToProto(*web_app);
+  ASSERT_THAT(round_trip_proto, NotNull());
+  ASSERT_EQ(1, round_trip_proto->display_overrides_size());
+  EXPECT_EQ(proto::WebApp::DISPLAY_MODE_BORDERLESS,
+            round_trip_proto->display_overrides(0).display_mode());
+  ASSERT_EQ(1, round_trip_proto->display_overrides(0).url_patterns_size());
 }
 
 }  // namespace

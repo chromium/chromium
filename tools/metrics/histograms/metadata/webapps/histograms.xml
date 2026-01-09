@@ -1928,6 +1928,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Migrations.DisplayModeOverrideToDisplayOverrides"
+    units="count" expires_after="2026-12-19">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps whose display_mode_override field was
+    migrated to the new display_overrides field during database migration v5 to
+    v6. Migration occurs once per user profile that existed before database
+    version 6 was introduced. It occurs on database open, which happens on
+    profile startup.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Migrations.InstallSourceAddUserInstalled" units="apps"
     expires_after="2026-12-19">
   <owner>dmurph@chromium.org</owner>

@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -966,8 +967,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   for (int i = 0; i < num_display_mode_override_tries; i++) {
     display_mode_override.insert(display_modes[random.next_uint(4)]);
   }
-  app->SetDisplayModeOverride(std::vector<DisplayMode>(
-      display_mode_override.begin(), display_mode_override.end()));
+  std::vector<DisplayOverride> override_items;
+  for (DisplayMode display_mode : display_mode_override) {
+    override_items.push_back(
+        display_mode == DisplayMode::kBorderless && random.next_bool()
+            ? DisplayOverride::CreateUnframed(CreateRandomUrlPatterns(random))
+            : DisplayOverride::Create(display_mode));
+  }
+  app->SetDisplayModeOverride(std::move(override_items));
 
   if (random.next_bool()) {
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));

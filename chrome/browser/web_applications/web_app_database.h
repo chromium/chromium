@@ -151,6 +151,12 @@ class WebAppDatabase {
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
 
+  // Migrates the deprecated `display_mode_override` field to the new
+  // `display_overrides` field.
+  void MigrateDisplayModeOverrideToDisplayOverrides(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::DataTypeStore> store);

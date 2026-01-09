@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -146,7 +147,7 @@ void WebAppDatabase::Write(
 
 // static
 int WebAppDatabase::GetCurrentDatabaseVersion() {
-  return 5;
+  return 6;
 }
 
 WebAppDatabase::ProtobufState::ProtobufState() = default;
@@ -235,6 +236,14 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
     MigratePendingUpdateInfoClearIconMetadataIfCorrupted(state, changed_apps);
     base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 5);
     state.metadata.set_version(5);
+    did_change_metadata = true;
+  }
+
+  // Upgrade from version 5 to version 6.
+  if (state.metadata.version() < 6 && GetCurrentDatabaseVersion() >= 6) {
+    MigrateDisplayModeOverrideToDisplayOverrides(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 6);
+    state.metadata.set_version(6);
     did_change_metadata = true;
   }
 
@@ -638,6 +647,37 @@ void WebAppDatabase::MigratePendingUpdateInfoClearIconMetadataIfCorrupted(
   base::UmaHistogramCounts1000(
       "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted",
       corrupted_apps_count);
+}
+
+void WebAppDatabase::MigrateDisplayModeOverrideToDisplayOverrides(
+    ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 5 to version 6.
+  CHECK_LT(state.metadata.version(), 6);
+  int apps_migrated_count = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    if (app_proto.display_mode_override_size() == 0) {
+      // This app does not have the deprecated field, nothing to migrate.
+      continue;
+    }
+
+    // Ignore the deprecated field if the new field is set.
+    if (app_proto.display_overrides_size() == 0) {
+      for (int i = 0; i < app_proto.display_mode_override_size(); ++i) {
+        auto old_mode = app_proto.display_mode_override(i);
+        auto* new_item = app_proto.add_display_overrides();
+        new_item->set_display_mode(old_mode);
+      }
+    }
+
+    // At this point both fields are non-empty. Clear the deprecated field.
+    app_proto.clear_display_mode_override();
+    changed_apps.insert(app_id);
+    apps_migrated_count++;
+  }
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.DisplayModeOverrideToDisplayOverrides",
+      apps_migrated_count);
 }
 
 void WebAppDatabase::OnDatabaseOpened(

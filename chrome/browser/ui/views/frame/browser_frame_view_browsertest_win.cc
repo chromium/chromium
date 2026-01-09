@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -230,7 +231,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   }
 
   std::optional<SkColor> theme_color_ = SK_ColorBLUE;
-  std::vector<blink::mojom::DisplayMode> display_override_ = {};
+  std::vector<web_app::DisplayOverride> display_override_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameViewWin, AcrossTasksDanglingUntriaged> frame_view_ =
@@ -326,7 +327,8 @@ class TabbedWebAppBrowserFrameViewWinTest
 
 IN_PROC_BROWSER_TEST_F(TabbedWebAppBrowserFrameViewWinTest,
                        TabbedWebAppIconInTitlebar) {
-  display_override_ = {blink::mojom::DisplayMode::kTabbed};
+  display_override_ = {
+      web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
   InstallAndLaunchWebApp();
 
   ASSERT_FALSE(frame_view_->window_icon_for_testing()->GetVisible());
@@ -362,8 +364,9 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
                          .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
                              embedded_test_server(), &temp_dir_);
 
-    std::vector<blink::mojom::DisplayMode> display_overrides = {
-        blink::mojom::DisplayMode::kWindowControlsOverlay};
+    std::vector<web_app::DisplayOverride> display_overrides = {
+        web_app::DisplayOverride::Create(
+            blink::mojom::DisplayMode::kWindowControlsOverlay)};
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();

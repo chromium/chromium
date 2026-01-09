@@ -695,6 +695,7 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="InvalidWebAppUnvalidatedMigrationSource"/>
   <int value="67" label="InvalidPendingMigrationInfo"/>
   <int value="68" label="InvalidWebAppValidatedMigrationSource"/>
+  <int value="69" label="InvalidDisplayOverrideUrlPatterns"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_app_database_serialization.h:ProtoParseResult) -->

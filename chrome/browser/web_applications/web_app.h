@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -127,7 +128,7 @@ class WebApp {
         ResolvePlatformSpecificUserDisplayMode(sync_proto()));
   }
 
-  const std::vector<DisplayMode>& display_mode_override() const {
+  const std::vector<DisplayOverride>& display_mode_override() const {
     return display_mode_override_;
   }
 
@@ -462,7 +463,8 @@ class WebApp {
   void SetDisplayMode(DisplayMode display_mode);
   // Sets the UserDisplayMode for the current platform (CrOS or default).
   void SetUserDisplayMode(mojom::UserDisplayMode user_display_mode);
-  void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
+  void SetDisplayModeOverride(
+      std::vector<DisplayOverride> display_mode_override);
   void SetBorderlessUrlPatterns(
       std::vector<blink::SafeUrlPattern> borderless_url_patterns);
   void SetWebAppChromeOsData(std::optional<WebAppChromeOsData> chromeos_data);
@@ -618,7 +620,7 @@ class WebApp {
   std::optional<SkColor> background_color_;
   std::optional<SkColor> dark_mode_background_color_;
   DisplayMode display_mode_ = DisplayMode::kUndefined;
-  std::vector<DisplayMode> display_mode_override_;
+  std::vector<DisplayOverride> display_mode_override_;
   std::vector<blink::SafeUrlPattern> borderless_url_patterns_;
   std::optional<WebAppChromeOsData> chromeos_data_;
   proto::InstallState install_state_ =

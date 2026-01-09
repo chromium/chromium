@@ -32,6 +32,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -711,7 +712,10 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
     install_info().display_mode = manifest_->display;
   }
   for (const auto& override_item : manifest_->display_override) {
-    install_info().display_override.push_back(override_item.display());
+    install_info().display_override.push_back(
+        override_item.display() == DisplayMode::kBorderless
+            ? DisplayOverride::CreateUnframed(override_item.url_patterns())
+            : DisplayOverride::Create(override_item.display()));
     if (override_item.display() == DisplayMode::kBorderless &&
         !override_item.url_patterns().empty()) {
       // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.

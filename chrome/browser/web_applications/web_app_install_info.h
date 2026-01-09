@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/localized_text.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -390,7 +391,7 @@ struct WebAppInstallInfo {
   blink::mojom::DisplayMode display_mode = blink::mojom::DisplayMode::kBrowser;
 
   // App preference to control display fallback ordering
-  std::vector<blink::mojom::DisplayMode> display_override;
+  std::vector<web_app::DisplayOverride> display_override;
 
   // User preference for whether the app should be opened as a tab or in an app
   // window. Must be either kBrowser or kStandalone, this will be checked by

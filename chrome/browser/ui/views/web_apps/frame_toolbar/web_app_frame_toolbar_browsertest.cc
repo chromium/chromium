@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -1158,8 +1159,6 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
 
   webapps::AppId InstallAndLaunchWCOWebApp(GURL start_url,
                                            std::u16string app_title) {
-    std::vector<blink::mojom::DisplayMode> display_overrides;
-    display_overrides.push_back(web_app::DisplayMode::kWindowControlsOverlay);
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -1167,7 +1166,8 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app_info->display_override = display_overrides;
+    web_app_info->display_override = {web_app::DisplayOverride::Create(
+        web_app::DisplayMode::kWindowControlsOverlay)};
 
     return helper()->InstallAndLaunchCustomWebApp(
         browser(), std::move(web_app_info), start_url);

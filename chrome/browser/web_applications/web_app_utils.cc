@@ -10,14 +10,19 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -63,8 +68,12 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/liburlpattern/options.h"
+#include "third_party/liburlpattern/part.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -151,8 +160,8 @@ class AppIconFetcherTask : public content::WebContentsObserver {
 
   void OnIconFetched(int fetched_size,
                      std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-    DCHECK(icon_bitmaps.size() == 1);
-    DCHECK(icon_bitmaps.begin()->first == fetched_size);
+    DCHECK_EQ(icon_bitmaps.size(), 1ul);
+    DCHECK_EQ(icon_bitmaps.begin()->first, fetched_size);
     if (icon_bitmaps.size() == 0) {
       delete this;
       return;

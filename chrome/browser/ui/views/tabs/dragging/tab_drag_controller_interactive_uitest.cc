@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -3972,7 +3973,8 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
     web_app_info->title = u"A tabbed web app";
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+    web_app_info->display_override = {
+        web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
     if (add_home_tab) {
       blink::Manifest::TabStrip manifest_tab_strip;
       manifest_tab_strip.home_tab = blink::Manifest::HomeTabParams();
