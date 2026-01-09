@@ -27,10 +27,16 @@ def __platform_properties(ctx):
         },
     }
 
+def __configs(ctx):
+    if "reapi_address" in ctx.flags:
+        if ctx.flags["reapi_address"] != "remotebuildexecution.googleapis.com:443":
+            return []
+    return [
+        "googlechrome",
+    ]
+
 backend = module(
     "backend",
     platform_properties = __platform_properties,
-    configs = [
-        "googlechrome",
-    ],
+    configs = __configs,
 )

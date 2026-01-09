@@ -61,7 +61,7 @@ def __get(ctx, key):
             if cfg == "cog":
                 onCog = True
     if hasattr(backend, "configs"):
-        if key in backend.configs:
+        if key in backend.configs(ctx):
             return True
     if onCog:
         if disableRemoteOnCog:
