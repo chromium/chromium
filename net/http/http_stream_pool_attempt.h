@@ -23,6 +23,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_stream_pool.h"
 #include "net/socket/tls_stream_attempt.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config.h"
 
 namespace net {
@@ -72,6 +73,12 @@ class HttpStreamPool::Attempt {
     virtual void OnStreamSocketReady(Attempt* attempt,
                                      std::unique_ptr<StreamSocket> stream) = 0;
     virtual void OnAttemptFailure(Attempt* attempt, int rv) = 0;
+    virtual void OnCertificateError(Attempt* attempt,
+                                    int rv,
+                                    SSLInfo ssl_info) = 0;
+    virtual void OnNeedsClientCertificate(
+        Attempt* attempt,
+        scoped_refptr<SSLCertRequestInfo> cert_info) = 0;
   };
 
   Attempt(Delegate& delegate, const StreamAttemptParams& stream_attempt_params);

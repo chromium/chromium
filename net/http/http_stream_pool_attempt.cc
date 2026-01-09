@@ -9,6 +9,8 @@
 #include <ranges>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -35,6 +37,7 @@
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/ssl/ssl_config.h"
+#include "net/ssl/ssl_info.h"
 
 namespace net {
 
@@ -373,19 +376,43 @@ void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
 void HttpStreamPool::Attempt::HandleSingleFailure(
     std::unique_ptr<TcpAttempt> attempt,
     int rv) {
-  most_recent_attempt_failure_ = {rv, attempt->ip_endpoint()};
-
-  attempt.reset();
-
   CHECK_NE(rv, OK);
   CHECK_NE(rv, ERR_IO_PENDING);
-  // If the error is fatal, we should notify the delegate immediately instead of
-  // trying further endpoints.
-  // TODO(crbug.com/457478038): Handle following fatal errors:
-  // - ERR_SSL_CLIENT_AUTH_CERT_NEEDED
-  // - Certificate errors
-  CHECK_NE(rv, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  CHECK(!IsCertificateError(rv));
+
+  most_recent_attempt_failure_ = {rv, attempt->ip_endpoint()};
+
+  // If the error is fatal, i.e., if the attempt requires a client certificate
+  // or a certificate error, we should notify the delegate immediately instead
+  // of trying further endpoints.
+  if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+    scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info =
+        attempt->stream_attempt().GetCertRequestInfo();
+    CHECK(ssl_cert_request_info);
+    attempt.reset();
+
+    base::WeakPtr<Attempt> weak_this = weak_ptr_factory_.GetWeakPtr();
+    delegate_->OnNeedsClientCertificate(this, std::move(ssl_cert_request_info));
+    // `this` is deleted.
+    CHECK(!weak_this);
+    return;
+  }
+
+  if (IsCertificateError(rv)) {
+    CHECK(attempt->stream_attempt().stream_socket());
+    SSLInfo ssl_info;
+    bool has_ssl_info =
+        attempt->stream_attempt().stream_socket()->GetSSLInfo(&ssl_info);
+    CHECK(has_ssl_info);
+    attempt.reset();
+
+    base::WeakPtr<Attempt> weak_this = weak_ptr_factory_.GetWeakPtr();
+    delegate_->OnCertificateError(this, rv, ssl_info);
+    // `this` is deleted.
+    CHECK(!weak_this);
+    return;
+  }
+
+  attempt.reset();
 
   MaybeAttempt();
   // Be careful of `this` may be deleted at this point.

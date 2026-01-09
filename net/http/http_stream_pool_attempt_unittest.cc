@@ -29,7 +29,9 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/ssl_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/scheme_host_port.h"
@@ -115,6 +117,15 @@ class TestAttemptDelegate final
     return negotiated_protocol_.value();
   }
 
+  scoped_refptr<const SSLCertRequestInfo> GetSSLCertRequestInfo() const {
+    return ssl_cert_request_info_;
+  }
+
+  const SSLInfo& GetCertErrorSSLInfo() const {
+    CHECK(cert_error_ssl_info_.has_value()) << "SSLInfo is not set";
+    return *cert_error_ssl_info_;
+  }
+
   // HttpStreamPool::Attempt::Delegate implementation:
 
   const HttpStreamKey& GetHttpStreamKey() const override { return *key_; }
@@ -145,6 +156,22 @@ class TestAttemptDelegate final
 
   void OnAttemptFailure(HttpStreamPool::Attempt* attempt, int rv) override {
     SetResult(rv);
+  }
+
+  void OnCertificateError(HttpStreamPool::Attempt* attempt,
+                          int rv,
+                          SSLInfo ssl_info) override {
+    CHECK(!cert_error_ssl_info_);
+    cert_error_ssl_info_ = ssl_info;
+    SetResult(rv);
+  }
+
+  void OnNeedsClientCertificate(
+      HttpStreamPool::Attempt* attempt,
+      scoped_refptr<SSLCertRequestInfo> cert_info) override {
+    CHECK(!ssl_cert_request_info_);
+    ssl_cert_request_info_ = cert_info;
+    SetResult(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   }
 
   // HostResolver::ServiceEndpointRequest::Delegate implementations:
@@ -197,6 +224,9 @@ class TestAttemptDelegate final
   std::optional<IPEndPoint> remote_ip_endpoint_;
   std::optional<NextProto> negotiated_protocol_;
   base::OnceClosure wait_result_closure_;
+
+  scoped_refptr<const SSLCertRequestInfo> ssl_cert_request_info_;
+  std::optional<SSLInfo> cert_error_ssl_info_;
 };
 
 }  // namespace
@@ -276,6 +306,64 @@ TEST_F(HttpStreamPoolAttemptTest, AllEndpointsFailed) {
 
   delegate.Start();
   ASSERT_EQ(delegate.WaitForResult(), ERR_CONNECTION_REFUSED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, NeedsClientAuth) {
+  // This should not be attempted.
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+
+  const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+
+  const HostPortPair kDestination("a.test", 443);
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          .add_ip_endpoint(ipv4_endpoint)
+          .add_ip_endpoint(ipv6_endpoint1)
+          .endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl_data(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl_data.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  ssl_data.cert_request_info->host_and_port = kDestination;
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  ASSERT_EQ(delegate.WaitForResult(), ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  EXPECT_EQ(delegate.GetSSLCertRequestInfo()->host_and_port, kDestination);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, CertificateError) {
+  // This should not be attempted.
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+
+  const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+
+  const HostPortPair kDestination("a.test", 443);
+  const scoped_refptr<X509Certificate> kCert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          .add_ip_endpoint(ipv4_endpoint)
+          .add_ip_endpoint(ipv6_endpoint1)
+          .endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl_data(ASYNC, ERR_CERT_DATE_INVALID);
+  ssl_data.ssl_info.cert_status = ERR_CERT_DATE_INVALID;
+  ssl_data.ssl_info.cert = kCert;
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  ASSERT_EQ(delegate.WaitForResult(), ERR_CERT_DATE_INVALID);
+  EXPECT_EQ(delegate.GetCertErrorSSLInfo().cert_status, ERR_CERT_DATE_INVALID);
+  EXPECT_EQ(delegate.GetCertErrorSSLInfo().cert, kCert);
 }
 
 TEST_F(HttpStreamPoolAttemptTest, Ipv4Only) {
