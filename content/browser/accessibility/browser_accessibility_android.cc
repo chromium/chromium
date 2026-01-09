@@ -330,6 +330,7 @@ bool BrowserAccessibilityAndroid::IsCollection() const {
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
     case ax::mojom::Role::kMenuListPopup:
+    case ax::mojom::Role::kTabList:
       return true;
     default:
       return ui::IsTableLike(GetRole());
@@ -346,6 +347,7 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListOption:
+    case ax::mojom::Role::kTab:
       return true;
     default:
       return ui::IsCellOrTableHeader(GetRole());
@@ -2107,7 +2109,8 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
       GetRole() == ax::mojom::Role::kListBox ||
       GetRole() == ax::mojom::Role::kMenu ||
       GetRole() == ax::mojom::Role::kMenuBar ||
-      GetRole() == ax::mojom::Role::kMenuListPopup) {
+      GetRole() == ax::mojom::Role::kMenuListPopup ||
+      GetRole() == ax::mojom::Role::kTabList) {
     ax_cols = 1;
   }
 
