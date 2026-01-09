@@ -62,9 +62,6 @@ class TabsEventRouterPlatformDelegate
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
-                      TabChangeType change_type) override;
   void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,

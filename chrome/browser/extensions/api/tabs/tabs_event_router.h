@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -76,6 +77,8 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     TabEntry(const TabEntry&) = delete;
     TabEntry& operator=(const TabEntry&) = delete;
 
+    ~TabEntry() override;
+
     // Update the audible state and return whether they were changed.
     bool SetAudible(bool new_val);
 
@@ -88,6 +91,9 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     void WebContentsDestroyed() override;
 
    private:
+    // Called when the recently-audible state for the tab changed.
+    void OnRecentlyAudibleStateChanged(bool was_recently_audible);
+
     // Whether we are waiting to fire the 'complete' status change. This will
     // occur the first time the WebContents stops loading after the
     // NavigationEntryCommitted() method was called. The tab may go back into
@@ -95,13 +101,16 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     // changes.
     bool complete_waiting_on_load_ = false;
 
-    // Previous audible state.
-    bool was_audible_ = false;
-
     GURL url_;
 
-    // Event router that the WebContents's noficiations are forwarded to.
+    // Callback subscription to be notified as the "recently audible" state
+    // changes.
+    base::CallbackListSubscription recently_audible_subscription_;
+
+    // Event router that the WebContents's notifications are forwarded to.
     raw_ref<TabsEventRouter> router_;
+
+    base::WeakPtrFactory<TabEntry> weak_factory_{this};
   };
 
   // Registers to receive the various notifications we are interested in for a

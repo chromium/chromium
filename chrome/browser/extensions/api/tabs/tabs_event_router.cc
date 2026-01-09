@@ -26,9 +26,7 @@ namespace extensions {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 constexpr char kAudibleKey[] = "audible";
-#endif
 constexpr char kAutoDiscardableKey[] = "autoDiscardable";
 constexpr char kMutedInfoKey[] = "mutedInfo";
 
@@ -103,16 +101,13 @@ TabsEventRouter::TabEntry::TabEntry(TabsEventRouter& router,
     : WebContentsObserver(&contents),
       router_(router) {
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(&contents);
-  was_audible_ = audible_helper->WasRecentlyAudible();
+  recently_audible_subscription_ =
+      audible_helper->RegisterRecentlyAudibleChangedCallback(
+          base::BindRepeating(&TabEntry::OnRecentlyAudibleStateChanged,
+                              weak_factory_.GetWeakPtr()));
 }
 
-bool TabsEventRouter::TabEntry::SetAudible(bool new_val) {
-  if (was_audible_ == new_val) {
-    return false;
-  }
-  was_audible_ = new_val;
-  return true;
-}
+TabsEventRouter::TabEntry::~TabEntry() = default;
 
 void TabsEventRouter::TabEntry::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
@@ -177,6 +172,11 @@ void TabsEventRouter::TabEntry::WebContentsDestroyed() {
                                          /*expect_registered=*/true);
 }
 
+void TabsEventRouter::TabEntry::OnRecentlyAudibleStateChanged(
+    bool was_recently_audible) {
+  router_->TabUpdated(this, {kAudibleKey});
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // TabsEventRouter:
 
@@ -237,19 +237,9 @@ TabsEventRouter::TabEntry* TabsEventRouter::GetTabEntry(
 
 void TabsEventRouter::TabUpdated(TabEntry* entry,
                                  std::set<std::string> changed_property_names) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto* audible_helper =
-      RecentlyAudibleHelper::FromWebContents(entry->web_contents());
-  bool audible = audible_helper->WasRecentlyAudible();
-  if (entry->SetAudible(audible)) {
-    changed_property_names.insert(kAudibleKey);
-  }
-#endif
-
-  if (!changed_property_names.empty()) {
-    DispatchTabUpdatedEvent(entry->web_contents(),
-                            std::move(changed_property_names));
-  }
+  CHECK(!changed_property_names.empty());
+  DispatchTabUpdatedEvent(entry->web_contents(),
+                          std::move(changed_property_names));
 }
 
 void TabsEventRouter::DispatchTabUpdatedEvent(

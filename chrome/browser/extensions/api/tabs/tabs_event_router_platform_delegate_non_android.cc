@@ -157,20 +157,6 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
   }
 }
 
-void TabsEventRouterPlatformDelegate::OnTabChangedAt(
-    tabs::TabInterface* tab,
-    int index,
-    TabChangeType change_type) {
-  TabsEventRouter::TabEntry* entry = router_->GetTabEntry(*tab->GetContents());
-  // TabClosingAt() may have already removed the entry for |contents| even
-  // though the tab has not yet been detached.
-  if (entry) {
-    // Pass an empty set of changed properties. TabUpdated() will still check
-    // other states that might have updated as a part of OnTabChangedAt().
-    router_->TabUpdated(entry, /*changed_property_names=*/{});
-  }
-}
-
 void TabsEventRouterPlatformDelegate::OnTabPinnedStateChanged(
     tabs::TabInterface* tab,
     int index) {
