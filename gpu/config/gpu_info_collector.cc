@@ -302,6 +302,8 @@ void GetDawnTogglesForSkiaGraphite(
 #endif
   }
 #endif  // DCHECK_IS_ON()
+
+  force_disabled_toggles->push_back("lazy_clear_resource_on_first_use");
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
