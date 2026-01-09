@@ -172,7 +172,6 @@ public class NtpThemeMediator {
             // When a new image is selected, store it and reset any existing crop settings from a
             // previous image.
             ShareImageFileUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
-            updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
             mNtpThemeCollectionManager.selectLocalBackgroundImage();
         }
 

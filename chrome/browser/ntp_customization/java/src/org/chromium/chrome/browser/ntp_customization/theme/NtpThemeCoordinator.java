@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.THEME_KEYS;
 
@@ -20,6 +21,7 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
@@ -214,6 +216,7 @@ public class NtpThemeCoordinator {
     @VisibleForTesting
     void onPreviewClosed(boolean isImageSelected) {
         if (isImageSelected) {
+            mMediator.updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
             mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
         }
         mDismissBottomSheetRunnable.run();
@@ -224,7 +227,9 @@ public class NtpThemeCoordinator {
     }
 
     void setMediatorForTesting(NtpThemeMediator mediator) {
+        var oldValue = mMediator;
         mMediator = mediator;
+        ResettersForTesting.register(() -> mMediator = oldValue);
     }
 
     void setNtpThemeBottomSheetViewForTesting(NtpThemeBottomSheetView ntpThemeBottomSheetView) {
