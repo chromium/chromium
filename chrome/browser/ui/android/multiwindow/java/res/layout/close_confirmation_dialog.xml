@@ -34,24 +34,15 @@ found in the LICENSE file.
             android:layout_marginHorizontal="@dimen/dialog_padding_sides"
             android:layout_marginVertical="16dp"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-        <LinearLayout
+        <CheckBox
+            android:id="@+id/no_more_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="@dimen/dialog_padding_sides" >
-            <CheckBox
-                android:id="@+id/no_more_check"
-                android:contentDescription="@string/dont_ask_again"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp" />
-            <TextView
-                android:id="@+id/no_more"
-                android:text="@string/dont_ask_again"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
-        </LinearLayout>
+            android:layout_marginStart="@dimen/dialog_padding_sides"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/dont_ask_again"
+            android:text="@string/dont_ask_again"
+            android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
 
         <org.chromium.components.browser_ui.widget.DualControlLayout
             android:id="@+id/button_bar"
