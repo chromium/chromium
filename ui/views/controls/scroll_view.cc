@@ -752,7 +752,14 @@ void ScrollView::Layout(PassKey) {
   const int contents_x = viewport_bounds.x();
   const int contents_y = viewport_bounds.y();
   if (viewport_bounds.IsEmpty()) {
-    // There's nothing to layout.
+    // If the ScrollView client has set bounds such that the viewport and its
+    // contents are empty it is important that viewport and contents bounds be
+    // updated to reflect this. This is necessary as nested contents will
+    // otherwise be unaware of changes to its bounds or visibility status.
+    contents_viewport_->SetBoundsRect(viewport_bounds);
+    if (contents_) {
+      contents_->DeprecatedLayoutImmediately();
+    }
     return;
   }
 
