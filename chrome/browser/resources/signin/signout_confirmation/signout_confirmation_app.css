@@ -39,8 +39,17 @@ extensions-section {
 
 #action-row {
   display: flex;
+  flex-wrap: wrap;      /* Allow items to wrap to the next line */
   gap: 8px;
   justify-content: flex-end;
+}
+
+#action-row cr-button {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* 3-button case: push Cancel to the far left. */
