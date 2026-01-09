@@ -204,6 +204,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _hasText;
   // Whether a successful navigation has started.
   BOOL _inNavigation;
+  // Used to count the number of images added in the session.
+  int _imageUploadCount;
 }
 
 - (instancetype)
@@ -297,6 +299,8 @@ CreateInputDataFromAnnotatedPageContent(
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeImage
                               assetID:assetID];
+  item.uploadIndex = _imageUploadCount++;
+
   [_items addItem:item];
   __block base::UnguessableToken identifier = item.identifier;
 
@@ -469,6 +473,7 @@ CreateInputDataFromAnnotatedPageContent(
         _contextualSearchSession->ClearFiles();
       }
       [_items clearItems];
+      _imageUploadCount = 0;
       break;
     case ComposeboxMode::kAIM:
       if (![self isEligibleToAIM]) {

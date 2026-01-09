@@ -132,10 +132,15 @@ const CGFloat kCloseButtonAlpha = 0.9;
 
   self.isAccessibilityElement = YES;
   switch (item.type) {
-    case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
-      self.accessibilityLabel = l10n_util::GetNSString(
-          IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_ACCESSIBILITY_LABEL);
+    case ComposeboxInputItemType::kComposeboxInputItemTypeImage: {
+      std::u16string pattern = l10n_util::GetStringUTF16(
+          IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_INDEXED_ACCESSIBILITY_LABEL);
+      std::u16string message =
+          base::i18n::MessageFormatter::FormatWithNamedArgs(
+              pattern, "index", static_cast<int>(item.uploadIndex + 1));
+      self.accessibilityLabel = base::SysUTF16ToNSString(message);
       break;
+    }
     case ComposeboxInputItemType::kComposeboxInputItemTypeFile: {
       std::u16string title = base::SysNSStringToUTF16(item.title);
       std::u16string pattern = l10n_util::GetStringUTF16(
