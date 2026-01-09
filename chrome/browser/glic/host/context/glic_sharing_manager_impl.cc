@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -71,9 +72,9 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
           static_cast<GlicFocusedBrowserManager*>(
               focused_browser_manager_.get()))),
       pinned_tab_manager_(
-          std::make_unique<GlicPinnedTabManager>(profile,
-                                                 window_controller,
-                                                 metrics)),
+          std::make_unique<GlicPinnedTabManagerImpl>(profile,
+                                                     window_controller,
+                                                     metrics)),
       profile_(profile),
       metrics_(metrics) {}
 #endif

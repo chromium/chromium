@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
+#include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -369,7 +370,7 @@ class GlicInstanceImpl : public GlicInstance,
   // The pinned tab manager for the instance.
   // TODO (crbug.com/452150693): move ownership of this instance into the
   // GlicStablePinningDelegatingSharingManager.
-  GlicPinnedTabManager pinned_tab_manager_;
+  std::unique_ptr<GlicPinnedTabManager> pinned_tab_manager_;
 
   // The sharing manager used internally for detached mode.
   GlicSharingManagerImpl detached_mode_sharing_manager_;

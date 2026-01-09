@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 
 #include <algorithm>
 #include <functional>
@@ -55,16 +55,10 @@ bool IsForeground(content::Visibility visibility) {
 
 }  // namespace
 
-GlicPinnedTabContextEvent::GlicPinnedTabContextEvent(
-    GlicPinnedTabContextEventType type)
-    : type(type), timestamp(base::TimeTicks::Now()) {}
-
-GlicPinnedTabContextEvent::~GlicPinnedTabContextEvent() = default;
-
-class GlicPinnedTabManager::PinnedTabObserver
+class GlicPinnedTabManagerImpl::PinnedTabObserver
     : public content::WebContentsObserver {
  public:
-  PinnedTabObserver(GlicPinnedTabManager* pinned_tab_manager,
+  PinnedTabObserver(GlicPinnedTabManagerImpl* pinned_tab_manager,
                     tabs::TabInterface* tab,
                     GlicInstanceHelper& helper)
       : content::WebContentsObserver(tab->GetContents()),
@@ -188,7 +182,7 @@ class GlicPinnedTabManager::PinnedTabObserver
   }
 
   // Owns this.
-  raw_ptr<GlicPinnedTabManager> pinned_tab_manager_;
+  raw_ptr<GlicPinnedTabManagerImpl> pinned_tab_manager_;
   raw_ptr<tabs::TabInterface> tab_;
 
   base::CallbackListSubscription will_discard_contents_subscription_;
@@ -201,7 +195,7 @@ class GlicPinnedTabManager::PinnedTabObserver
   std::unique_ptr<TabDataObserver> tab_data_observer_;
 };
 
-GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(
+GlicPinnedTabManagerImpl::PinnedTabEntry::PinnedTabEntry(
     tabs::TabHandle tab_handle,
     std::unique_ptr<PinnedTabObserver> tab_observer,
     GlicPinnedTabUsage usage)
@@ -209,13 +203,13 @@ GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(
       tab_observer(std::move(tab_observer)),
       usage(usage) {}
 
-GlicPinnedTabManager::PinnedTabEntry::~PinnedTabEntry() = default;
+GlicPinnedTabManagerImpl::PinnedTabEntry::~PinnedTabEntry() = default;
 
-GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(PinnedTabEntry&& other) =
-    default;
+GlicPinnedTabManagerImpl::PinnedTabEntry::PinnedTabEntry(
+    PinnedTabEntry&& other) = default;
 
-GlicPinnedTabManager::PinnedTabEntry&
-GlicPinnedTabManager::PinnedTabEntry::operator=(PinnedTabEntry&& other) =
+GlicPinnedTabManagerImpl::PinnedTabEntry&
+GlicPinnedTabManagerImpl::PinnedTabEntry::operator=(PinnedTabEntry&& other) =
     default;
 
 // A helper class to throttle updates using exponential backoff. It coalesces
@@ -223,7 +217,7 @@ GlicPinnedTabManager::PinnedTabEntry::operator=(PinnedTabEntry&& other) =
 // exponentially when updates are frequent and resets to an initial value after
 // a quiet period (i.e. when a timer fires without any new requests having
 // been queued).
-class GlicPinnedTabManager::UpdateThrottler {
+class GlicPinnedTabManagerImpl::UpdateThrottler {
  public:
   explicit UpdateThrottler(base::RepeatingClosure callback)
       : callback_(std::move(callback)) {}
@@ -263,7 +257,7 @@ class GlicPinnedTabManager::UpdateThrottler {
   base::TimeDelta current_delay_ = kInitialDelay;
 };
 
-GlicPinnedTabManager::GlicPinnedTabManager(
+GlicPinnedTabManagerImpl::GlicPinnedTabManagerImpl(
     Profile* profile,
     GlicInstance::UIDelegate* ui_delegate,
     GlicMetrics* metrics)
@@ -272,37 +266,37 @@ GlicPinnedTabManager::GlicPinnedTabManager(
       metrics_(metrics),
       max_pinned_tabs_(kDefaultMaxPinnedTabs) {
   pin_candidate_updater_ = std::make_unique<UpdateThrottler>(
-      base::BindRepeating(&GlicPinnedTabManager::SendPinCandidatesUpdate,
+      base::BindRepeating(&GlicPinnedTabManagerImpl::SendPinCandidatesUpdate,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-GlicPinnedTabManager::~GlicPinnedTabManager() = default;
+GlicPinnedTabManagerImpl::~GlicPinnedTabManagerImpl() = default;
 
 base::CallbackListSubscription
-GlicPinnedTabManager::AddPinnedTabsChangedCallback(
+GlicPinnedTabManagerImpl::AddPinnedTabsChangedCallback(
     PinnedTabsChangedCallback callback) {
   return pinned_tabs_changed_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
-GlicPinnedTabManager::AddPinnedTabDataChangedCallback(
+GlicPinnedTabManagerImpl::AddPinnedTabDataChangedCallback(
     PinnedTabDataChangedCallback callback) {
   return pinned_tab_data_changed_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
-GlicPinnedTabManager::AddTabPinningStatusChangedCallback(
+GlicPinnedTabManagerImpl::AddTabPinningStatusChangedCallback(
     TabPinningStatusChangedCallback callback) {
   return pinning_status_changed_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
-GlicPinnedTabManager::AddTabPinningStatusEventCallback(
+GlicPinnedTabManagerImpl::AddTabPinningStatusEventCallback(
     TabPinningStatusEventCallback callback) {
   return pinning_status_event_callback_list_.Add(std::move(callback));
 }
 
-bool GlicPinnedTabManager::PinTabs(
+bool GlicPinnedTabManagerImpl::PinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicPinTrigger trigger) {
   base::TimeTicks pin_timestamp = base::TimeTicks::Now();
@@ -357,7 +351,7 @@ bool GlicPinnedTabManager::PinTabs(
   return pinning_fully_succeeded;
 }
 
-bool GlicPinnedTabManager::UnpinTabs(
+bool GlicPinnedTabManagerImpl::UnpinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicUnpinTrigger trigger) {
   base::TimeTicks unpin_timestamp = base::TimeTicks::Now();
@@ -382,7 +376,7 @@ bool GlicPinnedTabManager::UnpinTabs(
   return unpinning_fully_succeeded;
 }
 
-void GlicPinnedTabManager::UnpinAllTabs(GlicUnpinTrigger trigger) {
+void GlicPinnedTabManagerImpl::UnpinAllTabs(GlicUnpinTrigger trigger) {
   std::vector<tabs::TabHandle> tabs_to_unpin;
   for (auto& entry : pinned_tabs_) {
     tabs_to_unpin.push_back(entry.tab_handle);
@@ -390,8 +384,8 @@ void GlicPinnedTabManager::UnpinAllTabs(GlicUnpinTrigger trigger) {
   UnpinTabs(tabs_to_unpin, trigger);
 }
 
-const GlicPinnedTabManager::PinnedTabEntry*
-GlicPinnedTabManager::GetPinnedTabEntry(tabs::TabHandle tab_handle) const {
+const GlicPinnedTabManagerImpl::PinnedTabEntry*
+GlicPinnedTabManagerImpl::GetPinnedTabEntry(tabs::TabHandle tab_handle) const {
   auto it = std::find_if(pinned_tabs_.begin(), pinned_tabs_.end(),
                          [tab_handle](const PinnedTabEntry& entry) {
                            return entry.tab_handle == tab_handle;
@@ -402,7 +396,7 @@ GlicPinnedTabManager::GetPinnedTabEntry(tabs::TabHandle tab_handle) const {
   return &(*it);
 }
 
-GlicPinnedTabUsage* GlicPinnedTabManager::GetPinnedTabUsageInternal(
+GlicPinnedTabUsage* GlicPinnedTabManagerImpl::GetPinnedTabUsageInternal(
     tabs::TabHandle tab_handle) {
   auto it = std::find_if(pinned_tabs_.begin(), pinned_tabs_.end(),
                          [tab_handle](const PinnedTabEntry& entry) {
@@ -415,7 +409,7 @@ GlicPinnedTabUsage* GlicPinnedTabManager::GetPinnedTabUsageInternal(
   return &it->usage;
 }
 
-uint32_t GlicPinnedTabManager::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
+uint32_t GlicPinnedTabManagerImpl::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
   if (max_pinned_tabs < GetNumPinnedTabs()) {
     max_pinned_tabs = GetNumPinnedTabs();
   } else if (max_pinned_tabs > kMaxPinnedTabs) {
@@ -425,19 +419,20 @@ uint32_t GlicPinnedTabManager::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
   return max_pinned_tabs;
 }
 
-uint32_t GlicPinnedTabManager::GetMaxPinnedTabs() const {
+uint32_t GlicPinnedTabManagerImpl::GetMaxPinnedTabs() const {
   return max_pinned_tabs_;
 }
 
-uint32_t GlicPinnedTabManager::GetNumPinnedTabs() const {
+uint32_t GlicPinnedTabManagerImpl::GetNumPinnedTabs() const {
   return static_cast<uint32_t>(pinned_tabs_.size());
 }
 
-bool GlicPinnedTabManager::IsTabPinned(tabs::TabHandle tab_handle) const {
+bool GlicPinnedTabManagerImpl::IsTabPinned(tabs::TabHandle tab_handle) const {
   return !!GetPinnedTabEntry(tab_handle);
 }
 
-std::vector<content::WebContents*> GlicPinnedTabManager::GetPinnedTabs() const {
+std::vector<content::WebContents*> GlicPinnedTabManagerImpl::GetPinnedTabs()
+    const {
   std::vector<content::WebContents*> pinned_contents;
   for (auto& entry : pinned_tabs_) {
     pinned_contents.push_back(entry.tab_observer->web_contents());
@@ -445,7 +440,7 @@ std::vector<content::WebContents*> GlicPinnedTabManager::GetPinnedTabs() const {
   return pinned_contents;
 }
 
-std::optional<GlicPinnedTabUsage> GlicPinnedTabManager::GetPinnedTabUsage(
+std::optional<GlicPinnedTabUsage> GlicPinnedTabManagerImpl::GetPinnedTabUsage(
     tabs::TabHandle tab_handle) const {
   const auto* entry = GetPinnedTabEntry(tab_handle);
   if (!entry) {
@@ -454,21 +449,21 @@ std::optional<GlicPinnedTabUsage> GlicPinnedTabManager::GetPinnedTabUsage(
   return entry->usage;
 }
 
-void GlicPinnedTabManager::SubscribeToPinCandidates(
+void GlicPinnedTabManagerImpl::SubscribeToPinCandidates(
     mojom::GetPinCandidatesOptionsPtr options,
     mojo::PendingRemote<mojom::PinCandidatesObserver> observer) {
   pin_candidates_observer_.reset();
   pin_candidates_observer_.Bind(std::move(observer));
-  pin_candidates_observer_.set_disconnect_handler(
-      base::BindOnce(&GlicPinnedTabManager::OnPinCandidatesObserverDisconnected,
-                     base::Unretained(this)));
+  pin_candidates_observer_.set_disconnect_handler(base::BindOnce(
+      &GlicPinnedTabManagerImpl::OnPinCandidatesObserverDisconnected,
+      base::Unretained(this)));
   pin_candidates_options_ = std::move(options);
   pin_candidate_updater_->RequestUpdate();
   tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, nullptr);
   tab_strip_tracker_->Init();
 }
 
-void GlicPinnedTabManager::OnPinnedTabContextEvent(
+void GlicPinnedTabManagerImpl::OnPinnedTabContextEvent(
     tabs::TabHandle tab_handle,
     GlicPinnedTabContextEvent context_event) {
   auto* pinned_usage = GetPinnedTabUsageInternal(tab_handle);
@@ -478,7 +473,7 @@ void GlicPinnedTabManager::OnPinnedTabContextEvent(
   OnPinnedTabContextEvent(*pinned_usage, context_event);
 }
 
-void GlicPinnedTabManager::OnPinnedTabContextEvent(
+void GlicPinnedTabManagerImpl::OnPinnedTabContextEvent(
     GlicPinnedTabUsage& pinned_usage,
     GlicPinnedTabContextEvent context_event) {
   switch (context_event.type) {
@@ -488,14 +483,14 @@ void GlicPinnedTabManager::OnPinnedTabContextEvent(
   }
 }
 
-void GlicPinnedTabManager::OnAllPinnedTabsContextEvent(
+void GlicPinnedTabManagerImpl::OnAllPinnedTabsContextEvent(
     GlicPinnedTabContextEvent context_event) {
   for (auto& entry : pinned_tabs_) {
     OnPinnedTabContextEvent(entry.usage, context_event);
   }
 }
 
-void GlicPinnedTabManager::SendPinCandidatesUpdate() {
+void GlicPinnedTabManagerImpl::SendPinCandidatesUpdate() {
   if (!pin_candidates_observer_) {
     return;
   }
@@ -514,7 +509,7 @@ void GlicPinnedTabManager::SendPinCandidatesUpdate() {
 }
 
 std::vector<content::WebContents*>
-GlicPinnedTabManager::GetUnsortedPinCandidates() {
+GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
   std::vector<content::WebContents*> candidates;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, &candidates](BrowserWindowInterface* browser_window_interface) {
@@ -547,7 +542,7 @@ GlicPinnedTabManager::GetUnsortedPinCandidates() {
   return candidates;
 }
 
-void GlicPinnedTabManager::OnTabStripModelChanged(
+void GlicPinnedTabManagerImpl::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -557,39 +552,39 @@ void GlicPinnedTabManager::OnTabStripModelChanged(
   pin_candidate_updater_->RequestUpdate();
 }
 
-void GlicPinnedTabManager::OnTabChangedAt(tabs::TabInterface* tab,
-                                          int index,
-                                          TabChangeType change_type) {
+void GlicPinnedTabManagerImpl::OnTabChangedAt(tabs::TabInterface* tab,
+                                              int index,
+                                              TabChangeType change_type) {
   if (!pin_candidates_observer_) {
     return;
   }
   pin_candidate_updater_->RequestUpdate();
 }
 
-void GlicPinnedTabManager::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                              int index) {
+void GlicPinnedTabManagerImpl::OnTabWillBeRemoved(tabs::TabInterface* tab,
+                                                  int index) {
   if (!pin_candidates_observer_) {
     return;
   }
   pin_candidate_updater_->RequestUpdate();
 }
 
-void GlicPinnedTabManager::OnPinCandidatesObserverDisconnected() {
+void GlicPinnedTabManagerImpl::OnPinCandidatesObserverDisconnected() {
   pin_candidates_observer_.reset();
   tab_strip_tracker_.reset();
 }
 
-void GlicPinnedTabManager::NotifyPinnedTabsChanged() {
+void GlicPinnedTabManagerImpl::NotifyPinnedTabsChanged() {
   pinned_tabs_changed_callback_list_.Notify(GetPinnedTabs());
 }
 
-void GlicPinnedTabManager::OnTabDataChanged(tabs::TabHandle tab_handle,
-                                            TabDataChange tab_data_change) {
+void GlicPinnedTabManagerImpl::OnTabDataChanged(tabs::TabHandle tab_handle,
+                                                TabDataChange tab_data_change) {
   CHECK(IsTabPinned(tab_handle));
   pinned_tab_data_changed_callback_list_.Notify(tab_data_change);
 }
 
-void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
+void GlicPinnedTabManagerImpl::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
   CHECK(IsTabPinned(tab_handle));
   if ((!GlicEnabling::IsMultiInstanceEnabled() ||
        base::FeatureList::IsEnabled(kGlicAutoUnpinOnTabChangedOrigin)) &&
@@ -600,23 +595,23 @@ void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
   }
 }
 
-void GlicPinnedTabManager::OnTabWillClose(tabs::TabHandle tab_handle) {
+void GlicPinnedTabManagerImpl::OnTabWillClose(tabs::TabHandle tab_handle) {
   // TODO(b/426644733): Avoid n^2 work when closing all tabs.
   CHECK(UnpinTabs({tab_handle}, GlicUnpinTrigger::kTabClose));
   NotifyPinnedTabsChanged();
 }
 
-bool GlicPinnedTabManager::IsBrowserValidForSharing(
+bool GlicPinnedTabManagerImpl::IsBrowserValidForSharing(
     BrowserWindowInterface* browser_window) {
   return IsBrowserValidForSharingInProfile(browser_window, profile_);
 }
 
-bool GlicPinnedTabManager::IsValidForSharing(
+bool GlicPinnedTabManagerImpl::IsValidForSharing(
     content::WebContents* web_contents) {
   return IsTabValidForSharing(web_contents);
 }
 
-bool GlicPinnedTabManager::IsGlicWindowShowing() {
+bool GlicPinnedTabManagerImpl::IsGlicWindowShowing() {
   return ui_delegate_->IsShowing();
 }
 

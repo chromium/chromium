@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
-
 #include "base/containers/fixed_flat_map.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -106,9 +105,9 @@ class FakePinCandidatesObserver : public mojom::PinCandidatesObserver {
   mojo::Receiver<mojom::PinCandidatesObserver> receiver_{this};
 };
 
-class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManager {
+class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManagerImpl {
  public:
-  using GlicPinnedTabManager::GlicPinnedTabManager;
+  using GlicPinnedTabManagerImpl::GlicPinnedTabManagerImpl;
   MOCK_METHOD(bool,
               IsBrowserValidForSharing,
               (BrowserWindowInterface*),
@@ -250,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
       pin_status_future.GetRepeatingCallback());
 
   // Pin a tab and verify it was pinned.
-  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
 
@@ -277,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
-  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   chrome::MoveTabsToNewWindow(browser(), {1});
@@ -293,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
   // Pin a tab and verify it was pinned.
-  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
 
@@ -302,7 +304,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
       pin_status_future.GetRepeatingCallback());
 
   // Unpin the tab and verify it was unpinned.
-  EXPECT_TRUE(pinned_tab_manager_->UnpinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->UnpinTabs({tab_handle}, GlicUnpinTrigger::kUnknown));
   EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(0u, pinned_tab_manager_->GetNumPinnedTabs());
 
@@ -325,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
   // Pin a tab and verify it was pinned.
-  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
 
@@ -358,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
-  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   // Switch to another tab to ensure the pinned tab is in the background.
@@ -395,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
-  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(
+      pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   // Switch to another tab to ensure the pinned tab is in the background.

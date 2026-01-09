@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
@@ -195,21 +196,22 @@ GlicInstanceImpl::GlicInstanceImpl(
       coordinator_delegate_(coordinator_delegate),
       id_(instance_id),
       host_(profile_, this, this, this),
-      pinned_tab_manager_(profile, this, metrics),
+      pinned_tab_manager_(
+          std::make_unique<GlicPinnedTabManagerImpl>(profile, this, metrics)),
       detached_mode_sharing_manager_(
           std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
               &sharing_manager_,
               detached_mode_focused_browser_manager),
           base::WrapUnique<GlicFocusedBrowserManager>(
               detached_mode_focused_browser_manager),
-          &pinned_tab_manager_,
+          pinned_tab_manager_.get(),
           profile,
           metrics),
       live_mode_sharing_manager_(std::make_unique<GlicFocusedTabManager>(
                                      live_mode_focused_browser_manager),
                                  base::WrapUnique<GlicFocusedBrowserManager>(
                                      live_mode_focused_browser_manager),
-                                 &pinned_tab_manager_,
+                                 pinned_tab_manager_.get(),
                                  profile,
                                  metrics),
       attached_mode_sharing_manager_(
@@ -217,7 +219,7 @@ GlicInstanceImpl::GlicInstanceImpl(
               profile,
               &sharing_manager_),
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
-          &pinned_tab_manager_,
+          pinned_tab_manager_.get(),
           profile,
           metrics),
       sharing_manager_(&attached_mode_sharing_manager_),
