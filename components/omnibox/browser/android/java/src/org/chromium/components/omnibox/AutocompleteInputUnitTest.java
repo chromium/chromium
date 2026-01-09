@@ -6,6 +6,7 @@ package org.chromium.components.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -17,6 +18,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Tests for {@link AutocompleteMediator}. */
@@ -205,6 +208,45 @@ public class AutocompleteInputUnitTest {
 
         mInput.setPageClassification(PageClassification.OTHER_VALUE);
         assertEquals(PageClassification.OTHER_VALUE, mInput.getPageClassification());
+    }
+
+    @Test
+    public void getPageClassification_forFuseboxRequests() {
+        Map<Integer, Integer> testCases =
+                Map.of(
+                        // NTP
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
+                        PageClassification.NTP_COMPOSEBOX_VALUE,
+                        // SRP
+                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                        PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE,
+                        // Web
+                        PageClassification.OTHER_VALUE, //
+                        PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE);
+
+        for (var requestType :
+                List.of(
+                        AutocompleteRequestType.AI_MODE,
+                        AutocompleteRequestType.IMAGE_GENERATION)) {
+            mInput.setRequestType(requestType);
+            for (var givePageClass : PageClassification.values()) {
+                Integer wantPageClass = testCases.getOrDefault(givePageClass.getNumber(), null);
+                String message =
+                        String.format(
+                                "Unexpected results in mode %d for page class %s",
+                                requestType, givePageClass.name());
+
+                if (wantPageClass != null) {
+                    // Page classes known to Fusebox.
+                    mInput.setPageClassification(givePageClass.getNumber());
+                    assertEquals(message, (int) wantPageClass, mInput.getPageClassification());
+                } else {
+                    // These page classes not recognized by Fusebox.
+                    mInput.setPageClassification(givePageClass.getNumber());
+                    assertThrows(message, AssertionError.class, mInput::getPageClassification);
+                }
+            }
+        }
     }
 
     @Test
