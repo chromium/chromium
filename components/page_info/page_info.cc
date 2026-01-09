@@ -1367,12 +1367,16 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 // via `HasContentSettingChangedViaPageInfo(type)`.
 bool PageInfo::ShouldShowPermission(
     const PageInfo::PermissionInfo& info) const {
-  // For the Loud Clapper experiment Chrome should display NOTIFICATIONS
+  // For the Clapper experiment Chrome should display NOTIFICATIONS
   // permission while it is being requested.
 #if BUILDFLAG(IS_ANDROID)
   if (info.type == ContentSettingsType::NOTIFICATIONS &&
-      base::FeatureList::IsEnabled(
-          permissions::kPermissionsAndroidClapperLoud) &&
+      (base::FeatureList::IsEnabled(
+           permissions::kPermissionsAndroidClapperLoud) ||
+       base::FeatureList::IsEnabled(
+           permissions::kPermissionsAndroidClapperQuiet)
+
+           ) &&
       web_contents_) {
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(

@@ -218,8 +218,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
 
   // Whether the notifications permission is being requested. This is
   // needed to determine whether to show the permission in Page Info while it is
-  // being requested. This is needed for the Loud Clapper experiment
-  // (crbug.com/458351800).
+  // being requested. This is needed for the Clapper experiment
+  // (crbug.com/458351800) and (crbug.com/463333225).
   bool requested_notifications = false;
 
   for (const auto& permission : permission_info_list) {
@@ -236,7 +236,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
       }
 
       // Notifications permission can have the setting to display as DEFAULT
-      // only if it is being requested and the Loud Clapper experiment is
+      // only if it is being requested and the Clapper experiment is
       // enabled.
       if (permission.type == ContentSettingsType::NOTIFICATIONS &&
           setting_to_display.has_value() &&
@@ -298,9 +298,11 @@ std::optional<PermissionSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     // to give users an easy way to create exceptions.
     return permission.default_setting;
   } else if (permission.type == ContentSettingsType::NOTIFICATIONS &&
-             base::FeatureList::IsEnabled(
-                 permissions::kPermissionsAndroidClapperLoud)) {
-    // For the Loud Clapper experiment, Notifications permission should be
+             (base::FeatureList::IsEnabled(
+                  permissions::kPermissionsAndroidClapperLoud) ||
+              base::FeatureList::IsEnabled(
+                  permissions::kPermissionsAndroidClapperQuiet))) {
+    // For the Clapper experiment, Notifications permission should be
     // displayed while it is being requested.
     return permission.default_setting;
   } else if (permission.type == ContentSettingsType::SOUND) {
