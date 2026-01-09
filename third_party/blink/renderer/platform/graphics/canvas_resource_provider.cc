@@ -229,14 +229,14 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              color_space,
                              delegate),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      raster_context_provider_(base::WrapRefCounted(
-          ContextProviderWrapper()->ContextProvider().RasterContextProvider())),
+      raster_context_provider_(
+          base::WrapRefCounted(context_provider_wrapper_->ContextProvider()
+                                   .RasterContextProvider())),
       is_accelerated_(is_accelerated),
       shared_image_usage_flags_(shared_image_usage_flags) {
-  if (ContextProviderWrapper()) {
+  if (context_provider_wrapper_) {
     // Graphite can handle a large buffer size.
-    if (ContextProviderWrapper()
-            ->ContextProvider()
+    if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
             .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
         gpu::kGpuFeatureStatusEnabled) {
@@ -245,7 +245,7 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
       recorder_->DisableLineDrawingAsPaths();
     }
 
-    ContextProviderWrapper()->AddObserver(this);
+    context_provider_wrapper_->AddObserver(this);
   }
 
   if (raster_context_provider_) {
@@ -295,8 +295,8 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
     return;
   }
 
-  if (ContextProviderWrapper()) {
-    ContextProviderWrapper()->RemoveObserver(this);
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
   }
 
   if (raster_context_provider_) {
@@ -344,7 +344,7 @@ CanvasResourceProviderSharedImage::CreateResource() {
 
   return CanvasResourceSharedImage::Create(
       Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-      ContextProviderWrapper(), CreateWeakPtr(), is_accelerated_,
+      context_provider_wrapper_, CreateWeakPtr(), is_accelerated_,
       shared_image_usage_flags_);
 }
 
@@ -985,7 +985,7 @@ void CanvasResourceProviderSharedImage::RasterRecord(
 
   const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
   const auto& caps =
-      ContextProviderWrapper()->ContextProvider().GetCapabilities();
+      context_provider_wrapper_->ContextProvider().GetCapabilities();
   bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
   ri->BeginRasterCHROMIUM(
       background_color, needs_clear,
@@ -1513,18 +1513,18 @@ CanvasResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
 
   // Callsites are responsible for checking this before invoking this
   // method.
-  CHECK(ContextProviderWrapper());
+  CHECK(context_provider_wrapper_);
 
   // Create an ImageDecodeCache for half float images only if the canvas is
   // using half float back storage.
   cc::ImageDecodeCache* cache_f16 = nullptr;
   if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = ContextProviderWrapper()->ContextProvider().ImageDecodeCache(
+    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
         kRGBA_F16_SkColorType);
   }
 
   cc::ImageDecodeCache* cache_rgba8 =
-      ContextProviderWrapper()->ContextProvider().ImageDecodeCache(
+      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
           kN32_SkColorType);
 
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(

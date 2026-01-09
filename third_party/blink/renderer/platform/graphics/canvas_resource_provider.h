@@ -544,10 +544,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnContextDestroyed() override;
 
  private:
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const {
-    return context_provider_wrapper_;
-  }
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
   void DisableLineDrawingAsPathsIfNecessary() override;
