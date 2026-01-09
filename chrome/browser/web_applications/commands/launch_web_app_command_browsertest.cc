@@ -294,6 +294,51 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
             provider().registrar_unsafe().GetInstallState(app_id));
 }
 
+IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
+                       NoAppLaunchForMigrationSuggestedApps) {
+  const GURL kStartUrl =
+      https_server()->GetURL("/banners/manifest_test_page.html");
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
+  web_app_info->scope = kStartUrl.GetWithoutFilename();
+  web_app_info->title = u"Name";
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+
+  // Install & bypass os integration.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  WebAppInstallParams params;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+  params.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+  provider().scheduler().InstallFromInfoWithParams(
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback(), params);
+  ASSERT_TRUE(install_future.Wait());
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+
+  // Check that OS integration has NOT occurred.
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppCurrentOsIntegrationState(app_id)
+                   ->has_shortcut());
+  EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
+            proto::SUGGESTED_FROM_MIGRATION);
+
+  // No app has been launched.
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch_future;
+  provider().scheduler().LaunchApp(app_id, std::nullopt,
+                                   launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait());
+  EXPECT_THAT(launch_future.Get<base::WeakPtr<Browser>>().get(),
+              testing::IsNull());
+}
+
 }  // namespace
 
 }  // namespace web_app

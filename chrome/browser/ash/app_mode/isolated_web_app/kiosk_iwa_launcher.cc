@@ -67,7 +67,17 @@ bool KioskIwaLauncher::IsIsolatedWebAppInstalled() const {
       web_app::WebAppProvider::GetForWebApps(profile());
   const web_app::WebAppRegistrar& web_app_registrar =
       CHECK_DEREF(provider).registrar_unsafe();
-  return web_app_registrar.GetInstallState(iwa_data().app_id()).has_value();
+  std::optional<web_app::proto::InstallState> install_state =
+      web_app_registrar.GetInstallState(iwa_data().app_id());
+  if (!install_state.has_value()) {
+    return false;
+  }
+
+  // IWAs are not eligible to be migrated, so if an IWA is found to be in the
+  // middle of migration, that is unexpected.
+  CHECK_NE(*install_state,
+           web_app::proto::InstallState::SUGGESTED_FROM_MIGRATION);
+  return true;
 }
 
 void KioskIwaLauncher::InstallIsolatedWebApp(

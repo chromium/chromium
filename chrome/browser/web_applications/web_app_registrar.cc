@@ -487,7 +487,8 @@ std::optional<webapps::AppId> WebAppRegistrar::LookupExternalAppId(
 
 bool WebAppRegistrar::HasExternalApp(const webapps::AppId& app_id) const {
   if (!IsInstallState(app_id,
-                      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                      {proto::InstallState::SUGGESTED_FROM_MIGRATION,
+                       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;
@@ -503,7 +504,8 @@ bool WebAppRegistrar::HasExternalAppWithInstallSource(
     const webapps::AppId& app_id,
     ExternalInstallSource install_source) const {
   if (!IsInstallState(app_id,
-                      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                      {proto::InstallState::SUGGESTED_FROM_MIGRATION,
+                       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;
@@ -989,6 +991,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return false;
   }
 
+  if (install_state == proto::SUGGESTED_FROM_MIGRATION) {
+    return filter.is_app_suggested_from_migration_;
+  }
+
   if (install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
     return filter.is_suggested_app_;
   }
@@ -1080,6 +1086,11 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       continue;
     }
 
+    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_MIGRATION &&
+        !filter.is_app_suggested_from_migration_) {
+      continue;
+    }
+
     if (GetInstallState(app_id) == proto::SUGGESTED_FROM_ANOTHER_DEVICE &&
         !filter.is_suggested_app_) {
       continue;
@@ -1157,7 +1168,8 @@ bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
 bool WebAppRegistrar::IsInstalledByDefaultManagement(
     const webapps::AppId& app_id) const {
   if (!IsInstallState(
-          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+          app_id, {proto::InstallState::SUGGESTED_FROM_MIGRATION,
+                   proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return false;
@@ -1596,7 +1608,8 @@ WebAppRegistrar::GetAllAppsControllingUrl(
 
 bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
   if (!IsInstallState(app_id,
-                      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                      {proto::InstallState::SUGGESTED_FROM_MIGRATION,
+                       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;

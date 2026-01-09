@@ -360,6 +360,12 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
   }
 
+  // If the app install state is explicitly set to be suggested from migration,
+  // honor that over any existing values.
+  if (options.install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION) {
+    web_app->SetInstallState(proto::InstallState::SUGGESTED_FROM_MIGRATION);
+  }
+
   // Set |user_display_mode| and any user-controllable fields here if this
   // install is user initiated or it's a new app.
   if (ShouldInstallOverwriteUserDisplayMode(options.install_surface) ||

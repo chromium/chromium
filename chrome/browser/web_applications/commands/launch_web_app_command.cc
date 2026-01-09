@@ -38,8 +38,8 @@ LaunchWebAppCommand::LaunchWebAppCommand(
           AppLockDescription(params.app_id),
           std::move(callback),
           /*args_for_shutdown=*/
-          std::make_tuple(nullptr,
-                          nullptr,
+          std::make_tuple(/*browser=*/nullptr,
+                          /*web_contents=*/nullptr,
                           apps::LaunchContainer::kLaunchContainerNone)),
       params_(std::move(params)),
       launch_setting_(launch_setting),
@@ -54,7 +54,19 @@ void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
   if (!lock_->registrar().IsInRegistrar(params_.app_id)) {
     GetMutableDebugValue().Set("error", "not_installed");
-    CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
+    CompleteAndSelfDestruct(CommandResult::kFailure, /*browser=*/nullptr,
+                            /*web_contents=*/nullptr,
+                            apps::LaunchContainer::kLaunchContainerNone);
+    return;
+  }
+
+  // Prevent web apps suggested for migration from ever launching.
+  if (lock_->registrar().AppMatches(
+          params_.app_id, WebAppFilter::IsAppSuggestedForMigration())) {
+    GetMutableDebugValue().Set("error",
+                               "suggested_from_migration_or_not_installed");
+    CompleteAndSelfDestruct(CommandResult::kFailure, /*browser=*/nullptr,
+                            /*web_contents=*/nullptr,
                             apps::LaunchContainer::kLaunchContainerNone);
     return;
   }

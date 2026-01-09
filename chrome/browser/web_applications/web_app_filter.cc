@@ -126,4 +126,11 @@ WebAppFilter WebAppFilter::IsIsolatedWebAppIncludingUninstalling() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsAppSuggestedForMigration() {
+  WebAppFilter filter;
+  filter.is_app_suggested_from_migration_ = true;
+  return filter;
+}
+
 }  // namespace web_app

@@ -44,7 +44,15 @@ void SetUserDisplayModeCommand::StartWithLock(
   app_lock_ = std::move(app_lock);
 
   if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
-    CompleteAndSelfDestruct(CommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
+    return;
+  }
+
+  // Users shouldn't be able to interact with apps that are suggested for
+  // migration, so changing the user display mode is not allowed for them.
+  if (app_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSuggestedForMigration())) {
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 

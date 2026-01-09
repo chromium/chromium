@@ -49,6 +49,15 @@ void InstallAppLocallyCommand::StartWithLock(
     return;
   }
 
+  // Apps suggested from migration shouldn't be locally installed, as they are
+  // treated as "not installed" anywhere in the system.
+  if (app_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSuggestedForMigration())) {
+    GetMutableDebugValue().Set("command_result", "app_not_in_registry");
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
+    return;
+  }
+
   // Setting app to be installed with OS integration before calling
   // Synchronize() helps trigger the OS integration.
   if (app_lock_->registrar().GetInstallState(app_id_) !=
