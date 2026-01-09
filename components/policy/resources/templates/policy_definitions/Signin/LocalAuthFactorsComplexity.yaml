@@ -27,6 +27,7 @@ features:
 
 type: int-enum
 
+# LINT.IfChange
 schema:
   type: integer
   enum:
@@ -34,6 +35,7 @@ schema:
   - 2
   - 3
   - 4
+# LINT.ThenChange(//chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom:LocalAuthFactorsComplexity)
 
 items:
 - caption: No Complexity

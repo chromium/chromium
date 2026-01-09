@@ -38,6 +38,17 @@ enum ManagementType {
   kChildRestriction,
 };
 
+// Values for the LocalAuthFactorsComplexity policy.
+// LINT.IfChange(LocalAuthFactorsComplexity)
+enum LocalAuthFactorsComplexity {
+  kUnset = 0,  // Additional value not present in the policy.
+  kNone = 1,
+  kLow,
+  kMedium,
+  kHigh,
+};
+// LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml)
+
 // An interface for clients of |AuthFactorConfig| (see there for a list of
 // clients) that need to be notified if configuration of auth factors changes.
 interface FactorObserver {
@@ -71,6 +82,10 @@ interface AuthFactorConfig {
   // Checks whether the user can configure |factor|. Is false if the factor is
   // not supported or e.g. a policy forces |factor| to be enabled/disabled.
   IsEditable(string auth_token, AuthFactor factor) => (bool editable);
+
+  // Gets the value of the LocalAuthFactorsComplexity policy.
+  GetLocalAuthFactorsComplexity(string auth_token) =>
+      result<LocalAuthFactorsComplexity, ConfigureResult>;
 };
 
 // Returned from various operations that change ("configure") something about

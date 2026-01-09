@@ -5,16 +5,21 @@
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -461,6 +466,41 @@ void AuthFactorConfig::IsEditableWithContext(
           &AuthFactorConfig::MaybeRetryFactorStatusCheckOnConfigRefresh,
           weak_factory_.GetWeakPtr(), std::move(retry),
           std::move(split_callback.second), auth_token));
+}
+
+void AuthFactorConfig::GetLocalAuthFactorsComplexity(
+    const std::string& auth_token,
+    GetLocalAuthFactorsComplexityCallback callback) {
+  ObtainContext(
+      auth_token,
+      base::BindOnce(
+          &AuthFactorConfig::GetLocalAuthFactorsComplexityWithContext,
+          weak_factory_.GetWeakPtr(), auth_token, std::move(callback)));
+}
+
+void AuthFactorConfig::GetLocalAuthFactorsComplexityWithContext(
+    const std::string& auth_token,
+    GetLocalAuthFactorsComplexityCallback callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(
+        base::unexpected(mojom::ConfigureResult::kInvalidTokenError));
+    return;
+  }
+
+  AccountId account_id = context->GetAccountId();
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
+  std::optional<LocalAuthFactorsComplexity> policy =
+      AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
+          account_id);
+
+  auto result = mojom::LocalAuthFactorsComplexity::kUnset;
+  if (policy.has_value()) {
+    result = static_cast<mojom::LocalAuthFactorsComplexity>(policy.value());
+  }
+  std::move(callback).Run(result);
 }
 
 void AuthFactorConfig::ObtainContext(
