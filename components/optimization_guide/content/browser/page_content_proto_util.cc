@@ -178,7 +178,7 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     case blink::mojom::AIPageContentAttributeType::kImage:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
     case blink::mojom::AIPageContentAttributeType::kSvgRoot:
-      return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG_ROOT;
     case blink::mojom::AIPageContentAttributeType::kCanvas:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS;
     case blink::mojom::AIPageContentAttributeType::kVideo:
@@ -401,9 +401,9 @@ void ConvertImageInfo(
 
 void ConvertSvgRootData(
     const blink::mojom::AIPageContentSvgRootData& mojom_svg_root_data,
-    optimization_guide::proto::SVGData* proto_svg_data) {
+    optimization_guide::proto::SVGRootData* proto_svg_root_data) {
   if (mojom_svg_root_data.inner_text) {
-    proto_svg_data->set_inner_text(*mojom_svg_root_data.inner_text);
+    proto_svg_root_data->set_inner_text(*mojom_svg_root_data.inner_text);
   }
 }
 
@@ -689,7 +689,7 @@ base::expected<void, std::string> ConvertAttributes(
       return base::unexpected("svg_root_data present, but node isn't kSvgRoot");
     }
     ConvertSvgRootData(*mojom_attributes.svg_root_data,
-                       proto_attributes->mutable_svg_data());
+                       proto_attributes->mutable_svg_root_data());
   } else if (mojom_attributes.canvas_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kCanvas) {

@@ -565,8 +565,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, SVG) {
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
 
   const auto& svg = page_content().root_node().children_nodes().at(0);
-  ASSERT_TRUE(svg.content_attributes().has_svg_data());
-  EXPECT_EQ(svg.content_attributes().svg_data().inner_text(),
+  ASSERT_TRUE(svg.content_attributes().has_svg_root_data());
+  EXPECT_EQ(svg.content_attributes().svg_root_data().inner_text(),
             "Hello SVG Text!");
 }
 

@@ -276,8 +276,8 @@ message ContentAttributes {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_IMAGE.
     ImageInfo image_data = 11;
 
-    // Only set if attribute_type is CONTENT_ATTRIBUTE_SVG.
-    SVGData svg_data = 23;
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_SVG_ROOT.
+    SVGRootData svg_root_data = 23;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_CANVAS.
     CanvasData canvas_data = 24;
@@ -587,7 +587,7 @@ message SecurityOrigin {
   string value = 2 [features = { field_presence: EXPLICIT }];
 }
 
-message SVGData {
+message SVGRootData {
   // The inner text for the SVG subtree.
   string inner_text = 1 [features = { field_presence: EXPLICIT }];
 }
@@ -2055,7 +2055,7 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
   // Root SVG nodes.
-  CONTENT_ATTRIBUTE_SVG = 25;
+  CONTENT_ATTRIBUTE_SVG_ROOT = 25;
 
   CONTENT_ATTRIBUTE_CANVAS = 26;
 
