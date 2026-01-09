@@ -19,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -42,7 +43,8 @@ class SharedURLLoaderFactory;
 class AimEligibilityService
     : public KeyedService,
       public net::NetworkChangeNotifier::NetworkChangeObserver,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public TemplateURLServiceObserver {
  public:
   // Helper that individual AIM features can use to check if they should be
   // enabled. Unlike most chrome features, which simply check if the
@@ -196,6 +198,16 @@ class AimEligibilityService
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
+
+  // Callback for when the DSE changes.
+  void OnDseChanged();
+
+  // Callback for when the AIM policy changes.
+  void OnPolicyChanged();
+
   // Callback for when the eligibility response changes. Notifies observers.
   void OnEligibilityResponseChanged();
 
@@ -258,11 +270,12 @@ class AimEligibilityService
 
   const raw_ref<PrefService, DanglingUntriaged> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
-  const raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   const bool is_off_the_record_;
+  bool is_dse_google_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription template_url_service_subscription_;

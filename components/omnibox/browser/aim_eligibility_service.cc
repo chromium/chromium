@@ -273,6 +273,13 @@ AimEligibilityService::AimEligibilityService(
       kResponsePrefName,
       base::BindRepeating(&AimEligibilityService::OnEligibilityResponseChanged,
                           weak_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      omnibox::kAIModeSettings,
+      base::BindRepeating(&AimEligibilityService::OnPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  is_dse_google_ = search::DefaultSearchProviderIsGoogle(template_url_service_);
+  template_url_service_->AddObserver(this);
 
   LoadMostRecentResponse();
 
@@ -297,6 +304,9 @@ AimEligibilityService::AimEligibilityService(
 }
 
 AimEligibilityService::~AimEligibilityService() {
+  if (template_url_service_) {
+    template_url_service_->RemoveObserver(this);
+  }
   if (base::FeatureList::IsEnabled(
           omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled)) {
     net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
@@ -478,6 +488,37 @@ void AimEligibilityService::OnNetworkChanged(
   }
 }
 
+void AimEligibilityService::OnTemplateURLServiceChanged() {
+  // `OnTemplateURLServiceChanged()` will capture:
+  // a) On completing loading TURL service (i.e. syncing keywords).
+  // b) The user switches the DSE TURL.
+  // c) The user edits the URL of the DSE TURL without switching the TURL
+  //    itself.
+  // d) Other changes that don't affect the DSE and we don't need to
+  //    notify observers of.
+  // TODO(crbug.com/474399812): (c) is bugged;
+  // `search::DefaultSearchProviderIsGoogle()` returns stale values when the
+  // user edits TURL URLs.
+  bool is_dse_google =
+      search::DefaultSearchProviderIsGoogle(template_url_service_);
+  if (is_dse_google != is_dse_google_) {
+    is_dse_google_ = is_dse_google;
+    eligibility_changed_callbacks_.Notify();
+  }
+}
+
+void AimEligibilityService::OnTemplateURLServiceShuttingDown() {
+  if (template_url_service_) {
+    template_url_service_->RemoveObserver(this);
+    template_url_service_ = nullptr;
+  }
+}
+
+void AimEligibilityService::OnPolicyChanged() {
+  // Notify observers that eligibility might have changed.
+  eligibility_changed_callbacks_.Notify();
+}
+
 void AimEligibilityService::OnEligibilityResponseChanged() {
   eligibility_changed_callbacks_.Notify();
 }
@@ -570,7 +611,7 @@ GURL AimEligibilityService::GetRequestUrl(
 void AimEligibilityService::StartServerEligibilityRequest(
     RequestSource request_source) {
   // URLLoaderFactory may be null in tests.
-  if (!url_loader_factory_) {
+  if (!url_loader_factory_ || !template_url_service_) {
     return;
   }
 
