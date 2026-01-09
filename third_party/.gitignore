@@ -119,7 +119,7 @@
 /qemu-linux-arm64
 /qemu-linux-x64
 /qemu-mac-x64
-/readability
+/readability/src
 /rust-src
 /rust-toolchain-intermediate
 /rust-toolchain/
