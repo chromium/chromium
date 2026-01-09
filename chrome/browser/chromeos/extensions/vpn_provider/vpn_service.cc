@@ -159,10 +159,12 @@ void VpnService::SendToExtension(const std::string& extension_id,
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
 
-bool VpnService::OwnsActiveConfiguration(
+VpnService::VpnConfiguration* VpnService::GetActiveConfigurationForExtension(
     const std::string& extension_id) const {
-  return active_configuration_ &&
-         active_configuration_->extension_id() == extension_id;
+  return (active_configuration_ &&
+          active_configuration_->extension_id() == extension_id)
+             ? active_configuration_
+             : nullptr;
 }
 
 void VpnService::SendOnPacketReceivedToExtension(
@@ -409,13 +411,15 @@ void VpnService::SetParameters(const std::string& extension_id,
                                base::Value::Dict parameters,
                                SuccessCallback success,
                                FailureCallback failure) {
-  if (!OwnsActiveConfiguration(extension_id)) {
+  VpnConfiguration* active_configuration =
+      GetActiveConfigurationForExtension(extension_id);
+  if (!active_configuration) {
     std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
 
   ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
-      active_configuration_->object_path(), std::move(parameters),
+      active_configuration->object_path(), std::move(parameters),
       base::IgnoreArgs<const std::string&>(std::move(success)),
       std::move(failure));
 }
@@ -424,7 +428,9 @@ void VpnService::SendPacket(const std::string& extension_id,
                             const std::vector<char>& data,
                             SuccessCallback success,
                             FailureCallback failure) {
-  if (!OwnsActiveConfiguration(extension_id)) {
+  VpnConfiguration* active_configuration =
+      GetActiveConfigurationForExtension(extension_id);
+  if (!active_configuration) {
     std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
@@ -435,7 +441,7 @@ void VpnService::SendPacket(const std::string& extension_id,
   }
 
   ash::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
-      active_configuration_->object_path(), data, std::move(success),
+      active_configuration->object_path(), data, std::move(success),
       std::move(failure));
 }
 
@@ -443,13 +449,15 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
                                               bool connection_success,
                                               SuccessCallback success,
                                               FailureCallback failure) {
-  if (!OwnsActiveConfiguration(extension_id)) {
+  VpnConfiguration* active_configuration =
+      GetActiveConfigurationForExtension(extension_id);
+  if (!active_configuration) {
     std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
 
   ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-      active_configuration_->object_path(),
+      active_configuration->object_path(),
       connection_success
           ? std::to_underlying(
                 extensions::api::vpn_provider::VpnConnectionState::kConnected)
@@ -468,9 +476,11 @@ void VpnService::OnExtensionUnloaded(
     content::BrowserContext*,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  if (OwnsActiveConfiguration(extension->id())) {
+  VpnConfiguration* active_configuration =
+      GetActiveConfigurationForExtension(extension->id());
+  if (active_configuration) {
     ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-        active_configuration_->object_path(),
+        active_configuration->object_path(),
         std::to_underlying(api_vpn::VpnConnectionState::kFailure),
         base::DoNothing(), base::DoNothing());
   }

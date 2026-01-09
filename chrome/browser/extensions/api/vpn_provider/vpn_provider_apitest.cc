@@ -202,7 +202,7 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   bool IsConfigConnected() {
-    return service()->OwnsActiveConfiguration(extension_id());
+    return service()->GetActiveConfigurationForExtension(extension_id());
   }
 
   std::string GetSingleServicePath() {

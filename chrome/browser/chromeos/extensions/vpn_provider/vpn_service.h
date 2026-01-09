@@ -106,7 +106,8 @@ class VpnService : public extensions::api::VpnServiceInterface,
   // Sets the active configuration.
   void SetActiveConfiguration(VpnConfiguration* configuration);
 
-  bool OwnsActiveConfiguration(const std::string& extension_id) const;
+  VpnConfiguration* GetActiveConfigurationForExtension(
+      const std::string& extension_id) const;
 
   // Sends the given event to the given extension.
   void SendToExtension(const std::string& extension_id,
