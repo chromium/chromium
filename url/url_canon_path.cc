@@ -312,7 +312,18 @@ bool DoPath(std::optional<std::basic_string_view<CHAR>> path,
     // and then canonicalize it, it will of course have a slash already. This
     // check is for the replacement and relative URL resolving cases of file
     // URLs.
-    if (!IsSlashOrBackslash((*path)[0])) {
+    bool has_leading_slash;
+    if (IsNonSpecialLeadingSlashHandlingEnabled()) {
+      // For non-special URLs, backslash is NOT a path separator, so only check
+      // for forward slash.
+      has_leading_slash =
+          ((*path)[0] == '/') || ((canon_mode == CanonMode::kSpecialURL ||
+                                   canon_mode == CanonMode::kFileURL) &&
+                                  (*path)[0] == '\\');
+    } else {
+      has_leading_slash = IsSlashOrBackslash((*path)[0]);
+    }
+    if (!has_leading_slash) {
       output->push_back('/');
     }
 

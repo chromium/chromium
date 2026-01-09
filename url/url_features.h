@@ -29,6 +29,14 @@ COMPONENT_EXPORT(URL) bool IsUsingIDNAContextJRules();
 // When enabled, apply IDNA ContextJ rules in URL host parsing.
 COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kUseIDNAContextJRules);
 
+// Returns true if non-special URLs should handle leading slashes according
+// to the URL Standard (backslash is NOT a path separator for non-special URLs).
+COMPONENT_EXPORT(URL) bool IsNonSpecialLeadingSlashHandlingEnabled();
+
+// When enabled, handle leading slashes in non-special URL paths according
+// to the WHATWG URL Standard.
+COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kNonSpecialLeadingSlashHandling);
+
 }  // namespace url
 
 #endif  // URL_URL_FEATURES_H_

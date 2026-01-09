@@ -32,4 +32,14 @@ bool IsUsingIDNAContextJRules() {
   return base::FeatureList::IsEnabled(kUseIDNAContextJRules);
 }
 
+BASE_FEATURE(kNonSpecialLeadingSlashHandling, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsNonSpecialLeadingSlashHandlingEnabled() {
+  if (!base::FeatureList::GetInstance()) {
+    return kNonSpecialLeadingSlashHandling.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  return base::FeatureList::IsEnabled(kNonSpecialLeadingSlashHandling);
+}
+
 }  // namespace url
