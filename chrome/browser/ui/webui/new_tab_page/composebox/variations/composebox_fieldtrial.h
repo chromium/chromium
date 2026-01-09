@@ -82,6 +82,8 @@ extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick;
 // Whether to trap tab focus within the composebox.
 extern const base::FeatureParam<bool> kEnableModalComposebox;
+// Whether to show the AIM threads rail when composebox is open.
+extern const base::FeatureParam<bool> kEnableThreadsRail;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 

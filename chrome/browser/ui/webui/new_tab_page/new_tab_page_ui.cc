@@ -695,6 +695,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
   source->AddBoolean("enableModalComposebox",
                      ntp_composebox::kEnableModalComposebox.Get());
+  source->AddBoolean("enableThreadsRail",
+                     ntp_composebox::kEnableThreadsRail.Get());
 
   // Action Chips LoadTimeData
   bool action_chips_eligible =

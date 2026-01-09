@@ -326,6 +326,11 @@ export class AppElement extends AppElementBase {
       contextMenuGlifAnimationState_: {type: String},
       undoAutoRemovalCallback_: {type: Object},
       undoAutoRemovalMessage_: {type: Object},
+
+      /**
+       * Whether to show the AIM threads rail when composebox is open.
+       */
+      enableThreadsRail_: {type: Boolean},
     };
   }
 
@@ -420,6 +425,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('enableEphemeralContextMenuDescription') ?? false;
   protected showContextMenuDescription_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
+  protected accessor enableThreadsRail_: boolean =
+      loadTimeData.getBoolean('enableThreadsRail');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
