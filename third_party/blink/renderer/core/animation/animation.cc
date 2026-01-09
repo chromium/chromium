@@ -837,10 +837,7 @@ bool Animation::PreCommit(
     compositor_group_ = compositor_group;
     if (start_on_compositor) {
       std::optional<PropertyHandleSet> unsupported_properties_for_tracing;
-      bool category_enabled;
-      TRACE_EVENT_CATEGORY_GROUP_ENABLED(AnimationTraceCategories(),
-                                         &category_enabled);
-      if (category_enabled) {
+      if (TRACE_EVENT_CATEGORY_ENABLED(AnimationTraceCategories())) {
         unsupported_properties_for_tracing.emplace();
       }
       CompositorAnimations::FailureReasons failure_reasons =

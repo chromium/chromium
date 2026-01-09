@@ -198,10 +198,7 @@ constexpr const char* RuntimeCallStatsScopedTracer::s_name_ =
 
 void RuntimeCallStatsScopedTracer::AddBeginTraceEventIfEnabled(
     v8::Isolate* isolate) {
-  bool category_group_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(s_category_group_,
-                                     &category_group_enabled);
-  if (!category_group_enabled) [[likely]] {
+  if (!TRACE_EVENT_CATEGORY_ENABLED(s_category_group_)) [[likely]] {
     return;
   }
 

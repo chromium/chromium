@@ -689,8 +689,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
                                      task_runner_state_->IsSynchronous() ||
                                      task_runner_state_->InNestedPumpSession();
 
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("blink", &is_tracing);
+  bool is_tracing = TRACE_EVENT_CATEGORY_ENABLED("blink");
   unsigned starting_bytes;
   if (is_tracing) {
     starting_bytes = input_.length();

@@ -296,9 +296,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
     {
-      bool tracing_enabled = false;
-      TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &tracing_enabled);
-      if (tracing_enabled) {
+      if (TRACE_EVENT_CATEGORY_ENABLED("media")) {
         if (frame->metadata().reference_time.has_value()) {
           TRACE_EVENT1("media", "EnqueueFrame", "Ideal Render Instant",
                        frame->metadata().reference_time->ToInternalValue());

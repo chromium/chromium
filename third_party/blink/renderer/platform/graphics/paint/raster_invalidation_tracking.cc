@@ -32,10 +32,8 @@ bool RasterInvalidationTracking::ShouldAlwaysTrack() {
 }
 
 bool RasterInvalidationTracking::IsTracingRasterInvalidations() {
-  bool tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("blink.invalidation"), &tracing_enabled);
-  return tracing_enabled;
+  return TRACE_EVENT_CATEGORY_ENABLED(
+      TRACE_DISABLED_BY_DEFAULT("blink.invalidation"));
 }
 
 void RasterInvalidationTracking::AddInvalidation(

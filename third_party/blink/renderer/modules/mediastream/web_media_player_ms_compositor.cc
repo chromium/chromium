@@ -529,8 +529,7 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
     RenderUsingAlgorithm(deadline_min, deadline_max);
 
   {
-    bool tracing_or_dcheck_enabled = false;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &tracing_or_dcheck_enabled);
+    bool tracing_or_dcheck_enabled = TRACE_EVENT_CATEGORY_ENABLED("media");
 #if DCHECK_IS_ON()
     tracing_or_dcheck_enabled = true;
 #endif  // DCHECK_IS_ON()

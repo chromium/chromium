@@ -113,9 +113,7 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
 
 // static
 bool PaintTimingVisualizer::IsTracingEnabled() {
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("loading", &enabled);
-  return enabled;
+  return TRACE_EVENT_CATEGORY_ENABLED("loading");
 }
 
 void PaintTimingVisualizer::OnStart(

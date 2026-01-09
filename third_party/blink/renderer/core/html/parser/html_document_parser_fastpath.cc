@@ -1576,9 +1576,7 @@ bool CanUseFastPath(Document& document,
   }
 
   // Disable when tracing is enabled to preserve trace behavior.
-  bool tracing_enabled = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
-  if (tracing_enabled) {
+  if (TRACE_EVENT_CATEGORY_ENABLED("devtools.timeline")) {
     LogFastPathResult(HtmlFastPathResult::kFailedTracingEnabled);
     return false;
   }

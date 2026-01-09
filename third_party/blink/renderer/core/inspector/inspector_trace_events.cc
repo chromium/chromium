@@ -1465,11 +1465,8 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
                                           v8::Isolate* isolate) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", event.type());
-  bool record_input_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"),
-      &record_input_enabled);
-  if (record_input_enabled) {
+  if (TRACE_EVENT_CATEGORY_ENABLED(
+          TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"))) {
     const auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
     if (keyboard_event) {
       dict.Add("modifier", GetModifierFromEvent(*keyboard_event));

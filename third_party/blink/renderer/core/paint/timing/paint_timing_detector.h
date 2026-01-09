@@ -102,9 +102,7 @@ class CORE_EXPORT PaintTimingDetector
   void DidChangePerformanceTiming();
 
   inline static bool IsTracing() {
-    bool tracing_enabled;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("loading", &tracing_enabled);
-    return tracing_enabled;
+    return TRACE_EVENT_CATEGORY_ENABLED("loading");
   }
 
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& float_rect) const;
