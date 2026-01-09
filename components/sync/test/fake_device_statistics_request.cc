@@ -22,14 +22,14 @@ DeviceStatisticsRequest::State FakeDeviceStatisticsRequest::GetState() const {
   return state_;
 }
 
-const std::vector<sync_pb::DeviceInfoSpecifics>&
+const std::vector<sync_pb::SyncEntity>&
 FakeDeviceStatisticsRequest::GetResults() const {
   CHECK_EQ(state_, State::kComplete);
   return results_;
 }
 
 void FakeDeviceStatisticsRequest::SimulateSuccess(
-    std::vector<sync_pb::DeviceInfoSpecifics> results) {
+    std::vector<sync_pb::SyncEntity> results) {
   ASSERT_EQ(state_, State::kInProgress);
   state_ = State::kComplete;
   results_ = std::move(results);

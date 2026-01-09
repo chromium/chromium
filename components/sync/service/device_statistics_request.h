@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 
 namespace sync_pb {
-class DeviceInfoSpecifics;
+class SyncEntity;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -30,8 +30,7 @@ class DeviceStatisticsRequest {
   virtual void Start(base::OnceClosure callback) = 0;
 
   virtual State GetState() const = 0;
-  virtual const std::vector<sync_pb::DeviceInfoSpecifics>& GetResults()
-      const = 0;
+  virtual const std::vector<sync_pb::SyncEntity>& GetResults() const = 0;
 };
 
 }  // namespace syncer

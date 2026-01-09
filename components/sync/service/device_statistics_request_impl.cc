@@ -68,7 +68,7 @@ DeviceStatisticsRequest::State DeviceStatisticsRequestImpl::GetState() const {
   return state_;
 }
 
-const std::vector<sync_pb::DeviceInfoSpecifics>&
+const std::vector<sync_pb::SyncEntity>&
 DeviceStatisticsRequestImpl::GetResults() const {
   return results_;
 }
@@ -223,7 +223,7 @@ void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
   }
 
   for (const sync_pb::SyncEntity& entity : response.get_updates().entries()) {
-    results_.push_back(entity.specifics().device_info());
+    results_.push_back(entity);
   }
 
   UpdateStateAndNotify(State::kComplete);

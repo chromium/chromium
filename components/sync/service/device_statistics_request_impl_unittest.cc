@@ -85,7 +85,8 @@ TEST_F(DeviceStatisticsRequestImplTest, ShouldSucceed) {
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(DeviceStatisticsRequest::State::kComplete, request.GetState());
   ASSERT_EQ(1u, request.GetResults().size());
-  EXPECT_EQ("test_client", request.GetResults()[0].client_name());
+  EXPECT_EQ("test_client",
+            request.GetResults()[0].specifics().device_info().client_name());
 }
 
 TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleAuthError) {
@@ -153,7 +154,8 @@ TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnUnauthorized) {
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(DeviceStatisticsRequest::State::kComplete, request.GetState());
   ASSERT_EQ(1u, request.GetResults().size());
-  EXPECT_EQ("test_client", request.GetResults()[0].client_name());
+  EXPECT_EQ("test_client",
+            request.GetResults()[0].specifics().device_info().client_name());
 }
 
 TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnlyOnceOnUnauthorized) {

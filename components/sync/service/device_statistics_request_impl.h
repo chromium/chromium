@@ -32,7 +32,7 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace sync_pb {
-class DeviceInfoSpecifics;
+class SyncEntity;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -55,7 +55,7 @@ class DeviceStatisticsRequestImpl : public DeviceStatisticsRequest {
   void Start(base::OnceClosure callback) override;
 
   State GetState() const override;
-  const std::vector<sync_pb::DeviceInfoSpecifics>& GetResults() const override;
+  const std::vector<sync_pb::SyncEntity>& GetResults() const override;
 
  private:
   void AccessTokenFetchComplete(GoogleServiceAuthError error,
@@ -83,7 +83,7 @@ class DeviceStatisticsRequestImpl : public DeviceStatisticsRequest {
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
-  std::vector<sync_pb::DeviceInfoSpecifics> results_;
+  std::vector<sync_pb::SyncEntity> results_;
 };
 
 }  // namespace syncer

@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/service/device_statistics_request.h"
 
 namespace syncer {
@@ -23,10 +23,10 @@ class FakeDeviceStatisticsRequest : public DeviceStatisticsRequest {
   // DeviceStatisticsRequest:
   void Start(base::OnceClosure callback) override;
   State GetState() const override;
-  const std::vector<sync_pb::DeviceInfoSpecifics>& GetResults() const override;
+  const std::vector<sync_pb::SyncEntity>& GetResults() const override;
 
   // Test-specific methods:
-  void SimulateSuccess(std::vector<sync_pb::DeviceInfoSpecifics> results);
+  void SimulateSuccess(std::vector<sync_pb::SyncEntity> results);
   void SimulateFailure();
 
   base::WeakPtr<FakeDeviceStatisticsRequest> GetWeakPtr() {
@@ -36,7 +36,7 @@ class FakeDeviceStatisticsRequest : public DeviceStatisticsRequest {
  private:
   State state_ = State::kNotStarted;
   base::OnceClosure callback_;
-  std::vector<sync_pb::DeviceInfoSpecifics> results_;
+  std::vector<sync_pb::SyncEntity> results_;
 
   base::WeakPtrFactory<FakeDeviceStatisticsRequest> weak_ptr_factory_{this};
 };

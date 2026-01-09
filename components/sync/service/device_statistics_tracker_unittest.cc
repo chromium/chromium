@@ -44,19 +44,25 @@ class DeviceStatisticsTrackerTest : public testing::Test {
                                base::Unretained(this));
   }
 
-  std::vector<sync_pb::DeviceInfoSpecifics> CreateDeviceInfos(
+  std::vector<sync_pb::SyncEntity> CreateDeviceInfos(
       const std::vector<sync_pb::SyncEnums_OsType>& platforms) {
-    std::vector<sync_pb::DeviceInfoSpecifics> specifics;
+    const base::Time now = base::Time::Now();
+    std::vector<sync_pb::SyncEntity> entities;
     for (size_t i = 0; i < platforms.size(); ++i) {
-      sync_pb::DeviceInfoSpecifics device;
+      sync_pb::SyncEntity entity;
+      entity.set_ctime(syncer::TimeToProtoTime(now - base::Days(7)));
+      entity.set_mtime(syncer::TimeToProtoTime(now - base::Days(1)));
+
+      sync_pb::DeviceInfoSpecifics& device =
+          *entity.mutable_specifics()->mutable_device_info();
       device.set_cache_guid("test_guid_" + base::NumberToString(i));
       device.set_os_type(platforms[i]);
       device.mutable_chrome_version_info();
       device.set_last_updated_timestamp(
-          syncer::TimeToProtoTime(base::Time::Now() - base::Days(1)));
-      specifics.push_back(std::move(device));
+          syncer::TimeToProtoTime(now - base::Days(1)));
+      entities.push_back(std::move(entity));
     }
-    return specifics;
+    return entities;
   }
 
  protected:
@@ -571,6 +577,48 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOtherPlatformsMetrics) {
       "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
       "PlatformOfAdditionalClient",
       DeviceStatisticsTracker::Platform::kLinux,
+      /*expected_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest, DedupesByActivityTimeRange) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  std::vector<sync_pb::SyncEntity> entities =
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+                         sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+                         sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS});
+  // Give all the entities non-overlapping usage time ranges. This means they
+  // likely all represent the same device, just with different cache GUIDs (i.e.
+  // the user removed and re-added the same account on the same device).
+  const base::Time now = base::Time::Now();
+  entities[0].set_ctime(syncer::TimeToProtoTime(now - base::Days(7)));
+  entities[0].set_mtime(syncer::TimeToProtoTime(now - base::Days(6)));
+  entities[1].set_ctime(syncer::TimeToProtoTime(now - base::Days(5)));
+  entities[1].set_mtime(syncer::TimeToProtoTime(now - base::Days(4)));
+  entities[2].set_ctime(syncer::TimeToProtoTime(now - base::Days(3)));
+  entities[2].set_mtime(syncer::TimeToProtoTime(now - base::Days(2)));
+  fake_requests_[primary.gaia]->SimulateSuccess(entities);
+  EXPECT_TRUE(future.Wait());
+
+  // Since the activity time ranges were non-overlapping, the three DeviceInfos
+  // should have been deduped into a single device.
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformOfAdditionalClient",
+      DeviceStatisticsTracker::Platform::kWindows,
       /*expected_count=*/1);
 }
 

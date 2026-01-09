@@ -17,9 +17,12 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/device_statistics_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -53,8 +56,8 @@ bool ShouldRecordOutcomeMetrics(
 }
 
 std::optional<DeviceStatisticsTracker::Platform> PlatformFromProto(
-    const sync_pb::DeviceInfoSpecifics& device) {
-  switch (device.os_type()) {
+    sync_pb::SyncEnums::OsType os_type) {
+  switch (os_type) {
     case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_WINDOWS:
       return DeviceStatisticsTracker::Platform::kWindows;
     case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_MAC:
@@ -74,6 +77,98 @@ std::optional<DeviceStatisticsTracker::Platform> PlatformFromProto(
       return std::nullopt;
   }
   NOTREACHED();
+}
+
+absl::flat_hash_map<
+    std::pair<sync_pb::SyncEnums::DeviceFormFactor, sync_pb::SyncEnums::OsType>,
+    std::multimap<base::Time, int>>
+GetRelevantEventsByType(
+    const std::vector<sync_pb::SyncEntity>& entities,
+    const std::vector<std::string>& current_device_cache_guids) {
+  absl::flat_hash_map<std::pair<sync_pb::SyncEnums::DeviceFormFactor,
+                                sync_pb::SyncEnums::OsType>,
+                      std::multimap<base::Time, int>>
+      events_by_type;
+
+  const base::Time now = base::Time::Now();
+
+  for (const sync_pb::SyncEntity& entity : entities) {
+    const sync_pb::DeviceInfoSpecifics& device =
+        entity.specifics().device_info();
+    // Only consider Chrome devices (not Google Play Services).
+    if (!device.has_chrome_version_info()) {
+      continue;
+    }
+
+    // Don't consider the current device.
+    if (base::Contains(current_device_cache_guids, device.cache_guid())) {
+      continue;
+    }
+
+    // Only consider recently-used devices.
+    base::Time last_updated_time =
+        ProtoTimeToTime(device.last_updated_timestamp());
+    if (now - last_updated_time > kDeviceActivityTimeRange) {
+      continue;
+    }
+
+    // Perform activity-time-range based deduping, similar to
+    // DeviceInfoSyncBridge::CountActiveDevicesByType(): Devices with the same
+    // form factor and OS, but with non-overlapping usage times, are likely
+    // the same device, just with different cache GUIDs.
+    base::Time begin = syncer::ProtoTimeToTime(entity.ctime());
+    base::Time end = syncer::ProtoTimeToTime(entity.mtime());
+    // Begin/end timestamps are received from other devices without local
+    // sanitizing, so potentially the timestamps could be malformed, and the
+    // modification time may predate the creation time.
+    if (begin > end) {
+      continue;
+    }
+    sync_pb::SyncEnums::DeviceFormFactor form_factor =
+        device.device_form_factor();
+    sync_pb::SyncEnums::OsType os_type = device.os_type();
+    events_by_type[{form_factor, os_type}].emplace(begin, 1);
+    events_by_type[{form_factor, os_type}].emplace(end, -1);
+  }
+
+  return events_by_type;
+}
+
+// `events` represents a set of devices, more precisely their first and last use
+// dates. First-use dates are represented as `1`, last-use dates as `-1`. This
+// function computes the maximum number of devices that were used at any one
+// time, i.e. the max number of devices with overlapping usage times.
+int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {
+  int max_overlapping = 0;
+  int overlapping = 0;
+  for (const auto& [time, value] : events) {
+    overlapping += value;
+    CHECK_LE(0, overlapping);
+    max_overlapping = std::max(max_overlapping, overlapping);
+  }
+  CHECK_EQ(overlapping, 0);
+  return max_overlapping;
+}
+
+std::vector<DeviceStatisticsTracker::Platform> GetPlatformsPerDevice(
+    const absl::flat_hash_map<std::pair<sync_pb::SyncEnums::DeviceFormFactor,
+                                        sync_pb::SyncEnums::OsType>,
+                              std::multimap<base::Time, int>>& events_by_type) {
+  std::vector<DeviceStatisticsTracker::Platform> result;
+  for (const auto& [form_factor_and_os_type, events] : events_by_type) {
+    // Figure out the platform/OS of the other device, and skip
+    // unknown/uninteresting ones.
+    std::optional<DeviceStatisticsTracker::Platform> platform =
+        PlatformFromProto(form_factor_and_os_type.second);
+    if (!platform) {
+      continue;
+    }
+    int count = CalculateMaxConcurrentEvents(events);
+    for (int i = 0; i < count; ++i) {
+      result.push_back(*platform);
+    }
+  }
+  return result;
 }
 
 }  // namespace
@@ -158,41 +253,10 @@ void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
   CHECK(request);
   requests_.erase(gaia);
 
-  const base::Time now = base::Time::Now();
-
   if (request->GetState() == DeviceStatisticsRequest::State::kComplete) {
-    other_devices_by_gaia_[gaia] = std::vector<Platform>();
-    for (const sync_pb::DeviceInfoSpecifics& device : request->GetResults()) {
-      // Only consider Chrome devices (not Google Play Services).
-      if (!device.has_chrome_version_info()) {
-        continue;
-      }
-
-      // Don't consider the current device.
-      if (base::Contains(current_device_cache_guids_, device.cache_guid())) {
-        continue;
-      }
-
-      // Only consider recently-used devices.
-      base::Time last_updated_time =
-          ProtoTimeToTime(device.last_updated_timestamp());
-      if (now - last_updated_time > kDeviceActivityTimeRange) {
-        continue;
-      }
-
-      // Figure out the platform/OS of the other device, and skip
-      // unknown/uninteresting ones.
-      std::optional<Platform> platform = PlatformFromProto(device);
-      if (!platform) {
-        continue;
-      }
-
-      // TODO(crbug.com/465716865): Implement activity-time-range based deduping
-      // logic as in DeviceInfoSyncBridge::CountActiveDevicesByType(). This will
-      // require plumbing the ctime/mtime from the SyncEntity here.
-
-      other_devices_by_gaia_[gaia]->push_back(*platform);
-    }
+    other_devices_by_gaia_[gaia] =
+        GetPlatformsPerDevice(GetRelevantEventsByType(
+            request->GetResults(), current_device_cache_guids_));
   } else {
     other_devices_by_gaia_[gaia] = base::unexpected(kRequestFailed);
   }
