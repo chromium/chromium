@@ -579,6 +579,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{كلمة مرور واحدة محتمَل تعرّضها للاختراق}two{كلمتا مرور ({NUM_COMPROMISED}) محتمَل تعرّضهما للاختراق}few{{NUM_COMPROMISED} كلمات مرور محتمَل تعرّضها للاختراق}many{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}other{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="1380028686461971526">الاتصال التلقائي بالشبكة</translation>
 <translation id="1381567580865186407">‏سيتم إرسال ملفات التعرّف على الكلام باللغة <ph name="LANGUAGE" /> إلى Google لمعالجتها.</translation>
+<translation id="1382174183118245544">أرقام بطاقات الائتمان</translation>
 <translation id="1383065744946263511">تثبيت الإضافة على شريط الأدوات</translation>
 <translation id="1383381142702995121">إدارة هذه الإضافة</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -1698,6 +1699,7 @@
 <translation id="2133775869826239001">اختيار المزيد من الميزات لإعدادها</translation>
 <translation id="2133857665503360653">محاولة تنزيل الملف "<ph name="FILE_NAME" />" مجددًا</translation>
 <translation id="2134905185275441536">مراجع تصديق النظام</translation>
+<translation id="2135420518376202233">أسماء الأجهزة التي تتضمّن بلوتوث</translation>
 <translation id="21354425047973905">إخفاء أرقام التعريف الشخصية</translation>
 <translation id="2135456203358955318">المكبّر الذي تم إرساؤه</translation>
 <translation id="2135787500304447609">&amp;استئناف</translation>
@@ -2835,6 +2837,7 @@
 <translation id="2893180576842394309">‏قد تستخدم Google سجلّك لتخصيص محرّك بحث Google وخدماتها الأخرى.</translation>
 <translation id="2893318819023133318">عكس طرق العرض</translation>
 <translation id="2893701697603065178">بيئة التطوير المُدارة</translation>
+<translation id="2894596417096093634">معرّفات تقارير الأعطال</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
 <translation id="289695669188700754">معرّف المفتاح: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ستتم إزالة هذا الإعداد المخصّص عند إغلاق جميع نوافذ التصفّح المتخفي.</translation>
@@ -3106,6 +3109,7 @@
 <translation id="3076966043108928831">حفظ كلمة المرور على هذا الجهاز فقط</translation>
 <translation id="3076977359333237641">تم حذف بيانات تسجيل الدخول</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">تحديث على مستوى المستخدِم</translation>
 <translation id="3080933187214341848">لم تتم مزامنة هذه الشبكة مع حسابك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">اسم التطبيق أو رقم تعريفه</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4287,6 +4291,7 @@
 <translation id="3867831579565057323">ربط الشاشة التي تعمل باللمس</translation>
 <translation id="3867944738977021751">حقول الشهادة</translation>
 <translation id="3869564880668247983">تجميع كل علامات التبويب</translation>
+<translation id="3869750789340473337">لقطات من الذاكرة</translation>
 <translation id="3869917919960562512">فهرس خاطئ.</translation>
 <translation id="3870626286046977643">مشاركة صوت النظام أيضًا</translation>
 <translation id="3870688298003434214">إلغاء اختيار "<ph name="BOOKMARK_TITLE" />"</translation>
@@ -6435,7 +6440,7 @@
 <translation id="5379140238605961210">متابعة حظر الدخول إلى الميكروفون</translation>
 <translation id="5380526436444479273">يُرجى الانتظار بضع دقائق ثم إعادة المحاولة.</translation>
 <translation id="5382591305415226340">إدارة الروابط المدعومة</translation>
-<translation id="5384401776498845256">مَن يمكنه المشاركة معك</translation>
+<translation id="5384401776498845256">مَن يمكنه مشاركة المحتوى معك</translation>
 <translation id="5385628342687007304">‏يتم حفظ كلمة المرور هذه على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google.</translation>
 <translation id="5387116558048951800">تعديل <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">تم تغيير سياسة المؤسسة، وبموجب هذا التغيير، تمت إضافة زر "التجارب" إلى شريط الأدوات. انقر على الزرّ لفتح مربّع حوار لتفعيل التجارب.</translation>
@@ -7168,6 +7173,7 @@
 <translation id="5886009770935151472">إصبع 1</translation>
 <translation id="5886112770923972514">الاتصال بالأجهزة القريبة التي تستخدم ميزة "الإقران السريع" وضبط إعداداتها بسرعة</translation>
 <translation id="5886384907280980632">الإيقاف الآن</translation>
+<translation id="5888337581644150257">الأرقام الدولية للحسابات المصرفية</translation>
 <translation id="5888889603768021126">تم تسجيل الدخول باستخدام</translation>
 <translation id="5889282057229379085">‏أقصى عدد من المراجع المصدقة المتوسطة (CA): <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">‏يمكنك استخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> لتشفير البيانات التي تمت مزامنتها. ولن يتم تشفير طُرق الدفع والعناوين من Google Pay، أو مزامنة سجلّ التصفُّح من Chrome.</translation>
@@ -7449,6 +7455,7 @@
 <translation id="6082877069782862752">تحديد المفاتيح</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - جزء من مجموعة لم تتم تسميتها</translation>
 <translation id="6086004606538989567">غير مسموح للحساب الذي أثبتّ ملكيته بالوصول إلى هذا الجهاز.</translation>
+<translation id="6086350918562605938">تحديث على مستوى النظام</translation>
 <translation id="6086418630711763366">‏بإمكانك التنقّل بين الصفحات باستخدام مؤشر النص. اضغط على Ctrl + <ph name="KEY" /> لإيقاف هذه الميزة.</translation>
 <translation id="6086846494333236931">تم التثبيت من قبل مشرفك</translation>
 <translation id="6087286598828478206">هل تريد حظر هذا الحساب ومغادرة المجموعة؟</translation>
@@ -7827,7 +7834,7 @@
 <translation id="6345878117466430440">وضع علامة "مقروءة"</translation>
 <translation id="6346952829206698721">لصق من الحافظة</translation>
 <translation id="6347010704471250799">عرض إشعار</translation>
-<translation id="634792071306410644">لا يمكن لأحد المشاركة معك إلا عندما تجعل جهازك مرئيًا</translation>
+<translation id="634792071306410644">لا يمكن لأحد مشاركة المحتوى معك إلا إذا جعلت جهازك مرئيًا</translation>
 <translation id="6348252528297699679">لإيقاف إمكانية الوصول إلى الموقع الجغرافي، انتقِل إلى "الإعدادات" &gt; "الخصوصية والأمان" &gt; "عناصر التحكّم في الخصوصية" &gt; "الوصول إلى الموقع الجغرافي". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">مساحة التخزين بلا اتصال بالإنترنت</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>

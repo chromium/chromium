@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp đã tải xuống</translation>
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2673508731173059946">Truy cập vào đường liên kết đã sao chép</translation>
+<translation id="2679659833697380">Thông tin sẽ được lưu vào thiết bị của bạn</translation>
 <translation id="2688535388040882469">Biểu ngữ</translation>
 <translation id="2690858294534178585">Máy ảnh đang được sử dụng</translation>
 <translation id="2691653761409724435">Ko khả dụng khi ngoại tuyến</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Khi đăng nhập bằng tài khoản được quản lý, bạn có thể tách biệt hoạt động duyệt web liên quan đến tổ chức (trong đó có các thẻ, nhật ký và mật khẩu) với hoạt động duyệt web khác của mình.
 
        Chọn cách xử lý dữ liệu duyệt web hiện có trên thiết bị này.</translation>
+<translation id="4675298276894277358">Trang web này sẽ không hiển thị nữa</translation>
 <translation id="4682496302933121474">Dịch trang này?</translation>
 <translation id="4682686630151240767">1. Mở phần Cài đặt iPhone</translation>
 <translation id="4691892551491778176">Khi bạn dùng tính năng này, nội dung trên trang và URL sẽ được gửi đến Google, nhưng không được dùng để cải thiện các mô hình AI tạo sinh. Bạn có thể tắt tính năng này trong phần cài đặt bất kỳ lúc nào.</translation>
@@ -1362,7 +1364,6 @@
 <translation id="6122191549521593678">Trực tuyến</translation>
 <translation id="6122831415929794347">Tắt tính năng Duyệt web an toàn?</translation>
 <translation id="6123514585040403489">Hệ thống sẽ đóng các thẻ</translation>
-<translation id="6127379762771434464">Đã xóa mục</translation>
 <translation id="6136914049981179737">Giây trước</translation>
 <translation id="6138324221869147340">Một số tính năng không còn hoạt động</translation>
 <translation id="6140600850356225166">Yêu cầu mở đường liên kết từ các ứng dụng khác ở chế độ ẩn danh</translation>
@@ -2130,6 +2131,7 @@
 <translation id="8856643812068084733">Kho lưu trữ</translation>
 <translation id="8863067612494559785">Đang gửi tới <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Xem đường đi và thông tin về địa phương từ Google Maps</translation>
+<translation id="8867879594900082274">Nội dung chỉnh sửa bạn thực hiện sẽ chỉ áp dụng cho các trang web được ghim trên thiết bị này.</translation>
 <translation id="8871974300055371298">Cài đặt nội dung</translation>
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
 <translation id="8879604564928138696">Nhấn đúp để dùng thử</translation>

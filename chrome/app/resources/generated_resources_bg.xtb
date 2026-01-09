@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Няма компрометирани пароли}=1{1 компрометирана парола}other{{NUM_COMPROMISED} компрометирани пароли}}</translation>
 <translation id="1380028686461971526">Свързване с мрежа автоматично</translation>
 <translation id="1381567580865186407">Говорът на <ph name="LANGUAGE" /> се изпраща до Google за обработка</translation>
+<translation id="1382174183118245544">Номера на кредитни карти</translation>
 <translation id="1383065744946263511">Фиксиране в лентата с инструменти</translation>
 <translation id="1383381142702995121">Управление на това разширение</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
@@ -1699,6 +1700,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2133775869826239001">Изберете още функции за настройване</translation>
 <translation id="2133857665503360653">Нов опит за <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Системни сертифициращи органи</translation>
+<translation id="2135420518376202233">Имена на устройствата с Bluetooth</translation>
 <translation id="21354425047973905">Скриване на ПИН кодовете</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
 <translation id="2135787500304447609">&amp;Възобновяване</translation>
@@ -2839,6 +2841,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2893180576842394309">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google</translation>
 <translation id="2893318819023133318">Обратни изгледи</translation>
 <translation id="2893701697603065178">Управлявана среда на програмиране</translation>
+<translation id="2894596417096093634">Идентификатори на сигналите за сривове</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
 <translation id="289695669188700754">Идентификатор (ИД) на ключ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Тази персонализирана настройка ще бъде премахната, когато затворите всички прозорци в режим „инкогнито“</translation>
@@ -3110,6 +3113,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3076966043108928831">Запазване само на това устройство</translation>
 <translation id="3076977359333237641">Данните ви за вход бяха изтрити</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Инсталиране на инструмента за актуализиране на потребител</translation>
 <translation id="3080933187214341848">Тази мрежа не е синхронизирана с профила ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Име или ID на приложението</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4291,6 +4295,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3867831579565057323">Асоцииране на сензорния екран</translation>
 <translation id="3867944738977021751">Полета на сертификата</translation>
 <translation id="3869564880668247983">Групиране на всички раздели</translation>
+<translation id="3869750789340473337">Снимки на паметта</translation>
 <translation id="3869917919960562512">Грешен индекс.</translation>
 <translation id="3870626286046977643">Споделяне и на системния звук</translation>
 <translation id="3870688298003434214">Премахване на избора на <ph name="BOOKMARK_TITLE" /></translation>
@@ -7176,6 +7181,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5886009770935151472">Пръст 1</translation>
 <translation id="5886112770923972514">Свързване и бързо настройване на устройствата наблизо с функцията за бързо сдвояване</translation>
 <translation id="5886384907280980632">Изключване сега</translation>
+<translation id="5888337581644150257">Международни номера на банкови сметки</translation>
 <translation id="5888889603768021126">Влезли сте със:</translation>
 <translation id="5889282057229379085">Максимален брой междинни сертифициращи органи: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифроване на синхронизираните данни със собствения ви <ph name="BEGIN_LINK" />пропуск за синхронизиране<ph name="END_LINK" />. Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.</translation>
@@ -7457,6 +7463,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6082877069782862752">Задаване на функции за клавишите</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> е част от група без име</translation>
 <translation id="6086004606538989567">Профилът, който потвърдихте, не е упълномощен да използва това устройство.</translation>
+<translation id="6086350918562605938">Инсталиране на инструмента за актуализиране на система</translation>
 <translation id="6086418630711763366">Можете да навигирате в страниците с помощта на текстов курсор. Натиснете Ctrl + <ph name="KEY" />, за да изключите функцията.</translation>
 <translation id="6086846494333236931">Инсталирано от администратора ви</translation>
 <translation id="6087286598828478206">Искате ли да блокирате потребителя и да напуснете групата?</translation>

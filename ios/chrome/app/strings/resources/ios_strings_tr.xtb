@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Bu cihazı kullanan herkes indirilen dosyaları görebilir</translation>
 <translation id="2671423594960767771">Grubu paylaş</translation>
 <translation id="2673508731173059946">Kopyalanan bağlantıyı ziyaret et</translation>
+<translation id="2679659833697380">Bilgileriniz cihazınıza kaydedilir</translation>
 <translation id="2688535388040882469">Banner'lar</translation>
 <translation id="2690858294534178585">Kamera kullanılıyor</translation>
 <translation id="2691653761409724435">Çevrimdışı kullanılamaz</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Yönetilen hesabınızla oturum açtığınızda kuruluşunuzla ilgili göz atma geçmişinizi (sekmeler, geçmiş ve şifreler dahil) diğer göz atma etkinliklerinizden ayrı tutabilirsiniz.
 
        Bu cihazdaki mevcut tarama verileri ile ne yapılacağını seçin.</translation>
+<translation id="4675298276894277358">Bu site bir daha gösterilmeyecek</translation>
 <translation id="4682496302933121474">Sayfa çevrilsin mi?</translation>
 <translation id="4682686630151240767">1. iPhone ayarlarını açın</translation>
 <translation id="4691892551491778176">Bu özelliği kullandığınızda sayfa içeriği ve URL'ler Google'a gönderilir ancak üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz. Bu özelliği ayarlarda istediğiniz zaman kapatabilirsiniz.</translation>
@@ -1362,7 +1364,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6122191549521593678">Çevrimiçi</translation>
 <translation id="6122831415929794347">Güvenli Tarama kapatılsın mı?</translation>
 <translation id="6123514585040403489">Sekmeleriniz kapatılacak</translation>
-<translation id="6127379762771434464">Öğe kaldırıldı</translation>
 <translation id="6136914049981179737">Sn. önce</translation>
 <translation id="6138324221869147340">Bazı özellikler artık kullanılamıyor</translation>
 <translation id="6140600850356225166">Diğer uygulamalardan gelen bağlantıları gizli modda açmak için sor</translation>
@@ -2130,6 +2131,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8856643812068084733">Arşivler</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> cihazına gönderiliyor…</translation>
 <translation id="8863431381414769983">Google Haritalar'dan yol tarifi ve bölgenizle ilgili bilgiler alın</translation>
+<translation id="8867879594900082274">Düzenlemeleriniz yalnızca bu cihazdaki sabitlenmiş sitelerinize uygulanır.</translation>
 <translation id="8871974300055371298">İçerik ayarları</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8879604564928138696">Denemek için iki kez dokunun</translation>

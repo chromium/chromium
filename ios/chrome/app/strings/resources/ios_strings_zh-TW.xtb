@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">登入代管帳戶後，就能將貴機構相關瀏覽資料 (包括分頁、歷史記錄和密碼) 與其他瀏覽資料分開。
 
        請選擇如何處理這部裝置上的現有瀏覽資料。</translation>
+<translation id="4675298276894277358">系統不會再顯示這個網站</translation>
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的 [設定]</translation>
 <translation id="4691892551491778176">使用這項功能時，頁面內容和網址會傳送到 Google，但不會用於改良生成式 AI 模型。你可以隨時前往設定關閉這項功能。</translation>
@@ -1363,7 +1364,6 @@
 <translation id="6122191549521593678">線上</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
 <translation id="6123514585040403489">你的分頁即將關閉</translation>
-<translation id="6127379762771434464">已移除項目</translation>
 <translation id="6136914049981179737">幾秒前</translation>
 <translation id="6138324221869147340">部分功能已無法使用</translation>
 <translation id="6140600850356225166">要求在無痕模式中開啟其他應用程式的連結</translation>

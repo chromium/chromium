@@ -575,6 +575,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{1 passord er utsatt for sikkerhetsbrudd}other{{NUM_COMPROMISED} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="1380028686461971526">Koble til nettverket automatisk</translation>
 <translation id="1381567580865186407">Tale på <ph name="LANGUAGE" /> blir sendt til Google for behandling</translation>
+<translation id="1382174183118245544">Kredittkortnumre</translation>
 <translation id="1383065744946263511">Fest på verktøyraden</translation>
 <translation id="1383381142702995121">Administrer denne utvidelsen</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv på nytt senere.</translation>
@@ -1697,6 +1698,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2133775869826239001">Velg flere funksjoner du vil konfigurere</translation>
 <translation id="2133857665503360653">Prøv å laste ned <ph name="FILE_NAME" /> på nytt</translation>
 <translation id="2134905185275441536">System-CA-er</translation>
+<translation id="2135420518376202233">Navn på Bluetooth-enheter</translation>
 <translation id="21354425047973905">Skjul PIN-koder</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
 <translation id="2135787500304447609">&amp;Fortsett</translation>
@@ -2837,6 +2839,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2893180576842394309">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg</translation>
 <translation id="2893318819023133318">Vend om visninger</translation>
 <translation id="2893701697603065178">Administrert utviklingsmiljø</translation>
+<translation id="2894596417096093634">Identifikatorer for krasjrapporter</translation>
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
 <translation id="289695669188700754">Nøkkel-id: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Denne egendefinerte innstillingen blir fjernet når du lukker alle inkognitovinduer</translation>
@@ -3108,6 +3111,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3076966043108928831">Lagre kun på denne enheten</translation>
 <translation id="3076977359333237641">Påloggingsinformasjonen ble slettet</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Oppdateringsprogram per bruker</translation>
 <translation id="3080933187214341848">Dette nettverket er ikke synkronisert med kontoen din. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Appnavn eller -ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4288,6 +4292,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3867831579565057323">Tilordne berøringsskjermen</translation>
 <translation id="3867944738977021751">Sertifikatfelter</translation>
 <translation id="3869564880668247983">Gruppér alle faner</translation>
+<translation id="3869750789340473337">Minneavbildninger</translation>
 <translation id="3869917919960562512">Feil indeks.</translation>
 <translation id="3870626286046977643">Del også lyd fra systemet</translation>
 <translation id="3870688298003434214">Fjern merkingen av <ph name="BOOKMARK_TITLE" /></translation>
@@ -7167,6 +7172,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Koble til og konfigurer raskt enheter i nærheten med Rask sammenkobling</translation>
 <translation id="5886384907280980632">Slå av nå</translation>
+<translation id="5888337581644150257">Internasjonale bankkontonumre</translation>
 <translation id="5888889603768021126">Logget på med</translation>
 <translation id="5889282057229379085">Maksimalt antall mellomliggende sertifiseringsinstanser: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Krypter synkroniserte data med din egen <ph name="BEGIN_LINK" />passordfrase for synkronisering<ph name="END_LINK" />. Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.</translation>
@@ -7448,6 +7454,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6082877069782862752">Tastetilordninger</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del av gruppe uten navn</translation>
 <translation id="6086004606538989567">Kontoen du verifiserte, er ikke autorisert for tilgang til denne enheten.</translation>
+<translation id="6086350918562605938">Oppdateringsprogram for hvert system</translation>
 <translation id="6086418630711763366">Du kan navigere på sider med en tekstmarkør. Trykk på Ctrl + <ph name="KEY" /> for å slå av dette.</translation>
 <translation id="6086846494333236931">Installert av administratoren din</translation>
 <translation id="6087286598828478206">Vil du blokkere og forlate gruppen?</translation>

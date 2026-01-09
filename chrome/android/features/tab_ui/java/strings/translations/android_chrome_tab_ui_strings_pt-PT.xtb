@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Remover separador e sair do grupo</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Adicione até <ph name="LIMIT_COUNT_ONE" /> ficheiro, separador ou imagem}other{Adicione até <ph name="LIMIT_COUNT_MANY" /> ficheiros, separadores ou imagens}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
 <translation id="5627941783489838464">Nenhuma atualização de separadores</translation>

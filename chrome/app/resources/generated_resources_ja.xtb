@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: {NUM_COMPROMISED} 件}}</translation>
 <translation id="1380028686461971526">自動接続するネットワーク</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> の音声は処理のために Google に送信されます</translation>
+<translation id="1382174183118245544">クレジット カード番号</translation>
 <translation id="1383065744946263511">ツールバーに固定</translation>
 <translation id="1383381142702995121">この拡張機能を管理</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
@@ -1690,6 +1691,7 @@
 <translation id="2133775869826239001">設定するその他の機能を選択する</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> を再試行</translation>
 <translation id="2134905185275441536">システム CA</translation>
+<translation id="2135420518376202233">Bluetooth デバイス名</translation>
 <translation id="21354425047973905">PIN を非表示</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
 <translation id="2135787500304447609">再開(&amp;R)</translation>
@@ -2825,6 +2827,7 @@
 <translation id="2893180576842394309">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="2893318819023133318">ビューを反転</translation>
 <translation id="2893701697603065178">管理対象の開発環境</translation>
+<translation id="2894596417096093634">障害レポート ID</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
@@ -3096,6 +3099,7 @@
 <translation id="3076966043108928831">このデバイスにのみ保存</translation>
 <translation id="3076977359333237641">ログインデータが削除されました</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">ユーザーあたりのアップデータ</translation>
 <translation id="3080933187214341848">このネットワークはアカウントに同期されていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">アプリの名前または ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4273,6 +4277,7 @@
 <translation id="3867831579565057323">タッチスクリーンをマッピング</translation>
 <translation id="3867944738977021751">証明書のフィールド</translation>
 <translation id="3869564880668247983">すべてのタブをグループ化</translation>
+<translation id="3869750789340473337">メモリダンプ</translation>
 <translation id="3869917919960562512">インデックスが正しくありません。</translation>
 <translation id="3870626286046977643">システム音声も共有する</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> の選択を解除する</translation>
@@ -7150,6 +7155,7 @@
 <translation id="5886009770935151472">指 1</translation>
 <translation id="5886112770923972514">近くにあるファスト ペアリング デバイスを接続して、すばやくセットアップする</translation>
 <translation id="5886384907280980632">今すぐオフにする</translation>
+<translation id="5888337581644150257">国際銀行勘定番号</translation>
 <translation id="5888889603768021126">ログインに使用した ID プロバイダ</translation>
 <translation id="5889282057229379085">中間認証局の最大数: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">同期データを<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化します。Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。</translation>
@@ -7431,6 +7437,7 @@
 <translation id="6082877069782862752">キーのマッピング</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
+<translation id="6086350918562605938">システムあたりのアップデータ</translation>
 <translation id="6086418630711763366">テキスト カーソルを使ってページ間を移動できます。オフにするには、Ctrl+<ph name="KEY" /> キーを押します。</translation>
 <translation id="6086846494333236931">管理者によりインストールされています</translation>
 <translation id="6087286598828478206">ブロックしてグループから退出しますか？</translation>

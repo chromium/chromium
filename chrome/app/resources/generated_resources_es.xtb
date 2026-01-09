@@ -575,6 +575,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{No hay contraseñas vulneradas}=1{1 contraseña vulnerada}other{{NUM_COMPROMISED} contraseñas vulneradas}}</translation>
 <translation id="1380028686461971526">Conectarse automáticamente a la red</translation>
 <translation id="1381567580865186407">Lo que se diga en <ph name="LANGUAGE" /> se enviará a Google para procesarse</translation>
+<translation id="1382174183118245544">Números de tarjetas de crédito</translation>
 <translation id="1383065744946263511">Fijar en la barra de herramientas</translation>
 <translation id="1383381142702995121">Gestionar esta extensión</translation>
 <translation id="1383597849754832576">No se han podido descargar los archivos de voz. Prueba de nuevo más tarde.</translation>
@@ -701,7 +702,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="1468571364034902819">No se puede utilizar este perfil</translation>
 <translation id="1469702495092129863">Comprueba tu micrófono</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{Añadir pestaña a nuevo grupo}other{Añadir pestañas a nuevo grupo}}</translation>
 <translation id="1470946456740188591">Para activar o desactivar la navegación por cursor de texto, usa la combinación de teclas Ctrl + tecla de búsqueda + 7</translation>
 <translation id="1471034383866732283">El modo Lectura no puede encontrar el contenido principal de esta página</translation>
 <translation id="1472675084647422956">Mostrar más</translation>
@@ -1693,6 +1694,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2133775869826239001">Elige más funciones para configurarlas</translation>
 <translation id="2133857665503360653">Reintentar descarga de <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Autoridades de certificación del sistema</translation>
+<translation id="2135420518376202233">Nombres de dispositivos Bluetooth</translation>
 <translation id="21354425047973905">Ocultar PINs</translation>
 <translation id="2135456203358955318">Lupa fijada</translation>
 <translation id="2135787500304447609">&amp;Reanudar</translation>
@@ -2831,6 +2833,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2893180576842394309">Es posible que Google utilice tu historial para personalizar la Búsqueda y otros servicios de Google</translation>
 <translation id="2893318819023133318">Invertir vistas</translation>
 <translation id="2893701697603065178">Entorno de desarrollo gestionado</translation>
+<translation id="2894596417096093634">Identificadores de informes sobre fallos</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Este ajuste personalizado se quitará cuando cierres todas tus ventanas de Incógnito</translation>
@@ -3102,6 +3105,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3076966043108928831">Guardar solo en este dispositivo</translation>
 <translation id="3076977359333237641">Se han eliminado tus datos de inicio de sesión</translation>
 <translation id="3077734595579995578">mayús</translation>
+<translation id="3080930813589868009">Actualizador por usuario</translation>
 <translation id="3080933187214341848">Esta red no está sincronizada con tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nombre o ID de la aplicación</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" />: <ph name="PAGE_URL" /></translation>
@@ -4282,6 +4286,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3867831579565057323">Asignar tu pantalla táctil</translation>
 <translation id="3867944738977021751">Campos de certificado</translation>
 <translation id="3869564880668247983">Agrupar todas las pestañas</translation>
+<translation id="3869750789340473337">Volcados de memoria</translation>
 <translation id="3869917919960562512">Índice incorrecto</translation>
 <translation id="3870626286046977643">Compartir también el audio del sistema</translation>
 <translation id="3870688298003434214">Desmarcar <ph name="BOOKMARK_TITLE" /></translation>
@@ -7163,6 +7168,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conecta y configura rápidamente dispositivos con Emparejamiento rápido cercanos</translation>
 <translation id="5886384907280980632">Desactivar ahora</translation>
+<translation id="5888337581644150257">Números internacionales de cuenta bancaria</translation>
 <translation id="5888889603768021126">Sesión iniciada con</translation>
 <translation id="5889282057229379085">Número máximo de entidades emisoras de certificados intermediarias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Cifra los datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" />. Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.</translation>
@@ -7444,6 +7450,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6082877069782862752">Asignación de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: parte de un grupo sin nombre</translation>
 <translation id="6086004606538989567">La cuenta que has verificado no tiene autorización para acceder a este dispositivo.</translation>
+<translation id="6086350918562605938">Actualizador por sistema</translation>
 <translation id="6086418630711763366">Puedes desplazarte por las páginas con un cursor de texto. Pulsa Ctrl + <ph name="KEY" /> para desactivarla.</translation>
 <translation id="6086846494333236931">Instalada por tu administrador</translation>
 <translation id="6087286598828478206">¿Bloquear y salir del grupo?</translation>

@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {NUM_COMPROMISED}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {NUM_COMPROMISED}টি পাসওয়ার্ড}}</translation>
 <translation id="1380028686461971526">নেটওয়ার্কে অটোমেটিক কানেক্ট করুন</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> স্পিচ প্রসেস করার জন্য Google-এ পাঠানো হয়</translation>
+<translation id="1382174183118245544">ক্রেডিট কার্ড নম্বর</translation>
 <translation id="1383065744946263511">টুলবারে পিন করুন</translation>
 <translation id="1383381142702995121">এই এক্সটেনশন ম্যানেজ করুন</translation>
 <translation id="1383597849754832576">স্পিচ ফাইল ডাউনলোড করা যাবে না। পরে আবার চেষ্টা করুন।</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2133775869826239001">সেট-আপ করতে, আরও ফিচার বেছে নিন</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> আবার চেষ্টা করুন</translation>
 <translation id="2134905185275441536">সিস্টেম সিএ (CA)</translation>
+<translation id="2135420518376202233">ব্লুটুথ ডিভাইসের নাম</translation>
 <translation id="21354425047973905">পিন লুকিয়ে রাখুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2135787500304447609">&amp;পুনঃসূচনা</translation>
@@ -2844,6 +2846,7 @@
 <translation id="2893180576842394309">সার্চ এবং অন্যান্য Google পরিষেবাকে আপনার মতো করে সাজিয়ে নিতে Google আপনার ইতিহাস ব্যবহার করতে পারে</translation>
 <translation id="2893318819023133318">বিপরীত ভিউ</translation>
 <translation id="2893701697603065178">ম্যানেজ করা ডেভেলপমেন্ট এনভায়রনমেন্ট</translation>
+<translation id="2894596417096093634">ক্র্যাশ রিপোর্ট আইডেন্টিফায়ার</translation>
 <translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="289695669188700754">কী ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">আপনি সমস্ত 'ছদ্মবেশী' উইন্ডো বন্ধ করলে এই কাস্টম সেটিং মুছে ফেলা হবে</translation>
@@ -3115,6 +3118,7 @@
 <translation id="3076966043108928831">শুধুমাত্র এই ডিভাইসে সেভ করুন</translation>
 <translation id="3076977359333237641">আপনার সাইন-ইন ডেটা মুছে দেওয়া হয়েছে</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">ব্যবহারকারী-পিছু আপডেটার</translation>
 <translation id="3080933187214341848">এই নেটওয়ার্কটি আপনার অ্যাকাউন্টে সিঙ্ক করা নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">অ্যাপের নাম বা আইডি</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4295,6 +4299,7 @@
 <translation id="3867831579565057323">আপনার টাচস্ক্রিন ম্যাপ করুন</translation>
 <translation id="3867944738977021751">সার্টিফিকেট ক্ষেত্রসমূহ</translation>
 <translation id="3869564880668247983">সব ট্যাব গ্রুপ করুন</translation>
+<translation id="3869750789340473337">মেমরি ডাম্প</translation>
 <translation id="3869917919960562512">ভুল সূচি৷</translation>
 <translation id="3870626286046977643">এছাড়াও সিস্টেম অডিও শেয়ার করুন</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> টিকচিহ্ন সরান</translation>
@@ -7180,6 +7185,7 @@
 <translation id="5886009770935151472">আঙুল ১</translation>
 <translation id="5886112770923972514">আশেপাশের ডিভাইসে কানেক্ট করে দ্রুত পেয়ার সেট-আপ করুন</translation>
 <translation id="5886384907280980632">এখনই বন্ধ করুন</translation>
+<translation id="5888337581644150257">আন্তর্জাতিক ব্যাঙ্ক অ্যাকাউন্ট নম্বর</translation>
 <translation id="5888889603768021126">এর মাধ্যমে সাইন-ইন করেছেন</translation>
 <translation id="5889282057229379085">ইন্টারমিডিয়েট CAগুলির সর্বাধিক সংখ্যা: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">আপনার নিজস্ব <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন। Google Pay থেকে পেমেন্ট পদ্ধতি এবং ঠিকানা এনক্রিপ্ট করা হবে না। Chrome থেকে ব্রাউজিং ইতিহাস সিঙ্ক হবে না।</translation>
@@ -7461,6 +7467,7 @@
 <translation id="6082877069782862752">কী ম্যাপিং</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - অজানা গ্রুপের অংশ</translation>
 <translation id="6086004606538989567">আপনার যাচাই করা অ্যাকাউন্টের সাহায্যে এই ডিভাইস অ্যাক্সেস করার অনুমতি নেই।</translation>
+<translation id="6086350918562605938">সিস্টেম-প্রতি আপডেটার</translation>
 <translation id="6086418630711763366">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে পারবেন। বন্ধ করতে, Ctrl + <ph name="KEY" /> প্রেস করুন।</translation>
 <translation id="6086846494333236931">আপনার প্রশাসক দ্বারা ইনস্টল করা হয়েছে</translation>
 <translation id="6087286598828478206">ব্লক করে গ্রুপ ছেড়ে বেরিয়ে যেতে চান?</translation>

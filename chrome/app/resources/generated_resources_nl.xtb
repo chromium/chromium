@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Je beheerder heeft bepaalde functionaliteit geblokkeerd voor dit apparaat</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wil de standaardwaarden van je Chrome-instellingen herstellen. Als je dit doet, worden je homepage, nieuwe tabbladpagina en zoekmachine opnieuw ingesteld, je extensies uitgezet en alle tabbladen losgemaakt. Ook worden alle andere tijdelijke en gecachte gegevens gewist, zoals cookies, content en sitegegevens.</translation>
 <translation id="1082725763867769612">Offline bestanden</translation>
+<translation id="1083050113196701330">Updatecheck afgerond. Er was geen update beschikbaar.</translation>
 <translation id="1084026333130513768">Opslaan, delen en casten</translation>
 <translation id="1084096383128641877">Als je dit wachtwoord verwijdert, wordt je account in <ph name="DOMAIN" /> niet verwijderd. Wijzig je wachtwoord of verwijder je account in <ph name="DOMAIN_LINK" /> om het te beschermen.</translation>
 <translation id="1084288067399862432">Het gehackte wachtwoord is gewijzigd.
@@ -734,6 +735,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1486486872607808064">Scan deze QR-code met de camera op het apparaat waarop je een toegangssleutel voor <ph name="APP_NAME" /> wilt maken</translation>
 <translation id="1486616492435615702">Maak een conceptversie of verfijn bestaand werk.</translation>
 <translation id="1487335504823219454">Aan - aangepaste instellingen</translation>
+<translation id="1488513761150925974">Je taken checken</translation>
 <translation id="1489101155914355052">Suggesties voor dit document genereren…</translation>
 <translation id="1493152297698462486">Afbeelding maken met Gemini</translation>
 <translation id="1493892686965953381">Wachten op <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3624,6 +3626,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Je deelt deze pagina met Gemini</translation>
 <translation id="345078987193237421">Zo geef je cameratoegang aan apps, websites met camerarechten en systeemservices.</translation>
+<translation id="345163758690017738">Je taak is in behandeling…</translation>
 <translation id="3452999110156026232">Toegang door ouders</translation>
 <translation id="3453082738208775226">Offline opslag opschonen?</translation>
 <translation id="3453597230179205517">Locatietoegang is geblokkeerd</translation>
@@ -3793,6 +3796,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3567284462585300767">Als je bestanden wilt krijgen en accepteren van mensen bij jou in de buurt, moet je zichtbaar zijn</translation>
 <translation id="356738834800832239">Je wachtwoord is opgeslagen</translation>
 <translation id="3568431410312984116">Sta toe dat Help me met schrijven automatisch wordt geopend</translation>
+<translation id="3569304198553566878"><ph name="NUM_DISPLAYED_EVENTS" /> van <ph name="NUM_TOTAL_EVENTS" /> worden weergegeven</translation>
 <translation id="3569382839528428029">Wil je je scherm delen met <ph name="APP_NAME" />?</translation>
 <translation id="3569614820047645079">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen.</translation>
 <translation id="3569617221227793022">De tijdzone is op dit moment ingesteld op <ph name="TIME_ZONE_ENTRY" />. Deze instelling wordt beheerd door je beheerder.</translation>
@@ -7618,6 +7622,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6206199626856438589">Je wordt uitgelogd van de getoonde sites, waaronder in geopende tabbladen</translation>
 <translation id="6206311232642889873">A&amp;fbeelding kopiëren</translation>
 <translation id="6207200176136643843">Standaardzoomniveau resetten</translation>
+<translation id="6207795130974856324">Wachten op je hulp</translation>
 <translation id="6207937957461833379">Land/regio</translation>
 <translation id="6208521041562685716">Mobiele data activeren</translation>
 <translation id="6208725777148613371">Kan niet opslaan in <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
@@ -8334,6 +8339,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6715735940363172819">Websites mogen je microfoon niet gebruiken</translation>
 <translation id="6716049856796700977">Niets kan je locatie gebruiken. Je locatie is via je IP-adres misschien nog wel zichtbaar voor apps en websites. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">De netwerkverbinding is verbroken. Check je netwerkverbinding of probeer een ander wifi-netwerk.</translation>
+<translation id="671868032356459320">Bereik van updater: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Scherm vergrendelen</translation>
 <translation id="6719839880830057298">Bestandsupload afgerond</translation>
 <translation id="6721744718589119342">We kunnen je een e-mail sturen als we meer informatie nodig hebben of als er updates zijn</translation>
@@ -9183,6 +9189,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7307129035224081534">Onderbroken</translation>
 <translation id="7308643132139167865">Websitetalen</translation>
 <translation id="7309214454733221756">Een toegangssleutel maken om in te loggen bij <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Takenlijst</translation>
 <translation id="7311005168897771689">Toegang krijgen tot je Google Drive-bestanden als je offline bent</translation>
 <translation id="7311244614769792472">Geen resultaten gevonden</translation>
 <translation id="7312040805247765153">Kan app niet installeren</translation>
@@ -11231,6 +11238,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8680251145628383637">Log in om je bookmarks, geschiedenis, wachtwoorden en andere instellingen op te halen op al je apparaten. Je wordt ook automatisch ingelogd bij je Google-services.</translation>
 <translation id="8681886425883659911">Advertenties worden geblokkeerd op sites waarvan bekend is dat ze opdringerige of misleidende advertenties tonen</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is verbonden en klaar</translation>
+<translation id="8683720831806477407">Bereik van updater</translation>
 <translation id="8684471948980641888">Synchroniseren toestaan voor netwerken met datalimiet</translation>
 <translation id="8685540043423825702">Je Chrome-profiel</translation>
 <translation id="8685882652128627032">Klik om het dialoogvenster Zoekopdracht op site toevoegen te openen</translation>
@@ -12053,6 +12061,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9220723036554088545">upload een bestand</translation>
 <translation id="9220820413868316583">Til je vinger op en probeer het opnieuw.</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
+<translation id="9222839391870847423">Duur: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Alle bekijken</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Open Extensies om de extensie te beheren}other{Open Extensies om de extensies te beheren}}</translation>
 <translation id="924818813611903184">Talen beheren in de instellingen van Chrome OS</translation>

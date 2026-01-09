@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Järjestelmänvalvojasi on estänyt joitakin laitteen toimintoja</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> haluaa palauttaa Chrome-asetuksesi alkuperäisiksi. Etusivusi, Uusi välilehti -sivusi ja hakukoneesi palautetaan, laajennukset poistetaan käytöstä ja kaikki kiinnitetyt välilehdet irrotetaan. Myös kaikki väliaikaiset ja välimuistissa olevat tiedot, kuten evästeet, sisältö ja sivustotiedot, poistetaan.</translation>
 <translation id="1082725763867769612">Offline-tiedostot</translation>
+<translation id="1083050113196701330">Päivitystarkistus onnistui. Päivitystä ei ollut saatavilla</translation>
 <translation id="1084026333130513768">Tallentaminen, jakaminen ja striimaaminen</translation>
 <translation id="1084096383128641877">Vaikka poistat salasanan, tiliäsi (<ph name="DOMAIN" />) ei poisteta. Vaihda salasana tai poista tili (<ph name="DOMAIN_LINK" />), jotta se pysyy turvassa muilta.</translation>
 <translation id="1084288067399862432">Vaarantunut salasana vaihdettu onnistuneesti.
@@ -735,6 +736,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1486486872607808064">Skannaa tämä QR-koodi sen laitteen kameralla, jolla haluat luoda avainkoodin tähän sovellukseen: <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Luo luonnos tai tarkenna aiemmin luotua tehtävää.</translation>
 <translation id="1487335504823219454">Päällä – muokatut asetukset</translation>
+<translation id="1488513761150925974">Tarkista tehtävät</translation>
 <translation id="1489101155914355052">Luodaan ehdotuksia tälle dokumentille…</translation>
 <translation id="1493152297698462486">Luo kuva Geminin avulla</translation>
 <translation id="1493892686965953381">Odotetaan parametria <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3638,6 +3640,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3450180775417907283"><ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon nyt ja lataat päivityksen.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Jaat tämän välilehden Geminille</translation>
 <translation id="345078987193237421">Sallii pääsyn kameraan sovelluksille, verkkosivustoille, joilla on kameralupa, ja järjestelmäpalveluille</translation>
+<translation id="345163758690017738">Tehtävää käsitellään…</translation>
 <translation id="3452999110156026232">Vanhemman pääsy</translation>
 <translation id="3453082738208775226">Tyhjennetäänkö offline-tallennustila?</translation>
 <translation id="3453597230179205517">Pääsy sijaintiin on estetty</translation>
@@ -3807,6 +3810,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3567284462585300767">Muuta tilasi näkyväksi, jotta voit vastaanottaa ja hyväksyä tiedostoja lähelläsi olevien henkilöiden kanssa</translation>
 <translation id="356738834800832239">Salasana on tallennettu</translation>
 <translation id="3568431410312984116">Salli Apua kirjoittamiseen ‐ominaisuuden automaattinen avautuminen</translation>
+<translation id="3569304198553566878">Näytetään <ph name="NUM_DISPLAYED_EVENTS" />/<ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Haluatko sovelluksen <ph name="APP_NAME" /> jakavan näyttösi?</translation>
 <translation id="3569614820047645079">Omassa Drivessa olevat tiedostot synkronoituvat Chromebookiin automaattisesti, joten voit käyttää niitä ilman internetyhteyttä.</translation>
 <translation id="3569617221227793022">Aikavyöhyke on tällä hetkellä <ph name="TIME_ZONE_ENTRY" />. Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
@@ -7635,6 +7639,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6206199626856438589">Sinut kirjataan ulos näkyviltä sivustoilta, myös avoimilla välilehdillä</translation>
 <translation id="6206311232642889873">K&amp;opioi kuva</translation>
 <translation id="6207200176136643843">Palauta zoomauksen oletustaso</translation>
+<translation id="6207795130974856324">Odottaa apuasi</translation>
 <translation id="6207937957461833379">Maa/alue</translation>
 <translation id="6208521041562685716">Mobiilidataa aktivoidaan</translation>
 <translation id="6208725777148613371">Tallennus kohteeseen <ph name="WEB_DRIVE" /> epäonnistui – <ph name="INTERRUPT_REASON" /></translation>
@@ -8351,6 +8356,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6715735940363172819">Verkkosivustot eivät saa käyttää mikrofoniasi</translation>
 <translation id="6716049856796700977">Sijaintiasi ei voi käyttää. Sijaintisi voi kuitenkin näkyä sovelluksille ja verkkosivustoille IP-osoitteesi perusteella. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Verkkoyhteys katkesi. Tarkista verkkoyhteys tai kokeile toista Wi-Fi-verkkoa.</translation>
+<translation id="671868032356459320">Päivittäjän laajuus: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Näytönlukitus</translation>
 <translation id="6719839880830057298">Tiedoston lataaminen on valmis</translation>
 <translation id="6721744718589119342">Voimme lähettää sinulle lisätietoa tai päivityksiä sähköpostitse</translation>
@@ -9200,6 +9206,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7307129035224081534">Keskeytetty</translation>
 <translation id="7308643132139167865">Verkkosivustojen kielet</translation>
 <translation id="7309214454733221756">Luodaanko avainkoodi sisäänkirjautumista (<ph name="APP_NAME" />) varten?</translation>
+<translation id="7309517920862730287">Tehtävälista</translation>
 <translation id="7311005168897771689">Käytä Google Drive ‐tiedostoja offline-tilassa</translation>
 <translation id="7311244614769792472">Ei tuloksia</translation>
 <translation id="7312040805247765153">Sovelluksen asentaminen epäonnistui</translation>
@@ -11249,6 +11256,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8680251145628383637">Kirjaudu sisään, niin voit käyttää kirjanmerkkejä, historiaa, salasanoja ja muita asetuksiasi kaikilla laitteilla. Sinut kirjataan lisäksi automaattisesti sisään käyttämiisi Googlen palveluihin.</translation>
 <translation id="8681886425883659911">Mainokset estetään sivustoilla, joiden tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> on yhdistetty ja valmiina</translation>
+<translation id="8683720831806477407">Päivittäjän laajuus</translation>
 <translation id="8684471948980641888">Salli synkronointi maksullisissa verkoissa</translation>
 <translation id="8685540043423825702">Chrome-profiilisi</translation>
 <translation id="8685882652128627032">Avaa Lisää sivustohaku ‐valintaikkuna klikkaamalla</translation>
@@ -12070,6 +12078,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9220723036554088545">lataa tiedosto</translation>
 <translation id="9220820413868316583">Nosta sormi ja yritä uudelleen.</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
+<translation id="9222839391870847423">Kesto: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Näytä kaikki</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Jos haluat hallinnoida sitä, avaa Laajennukset}other{Jos haluat hallinnoida niitä, avaa Laajennukset}}</translation>
 <translation id="924818813611903184">Muuta kielivalintoja Chrome-käyttöjärjestelmän asetuksista</translation>

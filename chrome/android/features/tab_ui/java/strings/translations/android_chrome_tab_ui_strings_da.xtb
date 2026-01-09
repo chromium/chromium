@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Fjern fane, og forlad gruppe</translation>
 <translation id="5490235265819901748">Fanegruppen blev udvidet</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Tilføj op til <ph name="LIMIT_COUNT_ONE" /> fil, fane eller billede}one{Tilføj op til <ph name="LIMIT_COUNT_MANY" /> fil, fane eller billede}other{Tilføj op til <ph name="LIMIT_COUNT_MANY" /> filer, faner eller billeder}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Luk fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Luk fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Luk fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="5556417849629758491">Se butiksoplysninger. Valgmuligheden findes øverst på skærmen</translation>
 <translation id="5627941783489838464">Ingen faneopdateringer</translation>

@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">Fazer login com a conta gerenciada ajuda a separar sua navegação relacionada à organização (incluindo guias, histórico e senhas) da sua outra navegação.
 
        Escolha o que fazer com os dados de navegação neste dispositivo.</translation>
+<translation id="4675298276894277358">Este site não vai aparecer de novo</translation>
 <translation id="4682496302933121474">Traduzir página?</translation>
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
 <translation id="4691892551491778176">Ao usar o Gemini, o conteúdo da página e os URLs são enviados ao Google, mas não são usados para aprimorar nossos modelos de IA generativa. Você pode desativar esse recurso nas configurações quando quiser.</translation>
@@ -1363,7 +1364,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6122191549521593678">On-line</translation>
 <translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6123514585040403489">As guias serão fechadas</translation>
-<translation id="6127379762771434464">Item removido</translation>
 <translation id="6136914049981179737">Segundos atrás</translation>
 <translation id="6138324221869147340">Alguns recursos não estão mais disponíveis</translation>
 <translation id="6140600850356225166">Pedir para abrir links de outros apps na navegação anônima</translation>
@@ -2244,7 +2244,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="954667170699278022">Lista de leitura</translation>
 <translation id="956066588046842680">A política da sua organização não permite a importação desses dados.</translation>
 <translation id="956218893102219091">Use sua localização exata para ter resultados mais precisos no Gemini, em vez de uma localização aproximada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="961856697154696964">Excluir histórico</translation>
+<translation id="961856697154696964">Excluir dados</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>
 <translation id="965879457362663186">Adicionar anexo</translation>
 <translation id="966593914872420832">Pesquisa por voz</translation>

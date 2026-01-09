@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2671423594960767771">Gruppe freigeben</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
+<translation id="2679659833697380">Deine Informationen werden auf deinem Gerät gespeichert</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Wenn du dich mit deinem verwalteten Konto anmeldest, kannst du die mit deiner Organisation verbundenen Browserdaten wie Tabs, Verlauf und Passwörter besser von deinen anderen Browserdaten trennen.
 
        Wähle aus, was mit den Browserdaten auf diesem Gerät geschehen soll.</translation>
+<translation id="4675298276894277358">Diese Website wird nicht mehr angezeigt</translation>
 <translation id="4682496302933121474">Seite übersetzen?</translation>
 <translation id="4682686630151240767">1. Öffne die iPhone-Einstellungen</translation>
 <translation id="4691892551491778176">Wenn du diese Funktion nutzt, werden Seiteninhalte und URLs an Google gesendet, aber nicht zur Verbesserung generativer KI-Modelle verwendet. Das lässt sich in den Einstellungen jederzeit deaktivieren.</translation>
@@ -1362,7 +1364,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
 <translation id="6123514585040403489">Deine Tabs werden geschlossen</translation>
-<translation id="6127379762771434464">Eintrag entfernt</translation>
 <translation id="6136914049981179737">Gerade eben</translation>
 <translation id="6138324221869147340">Einige Funktionen sind nicht mehr verfügbar</translation>
 <translation id="6140600850356225166">Links aus anderen Apps im Inkognitomodus öffnen</translation>
@@ -2130,6 +2131,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8856643812068084733">Archive</translation>
 <translation id="8863067612494559785">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="8863431381414769983">Wegbeschreibungen und lokale Informationen bei Google Maps abrufen</translation>
+<translation id="8867879594900082274">Deine Änderungen gelten nur für deine angepinnten Websites auf diesem Gerät.</translation>
 <translation id="8871974300055371298">Inhaltseinstellungen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8879604564928138696">Doppeltippen, um es auszuprobieren</translation>

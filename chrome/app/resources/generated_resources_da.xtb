@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Din administrator har blokeret nogle funktioner på denne enhed</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vil gendanne dine Chrome-indstillinger til den oprindelige standardkonfiguration. Dette vil nulstille din startside, siden Ny fane og din søgemaskine, deaktivere dine udvidelser og frigøre alle faner. Dette rydder også andre midlertidige og cachelagrede data, som f.eks. cookies, indhold og websitedata.</translation>
 <translation id="1082725763867769612">Offlinefiler</translation>
+<translation id="1083050113196701330">Opdateringstjekket er gennemført. Der var ingen tilgængelige opdateringer</translation>
 <translation id="1084026333130513768">Gem, del og cast</translation>
 <translation id="1084096383128641877">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="DOMAIN" />. Skift din adgangskode, eller slet din konto på <ph name="DOMAIN_LINK" /> for at beskytte den mod andre.</translation>
 <translation id="1084288067399862432">Den kompromitterede adgangskode er blevet ændret.
@@ -736,6 +737,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1486486872607808064">Scan denne QR-kode med et kamera på den enhed, hvor du vil oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Opret et udkast, eller juster eksisterende tekstarbejde.</translation>
 <translation id="1487335504823219454">Til – tilpassede indstillinger</translation>
+<translation id="1488513761150925974">Tjek dine opgaver</translation>
 <translation id="1489101155914355052">Genererer forslag for dette dokument…</translation>
 <translation id="1493152297698462486">Opret et billede ved hjælp af Gemini</translation>
 <translation id="1493892686965953381">Venter på <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3641,6 +3643,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3450180775417907283"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Du deler denne fane med Gemini</translation>
 <translation id="345078987193237421">Dette giver apps, websites med kameratilladelse og systemtjenester adgang til kameraet</translation>
+<translation id="345163758690017738">Arbejder på din opgave…</translation>
 <translation id="3452999110156026232">Forældreadgang</translation>
 <translation id="3453082738208775226">Vil du frigøre offlinelagerplads?</translation>
 <translation id="3453597230179205517">Lokationsadgang er blokeret</translation>
@@ -3810,6 +3813,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3567284462585300767">Du skal være synlig for at modtage og acceptere filer fra personer i nærheden af dig</translation>
 <translation id="356738834800832239">Din adgangskode er gemt</translation>
 <translation id="3568431410312984116">Tillad, at "Hjælp mig med at skrive" åbnes automatisk</translation>
+<translation id="3569304198553566878">Viser <ph name="NUM_DISPLAYED_EVENTS" /> af <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Vil du acceptere, at <ph name="APP_NAME" /> deler din skærm?</translation>
 <translation id="3569614820047645079">Dine filer i Mit drev synkroniseres automatisk med din Chromebook, så du kan få adgang til dem uden en internetforbindelse.</translation>
 <translation id="3569617221227793022">Tidszonen er i øjeblikket indstillet til <ph name="TIME_ZONE_ENTRY" />. Denne indstilling administreres af din administrator.</translation>
@@ -7641,6 +7645,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6206199626856438589">Du logges ud af de viste websites, også i åbne faner</translation>
 <translation id="6206311232642889873">Ko&amp;pier billede</translation>
 <translation id="6207200176136643843">Nulstil til standardniveauet for zoom</translation>
+<translation id="6207795130974856324">Venter på din hjælp</translation>
 <translation id="6207937957461833379">Land/Region</translation>
 <translation id="6208521041562685716">Mobildata aktiveres</translation>
 <translation id="6208725777148613371">Elementet kunne ikke gemmes i <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8359,6 +8364,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6715735940363172819">Websites har ikke tilladelse til at bruge din mikrofon</translation>
 <translation id="6716049856796700977">Intet kan bruge din lokation. Din lokation kan dog stadig være synlig for apps og websites via din IP-adresse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Netværksforbindelsen blev afbrudt. Tjek din netværksforbindelse, eller prøv et andet Wi-Fi-netværk.</translation>
+<translation id="671868032356459320">Opdateringsomfang: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Lås skærmen</translation>
 <translation id="6719839880830057298">Filen er uploadet</translation>
 <translation id="6721744718589119342">Vi sender dig muligvis en mail med en opdatering eller anmodning om flere oplysninger</translation>
@@ -9208,6 +9214,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7307129035224081534">Sat på pause</translation>
 <translation id="7308643132139167865">Sprog på websites</translation>
 <translation id="7309214454733221756">Vil du oprette en adgangsnøgle for at logge ind på <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Opgaveliste</translation>
 <translation id="7311005168897771689">Få adgang til dine Google Drev-filer, når du er offline</translation>
 <translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
 <translation id="7312040805247765153">Appen kan ikke installeres</translation>
@@ -11257,6 +11264,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8680251145628383637">Log ind for at få dine bogmærker, din historik, dine adgangskoder og dine øvrige indstillinger på alle dine enheder. Du bliver også automatisk logget ind på dine Google-tjenester.</translation>
 <translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> er tilsluttet og klar</translation>
+<translation id="8683720831806477407">Opdateringsomfang</translation>
 <translation id="8684471948980641888">Tillad synkronisering på forbrugsafregnede netværk</translation>
 <translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8685882652128627032">Klik for at åbne dialogboksen Tilføj Site Search</translation>
@@ -12080,6 +12088,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9220723036554088545">upload en fil</translation>
 <translation id="9220820413868316583">Løft fingeren, og prøv igen.</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
+<translation id="9222839391870847423">Varighed: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Vis alle</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Du kan administrere den ved at åbne Udvidelser}one{Du kan administrere den ved at åbne Udvidelser}other{Du kan administrere dem ved at åbne Udvidelser}}</translation>
 <translation id="924818813611903184">Administrer sprog i indstillingerne for ChromeOS</translation>

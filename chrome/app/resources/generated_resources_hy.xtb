@@ -577,6 +577,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{1 կոտրված գաղտնաբառ}one{{NUM_COMPROMISED} կոտրված գաղտնաբառ}other{{NUM_COMPROMISED} կոտրված գաղտնաբառ}}</translation>
 <translation id="1380028686461971526">Ավտոմատ միանալ ցանցին</translation>
 <translation id="1381567580865186407">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ձայնագրությունը մշակման համար ուղարկվում է Google-ին</translation>
+<translation id="1382174183118245544">Վարկային քարտերի համարներ</translation>
 <translation id="1383065744946263511">Ամրացնել գործիքագոտում</translation>
 <translation id="1383381142702995121">Կառավարել այս ընդլայնումը</translation>
 <translation id="1383597849754832576">Չհաջողվեց ներբեռնել ենթագրերի ֆայլը։ Փորձեք ավելի ուշ։</translation>
@@ -1695,6 +1696,7 @@
 <translation id="2133775869826239001">Ընտրեք ավելի շատ գործառույթներ՝ կարգավորելու համար</translation>
 <translation id="2133857665503360653">Նորից փորձել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="2134905185275441536">Համակարգի հավաստագրման կենտրոններ</translation>
+<translation id="2135420518376202233">Bluetooth սարքերի անվանումներ</translation>
 <translation id="21354425047973905">Թաքցնել PIN կոդերը</translation>
 <translation id="2135456203358955318">Ամրացված խոշորացույց</translation>
 <translation id="2135787500304447609">&amp;Շարունակել</translation>
@@ -2830,6 +2832,7 @@
 <translation id="2893180576842394309">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումն ու Google-ի մյուս ծառայություններն անհատականացնելու համար:</translation>
 <translation id="2893318819023133318">Փոխատեղել դիտակերպերը</translation>
 <translation id="2893701697603065178">Մշակման կառավարվող միջավայր</translation>
+<translation id="2894596417096093634">Խափանման մասին հաշվետվության նույնացուցիչներ</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
 <translation id="289695669188700754">Բանալու ID` <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Այս հատուկ կարգավորումը կհեռացվի, երբ դուք փակեք ձեր բոլոր ինկոգնիտո պատուհանները</translation>
@@ -3101,6 +3104,7 @@
 <translation id="3076966043108928831">Պահել միայն այս սարքում</translation>
 <translation id="3076977359333237641">Ձեր մուտքի տվյալները հեռացվեցին</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Թարմացում յուրաքանչյուր օգտատիրոջ համար</translation>
 <translation id="3080933187214341848">Այս ցանցը համաժամացված չէ ձեր հաշվի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Հավելվածի անվանում կամ ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4279,6 +4283,7 @@
 <translation id="3867831579565057323">Համեմատեք ձեր հպէկրանը</translation>
 <translation id="3867944738977021751">Վկայագրի դաշտեր</translation>
 <translation id="3869564880668247983">Խմբավորել բոլոր ներդիրները</translation>
+<translation id="3869750789340473337">Հիշողության տվյալներ</translation>
 <translation id="3869917919960562512">Ցուցիչը սխալ է:</translation>
 <translation id="3870626286046977643">Նաև հասանելի դարձնել համակարգի աուդիո բովանդակությունը</translation>
 <translation id="3870688298003434214">Ապընտրել <ph name="BOOKMARK_TITLE" /> տարրը</translation>
@@ -7160,6 +7165,7 @@
 <translation id="5886009770935151472">Մատ 1</translation>
 <translation id="5886112770923972514">Միացեք մոտակայքում գտնվող Արագ զուգակցման սարքերին և արագ կարգավորեք դրանք</translation>
 <translation id="5886384907280980632">Անջատել</translation>
+<translation id="5888337581644150257">Միջազգային բանկային հաշվեհամարներ</translation>
 <translation id="5888889603768021126">Մուտք եք գործել որպես</translation>
 <translation id="5889282057229379085">Միջանկյալ հավաստագրման կենտրոնների առավելագույն քանակը՝ <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Գաղտնագրել համաժամացված տվյալները սեփական <ph name="BEGIN_LINK" />համաժամացման անցաբառով<ph name="END_LINK" />։ Վճարման եղանակները և Google Pay-ի հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։</translation>
@@ -7440,6 +7446,7 @@
 <translation id="6082877069782862752">Ստեղների նշանակում</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – անանուն խմբից</translation>
 <translation id="6086004606538989567">Այս սարքը հասանելի չէ ձեր հաստատած հաշվի համար։</translation>
+<translation id="6086350918562605938">Թարմացում յուրաքանչյուր համակարգի համար</translation>
 <translation id="6086418630711763366">Դուք կարող եք մեկ էջից անցնել մյուսը տեսքտի նշորդի միջոցով։ Սեղմեք Ctrl + <ph name="KEY" />՝ անջատելու համար։</translation>
 <translation id="6086846494333236931">Տեղադրվել է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6087286598828478206">Արգելափակե՞լ և լքել խումբը</translation>

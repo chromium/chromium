@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">Če se prijavite z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja
 
        Izberite, kaj želite storiti z obstoječimi podatki brskanja v tej napravi.</translation>
+<translation id="4675298276894277358">To spletno mesto ne bo več prikazano</translation>
 <translation id="4682496302933121474">Želite prevod strani?</translation>
 <translation id="4682686630151240767">1. Odprite nastavitve za iPhone.</translation>
 <translation id="4691892551491778176">Če uporabljate to funkcijo, se vsebina strani in URL-ji pošiljajo Googlu, vendar se ne uporabljajo za izboljšanje modelov generativne umetne inteligence. To lahko kadar koli izklopite v nastavitvah.</translation>
@@ -1363,7 +1364,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6122831415929794347">Želite izklopiti varno brskanje?</translation>
 <translation id="6123514585040403489">Zavihki bodo zaprti</translation>
-<translation id="6127379762771434464">Element odstranjen</translation>
 <translation id="6136914049981179737">Pred sek.</translation>
 <translation id="6138324221869147340">Nekatere funkcije niso več na voljo</translation>
 <translation id="6140600850356225166">Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>

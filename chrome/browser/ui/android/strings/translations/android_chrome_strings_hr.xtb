@@ -72,6 +72,7 @@
 <translation id="1263231323834454256">Popis za čitanje</translation>
 <translation id="1269129608791067105">Ovdje ćete pronaći svoju povijest</translation>
 <translation id="1273937721055267968">Blokiraj <ph name="DOMAIN" /></translation>
+<translation id="1280921956537356716">Uključite obavijesti o savjetima</translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
 <translation id="1289129165308566697">Pogledajte svoju povijest na drugim uređajima</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
@@ -1487,6 +1488,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7207760545532569765">Vratite <ph name="TAB_COUNT" /> kartica kao nove pozadinske kartice.</translation>
 <translation id="7217781228893594884">Anonimne kartice zaključat će se kada napustite Chrome</translation>
 <translation id="7221869452894271364">Ponovno učitaj ovu stranicu</translation>
+<translation id="722681077040152344">Otkazana je pretplata na ovoliko web-lokacija: <ph name="COUNT" /></translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7230064152164845085">Prijeđi na anonimni način</translation>
 <translation id="7237724030342645845">Google upravitelj zaporki više ne funkcionira</translation>
@@ -1741,6 +1743,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8244387390464017490">Prilagodite novu karticu</translation>
 <translation id="8244444485683708655">Priložite sliku s kamere</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
+<translation id="8257429805444572809">Otkazana je pretplata na web-lokaciju <ph name="DOMAIN" /></translation>
 <translation id="8258999165172757081">Dodano</translation>
 <translation id="8259179246279078674">Budući da se predučitane stranice šifriraju, Google neće saznati ništa o sadržaju predučitanih stranica. Googleovi poslužitelji saznat će koje se web-lokacije anonimno predučitavaju. Ti se podaci koriste samo za predučitavanje stranica i ne povezuju se s drugim podacima s vašeg Google računa.</translation>
 <translation id="8260126382462817229">Ponovo se pokušajte prijaviti</translation>

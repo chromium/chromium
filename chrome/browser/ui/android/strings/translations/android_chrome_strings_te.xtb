@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">ఈ పరికరంలో మాత్రమే</translation>
 <translation id="4181841719683918333">భాషలు</translation>
 <translation id="4188221736490993796">Z నుండి Aకు సార్ట్ చేయి</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{స్పామ్ లేదా మోసపూరితమైన కంటెంట్ ఉన్న కారణంగా నోటిఫికేషన్‌లను పంపకుండా ఈ సైట్‌ను Chrome అడ్డుకుంది}other{స్పామ్ లేదా మోసపూరితమైన కంటెంట్ ఉన్న కారణంగా నోటిఫికేషన్‌లను పంపకుండా ఈ సైట్‌లను Chrome అడ్డుకుంది}}</translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ఈ పరికరంలో 1 ట్యాబ్}other{ఈ పరికరంలో # ట్యాబ్‌లు}}</translation>
 <translation id="4198423547019359126">డౌన్‌లోడ్ స్థానాలు అందుబాటులో లేవు</translation>
@@ -964,7 +965,7 @@
 <translation id="5123685120097942451">అజ్ఞాత ట్యాబ్</translation>
 <translation id="5142281402488957685">కొత్త కథనాల కోసం, రిఫ్రెష్ చేయడానికి కిందికి లాగండి</translation>
 <translation id="5144385790872094440">మీరు సందర్శించే కొన్ని పేజీలు ప్రీ - లోడ్ చేయబడ్డాయి. Google సైట్ లేదా యాప్ నుండి లింక్ చేసినప్పుడు పేజీలు Google సర్వర్‌ల ద్వారా ప్రీ - లోడ్ చేయబడవచ్చు.</translation>
-<translation id="5152843274749979095">మద్దతు గల యాప్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
+<translation id="5152843274749979095">సపోర్ట్ ఉన్న యాప్‌లను వేటినీ ఇన్‌స్టాల్ చేయలేదు</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
 <translation id="5161262286013276579">పాస్-కీ నిర్ధారణ షీట్ తెరవబడింది</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> ప్రస్తుతం ఎంచుకోబడ్డారు. ఒక ఖాతాను ఎంచుకోండి.</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయండి</translation>
 <translation id="5839058148541733625">Chrome డినో</translation>
 <translation id="5841444063256914865">అయినా సరే మీరు "<ph name="FILE_NAME" />"ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
+<translation id="5847265694842662173">దుర్వినియోగ సైట్‌లు, ఉపయోగించని సైట్‌లు నోటిఫికేషన్‌లను పంపకుండా Chrome అడ్డుకుంది</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" />‌తో PDFను తెరవాలా?</translation>
 <translation id="5849288995120328556">షేర్ చేయడాన్ని ఆపివేయాలా?</translation>
 <translation id="5853623416121554550">పాజ్ చేయబడింది</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">Chrome సహాయ కేంద్రాన్ని కొత్త ట్యాబ్‌లో తెరవండి</translation>
 <translation id="59577092665511740">ఒక ఖాతాను ఎంచుకోండి.</translation>
 <translation id="5958275228015807058">డౌన్‌లోడ్‌లలో మీ ఫైళ్లు మరియు పేజీలను కనుగొనండి</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{మీరు ఇటీవల విజిట్ చేయని సైట్ నుండి మీకు నోటిఫికేషన్‌లు రాకుండా Chrome అడ్డుకుంది}other{మీరు ఇటీవల విజిట్ చేయని సైట్‌ల నుండి మీకు నోటిఫికేషన్‌లు రాకుండా Chrome అడ్డుకుంది}}</translation>
 <translation id="5962718611393537961">కుదించడానికి నొక్కండి</translation>
 <translation id="5964869237734432770">ఇమేజ్ వివరణలను ఆపివేయి</translation>
 <translation id="5972844218283131174">అన్నింటి ఎంపికను తొలగించండి</translation>
@@ -1802,6 +1805,7 @@
 <translation id="847433688444405067">పరికరాలన్నింటిలో బ్రౌజ్ చేయండి</translation>
 <translation id="8477178913400731244">డేటాను తొలగించండి</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">ఇన్‌యాక్టివ్ విండోలు ఏవీ లేవు</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8497242791509864205">క్రమబద్ధీకరణ ఆప్షన్‌లను తెరుస్తుంది</translation>
 <translation id="8497480609928300907">గోప్యతా గైడ్ వివరణ</translation>
@@ -1901,6 +1905,7 @@
 <translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8965591936373831584">పెండింగ్‌లో ఉంది</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, ఇంకా మరో<ph name="TAB_COUNT_ONE" /> ట్యాబ్ మూసివేయబడతాయి}other{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, ఇంకా మరో<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు మూసివేయబడతాయి}}</translation>
+<translation id="8969796057708736017">ఫైల్ మీ సంస్థ పాలసీలకు అనుగుణంగా ఉంటే మీ డౌన్‌లోడ్ పూర్తవుతుంది</translation>
 <translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8972098258593396643">డిఫాల్ట్ ఫోల్డర్‌కు డౌన్‌లోడ్ చేయాలా?</translation>
 <translation id="8992769679401294069">మీ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయబడింది. మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించడానికి, అందులో డేటాను సేవ్ చేయడానికి దాన్ని ఎంటర్ చేయండి.</translation>

@@ -576,6 +576,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nicio parolă compromisă}=1{O parolă compromisă}few{{NUM_COMPROMISED} parole compromise}other{{NUM_COMPROMISED} de parole compromise}}</translation>
 <translation id="1380028686461971526">Conectează-te automat la rețea</translation>
 <translation id="1381567580865186407">Vorbirea în <ph name="LANGUAGE" /> este trimisă către Google spre procesare</translation>
+<translation id="1382174183118245544">Numere ale cardurilor de credit</translation>
 <translation id="1383065744946263511">Fixează în bara de instrumente</translation>
 <translation id="1383381142702995121">Gestionează extensia</translation>
 <translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
@@ -1694,6 +1695,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2133775869826239001">Alege mai multe funcții pentru configurare</translation>
 <translation id="2133857665503360653">Reîncearcă <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Autorități de certificare (CA) de sistem</translation>
+<translation id="2135420518376202233">Nume ale dispozitivelor Bluetooth</translation>
 <translation id="21354425047973905">Ascunde codurile PIN</translation>
 <translation id="2135456203358955318">Lupă andocată</translation>
 <translation id="2135787500304447609">&amp;Reia</translation>
@@ -2831,6 +2833,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2893180576842394309">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google</translation>
 <translation id="2893318819023133318">Inversează vizualizările</translation>
 <translation id="2893701697603065178">Mediu de dezvoltare gestionat</translation>
+<translation id="2894596417096093634">Identificatori ai rapoartelor de blocare</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
 <translation id="289695669188700754">ID cheie: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Această setare personalizată va fi eliminată când închizi toate ferestrele incognito</translation>
@@ -3102,6 +3105,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3076966043108928831">Salvează numai pe acest dispozitiv</translation>
 <translation id="3076977359333237641">Datele de conectare s-au șters</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Instrument pentru actualizări pentru fiecare utilizator</translation>
 <translation id="3080933187214341848">Această rețea nu este sincronizată cu contul tău. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Numele sau codul aplicației</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4281,6 +4285,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3867831579565057323">Mapează ecranul tactil</translation>
 <translation id="3867944738977021751">Câmpuri certificat</translation>
 <translation id="3869564880668247983">Grupează toate filele</translation>
+<translation id="3869750789340473337">Dumpuri de memorie</translation>
 <translation id="3869917919960562512">Index greșit.</translation>
 <translation id="3870626286046977643">Permite accesul și la conținutul audio de pe sistem</translation>
 <translation id="3870688298003434214">Debifează <ph name="BOOKMARK_TITLE" /></translation>
@@ -7163,6 +7168,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5886009770935151472">Deget 1</translation>
 <translation id="5886112770923972514">Conectează și configurează rapid dispozitivele Fast Pair din apropiere</translation>
 <translation id="5886384907280980632">Dezactivează acum</translation>
+<translation id="5888337581644150257">Numere internaționale ale conturilor bancare</translation>
 <translation id="5888889603768021126">Conectat(ă) cu</translation>
 <translation id="5889282057229379085">Număr maxim de Autorități de certificare (CA) intermediare: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Criptează datele sincronizate folosind propria <ph name="BEGIN_LINK" />expresie de acces pentru sincronizare<ph name="END_LINK" />. Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.</translation>
@@ -7444,6 +7450,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6082877069782862752">Maparea tastelor</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – parte a unui grup nedenumit</translation>
 <translation id="6086004606538989567">Contul pe care l-ai confirmat nu este autorizat să acceseze acest dispozitiv.</translation>
+<translation id="6086350918562605938">Instrument pentru actualizări pentru fiecare sistem</translation>
 <translation id="6086418630711763366">Poți să navighezi în pagini folosind cursorul pentru text. Apasă Ctrl + <ph name="KEY" /> pentru a dezactiva.</translation>
 <translation id="6086846494333236931">Instalată de administrator</translation>
 <translation id="6087286598828478206">Blochezi și ieși din grup?</translation>

@@ -577,6 +577,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nema ugroženih lozinki}=1{1 ugrožena lozinka}one{{NUM_COMPROMISED} ugrožena lozinka}few{{NUM_COMPROMISED} ugrožene lozinke}other{{NUM_COMPROMISED} ugroženih lozinki}}</translation>
 <translation id="1380028686461971526">Automatski se poveži s mrežom</translation>
 <translation id="1381567580865186407">Govor na jeziku <ph name="LANGUAGE" /> se šalje Googleu na obradu</translation>
+<translation id="1382174183118245544">Brojevi kreditnih kartica</translation>
 <translation id="1383065744946263511">Zakači na alatnu traku</translation>
 <translation id="1383381142702995121">Upravljajte ekstenzijom</translation>
 <translation id="1383597849754832576">Nije moguće preuzeti fajlove govora. Pokušajte ponovo kasnije.</translation>
@@ -1702,6 +1703,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2133775869826239001">Odaberite više funkcija koje želite postaviti</translation>
 <translation id="2133857665503360653">Ponovni pokušaj fajla <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">CA certifikati sistema</translation>
+<translation id="2135420518376202233">Nazivi Bluetooth uređaja</translation>
 <translation id="21354425047973905">Sakrij PIN-ove</translation>
 <translation id="2135456203358955318">Priključeno povećalo</translation>
 <translation id="2135787500304447609">&amp;Nastavi</translation>
@@ -2842,6 +2844,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2893180576842394309">Google može koristiti vašu historiju za personalizaciju Pretraživanja i drugih Googleovih usluga</translation>
 <translation id="2893318819023133318">Obrni prikaze</translation>
 <translation id="2893701697603065178">Upravljano programersko okruženje</translation>
+<translation id="2894596417096093634">Identifikatori izvještaja o padovima aplikacije</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="289695669188700754">ID ključa: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ova prilagođena postavka će se ukloniti kada zatvorite sve anonimne prozore.</translation>
@@ -3113,6 +3116,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3076966043108928831">Sačuvaj samo na ovom uređaju</translation>
 <translation id="3076977359333237641">Vaši podaci za prijavu su izbrisani</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Program za ažuriranje po korisniku</translation>
 <translation id="3080933187214341848">Ova mreža još nije sinhronizirana s vašim računom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Naziv ili ID aplikacije</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" />, <ph name="PAGE_URL" /></translation>
@@ -4293,6 +4297,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3867831579565057323">Mapirajte ekran na dodir</translation>
 <translation id="3867944738977021751">Polja potvrda</translation>
 <translation id="3869564880668247983">Grupiši sve kartice</translation>
+<translation id="3869750789340473337">Snimci memorije</translation>
 <translation id="3869917919960562512">Pogrešan indeks.</translation>
 <translation id="3870626286046977643">Dijeli i zvuk sistema</translation>
 <translation id="3870688298003434214">Poništavanje odabira oznake <ph name="BOOKMARK_TITLE" /></translation>
@@ -7177,6 +7182,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5886009770935151472">1. prst</translation>
 <translation id="5886112770923972514">Povežite se s uređajima za Brzo uparivanje u blizini i postavite ih</translation>
 <translation id="5886384907280980632">Isključi sada</translation>
+<translation id="5888337581644150257">Međunarodni brojevi bankovnih računa</translation>
 <translation id="5888889603768021126">Prijavljeni ste koristeći</translation>
 <translation id="5889282057229379085">Maksimalni broj posredničkih CA-ova: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifrirajte sinhronizirane podatke svojim <ph name="BEGIN_LINK" />pristupnim izrazom za sinhronizaciju<ph name="END_LINK" />. Načini plaćanja i adrese s Google Paya se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.</translation>
@@ -7458,6 +7464,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6082877069782862752">Mapiranje tipki</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – dio neimenovane grupe</translation>
 <translation id="6086004606538989567">Račun koji ste potvrdili nema odobrenje za pristup ovom uređaju.</translation>
+<translation id="6086350918562605938">Program za ažuriranje po sistemu</translation>
 <translation id="6086418630711763366">Možete navigirati stranicama pomoću kursora za tekst. Pritisnite Ctrl i <ph name="KEY" /> da isključite.</translation>
 <translation id="6086846494333236931">Instalirao administrator</translation>
 <translation id="6087286598828478206">Blokirati i napustiti grupu?</translation>

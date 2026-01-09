@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">O seu administrador bloqueou algumas funcionalidades para este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quer restaurar as suas definições do Chrome para as predefinições originais. Esta ação repõe a página inicial, a página novo separador e o motor de pesquisa, desativa as extensões e solta todos os separadores. Limpa também outros dados em cache e temporários, tais como cookies, conteúdos e dados de sites.</translation>
 <translation id="1082725763867769612">Ficheiros offline</translation>
+<translation id="1083050113196701330">Verificação de atualizações concluída com êxito. Não estava disponível nenhuma atualização</translation>
 <translation id="1084026333130513768">Guardar, partilhar e transmitir</translation>
 <translation id="1084096383128641877">Remover esta palavra-passe não elimina a sua conta em <ph name="DOMAIN" />. Altere a palavra-passe ou elimine a sua conta em <ph name="DOMAIN_LINK" /> para a manter protegida contra terceiros.</translation>
 <translation id="1084288067399862432">Alterou com êxito a palavra-passe comprometida.
@@ -734,6 +735,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1486486872607808064">Leia este código QR com uma câmara no dispositivo onde quer criar uma chave de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crie um rascunho ou refina um trabalho existente.</translation>
 <translation id="1487335504823219454">Ativado - definições personalizadas</translation>
+<translation id="1488513761150925974">Verifique as suas tarefas</translation>
 <translation id="1489101155914355052">A gerar sugestões para este documento…</translation>
 <translation id="1493152297698462486">Criar imagem com o Gemini</translation>
 <translation id="1493892686965953381">A aguardar <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3627,6 +3629,7 @@ Quer pará-lo?</translation>
 <translation id="3450180775417907283">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Está a partilhar este separador com o Gemini</translation>
 <translation id="345078987193237421">Isto permite o acesso à câmara para apps, Websites com a autorização de acesso à câmara e serviços do sistema</translation>
+<translation id="345163758690017738">A trabalhar na sua tarefa…</translation>
 <translation id="3452999110156026232">Acesso parental</translation>
 <translation id="3453082738208775226">Limpar o armazenamento offline?</translation>
 <translation id="3453597230179205517">O acesso à localização está bloqueado</translation>
@@ -3796,6 +3799,7 @@ Quer pará-lo?</translation>
 <translation id="3567284462585300767">Para receber e aceitar ficheiros de pessoas à sua volta, torne-se visível</translation>
 <translation id="356738834800832239">A sua palavra-passe foi guardada</translation>
 <translation id="3568431410312984116">Permitir que a opção "Ajuda-me a escrever" seja aberta automaticamente</translation>
+<translation id="3569304198553566878">A apresentar <ph name="NUM_DISPLAYED_EVENTS" /> de <ph name="NUM_TOTAL_EVENTS" />.</translation>
 <translation id="3569382839528428029">Deseja que <ph name="APP_NAME" /> partilhe o seu ecrã?</translation>
 <translation id="3569614820047645079">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet.</translation>
 <translation id="3569617221227793022">O fuso horário está atualmente definido como <ph name="TIME_ZONE_ENTRY" />. Esta definição é gerida pelo seu administrador.</translation>
@@ -7628,6 +7632,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6206199626856438589">A sua sessão nos sites apresentados vai ser terminada, incluindo em separadores abertos</translation>
 <translation id="6206311232642889873">Cop&amp;iar Imagem</translation>
 <translation id="6207200176136643843">Repor o nível de zoom predefinido</translation>
+<translation id="6207795130974856324">A aguardar a sua ajuda</translation>
 <translation id="6207937957461833379">País/Região</translation>
 <translation id="6208521041562685716">Os dados móveis estão a ser ativados</translation>
 <translation id="6208725777148613371">Falha ao guardar no <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8344,6 +8349,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6715735940363172819">Os Websites não têm autorização para usar o microfone</translation>
 <translation id="6716049856796700977">Nada pode usar a sua localização. No entanto, a sua localização pode continuar visível para as apps e os Websites através do seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">A ligação de rede falhou. Verifique-a ou experimente outra rede Wi-Fi.</translation>
+<translation id="671868032356459320">Âmbito do atualizador: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Ecrã de bloqueio</translation>
 <translation id="6719839880830057298">Carregamento do ficheiro concluído</translation>
 <translation id="6721744718589119342">Para mais informações ou atualizações, podemos enviar-lhe emails</translation>
@@ -9193,6 +9199,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7307129035224081534">Em pausa</translation>
 <translation id="7308643132139167865">Idiomas de Websites</translation>
 <translation id="7309214454733221756">Criar uma chave de acesso para iniciar sessão na app <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Lista de tarefas</translation>
 <translation id="7311005168897771689">Aceda aos seus ficheiros do Google Drive quando estiver offline</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7312040805247765153">Não é possível instalar a app</translation>
@@ -11242,6 +11249,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8680251145628383637">Inicie sessão para obter os seus marcadores, o histórico, as palavras-passe e outras definições em todos os seus dispositivos. Além disso, também inicia sessão automaticamente nos serviços Google.</translation>
 <translation id="8681886425883659911">Os anúncios são bloqueados em sites conhecidos por mostrarem anúncios intrusivos ou enganadores</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está ligada e pronta.</translation>
+<translation id="8683720831806477407">Âmbito do atualizador</translation>
 <translation id="8684471948980641888">Permitir sincronização em redes com acesso limitado</translation>
 <translation id="8685540043423825702">O seu perfil do Chrome</translation>
 <translation id="8685882652128627032">Clicar para abrir a caixa de diálogo Adicione a pesquisa no site</translation>
@@ -12063,6 +12071,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9220723036554088545">carregue um ficheiro</translation>
 <translation id="9220820413868316583">Levante e tente novamente.</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
+<translation id="9222839391870847423">Duração: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Mostrar tudo</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para a gerir, abra as Extensões}other{Para as gerir, abra as Extensões}}</translation>
 <translation id="924818813611903184">Gerir idiomas nas definições do ChromeOS</translation>

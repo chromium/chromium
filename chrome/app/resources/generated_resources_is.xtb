@@ -576,6 +576,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Engin aðgangsorð í hættu}=1{1 aðgangsorð í hættu}one{{NUM_COMPROMISED} aðgangsorð í hættu}other{{NUM_COMPROMISED} aðgangsorð í hættu}}</translation>
 <translation id="1380028686461971526">Tengjast sjálfkrafa við netkerfi</translation>
 <translation id="1381567580865186407">Tal á <ph name="LANGUAGE" /> verður sent til Google til úrvinnslu</translation>
+<translation id="1382174183118245544">Greiðslukortanúmer</translation>
 <translation id="1383065744946263511">Festa á tækjastiku</translation>
 <translation id="1383381142702995121">Stjórna þessari viðbót</translation>
 <translation id="1383597849754832576">Ekki er hægt að sækja talskrár. Reyndu aftur síðar.</translation>
@@ -1704,6 +1705,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2133775869826239001">Veldu fleiri eiginleika til að setja upp</translation>
 <translation id="2133857665503360653">Reyna aftur að sækja <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">CA-vottorð kerfis</translation>
+<translation id="2135420518376202233">Heiti Bluetooth-tækja</translation>
 <translation id="21354425047973905">Fela PIN-númer</translation>
 <translation id="2135456203358955318">Stækkunargler í föstum glugga</translation>
 <translation id="2135787500304447609">Halda áf&amp;ram</translation>
@@ -2844,6 +2846,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2893180576842394309">Google notar hugsanlega ferilinn þinn til að sérsníða leitina og aðra þjónustu Google</translation>
 <translation id="2893318819023133318">Víxla yfirlitum</translation>
 <translation id="2893701697603065178">Stýrt forritunarumhverfi</translation>
+<translation id="2894596417096093634">Auðkenni hrunskýrslu</translation>
 <translation id="2894757982205307093">Nýr flipi í hópi</translation>
 <translation id="289695669188700754">Lykilsauðkenni: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Þessi sérstilling verður fjarlægð þegar þú lokar öllum huliðsgluggum</translation>
@@ -3115,6 +3118,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3076966043108928831">Vista aðeins á þessu tæki</translation>
 <translation id="3076977359333237641">Innskráningargögnum þínum var eytt</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Uppfærsla fyrir notanda</translation>
 <translation id="3080933187214341848">Þetta net er ekki samstillt við reikninginn þinn. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Heiti eða auðkenni forrits</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4295,6 +4299,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3867831579565057323">Varpaðu snertiskjánum</translation>
 <translation id="3867944738977021751">Vottorðsreitir</translation>
 <translation id="3869564880668247983">Flokka alla flipa</translation>
+<translation id="3869750789340473337">Minnisdemba</translation>
 <translation id="3869917919960562512">Rangur vísir.</translation>
 <translation id="3870626286046977643">Deila einnig kerfishljóði</translation>
 <translation id="3870688298003434214">Afvelja <ph name="BOOKMARK_TITLE" /></translation>
@@ -7179,6 +7184,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Tengja og setja upp nálæg tæki með hraðpörun á skjótan hátt</translation>
 <translation id="5886384907280980632">Slökkva núna</translation>
+<translation id="5888337581644150257">IBAN-númer</translation>
 <translation id="5888889603768021126">Skráð(ur) inn með</translation>
 <translation id="5889282057229379085">Hámarksfjöldi CA-millistigsvottorða: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Dulkóða samstillt gögn með eigin <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" />. Upplýsingar um greiðslumáta og heimilisföng frá Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.</translation>
@@ -7460,6 +7466,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6082877069782862752">Lyklaskipan</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – hluti af ónefndum hópi</translation>
 <translation id="6086004606538989567">Reikningurinn sem þú staðfestir hefur ekki aðgangsheimild að þessu tæki.</translation>
+<translation id="6086350918562605938">Uppfærsla fyrir kerfi</translation>
 <translation id="6086418630711763366">Þú getur skoðað síður með textabendli. Ýttu á Ctrl + <ph name="KEY" /> til að slökkva.</translation>
 <translation id="6086846494333236931">Kerfisstjórinn þinn setti upp</translation>
 <translation id="6087286598828478206">Setja á bannlista og yfirgefa hóp?</translation>

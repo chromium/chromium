@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">سرپرستتان برخی‌از عملکردهای این دستگاه را مسدود کرده است</translation>
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> می‌خواهد تنظیمات Chrome شما را به پیش‌فرض‌های اصلی‌شان بازیابی کند. با این کار صفحه اصلی، صفحه زبانه جدید، و موتور جستجویتان بازنشانی می‌شود، افزونه‌های شما غیرفعال می‌شوند و سنجاق همه زبانه‌ها برداشته می‌شود. همچنین سایر داده‌های موقت و داده‌های ذخیره‌شده در حافظه موقت مانند کوکی‌ها، اطلاعات سایت و محتوا پاک می‌شوند.</translation>
 <translation id="1082725763867769612">فایل‌های آفلاین</translation>
+<translation id="1083050113196701330">بررسی به‌روزرسانی باموفقیت انجام شد. به‌روزرسانی دردسترس نبود</translation>
 <translation id="1084026333130513768">ذخیره، هم‌رسانی، و پخش محتوا</translation>
 <translation id="1084096383128641877">با برداشتن گذرواژه، حساب‌تان در <ph name="DOMAIN" /> حذف نخواهد شد. برای ایمن نگه‌داشتن گذرواژه‌تان، آن را تغییر دهید یا حساب‌تان را در <ph name="DOMAIN_LINK" /> حذف کنید.</translation>
 <translation id="1084288067399862432">گذرواژه لورفته باموفقیت تغییر کرد.
@@ -238,7 +239,7 @@
 <translation id="1151917987301063366">همیشه اجازه دسترسی به حسگرها به <ph name="HOST" /> داده شود</translation>
 <translation id="1152346050262092795">برای به‌تأیید رساندن حساب، گذرواژه‌تان را دوباره وارد کنید.</translation>
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
-<translation id="1155816283571436363">درحال اتصال به تلفن</translation>
+<translation id="1155816283571436363">درحال متصل شدن به تلفن</translation>
 <translation id="1157952955648710254">‏بستن پانل کناری «جستجوی Google»</translation>
 <translation id="1158080958325422608">تبدیل به حروف بزرگ</translation>
 <translation id="1159879754517035595">مدیریت تنظیمات افزونه</translation>
@@ -602,7 +603,7 @@
 <translation id="1399261165075500043">‏«شرایط خدمات Google Play» بار نشد</translation>
 <translation id="1400243387594338234">می‌توانید از این پین برای ورود به سیستم دستگاهتان استفاده کنید</translation>
 <translation id="1401216725754314428">در برگه جدیدی درباره سایت‌های مرتبط بیشتر بدانید</translation>
-<translation id="1402426911829176748">درحال اتصال به دستگاه</translation>
+<translation id="1402426911829176748">درحال متصل شدن به دستگاه</translation>
 <translation id="1403222014593521787">امکان اتصال به پراکسی وجود ندارد</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
@@ -736,6 +737,7 @@
 <translation id="1486486872607808064">با دوربین دستگاهی که می‌خواهید ازطریق آن گذرکلیدی برای <ph name="APP_NAME" /> ایجاد کنید، این رمزینه پاسخ‌سریع را اسکن کنید</translation>
 <translation id="1486616492435615702">پیش‌نویس تهیه کنید یا کار موجود را پالایش کنید.</translation>
 <translation id="1487335504823219454">روشن - تنظیمات سفارشی</translation>
+<translation id="1488513761150925974">بررسی تکالیف</translation>
 <translation id="1489101155914355052">درحال تولید کردن پیشنهادهایی برای این سند…</translation>
 <translation id="1493152297698462486">‏تصویر ساختن با Gemini</translation>
 <translation id="1493892686965953381">انتظار برای <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -1988,7 +1990,7 @@
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% کامل شد</translation>
 <translation id="2318143611928805047">اندازه کاغذ</translation>
 <translation id="2318817390901984578">‏برای استفاده از برنامه‌های Android، ‏<ph name="DEVICE_TYPE" /> خود را شارژ و به‌روزرسانی کنید.</translation>
-<translation id="2319072477089403627">‏درحال اتصال به تلفن Android…</translation>
+<translation id="2319072477089403627">‏درحال متصل شدن به تلفن Android…</translation>
 <translation id="2319459402137712349">برای باز کردن صفحه‌کلید، فیلد نوشتار را انتخاب کنید. همچنین می‌توانید نماد «صفحه‌کلید» را در پایین صفحه‌نمایش انتخاب کنید.</translation>
 <translation id="2319993584768066746">عکس‌های صفحه ورود به سیستم</translation>
 <translation id="2321487076181785382">تقسیم کردن زبانه‌ها</translation>
@@ -3636,6 +3638,7 @@
 <translation id="3450180775417907283">‏<ph name="MANAGER" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید.</translation>
 <translation id="3450251767853793660">‏‫<ph name="WINDOW_TITLE" /> - درحال هم‌رسانی این زبانه با Gemini هستید</translation>
 <translation id="345078987193237421">این اقدام دسترسی دوربین را برای برنامه‌ها، وب‌سایت‌های دارای اجازه دوربین، و خدمات سیستم مجاز می‌کند</translation>
+<translation id="345163758690017738">درحال کار کردن روی تکلیف شما…</translation>
 <translation id="3452999110156026232">دسترسی ولی</translation>
 <translation id="3453082738208775226">فضای ذخیره‌سازی آفلاین پاک‌سازی شود؟</translation>
 <translation id="3453597230179205517">دسترسی مکان مسدود است</translation>
@@ -3805,6 +3808,7 @@
 <translation id="3567284462585300767">برای دریافت و پذیرفتن فایل‌های افرادی که در اطرافتان هستند، نمایان شوید</translation>
 <translation id="356738834800832239">گذرواژه شما ذخیره شد</translation>
 <translation id="3568431410312984116">«کمک گرفتن در نوشتن» اجازه دارد به‌طور خودکار باز شود</translation>
+<translation id="3569304198553566878">درحال نمایش <ph name="NUM_DISPLAYED_EVENTS" /> از <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">آیا می‌خواهید <ph name="APP_NAME" /> صفحه شما را به اشتراک بگذارد؟</translation>
 <translation id="3569614820047645079">‏فایل‌های شما در My Drive به‌طور خودکار با Chromebook همگام‌سازی می‌شود تا بتوانید بدون اتصال اینترنت به آن‌ها دسترسی داشته باشید.</translation>
 <translation id="3569617221227793022">منطقه زمانی درحال‌حاضر روی <ph name="TIME_ZONE_ENTRY" /> تنظیم شده است. این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
@@ -4894,7 +4898,7 @@
 <translation id="428565720843367874">نرم‌افزار آنتی‌ویروس به‌طور غیرمنتظره‌ای در هنگام اسکن کردن این فایل متوقف شد.</translation>
 <translation id="4286409554022318832"><ph name="NUM_OF_APPS" /> برنامه نصب‌شده برداشته خواهد شد</translation>
 <translation id="4287099557599763816">صفحه‌خوان</translation>
-<translation id="428715201724021596">درحال اتصال به نمایه. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="428715201724021596">درحال متصل شدن به نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4287157641315808225">‏بله، ChromeVox فعال شود</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{نمایش}one{نمایش همه}other{نمایش همه}}</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
@@ -5111,6 +5115,7 @@
 <translation id="4426857487270413362">فایل‌های نصب‌کننده بارگیری نشد. لطفاً اتصال اینترنت و داشتن فضای دیسک کافی را بررسی و دوباره امتحان کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="4427111270137140798">‫<ph name="COUNT" /> بار شناسایی شده است</translation>
 <translation id="4427365070557649936">درحال راستی‌آزمایی کد تأیید…</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{تکلیف انجام شد}one{تکلیف انجام شد}other{تکلیف انجام شد}}</translation>
 <translation id="4429163740524851942">جانمایی صفحه‌کلید فیزیکی</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
 <translation id="443031431654216610">فقط از اعداد استفاده کنید</translation>
@@ -5982,7 +5987,7 @@
 <translation id="505347685865235222">گروه بدون نام - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{باید این گذرواژه را همین‌حالا تغییر دهید}one{باید این گذرواژه را همین‌حالا تغییر دهید}other{باید این گذرواژه‌ها را همین‌حالا تغییر دهید}}</translation>
 <translation id="5056587122125565772">ساختن تصویر</translation>
-<translation id="5056950756634735043">درحال اتصال به محتوی</translation>
+<translation id="5056950756634735043">درحال متصل شدن به محتوی</translation>
 <translation id="5057110919553308744">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="5057127674016624293">اسکن کردن بیش‌از حد معمول طول کشیده است</translation>
 <translation id="5057480703570202545">سابقه بارگیری</translation>
@@ -6687,7 +6692,7 @@
 <translation id="5541091577812545428">گذرواژه تغییر نکرد</translation>
 <translation id="5542132724887566711">نمایه</translation>
 <translation id="5542750926112347543">کوکی‌های <ph name="DOMAIN" /> مسدود شدند</translation>
-<translation id="5542949973455282971">درحال اتصال به <ph name="CARRIER_NAME" /></translation>
+<translation id="5542949973455282971">درحال متصل شدن به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
 <translation id="5544482392629385159">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">ارائه‌دهنده</translation>
@@ -7636,6 +7641,7 @@
 <translation id="6206199626856438589">از سیستم سایت‌های نشان‌داده‌شده (ازجمله در برگه‌های باز) خارج خواهید شد</translation>
 <translation id="6206311232642889873">&amp;کپی تصویر</translation>
 <translation id="6207200176136643843">بازنشانی به سطح بزرگ‌نمایی پیش‌فرض</translation>
+<translation id="6207795130974856324">درانتظار کمک شما</translation>
 <translation id="6207937957461833379">کشور/منطقه</translation>
 <translation id="6208521041562685716">داده تلفن همراه درحال فعال شدن است</translation>
 <translation id="6208725777148613371">در <ph name="WEB_DRIVE" /> ذخیره نشد - <ph name="INTERRUPT_REASON" /></translation>
@@ -7728,7 +7734,7 @@
 <translation id="62650662268452475">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از نشانک‌ها، افزونه‌ها، و سایر موارد ذخیره‌شده در «حساب Google» خود در همه دستگاه‌هایتان استفاده کنید</translation>
 <translation id="6265159465845424232">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Microsoft OneDrive سؤال شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
-<translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>
+<translation id="6266532094411434237">درحال متصل شدن به <ph name="DEVICE" /></translation>
 <translation id="6266984048393265562">سفارشی‌سازی نمایه</translation>
 <translation id="6267166720438879315">انتخاب گواهی برای راستی‌آزمایی خودتان در <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">باز کردن با <ph name="APP" /></translation>
@@ -7739,7 +7745,7 @@
 <translation id="6271348838875430303">تصحیح واگرد شد</translation>
 <translation id="6271824294945464304">هم‌رسانی گذرواژه</translation>
 <translation id="6273677812470008672">کیفیت</translation>
-<translation id="6274089201566806618">درحال اتصال به <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274089201566806618">درحال متصل شدن به <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274108044476515407">اینکه آیا آگهی‌ای که می‌بینید شخصی‌سازی شده است یا نه به عوامل زیادی بستگی دارد، ازجمله این تنظیم، <ph name="BEGIN_LINK1" />آگهی‌های پیشنهادی سایت<ph name="LINK_END1" />، <ph name="BEGIN_LINK2" />تنظیمات کوکی<ph name="LINK_END2" /> شما، و اینکه سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه. درباره <ph name="BEGIN_LINK3" />مدیریت حریم خصوصی آگهی<ph name="LINK_END3" /> بیشتر بدانید.</translation>
 <translation id="6274202259872570803">ضبط ویدیویی از صفحه</translation>
 <translation id="627581157848786026">دیدن زبانه‌های بازشده در سایر دستگاه‌ها</translation>
@@ -8354,6 +8360,7 @@
 <translation id="6715735940363172819">وب‌سایت‌ها اجازه ندارند از میکروفون شما استفاده کنند</translation>
 <translation id="6716049856796700977">‏هیچ‌چیز نمی‌تواند از مکان شما استفاده کند. بااین‌حال، ممکن است مکان شما همچنان ازطریق نشانی IP شما برای برنامه‌ها و وب‌سایت‌ها نمایان باشد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">‏اتصال شبکه قطع شد. اتصال شبکه را بررسی کنید یا شبکه Wi-Fi دیگری را امتحان کنید.</translation>
+<translation id="671868032356459320">حوزه به‌روزرسان: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">قفل صفحه</translation>
 <translation id="6719839880830057298">بارگذاری فایل کامل شد</translation>
 <translation id="6721744718589119342">ممکن است اطلاعات بیشتر یا به‌روزرسانی‌ها را برایتان ایمیل کنیم.</translation>
@@ -9203,6 +9210,7 @@
 <translation id="7307129035224081534">موقتاً متوقف شد</translation>
 <translation id="7308643132139167865">زبان‌های وب‌سایت</translation>
 <translation id="7309214454733221756">برای ورود به سیستم <ph name="APP_NAME" />، گذرکلید ایجاد شود؟</translation>
+<translation id="7309517920862730287">فهرست تکالیف</translation>
 <translation id="7311005168897771689">‏زمانی‌که آفلاین هستید به فایل‌های Google Drive خود دسترسی داشته باشید</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7312040805247765153">برنامه نصب نشد</translation>
@@ -11252,6 +11260,7 @@
 <translation id="8680251145628383637">‏برای دریافت نشانک‌ها، سابقه، گذرواژه‌ها و تنظیمات دیگرتان را در همه دستگاه‌هایتان، به سیستم وارد شوید. همچنین به‌صورت خودکار به سیستم خدمات Google خود نیز وارد می‌شوید.</translation>
 <translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> متصل و آماده است</translation>
+<translation id="8683720831806477407">حوزه به‌روزرسان</translation>
 <translation id="8684471948980641888">مجاز کردن همگام‌سازی در شبکه‌های با حجم محدود</translation>
 <translation id="8685540043423825702">‏نمایه Chrome شما</translation>
 <translation id="8685882652128627032">برای باز کردن کادر گفتگوی «افزودن جستجوی سایت» کلیک کنید</translation>
@@ -12074,6 +12083,7 @@
 <translation id="9220723036554088545">فایلی بارگذاری کنید</translation>
 <translation id="9220820413868316583">انگشتتان را بردارید سپس دوباره امتحان کنید.</translation>
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
+<translation id="9222839391870847423">مدت: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">نمایش همه</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{برای مدیریت آن، «افزونه‌ها» را باز کنید.}one{برای مدیریت آن، «افزونه‌ها» را باز کنید.}other{برای مدیریت آن‌ها، «افزونه‌ها» را باز کنید.}}</translation>
 <translation id="924818813611903184">‏مدیریت زبان‌ها در تنظیمات ChromeOS</translation>

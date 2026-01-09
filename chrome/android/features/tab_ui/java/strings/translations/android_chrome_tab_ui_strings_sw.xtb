@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Ondoa kichupo na uondoke kwenye kikundi</translation>
 <translation id="5490235265819901748">Kikundi cha vichupo kimepanuliwa</translation>
 <translation id="5494920125229734069">Chagua zote</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Weka hadi faili, kichupo au picha <ph name="LIMIT_COUNT_ONE" />}other{Weka hadi faili, vichupo au picha <ph name="LIMIT_COUNT_MANY" />}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Funga kikundi cha vichupo chenye kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Funga kikundi cha vichupo chenye vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Angalia maelezo ya duka, chaguo hili linapatikana karibu na sehemu ya juu ya skrini</translation>
 <translation id="5627941783489838464">Hakuna masasisho ya vichupo</translation>

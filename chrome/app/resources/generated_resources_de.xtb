@@ -575,6 +575,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Keine kompromittierten Passwörter}=1{1 kompromittiertes Passwort}other{{NUM_COMPROMISED} kompromittierte Passwörter}}</translation>
 <translation id="1380028686461971526">Verbindung mit Netzwerk automatisch herstellen</translation>
 <translation id="1381567580865186407">Sprachaufnahmen auf <ph name="LANGUAGE" /> werden zur Verarbeitung an Google gesendet</translation>
+<translation id="1382174183118245544">Kreditkartennummern</translation>
 <translation id="1383065744946263511">An Symbolleiste anpinnen</translation>
 <translation id="1383381142702995121">Diese Erweiterung verwalten</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
@@ -1690,6 +1691,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2133775869826239001">Weitere Funktionen zum Einrichten auswählen</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> noch einmal herunterladen</translation>
 <translation id="2134905185275441536">System-Zertifizierungsstellen</translation>
+<translation id="2135420518376202233">Namen von Bluetooth-Geräten</translation>
 <translation id="21354425047973905">PINs ausblenden</translation>
 <translation id="2135456203358955318">Angedockte Lupe</translation>
 <translation id="2135787500304447609">&amp;Fortsetzen</translation>
@@ -2827,6 +2829,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2893180576842394309">Anhand deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren</translation>
 <translation id="2893318819023133318">Ansichten umkehren</translation>
 <translation id="2893701697603065178">Verwaltete Entwicklungsumgebung</translation>
+<translation id="2894596417096093634">IDs von Absturzberichten</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
@@ -3098,6 +3101,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3076966043108928831">Nur auf diesem Gerät speichern</translation>
 <translation id="3076977359333237641">Deine Anmeldedaten wurden gelöscht</translation>
 <translation id="3077734595579995578">Umschalttaste</translation>
+<translation id="3080930813589868009">Installation pro Nutzer</translation>
 <translation id="3080933187214341848">Dieses Netzwerk ist nicht mit deinem Konto synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">App-Name oder ‑ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4276,6 +4280,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3867831579565057323">Touchscreen zuordnen</translation>
 <translation id="3867944738977021751">Zertifikatfelder</translation>
 <translation id="3869564880668247983">Alle Tabs gruppieren</translation>
+<translation id="3869750789340473337">Speicherauszüge</translation>
 <translation id="3869917919960562512">Falscher Index</translation>
 <translation id="3870626286046977643">Auch Audio des Systems teilen</translation>
 <translation id="3870688298003434214">Auswahl von „<ph name="BOOKMARK_TITLE" />“ aufheben</translation>
@@ -7156,6 +7161,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Geräte in der Nähe mit der Funktion „Schnelles Pairing“ ganz leicht verbinden und einrichten</translation>
 <translation id="5886384907280980632">Jetzt deaktivieren</translation>
+<translation id="5888337581644150257">International Bank Account Numbers</translation>
 <translation id="5888889603768021126">Angemeldet mit</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Alle synchronisierten Daten werden mit meiner eigenen <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung verschlüsselt<ph name="END_LINK" />. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
@@ -7436,6 +7442,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6082877069782862752">Tastenbelegung</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Teil einer unbenannten Gruppe</translation>
 <translation id="6086004606538989567">Das bestätigte Konto ist nicht berechtigt, auf dieses Gerät zuzugreifen.</translation>
+<translation id="6086350918562605938">Installation pro System</translation>
 <translation id="6086418630711763366">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Wenn du die Tastaturnavigation deaktivieren möchtest, drücke Strg + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Von deinem Administrator installiert</translation>
 <translation id="6087286598828478206">Blockieren und Gruppe verlassen?</translation>

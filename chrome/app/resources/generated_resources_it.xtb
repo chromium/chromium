@@ -575,6 +575,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nessuna password compromessa}=1{1 password compromessa}other{{NUM_COMPROMISED} password compromesse}}</translation>
 <translation id="1380028686461971526">Collegamento automatico alla rete</translation>
 <translation id="1381567580865186407">Il testo dettato in <ph name="LANGUAGE" /> viene inviato a Google per essere elaborato</translation>
+<translation id="1382174183118245544">Numeri carte di credito</translation>
 <translation id="1383065744946263511">Blocca sulla barra degli strumenti</translation>
 <translation id="1383381142702995121">Gestisci questa estensione</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
@@ -1693,6 +1694,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2133775869826239001">Scegli altre funzionalità da configurare</translation>
 <translation id="2133857665503360653">Riprova l'azione per il file <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">CA del sistema</translation>
+<translation id="2135420518376202233">Nomi dei dispositivi Bluetooth</translation>
 <translation id="21354425047973905">Nascondi i codici PIN</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
 <translation id="2135787500304447609">&amp;Riprendi</translation>
@@ -2830,6 +2832,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2893180576842394309">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google</translation>
 <translation id="2893318819023133318">Inverti visualizzazioni</translation>
 <translation id="2893701697603065178">Ambiente di sviluppo gestito</translation>
+<translation id="2894596417096093634">Identificatori report sugli arresti anomali</translation>
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="289695669188700754">ID chiave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Questa impostazione personalizzata verrà rimossa quando chiuderai tutte le finestre di navigazione in incognito</translation>
@@ -3101,6 +3104,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3076966043108928831">Salva solo su questo dispositivo</translation>
 <translation id="3076977359333237641">I dati di accesso sono stati eliminati</translation>
 <translation id="3077734595579995578">maiusc</translation>
+<translation id="3080930813589868009">Programma di aggiornamento per utente</translation>
 <translation id="3080933187214341848">Questa rete non è sincronizzata con il tuo account. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ID o nome dell'app</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4281,6 +4285,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3867831579565057323">Mappa il touchscreen</translation>
 <translation id="3867944738977021751">Campi certificato</translation>
 <translation id="3869564880668247983">Raggruppa tutte le schede</translation>
+<translation id="3869750789340473337">Dump di memoria</translation>
 <translation id="3869917919960562512">Indice errato.</translation>
 <translation id="3870626286046977643">Condividi anche l'audio di sistema</translation>
 <translation id="3870688298003434214">Deseleziona <ph name="BOOKMARK_TITLE" /></translation>
@@ -7162,6 +7167,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5886009770935151472">Impronta 1</translation>
 <translation id="5886112770923972514">Connetti e configura rapidamente i dispositivi con Accoppiamento rapido nelle vicinanze</translation>
 <translation id="5886384907280980632">Disattiva ora</translation>
+<translation id="5888337581644150257">IBAN</translation>
 <translation id="5888889603768021126">Accesso eseguito con</translation>
 <translation id="5889282057229379085">Numero massimo di CA intermedie: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Cripta i dati sincronizzati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" />. I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.</translation>
@@ -7442,6 +7448,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6082877069782862752">Mappatura dei tasti</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Parte di un gruppo senza nome</translation>
 <translation id="6086004606538989567">L'account che hai verificato non è autorizzato ad accedere a questo dispositivo.</translation>
+<translation id="6086350918562605938">Programma di aggiornamento per sistema</translation>
 <translation id="6086418630711763366">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi Ctrl + <ph name="KEY" /> per disattivare.</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087286598828478206">Bloccare e uscire dal gruppo?</translation>

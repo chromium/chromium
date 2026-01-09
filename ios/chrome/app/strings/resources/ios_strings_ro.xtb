@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Oricine folosește acest dispozitiv poate să vadă fișierele descărcate</translation>
 <translation id="2671423594960767771">Trimite grupul</translation>
 <translation id="2673508731173059946">Accesează linkul copiat</translation>
+<translation id="2679659833697380">Informațiile tale sunt salvate pe dispozitiv</translation>
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Camera foto este în uz</translation>
 <translation id="2691653761409724435">Indisponibil offline</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Dacă te conectezi cu contul gestionat, poți să separi navigarea asociată organizației tale (inclusiv filele, istoricul și parolele) de celelalte activități de navigare.
 
        Alege ce să faci cu datele de navigare existente de pe acest dispozitiv.</translation>
+<translation id="4675298276894277358">Acest site nu se va mai afișa</translation>
 <translation id="4682496302933121474">Traduci pagina?</translation>
 <translation id="4682686630151240767">1. Deschide Setările dispozitivului iPhone.</translation>
 <translation id="4691892551491778176">Când folosești această funcție, conținutul paginilor și adresele URL sunt trimise la Google, dar nu se vor folosi pentru a îmbunătăți modelele de AI generativ. Poți dezactiva oricând această opțiune din setări.</translation>
@@ -1362,7 +1364,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6123514585040403489">Filele vor fi închise</translation>
-<translation id="6127379762771434464">Elementul a fost eliminat</translation>
 <translation id="6136914049981179737">Secunde</translation>
 <translation id="6138324221869147340">Unele funcții nu mai sunt disponibile</translation>
 <translation id="6140600850356225166">Solicită deschiderea linkurilor din alte aplicații în modul incognito</translation>
@@ -2130,6 +2131,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8856643812068084733">Arhive</translation>
 <translation id="8863067612494559785">Se trimit la <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Primește indicații de orientare și informații locale de la Google Maps</translation>
+<translation id="8867879594900082274">Modificările se vor aplica numai site-urilor fixate de pe acest dispozitiv.</translation>
 <translation id="8871974300055371298">Setări de conținut</translation>
 <translation id="8877788021141246043">Setează un memento</translation>
 <translation id="8879604564928138696">Atinge de două ori pentru a încerca</translation>

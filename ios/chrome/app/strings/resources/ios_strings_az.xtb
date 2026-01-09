@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Bu cihazdan istifadə edən hər kəs endirilmiş faylları görə bilər</translation>
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2673508731173059946">Kopiyalanmış linkə daxil olun</translation>
+<translation id="2679659833697380">Məlumatınız cihazda yadda saxlanılır</translation>
 <translation id="2688535388040882469">Bannerlər</translation>
 <translation id="2690858294534178585">Kamera istifadə olunur</translation>
 <translation id="2691653761409724435">Oflayn şəkildə əlçatan deyil</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">İdarə olunan hesabınız ilə daxil olmaq təşkilatınızla əlaqəli axtarışı (tablar, tarixçə və parollar daxil olmaqla) digər axtarışdan ayırmağa kömək edir.
 
        Bu cihazda mövcud axtarış datası ilə nə edəcəyinizi seçin.</translation>
+<translation id="4675298276894277358">Bu sayt bir daha göstərilməyəcək</translation>
 <translation id="4682496302933121474">Səhifə tərcümə edilsin?</translation>
 <translation id="4682686630151240767">1. iPhone Ayarlarını açın</translation>
 <translation id="4691892551491778176">Bu funksiyadan istifadə etdiyiniz zaman səhifə kontenti və URL-lər Google-a göndərilir, lakin generativ Sİ modellərini təkmilləşdirmək üçün istifadə olunmur. Bunu ayarlarda istənilən vaxt deaktiv edə bilərsiniz.</translation>
@@ -1362,7 +1364,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122831415929794347">Təhlükəsiz Baxış deaktiv edilsin?</translation>
 <translation id="6123514585040403489">Tablar bağlanacaq</translation>
-<translation id="6127379762771434464">Element silindi</translation>
 <translation id="6136914049981179737">Saniyələr əvvəl</translation>
 <translation id="6138324221869147340">Bəzi funksiyalar artıq əlçatan deyil</translation>
 <translation id="6140600850356225166">Digər tətbiqlərdən linkəri Anonim rejimdə açmağı istəyin</translation>
@@ -2130,6 +2131,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8856643812068084733">Arxivlər</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> cihazına göndərilir…</translation>
 <translation id="8863431381414769983">Google Xəritədən istiqamət və yerli məlumat əldə edin</translation>
+<translation id="8867879594900082274">Redaktələriniz yalnız bu cihazda bərkidilmiş saytlara tətbiq ediləcək.</translation>
 <translation id="8871974300055371298">Məzmun ayarları</translation>
 <translation id="8877788021141246043">Xatırlatma ayarlayın</translation>
 <translation id="8879604564928138696">Sınamaq üçün iki dəfə toxunun</translation>

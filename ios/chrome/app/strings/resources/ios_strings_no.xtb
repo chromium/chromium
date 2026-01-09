@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Besøk den kopierte linken</translation>
+<translation id="2679659833697380">Informasjonen din lagres på enheten din</translation>
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Hvis du logger på med den administrerte kontoen din, kan du holde nettlesingen som er knyttet til organisasjonen din (inkludert faner, logg og passord), atskilt fra annen nettlesing
 
        Velg hva du vil gjøre med de eksisterende nettlesingsdataene på denne enheten.</translation>
+<translation id="4675298276894277358">Dette nettstedet vises ikke igjen</translation>
 <translation id="4682496302933121474">Vil du oversette siden?</translation>
 <translation id="4682686630151240767">1. Åpne iPhone-innstillingene</translation>
 <translation id="4691892551491778176">Når du bruker denne funksjonen, sendes sideinnhold og nettadresser til Google, men de brukes ikke til å forbedre generative AI-modeller. Du kan når som helst slå av dette av i innstillingene.</translation>
@@ -1362,7 +1364,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6122191549521593678">Pålogget</translation>
 <translation id="6122831415929794347">Vil du slå av Safe Browsing?</translation>
 <translation id="6123514585040403489">Fanene dine blir lukket</translation>
-<translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6136914049981179737">For noen sekunder siden</translation>
 <translation id="6138324221869147340">Enkelte funksjoner er ikke tilgjengelige lenger</translation>
 <translation id="6140600850356225166">Spør om linker fra andre apper skal åpnes i Inkognito</translation>
@@ -2130,6 +2131,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8856643812068084733">Arkiver</translation>
 <translation id="8863067612494559785">Sender til <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Få veibeskrivelser og lokal informasjon fra Google Maps</translation>
+<translation id="8867879594900082274">Endringene dine gjelder bare for de festede nettstedene dine på denne enheten.</translation>
 <translation id="8871974300055371298">Innholdsinnstillinger</translation>
 <translation id="8877788021141246043">Angi en påminnelse</translation>
 <translation id="8879604564928138696">Dobbelttrykk for å prøve</translation>

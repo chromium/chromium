@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">Signing in with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing.
 
        Choose what to do with the existing browsing data on this device.</translation>
+<translation id="4675298276894277358">This site won't be shown again</translation>
 <translation id="4682496302933121474">Translate page?</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
 <translation id="4691892551491778176">When you use this feature, page content and URLs are sent to Google but won't be used to improve generative AI models. You can turn this off in settings at any time.</translation>
@@ -1363,7 +1364,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
 <translation id="6123514585040403489">Your tabs will be closed</translation>
-<translation id="6127379762771434464">Item removed</translation>
 <translation id="6136914049981179737">Seconds ago</translation>
 <translation id="6138324221869147340">Some features are no longer available</translation>
 <translation id="6140600850356225166">Ask to open links from other apps in Incognito</translation>

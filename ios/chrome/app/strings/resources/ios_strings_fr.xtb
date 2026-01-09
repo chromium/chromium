@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2673508731173059946">Consulter le lien copié</translation>
+<translation id="2679659833697380">Vos informations sont enregistrées sur votre appareil</translation>
 <translation id="2688535388040882469">Bannières</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">En vous connectant avec votre compte géré, vous pouvez séparer la navigation liée à votre organisation (onglets, historique et mots de passe, par exemple) de vos autres activités de navigation.
 
        Choisissez ce que vous souhaitez faire des données de navigation existantes sur cet appareil.</translation>
+<translation id="4675298276894277358">Ce site ne sera plus affiché</translation>
 <translation id="4682496302933121474">Traduire la page ?</translation>
 <translation id="4682686630151240767">1. Ouvrez les réglages de l'iPhone</translation>
 <translation id="4691892551491778176">Lorsque vous utilisez cette fonctionnalité, le contenu des pages et les URL sont envoyés à Google, mais ne servent pas à améliorer les modèles d'IA générative. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
@@ -1362,7 +1364,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée ?</translation>
 <translation id="6123514585040403489">Vos onglets seront fermés</translation>
-<translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">À l'instant.</translation>
 <translation id="6138324221869147340">Certaines fonctionnalités ne sont plus disponibles</translation>
 <translation id="6140600850356225166">Demander à ouvrir des liens d'autres applis en mode navigation privée</translation>
@@ -2130,6 +2131,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8856643812068084733">Archives</translation>
 <translation id="8863067612494559785">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtenez un itinéraire et des informations locales depuis Google Maps</translation>
+<translation id="8867879594900082274">Vos modifications ne s'appliqueront qu'aux sites que vous avez épinglés sur cet appareil.</translation>
 <translation id="8871974300055371298">Paramètres du contenu</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8879604564928138696">Appuyez deux fois pour essayer</translation>

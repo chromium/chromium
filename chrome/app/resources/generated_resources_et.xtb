@@ -575,6 +575,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ükski parool ei ole ohus}=1{1 parool on ohus}other{{NUM_COMPROMISED} parooli on ohus}}</translation>
 <translation id="1380028686461971526">Võrguta automaatselt ühendamine</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> keeles olev kõne saadetakse töötlemiseks Google'ile</translation>
+<translation id="1382174183118245544">Krediitkaardinumbrid</translation>
 <translation id="1383065744946263511">Tööriistaribale kinnitamine</translation>
 <translation id="1383381142702995121">Hallake seda laiendust</translation>
 <translation id="1383597849754832576">Kõnefaile ei saa alla laadida. Proovige hiljem uuesti.</translation>
@@ -1694,6 +1695,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2133775869826239001">Seadistamiseks rohkemate funktsioonide valimine</translation>
 <translation id="2133857665503360653">Faili <ph name="FILE_NAME" /> uuesti allalaadimine</translation>
 <translation id="2134905185275441536">Süsteemi CA-d</translation>
+<translation id="2135420518376202233">Bluetooth-seadmete nimed</translation>
 <translation id="21354425047973905">PIN-koodide peitmine</translation>
 <translation id="2135456203358955318">Dokitud luup</translation>
 <translation id="2135787500304447609">&amp;Taasta</translation>
@@ -2834,6 +2836,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2893180576842394309">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks</translation>
 <translation id="2893318819023133318">Vaheta vaated</translation>
 <translation id="2893701697603065178">Hallatav arenduskeskkond</translation>
+<translation id="2894596417096093634">Krahhiaruannete identifikaatorid</translation>
 <translation id="2894757982205307093">Uus vaheleht grupis</translation>
 <translation id="289695669188700754">Võtme ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">See kohandatud seade eemaldatakse, kui sulgete kõik oma inkognito aknad</translation>
@@ -3105,6 +3108,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3076966043108928831">Salvesta ainult sellesse seadmesse</translation>
 <translation id="3076977359333237641">Teie sisselogimisandmed kustutati</translation>
 <translation id="3077734595579995578">tõstuklahv</translation>
+<translation id="3080930813589868009">Kasutajapõhine värskendaja</translation>
 <translation id="3080933187214341848">See võrk pole teie kontoga sünkroonitud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Rakenduse nimi või ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> — <ph name="PAGE_URL" /></translation>
@@ -4285,6 +4289,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3867831579565057323">Vastendage oma puuteekraan</translation>
 <translation id="3867944738977021751">Sertifikaadi väljad</translation>
 <translation id="3869564880668247983">Kõigi vahelehtede rühmitamine</translation>
+<translation id="3869750789340473337">Mälutõmmised</translation>
 <translation id="3869917919960562512">Vale register.</translation>
 <translation id="3870626286046977643">Jaga ka süsteemi heli</translation>
 <translation id="3870688298003434214">Valiku <ph name="BOOKMARK_TITLE" /> tühistamine</translation>
@@ -7169,6 +7174,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5886009770935151472">1. sõrm</translation>
 <translation id="5886112770923972514">Läheduses olevate kiirsidumise funktsiooniga seadmete ühendamine ja kiirelt seadistamine</translation>
 <translation id="5886384907280980632">Lülita kohe välja</translation>
+<translation id="5888337581644150257">Rahvusvahelised pangakontonumbrid (IBAN)</translation>
 <translation id="5888889603768021126">Sisse logitud teenusega</translation>
 <translation id="5889282057229379085">Vahe CA-de maksimaalne arv: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Krüpteerige sünkroonitud andmed oma <ph name="BEGIN_LINK" />sünkroonimisparooliga<ph name="END_LINK" />. Google Payst pärinevaid makseviise ja aadresse ei krüpteerita. Sirvimisajalugu Chrome'ist ei sünkroonita.</translation>
@@ -7450,6 +7456,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6082877069782862752">Klahvide vastendamine</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – osa nimeta grupist</translation>
 <translation id="6086004606538989567">Kontol, mille kinnitasite, pole luba sellele seadmele juurdepääsemiseks.</translation>
+<translation id="6086350918562605938">Süsteemipõhine värskendaja</translation>
 <translation id="6086418630711763366">Lehtedel saab navigeerida tekstikursoriga. Väljalülitamiseks vajutage klahve Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Selle installis administraator</translation>
 <translation id="6087286598828478206">Kas blokeerida ja grupist lahkuda?</translation>

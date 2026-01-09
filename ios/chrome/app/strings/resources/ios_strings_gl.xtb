@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2673508731173059946">Visitar ligazón copiada</translation>
+<translation id="2679659833697380">A túa información gárdase no teu dispositivo</translation>
 <translation id="2688535388040882469">Báners</translation>
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Iniciar sesión coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais, da outra navegación que fagas.
 
        Escolle que queres facer cos datos de navegación deste dispositivo.</translation>
+<translation id="4675298276894277358">Este sitio non se volverá mostrar</translation>
 <translation id="4682496302933121474">Queres traducir a páxina?</translation>
 <translation id="4682686630151240767">1. Abre a configuración do iPhone</translation>
 <translation id="4691892551491778176">Cando uses esta función, o contido da páxina e os URL enviaranse a Google, pero non se usarán para mellorar os modelos de IA xenerativa. Podes desactivala cando queiras na configuración.</translation>
@@ -1362,7 +1364,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Queres desactivar a función Navegación segura?</translation>
 <translation id="6123514585040403489">Pecharanse as pestanas</translation>
-<translation id="6127379762771434464">Eliminouse o elemento</translation>
 <translation id="6136914049981179737">Seg. antes</translation>
 <translation id="6138324221869147340">Algunhas funcións xa non están dispoñibles</translation>
 <translation id="6140600850356225166">Preguntar para abrir ligazóns doutras aplicacións no modo de incógnito</translation>
@@ -2130,6 +2131,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8856643812068084733">Arquivos</translation>
 <translation id="8863067612494559785">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Recibe indicacións e información local de Google Maps</translation>
+<translation id="8867879594900082274">Os cambios só se aplicarán aos sitios que fixases neste dispositivo.</translation>
 <translation id="8871974300055371298">Configuración de contido</translation>
 <translation id="8877788021141246043">Definir un recordatorio</translation>
 <translation id="8879604564928138696">Toca dúas veces para tentalo</translation>

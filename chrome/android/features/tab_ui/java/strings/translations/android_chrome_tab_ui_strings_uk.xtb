@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Вилучити вкладку й залишити групу</translation>
 <translation id="5490235265819901748">Групу вкладок розгорнуто</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Додайте щонайбільше <ph name="LIMIT_COUNT_ONE" /> файл, вкладку або зображення}one{Додайте щонайбільше <ph name="LIMIT_COUNT_MANY" /> файл, вкладку або зображення}few{Додайте щонайбільше <ph name="LIMIT_COUNT_MANY" /> файли, вкладки або зображення}many{Додайте щонайбільше <ph name="LIMIT_COUNT_MANY" /> файлів, вкладок або зображень}other{Додайте щонайбільше <ph name="LIMIT_COUNT_MANY" /> файлу, вкладки або зображення}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрити групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>

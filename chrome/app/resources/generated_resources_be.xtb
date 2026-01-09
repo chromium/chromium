@@ -578,6 +578,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Раскрытых пароляў няма}=1{1 раскрыты пароль}one{{NUM_COMPROMISED} раскрыты пароль}few{{NUM_COMPROMISED} раскрытыя паролі}many{{NUM_COMPROMISED} раскрытых пароляў}other{{NUM_COMPROMISED} раскрытага пароля}}</translation>
 <translation id="1380028686461971526">Падключацца да сеткі аўтаматычна</translation>
 <translation id="1381567580865186407">Аўдыяматэрыял на гэтай мове (<ph name="LANGUAGE" />) адпраўляецца ў Google для апрацоўкі</translation>
+<translation id="1382174183118245544">Нумары крэдытных картак</translation>
 <translation id="1383065744946263511">Замацаваць на панэлі інструментаў</translation>
 <translation id="1383381142702995121">Кіраваць гэтым пашырэннем</translation>
 <translation id="1383597849754832576">Не ўдалося спампаваць файлы для ператварэння маўлення ў тэкст. Паўтарыце спробу пазней.</translation>
@@ -1694,6 +1695,7 @@
 <translation id="2133775869826239001">Выберыце, што яшчэ вы хочаце наладзіць</translation>
 <translation id="2133857665503360653">Паўтарыць спробу спампаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="2134905185275441536">Сістэмныя цэнтры сертыфікацыі</translation>
+<translation id="2135420518376202233">Назвы прылад з Bluetooth</translation>
 <translation id="21354425047973905">Не паказваць PIN-коды</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
 <translation id="2135787500304447609">&amp;Узнавіць</translation>
@@ -2831,6 +2833,7 @@
 <translation id="2893180576842394309">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google</translation>
 <translation id="2893318819023133318">Памяняць экраны месцамі</translation>
 <translation id="2893701697603065178">Асяроддзе распрацоўкі пад кіраваннем</translation>
+<translation id="2894596417096093634">Ідэнтыфікатары справаздач аб збоях</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
 <translation id="289695669188700754">Ідэнтыфікатар ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Гэта карыстальніцкая налада будзе выдалена, калі вы закрыеце ўсе вокны, адкрытыя ў рэжыме інкогніта</translation>
@@ -3102,6 +3105,7 @@
 <translation id="3076966043108928831">Захаваць толькі на гэтай прыладзе</translation>
 <translation id="3076977359333237641">Даныя для ўваходу выдалены</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Абнаўленне на ўзроўні карыстальніка</translation>
 <translation id="3080933187214341848">Гэта сетка не сінхранізавана з уліковым запісам. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Назва або ідэнтыфікатар праграмы</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4280,6 +4284,7 @@
 <translation id="3867831579565057323">Супаставіць сэнсарны экран</translation>
 <translation id="3867944738977021751">Палі сертыфіката</translation>
 <translation id="3869564880668247983">Згрупаваць усе ўкладкі</translation>
+<translation id="3869750789340473337">Дампы памяці</translation>
 <translation id="3869917919960562512">Няправільны індэкс.</translation>
 <translation id="3870626286046977643">Таксама абагуліць сістэмнае аўдыя</translation>
 <translation id="3870688298003434214">Скасаваць выбар закладкі "<ph name="BOOKMARK_TITLE" />"</translation>
@@ -7163,6 +7168,7 @@
 <translation id="5886009770935151472">Палец 1</translation>
 <translation id="5886112770923972514">Падключаць і наладжваць прылады паблізу з дапамогай функцыі хуткага спалучэння</translation>
 <translation id="5886384907280980632">Выключыць</translation>
+<translation id="5888337581644150257">Міжнародныя нумары банкаўскіх рахункаў</translation>
 <translation id="5888889603768021126">Вы ўвайшлі з дапамогай наступнага пастаўшчыка ідэнтыфікацыйнай інфармацыі:</translation>
 <translation id="5889282057229379085">Максімальная колькасць прамежкавых ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шыфраваць сінхранізаваныя даныя з дапамогай <ph name="BEGIN_LINK" />фразы-пароля<ph name="END_LINK" />. Спосабы аплаты і адрасы з Google Pay не будуць шыфравацца. Гісторыя прагляду сайтаў у браўзеры Chrome не будзе сінхранізавацца.</translation>
@@ -7444,6 +7450,7 @@
 <translation id="6082877069782862752">Вызначэнне клавіш</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – належыць да групы без назвы</translation>
 <translation id="6086004606538989567">Спраўджаны вамі ўліковы запіс не мае дазволу на доступ да гэтай прылады.</translation>
+<translation id="6086350918562605938">Абнаўленне на ўзроўні сістэмы</translation>
 <translation id="6086418630711763366">Перамяшчацца па старонках можна з дапамогай тэкставага курсора. Каб выключыць гэту функцыю, націсніце Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Усталявана вашым адміністратарам</translation>
 <translation id="6087286598828478206">Заблакіраваць і выйсці з групы?</translation>

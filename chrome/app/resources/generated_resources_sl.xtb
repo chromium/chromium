@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Skrbnik je blokiral nekatere funkcije za to napravo.</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> želi vaše nastavitve za Chrome ponastaviti na izvirne privzete nastavitve. S tem bodo ponastavljeni domača stran, nov zavihek s povezavami in iskalnik ter onemogočene razširitve in odpeti vsi zavihki. S tem bodo tudi izbrisani začasni in predpomnjeni podatki, kot so piškotki, vsebina in podatki spletnih mest.</translation>
 <translation id="1082725763867769612">Datoteke brez povezave</translation>
+<translation id="1083050113196701330">Preverjanje posodobitev je bilo uspešno dokončano. Posodobitev ni bila na voljo.</translation>
 <translation id="1084026333130513768">Shranjevanje, deljenje in predvajanje</translation>
 <translation id="1084096383128641877">Če odstranite to geslo, ne izbrišete računa na <ph name="DOMAIN" />. Če želite račun zaščititi pred drugimi, spremenite geslo ali izbrišite račun na <ph name="DOMAIN_LINK" />.</translation>
 <translation id="1084288067399862432">Ogroženo geslo je bilo uspešno spremenjeno.
@@ -738,6 +739,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1486486872607808064">Optično preberite to kodo QR s fotoaparatom v napravi, v kateri želite ustvariti ključ za dostop za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="1486616492435615702">Ustvarite osnutek ali izboljšajte obstoječe delo.</translation>
 <translation id="1487335504823219454">Vklopljeno – nastavitve po meri</translation>
+<translation id="1488513761150925974">Preverjanje opravil</translation>
 <translation id="1489101155914355052">Ustvarjanje predlogov za ta dokument …</translation>
 <translation id="1493152297698462486">Ustvarjanje slike z Geminijem</translation>
 <translation id="1493892686965953381">Čakanje na <ph name="LOAD_STATE_PARAMETER" /> ...</translation>
@@ -3642,6 +3644,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3450180775417907283">Domena <ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – ta zavihek delite z Geminijem</translation>
 <translation id="345078987193237421">To omogoča dostop do kamere za aplikacije, spletna mesta z dovoljenjem za kamero in sistemske storitve</translation>
+<translation id="345163758690017738">Obdeluje vaše opravilo …</translation>
 <translation id="3452999110156026232">Starševski dostop</translation>
 <translation id="3453082738208775226">Želite izbrisati podatke v shrambi brez povezave?</translation>
 <translation id="3453597230179205517">Dostop do lokacije je blokiran</translation>
@@ -3811,6 +3814,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3567284462585300767">Če želite prejeti in sprejeti datoteke od oseb okoli sebe, omogočite vidnost.</translation>
 <translation id="356738834800832239">Geslo je shranjeno</translation>
 <translation id="3568431410312984116">Dovoli samodejno odpiranje funkcije »Pomagaj mi pisati«</translation>
+<translation id="3569304198553566878">Prikaz <ph name="NUM_DISPLAYED_EVENTS" /> od <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Ali  želite, da <ph name="APP_NAME" /> souporablja vaš zaslon?</translation>
 <translation id="3569614820047645079">Datoteke v Mojem disku se samodejno sinhronizirajo s Chromebookom, tako da lahko do njih dostopate brez internetne povezave.</translation>
 <translation id="3569617221227793022">Časovni pas je trenutno nastavljen na <ph name="TIME_ZONE_ENTRY" />. To nastavitev upravlja skrbnik.</translation>
@@ -7644,6 +7648,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6206199626856438589">Odjavljeni boste s prikazanih spletnih mest, vključno s tistimi na odprtih zavihkih.</translation>
 <translation id="6206311232642889873">Kop&amp;iraj sliko</translation>
 <translation id="6207200176136643843">Ponastavitev na privzeto stopnjo povečave/pomanjšave</translation>
+<translation id="6207795130974856324">Čaka na vašo pomoč</translation>
 <translation id="6207937957461833379">Država/regija</translation>
 <translation id="6208521041562685716">Prenos podatkov v mobilnih omrežjih je v postopku aktiviranja</translation>
 <translation id="6208725777148613371">Ni bilo mogoče shraniti v <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8366,6 +8371,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6715735940363172819">Spletnim mestom ni dovoljena uporaba mikrofona</translation>
 <translation id="6716049856796700977">Nič ne more uporabljati vaše lokacije. Kljub temu bo vaša lokacija morda še vedno vidna aplikacijam in spletnim mestom prek naslova IP. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Omrežna povezava je bila prekinjena. Preverite omrežno povezavo ali poskusite drugo omrežje Wi-Fi.</translation>
+<translation id="671868032356459320">Obseg orodja za posodabljanje: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Zakleni zaslon</translation>
 <translation id="6719839880830057298">Nalaganje datoteke je dokončano</translation>
 <translation id="6721744718589119342">Morda vam bomo poslali e-poštno sporočilo zaradi več informacij ali obvestil.</translation>
@@ -9215,6 +9221,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7307129035224081534">Zaustavljeno</translation>
 <translation id="7308643132139167865">Jeziki spletnih mest</translation>
 <translation id="7309214454733221756">Želite ustvariti ključ za dostop za prijavo v aplikacijo <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Seznam opravil</translation>
 <translation id="7311005168897771689">Dostop do datotek v Googlu Drive, ko nimate povezave</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7312040805247765153">Aplikacije ni mogoče namestiti</translation>
@@ -11264,6 +11271,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8680251145628383637">Prijavite se, če želite uporabljati zaznamke, zgodovino, gesla in druge nastavitve v vseh napravah. Prav tako boste samodejno prijavljeni v Googlove storitve.</translation>
 <translation id="8681886425883659911">Oglasi so blokirani na spletnih mestih, za katera je znano, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="8682730193597992579">Tiskalnik <ph name="PRINTER_NAME" /> je povezan in pripravljen</translation>
+<translation id="8683720831806477407">Obseg orodja za posodabljanje</translation>
 <translation id="8684471948980641888">Dovoli sinhronizacijo v omrežjih z omejenim prenosom podatkov</translation>
 <translation id="8685540043423825702">Vaš profil v Chromu</translation>
 <translation id="8685882652128627032">Kliknite, če želite odpreti pogovorno okno za dodajanje iskanja po spletnem mestu</translation>
@@ -12088,6 +12096,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9220723036554088545">naložite datoteko</translation>
 <translation id="9220820413868316583">Dvignite prst, nato poskusite znova.</translation>
 <translation id="922152298093051471">Prilagajanje Chroma</translation>
+<translation id="9222839391870847423">Trajanje: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Pokaži vse</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Če želite upravljati, odprite razširitve}one{Če želite upravljati, odprite razširitve}two{Če želite upravljati, odprite razširitve}few{Če želite upravljati, odprite razširitve}other{Če želite upravljati, odprite razširitve}}</translation>
 <translation id="924818813611903184">Upravljanje jezikov v nastavitvah sistema Chrome OS</translation>

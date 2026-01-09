@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2673508731173059946">Visita il link copiato</translation>
+<translation id="2679659833697380">Le tue informazioni sono salvate sul dispositivo</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">La videocamera è in uso</translation>
 <translation id="2691653761409724435">Non disponibile offline</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">L'accesso con l'account gestito ti aiuta a mantenere separata la navigazione relativa alla tua organizzazione (tra cui schede, cronologia e password) dall'altra navigazione.
 
        Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo.</translation>
+<translation id="4675298276894277358">Questo sito non verrà più mostrato</translation>
 <translation id="4682496302933121474">Vuoi tradurre la pagina?</translation>
 <translation id="4682686630151240767">1. Apri le Impostazioni dell'iPhone</translation>
 <translation id="4691892551491778176">Quando usi questa funzionalità, i contenuti e gli URL della pagina vengono inviati a Google, ma non saranno usati per migliorare i modelli di AI generativa. Puoi disattivare questa opzione nelle impostazioni in qualsiasi momento.</translation>
@@ -1362,7 +1364,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Disattivare la Navigazione sicura?</translation>
 <translation id="6123514585040403489">Le tue schede verranno chiuse</translation>
-<translation id="6127379762771434464">Elemento rimosso</translation>
 <translation id="6136914049981179737">Secondi fa</translation>
 <translation id="6138324221869147340">Alcune funzionalità non sono più disponibili</translation>
 <translation id="6140600850356225166">Chiedi di aprire link da altre app in incognito</translation>
@@ -2130,6 +2131,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8856643812068084733">Archivi</translation>
 <translation id="8863067612494559785">Invio a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="8863431381414769983">Ricevi indicazioni stradali e informazioni locali da Google Maps</translation>
+<translation id="8867879594900082274">Le modifiche verranno applicate solo ai siti fissati su questo dispositivo.</translation>
 <translation id="8871974300055371298">Impostazioni contenuti</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8879604564928138696">Tocca due volte per provare</translation>

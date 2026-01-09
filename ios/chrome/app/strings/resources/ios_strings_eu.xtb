@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2673508731173059946">Joan kopiatu duzun estekara</translation>
+<translation id="2679659833697380">Gailuan gordetzen da informazioa</translation>
 <translation id="2688535388040882469">Banda-mezuak</translation>
 <translation id="2690858294534178585">Kamera abian da</translation>
 <translation id="2691653761409724435">Ez dago erabilgarri konexiorik gabe</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Kontu kudeatuarekin saioa hasiz gero, errazagoa da erakundearekin erlazionatutako arakatzea bereiztea beste arakatzetik (fitxak, historia eta pasahitzak barne).
 
        Aukeratu zer egin nahi duzun gailuan lehendik dauden arakatze-datuekin.</translation>
+<translation id="4675298276894277358">Webgune hau ez da erakutsiko berriro</translation>
 <translation id="4682496302933121474">Orria itzuli nahi duzu?</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
 <translation id="4691892551491778176">Eginbide hau erabiltzen duzunean, orriaren edukia eta URLak Google-ra bidaltzen dira, baina ez dira erabiliko AA generatiboko ereduak hobetzeko. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
@@ -1362,7 +1364,6 @@
 <translation id="6122191549521593678">Konektatu</translation>
 <translation id="6122831415929794347">Arakatze segurua desaktibatu nahi duzu?</translation>
 <translation id="6123514585040403489">Fitxak itxiko dira</translation>
-<translation id="6127379762771434464">Kendu egin da elementua</translation>
 <translation id="6136914049981179737">Duela segundo gutxi</translation>
 <translation id="6138324221869147340">Eginbide batzuk jada ez daude erabilgarri</translation>
 <translation id="6140600850356225166">Eskatu beste aplikazioetako estekak ezkutuko moduan irekitzea</translation>
@@ -2130,6 +2131,7 @@
 <translation id="8856643812068084733">Artxiboak</translation>
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="8863431381414769983">Lortu jarraibideak eta tokiko informazioa Google Maps-en bidez</translation>
+<translation id="8867879594900082274">Aldaketak gailu honetan ainguratuta dauzkazun webguneei soilik aplikatuko zaizkie.</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
 <translation id="8877788021141246043">Ezarri gogorarazpen bat</translation>
 <translation id="8879604564928138696">Saiatzeko, sakatu birritan</translation>

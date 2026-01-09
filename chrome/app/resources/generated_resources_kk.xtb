@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ұрланған құпия сөздер жоқ.}=1{1 құпия сөз ұрланды.}other{{NUM_COMPROMISED} құпия сөз ұрланды.}}</translation>
 <translation id="1380028686461971526">Желіге автоматты қосылу</translation>
 <translation id="1381567580865186407">Мына тілдегі сөз өңдеу үшін Google-ға жіберілді: <ph name="LANGUAGE" />.</translation>
+<translation id="1382174183118245544">Несиелік карта нөмірлері</translation>
 <translation id="1383065744946263511">Құралдар тақтасына бекіту</translation>
 <translation id="1383381142702995121">Бұл кеңейтімді басқару</translation>
 <translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
@@ -1690,6 +1691,7 @@
 <translation id="2133775869826239001">Реттеу үшін қосымша функцияларды таңдаңыз</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> файлын қайталау</translation>
 <translation id="2134905185275441536">Жүйенің сертификаттау органдары</translation>
+<translation id="2135420518376202233">Bluetooth құрылғысының атаулары</translation>
 <translation id="21354425047973905">PIN кодтарын жасыру</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
 <translation id="2135787500304447609">&amp;Жалғастыру</translation>
@@ -2827,6 +2829,7 @@
 <translation id="2893180576842394309">Search және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін Google интернеттегі әрекеттеріңізді пайдалануы мүмкін.</translation>
 <translation id="2893318819023133318">Кері көріністер</translation>
 <translation id="2893701697603065178">Басқарылатын әзірлеу ортасы</translation>
+<translation id="2894596417096093634">Бұзылу туралы есеп идентификаторлары</translation>
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
 <translation id="289695669188700754">Кілт индентификаторы: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Сіз барлық инкогнито терезесін жапқан кезде, бұл арнаулы параметр өз күшін жояды.</translation>
@@ -3098,6 +3101,7 @@
 <translation id="3076966043108928831">Тек осы құрылғыда сақтау</translation>
 <translation id="3076977359333237641">Кіру деректері жойылды</translation>
 <translation id="3077734595579995578">ауысу</translation>
+<translation id="3080930813589868009">Әр пайдаланушыға арналған жаңартқыш</translation>
 <translation id="3080933187214341848">Бұл желі аккаунтыңызға синхрондалмайды. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Қолданба атауы немесе идентификаторы</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4276,6 +4280,7 @@
 <translation id="3867831579565057323">Сенсорлық экранды түрлендіріңіз</translation>
 <translation id="3867944738977021751">Сертификат өрістері</translation>
 <translation id="3869564880668247983">Барлық қойындыны топтау</translation>
+<translation id="3869750789340473337">Жад дамптары</translation>
 <translation id="3869917919960562512">Қате индекс.</translation>
 <translation id="3870626286046977643">Жүйе аудиосын да бөлісіңіз</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> белгісін таңдаудан бас тарту</translation>
@@ -7156,6 +7161,7 @@
 <translation id="5886009770935151472">1-ші саусақ</translation>
 <translation id="5886112770923972514">Маңайдағы Fast Pair құрылғыларын қосу және жылдам реттеу</translation>
 <translation id="5886384907280980632">Қазір өшіру</translation>
+<translation id="5888337581644150257">Халықаралық банк шотының нөмірлері</translation>
 <translation id="5888889603768021126">Кіруге қолданылды:</translation>
 <translation id="5889282057229379085">Аралық CA сертификаттарының максималды саны: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Синхрондалған деректерді өзіңіздің <ph name="BEGIN_LINK" />синхрондау құпия фразаңызбен<ph name="END_LINK" /> шифрлаңыз. Google Pay қызметіндегі төлеу әдістері мен мекенжайлары шифрланбайды. Chrome-ның браузерді қолдану тарихы синхрондалмайды.</translation>
@@ -7436,6 +7442,7 @@
 <translation id="6082877069782862752">Кілтті түрлендіру</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: атаусыз топқа кіреді</translation>
 <translation id="6086004606538989567">Растаған аккаунтыңыздың бұл құрылғыны пайдалануға рұқсаты жоқ.</translation>
+<translation id="6086350918562605938">Әр жүйеге арналған жаңартқыш</translation>
 <translation id="6086418630711763366">Мәтін курсорымен бір беттен екінші бетке өте аласыз. Өшіру үшін Ctrl + <ph name="KEY" /> тіркесімін басыңыз.</translation>
 <translation id="6086846494333236931">Әкімші орнатқан</translation>
 <translation id="6087286598828478206">Топты блоктап, одан шығасыз ба?</translation>

@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Алдагдсан нууц үг алга}=1{Алдагдсан 1 нууц үг}other{{NUM_COMPROMISED} алдагдсан нууц үг}}</translation>
 <translation id="1380028686461971526">Сүлжээнд автоматаар холбогдох</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> дээрх яриаг боловсруулахаар Google рүү илгээсэн</translation>
+<translation id="1382174183118245544">Кредит картын дугаар</translation>
 <translation id="1383065744946263511">Самбарт бэхлэх</translation>
 <translation id="1383381142702995121">Энэ өргөтгөлийг удирдах</translation>
 <translation id="1383597849754832576">Ярианы файлуудыг татах боломжгүй. Дараа дахин оролдоно уу.</translation>
@@ -1700,6 +1701,7 @@
 <translation id="2133775869826239001">Тохируулах бусад онцлогийг сонгох</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" />-г дахин оролдох</translation>
 <translation id="2134905185275441536">Системийн CA</translation>
+<translation id="2135420518376202233">Bluetooth төхөөрөмжийн нэр</translation>
 <translation id="21354425047973905">ПИН нуух</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2135787500304447609">&amp; Сэргээн үргэлжүүлэх</translation>
@@ -2840,6 +2842,7 @@
 <translation id="2893180576842394309">Google таны түүхийг Хайлт болон Google-н бусад үйлчилгээг хувийн болгох зорилгоор ашиглаж болзошгүй</translation>
 <translation id="2893318819023133318">Харагдах байдлуудыг урвуулах</translation>
 <translation id="2893701697603065178">Удирддаг хөгжүүлэлтийн орчин</translation>
+<translation id="2894596417096093634">Гэмтлийн тайлангийн танигчид</translation>
 <translation id="2894757982205307093">Бүлэг доторх шинэ таб</translation>
 <translation id="289695669188700754">Гол ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Таныг бүх нууцлалтай цонхоо хаах үед энэ захиалгат тохиргоог хасах болно</translation>
@@ -3111,6 +3114,7 @@
 <translation id="3076966043108928831">Зөвхөн энэ төхөөрөмж дээр хадгалах</translation>
 <translation id="3076977359333237641">Таны нэвтрэх өгөгдлийг устгалаа</translation>
 <translation id="3077734595579995578">Шилжүүлэх</translation>
+<translation id="3080930813589868009">Хэрэглэгч тус бүрийн шинэчлэгч</translation>
 <translation id="3080933187214341848">Энэ сүлжээг таны бүртгэлтэй синк хийгээгүй байна. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Аппын нэр, ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4291,6 +4295,7 @@
 <translation id="3867831579565057323">Мэдрэгчтэй дэлгэцээ харгалзуулах</translation>
 <translation id="3867944738977021751">Гэрчилгээний талбарууд</translation>
 <translation id="3869564880668247983">Бүх табыг бүлэглэх</translation>
+<translation id="3869750789340473337">Санах ойн агшин зураг</translation>
 <translation id="3869917919960562512">Буруу индекс.</translation>
 <translation id="3870626286046977643">Мөн системийн аудиог хуваалцана уу</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" />-н сонголтыг цуцлах</translation>
@@ -7175,6 +7180,7 @@
 <translation id="5886009770935151472">Хуруу 1</translation>
 <translation id="5886112770923972514">Ойролцоох Хурдан холбох төхөөрөмжүүдэд холбогдож, шуурхай тохируулах</translation>
 <translation id="5886384907280980632">Одоо унтраах</translation>
+<translation id="5888337581644150257">Олон улсын төлбөр тооцооны харилцагчийн дансны дугаар (IBAN)</translation>
 <translation id="5888889603768021126">Дараахаар нэвтэрсэн</translation>
 <translation id="5889282057229379085">Завсрын Cas-ийн хамгийн их тоо: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Синк хийсэн өгөгдлийг өөрийн <ph name="BEGIN_LINK" />синкийн нэвтрэх үгээр<ph name="END_LINK" /> шифрлээрэй. Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.</translation>
@@ -7455,6 +7461,7 @@
 <translation id="6082877069782862752">Товч харгалзуулах</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Нэргүй бүлгийн хэсэг</translation>
 <translation id="6086004606538989567">Таны баталгаажуулсан бүртгэл энэ төхөөрөмжид хандах зөвшөөрөлгүй байна.</translation>
+<translation id="6086350918562605938">Систем бүрийн шинэчлэгч</translation>
 <translation id="6086418630711763366">Та текстийн курсороор хуудас хооронд шилжиж болно. Унтраахын тулд Ctrl + <ph name="KEY" /> дээр дарна уу.</translation>
 <translation id="6086846494333236931">Таны админ суулгасан</translation>
 <translation id="6087286598828478206">Бүлгийг блоклоод, гарах уу?</translation>

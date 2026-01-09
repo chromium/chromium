@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">Genom att logga in med det hanterade kontot kan du skilja på webbinformationen som är kopplad till organisationen, till exempel flikar, historik och lösenord, från annan webbinformation.
 
        Välj vad du vill göra med befintlig webbinformation på den här enheten.</translation>
+<translation id="4675298276894277358">Den här webbplatsen visas inte igen</translation>
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="4682686630151240767">1. Öppna iPhone-inställningarna</translation>
 <translation id="4691892551491778176">När du använder den här funktionen skickas sidinnehåll och webbadresser till Google, men vi använder inte denna data för att förbättra generativa AI-modeller. Du kan inaktivera detta i inställningarna när som helst.</translation>
@@ -1363,7 +1364,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
 <translation id="6123514585040403489">Dina flikar stängs</translation>
-<translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6136914049981179737">Nyss</translation>
 <translation id="6138324221869147340">Vissa funktioner är inte längre tillgängliga</translation>
 <translation id="6140600850356225166">Be om att öppna länkar från andra appar i inkognitoläge</translation>

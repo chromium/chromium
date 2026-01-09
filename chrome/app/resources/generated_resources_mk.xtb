@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нема компромитирани лозинки}=1{1 компромитирана лозинка}one{{NUM_COMPROMISED} компромитирана лозинка}other{{NUM_COMPROMISED} компромитирани лозинки}}</translation>
 <translation id="1380028686461971526">Автоматско поврзување на мрежа</translation>
 <translation id="1381567580865186407">Говорот на <ph name="LANGUAGE" /> се испраќа во Google за обработка</translation>
+<translation id="1382174183118245544">Броеви на кредитни картички</translation>
 <translation id="1383065744946263511">Закачи за алатникот</translation>
 <translation id="1383381142702995121">Управувајте со екстензијава</translation>
 <translation id="1383597849754832576">Не може да се преземат датотеките за говор. Обидете се повторно подоцна.</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2133775869826239001">Изберете повеќе функции за поставување</translation>
 <translation id="2133857665503360653">Обиди се пак со <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Системски сертификати CA</translation>
+<translation id="2135420518376202233">Имиња на уреди со Bluetooth</translation>
 <translation id="21354425047973905">Сокријте ги PIN-кодовите</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
 <translation id="2135787500304447609">&amp;Продолжи</translation>
@@ -2844,6 +2846,7 @@
 <translation id="2893180576842394309">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“ и другите услуги на Google</translation>
 <translation id="2893318819023133318">Замени ги приказите обратно</translation>
 <translation id="2893701697603065178">Управувана околина за програмирање</translation>
+<translation id="2894596417096093634">Идентификатори на извештаи за падови</translation>
 <translation id="2894757982205307093">Нова картичка во групата</translation>
 <translation id="289695669188700754">ИД на клуч: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Оваа приспособена поставка ќе биде отстранета кога ќе ги затворите сите ваши прозорци „Инкогнито“</translation>
@@ -3115,6 +3118,7 @@
 <translation id="3076966043108928831">Зачувај само на уредов</translation>
 <translation id="3076977359333237641">Податоците за најавување се избришани</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Ажурирање по корисник</translation>
 <translation id="3080933187214341848">Мрежава не е синхронизирана со вашата сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Име или ID на апликацијата</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4295,6 +4299,7 @@
 <translation id="3867831579565057323">Мапирајте го допирниот екран</translation>
 <translation id="3867944738977021751">Полиња на сертификат</translation>
 <translation id="3869564880668247983">Групирајте ги сите картички</translation>
+<translation id="3869750789340473337">Произволни податоци од меморијата</translation>
 <translation id="3869917919960562512">Погрешен индекс.</translation>
 <translation id="3870626286046977643">Сподели го и аудиото на системот</translation>
 <translation id="3870688298003434214">Поништи го изборот на <ph name="BOOKMARK_TITLE" /></translation>
@@ -7179,6 +7184,7 @@
 <translation id="5886009770935151472">Прст 1</translation>
 <translation id="5886112770923972514">Поврзете се и брзо поставувајте уреди со „Брзо спарување“ во близина</translation>
 <translation id="5886384907280980632">Исклучи сега</translation>
+<translation id="5888337581644150257">Меѓународни броеви на банкарски сметки</translation>
 <translation id="5888889603768021126">Најавен со</translation>
 <translation id="5889282057229379085">Максимален број посредни ЦА: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифрирајте ги синхронизираните податоци со сопствена <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" />. Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистување од Chrome нема да се синхронизира.</translation>
@@ -7460,6 +7466,7 @@
 <translation id="6082877069782862752">Мапирање клучеви</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - дел од неименувана група</translation>
 <translation id="6086004606538989567">Сметката што ја потврдивте нема овластување за пристап до уредов.</translation>
+<translation id="6086350918562605938">Ажурирање по систем</translation>
 <translation id="6086418630711763366">Може да се движите низ страниците со курсорот за текст. Притиснете Ctrl + <ph name="KEY" /> за да исклучите.</translation>
 <translation id="6086846494333236931">Инсталирано од вашиот администратор</translation>
 <translation id="6087286598828478206">Да се блокира и напушти групата?</translation>

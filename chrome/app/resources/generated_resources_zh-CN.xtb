@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{没有任何已泄露的密码}=1{有 1 个已泄露的密码}other{有 {NUM_COMPROMISED} 个已泄露的密码}}</translation>
 <translation id="1380028686461971526">自动联网</translation>
 <translation id="1381567580865186407">系统会将<ph name="LANGUAGE" />语音发送给 Google 以供处理</translation>
+<translation id="1382174183118245544">信用卡号</translation>
 <translation id="1383065744946263511">固定到工具栏</translation>
 <translation id="1383381142702995121">管理此扩展程序</translation>
 <translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
@@ -1686,6 +1687,7 @@
 <translation id="2133775869826239001">选择更多功能进行设置</translation>
 <translation id="2133857665503360653">重新尝试下载“<ph name="FILE_NAME" />”文件</translation>
 <translation id="2134905185275441536">系统 CA</translation>
+<translation id="2135420518376202233">蓝牙设备名称</translation>
 <translation id="21354425047973905">隐藏 PIN 码</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2135787500304447609">继续(&amp;R)</translation>
@@ -2822,6 +2824,7 @@
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2893318819023133318">反转视图</translation>
 <translation id="2893701697603065178">代管式开发环境</translation>
+<translation id="2894596417096093634">崩溃报告标识符</translation>
 <translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
@@ -3093,6 +3096,7 @@
 <translation id="3076966043108928831">仅保存到此设备上</translation>
 <translation id="3076977359333237641">您的登录数据已删除</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">按用户安装的更新程序</translation>
 <translation id="3080933187214341848">此网络未同步到您的账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">应用名称或 ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4271,6 +4275,7 @@
 <translation id="3867831579565057323">映射触摸屏</translation>
 <translation id="3867944738977021751">证书字段</translation>
 <translation id="3869564880668247983">将所有标签页归为一组</translation>
+<translation id="3869750789340473337">内存转储</translation>
 <translation id="3869917919960562512">索引错误。</translation>
 <translation id="3870626286046977643">同时分享系统音频</translation>
 <translation id="3870688298003434214">取消选择“<ph name="BOOKMARK_TITLE" />”</translation>
@@ -7150,6 +7155,7 @@
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">连接并快速设置附近的快速配对设备</translation>
 <translation id="5886384907280980632">立即关闭</translation>
+<translation id="5888337581644150257">国际银行账号</translation>
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用您自己的<ph name="BEGIN_LINK" />同步口令<ph name="END_LINK" />加密已同步的数据。Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。</translation>
@@ -7430,6 +7436,7 @@
 <translation id="6082877069782862752">按键映射</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
 <translation id="6086004606538989567">您已验证的账号无权访问此设备。</translation>
+<translation id="6086350918562605938">按系统安装的更新程序</translation>
 <translation id="6086418630711763366">您可以使用文本光标浏览网页。按 Ctrl + <ph name="KEY" />即可关闭。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087286598828478206">要屏蔽并退出分组吗？</translation>

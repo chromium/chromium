@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2673508731173059946">Ir al enlace copiado</translation>
+<translation id="2679659833697380">Tu información se guarda en tu dispositivo</translation>
 <translation id="2688535388040882469">Avisos</translation>
 <translation id="2690858294534178585">La cámara se está utilizando</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Iniciar sesión con tu cuenta gestionada te ayuda a mantener la navegación relacionada con tu organización (como las pestañas, el historial y las contraseñas) separada del resto de tu navegación.
 
        Elige qué hacer con los datos de navegación de este dispositivo.</translation>
+<translation id="4675298276894277358">Este sitio no se volverá a mostrar</translation>
 <translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4691892551491778176">Cuando usas esta función, el contenido de la página y las URLs se envían a Google, pero no se utilizan para mejorar los modelos de IA generativa. Puedes desactivar esta opción en Configuración cuando quieras.</translation>
@@ -1362,7 +1364,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
 <translation id="6123514585040403489">Tus pestañas se cerrarán</translation>
-<translation id="6127379762771434464">Elemento quitado</translation>
 <translation id="6136914049981179737">Hace segundos</translation>
 <translation id="6138324221869147340">Algunas funciones ya no están disponibles</translation>
 <translation id="6140600850356225166">Solicitar abrir enlaces de otras aplicaciones en Incógnito</translation>
@@ -1967,7 +1968,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8282657446819506217">Abrir en un grupo de pestañas</translation>
-<translation id="828291969289324795">{count,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
+<translation id="828291969289324795">{count,plural, =1{Añadir pestaña a nuevo grupo}other{Añadir pestañas a nuevo grupo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8289930144142009940">Notificaciones de <ph name="FEATURE_NAME" /> desactivadas</translation>
 <translation id="8290077367744012649">Seguir precios de tus pestañas</translation>
@@ -2130,6 +2131,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8856643812068084733">Archivos</translation>
 <translation id="8863067612494559785">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtén indicaciones e información local de Google Maps</translation>
+<translation id="8867879594900082274">Los cambios que hagas solo se aplicarán a los sitios fijados en este dispositivo.</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
 <translation id="8877788021141246043">Añadir un recordatorio</translation>
 <translation id="8879604564928138696">Toca dos veces para probar</translation>

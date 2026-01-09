@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">တဘ်ဖယ်ရှားပြီး အဖွဲ့မှထွက်ရန်</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ဖိုင်၊ တဘ် (သို့) ပုံ <ph name="LIMIT_COUNT_ONE" /> ခုအထိ ထည့်ပါ}other{ဖိုင်၊ တဘ် (သို့) ပုံ <ph name="LIMIT_COUNT_MANY" /> ခုအထိ ထည့်ပါ}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ပိတ်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ပိတ်ပါ။}}</translation>
 <translation id="5556417849629758491">ဆိုင်အချက်အလက် ကြည့်ရန် ရွေးချယ်စရာကို ဖန်သားပြင်ထိပ်ပိုင်းအနီးတွင် ရနိုင်သည်</translation>
 <translation id="5627941783489838464">တဘ်အပ်ဒိတ် မရှိပါ</translation>

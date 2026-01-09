@@ -180,7 +180,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
-<translation id="1651260071709244114">应用</translation>
+<translation id="1651260071709244114">App</translation>
 <translation id="1652051421944182562">开启安全检查通知…</translation>
 <translation id="1652333207707886577">自定义菜单</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{剩余时间：{TIME} 秒}=1{剩余时间：{TIME} 秒}other{剩余时间：{TIME} 秒}}</translation>
@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2671423594960767771">分享组</translation>
 <translation id="2673508731173059946">访问复制的链接</translation>
+<translation id="2679659833697380">您的信息会保存到您的设备上</translation>
 <translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
 
        选择如何处理此设备上现有的浏览数据。</translation>
+<translation id="4675298276894277358">此网站不会再显示</translation>
 <translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4691892551491778176">当您使用此功能时，网页内容和网址会发送给 Google，但不会用于改进生成式 AI 模型。您随时可以在设置中关闭此功能。</translation>
@@ -1362,7 +1364,6 @@
 <translation id="6122191549521593678">在线</translation>
 <translation id="6122831415929794347">要关闭“安全浏览”功能吗？</translation>
 <translation id="6123514585040403489">标签页将被关闭</translation>
-<translation id="6127379762771434464">该项已移除</translation>
 <translation id="6136914049981179737">几秒前</translation>
 <translation id="6138324221869147340">部分功能已不再可用</translation>
 <translation id="6140600850356225166">请求以无痕模式打开来自其他应用的链接</translation>
@@ -2130,6 +2131,7 @@
 <translation id="8856643812068084733">归档文件</translation>
 <translation id="8863067612494559785">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
+<translation id="8867879594900082274">您所做的修改只会应用于此设备上固定的网站。</translation>
 <translation id="8871974300055371298">内容设置</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8879604564928138696">点按两次即可试用</translation>

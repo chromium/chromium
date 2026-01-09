@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{कोई भी पासवर्ड हैक या चोरी नहीं हुआ}=1{1 पासवर्ड हैक या चोरी हुआ है}one{{NUM_COMPROMISED} पासवर्ड हैक या चोरी हुआ है}other{{NUM_COMPROMISED} पासवर्ड हैक या चोरी हुए हैं}}</translation>
 <translation id="1380028686461971526">नेटवर्क से अपने-आप कनेक्ट हो</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> स्पीच को प्रोसेसिंग के लिए, Google के पास भेजा जाता है</translation>
+<translation id="1382174183118245544">क्रेडिट कार्ड नंबर</translation>
 <translation id="1383065744946263511">टूलबार पर पिन करें</translation>
 <translation id="1383381142702995121">इस एक्सटेंशन को मैनेज करें</translation>
 <translation id="1383597849754832576">स्पीच फ़ाइलें डाउनलोड नहीं की जा सकतीं. कुछ देर बाद कोशिश करें.</translation>
@@ -1704,6 +1705,7 @@
 <translation id="2133775869826239001">सेट अप करने के लिए, ज़्यादा सुविधाएं चुनें</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> को फिर से डाउनलोड करने की कोशिश करें</translation>
 <translation id="2134905185275441536">सिस्टम CA सर्टिफ़िकेट</translation>
+<translation id="2135420518376202233">ब्लूटूथ डिवाइस के नाम</translation>
 <translation id="21354425047973905">पिन छिपाएं</translation>
 <translation id="2135456203358955318">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा</translation>
 <translation id="2135787500304447609">&amp;फिर से शुरू करें</translation>
@@ -2844,6 +2846,7 @@
 <translation id="2893180576842394309">Search और अन्य Google सेवाओं को आपके हिसाब से बनाने के लिए, Google आपका ब्राउज़िंग इतिहास इस्तेमाल कर सकता है.</translation>
 <translation id="2893318819023133318">व्यू को आपस में बदलें</translation>
 <translation id="2893701697603065178">मैनेज किए जा रहे डेवलपमेंट एनवायरमेंट</translation>
+<translation id="2894596417096093634">क्रैश रिपोर्ट के आइडेंटिफ़ायर</translation>
 <translation id="2894757982205307093">ग्रुप में नया टैब जोड़ें</translation>
 <translation id="289695669188700754">कुंजी ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">इस कस्टम सेटिंग को तब हटाया जाएगा, जब आप अपने सभी गुप्त विंडो बंद करेंगे</translation>
@@ -3115,6 +3118,7 @@
 <translation id="3076966043108928831">सिर्फ़ इस डिवाइस में सेव करें</translation>
 <translation id="3076977359333237641">आपका साइन-इन डेटा मिटा दिया गया</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">हर उपयोगकर्ता के लिए अपडेटर</translation>
 <translation id="3080933187214341848">यह नेटवर्क आपके खाते से सिंक नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ऐप्लिकेशन का नाम या आईडी</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4295,6 +4299,7 @@
 <translation id="3867831579565057323">टचस्क्रीन डिवाइस को मैप करें</translation>
 <translation id="3867944738977021751">प्रमाणपत्र फ़ील्ड</translation>
 <translation id="3869564880668247983">सभी टैब का ग्रुप बनाएं</translation>
+<translation id="3869750789340473337">मेमोरी डंप</translation>
 <translation id="3869917919960562512">गलत इंडेक्स.</translation>
 <translation id="3870626286046977643">सिस्टम का ऑडियो भी शेयर करें</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> से चुने हुए का निशान हटाएं</translation>
@@ -7176,6 +7181,7 @@
 <translation id="5886009770935151472">उंगली 1</translation>
 <translation id="5886112770923972514">आस-पास मौजूद फ़ास्ट पेयर वाले डिवाइसों को जोड़ें और फटाफट सेट अप करें</translation>
 <translation id="5886384907280980632">अभी बंद करें</translation>
+<translation id="5888337581644150257">अंतरराष्ट्रीय बैंक खाता नंबर</translation>
 <translation id="5888889603768021126">इससे साइन इन किया है</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA की अधिकतम संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">सिंक किए गए डेटा को, <ph name="BEGIN_LINK" />सिंक करने से जुड़े अपने लंबे पासवर्ड<ph name="END_LINK" /> से एन्क्रिप्ट (सुरक्षित) करें. Google Pay पर सेव आपके पेमेंट के तरीके और पते, एन्क्रिप्ट (सुरक्षित) नहीं किए जाएंगे. Chrome का ब्राउज़िंग इतिहास सिंक नहीं किया जाएगा.</translation>
@@ -7457,6 +7463,7 @@
 <translation id="6082877069782862752">की-मैपिंग</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - बिना नाम वाले ग्रुप का हिस्सा</translation>
 <translation id="6086004606538989567">आपने जिस खाते की पुष्टि की है उसके पास इस डिवाइस को ऐक्सेस करने की अनुमति नहीं है.</translation>
+<translation id="6086350918562605938">हर सिस्टम के लिए अपडेटर</translation>
 <translation id="6086418630711763366">किसी टेक्स्ट कर्सर से पेजों पर नेविगेट किया जा सकता है. इसे बंद करने के लिए, Ctrl + <ph name="KEY" /> दबाएं.</translation>
 <translation id="6086846494333236931">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>
 <translation id="6087286598828478206">क्या आपको ग्रुप ब्लॉक करना और छोड़ना है?</translation>

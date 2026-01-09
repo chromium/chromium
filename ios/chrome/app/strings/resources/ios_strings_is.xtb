@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
 <translation id="2671423594960767771">Deila hópi</translation>
 <translation id="2673508731173059946">Opna afritaðan tengil</translation>
+<translation id="2679659833697380">Upplýsingarnar þínar eru vistaðar í tækinu þínu</translation>
 <translation id="2688535388040882469">Borðar</translation>
 <translation id="2690858294534178585">Myndavélin er í notkun</translation>
 <translation id="2691653761409724435">Ekki í boði án nettengingar</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Með því að skrá þig inn með stýrða reikningnum þínum auðveldarðu þér að halda vefskoðun sem tengist fyrirtækinu þínu (svo sem flipa, feril og aðgangsorð) aðskildri frá annarri vefskoðun.
 
        Veldu hvað þú vilt gera við fyrirliggjandi vefskoðunargögn í þessu tæki.</translation>
+<translation id="4675298276894277358">Þetta vefsvæði verður ekki sýnt aftur</translation>
 <translation id="4682496302933121474">Þýða síðu?</translation>
 <translation id="4682686630151240767">1. Opnaðu stillingar iPhone</translation>
 <translation id="4691892551491778176">Þegar þú notar þennan eiginleika eru efni síðunnar og vefslóðir send til Google, en eru ekki notuð til að bæta skapandi gervigreindarlíkön. Þú getur slökkt á þessu í stillingum hvenær sem er.</translation>
@@ -1362,7 +1364,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6122191549521593678">Á netinu</translation>
 <translation id="6122831415929794347">Viltu slökkva á öruggri vefnotkun?</translation>
 <translation id="6123514585040403489">Flipar lokast</translation>
-<translation id="6127379762771434464">Atriði fjarlægt</translation>
 <translation id="6136914049981179737">sekúndur síðan</translation>
 <translation id="6138324221869147340">Sumir eiginleikar eru ekki lengur tiltækir</translation>
 <translation id="6140600850356225166">Biðja um að opna tengla úr öðrum forritum í huliðsstillingu</translation>
@@ -2130,6 +2131,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8856643812068084733">Geymslur</translation>
 <translation id="8863067612494559785">Sendir í <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Fáðu leiðarlýsingar og staðbundnar upplýsingar frá Google-kortum</translation>
+<translation id="8867879594900082274">Breytingarnar þínar munu aðeins gilda um festu vefsvæðin þín í þessu tæki.</translation>
 <translation id="8871974300055371298">Efnisstillingar</translation>
 <translation id="8877788021141246043">Stilla áminningu</translation>
 <translation id="8879604564928138696">Ýttu tvisvar til að prófa</translation>

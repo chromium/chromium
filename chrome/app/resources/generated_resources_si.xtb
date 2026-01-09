@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{අවදානමට පත් වූ මුරපද නැත}=1{අවදානමට පත් වූ මුරපද 1}one{අවදානමට පත් වූ මුරපද {NUM_COMPROMISED}}other{අවදානමට පත් වූ මුරපද {NUM_COMPROMISED}}}</translation>
 <translation id="1380028686461971526">ජාලයට ස්වයංක්‍රීයව සම්බන්ධ කරන්න</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> කථනය සැකසීම සඳහා Google වෙත යැවේ.</translation>
+<translation id="1382174183118245544">ණය කාඩ්පත් අංක</translation>
 <translation id="1383065744946263511">මෙවලම් තීරුවට අමුණන්න</translation>
 <translation id="1383381142702995121">මෙම දිගුව කළමනාකරණය කරන්න</translation>
 <translation id="1383597849754832576">කථන ගොනු බාගැනීමට නොහැකිය. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -1692,6 +1693,7 @@
 <translation id="2133775869826239001">පිහිටුවීමට තවත් විශේෂාංග තෝරා ගන්න</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> යළි උත්සාහ කරන්න</translation>
 <translation id="2134905185275441536">පද්ධති CAs</translation>
+<translation id="2135420518376202233">බ්ලූටූත් උපාංග නම්</translation>
 <translation id="21354425047973905">රහස් අංක සඟවන්න</translation>
 <translation id="2135456203358955318">ඈඳන ලද විශාලකය</translation>
 <translation id="2135787500304447609">නැවත පටන්ගැනීම (&amp;R)</translation>
@@ -2832,6 +2834,7 @@
 <translation id="2893180576842394309">සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලායන කිරීමට Google ඔබේ ඉතිහාසය භාවිත කළ හැක</translation>
 <translation id="2893318819023133318">ප්‍රතිලෝම දසුන්</translation>
 <translation id="2893701697603065178">කළමනා කෙරෙන සංවර්ධන පරිසරය</translation>
+<translation id="2894596417096093634">බිඳ වැටීම් වාර්තා හැඳුනුම්කාරක</translation>
 <translation id="2894757982205307093">කණ්ඩායම තුළ නව පටිත්ත</translation>
 <translation id="289695669188700754">යතුරු ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ඔබ ඔබගේ සියලු අප්‍රසිද්ධ කවුළු වැසූ විට මෙම අභිරුචි සැකසීම ඉවත් කරනු ඇත</translation>
@@ -3103,6 +3106,7 @@
 <translation id="3076966043108928831">මෙම උපාංගයේ පමණක් සුරකින්න</translation>
 <translation id="3076977359333237641">ඔබේ පුරන දත්ත මකන ලදි</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">එක් පරිශීලකයෙකුට යාවත්කාලීන කරන්නා</translation>
 <translation id="3080933187214341848">මෙම ජාලය ඔබේ ගිණුම සමඟ සමමුහූර්ත නොකෙරේ. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">යෙදුමේ නම හෝ ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4282,6 +4286,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3867831579565057323">ඔබේ ස්පර්ශ තිරය අනුරූපණය කරන්න</translation>
 <translation id="3867944738977021751">සහතික ක්ෂේත්‍ර</translation>
 <translation id="3869564880668247983">සියලු පටිති සමූහ කරන්න</translation>
+<translation id="3869750789340473337">මතක නික්ෂේප</translation>
 <translation id="3869917919960562512">වැරදි සුචිය.</translation>
 <translation id="3870626286046977643">පද්ධති ශ්‍රව්‍ය ද බෙදා ගන්න</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> නොතෝරන්න</translation>
@@ -7166,6 +7171,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5886009770935151472">ඇඟිල්ල 1</translation>
 <translation id="5886112770923972514">සමීපව වේගවත් යුගල උපාංග සම්බන්ධ කර ඉක්මනින් පිහිටුවන්න</translation>
 <translation id="5886384907280980632">දැන් ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="5888337581644150257">ජාත්‍යන්තර බැංකු ගිණුම් අංක</translation>
 <translation id="5888889603768021126">පුරා ඇත</translation>
 <translation id="5889282057229379085">අතරමැදි CAs හි උපරිම සංඛ්‍යාව: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">ඔබගේම <ph name="BEGIN_LINK" />සමමුහුර්ත මුර-වැකිකඩ<ph name="END_LINK" /> සමග සමමුහුර්ත කළ දත්ත සංකේතනය කරන්න Google Pay වෙතින් ගෙවීම් ක්‍රම සහ ලිපින සංකේතනය කරනු නොලැබේ. Chrome වෙතින් බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහුර්ත නොවනු ඇත.</translation>
@@ -7447,6 +7453,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6082877069782862752">යතුරු අනුරූපණය</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - නම් නොකළ කණ්ඩායමක කොටසකි</translation>
 <translation id="6086004606538989567">ඔබ සත්‍යාපනය කළ ගිණුමට මෙම උපාංගයට ප්‍රවේශ වීමට අවසර නැත.</translation>
+<translation id="6086350918562605938">පද්ධතියකට යාවත්කාලීන කරන්නා</translation>
 <translation id="6086418630711763366">ඔබට පෙළ කර්සරයක් සමගින් පිටුවල සංචාලනය කළ හැකිය. ක්‍රියාවිරහිත කිරීමට Ctrl + <ph name="KEY" /> ඔබන්න.</translation>
 <translation id="6086846494333236931">ඔබේ පරිපාලක විසින් ස්ථාපනය කරන ලදී</translation>
 <translation id="6087286598828478206">සමූහය අවහිර කර හැර යන්න ද?</translation>

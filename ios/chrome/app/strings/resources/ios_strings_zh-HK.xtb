@@ -456,7 +456,7 @@
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2673508731173059946">前往已複製的連結</translation>
-<translation id="2679659833697380">你的資訊會儲存到裝置</translation>
+<translation id="2679659833697380">你的資料會儲存到裝置</translation>
 <translation id="2688535388040882469">橫額</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
 <translation id="2691653761409724435">無法離線查看</translation>
@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">登入受管帳戶後，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開。
 
        選擇如何處理此裝置上現有的瀏覽資料。</translation>
+<translation id="4675298276894277358">此網站不會再顯示</translation>
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的「設定」</translation>
 <translation id="4691892551491778176">當你使用此功能，頁面內容和網址會傳送到 Google，但不會用於改善生成式 AI 模型。你可隨時在設定中關閉此功能。</translation>
@@ -1363,7 +1364,6 @@
 <translation id="6122191549521593678">在線</translation>
 <translation id="6122831415929794347">要關閉安全瀏覽嗎？</translation>
 <translation id="6123514585040403489">你的分頁即將關閉</translation>
-<translation id="6127379762771434464">項目已移除</translation>
 <translation id="6136914049981179737">幾秒前</translation>
 <translation id="6138324221869147340">部分功能已無法使用</translation>
 <translation id="6140600850356225166">要求在無痕模式中開啟其他應用程式的連結</translation>
@@ -2131,7 +2131,7 @@
 <translation id="8856643812068084733">封存檔</translation>
 <translation id="8863067612494559785">正傳送至 <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">透過「Google 地圖」規劃路線及取得本地資料</translation>
-<translation id="8867879594900082274">編輯內容只會套用至這部裝置上釘選的網站。</translation>
+<translation id="8867879594900082274">你的編輯內容只會套用到此裝置上的已固定網站。</translation>
 <translation id="8871974300055371298">內容設定</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8879604564928138696">㩒兩下就可以試用</translation>

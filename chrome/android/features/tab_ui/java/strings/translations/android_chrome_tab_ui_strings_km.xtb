@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ដកផ្ទាំង​ចេញ និង​ចាកចេញ​ពីក្រុម</translation>
 <translation id="5490235265819901748">បានពង្រីក​ក្រុមផ្ទាំង</translation>
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{បញ្ចូល​ឯកសារ ផ្ទាំង ឬរូបភាព​បានរហូត​ដល់ <ph name="LIMIT_COUNT_ONE" />}other{បញ្ចូល​ឯកសារ ផ្ទាំង ឬរូបភាព​បានរហូត​ដល់ <ph name="LIMIT_COUNT_MANY" />}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="5556417849629758491">មើលព័ត៌មានអំពីហាង ជម្រើសមាននៅជិតផ្នែកខាងលើអេក្រង់</translation>
 <translation id="5627941783489838464">មិនមានការធ្វើបច្ចុប្បន្នភាពផ្ទាំងទេ</translation>

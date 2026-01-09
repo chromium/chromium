@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Odstrani zavihek in zapusti skupino</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Dodajte največ <ph name="LIMIT_COUNT_ONE" /> datoteko, zavihek ali sliko}one{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datoteko, zavihek ali sliko}two{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datoteki, zavihka ali sliki}few{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datoteke, zavihke ali slike}other{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datotek, zavihkov ali slik}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zapiranje skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />.}one{Zapiranje skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />.}two{Zapiranje skupine zavihkov z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />.}few{Zapiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}other{Zapiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ogled podatkov o trgovini, možnosti so na voljo pri vrhu zaslona</translation>
 <translation id="5627941783489838464">Ni posodobitev zavihkov</translation>

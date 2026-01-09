@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ट्याब हटाउनुहोस् र समूह छाड्नुहोस्</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{बढीमा <ph name="LIMIT_COUNT_ONE" /> फाइल, ट्याब वा फोटो हाल्नुहोस्}other{बढीमा <ph name="LIMIT_COUNT_MANY" /> वटा फाइल, ट्याब वा फोटो हाल्नुहोस्}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
 <translation id="5627941783489838464">ट्याबसम्बन्धी कुनै पनि नयाँ जानकारी छैन</translation>

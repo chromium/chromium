@@ -271,6 +271,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="3885770153807205175">Засіб вибору мови</translation>
 <translation id="3889417619312448367">Видалити Google Chrome</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
+<translation id="3893985792899396936">Підказка щодо Chrome: шукайте за допомогою Об’єктива</translation>
 <translation id="3906096710440765802">Увійдіть в обліковий запис у Chrome, щоб отримати доступ до своїх паролів, закладок і інших даних на всіх пристроях</translation>
 <translation id="3921132130819999051">Дозвольте Chrome шукати інформацію для вас</translation>
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
@@ -368,6 +369,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5003967926796347400">Натисніть "Google Менеджер паролів"</translation>
 <translation id="5043786843026425788">Докладніше про пошук за допомогою Google Об’єктива в Chrome</translation>
 <translation id="504867494566807945">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chrome і закріпіть його на панелі завдань для зручності.</translation>
+<translation id="5105120510934353742">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 13 або новішої версії. На цьому комп’ютері встановлено macOS 12.</translation>
 <translation id="5114340746415930644">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="USER_EMAIL" />, введіть парольну фразу</translation>
 <translation id="5120334927898581447">Входити в Chrome під час входу в інші сервіси Google</translation>
 <translation id="5126049312684316860">Chrome попередньо завантажує ще більше сторінок, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>

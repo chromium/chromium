@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Pentadbir anda telah menyekat sesetengah fungsi untuk peranti ini</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> mahu memulihkan tetapan Chrome anda kepada tetapan lalainya yang asal. Tindakan ini akan menetap semula halaman utama, halaman tab baharu dan enjin carian anda, melumpuhkan sambungan anda dan menyahsemat semua tab. Data sementara yang lain dan data cache anda, seperti data kuki, kandungan dan tapak akan turut dikosongkan.</translation>
 <translation id="1082725763867769612">Fail luar talian</translation>
+<translation id="1083050113196701330">Semakan kemaskinian berjaya diselesaikan. Tiada kemaskinian tersedia</translation>
 <translation id="1084026333130513768">Simpan, Kongsi dan Hantar</translation>
 <translation id="1084096383128641877">Pengalihan keluar kata laluan tidak akan memadamkan akaun anda pada <ph name="DOMAIN" />. Tukar kata laluan anda atau padamkan akaun anda pada <ph name="DOMAIN_LINK" /> untuk melindungi kata laluan itu daripada orang lain.</translation>
 <translation id="1084288067399862432">Berjaya menukar kata laluan yang terjejas.
@@ -735,6 +736,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1486486872607808064">Imbas kod QR ini dengan kamera pada peranti yang mahu digunakan untuk membuat kunci laluan bagi <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Buat draf atau perhalus kerja sedia ada.</translation>
 <translation id="1487335504823219454">Hidup - tetapan tersuai</translation>
+<translation id="1488513761150925974">Semak tugasan anda</translation>
 <translation id="1489101155914355052">Menjana cadangan untuk dokumen ini…</translation>
 <translation id="1493152297698462486">Buat Imej dengan Gemini</translation>
 <translation id="1493892686965953381">Menunggu untuk <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3639,6 +3641,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3450180775417907283"><ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemaskinian.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Anda berkongsi tab ini dengan Gemini</translation>
 <translation id="345078987193237421">Tindakan ini membenarkan akses kamera untuk apl, laman web dengan kebenaran kamera dan perkhidmatan sistem</translation>
+<translation id="345163758690017738">Sedang mengusahakan tugasan anda…</translation>
 <translation id="3452999110156026232">Akses Ibu Bapa</translation>
 <translation id="3453082738208775226">Kosongkan storan luar talian?</translation>
 <translation id="3453597230179205517">Akses lokasi telah disekat</translation>
@@ -3808,6 +3811,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3567284462585300767">Untuk menerima fail daripada orang di sekitar anda, hidupkan keterlihatan</translation>
 <translation id="356738834800832239">Kata Laluan Anda Telah Disimpan</translation>
 <translation id="3568431410312984116">Benarkan "Bantu saya tulis" untuk dibuka secara automatik</translation>
+<translation id="3569304198553566878">Memaparkan <ph name="NUM_DISPLAYED_EVENTS" /> daripada <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Adakah anda ingin <ph name="APP_NAME" /> berkongsi skrin anda?</translation>
 <translation id="3569614820047645079">Fail anda dalam My Drive disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet.</translation>
 <translation id="3569617221227793022">Zon waktu ditetapkan kepada <ph name="TIME_ZONE_ENTRY" /> pada masa ini. Tetapan ini diurus oleh pentadbir anda.</translation>
@@ -5114,6 +5118,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4426857487270413362">Tidak dapat memuat turun fail pemasang. Sila semak sambungan Internet anda dan pastikan anda mempunyai ruang cakera kosong yang mencukupi dan cuba lagi. Kod ralat ialah <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Dikesan <ph name="COUNT" /> kali</translation>
 <translation id="4427365070557649936">Mengesahkan kod pengesahan...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Tugasan selesai}other{Tugasan selesai}}</translation>
 <translation id="4429163740524851942">Reka letak papan kekunci fizikal</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
 <translation id="443031431654216610">Gunakan digit berangka sahaja</translation>
@@ -7639,6 +7644,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6206199626856438589">Anda akan dilog keluar daripada laman yang dipaparkan, termasuk dalam tab yang terbuka</translation>
 <translation id="6206311232642889873">Sal&amp;in Imej</translation>
 <translation id="6207200176136643843">Tetapkan semula kepada tahap zum lalai</translation>
+<translation id="6207795130974856324">Menunggu bantuan anda</translation>
 <translation id="6207937957461833379">Negara/Rantau</translation>
 <translation id="6208521041562685716">Data mudah alih sedang diaktifkan</translation>
 <translation id="6208725777148613371">Gagal menyimpan pada <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
@@ -8355,6 +8361,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6715735940363172819">Laman web tidak dibenarkan untuk menggunakan mikrofon anda</translation>
 <translation id="6716049856796700977">Tiada apa-apa yang boleh menggunakan lokasi anda. Walau bagaimanapun, lokasi anda masih kelihatan kepada apl dan laman web melalui alamat IP anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Sambungan rangkaian terputus. Semak sambungan rangkaian anda atau cuba rangkaian Wi-Fi yang lain.</translation>
+<translation id="671868032356459320">Skop Pengemas kini: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Kunci skrin</translation>
 <translation id="6719839880830057298">Muat naik fail selesai</translation>
 <translation id="6721744718589119342">Kami mungkin menghantar e-mel kepada anda untuk maklumat atau kemaskinian lanjut</translation>
@@ -9204,6 +9211,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7307129035224081534">Dijeda</translation>
 <translation id="7308643132139167865">Bahasa laman web</translation>
 <translation id="7309214454733221756">Buat kunci laluan untuk log masuk ke <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Senarai tugas</translation>
 <translation id="7311005168897771689">Akses fail Google Drive anda dengan mudah apabila anda berstatus luar talian</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7312040805247765153">Tidak dapat memasang apl</translation>
@@ -11254,6 +11262,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8680251145628383637">Log masuk untuk mendapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda. Anda turut akan dilog masuk secara automatik ke perkhidmatan Google anda.</translation>
 <translation id="8681886425883659911">Iklan disekat di laman yang diketahui memaparkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> disambungkan dan sedia</translation>
+<translation id="8683720831806477407">Skop Pengemas kini</translation>
 <translation id="8684471948980641888">Benarkan penyegerakan pada rangkaian bermeter</translation>
 <translation id="8685540043423825702">Profil Chrome anda</translation>
 <translation id="8685882652128627032">Klik untuk membuka dialog Tambahkan Carian Laman</translation>
@@ -12075,6 +12084,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9220723036554088545">muat naik fail</translation>
 <translation id="9220820413868316583">Angkat kemudian cuba lagi.</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
+<translation id="9222839391870847423">Tempoh: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Tunjukkan Semua</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Untuk mengurus sambungan, akses Sambungan}other{Untuk mengurus sambungan, akses Sambungan}}</translation>
 <translation id="924818813611903184">Urus bahasa dalam tetapan Chrome OS</translation>

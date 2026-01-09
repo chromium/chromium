@@ -579,6 +579,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u darganfod}=1{1 cyfrinair sydd wedi'i ddarganfod}two{{NUM_COMPROMISED} gyfrinair sydd wedi'u darganfod}few{{NUM_COMPROMISED} chyfrinair sydd wedi'u darganfod}many{{NUM_COMPROMISED} chyfrinair sydd wedi'u darganfod}other{{NUM_COMPROMISED} cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="1380028686461971526">Awtogysylltu â'r rhwydwaith</translation>
 <translation id="1381567580865186407">Anfonir lleferydd <ph name="LANGUAGE" /> at Google i'w brosesu</translation>
+<translation id="1382174183118245544">Rhifau Cerdyn Credyd</translation>
 <translation id="1383065744946263511">Pinio i'r Bar Offer</translation>
 <translation id="1383381142702995121">Rheoli'r estyniad hwn</translation>
 <translation id="1383597849754832576">Methu â lawrlwytho ffeiliau lleferydd. Rhowch gynnig arall arni'n nes ymlaen.</translation>
@@ -1706,6 +1707,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2133775869826239001">Dewiswch ragor o nodweddion i'w gosod</translation>
 <translation id="2133857665503360653">Rhoi cynnig arall ar <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">System CA</translation>
+<translation id="2135420518376202233">Enwau Dyfeisiau Bluetooth</translation>
 <translation id="21354425047973905">Cuddio PIN</translation>
 <translation id="2135456203358955318">Chwyddwr sydd wedi'i docio</translation>
 <translation id="2135787500304447609">&amp;Parhau</translation>
@@ -2846,6 +2848,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2893180576842394309">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill</translation>
 <translation id="2893318819023133318">Gwrthdroi'r gweddau</translation>
 <translation id="2893701697603065178">Amgylchedd Datblygu a Reolir</translation>
+<translation id="2894596417096093634">Dynodwyr Adroddiad Chwalfa</translation>
 <translation id="2894757982205307093">Mae tab newydd yn y grŵp</translation>
 <translation id="289695669188700754">Rhif adnabod yr allwedd: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Bydd y gosodiad personol hwn yn cael ei dynnu pan fyddwch yn cau eich holl ffenestri Anhysbys</translation>
@@ -3117,6 +3120,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3076966043108928831">Cadw ar y ddyfais hon yn unig</translation>
 <translation id="3076977359333237641">Cafodd eich data mewngofnodi eu dileu</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Diweddarwr fesul defnyddiwr</translation>
 <translation id="3080933187214341848">Nid yw'r rhwydwaith hwn wedi'i gysoni i'ch cyfrif. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Enw neu Rif Adnabod yr Ap</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4297,6 +4301,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3867831579565057323">Mapio'ch sgrîn gyffwrdd</translation>
 <translation id="3867944738977021751">Meysydd Tystysgrif</translation>
 <translation id="3869564880668247983">Grwpio pob tab</translation>
+<translation id="3869750789340473337">Dympiau Cof</translation>
 <translation id="3869917919960562512">Mynegai anghywir.</translation>
 <translation id="3870626286046977643">Rhannu sain system hefyd</translation>
 <translation id="3870688298003434214">Dad-ddewis <ph name="BOOKMARK_TITLE" /></translation>
@@ -7181,6 +7186,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5886009770935151472">Bys 1</translation>
 <translation id="5886112770923972514">Cysylltwch a gosodwch ddyfeisiau Paru Cyflym yn gyflym gerllaw</translation>
 <translation id="5886384907280980632">Diffodd nawr</translation>
+<translation id="5888337581644150257">Rhifau Cyfrif Banc Rhyngwladol</translation>
 <translation id="5888889603768021126">Wedi mewngofnodi gyda</translation>
 <translation id="5889282057229379085">Uchafswm y CA canolradd: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Amgryptio data sydd wedi'u cysoni gyda'ch <ph name="BEGIN_LINK" />cyfrinymadrodd cysoni<ph name="END_LINK" /> eich hun. Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.</translation>
@@ -7462,6 +7468,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6082877069782862752">Mapio allweddi</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Rhan o grŵp dienw</translation>
 <translation id="6086004606538989567">Nid yw'r cyfrif a ddilyswyd gennych wedi'i awdurdodi i gael mynediad at y ddyfais hon.</translation>
+<translation id="6086350918562605938">Diweddarwr fesul system</translation>
 <translation id="6086418630711763366">Gallwch lywio tudalennau gyda chyrchwr testun. Pwyswch Ctrl + <ph name="KEY" /> i'w ddiffodd.</translation>
 <translation id="6086846494333236931">Wedi'i osod gan eich gweinyddwr</translation>
 <translation id="6087286598828478206">Rhwystro a gadael y grŵp?</translation>

@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
 <translation id="4188221736490993796">Z ನಿಂದ A ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{ಸ್ಪ್ಯಾಮ್ ಅಥವಾ ಮೋಸಗೊಳಿಸುವ ಕಂಟೆಂಟ್‌ನಿಂದಾಗಿ ಈ ಸೈಟ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ}one{ಸ್ಪ್ಯಾಮ್ ಅಥವಾ ಮೋಸಗೊಳಿಸುವ ಕಂಟೆಂಟ್‌ನಿಂದಾಗಿ ಈ ಸೈಟ್‌ಗಳು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ}other{ಸ್ಪ್ಯಾಮ್ ಅಥವಾ ಮೋಸಗೊಳಿಸುವ ಕಂಟೆಂಟ್‌ನಿಂದಾಗಿ ಈ ಸೈಟ್‌ಗಳು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ}}</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ಈ ಸಾಧನದಲ್ಲಿ 1 ಟ್ಯಾಬ್}one{ಈ ಸಾಧನದಲ್ಲಿ # ಟ್ಯಾಬ್‌ಗಳು}other{ಈ ಸಾಧನದಲ್ಲಿ # ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -1115,6 +1116,7 @@
 <translation id="5833984609253377421">ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">ನೀವು "<ph name="FILE_NAME" />" ಅನ್ನು ಹೇಗಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
+<translation id="5847265694842662173">ನಿಂದನೀಯ ಮತ್ತು ಬಳಕೆಯಾಗದ ಸೈಟ್‌ಗಳು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> ಮೂಲಕ PDF ತೆರೆಯಬೇಕೆ?</translation>
 <translation id="5849288995120328556">ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ನಿಲ್ಲಿಸಬೇಕೇ?</translation>
 <translation id="5853623416121554550">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -1143,6 +1145,7 @@
 <translation id="5956665950594638604">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ Chrome ಸಹಾಯ ಕೇಂದ್ರ ತೆರೆಯಿರಿ</translation>
 <translation id="59577092665511740">ಖಾತೆಯೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5958275228015807058">ಡೌನ್‌ಲೋಡ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದಿರುವ ಸೈಟ್ ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ}one{ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದಿರುವ ಸೈಟ್‌ಗಳು ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ}other{ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದಿರುವ ಸೈಟ್‌ಗಳು ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು Chrome ನಿಲ್ಲಿಸಿದೆ}}</translation>
 <translation id="5962718611393537961">ಕುಗ್ಗಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5964869237734432770">ಚಿತ್ರ ವಿವರಣೆಗಳನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5972844218283131174">ಎಲ್ಲಾ ಆಯ್ಕೆಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -1803,6 +1806,7 @@
 <translation id="847433688444405067">ಸಾಧನಗಳಾದ್ಯಂತ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="8477178913400731244">ಡೇಟಾ ಅಳಿಸಿ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">ಯಾವುದೇ ನಿಷ್ಕ್ರಿಯ ವಿಂಡೋಗಳಿಲ್ಲ</translation>
 <translation id="8493948351860045254">ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
 <translation id="8497242791509864205">ವಿಂಗಡಣೆ ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8497480609928300907">ಗೌಪ್ಯತಾ ಮಾರ್ಗದರ್ಶಿ ವಿವರಣೆ</translation>

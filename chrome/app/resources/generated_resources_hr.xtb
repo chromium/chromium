@@ -577,6 +577,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nema ugroženih zaporki}=1{Jedna ugrožena zaporka}one{{NUM_COMPROMISED} ugrožena zaporka}few{{NUM_COMPROMISED} ugrožene zaporke}other{{NUM_COMPROMISED} ugroženih zaporki}}</translation>
 <translation id="1380028686461971526">Automatsko povezivanje s mrežom</translation>
 <translation id="1381567580865186407">Govor na jeziku <ph name="LANGUAGE" /> šalje se Googleu na obradu</translation>
+<translation id="1382174183118245544">Brojevi kreditnih kartica</translation>
 <translation id="1383065744946263511">Prikvači na alatnu traku</translation>
 <translation id="1383381142702995121">Upravljajte ovim proširenjem</translation>
 <translation id="1383597849754832576">Preuzimanje govornih datoteka nije uspjelo. Pokušajte ponovo kasnije.</translation>
@@ -1695,6 +1696,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2133775869826239001">Odaberite više značajki za postavljanje</translation>
 <translation id="2133857665503360653">Pokušaj ponovo: <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">CA-ovi sustava</translation>
+<translation id="2135420518376202233">Nazivi Bluetooth uređaja</translation>
 <translation id="21354425047973905">Skrivanje PIN-ova</translation>
 <translation id="2135456203358955318">Usidreno povećalo</translation>
 <translation id="2135787500304447609">&amp;Nastavi</translation>
@@ -2833,6 +2835,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2893180576842394309">Google može upotrebljavati vašu povijest za prilagodbu Pretraživanja i drugih Googleovih usluga</translation>
 <translation id="2893318819023133318">Obrni prikaze</translation>
 <translation id="2893701697603065178">Upravljano razvojno okruženje</translation>
+<translation id="2894596417096093634">Identifikatori izvješća o rušenju preglednika</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="289695669188700754">ID ključa: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ta će se prilagođena postavka ukloniti kad zatvorite sve anonimne prozore</translation>
@@ -3104,6 +3107,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3076966043108928831">Spremi samo na ovom uređaju</translation>
 <translation id="3076977359333237641">Podaci za prijavu su izbrisani</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Program za ažuriranje po korisniku</translation>
 <translation id="3080933187214341848">Ova se mreža ne sinkronizira s vašim računom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Naziv ili ID aplikacije</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4283,6 +4287,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3867831579565057323">Mapiranje dodirnog zaslona</translation>
 <translation id="3867944738977021751">Polja certifikata</translation>
 <translation id="3869564880668247983">Grupiraj sve kartice</translation>
+<translation id="3869750789340473337">Snimke memorije</translation>
 <translation id="3869917919960562512">Pogrešni indeks.</translation>
 <translation id="3870626286046977643">Dijelite i zvuk sustava</translation>
 <translation id="3870688298003434214">Poništi odabir <ph name="BOOKMARK_TITLE" /></translation>
@@ -7163,6 +7168,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5886009770935151472">1. prst</translation>
 <translation id="5886112770923972514">Povežite i brzo postavite uređaje za brzo uparivanje u blizini</translation>
 <translation id="5886384907280980632">Isključi odmah</translation>
+<translation id="5888337581644150257">Međunarodni brojevi bankovnog računa</translation>
 <translation id="5888889603768021126">Prijavljeni ste na uslugu</translation>
 <translation id="5889282057229379085">Maksimalni broj srednjih CA-ova: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifriraj sinkronizirane podatke vlastitom <ph name="BEGIN_LINK" />šifrom za sinkronizaciju<ph name="END_LINK" />. Načini plaćanja i adrese s Google Paya neće se šifrirati. Povijest pregledavanja iz Chromea neće se sinkronizirati.</translation>
@@ -7443,6 +7449,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6082877069782862752">Mapiranje tipki</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – dio neimenovane grupe</translation>
 <translation id="6086004606538989567">Račun koji ste potvrdili nije ovlašten pristupiti ovom uređaju.</translation>
+<translation id="6086350918562605938">Program za ažuriranje po sustavu</translation>
 <translation id="6086418630711763366">Stranicama se možete kretati pomoću pokazivača za tekst. Pritisnite Ctrl + <ph name="KEY" /> da biste isključili tu značajku.</translation>
 <translation id="6086846494333236931">Instalirao vaš administrator</translation>
 <translation id="6087286598828478206">Želite li blokirati i napustiti grupu?</translation>

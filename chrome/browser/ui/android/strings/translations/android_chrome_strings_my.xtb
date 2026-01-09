@@ -1902,6 +1902,7 @@
 <translation id="8963117664422609631">ဝဘ်ဆိုက်ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8965591936373831584">ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="INCOGNITO_TAB_COUNT" /> ခုနှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_ONE" /> ခုကို ပိတ်ပါမည်}other{ရုပ်ဖျက်တဘ် <ph name="INCOGNITO_TAB_COUNT" /> ခုနှင့် နောက်ထပ်တဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်ပါမည်}}</translation>
+<translation id="8969796057708736017">ဖိုင်သည် သင့်အဖွဲ့အစည်း၏ မူဝါဒများနှင့် ကိုက်ညီပါက ဒေါင်းလုဒ်လုပ်ခြင်း ပြီးစီးပါမည်</translation>
 <translation id="8970887620466824814">တစ်ခုခု မှားသွားပါသည်။</translation>
 <translation id="8972098258593396643">မူရင်းဖိုင်တွဲသို့ ဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="8992769679401294069">ဒေတာကို သင့်စကားဝှက်စာဖြင့် အသွင်ဝှက်ထားသည်။ သင်၏ Google Account ရှိ Chrome ဒေတာ သုံးရန်၊ သိမ်းရန် ၎င်းကိုထည့်ပါ။</translation>

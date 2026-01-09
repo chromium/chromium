@@ -575,6 +575,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{1 gekompromitteerde wagwoord}other{{NUM_COMPROMISED} gekompromitteerde wagwoorde}}</translation>
 <translation id="1380028686461971526">Koppel outomaties aan netwerk</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" />-spraak word vir verwerking na Google toe gestuur</translation>
+<translation id="1382174183118245544">Kredietkaartnommers</translation>
 <translation id="1383065744946263511">Speld aan nutsbalk vas</translation>
 <translation id="1383381142702995121">Bestuur hierdie uitbreiding</translation>
 <translation id="1383597849754832576">Kan nie spraaklêers aflaai nie Probeer later weer.</translation>
@@ -1703,6 +1704,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2133775869826239001">Kies nog kenmerke om op te stel</translation>
 <translation id="2133857665503360653">Herprobeer <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Stelsel-CA’s</translation>
+<translation id="2135420518376202233">Name van Bluetooth-toestelle</translation>
 <translation id="21354425047973905">Versteek PIN-nommers</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
 <translation id="2135787500304447609">Gaan aan</translation>
@@ -2843,6 +2845,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2893180576842394309">Google kan jou geskiedenis gebruik om Search en ander Google-dienste te personaliseer</translation>
 <translation id="2893318819023133318">Keer aansigte om</translation>
 <translation id="2893701697603065178">Bestuurde ontwikkelingomgewing</translation>
+<translation id="2894596417096093634">Identifiseerders vir omvalverslae</translation>
 <translation id="2894757982205307093">Nuwe oortjie in groep</translation>
 <translation id="289695669188700754">Sleutel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Hierdie gepasmaakte instelling sal verwyder word wanneer jy al jou Incognito-vensters toemaak</translation>
@@ -3114,6 +3117,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3076966043108928831">Stoor net op hierdie toestel</translation>
 <translation id="3076977359333237641">Jou aanmelddata is uitgevee</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Opdateerder per gebruiker</translation>
 <translation id="3080933187214341848">Hierdie netwerk is nie met jou rekening gesinkroniseer nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Appnaam of -ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4294,6 +4298,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3867831579565057323">Beeld jou raakskerm af</translation>
 <translation id="3867944738977021751">Sertifikaatvelde</translation>
 <translation id="3869564880668247983">Groepeer alle oortjies</translation>
+<translation id="3869750789340473337">Geheuestortings</translation>
 <translation id="3869917919960562512">Verkeerde indeks.</translation>
 <translation id="3870626286046977643">Deel ook stelseloudio</translation>
 <translation id="3870688298003434214">Ontkies <ph name="BOOKMARK_TITLE" /></translation>
@@ -7179,6 +7184,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5886009770935151472">Vinger 1</translation>
 <translation id="5886112770923972514">Koppel en stel vinnig Kitsbind-toestelle in die omtrek op</translation>
 <translation id="5886384907280980632">Skakel nou af</translation>
+<translation id="5888337581644150257">Nommers vir internasionale bankrekeninge</translation>
 <translation id="5888889603768021126">Aangemeld met</translation>
 <translation id="5889282057229379085">Maksimum getal intermediêre CA's: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Enkripteer gesinkroniseerde data met jou eie <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" />. Betaalmetodes en -adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.</translation>
@@ -7460,6 +7466,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6082877069782862752">Sleutelkartering</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – deel van naamlose groep</translation>
 <translation id="6086004606538989567">Die rekening wat jy geverifieer het, is nie gemagtig om toegang tot hierdie toestel te kry nie.</translation>
+<translation id="6086350918562605938">Opdateerder per stelsel</translation>
 <translation id="6086418630711763366">Jy kan met ’n tekspyltjie deur bladsye navigeer. Druk Ctrl + <ph name="KEY" /> om af te skakel.</translation>
 <translation id="6086846494333236931">Deur jou administrateur geïnstalleer</translation>
 <translation id="6087286598828478206">Blokkeer en verlaat groep?</translation>

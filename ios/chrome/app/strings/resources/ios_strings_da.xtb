@@ -953,6 +953,7 @@
 <translation id="4673565891421389203">Når du logger ind med din administrerede konto, kan du adskille browserdata, der er relateret til din organisation (herunder faner, historik og adgangskoder), fra dine øvrige browserdata.
 
        Vælg, hvad der skal ske med de eksisterende browserdata på denne enhed.</translation>
+<translation id="4675298276894277358">Dette website vises ikke igen</translation>
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="4682686630151240767">1. Åbn iPhone-indstillingerne</translation>
 <translation id="4691892551491778176">Når du bruger denne funktion, sendes sideindhold og webadresser til Google, men oplysningerne anvendes ikke til at forbedre generativ AI-modeller. Du kan altid deaktivere dette i indstillingerne.</translation>
@@ -1363,7 +1364,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Vil du deaktivere Beskyttet browsing?</translation>
 <translation id="6123514585040403489">Dine faner lukkes</translation>
-<translation id="6127379762771434464">Elementet blev fjernet</translation>
 <translation id="6136914049981179737">Sek. siden</translation>
 <translation id="6138324221869147340">Visse funktioner er ikke længere tilgængelige</translation>
 <translation id="6140600850356225166">Anmod om at åbne links fra andre apps i inkognito</translation>

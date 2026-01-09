@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">பக்கத்தை அகற்றிவிட்டு, குழுவை விட்டு வெளியேறு</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{அதிகபட்சம் <ph name="LIMIT_COUNT_ONE" /> ஃபைல், பக்கம் அல்லது படத்தைச் சேர்க்கவும்}other{அதிகபட்சம் <ph name="LIMIT_COUNT_MANY" /> ஃபைல்கள், பக்கங்கள் அல்லது படங்களைச் சேர்க்கவும்}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை மூடும்.}}</translation>
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
 <translation id="5627941783489838464">பக்க மாற்றங்கள் இல்லை</translation>

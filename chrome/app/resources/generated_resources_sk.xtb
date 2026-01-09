@@ -577,6 +577,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Žiadne odhalené heslá}=1{1 odhalené heslo}few{{NUM_COMPROMISED} odhalené heslá}many{{NUM_COMPROMISED} compromised passwords}other{{NUM_COMPROMISED} odhalených hesiel}}</translation>
 <translation id="1380028686461971526">Automaticky pripojiť k sieti</translation>
 <translation id="1381567580865186407">Reč v jazyku <ph name="LANGUAGE" /> sa odosiela na spracovanie Googlu</translation>
+<translation id="1382174183118245544">Čísla kreditných kariet</translation>
 <translation id="1383065744946263511">Pripnúť na panel s nástrojmi</translation>
 <translation id="1383381142702995121">Spravovať toto rozšírenie</translation>
 <translation id="1383597849754832576">Súbory s balíkmi reči sa nedajú stiahnuť. Skúste to neskôr.</translation>
@@ -1695,6 +1696,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2133775869826239001">Výber ďalších funkcií na nastavenie</translation>
 <translation id="2133857665503360653">Zopakovať pre súbor <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Certifikáty CA systému</translation>
+<translation id="2135420518376202233">Názvy zariadení s rozhraním Bluetooth</translation>
 <translation id="21354425047973905">Skryť kódy PIN</translation>
 <translation id="2135456203358955318">Ukotvená lupa</translation>
 <translation id="2135787500304447609">&amp;Obnoviť</translation>
@@ -2832,6 +2834,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2893180576842394309">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie a ďalšie služby Googlu</translation>
 <translation id="2893318819023133318">Vymeniť zobrazenia</translation>
 <translation id="2893701697603065178">Spravované vývojové prostredie</translation>
+<translation id="2894596417096093634">Identifikátory reportov pádov</translation>
 <translation id="2894757982205307093">Nová karta v skupine</translation>
 <translation id="289695669188700754">Identifikácia kľúča: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Keď zavriete všetky okná inkognito, toto vlastné nastavenie bude odstránené</translation>
@@ -3103,6 +3106,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3076966043108928831">Uložiť iba v tomto zariadení</translation>
 <translation id="3076977359333237641">Vaše prihlasovacie údaje boli odstránené</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Aktualizátor pre jednotlivých používateľov</translation>
 <translation id="3080933187214341848">Táto sieť nie je synchronizovaná do vášho účtu. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Názov alebo identifikátor aplikácie</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4283,6 +4287,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3867831579565057323">Namapujte dotykovú obrazovku</translation>
 <translation id="3867944738977021751">Polia certifikátu</translation>
 <translation id="3869564880668247983">Zoskupiť všetky karty</translation>
+<translation id="3869750789340473337">Výpisy pamäte</translation>
 <translation id="3869917919960562512">Nesprávny index.</translation>
 <translation id="3870626286046977643">Zdieľať aj zvuk systému</translation>
 <translation id="3870688298003434214">Zrušiť výber záložky <ph name="BOOKMARK_TITLE" /></translation>
@@ -7165,6 +7170,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5886009770935151472">1. prst</translation>
 <translation id="5886112770923972514">Pripájajte sa k zariadeniam s rýchlym párovaním v okolí a rýchlo ich nastavujte</translation>
 <translation id="5886384907280980632">Vypnúť</translation>
+<translation id="5888337581644150257">Medzinárodné čísla IBAN bankových účtov</translation>
 <translation id="5888889603768021126">Prihlásenie cez poskytovateľa</translation>
 <translation id="5889282057229379085">Maximálny počet sprostredkujúcich certifikačných autorít: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifrovať synchronizované údaje pomocou vlastnej <ph name="BEGIN_LINK" />prístupovej frázy synchronizácie<ph name="END_LINK" />. Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.</translation>
@@ -7446,6 +7452,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6082877069782862752">Priradenie klávesov</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – súčasť skupiny bez názvu</translation>
 <translation id="6086004606538989567">Účet, ktorý ste overili, nemá povolený prístup do tohto zariadenia.</translation>
+<translation id="6086350918562605938">Aktualizátor pre jednotlivé systémy</translation>
 <translation id="6086418630711763366">Stránkami môžete prechádzať pomocou textového kurzora. Ak ho chcete vypnúť, stlačte Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Nainštalované vaším správcom</translation>
 <translation id="6087286598828478206">Chcete skupinu zablokovať a opustiť?</translation>

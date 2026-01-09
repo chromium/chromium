@@ -724,6 +724,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4180726336228139707">यो डिभाइसमा मात्र</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4188221736490993796">Z देखि A को क्रममा क्रमबद्ध गर्नुहोस्</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{स्प्याम वा भ्रामक सामग्रीका कारण Chrome ले यो साइटलाई नोटिफिकेसन पठाउन रोक लगाएको छ}other{स्प्याम वा भ्रामक सामग्रीका कारण Chrome ले यी साइटहरूलाई नोटिफिकेसन पठाउन रोक लगाएको छ}}</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{यो डिभाइसको एउटा ट्याब}other{यो डिभाइसको # वटा ट्याब}}</translation>
 <translation id="4198423547019359126">डाउनलोडसम्बन्धी कुनै पनि स्थानहरू उपलब्ध छैनन्</translation>
@@ -1115,6 +1116,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5833984609253377421">लिंक सेयर गर्नुहोस्</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">तपाईं जे भए पनि "<ph name="FILE_NAME" />" डाउनलोड गर्न चाहनुहुन्छ?</translation>
+<translation id="5847265694842662173">Chrome ले हानिकारक र प्रयोग नगरिएका साइटहरूलाई नोटिफिकेसन पठाउन रोक लगाएको छ</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> मार्फत PDF खोल्ने हो?</translation>
 <translation id="5849288995120328556">सेयर गर्न छाड्ने हो?</translation>
 <translation id="5853623416121554550">पज गरियो</translation>
@@ -1143,6 +1145,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5956665950594638604">Chrome को मद्दत केन्द्र एउटा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="59577092665511740">एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="5958275228015807058">डाउनलोडरू नामक फोल्डरमा भएका आफ्ना फाइल र पृष्ठहरू भेट्टाउनुहोस्</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ले तपाईंले केही समययता नखोलेको साइटलाई तपाईंलाई नोटिफिकेसन पठाउन रोक लगाएको छ}other{Chrome ले तपाईंले केही समययता नखोलेका साइटहरूलाई तपाईंलाई नोटिफिकेसन पठाउन रोक लगाएको छ}}</translation>
 <translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5964869237734432770">फोटो विवरण पाउन छाड्नुहोस्</translation>
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
@@ -1803,6 +1806,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="847433688444405067">सबै डिभाइसहरूमा ब्राउज गर्नुहोस्</translation>
 <translation id="8477178913400731244">डेटा मेटाउनुहोस्</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">कुनै पनि निष्क्रिय विन्डो छैन</translation>
 <translation id="8493948351860045254">ठाउँ खाली गर्नुहोस्</translation>
 <translation id="8497242791509864205">क्रमबद्ध गर्ने विकल्पहरू खोल्नुहोस्</translation>
 <translation id="8497480609928300907">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन</translation>
@@ -1902,6 +1906,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
+<translation id="8969796057708736017">यो फाइल तपाईंको सङ्गठनका नीतिअनुरूप छ भने डाउनलोड गर्ने प्रक्रिया पूरा हुने छ</translation>
 <translation id="8970887620466824814">कुनै समस्या आयो।</translation>
 <translation id="8972098258593396643">डिफल्ट फोल्डरमा डाउनलोड गर्ने हो?</translation>
 <translation id="8992769679401294069">तपाईंको पासफ्रेज प्रयोग गरी तपाईंको डेटा इन्क्रिप्ट गरिएको छ। आफ्नो Google खातामा Chrome को डेटा सेभ गर्न तथा सो डेटा प्रयोग गर्न तपाईंको पासफ्रेज हाल्नुहोस्।</translation>

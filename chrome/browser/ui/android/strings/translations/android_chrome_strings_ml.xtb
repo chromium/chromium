@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">ഈ ഉപകരണത്തിൽ മാത്രം</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
 <translation id="4188221736490993796">റ മുതൽ അ വരെയുള്ള ക്രമം</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{സ്പാം അല്ലെങ്കിൽ വഞ്ചനാപരമായ ഉള്ളടക്കം കാരണം അറിയിപ്പുകൾ അയയ്ക്കുന്നതിൽ നിന്ന് ഈ സൈറ്റിനെ Chrome തടഞ്ഞു}other{സ്പാം അല്ലെങ്കിൽ വഞ്ചനാപരമായ ഉള്ളടക്കം കാരണം അറിയിപ്പുകൾ അയയ്ക്കുന്നതിൽ നിന്ന് ഈ സൈറ്റുകളെ Chrome തടഞ്ഞു}}</translation>
 <translation id="4195643157523330669">പുതിയ ടാബില്‍ തുറക്കുക</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ഈ ഉപകരണത്തിലെ ഒരു ടാബ്}other{ഈ ഉപകരണത്തിലെ # ടാബ്}}</translation>
 <translation id="4198423547019359126">ലഭ്യമായ ഡൗൺലോഡ് ലൊക്കേഷനുകളൊന്നും ഇല്ല</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">ലിങ്ക് പങ്കിടുക</translation>
 <translation id="5839058148541733625">Chrome ദിനോസർ</translation>
 <translation id="5841444063256914865">നിങ്ങൾക്ക് "<ph name="FILE_NAME" />" എന്തായാലും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
+<translation id="5847265694842662173">ദുരുപയോഗം ചെയ്യുന്നതും ഉപയോഗിക്കാത്തതുമായ സൈറ്റുകൾ അറിയിപ്പുകൾ അയയ്ക്കുന്നത് Chrome തടഞ്ഞു</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> ഉപയോഗിച്ച് PDF തുറക്കണോ?</translation>
 <translation id="5849288995120328556">പങ്കിടൽ നിർത്തണോ?</translation>
 <translation id="5853623416121554550">താൽക്കാലികമായി നിർത്തി</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">പുതിയ ടാബിൽ Chrome സഹായകേന്ദ്രം തുറക്കുക</translation>
 <translation id="59577092665511740">അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5958275228015807058">ഡൗൺലോഡുകളിൽ നിന്നും നിങ്ങളുടെ ഫയലുകളും ‌പേജുകളും കണ്ടെത്തുക</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്ത ഒരു സൈറ്റ് നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്ക്കുന്നത് Chrome തടഞ്ഞു}other{നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്ത സൈറ്റുകൾ നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്ക്കുന്നത് Chrome തടഞ്ഞു}}</translation>
 <translation id="5962718611393537961">ചുരുക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5964869237734432770">ചിത്ര വിവരണങ്ങൾ നിർത്തുക</translation>
 <translation id="5972844218283131174">തിരഞ്ഞെടുത്തത് എല്ലാം മാറ്റുക</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">ഉപകരണങ്ങളിലുടനീളം ബ്രൗസ് ചെയ്യൂ</translation>
 <translation id="8477178913400731244">ഡാറ്റ ഇല്ലാതാക്കുക</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">നിഷ്ക്രിയമായ വിൻഡോകളൊന്നുമില്ല</translation>
 <translation id="8493948351860045254">ഇടം സൃഷ്‌ടിക്കുക</translation>
 <translation id="8497242791509864205">അടുക്കൽ ഓപ്‌ഷനുകൾ തുറക്കുക</translation>
 <translation id="8497480609928300907">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം</translation>
@@ -1903,6 +1907,7 @@
 <translation id="8963117664422609631">സൈറ്റിന്റെ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8965591936373831584">തീർച്ചപ്പെടുത്താത്തവ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>
+<translation id="8969796057708736017">ഫയൽ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ പാലിക്കുന്നുണ്ടെങ്കിൽ നിങ്ങളുടെ ഡൗൺലോഡ് പൂർത്തിയാകും</translation>
 <translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8972098258593396643">ഡിഫോൾട്ട് ഫോൾഡറിലേക്ക് ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="8992769679401294069">നിങ്ങളുടെ പാസ്ഫ്രെയ്‌സ് ഉപയോഗിച്ച് നിങ്ങളുടെ ഡാറ്റ എൻക്രിപ്റ്റ് ചെയ്‌തു. നിങ്ങളുടെ Google Account-ലെ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും ആ പാസ്ഫ്രെയ്‌സ് നൽകുക.</translation>

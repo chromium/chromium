@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2673508731173059946">Otvori kopiranu vezu</translation>
+<translation id="2679659833697380">Vaši se podaci spremaju na vaš uređaj</translation>
 <translation id="2688535388040882469">Natpisi</translation>
 <translation id="2690858294534178585">Fotoaparat je aktivan</translation>
 <translation id="2691653761409724435">Nije dostupno offline</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Prijavite se na upravljani račun kako biste pregledavanje povezano s vašom organizacijom (uključujući kartice, povijest i zaporke) lakše odvojili od ostatka pregledavanja.
 
        Odaberite što želite učiniti s postojećim podacima o pregledavanju na ovom uređaju.</translation>
+<translation id="4675298276894277358">Ova se web-lokacija više neće prikazivati</translation>
 <translation id="4682496302933121474">Želite li prevesti stranicu?</translation>
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
 <translation id="4691892551491778176">Kada upotrebljavate ovu značajku, sadržaj stranice i URL-ovi šalju se Googleu, ali neće se upotrebljavati za poboljšanje generativnih AI modela. To uvijek možete isključiti u postavkama.</translation>
@@ -1362,7 +1364,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6122191549521593678">Na mreži</translation>
 <translation id="6122831415929794347">Želite li isključiti Sigurno pregledavanje?</translation>
 <translation id="6123514585040403489">Vaše će se kartice zatvoriti</translation>
-<translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6136914049981179737">Prije nekoliko sek.</translation>
 <translation id="6138324221869147340">Neke značajke više nisu dostupne</translation>
 <translation id="6140600850356225166">Postavi upit za otvaranje veza iz drugih aplikacija u anonimnom načinu</translation>
@@ -2130,6 +2131,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8856643812068084733">Arhive</translation>
 <translation id="8863067612494559785">Slanje na uređaj <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Preuzmite upute i lokalne informacije s Google karata</translation>
+<translation id="8867879594900082274">Vaša će se uređivanja primjenjivati samo na vaše prikvačene web-lokacije na ovom uređaju.</translation>
 <translation id="8871974300055371298">Postavke sadržaja</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8879604564928138696">Dodirnite dvaput da biste isprobali</translation>

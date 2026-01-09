@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">टॅब काढून टाका आणि गटातून बाहेर पडा</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{कमाल <ph name="LIMIT_COUNT_ONE" /> फाइल, टॅब किंवा इमेज जोडा}other{कमाल <ph name="LIMIT_COUNT_MANY" /> फाइल, टॅब किंवा इमेज जोडा}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{टॅब गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{टॅब गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5627941783489838464">टॅब अपडेट नाहीत</translation>

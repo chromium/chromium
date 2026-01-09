@@ -575,6 +575,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Oğurlanmış parol yoxdur}=1{1 oğurlanmış parol}other{{NUM_COMPROMISED} oğurlanmış parol}}</translation>
 <translation id="1380028686461971526">Şəbəkəyə avtomatik olaraq qoşulun</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> dilində danışıq emal üçün Google'a göndərilir</translation>
+<translation id="1382174183118245544">Kredit kartı nömrələri</translation>
 <translation id="1383065744946263511">Alətlər panelinə bərkidin</translation>
 <translation id="1383381142702995121">Bu artırmanı idarə edin</translation>
 <translation id="1383597849754832576">Nitq fayllarını endirmək olmur. Sonra yenidən cəhd edin.</translation>
@@ -1693,6 +1694,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2133775869826239001">Ayarlanacaq digər funksiyaları seçin</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> faylını yenidən sınayın</translation>
 <translation id="2134905185275441536">Sistem CA-ləri</translation>
+<translation id="2135420518376202233">Bluetooth cihazlarının adları</translation>
 <translation id="21354425047973905">PIN-ləri gizlədin</translation>
 <translation id="2135456203358955318">Daxili miqyas</translation>
 <translation id="2135787500304447609">Davam edin</translation>
@@ -2833,6 +2835,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2893180576842394309">Axtarış və digər Google xidmətlərini fərdiləşdirmək üçün Google tarixçədən istifadə edə bilər</translation>
 <translation id="2893318819023133318">Görünüşləri tərs çevirin</translation>
 <translation id="2893701697603065178">İdarə edilən inkişaf mühiti</translation>
+<translation id="2894596417096093634">Xəta hesabatı identifikatorları</translation>
 <translation id="2894757982205307093">Qrupa yeni tab</translation>
 <translation id="289695669188700754">Əsas ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Bu fərdi ayar bütün Anonim pəncərələri bağladığınızda silinəcəkdir</translation>
@@ -3104,6 +3107,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3076966043108928831">Yalnız bu cihazda saxlayın</translation>
 <translation id="3076977359333237641">Giriş datanız silindi</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Hər istifadəçi üzrə güncəlləyici</translation>
 <translation id="3080933187214341848">Bu şəbəkə hesabınızla sinxronizasiya edilmir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Tətbiqin adı və ya ID-si</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4284,6 +4288,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3867831579565057323">Sensor ekranı təyin edin</translation>
 <translation id="3867944738977021751">Sertifikat Sahələri</translation>
 <translation id="3869564880668247983">Bütün tabları qruplaşdırın</translation>
+<translation id="3869750789340473337">Yaddaş datası</translation>
 <translation id="3869917919960562512">Yanlış indeks.</translation>
 <translation id="3870626286046977643">Sistem audiosunu da paylaşın</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> seçimini silin</translation>
@@ -7166,6 +7171,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5886009770935151472">Barmaq 1</translation>
 <translation id="5886112770923972514">Yaxınlıqdakı Sürətli Birləşdirmə cihazlarını qoşun və tez ayarlayın</translation>
 <translation id="5886384907280980632">İndi deaktiv edin</translation>
+<translation id="5888337581644150257">Beynəlxalq bank hesab nömrələri</translation>
 <translation id="5888889603768021126">Bununla daxil olunub</translation>
 <translation id="5889282057229379085">Orta CA-ların maksimal sayı: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638"><ph name="BEGIN_LINK" />Sinxronizasiya parol ifadəniz<ph name="END_LINK" /> ilə sinxronizasiya edilmiş datanı şifrələyin. Google Pay'dən ödəniş metodları və ünvanlar şifrələnməyəcək. Chrome'dan baxış tarixçəsi sinxronlaşdırılmayacaq.</translation>
@@ -7445,6 +7451,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6082877069782862752">Açarların əks olunması</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Adsız qrupun hissəsi</translation>
 <translation id="6086004606538989567">Doğruladığınız hesabın bu cihaza giriş icazəsi yoxdur.</translation>
+<translation id="6086350918562605938">Hər sistem üzrə güncəlləyici</translation>
 <translation id="6086418630711763366">Səhifələr arasında mətn kursoru ilə keçid edə bilərsiniz. Söndürmək üçün Ctrl + <ph name="KEY" /> üstünə basın.</translation>
 <translation id="6086846494333236931">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="6087286598828478206">Bloklamaq və qrupdan çıxmaq istəyirsiniz?</translation>

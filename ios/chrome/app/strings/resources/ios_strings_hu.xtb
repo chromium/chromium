@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
 <translation id="2671423594960767771">Csoport megosztása</translation>
 <translation id="2673508731173059946">Másolt link megnyitása</translation>
+<translation id="2679659833697380">Adatait az eszközre menti a rendszer</translation>
 <translation id="2688535388040882469">Üzenetszalagok</translation>
 <translation id="2690858294534178585">A kamera épp használatban van</translation>
 <translation id="2691653761409724435">Nem érhető el offline</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">A felügyelt fiókjával való bejelentkezéssel segíthet elkülöníteni a szervezetéhez kapcsolódó böngészési adatokat (például a lapokat, az előzményeket és a jelszavakat) a többi böngészési adatától.
 
        Válassza ki, hogy mit szeretne tenni az eszközön meglévő böngészési adatokkal.</translation>
+<translation id="4675298276894277358">Ez a webhely nem fog újra megjelenni</translation>
 <translation id="4682496302933121474">Lefordítja az oldalt?</translation>
 <translation id="4682686630151240767">1. Nyissa meg az iPhone Beállítások menüjét.</translation>
 <translation id="4691892551491778176">A funkció használatakor az oldalak tartalma és az URL-címek elküldésre kerülnek a Google-nak, de nem használjuk fel őket a generatív AI-modellek továbbfejlesztéséhez. Ezt bármikor kikapcsolhatja a beállításokban.</translation>
@@ -1362,7 +1364,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Kikapcsolja a Biztonságos Böngészést?</translation>
 <translation id="6123514585040403489">A rendszer bezárja a lapokat</translation>
-<translation id="6127379762771434464">Elem eltávolítva</translation>
 <translation id="6136914049981179737">Néhány másodperce</translation>
 <translation id="6138324221869147340">Egyes funkciók már nem állnak rendelkezésre</translation>
 <translation id="6140600850356225166">Kérdezzen rá más alkalmazások linkjeinek inkognitó módban való megnyitására</translation>
@@ -2130,6 +2131,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8856643812068084733">Archívum</translation>
 <translation id="8863067612494559785">Küldés ide: <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Útvonaltervet és helyi információkat kérhet a Google Térképtől.</translation>
+<translation id="8867879594900082274">A módosítások csak az ezen az eszközön kitűzött webhelyekre vonatkoznak.</translation>
 <translation id="8871974300055371298">Tartalombeállítások</translation>
 <translation id="8877788021141246043">Emlékeztető beállítása</translation>
 <translation id="8879604564928138696">Koppintson duplán a kipróbáláshoz</translation>

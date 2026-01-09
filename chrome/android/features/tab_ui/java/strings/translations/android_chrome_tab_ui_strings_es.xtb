@@ -147,7 +147,7 @@
 <translation id="6228793724645064692">(valoración de la tienda)</translation>
 <translation id="6251046978189636310">Reproduciendo audio</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Quitar pestaña del grupo}other{Quitar pestañas del grupo}}</translation>
-<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Añadir pestaña a nuevo grupo}other{Añadir pestañas a nuevo grupo}}</translation>
 <translation id="6333260925957816943">Información sobre esta tienda</translation>
 <translation id="6344715021569694246">{TABS_COUNT,plural, =1{Fijar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Fijar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="6381032505162537930">Aquí verás tus grupos de pestañas</translation>

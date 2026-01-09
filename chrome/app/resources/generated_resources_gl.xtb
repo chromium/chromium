@@ -575,6 +575,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ningún contrasinal vulnerado}=1{1 contrasinal vulnerado}other{{NUM_COMPROMISED} contrasinais vulnerados}}</translation>
 <translation id="1380028686461971526">Conectarse á rede de forma automática</translation>
 <translation id="1381567580865186407">Enviaráselle a Google o que se fale en <ph name="LANGUAGE" /> para que o procese</translation>
+<translation id="1382174183118245544">Números de tarxetas de crédito</translation>
 <translation id="1383065744946263511">Fixar na barra de ferramentas</translation>
 <translation id="1383381142702995121">Xestionar esta extensión</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
@@ -1692,6 +1693,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2133775869826239001">Seleccionar máis funcións para configurar</translation>
 <translation id="2133857665503360653">Tentar descargar <ph name="FILE_NAME" /> de novo</translation>
 <translation id="2134905185275441536">Autoridade certificadora do sistema</translation>
+<translation id="2135420518376202233">Nomes de dispositivos Bluetooth</translation>
 <translation id="21354425047973905">Ocultar PIN</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
 <translation id="2135787500304447609">Continua&amp;r</translation>
@@ -2829,6 +2831,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2893180576842394309">Google pode utilizar o teu historial para personalizar a Busca e outros servizos de Google</translation>
 <translation id="2893318819023133318">Inverter vistas</translation>
 <translation id="2893701697603065178">Contorno de desenvolvemento xestionado</translation>
+<translation id="2894596417096093634">Identificadores de informes de fallos</translation>
 <translation id="2894757982205307093">Nova pestana no grupo</translation>
 <translation id="289695669188700754">ID da clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Esta opción de configuración personalizada quitarase cando peches todas as ventás do modo de incógnito</translation>
@@ -3100,6 +3103,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3076966043108928831">Gardar só neste dispositivo</translation>
 <translation id="3076977359333237641">Elimináronse os teus datos de inicio de sesión</translation>
 <translation id="3077734595579995578">maiús</translation>
+<translation id="3080930813589868009">Actualizador por usuario</translation>
 <translation id="3080933187214341848">Esta rede non está sincronizada coa túa conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nome ou código da aplicación</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4283,6 +4287,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3867831579565057323">Mapear a túa pantalla táctil</translation>
 <translation id="3867944738977021751">Campos de certificado</translation>
 <translation id="3869564880668247983">Agrupar todas as pestanas</translation>
+<translation id="3869750789340473337">Baleirados de memoria</translation>
 <translation id="3869917919960562512">Índice incorrecto.</translation>
 <translation id="3870626286046977643">Compartir tamén audio do sistema</translation>
 <translation id="3870688298003434214">Anular a selección de <ph name="BOOKMARK_TITLE" /></translation>
@@ -7165,6 +7170,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conéctate con dispositivos compatibles coa función Vinculación rápida que estean preto de ti e configúraos velozmente</translation>
 <translation id="5886384907280980632">Desactivar agora</translation>
+<translation id="5888337581644150257">Números de contas bancarias internacionais</translation>
 <translation id="5888889603768021126">Iniciouse sesión con</translation>
 <translation id="5889282057229379085">Número máximo de CA intermedias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encriptar datos sincronizados coa túa propia <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" />. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se sincronizará o historial de navegación de Chrome.</translation>
@@ -7445,6 +7451,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6082877069782862752">Asignación de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> (forma parte dun grupo sen nome)</translation>
 <translation id="6086004606538989567">A conta que verificaches non está autorizada para acceder a este dispositivo.</translation>
+<translation id="6086350918562605938">Actualizador por sistema</translation>
 <translation id="6086418630711763366">Podes navegar polas páxinas cun cursor de texto. Preme Control + <ph name="KEY" /> para desactivala.</translation>
 <translation id="6086846494333236931">Extensión instalada polo administrador</translation>
 <translation id="6087286598828478206">Queres proceder ao bloqueo e saír do grupo?</translation>

@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2673508731173059946">Bisitahin ang kinopyang link</translation>
+<translation id="2679659833697380">Sine-save sa iyong device ang impormasyon mo</translation>
 <translation id="2688535388040882469">Mga Banner</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
 <translation id="2691653761409724435">Hindi available offline</translation>
@@ -952,6 +953,7 @@
 <translation id="4673565891421389203">Nakakatulong ang pag-sign in sa iyong pinapamahalaang account na maihiwalay mo ang pag-browse na nauugnay sa iyong organisasyon (kabilang ang mga tab, history, at mga password) sa iba mo pang pag-browse.
 
        Piliin kung ano ang gagawin sa kasalukuyang data mula sa pag-browse sa device na ito.</translation>
+<translation id="4675298276894277358">Hindi na ipapakita ulit ang site na ito</translation>
 <translation id="4682496302933121474">Isalin ang page?</translation>
 <translation id="4682686630151240767">1. Buksan ang Mga Setting ng iPhone</translation>
 <translation id="4691892551491778176">Kapag ginamit mo ang feature na ito, ipapadala ang content ng page at mga URL sa Google pero hindi ito gagamitin para mapahusay ang mga generative AI model. Puwede mo itong i-off sa mga setting anumang oras.</translation>
@@ -1362,7 +1364,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">I-off ang Ligtas na Pag-browse?</translation>
 <translation id="6123514585040403489">Isasara ang iyong mga tab</translation>
-<translation id="6127379762771434464">Inalis ang item</translation>
 <translation id="6136914049981179737">Segundo</translation>
 <translation id="6138324221869147340">Hindi na available ang ilang feature</translation>
 <translation id="6140600850356225166">Hilinging magbukas ng mga link mula sa iba pang app sa Incognito</translation>
@@ -2130,6 +2131,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8856643812068084733">Mga Archive</translation>
 <translation id="8863067612494559785">Ipinapadala kay/sa <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Makakuha ng mga direksyon at lokal na impormasyon mula sa Google Maps</translation>
+<translation id="8867879594900082274">Maa-apply lang ang iyong mga pag-edit sa mga naka-pin mong site sa device na ito.</translation>
 <translation id="8871974300055371298">Mga setting ng content 
 </translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
