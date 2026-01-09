@@ -76,6 +76,8 @@ constexpr char kConfirmationUnsyncedReauthHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.UnsyncedReauth";
 constexpr char kConfirmationSupervisedProfileHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.SupervisedProfile";
+constexpr char kConfirmationTooManyBookmarksHistogramName[] =
+    "Signin.ChromeSignoutConfirmationPrompt.TooManyBookmarks";
 constexpr char16_t kTestExtensionName[] = u"Test extension";
 
 constexpr char kAccountExtensionsSignoutChoiceHistogramName[] =
@@ -93,28 +95,32 @@ void VerifySignoutPromptHistogram(
     const base::HistogramTester& histogram_tester,
     ChromeSignoutConfirmationPromptVariant variant,
     ChromeSignoutConfirmationChoice choice) {
-  const char* confirmaton_prompt_histogram_name =
-      kConfirmationUnsyncedHistogramName;
+  const char* confirmation_prompt_histogram_name;
   switch (variant) {
     case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
-      confirmaton_prompt_histogram_name = kConfirmationNoUnsyncedHistogramName;
+      confirmation_prompt_histogram_name = kConfirmationNoUnsyncedHistogramName;
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
+      confirmation_prompt_histogram_name = kConfirmationUnsyncedHistogramName;
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      confirmaton_prompt_histogram_name =
+      confirmation_prompt_histogram_name =
           kConfirmationUnsyncedReauthHistogramName;
       break;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
-      confirmaton_prompt_histogram_name =
+      confirmation_prompt_histogram_name =
           kConfirmationSupervisedProfileHistogramName;
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
+      confirmation_prompt_histogram_name =
+          kConfirmationTooManyBookmarksHistogramName;
       break;
   }
 
-  histogram_tester.ExpectUniqueSample(confirmaton_prompt_histogram_name, choice,
-                                      1);
+  histogram_tester.ExpectUniqueSample(confirmation_prompt_histogram_name,
+                                      choice, 1);
   base::HistogramTester::CountsMap expected_counts;
-  expected_counts[confirmaton_prompt_histogram_name] = 1;
+  expected_counts[confirmation_prompt_histogram_name] = 1;
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                   "Signin.ChromeSignoutConfirmationPrompt."),
               testing::ContainerEq(expected_counts));
@@ -258,17 +264,18 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
     return LogoutTabHelper::FromWebContents(tab);
   }
 
+ protected:
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(GetProfile()));
+  }
+
  private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
     SigninBrowserTestBaseT::OnWillCreateBrowserContextServices(context);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
-  }
-
-  syncer::TestSyncService* GetTestSyncService() {
-    return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(GetProfile()));
   }
 };
 
@@ -543,6 +550,122 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   VerifyUnsyncedDataCountHistograms(
       histogram_tester,
       ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_BookmarksLimitExceeded) {
+  // Setup a primary account.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Set Bookmarks Limit Exceeded error.
+  GetTestSyncService()->SetBookmarksLimitExceeded(true);
+
+  {
+    // Trigger the Chrome signout action.
+    base::HistogramTester histogram_tester;
+    SignoutConfirmationUI* signout_confirmation_ui =
+        TriggerSignoutAndWaitForConfirmationPrompt();
+    ASSERT_TRUE(signout_confirmation_ui);
+
+    // Click "Cancel".
+    signout_confirmation_ui->CancelDialogForTesting();
+    VerifySignoutPromptHistogram(
+        histogram_tester,
+        ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks,
+        ChromeSignoutConfirmationChoice::kCancelSignout);
+    VerifyUnsyncedDataCountHistograms(
+        histogram_tester,
+        ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks);
+  }
+
+  // User is still signed in.
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was not navigated to the signin page or signout page.
+  content::WebContents* active_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_tab);
+  EXPECT_FALSE(IsSigninTab(active_tab));
+  EXPECT_FALSE(IsSignoutTab(active_tab));
+
+  {
+    // Trigger the Chrome signout action again.
+    base::HistogramTester histogram_tester;
+    SignoutConfirmationUI* signout_confirmation_ui =
+        TriggerSignoutAndWaitForConfirmationPrompt();
+    ASSERT_TRUE(signout_confirmation_ui);
+
+    // Click "Sign Out Anyway".
+    signout_confirmation_ui->AcceptDialogForTesting();
+    VerifySignoutPromptHistogram(
+        histogram_tester,
+        ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks,
+        ChromeSignoutConfirmationChoice::kSignout);
+    VerifyUnsyncedDataCountHistograms(
+        histogram_tester,
+        ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks);
+  }
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_ReauthAndBookmarksLimit) {
+  // Setup a primary account in error state.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  // Set Bookmarks Limit Exceeded error.
+  GetTestSyncService()->SetBookmarksLimitExceeded(true);
+
+  // Trigger the Chrome signout action.
+  base::HistogramTester histogram_tester;
+  SignoutConfirmationUI* signout_confirmation_ui =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(signout_confirmation_ui);
+
+  // Click "Sign Out Anyway".
+  // Note: This is the accept action.
+  signout_confirmation_ui->AcceptDialogForTesting();
+  VerifySignoutPromptHistogram(
+      histogram_tester,
+      ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
+      ChromeSignoutConfirmationChoice::kSignout);
+
+  // If we are in a bookmark limit state, we should not have any unsynced data
+  // of type BOOKMARK. The reason is that the BOOKMARK data type is disabled,
+  // hence bookmark entities are not forwarded to the commit path.
+  histogram_tester.ExpectTotalCount(
+      "Sync.DataTypeNumUnsyncedEntitiesOnSignoutConfirmationFromPendingState."
+      "BOOKMARK",
+      /*expected_count=*/0);
 
   // User was signed out.
   EXPECT_FALSE(

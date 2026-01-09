@@ -17,6 +17,8 @@ constexpr char kChromeSignoutPromptHistogramUnsyncedVariant[] = "Unsynced";
 constexpr char kChromeSignoutPromptHistogramNoUnsyncedVariant[] = "NoUnsynced";
 constexpr char kChromeSignoutPromptHistogramSupervisedProfileVariant[] =
     "SupervisedProfile";
+constexpr char kChromeSignoutPromptHistogramTooManyBookmarksVariant[] =
+    "TooManyBookmarks";
 
 constexpr char kAccountExtensionsSignoutChoiceHistogramName[] =
     "Signin.Extensions.AccountExtensionsSignoutChoice";
@@ -40,6 +42,10 @@ void RecordChromeSignoutConfirmationPromptMetrics(
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       histogram_variant_name =
           kChromeSignoutPromptHistogramSupervisedProfileVariant;
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
+      histogram_variant_name =
+          kChromeSignoutPromptHistogramTooManyBookmarksVariant;
       break;
   }
 

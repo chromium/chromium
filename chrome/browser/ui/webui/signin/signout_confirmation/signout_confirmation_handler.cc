@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/number_formatting.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -49,6 +50,8 @@ int ComputeDialogTitleId(ChromeSignoutConfirmationPromptVariant variant) {
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE;
+    case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE;
     default:
       NOTREACHED();
   }
@@ -71,17 +74,25 @@ std::string ComputeDialogSubtitle(
       return l10n_util::GetStringUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
-        CHECK_GT(unsynced_data_count, 0u);
+      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
+          unsynced_data_count > 0) {
         return l10n_util::GetPluralStringFUTF8(
             IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY_WITH_COUNT,
             unsynced_data_count);
       }
+      // UnoPhase2FollowUp is not enabled, or the bookmark limit was exceeded
+      // (i.e. `unsynced_data_count` is 0). This is because BOOKMARKS are
+      // disabled in this state and therefore not counted towards
+      // `unsynced_data_count`.
       return l10n_util::GetStringUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY);
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return l10n_util::GetStringUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY);
+    case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
+      return l10n_util::GetStringFUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TOO_MANY_BOOKMARKS_BODY,
+          base::FormatNumber(syncer::kSyncBookmarksLimitValue.Get()));
     default:
       NOTREACHED();
   }
@@ -97,6 +108,8 @@ int ComputeAcceptButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_SCREEN_LOCK_SIGN_OUT;
+    case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON;
     default:
       NOTREACHED();
   }
@@ -129,8 +142,9 @@ ConstructSignoutConfirmationData(
 
   signout_confirmation_mojo->has_unsynced_data =
       variant == ChromeSignoutConfirmationPromptVariant::kUnsyncedData ||
-      variant ==
-          ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton;
+      variant == ChromeSignoutConfirmationPromptVariant::
+                     kUnsyncedDataWithReauthButton ||
+      variant == ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks;
   signout_confirmation_mojo->account_extensions =
       std::move(extension_infos_mojo);
   return signout_confirmation_mojo;

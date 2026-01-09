@@ -33,6 +33,10 @@
   line-height: 20px;
 }
 
+#subtitle p:first-child {
+  white-space: pre-wrap;
+}
+
 extensions-section {
   margin-bottom: 1em;
 }

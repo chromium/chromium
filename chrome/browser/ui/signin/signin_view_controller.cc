@@ -292,6 +292,28 @@ void FinishProfileCreationWhenNoCustomizeProfileIsShown(
     entry->SetIsEphemeral(false);
   }
 }
+
+ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
+    size_t unsynced_data_count,
+    bool is_bookmarks_limit_exceeded,
+    bool needs_reauth) {
+  if (unsynced_data_count == 0 && !is_bookmarks_limit_exceeded) {
+    return ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData;
+  }
+
+  if (needs_reauth) {
+    return ChromeSignoutConfirmationPromptVariant::
+        kUnsyncedDataWithReauthButton;
+  }
+
+  if (unsynced_data_count > 0) {
+    return ChromeSignoutConfirmationPromptVariant::kUnsyncedData;
+  }
+
+  CHECK(is_bookmarks_limit_exceeded);
+  return ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks;
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
@@ -746,11 +768,19 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     return;
   }
 
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(GetProfile());
+  const bool is_bookmarks_limit_exceeded =
+      sync_service &&
+      sync_service->GetUserActionableError() ==
+          syncer::SyncService::UserActionableError::kBookmarksLimitExceeded;
+
   const bool needs_reauth =
       !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id);
-  bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
+  bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth &&
+                              !is_bookmarks_limit_exceeded;
   const size_t unsynced_data_count =
       std::accumulate(unsynced_datatypes.begin(), unsynced_datatypes.end(), 0,
                       [](size_t current_sum, const auto& pair) {
@@ -777,13 +807,8 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
   }
 
   ChromeSignoutConfirmationPromptVariant prompt_variant =
-      ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData;
-  if (unsynced_data_count > 0) {
-    prompt_variant =
-        needs_reauth ? ChromeSignoutConfirmationPromptVariant::
-                           kUnsyncedDataWithReauthButton
-                     : ChromeSignoutConfirmationPromptVariant::kUnsyncedData;
-  }
+      GetSignoutConfirmationPromptVariant(
+          unsynced_data_count, is_bookmarks_limit_exceeded, needs_reauth);
   auto extended_account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(primary_account_id);
   if (base::FeatureList::IsEnabled(
@@ -797,6 +822,7 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
   switch (prompt_variant) {
     case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+    case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(

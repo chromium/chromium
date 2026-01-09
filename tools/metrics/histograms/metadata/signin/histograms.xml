@@ -1328,6 +1328,8 @@ prefs when the profile is loaded.  -->
     <variant name="SupervisedProfile" summary="the user is supervised"/>
     <variant name="Unsynced"
         summary="the user has valid credentials and unsynced data"/>
+    <variant name="UnsyncedBookmarks"
+        summary="the user has unsynced bookmarks data"/>
     <variant name="UnsyncedReauth"
         summary="the user has invalid credentials and unsynced data"/>
   </token>
