@@ -1361,7 +1361,13 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     return false;
   }
 
-  key_pair_ = RsaKeyPair::FromString(*key_base64);
+  bool generate_private_key = *key_base64 == "generate";
+  if (generate_private_key) {
+    HOST_LOG << "private_key is set to 'generate', generating a new key pair.";
+    key_pair_ = RsaKeyPair::Generate();
+  } else {
+    key_pair_ = RsaKeyPair::FromString(*key_base64);
+  }
   if (!key_pair_.get()) {
     LOG(ERROR) << "Host config has an invalid value for path: `"
                << kPrivateKeyConfigPath << "`";
@@ -1415,6 +1421,15 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     HOST_LOG << "Host config specifies that Session Authorization is required.";
     HOST_LOG << "PIN authentication is disabled.";
   } else if (host_secret_hash) {
+    if (generate_private_key) {
+      // Allowing PIN auth, based on the existence of `host_secret_hash`,
+      // requires a stable private_key to validate incoming connection requests.
+      // We should not allow both modes, otherwise PIN connections will fail for
+      // a non-obvious reason (to the client).
+      LOG(ERROR) << "Host config cannot define a host_secret_hash value when "
+                 << "using a dynamically generated KeyPair.";
+      return false;
+    }
     if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
       LOG(ERROR) << "Host config has an invalid value for path: `"
                  << kHostSecretHashConfigPath << "`";
