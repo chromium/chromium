@@ -148,7 +148,15 @@ pub fn parse_struct(
 ) -> ParsingResult<MojomValue> {
     // Parse the struct header
     let size_in_bytes = parse_size(data, false, false)?;
-    let _version_number = parse_u32(data)?; // We're ignoring versioning for now
+    let version_number = parse_u32(data)?;
+
+    // We're ignoring versioning for now
+    if version_number != 0 {
+        return Err(ParsingError::not_implemented(
+            data.bytes_parsed() - 4,
+            "Versioning".to_string(),
+        ));
+    }
 
     let (parsed_names, parsed_fields) = parse_structured_body(
         data,
@@ -654,4 +662,33 @@ pub fn parse_single_value_for_testing(
         }
         _ => panic!("Invalid argument to parse_single_value_for_testing: {wire_type:?}"),
     }
+}
+
+/// Deserialize a single value from the given bytes, and return the remaining
+/// unparsed bytes.
+pub fn parse_top_level_value<'a>(
+    data_slice: &'a [u8],
+    ty: &MojomWireType,
+) -> ParsingResult<(&'a [u8], MojomValue)> {
+    let mut data = ParserData::new(data_slice);
+    match ty {
+        MojomWireType::Pointer {
+            nested_data_type:
+                PackedStructuredType::Struct {
+                    packed_field_names,
+                    packed_field_types,
+                    num_elements_in_value,
+                },
+            ..
+        } => {
+            return crate::parse_values::parse_struct(
+                &mut data,
+                packed_field_names,
+                packed_field_types,
+                *num_elements_in_value,
+            )
+            .map(|ret| (data.into_bytes(), ret));
+        }
+        _ => panic!("All message bodies are structs"),
+    };
 }

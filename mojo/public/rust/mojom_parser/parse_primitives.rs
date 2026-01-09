@@ -52,6 +52,10 @@ impl<'a> ParserData<'a> {
     pub fn remaining_bytes(&self) -> usize {
         self.remaining_bytes.len()
     }
+
+    pub fn into_bytes(self) -> &'a [u8] {
+        self.remaining_bytes
+    }
 }
 
 /// Skips the next `bytes_to_parse` bytes, assuming they exist.

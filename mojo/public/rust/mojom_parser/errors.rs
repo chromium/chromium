@@ -50,6 +50,8 @@ pub enum ParsingErrorType {
     DuplicateMapKey { dup: crate::ast::MojomValue },
     /// Indicates that the key and value arrays for a map were different lengths
     MismatchedMap { key_len: usize, value_len: usize },
+    /// Indicates that the corresponding mojom feature has yet to be implemented
+    NotImplemented { feature_name: String },
 }
 
 impl ParsingError {
@@ -107,6 +109,10 @@ impl ParsingError {
 
     pub fn mismatched_map(offset: usize, key_len: usize, value_len: usize) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::MismatchedMap { key_len, value_len } }
+    }
+
+    pub fn not_implemented(offset: usize, feature_name: String) -> ParsingError {
+        ParsingError { offset, ty: ParsingErrorType::NotImplemented { feature_name } }
     }
 }
 
@@ -180,6 +186,9 @@ impl std::fmt::Display for ParsingError {
             }
             ParsingErrorType::MismatchedMap { key_len, value_len } => {
                 write!(f, "Map had {key_len} keys and {value_len} values.")
+            }
+            ParsingErrorType::NotImplemented { feature_name } => {
+                write!(f, "The rust bindings do not yet support {feature_name}")
             }
         }
     }

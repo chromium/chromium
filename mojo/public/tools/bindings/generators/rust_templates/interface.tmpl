@@ -32,8 +32,7 @@
 
 impl {{args_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::Message {
-    let payload = mojom_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } )
-                  .expect("FOR_RELEASE: Figure this out");
+    let payload = mojom_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
     bindings::Message { header: (), id: {{ method.ordinal }}, payload}
   }
 }
@@ -43,8 +42,7 @@ impl {{args_struct(method)}} {
 
 impl {{response_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::Message {
-    let payload = mojom_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } )
-                  .expect("FOR_RELEASE: Figure this out");
+    let payload = mojom_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
     bindings::Message { header: (), id: {{ method.ordinal }}, payload}
   }
 }
@@ -75,7 +73,7 @@ pub trait {{interface.name}} : bindings::internal::ImplementThisViaMacro {
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
-          mojom_parser::deserialize(&message.payload)
+          mojom_parser::deserialize_exact(&message.payload)
           .expect("FOR_RELEASE: figure out what to do here");
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
@@ -113,7 +111,7 @@ impl bindings::MojomInterface for dyn {{interface.name}} {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} =
-          mojom_parser::deserialize(&message.payload)
+          mojom_parser::deserialize_exact(&message.payload)
           .expect("FOR_RELEASE: figure out what to do here");
         callback(
           {%- for field in method.response_param_struct.fields -%}

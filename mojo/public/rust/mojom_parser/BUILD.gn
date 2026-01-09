@@ -26,14 +26,13 @@ rust_static_library("mojom_parser_core") {
     "errors.rs",
     "lib_core.rs",
     "pack.rs",
-    "parse_messages.rs",
     "parse_primitives.rs",
     "parse_values.rs",
     "parsing_trait.rs",
   ]
   deps = [ "//third_party/rust/anyhow/v1:lib" ]
 
-  visibility = [ ":*" ]
+  visibility = [ "../*" ]
 }
 
 rust_macro("parsing_attribute") {
