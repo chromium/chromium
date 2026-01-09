@@ -198,6 +198,7 @@
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
 #include "chrome/browser/metrics/google_update_metrics_provider_win.h"
 #include "chrome/browser/metrics/system_memory_list_metrics_provider_win.h"
+#include "chrome/browser/metrics/system_pdh_metrics_provider_win.h"
 #include "chrome/browser/metrics/tpm_metrics_provider_win.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -900,6 +901,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<TPMMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<SystemMemoryListMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<SystemPdhMetricsProvider>());
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

@@ -5,6 +5,8 @@
 #ifndef BASE_WIN_SCOPED_PDH_QUERY_H_
 #define BASE_WIN_SCOPED_PDH_QUERY_H_
 
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/scoped_generic.h"
 #include "base/win/pdh_shim.h"
@@ -44,6 +46,11 @@ struct ScopedPdhQueryTraits {
 class BASE_EXPORT ScopedPdhQuery
     : public ScopedGeneric<PDH_HQUERY, internal::ScopedPdhQueryTraits> {
  public:
+  static constexpr std::string_view kQueryErrorHistogram =
+      "Windows.PdhQueryErrorCode";
+  static constexpr std::string_view kResultErrorHistogram =
+      "Windows.PdhQueryResultCStatus";
+
   // Constructs a ScopedPdhQuery from a PDH_HQUERY, and takes ownership of
   // `pdh_query` if it is not null.
   explicit ScopedPdhQuery(PDH_HQUERY pdh_query = nullptr)

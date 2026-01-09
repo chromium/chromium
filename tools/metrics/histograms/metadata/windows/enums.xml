@@ -2457,6 +2457,95 @@ the IOpenWithLauncher COM interface.
   <int value="4" label="Launch error">Launching settings returned an error</int>
 </enum>
 
+<enum name="PDH_STATUS">
+  <int value="-2147481648" label="PDH_CSTATUS_NO_MACHINE"/>
+  <int value="-2147481647" label="PDH_CSTATUS_NO_INSTANCE"/>
+  <int value="-2147481646" label="PDH_MORE_DATA"/>
+  <int value="-2147481645" label="PDH_CSTATUS_ITEM_NOT_VALIDATED"/>
+  <int value="-2147481644" label="PDH_RETRY"/>
+  <int value="-2147481643" label="PDH_NO_DATA"/>
+  <int value="-2147481642" label="PDH_CALC_NEGATIVE_DENOMINATOR"/>
+  <int value="-2147481641" label="PDH_CALC_NEGATIVE_TIMEBASE"/>
+  <int value="-2147481640" label="PDH_CALC_NEGATIVE_VALUE"/>
+  <int value="-2147481639" label="PDH_DIALOG_CANCELLED"/>
+  <int value="-2147481638" label="PDH_END_OF_LOG_FILE"/>
+  <int value="-2147481637" label="PDH_ASYNC_QUERY_TIMEOUT"/>
+  <int value="-2147481636" label="PDH_CANNOT_SET_DEFAULT_REALTIME_DATASOURCE"/>
+  <int value="-2147480619" label="PDH_UNABLE_MAP_NAME_FILES"/>
+  <int value="-2147480589" label="PDH_PLA_VALIDATION_WARNING"/>
+  <int value="-1073738824" label="PDH_CSTATUS_NO_OBJECT"/>
+  <int value="-1073738823" label="PDH_CSTATUS_NO_COUNTER"/>
+  <int value="-1073738822" label="PDH_CSTATUS_INVALID_DATA"/>
+  <int value="-1073738821" label="PDH_MEMORY_ALLOCATION_FAILURE"/>
+  <int value="-1073738820" label="PDH_INVALID_HANDLE"/>
+  <int value="-1073738819" label="PDH_INVALID_ARGUMENT"/>
+  <int value="-1073738818" label="PDH_FUNCTION_NOT_FOUND"/>
+  <int value="-1073738817" label="PDH_CSTATUS_NO_COUNTERNAME"/>
+  <int value="-1073738816" label="PDH_CSTATUS_BAD_COUNTERNAME"/>
+  <int value="-1073738815" label="PDH_INVALID_BUFFER"/>
+  <int value="-1073738814" label="PDH_INSUFFICIENT_BUFFER"/>
+  <int value="-1073738813" label="PDH_CANNOT_CONNECT_MACHINE"/>
+  <int value="-1073738812" label="PDH_INVALID_PATH"/>
+  <int value="-1073738811" label="PDH_INVALID_INSTANCE"/>
+  <int value="-1073738810" label="PDH_INVALID_DATA"/>
+  <int value="-1073738809" label="PDH_NO_DIALOG_DATA"/>
+  <int value="-1073738808" label="PDH_CANNOT_READ_NAME_STRINGS"/>
+  <int value="-1073738807" label="PDH_LOG_FILE_CREATE_ERROR"/>
+  <int value="-1073738806" label="PDH_LOG_FILE_OPEN_ERROR"/>
+  <int value="-1073738805" label="PDH_LOG_TYPE_NOT_FOUND"/>
+  <int value="-1073738804" label="PDH_NO_MORE_DATA"/>
+  <int value="-1073738803" label="PDH_ENTRY_NOT_IN_LOG_FILE"/>
+  <int value="-1073738802" label="PDH_DATA_SOURCE_IS_LOG_FILE"/>
+  <int value="-1073738801" label="PDH_DATA_SOURCE_IS_REAL_TIME"/>
+  <int value="-1073738800" label="PDH_UNABLE_READ_LOG_HEADER"/>
+  <int value="-1073738799" label="PDH_FILE_NOT_FOUND"/>
+  <int value="-1073738798" label="PDH_FILE_ALREADY_EXISTS"/>
+  <int value="-1073738797" label="PDH_NOT_IMPLEMENTED"/>
+  <int value="-1073738796" label="PDH_STRING_NOT_FOUND"/>
+  <int value="-1073738794" label="PDH_UNKNOWN_LOG_FORMAT"/>
+  <int value="-1073738793" label="PDH_UNKNOWN_LOGSVC_COMMAND"/>
+  <int value="-1073738792" label="PDH_LOGSVC_QUERY_NOT_FOUND"/>
+  <int value="-1073738791" label="PDH_LOGSVC_NOT_OPENED"/>
+  <int value="-1073738790" label="PDH_WBEM_ERROR"/>
+  <int value="-1073738789" label="PDH_ACCESS_DENIED"/>
+  <int value="-1073738788" label="PDH_LOG_FILE_TOO_SMALL"/>
+  <int value="-1073738787" label="PDH_INVALID_DATASOURCE"/>
+  <int value="-1073738786" label="PDH_INVALID_SQLDB"/>
+  <int value="-1073738785" label="PDH_NO_COUNTERS"/>
+  <int value="-1073738784" label="PDH_SQL_ALLOC_FAILED"/>
+  <int value="-1073738783" label="PDH_SQL_ALLOCCON_FAILED"/>
+  <int value="-1073738782" label="PDH_SQL_EXEC_DIRECT_FAILED"/>
+  <int value="-1073738781" label="PDH_SQL_FETCH_FAILED"/>
+  <int value="-1073738780" label="PDH_SQL_ROWCOUNT_FAILED"/>
+  <int value="-1073738779" label="PDH_SQL_MORE_RESULTS_FAILED"/>
+  <int value="-1073738778" label="PDH_SQL_CONNECT_FAILED"/>
+  <int value="-1073738777" label="PDH_SQL_BIND_FAILED"/>
+  <int value="-1073738776" label="PDH_CANNOT_CONNECT_WMI_SERVER"/>
+  <int value="-1073738775" label="PDH_PLA_COLLECTION_ALREADY_RUNNING"/>
+  <int value="-1073738774" label="PDH_PLA_ERROR_SCHEDULE_OVERLAP"/>
+  <int value="-1073738773" label="PDH_PLA_COLLECTION_NOT_FOUND"/>
+  <int value="-1073738772" label="PDH_PLA_ERROR_SCHEDULE_ELAPSED"/>
+  <int value="-1073738771" label="PDH_PLA_ERROR_NOSTART"/>
+  <int value="-1073738770" label="PDH_PLA_ERROR_ALREADY_EXISTS"/>
+  <int value="-1073738769" label="PDH_PLA_ERROR_TYPE_MISMATCH"/>
+  <int value="-1073738768" label="PDH_PLA_ERROR_FILEPATH"/>
+  <int value="-1073738767" label="PDH_PLA_SERVICE_ERROR"/>
+  <int value="-1073738766" label="PDH_PLA_VALIDATION_ERROR"/>
+  <int value="-1073738764" label="PDH_PLA_ERROR_NAME_TOO_LONG"/>
+  <int value="-1073738763" label="PDH_INVALID_SQL_LOG_FORMAT"/>
+  <int value="-1073738762" label="PDH_COUNTER_ALREADY_IN_QUERY"/>
+  <int value="-1073738761" label="PDH_BINARY_LOG_CORRUPT"/>
+  <int value="-1073738760" label="PDH_LOG_SAMPLE_TOO_SMALL"/>
+  <int value="-1073738759" label="PDH_OS_LATER_VERSION"/>
+  <int value="-1073738758" label="PDH_OS_EARLIER_VERSION"/>
+  <int value="-1073738757" label="PDH_INCORRECT_APPEND_TIME"/>
+  <int value="-1073738756" label="PDH_UNMATCHED_APPEND_COUNTER"/>
+  <int value="-1073738755" label="PDH_SQL_ALTER_DETAIL_FAILED"/>
+  <int value="-1073738754" label="PDH_QUERY_PERF_DATA_TIMEOUT"/>
+  <int value="0" label="PDH_CSTATUS_VALID_DATA"/>
+  <int value="1" label="PDH_CSTATUS_NEW_DATA"/>
+</enum>
+
 <enum name="ProcessNameHash">
   <summary>
     The hash of a lower case process name generated using metrics::HashName.

@@ -4,6 +4,8 @@
 
 #include "base/win/scoped_pdh_query.h"
 
+#include "base/metrics/histogram_functions.h"
+
 namespace base::win {
 
 // static
@@ -13,6 +15,8 @@ ScopedPdhQuery ScopedPdhQuery::Create() {
   if (pdh_status == ERROR_SUCCESS) {
     return ScopedPdhQuery(pdh_query);
   }
+
+  base::UmaHistogramSparse(kQueryErrorHistogram, pdh_status);
   return ScopedPdhQuery();
 }
 
