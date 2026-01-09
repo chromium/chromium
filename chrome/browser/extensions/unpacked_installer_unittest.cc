@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
@@ -76,6 +77,9 @@ TEST_P(UnpackedInstallerUnitTest, WithheldHostPermissionsWithFlag) {
             flag_enabled);
 }
 
+// --load-extension is not allowed in Google Chrome branded builds (except on
+// ChromeOS), so these tests are skipped in that configuration.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS)
 TEST_P(UnpackedInstallerUnitTest,
        RecordCommandLineDeveloperModeMetrics_EnabledDeveloperModeOff) {
   // Developer Mode is disabled by default.
@@ -187,6 +191,7 @@ TEST_P(UnpackedInstallerUnitTest,
       /*sample=*/1,
       /*expected_count=*/1);
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All, UnpackedInstallerUnitTest, testing::Bool());
 
