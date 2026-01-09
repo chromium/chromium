@@ -559,6 +559,17 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
+    public void testOnTabGroupModelFilterChanged_NullProfile() {
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(null);
+
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+
+        // Verify that the downstream dependencies are not created.
+        verify(mOnTabGroupCreation, times(0)).run();
+    }
+
+    @Test
     public void testDestroy() {
         mMediator.destroy();
         verify(mTabListCoordinator)
