@@ -192,7 +192,7 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
 BASE_FEATURE(kDevToolsLiveEdit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDevToolsIndividualRequestThrottling,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether the AI Prompt API (https://developer.chrome.com/docs/ai/prompt-api)
 // is available in DevTools.
