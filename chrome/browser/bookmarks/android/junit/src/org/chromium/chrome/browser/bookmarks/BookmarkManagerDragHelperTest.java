@@ -12,7 +12,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
 import android.view.View;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -57,6 +59,8 @@ public class BookmarkManagerDragHelperTest {
     @Mock RecyclerView mRecyclerView;
     @Mock View mItemView;
 
+    @Mock View mDragHandle;
+
     RecyclerView.ViewHolder mViewHolder;
     private Activity mActivity;
     private BookmarkManagerDragHelper mDragHelper;
@@ -70,6 +74,7 @@ public class BookmarkManagerDragHelperTest {
         mViewHolder = new RecyclerView.ViewHolder(mItemView) {};
 
         when(mItemView.getContext()).thenReturn(mActivity);
+        doReturn(mDragHandle).when(mItemView).findViewById(R.id.drag_handle);
 
         mDragHelper =
                 new BookmarkManagerDragHelper(
@@ -168,6 +173,79 @@ public class BookmarkManagerDragHelperTest {
         verify(mItemView).removeOnAttachStateChangeListener(mDragHelper);
     }
 
+    @Test
+    public void testDragHandle_DragWithFinger() {
+        // Scenario: User touches the drag handle.
+        // Expectation: It behaves like a normal semi-instant drag (100ms delay).
+
+        // 1. Action Down.
+        MotionEvent event = obtainEvent(MotionEvent.ACTION_DOWN);
+        mDragHelper.onDragHandleTouch(mDragHandle, event);
+
+        // 2. Verify that the drag has not started immediately.
+        verify(mItemTouchHelper, never()).startDrag(any());
+
+        // 3. Fast forward 99ms. The drag should still not have started.
+        ShadowLooper.idleMainLooper(99, TimeUnit.MILLISECONDS);
+        verify(mItemTouchHelper, never()).startDrag(any());
+
+        // 4. Fast forward an additional 100ms, now we are at 199s. The drag should have started at
+        // the 100ms mark.
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        verify(mItemTouchHelper).startDrag(mViewHolder);
+    }
+
+    @Test
+    public void testDragHandle_DragWithMouse() {
+        // Scenario: User presses down on the grab handle with a mouse and drags.
+        // Expectation: Drag starts immediately after exceeding touch slop.
+
+        // 1. Mouse Down at (50, 50).
+        MotionEvent downEvent = obtainMouseEvent(MotionEvent.ACTION_DOWN, 50f, 50f);
+        mDragHelper.onDragHandleTouch(mDragHandle, downEvent);
+
+        // 2. Verify that the drag has not started yet.
+        verify(mItemTouchHelper, never()).startDrag(any());
+
+        // 3. Mouse Move to (100, 100).
+        // Distance is about 70px, which is > TouchSlop.
+        MotionEvent moveEvent = obtainMouseEvent(MotionEvent.ACTION_MOVE, 100f, 100f);
+        mDragHelper.onDragHandleTouch(mDragHandle, moveEvent);
+
+        // 4. Verify start drag.
+        verify(mItemTouchHelper).startDrag(mViewHolder);
+
+        // 5. Verify the synthetic event is dispatched to the Recycler View to ensuring the "closed
+        // hand" cursor persists correctly during the drag.
+        verify(mRecyclerView).dispatchTouchEvent(any(MotionEvent.class));
+    }
+
+    @Test
+    public void testDragHandle_MouseDownThenUp() {
+        // Scenario: User clicks on the drag handle.
+        // Expectation: Pointer icon changes to closed hand (GRABBING) and then to open hand (GRAB)
+        // when mouse is up.
+
+        // Item is selected.
+        doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
+
+        // 1. Mouse down.
+        MotionEvent event = obtainMouseEvent(MotionEvent.ACTION_DOWN, 50f, 50f);
+        mDragHelper.onDragHandleTouch(mDragHandle, event);
+
+        // Verify: Icon becomes "Closed Hand" (GRABBING).
+        PointerIcon grabbingIcon = PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRABBING);
+        verify(mDragHandle).setPointerIcon(grabbingIcon);
+
+        // 2. Mouse up.
+        MotionEvent upEvent = obtainMouseEvent(MotionEvent.ACTION_UP, 50f, 50f);
+        mDragHelper.onDragHandleTouch(mDragHandle, upEvent);
+
+        // Verify: Icon reverts to "Open Hand" (GRAB).
+        PointerIcon grabIcon = PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRAB);
+        verify(mDragHandle).setPointerIcon(grabIcon);
+    }
+
     // Obtain the action event we want to perform (ACTION_DOWN, etc.).
     private MotionEvent obtainEvent(int action) {
         // Use coordinates that are definitely not (0,0) and likely not where the drag handle is.
@@ -179,5 +257,44 @@ public class BookmarkManagerDragHelperTest {
                 /* x= */ 50f,
                 /* y= */ 50f,
                 /* metaState= */ 0);
+    }
+
+    // Simulate a mouse movement.
+    private MotionEvent obtainMouseEvent(int action, float x, float y) {
+        // We get the current time since Android rejects times that are 0 or in the past.
+
+        // When the finger first touches the screen.
+        long downTime = SystemClock.uptimeMillis();
+        // When the specific event happens (finger down, drag, lift finger, etc.).
+        long eventTime = SystemClock.uptimeMillis();
+
+        // Describes what (the mouse) is touching the screen.
+        MotionEvent.PointerProperties[] pointerProperties = new MotionEvent.PointerProperties[1];
+        pointerProperties[0] = new MotionEvent.PointerProperties();
+        pointerProperties[0].id = 0;
+        pointerProperties[0].toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        // Describes where the mouse is touch the screen.
+        MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[1];
+        pointerCoords[0] = new MotionEvent.PointerCoords();
+        pointerCoords[0].x = x;
+        pointerCoords[0].y = y;
+
+        // Manually create a fake event.
+        return MotionEvent.obtain(
+                /* downTime= */ downTime,
+                /* eventTime= */ eventTime,
+                /* action= */ action,
+                /* pointerCount= */ 1,
+                /* pointerProperties= */ pointerProperties,
+                /* pointerCoords= */ pointerCoords,
+                /* metaState= */ 0,
+                /* buttonState= */ 0,
+                /* xPrecision= */ 1.0f,
+                /* yPrecision= */ 1.0f,
+                /* deviceId= */ 0,
+                /* edgeFlags= */ 0,
+                /* source= */ 0,
+                /* flags= */ 0);
     }
 }
