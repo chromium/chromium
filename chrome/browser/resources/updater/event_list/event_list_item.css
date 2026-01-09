@@ -11,39 +11,36 @@
 
 :host {
   --event-type-background-color: var(--google-blue-50);
-  --event-error-border-color: var(--google-red-700);
+  --event-error-icon-color: var(--google-red-700);
   --event-error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
-  --event-success-border-color: var(--google-green-700);
+  --event-success-icon-color: var(--google-green-700);
   --event-success-background-color: color-mix(in srgb, var(--google-green-500) 4%, white);
 
-  border: 1px solid var(--cr-scrollable-border-color);
-  border-radius: 8px;
+  border-bottom: 1px solid var(--cr-scrollable-border-color);
   display: block;
 }
 
 @media (prefers-color-scheme: dark) {
   :host {
     --event-type-background-color: var(--google-blue-900);
-    --event-error-border-color: var(--cr-fallback-color-error);
+    --event-error-icon-color: var(--cr-fallback-color-error);
     --event-error-background-color: color-mix(in srgb, var(--google-red-500) 10%, black);
-    --event-success-border-color: var(--google-green-700);
+    --event-success-icon-color: var(--google-green-700);
     --event-success-background-color: color-mix(in srgb, var(--google-green-500) 10%, black);
   }
 }
 
 :host([status=error]) {
-  border-color: var(--event-error-border-color);
   background-color: var(--event-error-background-color);
 }
 
 :host([status=success]) {
-  border-color: var(--event-success-border-color);
   background-color: var(--event-success-background-color);
 }
 
 cr-expand-button {
-  border-radius: 8px;
-  padding: 8px 12px;
+  padding: 0px 12px;
+  --cr-section-vertical-padding: 4px;
 }
 
 .event-header {
@@ -107,11 +104,11 @@ cr-expand-button {
 }
 
 .event-description-icon-column cr-icon[icon="cr:check-circle"] {
-  --iron-icon-fill-color: var(--event-success-border-color);
+  --iron-icon-fill-color: var(--event-success-icon-color);
 }
 
 .event-description-icon-column cr-icon[icon="cr:warning"] {
-  --iron-icon-fill-color: var(--event-error-border-color);
+  --iron-icon-fill-color: var(--event-error-icon-color);
 }
 
 .event-description {
