@@ -370,7 +370,7 @@ public class LocationBarModelUnitTest {
         for (int securityLevel : SECURITY_LEVELS) {
             for (int maliciousContentStatus : MALICIOUS_CONTENT_STATUSES) {
                 assertResourceIdIs(
-                        R.drawable.ic_offline_pin_24dp,
+                        R.drawable.ic_offline_pin_fill_24dp,
                         securityLevel,
                         maliciousContentStatus,
                         /* isOfflinePage= */ true,

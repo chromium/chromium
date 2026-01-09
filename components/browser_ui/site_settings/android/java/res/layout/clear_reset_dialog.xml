@@ -35,7 +35,8 @@ TextViewWithCompoundDrawables.
     <TextView
         android:id="@+id/offline_text"
         android:layout_marginTop="12dp"
-        app:drawableStartCompat="@drawable/ic_offline_pin_24dp"
+        app:drawableStartCompat="@drawable/ic_offline_pin_fill_24dp"
+        android:tint="@color/default_icon_color_secondary_baseline"
         android:drawablePadding="12dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

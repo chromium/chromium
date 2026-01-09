@@ -731,7 +731,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // Checking for a preview first because one possible preview type is showing an offline page
         // on a slow connection. In this case, the previews UI takes precedence.
         if (isOfflinePage) {
-            return R.drawable.ic_offline_pin_24dp;
+            return R.drawable.ic_offline_pin_fill_24dp;
         }
 
         // Pdf page is a native page used to render downloaded pdf files.

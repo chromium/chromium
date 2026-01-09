@@ -6,7 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <drawable name="ic_offline_pin_24dp">@drawable/ic_offline_pin_24dp_on_dark_bg</drawable>
     <drawable name="ic_play_circle_filled_24dp">
         @drawable/ic_play_circle_filled_24dp_on_dark_bg
     </drawable>

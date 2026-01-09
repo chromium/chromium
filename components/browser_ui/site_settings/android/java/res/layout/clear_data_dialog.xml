@@ -54,7 +54,8 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_offline_pin_24dp"
+            android:src="@drawable/ic_offline_pin_fill_24dp"
+            android:tint="@color/default_icon_color_secondary_baseline"
             android:importantForAccessibility="no" />
         <TextView
             android:id="@+id/offline_text"
