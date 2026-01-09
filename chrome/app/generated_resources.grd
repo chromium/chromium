@@ -8127,6 +8127,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_SHOW_LESS_BUTTON_LABEL" desc="Label for a button that allows the user to see fewer most visited tiles on the New Tab Page.">
         Show less
       </message>
+      <message name="IDS_NTP_THREADS_HISTORY_LABEL" desc="Label for listing the user's AI Mode threads history.">
+        AI Mode history
+      </message>
+      <message name="IDS_NTP_THREADS_NEW_SEARCH_LABEL" desc="Label for starting a new AI Mode query.">
+        Start new search
+      </message>
       <message name="IDS_NTP_WEBSTORE_SHOPPING_CATEOGRY_LABEL" desc="The message displayed on the button that redirects users to the 'shopping' category page of the Chrome webstore.">
         Find coupons
       </message>
