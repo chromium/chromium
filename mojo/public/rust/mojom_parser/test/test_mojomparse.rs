@@ -1650,7 +1650,7 @@ static STRINGS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 });
 
 fn mojomvalue_from_str(str: &str) -> MojomValue {
-    MojomValue::String(MojomString::from_str(str))
+    MojomValue::String(str.to_string())
 }
 
 fn strings_mojom(
@@ -1687,11 +1687,10 @@ fn strings_mojom(
 fn test_strings() {
     STRINGS_TY.validate_mojomparse(
         Strings {
-            str: MojomString::from_str("test"),
-            arr: vec![MojomString::from_str("a"), MojomString::from_str("b")],
-            to_str: [(1, MojomString::from_str("one")), (2, MojomString::from_str("two"))].into(),
-            from_str: [(MojomString::from_str("three"), 3), (MojomString::from_str("four"), 4)]
-                .into(),
+            str: "test".to_string(),
+            arr: vec!["a".to_string(), "b".to_string()],
+            to_str: [(1, "one".to_string()), (2, "two".to_string())].into(),
+            from_str: [("three".to_string(), 3), ("four".to_string(), 4)].into(),
         },
         strings_mojom(
             "test",
@@ -1703,7 +1702,7 @@ fn test_strings() {
 
     STRINGS_TY.validate_mojomparse(
         Strings {
-            str: MojomString::from_str(""),
+            str: "".to_string(),
             arr: vec![],
             to_str: HashMap::new(),
             from_str: HashMap::new(),
@@ -1740,7 +1739,7 @@ static HOLDS_COMPLEX_TYPES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 });
 
 fn holds_complex_types_mojom_str(str: &str) -> MojomValue {
-    MojomValue::Union(0, Box::new(MojomValue::String(MojomString::from_str(str))))
+    MojomValue::Union(0, Box::new(MojomValue::String(str.to_string())))
 }
 
 fn holds_complex_types_mojom_arr(arr: Vec<i16>) -> MojomValue {
@@ -1775,12 +1774,12 @@ static COMPLEX_UNION_HOLDER_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 fn test_complex_union() {
     // Test both the union and the union inside a struct
     HOLDS_COMPLEX_TYPES_TY.validate_mojomparse(
-        HoldsComplexTypes::str(MojomString::from_str("hello")),
+        HoldsComplexTypes::str("hello".to_string()),
         holds_complex_types_mojom_str("hello"),
     );
 
     COMPLEX_UNION_HOLDER_TY.validate_mojomparse(
-        ComplexUnionHolder { u: HoldsComplexTypes::str(MojomString::from_str("eek")) },
+        ComplexUnionHolder { u: HoldsComplexTypes::str("eek".to_string()) },
         wrap_struct_fields_value(vec![("u".to_string(), holds_complex_types_mojom_str("eek"))]),
     );
 
@@ -2075,10 +2074,7 @@ fn union_with_nullables_mojom_e(e: Option<Empty>) -> MojomValue {
 }
 
 fn union_with_nullables_mojom_str(str: Option<&str>) -> MojomValue {
-    MojomValue::Union(
-        1,
-        Box::new(nullable_val!(str.map(|s| MojomValue::String(MojomString::from_str(s))))),
-    )
+    MojomValue::Union(1, Box::new(nullable_val!(str.map(|s| MojomValue::String(s.to_string())))))
 }
 
 fn union_with_nullables_mojom_u(u: Option<MojomValue>) -> MojomValue {
@@ -2116,10 +2112,7 @@ fn nullable_others_mojom(
     wrap_struct_fields_value(vec![
         ("u".to_string(), nullable_val!(u)),
         ("m".to_string(), nullable_val!(m.map(map_u8_u8_mojom))),
-        (
-            "str".to_string(),
-            nullable_val!(str.map(|s| MojomValue::String(MojomString::from_str(s)))),
-        ),
+        ("str".to_string(), nullable_val!(str.map(|s| MojomValue::String(s.to_string())))),
     ])
 }
 
@@ -2190,7 +2183,7 @@ fn test_nullables() {
         union_with_nullables_mojom_e(Some(Empty {})),
     );
     UNION_WITH_NULLABLES_TY.validate_mojomparse(
-        UnionWithNullables::str(Some(MojomString::from_str("hello"))),
+        UnionWithNullables::str(Some("hello".to_string())),
         union_with_nullables_mojom_str(Some("hello")),
     );
     UNION_WITH_NULLABLES_TY.validate_mojomparse(
@@ -2214,7 +2207,7 @@ fn test_nullables() {
         NullableOthers {
             u: Some(UnionWithNullables::u(Some(BaseUnion::n1(42)))),
             m: Some([(1, 2), (3, 4)].into()),
-            str: Some(MojomString::from_str("hello")),
+            str: Some("hello".to_string()),
         },
         nullable_others_mojom(
             Some(union_with_nullables_mojom_u(Some(base_union_mojom_n1(42)))),

@@ -802,14 +802,10 @@ fn str_wire_format(str: &str) -> String {
 fn test_string_parsing() -> anyhow::Result<()> {
     use std::collections::HashMap;
 
-    validate_parsing::<MojomString>(MojomString::from_str("hello"), &str_wire_format("hello"))?;
+    validate_parsing::<String>("hello".to_string(), &str_wire_format("hello"))?;
 
-    validate_parsing::<Vec<MojomString>>(
-        vec![
-            MojomString::from_str("life"),
-            MojomString::from_str("universe"),
-            MojomString::from_str("everything"),
-        ],
+    validate_parsing::<Vec<String>>(
+        vec!["life".to_string(), "universe".to_string(), "everything".to_string()],
         &format!(
             "{} {} {} {} {} {} {} {}",
             "[u4]32 [u4]3 ",
@@ -823,8 +819,8 @@ fn test_string_parsing() -> anyhow::Result<()> {
         ),
     )?;
 
-    validate_parsing::<HashMap<u8, MojomString>>(
-        [(10, MojomString::from_str("ten")), (20, MojomString::from_str("twenty"))].into(),
+    validate_parsing::<HashMap<u8, String>>(
+        [(10, "ten".to_string()), (20, "twenty".to_string())].into(),
         &format!(
             "{} {} {} {} {} {} {} {} {}",
             "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
@@ -839,7 +835,7 @@ fn test_string_parsing() -> anyhow::Result<()> {
         ),
     )?;
 
-    validate_parsing::<HashMap<MojomString, i16>>(
+    validate_parsing::<HashMap<String, i16>>(
         [("three".to_string().into(), 3), ("four".to_string().into(), 4)].into(),
         &format!(
             "{} {} {} {} {} {} {} {} {}",
@@ -854,6 +850,13 @@ fn test_string_parsing() -> anyhow::Result<()> {
             "[u4]12 [u4]2 [s2]4 [s2]3 [u4]0 ",
         ),
     )?;
+
+    // Non-UTF8 string (192 isn't a valid UTF-8 character)
+    validate_parsing_failure::<String>("[u4]10 [u4]2 [u1]72 [u1]192 [u2]0 [u4]0")?;
+
+    // Extremely UTF-8 string, courtesy of the rust docs
+    validate_parsing("💖".to_string(), "[u4]12 [u4]4 [u1]240 [u1]159 [u1]146 [u1]150 [u4]0")?;
+
     Ok(())
 }
 
@@ -861,7 +864,7 @@ fn test_string_parsing() -> anyhow::Result<()> {
 fn test_complex_union_parsing() -> anyhow::Result<()> {
     // HoldsComplexTypes: string
     validate_parsing::<HoldsComplexTypes>(
-        HoldsComplexTypes::str(MojomString::from_str("union_string")),
+        HoldsComplexTypes::str("union_string".to_string()),
         &format!(
             "[u4]16 [u4]0 [dist8]union_str_ptr [anchr]union_str_ptr {}",
             &str_wire_format("union_string")
@@ -869,7 +872,7 @@ fn test_complex_union_parsing() -> anyhow::Result<()> {
     )?;
 
     validate_parsing::<ComplexUnionHolder>(
-        ComplexUnionHolder { u: HoldsComplexTypes::str(MojomString::from_str("union_string")) },
+        ComplexUnionHolder { u: HoldsComplexTypes::str("union_string".to_string()) },
         &format!(
             "[u4]24 [u4]0 [u4]16 [u4]0 [dist8]union_str_ptr [anchr]union_str_ptr {}",
             &str_wire_format("union_string")
@@ -1011,7 +1014,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
         "[u4]16 [u4]0 [dist8]empty_ptr [anchr]empty_ptr [u4]8 [u4]0",
     )?;
     validate_parsing::<UnionWithNullables>(
-        UnionWithNullables::str(Some(MojomString::from_str("union_string"))),
+        UnionWithNullables::str(Some("union_string".to_string())),
         &format!(
             "[u4]16 [u4]1 [dist8]union_str_ptr [anchr]union_str_ptr {}",
             &str_wire_format("union_string")
@@ -1030,7 +1033,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
         NullableOthers {
             u: Some(UnionWithNullables::u(None)),
             m: None,
-            str: Some(MojomString::from_str("holla")),
+            str: Some("holla".to_string()),
         },
         &format!(
             "{} {} {}",
@@ -1060,7 +1063,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
         NullableOthers {
             u: Some(UnionWithNullables::u(Some(BaseUnion::n1(42)))),
             m: Some([(1, 2), (3, 4)].into()),
-            str: Some(MojomString::from_str("hello")),
+            str: Some("hello".to_string()),
         },
         &format!(
             "{} {} {} {} {} {} {}",

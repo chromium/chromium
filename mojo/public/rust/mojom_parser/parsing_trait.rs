@@ -123,7 +123,7 @@ mojomparse_leaf_impl!(i32, Int32);
 mojomparse_leaf_impl!(i64, Int64);
 
 mojomparse_leaf_impl!(bool, Bool);
-mojomparse_leaf_impl!(MojomString, String);
+mojomparse_leaf_impl!(String, String);
 
 // Implement MojomParse for any type that implements PrimitiveEnum and the other
 // requirements for MojomParse. All requirements are derived by

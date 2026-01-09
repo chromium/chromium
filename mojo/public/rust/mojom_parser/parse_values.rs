@@ -384,15 +384,17 @@ fn parse_string(
     size_in_bytes: usize,
     num_elements: usize,
 ) -> ParsingResult<MojomValue> {
-    let string_contents = parse_raw_bytes(data, num_elements)?.to_vec();
     // Array header size should be the size of the header (8) + the number of bytes
     if size_in_bytes != num_elements + 8 {
         return Err(ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, num_elements + 8));
     }
+    let string_bytes = parse_raw_bytes(data, num_elements)?.to_vec();
+    let rust_string = String::from_utf8(string_bytes)
+        .map_err(|err| ParsingError::non_utf8_string(data.bytes_parsed(), err))?;
     // Array bodies always end at 8 byte alignment, though it's not
     // reflected in the header's reported size.
     skip_to_alignment(data, 8)?;
-    Ok(MojomValue::String(MojomString::from_bytes(string_contents)))
+    Ok(MojomValue::String(rust_string))
 }
 
 const DUMMY_MOJOMVALUE: MojomValue = MojomValue::Int8(0);

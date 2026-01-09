@@ -278,8 +278,8 @@ fn deparse_map(
     deparse_struct(data, &field_values, &packed_fields)
 }
 
-fn deparse_string(data: &mut Vec<u8>, value: &MojomString) -> Result<()> {
-    let bytes = value.to_bytes();
+fn deparse_string(data: &mut Vec<u8>, value: &String) -> Result<()> {
+    let bytes = value.as_bytes();
     let num_bytes: u32 = bytes
         .len()
         .try_into()
