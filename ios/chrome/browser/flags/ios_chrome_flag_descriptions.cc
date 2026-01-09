@@ -298,6 +298,10 @@ const char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
+const char kComposeboxAIMDisabledName[] = "ComposeboxAIMDisabled";
+const char kComposeboxAIMDisabledDescription[] =
+    "When enabled, AIM feature are disabled in the composebox.";
+
 const char kComposeboxAIMNudgeName[] = "ComposeboxAIMNudge";
 const char kComposeboxAIMNudgeDescription[] =
     "Enables the AIM nudge button in the composebox, tapping on the button "

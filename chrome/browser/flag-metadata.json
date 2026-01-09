@@ -1873,6 +1873,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "composebox-aim-disabled",
+    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "composebox-aim-nudge",
     "owners": [ "christianxu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 149

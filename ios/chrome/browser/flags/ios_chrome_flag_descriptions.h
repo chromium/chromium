@@ -181,6 +181,9 @@ extern const char kCloseOtherTabsDescription[];
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 
+extern const char kComposeboxAIMDisabledName[];
+extern const char kComposeboxAIMDisabledDescription[];
+
 extern const char kComposeboxAIMNudgeName[];
 extern const char kComposeboxAIMNudgeDescription[];
 

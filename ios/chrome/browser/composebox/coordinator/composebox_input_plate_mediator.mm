@@ -1162,6 +1162,9 @@ CreateInputDataFromAnnotatedPageContent(
   if (experimental_flags::ShouldForceDisableComposeboxAIM()) {
     return NO;
   }
+  if (IsComposeboxAIMDisabled()) {
+    return NO;
+  }
   if (!_aimEligibilityService) {
     return NO;
   }

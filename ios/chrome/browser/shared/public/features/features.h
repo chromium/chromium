@@ -1040,4 +1040,10 @@ BASE_DECLARE_FEATURE(kChromeNextIa);
 // Returns true if the ChromeNextIa feature is enabled.
 bool IsChromeNextIaEnabled();
 
+// Enables the ComposeboxAIMDisabled feature.
+BASE_DECLARE_FEATURE(kComposeboxAIMDisabled);
+
+// Returns true if the ComposeboxAIMDisabled feature is enabled.
+bool IsComposeboxAIMDisabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
