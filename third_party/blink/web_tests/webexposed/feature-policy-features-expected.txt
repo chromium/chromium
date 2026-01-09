@@ -61,7 +61,9 @@ keyboard-map
 language-detector
 language-model
 local-fonts
+local-network
 local-network-access
+loopback-network
 magnetometer
 manual-text
 media-playback-while-not-visible

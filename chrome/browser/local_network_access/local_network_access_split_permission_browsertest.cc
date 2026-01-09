@@ -40,7 +40,16 @@ std::string QueryPermissionScript(std::string_view permission) {
 }  // namespace
 
 class LocalNetworkAccessSplitPermissionOffBrowserTest
-    : public LocalNetworkAccessBrowserTestBase {};
+    : public LocalNetworkAccessBrowserTestBase {
+ public:
+  LocalNetworkAccessSplitPermissionOffBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        network::features::kLocalNetworkAccessChecksSplitPermissions);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 class LocalNetworkAccessSplitPermissionOnBrowserTest
     : public LocalNetworkAccessBrowserTestBase {
