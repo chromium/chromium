@@ -6,8 +6,12 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
@@ -18,7 +22,14 @@ import java.util.List;
 /** A popup for the Fusebox component. */
 @NullMarked
 class FuseboxPopup {
+    /**
+     * Delay (in milliseconds) between calling up the popup window and requesting focus for
+     * accessibility. This is needed because Popup views are not shown instantaneously.
+     */
+    private static final int ACCESSIBILITY_VIEW_FOCUS_DELAY_MS = 500;
+
     /* package */ final AnchoredPopupWindow mPopupWindow;
+    /* package */ final ViewGroup mViewGroup;
     /* package */ final Button mAddCurrentTab;
     /* package */ final Button mTabButton;
     /* package */ final Button mCameraButton;
@@ -46,6 +57,7 @@ class FuseboxPopup {
         if (ChromeFeatureList.sChromeItemPickerUi.isEnabled()) {
             mTabButton.setVisibility(View.VISIBLE);
         }
+        mViewGroup = contentView.findViewById(R.id.fusebox_view_group);
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
         mFileButton = contentView.findViewById(R.id.fusebox_pick_file_button);
@@ -70,6 +82,39 @@ class FuseboxPopup {
 
     void show() {
         mPopupWindow.show();
+        // TODO(crbug.com/470324794): This isn't right. Figure out why AnchoredPopupWindow won't
+        // focus views for us.
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                this::focusFirstViewForAccessibility,
+                ACCESSIBILITY_VIEW_FOCUS_DELAY_MS);
+    }
+
+    /**
+     * Focuses for accessibility the first view marked as important for accessibility.
+     *
+     * <p>This is important because Android Popup windows are not focused for accessibility by
+     * default and do not automatically move the Accessibility focus when called up.
+     *
+     * <p>TODO(crbug.com/470324794): This isn't right. Figure out why AnchoredPopupWindow won't
+     * focus views for us.
+     */
+    void focusFirstViewForAccessibility() {
+        View viewForAccessibility = null;
+        for (int viewIndex = 0; viewIndex < mViewGroup.getChildCount(); viewIndex++) {
+            var view = mViewGroup.getChildAt(viewIndex);
+
+            if (view.getVisibility() == View.VISIBLE && view.isImportantForAccessibility()) {
+                viewForAccessibility = view;
+                break;
+            }
+        }
+
+        if (viewForAccessibility == null) return;
+
+        // Move focus to the view, emitting event.
+        viewForAccessibility.requestFocus();
+        viewForAccessibility.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     void dismiss() {

@@ -452,6 +452,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetricsTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxPopupUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeaderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/PageInfoIphControllerUnitTest.java",
