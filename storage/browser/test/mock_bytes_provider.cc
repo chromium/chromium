@@ -5,6 +5,7 @@
 #include "storage/browser/test/mock_bytes_provider.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,13 +49,12 @@ void MockBytesProvider::RequestAsFile(uint64_t source_offset,
                                       RequestAsFileCallback callback) {
   if (file_request_count_)
     ++*file_request_count_;
-  EXPECT_LE(source_offset + source_size, data_.size());
-  UNSAFE_TODO(
-      EXPECT_EQ(source_size,
-                static_cast<uint64_t>(file.Write(
-                    file_offset,
-                    reinterpret_cast<const char*>(data_.data() + source_offset),
-                    source_size))));
+  EXPECT_EQ(source_size,
+            static_cast<uint64_t>(
+                file.Write(file_offset, base::span(data_).subspan(
+                                            static_cast<size_t>(source_offset),
+                                            static_cast<size_t>(source_size)))
+                    .value_or(0)));
   EXPECT_TRUE(file.Flush());
   std::move(callback).Run(file_modification_time_);
 }
