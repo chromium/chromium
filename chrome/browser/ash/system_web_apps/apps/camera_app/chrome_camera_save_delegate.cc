@@ -9,8 +9,10 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/odfs_file_deleter.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/experiences/camera/camera_save_handler.h"
 #include "components/prefs/pref_service.h"
 
@@ -134,6 +136,22 @@ void ChromeCameraSaveDelegate::CancelUploads() {
     CHECK(is_google_drive());
     // TODO(crbug.com/454152412) Implement Google Drive upload cancellation.
   }
+}
+
+void ChromeCameraSaveDelegate::OpenFileInImageEditor(
+    const base::FilePath& file_path) {
+  ash::SystemAppLaunchParams params;
+  params.launch_paths = {file_path};
+  params.launch_source = apps::LaunchSource::kFromFileManager;
+  ash::LaunchSystemWebAppAsync(Profile::FromBrowserContext(context_),
+                               ash::SystemWebAppType::MEDIA, params);
+}
+
+void ChromeCameraSaveDelegate::DeleteFileOnOneDrive(
+    const base::FilePath& file_path,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(GetOneDriveUploadFolder().IsParent(file_path));
+  ash::cloud_upload::OdfsFileDeleter::Delete(file_path, std::move(callback));
 }
 
 void ChromeCameraSaveDelegate::OnOnedriveUploadDone(

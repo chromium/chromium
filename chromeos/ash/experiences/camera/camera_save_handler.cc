@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/experiences/camera/camera_upload_notification.h"
 #include "chromeos/ash/experiences/camera/cancel_camera_upload_dialog.h"
+#include "chromeos/ash/experiences/camera/upload_done_notification.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
@@ -148,7 +149,8 @@ void CameraSaveHandler::PerformUpload(const base::FilePath& upload_from_path,
       base::BindRepeating(&CameraSaveHandler::OnUploadProgress,
                           weak_ptr_factory_.GetWeakPtr(), upload_from_path),
       base::BindOnce(&CameraSaveHandler::OnUploadDone,
-                     weak_ptr_factory_.GetWeakPtr(), upload_from_path));
+                     weak_ptr_factory_.GetWeakPtr(), upload_from_path,
+                     thumbnail));
 }
 
 void CameraSaveHandler::TrackUpload(const base::FilePath& upload_from_path,
@@ -254,13 +256,52 @@ void CameraSaveHandler::OnUploadProgress(const base::FilePath& upload_from_path,
 }
 
 void CameraSaveHandler::OnUploadDone(const base::FilePath& upload_from_path,
+                                     const gfx::Image& thumbnail,
                                      bool success) {
   UntrackUpload(upload_from_path, success);
+  auto uploaded_file_path = GetFinalPath().Append(upload_from_path.BaseName());
   DCHECK(delegate_);
+  // TODO(crbug.com/454152412): Add unit tests for upload done handling and
+  // notifications.
+  if (success) {
+    CreateUploadDoneNotification(
+        delegate_->GetDestination() == FileSaveDestination::kOneDrive,
+        thumbnail, uploaded_file_path,
+        base::BindRepeating(&CameraSaveHandler::OpenFileInImageEditor,
+                            weak_ptr_factory_.GetWeakPtr(), uploaded_file_path),
+        base::BindRepeating(&CameraSaveHandler::DeleteFileAfterUpload,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            uploaded_file_path));
+  } else {
+    // TODO(crbug.com/454152412): Show error notification.
+  }
   if (!success &&
       delegate_->GetDestination() == FileSaveDestination::kOneDrive) {
     // Clean up the temp file if upload fails, so that the thumbnail for this
     // file isn't shown in the camera app when it is launched next.
     DeleteFileAsync(upload_from_path);
+  }
+}
+
+void CameraSaveHandler::OpenFileInImageEditor(const base::FilePath& file_path) {
+  CHECK(delegate_);
+  delegate_->OpenFileInImageEditor(file_path);
+}
+
+void CameraSaveHandler::DeleteFileAfterUpload(const base::FilePath& file_path) {
+  CHECK(delegate_);
+  auto callback = base::BindOnce([](const base::FilePath& path, bool success) {
+    if (!success) {
+      LOG(ERROR) << "Failed to delete the file: " << path;
+    }
+  });
+  if (delegate_->GetDestination() == FileSaveDestination::kOneDrive) {
+    delegate_->DeleteFileOnOneDrive(
+        file_path, base::BindOnce(std::move(callback), file_path));
+  } else {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&base::DeleteFile, file_path),
+        base::BindOnce(std::move(callback), file_path));
   }
 }

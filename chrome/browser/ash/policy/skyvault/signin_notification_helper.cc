@@ -12,11 +12,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/policy/skyvault/camera_notification_util.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chromeos/ash/experiences/camera/camera_notification_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -160,9 +160,8 @@ void ShowSignInNotification(
       }
       auto notification_id = base::StrCat(
           {kCameraSignInNotificationIdPrefix, base::NumberToString(id)});
-      TitleAndMessageIds title_and_message =
-          policy::skyvault_ui_utils::GetCameraSignInStringsFromFilename(
-              file_path);
+      SignInNotificationIds title_and_message =
+          GetCameraSignInStringsFromFilename(file_path);
       message_center::Notification notification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           /*title=*/l10n_util::GetStringUTF16(title_and_message.title),

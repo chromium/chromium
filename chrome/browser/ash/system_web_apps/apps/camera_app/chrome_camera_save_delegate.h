@@ -44,6 +44,9 @@ class ChromeCameraSaveDelegate : public CameraSaveHandler::Delegate {
                      base::RepeatingCallback<void(int64_t)> progress_callback,
                      base::OnceCallback<void(bool)> done_callback) override;
   void CancelUploads() override;
+  void OpenFileInImageEditor(const base::FilePath& file_path) override;
+  void DeleteFileOnOneDrive(const base::FilePath& file_path,
+                            base::OnceCallback<void(bool)> callback) override;
 
   bool is_onedrive() const {
     return destination_ ==

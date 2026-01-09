@@ -56,6 +56,11 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
     // saved.
     virtual base::FilePath GetFinalPathRelativeToRoot() const = 0;
 
+    // Deletes the file with path `file_path` from OneDrive.
+    virtual void DeleteFileOnOneDrive(
+        const base::FilePath& file_path,
+        base::OnceCallback<void(bool)> callback) = 0;
+
     // Uploads the file with path `upload_from_path` to the cloud destination.
     // `file_size` is the size of the file in bytes.
     // `thumbnail` is an image for notifications that may be presented before
@@ -73,6 +78,9 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
 
     // Cancels all ongoing uploads.
     virtual void CancelUploads() = 0;
+
+    // Opens the file for editing from the upload done notification.
+    virtual void OpenFileInImageEditor(const base::FilePath& file_path) = 0;
   };
 
   CameraSaveHandler(const CameraSaveHandler&) = delete;
@@ -152,8 +160,11 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
   void OnUploadProgress(const base::FilePath&, int64_t)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   // Gets called for each file when it is no longer being uploaded.
-  void OnUploadDone(const base::FilePath&, bool)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void OnUploadDone(const base::FilePath& upload_from_path,
+                    const gfx::Image& thumbnail,
+                    bool success) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void OpenFileInImageEditor(const base::FilePath& file_path);
+  void DeleteFileAfterUpload(const base::FilePath& file_path);
 
   std::unique_ptr<Delegate> delegate_;
   // TODO(crbug.com/454152412) Add unit tests for progress notification and

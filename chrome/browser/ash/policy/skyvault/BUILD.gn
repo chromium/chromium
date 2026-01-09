@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("skyvault") {
   sources = [
-    "camera_notification_util.cc",
-    "camera_notification_util.h",
     "drive_skyvault_uploader.cc",
     "drive_skyvault_uploader.h",
     "drive_upload_observer.cc",
@@ -72,6 +70,7 @@ static_library("skyvault") {
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/camera:camera_notification_util",
     "//chromeos/ui/vector_icons",
     "//components/download/public/common:public",
     "//components/drive",

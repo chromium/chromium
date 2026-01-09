@@ -1410,6 +1410,33 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_CLOSE_BUTTON" desc="The close button in the notification dialog which asks the user whether to cancel upload to cloud storage.">
     Close
   </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_ONEDRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Photo saved to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_DONE_TITLE_ONEDRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Video saved to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_ONEDRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Scan saved to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_GOOGLE_DRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Photo saved to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_DONE_TITLE_GOOGLE_DRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Video saved to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_GOOGLE_DRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Scan saved to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_MESSAGE" desc="The message of the notification which shows when the file is successfully saved to cloud storage.">
+    You can find it in the Camera folder
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_EDIT_BUTTON" desc="The edit button in the notification which shows when the file is successfully saved to cloud storage.">
+    Edit
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_DELETE_BUTTON" desc="The delete button in the notification which shows when the file is successfully saved to cloud storage.">
+    Delete
+  </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
     Sign in to OneDrive to continue downloading
   </message>
