@@ -858,6 +858,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.CrashBubbleShown" enum="BooleanShown"
+    expires_after="2026-06-06">
+  <owner>spvm@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether the session restore crash bubble was shown on startup. Recorded once
+    every startup, during early startup, when initializing the infobar. Recorded
+    only on platforms with the crash bubble (i.e. desktop).
+  </summary>
+</histogram>
+
 <histogram name="Startup.CreateFirstProfile" units="ms" expires_after="never">
 <!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
 
