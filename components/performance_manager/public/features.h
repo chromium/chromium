@@ -237,6 +237,11 @@ BASE_DECLARE_FEATURE(kKeepDefaultSearchEngineRendererAlive);
 // A feature to boost the priority of tabs that are being closed.
 BASE_DECLARE_FEATURE(kBoostClosingTabs);
 
+// A feature to force foreground priority for all frames and workers. Intended
+// for ad-hoc debugging, to determine if a background tab issue is caused
+// specifically by low priority.
+BASE_DECLARE_FEATURE(kForceForegroundPriority);
+
 BASE_DECLARE_FEATURE(kTransientKeepAlivePolicy);
 
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTransientKeepAlivePolicyDuration);
