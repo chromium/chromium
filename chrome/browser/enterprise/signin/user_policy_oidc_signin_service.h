@@ -81,6 +81,10 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
   // UserPolicySigninServiceBase implementation:
   void ShutdownCloudPolicyManager() override;
 
+  // Shutdown GAIA policy service and restart `UserCloudPolicyManager` for a
+  // clean slate.
+  void ResetGaiaPolicyManagement();
+
   void FetchPolicyForOidcUser(
       const AccountId& account_id,
       const std::string& dm_token,

@@ -175,6 +175,15 @@ void UserPolicyOidcSigninService::
 
 void UserPolicyOidcSigninService::OnPolicyFetched(CloudPolicyClient* client) {}
 
+void UserPolicyOidcSigninService::ResetGaiaPolicyManagement() {
+  // GAIA-related services are already unavailable for Dasherless profiles, no
+  // op.
+  if (!IsDasherlessProfile(profile_)) {
+    ShutdownUserPolicySigninService(profile_);
+    ShutdownCloudPolicyManager();
+  }
+}
+
 void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     const AccountId& account_id,
     const std::string& dm_token,
@@ -185,7 +194,6 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     bool switch_to_entry,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
-  ShutdownUserPolicySigninService(profile_);
   FetchPolicyForSignedInUser(
       account_id, dm_token, client_id, user_affiliation_ids,
       std::move(profile_url_loader_factory),
@@ -197,7 +205,6 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
 }
 
 void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
-  ShutdownUserPolicySigninService(profile_);
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Attempting to restore OIDC profile policy via backup DM token";
   std::string dm_token = profile_->GetPrefs()->GetString(
@@ -208,20 +215,9 @@ void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
     return;
   }
 
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-
-  if (!entry) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "OIDC policy restoration failed due to missing profile attribute.";
-    return;
-  }
-
   // Policy restoration only applies to OIDC profiles and when there is no other
   // restoration/interception in progress.
-  if (entry->GetProfileManagementOidcTokens().auth_token.empty()) {
+  if (!IsOidcManagedProfile(profile_)) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Policy restoration is only available for OIDC-managed profiles.";
     return;
@@ -229,6 +225,14 @@ void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
 
   std::string client_id = profile_->GetPrefs()->GetString(
       enterprise_signin::prefs::kPolicyRecoveryClientId);
+
+  // We need to clear the current GAIA policy management if it exists, this
+  // clears any stale policy client and services so OIDC policy service can
+  // properly set up new registration.
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Resetting GAIA policy management to start policy recovery from a "
+         "clean slate.";
+  ResetGaiaPolicyManagement();
 
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Starting OIDC policy recovery using client ID: " << client_id;
@@ -261,14 +265,10 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
   bool dasher_based = !IsDasherlessProfile(profile_);
   RecordOidcEnrollmentPolicyFetchLatency(
       dasher_based, success, base::TimeTicks::Now() - policy_fetch_start_time);
-  if (success) {
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Policy fetched for OIDC profile.";
-    profile_->GetPrefs()->SetBoolean(
-        enterprise_signin::prefs::kPolicyRecoveryRequired, false);
-  } else {
-    profile_->GetPrefs()->SetBoolean(
-        enterprise_signin::prefs::kPolicyRecoveryRequired, true);
-  }
+
+  auto* success_string = success ? "succeeded" : "failed";
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Policy fetched for OIDC profile " << success_string;
 
   if (success && dasher_based && !switch_to_entry) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
@@ -385,26 +385,31 @@ void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
   auto* policy_store = policy_manager()->core()->store();
   if (!policy_store->is_initialized()) {
     store_observation_.Observe(policy_store);
-  } else if (policy_manager()->core()->store()->status() !=
-             CloudPolicyStore::Status::STATUS_OK) {
+    return;
+  }
+
+  if (policy_manager()->core()->store()->status() !=
+      CloudPolicyStore::Status::STATUS_OK) {
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "Cached OIDC policies are not valid";
 
     AttemptToRestorePolicy();
+    return;
+  }
 
-    // If policy already exists and profile is dasher-based, initialization will
-    // be taken care of by `UserPolicySigninService`. If there's no policy yet,
-    // then the first policy fetch is still in progress, and initialization will
-    // be done via `FetchPolicyForSignedInUser`.
-  } else if (!policy_manager()->core()->store()->is_managed() &&
-             profile_->GetPrefs()->GetBoolean(
-                 enterprise_signin::prefs::kPolicyRecoveryRequired)) {
+  // At this point `UserPolicySigninService` has already run and fetched
+  // policies if it's able to. If the policies are still missing,
+  // `UserPolicyOidcSigninService` should try to re-fetch the policies using
+  // the backup DM token.
+  if (!policy_manager()->core()->store()->is_managed()) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "OIDC policy is missing due to a previous fetch failure. ";
+        << "OIDC policy store is not managed, will try "
+           "to fetch using backup token. ";
 
     AttemptToRestorePolicy();
+    return;
+  }
 
-  } else if (policy_manager()->core()->store()->is_managed() &&
-             IsDasherlessProfile(profile)) {
+  if (IsDasherlessProfile(profile)) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "OIDC Signin Service Initializing for Dasherless Profile";
     InitializeForSignedInUser(AccountId(),

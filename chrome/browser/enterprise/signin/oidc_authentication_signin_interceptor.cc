@@ -599,6 +599,10 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     return;
   }
 
+  LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Shutting off GAIA policy service for "
+                                        "OIDC policy initializtion process.";
+  oidc_signin_service->ResetGaiaPolicyManagement();
+
   oidc_signin_service->FetchPolicyForOidcUser(
       AccountId(), dm_token_, client_id_, user_email_,
       /*user_affiliation_ids=*/std::vector<std::string>(),
