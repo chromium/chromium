@@ -97,20 +97,25 @@ InputSyncWriter::InputSyncWriter(
   DCHECK(glitch_counter_);
 
   audio_buses_.resize(shared_memory_segment_count);
+  input_buffers_.resize(shared_memory_segment_count);
 
   // Create vector of audio buses by wrapping existing blocks of memory.
   base::span<uint8_t> data = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
   CHECK(!data.empty());
   auto reader = base::SpanReader<uint8_t>(data);
 
-  for (auto& bus : audio_buses_) {
+  for (uint32_t segment_index = 0; segment_index < shared_memory_segment_count;
+       segment_index++) {
     auto input_buffer = *reader.Read(shared_memory_segment_size_);
+    input_buffers_[segment_index] =
+        reinterpret_cast<media::AudioInputBuffer*>(input_buffer.data());
     auto audio_data =
         input_buffer.subspan<sizeof(media::AudioInputBufferParameters)>();
     CHECK_EQ(audio_data.size(), audio_bus_memory_size_);
     CHECK(
         base::IsAligned(audio_data.data(), media::AudioBus::kChannelAlignment));
-    bus = media::AudioBus::WrapMemory(params, audio_data);
+    audio_buses_[segment_index] =
+        media::AudioBus::WrapMemory(params, audio_data);
   }
 
   CHECK(reader.remaining_span().empty());
@@ -423,12 +428,8 @@ bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
 
 media::AudioInputBuffer* InputSyncWriter::GetSharedInputBuffer(
     uint32_t segment_id) {
-  CHECK_LT(segment_id, audio_buses_.size());
-  base::span<uint8_t> memory =
-      shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
-  base::span<uint8_t> segment = memory.subspan(
-      segment_id * shared_memory_segment_size_, shared_memory_segment_size_);
-  return reinterpret_cast<media::AudioInputBuffer*>(segment.data());
+  CHECK_LT(segment_id, input_buffers_.size());
+  return input_buffers_[segment_id];
 }
 
 void InputSyncWriter::SendLogMessage(const char* format, ...) {
