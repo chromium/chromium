@@ -152,7 +152,7 @@ void CopyToGpuMemoryBuffer(
     const gpu::SyncToken& blit_done_sync_token,
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableSharedImage());
-  CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
+  CHECK(!dst_frame->HasNativeMappableSharedImage());
   CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);
@@ -289,7 +289,7 @@ WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
           },
           std::move(dst_frame), std::move(callback), flow_id));
 
-  if (!dst_frame_ptr->HasNativeGpuMemoryBuffer()) {
+  if (!dst_frame_ptr->HasNativeMappableSharedImage()) {
     // For shared memory GMBs we needed to explicitly request a copy
     // from the shared image GPU texture to the GMB.
     CopyToGpuMemoryBuffer(weak_context_provider_, dst_frame_ptr,

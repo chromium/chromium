@@ -1171,9 +1171,9 @@ bool VideoFrame::HasMappableSharedImage() const {
   return storage_type_ == STORAGE_MAPPABLE_SHARED_IMAGE;
 }
 
-bool VideoFrame::HasNativeGpuMemoryBuffer() const {
+bool VideoFrame::HasNativeMappableSharedImage() const {
   if (wrapped_frame_) {
-    return wrapped_frame_->HasNativeGpuMemoryBuffer();
+    return wrapped_frame_->HasNativeMappableSharedImage();
   } else if (HasMappableSharedImage()) {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();

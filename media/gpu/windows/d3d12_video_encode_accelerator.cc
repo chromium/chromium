@@ -857,7 +857,7 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   scoped_refptr<VideoFrame> frame = input_frame.frame;
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
   if (frame->HasMappableSharedImage()) {
-    if (frame->HasNativeGpuMemoryBuffer()) {
+    if (frame->HasNativeMappableSharedImage()) {
       input_texture = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
     } else {
       frame = ConvertToMemoryMappedFrame(std::move(frame));

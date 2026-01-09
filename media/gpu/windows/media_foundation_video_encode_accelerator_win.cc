@@ -748,7 +748,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
   result.discard_output = discard_output;
 
   result.generate_sample_on_wait_sync_token =
-      command_buffer_helper_ && !frame->HasNativeGpuMemoryBuffer() &&
+      command_buffer_helper_ && !frame->HasNativeMappableSharedImage() &&
       !frame->HasMappableSharedImage() && frame->HasSharedImage();
   if (result.generate_sample_on_wait_sync_token) {
     TRACE_EVENT0("media",
@@ -1946,7 +1946,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
 
   if (frame->HasMappableSharedImage() ||
       input.generate_sample_on_wait_sync_token) {
-    if ((frame->HasNativeGpuMemoryBuffer() ||
+    if ((frame->HasNativeMappableSharedImage() ||
          input.generate_sample_on_wait_sync_token) &&
         dxgi_device_manager_ != nullptr) {
       if (!dxgi_resource_mapping_required_) {
@@ -2088,7 +2088,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
     scoped_refptr<VideoFrame> frame,
     const PendingInput& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(frame->HasNativeGpuMemoryBuffer() ||
+  DCHECK(frame->HasNativeMappableSharedImage() ||
          input.generate_sample_on_wait_sync_token);
   DCHECK(dxgi_device_manager_);
   auto& input_sample = input.input_sample;
@@ -2101,7 +2101,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
 
   HRESULT hr;
   ComD3D11Texture2D input_texture;
-  if (frame->HasNativeGpuMemoryBuffer()) {
+  if (frame->HasNativeMappableSharedImage()) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
 
@@ -2230,7 +2230,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   HRESULT hr;
   ComD3D11Texture2D input_texture;
   ComD3D11Texture2D sample_texture;
-  if (frame->HasNativeGpuMemoryBuffer()) {
+  if (frame->HasNativeMappableSharedImage()) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
 

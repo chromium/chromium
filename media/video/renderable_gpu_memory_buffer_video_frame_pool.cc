@@ -280,7 +280,7 @@ scoped_refptr<VideoFrame> FrameResources::CreateVideoFrame() {
       shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
   // Only native (non shared memory) GMBs require waiting on GPU fences.
-  const bool has_native_gmb = video_frame->HasNativeGpuMemoryBuffer();
+  const bool has_native_gmb = video_frame->HasNativeMappableSharedImage();
   video_frame->metadata().read_lock_fences_enabled = has_native_gmb;
 
   return video_frame;

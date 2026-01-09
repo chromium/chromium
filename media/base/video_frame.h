@@ -477,11 +477,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns true if the VideoFrame is backed by a MappableSharedImage.
   bool HasMappableSharedImage() const;
 
-  // Returns true if the GpuMemoruBuffer backing the video frame is native
-  // buffer and not shared memory buffer. A native GPU memory buffer is a
-  // block of memory that is allocated and managed directly on the GPU's
-  // memory which allows for hardware acceleration.
-  bool HasNativeGpuMemoryBuffer() const;
+  // Returns true if the MappableSharedImage backing the video frame is native,
+  // i.e., a block of memory that is allocated and managed directly on the GPU's
+  // memory (rather than being shared memory).
+  bool HasNativeMappableSharedImage() const;
 
   // Returns true if the underlying SharedImage can be mapped truly
   // asynchronously: with an unblocking request to the GPU process.
