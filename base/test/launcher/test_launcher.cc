@@ -1289,10 +1289,11 @@ void TestLauncher::ProcessTestResults(
 
   // Results to be reported back to the test launcher.
   std::vector<TestResult> final_results;
+  final_results.reserve(test_names.size());
 
   for (const auto& i : test_names) {
-    if (results_map.contains(i)) {
-      TestResult test_result = results_map[i];
+    if (auto it = results_map.find(i); it != results_map.end()) {
+      TestResult test_result = it->second;
       // Fix up the test status: we forcibly kill the child process
       // after the timeout, so from XML results it looks just like
       // a crash.
@@ -1305,7 +1306,7 @@ void TestLauncher::ProcessTestResults(
           test_result.elapsed_time > launcher_delegate_->GetTimeout()) {
         test_result.status = TestResult::TEST_TIMEOUT;
       }
-      final_results.push_back(test_result);
+      final_results.push_back(std::move(test_result));
     } else {
       // TODO(phajdan.jr): Explicitly pass the info that the test didn't
       // run for a mysterious reason.
@@ -1313,7 +1314,7 @@ void TestLauncher::ProcessTestResults(
       TestResult test_result;
       test_result.full_name = i;
       test_result.status = missing_result_status;
-      final_results.push_back(test_result);
+      final_results.push_back(std::move(test_result));
     }
   }
   // TODO(phajdan.jr): Handle the case where processing XML output
