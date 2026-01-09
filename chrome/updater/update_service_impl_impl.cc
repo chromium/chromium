@@ -1073,6 +1073,7 @@ void UpdateServiceImplImpl::Update(
             if (!update_state.next_version.empty()) {
               event->SetNextVersion(update_state.next_version);
             }
+            event->SetOutcome(update_state.state);
             return update_state;
           },
           event.get())
