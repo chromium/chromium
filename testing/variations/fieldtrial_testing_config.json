@@ -8061,6 +8061,21 @@
             ]
         }
     ],
+    "DBSCMacUKSInBrowserProcess": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20251217",
+                    "enable_features": [
+                        "UseUnexportableKeyServiceInBrowserProcess"
+                    ]
+                }
+            ]
+        }
+    ],
     "DSEPreconnect2": [
         {
             "platforms": [
