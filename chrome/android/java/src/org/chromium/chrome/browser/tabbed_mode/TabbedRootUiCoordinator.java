@@ -176,6 +176,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
+import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -287,6 +288,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable Supplier<Integer> mBookmarkBarHeightSupplier;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
+    private @Nullable TabBottomSheetManager mTabBottomSheetManager;
     private final @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
     private final @NonNull KeyboardFocusRowManager mKeyboardFocusRowManager;
@@ -768,6 +770,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mNtpSyncedThemeManager.destroy();
         }
 
+        if (mTabBottomSheetManager != null) {
+            mTabBottomSheetManager.destroy();
+            mTabBottomSheetManager = null;
+        }
+
         super.onDestroy();
     }
 
@@ -999,6 +1006,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     };
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
+
+        initiateTabBottomSheetManager();
     }
 
     @Override
@@ -1553,6 +1562,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mToolbarManager
                     .getTabStripHeightSupplier()
                     .addObserver(mOnTabStripHeightChangedCallback);
+        }
+    }
+
+    private void initiateTabBottomSheetManager() {
+        if (ChromeFeatureList.sTabBottomSheet.isEnabled()) {
+            mTabBottomSheetManager =
+                    new TabBottomSheetManager(
+                            mActivity,
+                            mTabModelSelectorSupplier.get().getModel(false),
+                            getBottomSheetController());
         }
     }
 
