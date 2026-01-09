@@ -131,7 +131,7 @@
     Local network
   </message>
   <message name="IDS_LOOPBACK_NETWORK_PERMISSION_TITLE" desc="Title of the permission for Loopback Network [CHAR_LIMIT=32]">
-    Loopback network
+    Apps on device
   </message>
   <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_TITLE" desc="Title of the permission for Window Management [CHAR_LIMIT=32]">
     Window management

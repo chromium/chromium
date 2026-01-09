@@ -226,10 +226,10 @@
     local network
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOOPBACK_NETWORK" desc="The label used for the loopback network site settings controls.">
-    Loopback network
+    Apps on device
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOOPBACK_NETWORK_MID_SENTENCE" desc="The label used for the loopback network site settings controls when used mid-sentence.">
-    loopback network
+    apps on device
   </message>
 
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
