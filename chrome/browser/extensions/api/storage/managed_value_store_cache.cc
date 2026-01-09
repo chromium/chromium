@@ -196,9 +196,14 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
     // and is valid. If the schema is invalid then proceed with an empty schema.
     // The extension will be listed in chrome://policy but won't be able to load
     // any policies.
-    (*components)[extension->id()] =
-        StorageSchemaManifestHandler::GetSchema(extension.get())
-            .value_or(policy::Schema());
+    base::expected<policy::Schema, std::string> schema =
+        StorageSchemaManifestHandler::GetSchema(extension.get());
+    if (!schema.has_value()) {
+      LOG(ERROR) << "Failed to parse schema for extension " << extension->id()
+                 << " with error: " << schema.error();
+      schema = policy::Schema();
+    }
+    (*components)[extension->id()] = std::move(schema.value());
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
