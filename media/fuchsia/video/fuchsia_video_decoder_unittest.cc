@@ -189,6 +189,7 @@ class FakeClientNativePixmap : public gfx::ClientNativePixmap {
   gfx::NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(handle_);
   }
+  uint64_t GetPlaneSize(size_t plane) const override { NOTREACHED(); }
 
  private:
   gfx::NativePixmapHandle handle_;
