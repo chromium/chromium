@@ -116,6 +116,7 @@ class ContextualSearchMetricsRecorder {
   void RecordTabClickedMetrics(bool has_duplicate_title,
                                std::optional<int> recency_ranking);
 
+  // If `duplicate_title_count` < 0 then it won't be recorded.
   void RecordTabContextMenuMetrics(int total_tab_count,
                                    int duplicate_title_count);
 

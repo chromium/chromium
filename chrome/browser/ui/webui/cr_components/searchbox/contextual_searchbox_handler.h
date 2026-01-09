@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -74,6 +75,9 @@ class ContextualOmniboxClient : public SearchboxOmniboxClient {
   GetSuggestInputsCallback suggest_inputs_callback_;
 };
 
+// This just allows declaration in class to avoid cluttering global namespace.
+#define DECLARE_FEATURE(feature) static constinit const base::Feature feature
+
 // Abstract class that extends the SearchboxHandler and implements all methods
 // shared between the composebox and realbox to support contextual search.
 class ContextualSearchboxHandler
@@ -82,6 +86,8 @@ class ContextualSearchboxHandler
       public SearchboxHandler,
       public TabStripModelObserver {
  public:
+  DECLARE_FEATURE(kExhaustiveGetRecentTabs);
+
   explicit ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,

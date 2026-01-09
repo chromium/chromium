@@ -199,9 +199,11 @@ void ContextualSearchMetricsRecorder::RecordTabContextMenuMetrics(
   base::UmaHistogramCounts1000(
       "ContextualSearch.ActiveTabsCountOnContextMenuOpen." + metrics_suffix_,
       total_tab_count);
-  base::UmaHistogramCounts1000(
-      "ContextualSearch.DuplicateTabTitlesShownCount." + metrics_suffix_,
-      duplicate_title_count);
+  if (duplicate_title_count >= 0) {
+    base::UmaHistogramCounts1000(
+        "ContextualSearch.DuplicateTabTitlesShownCount." + metrics_suffix_,
+        duplicate_title_count);
+  }
 }
 
 void ContextualSearchMetricsRecorder::RecordToolsSubmissionType(
