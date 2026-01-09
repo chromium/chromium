@@ -134,8 +134,6 @@ void DumpWithoutCrashingOnError(wgpu::ErrorType error_type,
 std::vector<const char*> GetDisabledToggles(
     const GpuPreferences& gpu_preferences) {
   std::vector<const char*> disabled_toggles;
-  // Disable Dawn's lazy clears because Graphite already does that on its own.
-  disabled_toggles.push_back("lazy_clear_resource_on_first_use");
   for (const auto& toggle : gpu_preferences.disabled_dawn_features_list) {
     disabled_toggles.push_back(toggle.c_str());
   }
