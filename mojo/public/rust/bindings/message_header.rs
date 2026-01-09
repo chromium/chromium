@@ -12,7 +12,10 @@
 
 chromium::import! {
     "//mojo/public/rust/mojom_parser";
+    "//mojo/public/rust/bindings:helper_functions_cxx";
 }
+
+use helper_functions_cxx::ffi as cxx_helpers;
 
 /// The header format used by the most recent version of Mojom.
 ///
@@ -59,7 +62,7 @@ pub struct MessageHeaderV3 {
     /// Used for associated interfaces. Rust doesn't support these yet.
     interface_ids_ptr: u64,
     /// Tracks when the header was created.
-    creation_timeticks_us: u64,
+    creation_timeticks_us: i64,
 }
 
 impl MessageHeaderV3 {
@@ -69,19 +72,20 @@ impl MessageHeaderV3 {
             interface_id,
             name,
             flags,
-            trace_nonce: todo!("Call C++ to get this"),
+            // The C++ equivalent uses static_cast<uint32_t> on the result here
+            trace_nonce: cxx_helpers::GetNextGlobalTraceId() as u32,
             request_id,
             // The payload always immediately follows the header, so it's 24
             // bytes from the start of `payload_ptr`
             payload_ptr: 24,
             // This pointer is unused in Rust for now
             interface_ids_ptr: 0,
-            creation_timeticks_us: todo!("Call C++ to get this"),
+            creation_timeticks_us: cxx_helpers::CurrentTimeTicksInMicroseconds(),
         }
     }
 
     /// Return the timestamp when this header value was created.
-    pub fn creation_timeticks_us(&self) -> u64 {
+    pub fn creation_timeticks_us(&self) -> i64 {
         self.creation_timeticks_us
     }
 
