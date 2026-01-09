@@ -37,20 +37,6 @@ class ClipboardRecentContent {
   // Sets the global instance of ClipboardRecentContent singleton.
   static void SetInstance(std::unique_ptr<ClipboardRecentContent> new_instance);
 
-  // Returns clipboard content as URL, if it has a compatible type,
-  // is recent enough, has not been suppressed and will not trigger a system
-  // notification that the clipboard has been accessed.
-  virtual std::optional<GURL> GetRecentURLFromClipboard() = 0;
-
-  // Returns clipboard content as text, if it has a compatible type,
-  // is recent enough, has not been suppressed and will not trigger a system
-  // notification that the clipboard has been accessed.
-  virtual std::optional<std::u16string> GetRecentTextFromClipboard() = 0;
-
-  // Return if system's clipboard contains an image that will not trigger a
-  // system notification that the clipboard has been accessed.
-  virtual bool HasRecentImageFromClipboard() = 0;
-
   // Returns current clipboard content type(s) if it is recent enough and has
   // not been suppressed. This value will be nullopt during the brief period
   // when the clipboard is updating its cache. More succintly, this value will
@@ -110,8 +96,8 @@ class ClipboardRecentContent {
   virtual void ClearClipboardContent() = 0;
 
  protected:
-  // GetRecentURLFromClipboard() should never return a URL from a clipboard
-  // older than this.
+  // Clipboard accessors should never return a URL from a clipboard older than
+  // this.
   static base::TimeDelta MaximumAgeOfClipboard();
 };
 

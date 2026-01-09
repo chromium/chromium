@@ -61,10 +61,9 @@
   // Update change count before the app becomes inactive to catch
   // possible pasteboard updates outside of the app.
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(/* asynchronous= */ true,
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
-                         [weakSelf updateChangeCountFromPasteboard:pasteboard];
-                       }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf updateChangeCountFromPasteboard:pasteboard];
+  }));
 }
 
 - (void)updateChangeCountFromPasteboard:(UIPasteboard*)pasteboard {
@@ -73,10 +72,9 @@
 
 - (void)updateFromGeneralPasteboard {
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(/* asynchronous= */ true,
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
-                         [weakSelf updateIfNeededWithPasteboard:pasteboard];
-                       }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf updateIfNeededWithPasteboard:pasteboard];
+  }));
 }
 
 - (void)updateIfNeededWithPasteboard:(UIPasteboard*)pasteboard {

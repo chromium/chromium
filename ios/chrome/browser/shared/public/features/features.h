@@ -361,10 +361,6 @@ extern const char kBottomOmniboxEvolutionParamForceBottomOmniboxEditState[];
 // Feature flag to enable improvdements in the bottom omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxEvolution);
 
-// Feature flag to put all clipboard access onto a background thread. Any
-// synchronous clipboard access will always return nil/false.
-BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
-
 // Whether the Safety Check Manager can automatically trigger Safety Checks.
 bool IsSafetyCheckAutorunByManagerEnabled();
 

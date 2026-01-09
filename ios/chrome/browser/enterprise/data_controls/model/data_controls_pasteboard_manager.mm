@@ -121,7 +121,6 @@ void DataControlsPasteboardManager::RestoreItemsToGeneralPasteboardIfNeeded(
   if (!pasteboard_state_.os_clipboard_allowed && pasteboard_state_.items) {
     stage_ = Stage::kReplacingItems;
     GetGeneralPasteboard(
-        /* asynchronous= */ true,
         base::BindOnce(&WriteItemsToPasteboard, pasteboard_state_.items)
             .Then(std::move(callback)));
   } else {
@@ -170,7 +169,6 @@ void DataControlsPasteboardManager::
   if (!pasteboard_state_.os_clipboard_allowed) {
     stage_ = Stage::kReplacingItems;
     GetGeneralPasteboard(
-        /* asynchronous= */ true,
         base::BindOnce(&ReplacePasteboardItemsWithPlaceholder));
   }
 }

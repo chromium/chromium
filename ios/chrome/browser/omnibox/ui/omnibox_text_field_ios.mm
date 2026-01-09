@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
@@ -1099,10 +1098,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)pasteboardDidChange:(NSNotification*)notification {
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
-                         [weakSelf pasteboardDidChangeCallback:pasteboard];
-                       }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf pasteboardDidChangeCallback:pasteboard];
+  }));
 }
 
 - (void)pasteboardDidChangeCallback:(UIPasteboard*)pasteboard {

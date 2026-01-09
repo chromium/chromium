@@ -44,8 +44,6 @@ NSString* const kDefaultScheme = @"https";
 @property(nonatomic, strong) id<ClipboardRecentContentDelegate> delegate;
 // Maximum age of clipboard in seconds.
 @property(nonatomic, readonly) NSTimeInterval maximumAgeOfClipboard;
-// Whether the clipboard should only be accessed asynchronously.
-@property(nonatomic, assign) BOOL onlyUseClipboardAsync;
 
 // A cached version of an already-retrieved URL. This prevents subsequent URL
 // requests from triggering the iOS 14 pasteboard notification.
@@ -94,7 +92,6 @@ NSString* const kDefaultScheme = @"https";
 - (instancetype)initWithMaxAge:(NSTimeInterval)maxAge
              authorizedSchemes:(NSSet<NSString*>*)authorizedSchemes
                   userDefaults:(NSUserDefaults*)groupUserDefaults
-         onlyUseClipboardAsync:(BOOL)onlyUseClipboardAsync
                       delegate:(id<ClipboardRecentContentDelegate>)delegate {
   self = [super init];
   if (self) {
@@ -102,7 +99,6 @@ NSString* const kDefaultScheme = @"https";
     _delegate = delegate;
     _authorizedSchemes = authorizedSchemes;
     _sharedUserDefaults = groupUserDefaults;
-    _onlyUseClipboardAsync = onlyUseClipboardAsync;
 
     _lastPasteboardChangeCount = NSIntegerMax;
     [self loadFromUserDefaults];
@@ -120,13 +116,12 @@ NSString* const kDefaultScheme = @"https";
              object:nil];
 
     __weak __typeof(self) weakSelf = self;
-    GetGeneralPasteboard(
-        _onlyUseClipboardAsync, base::BindOnce(^(UIPasteboard* pasteboard) {
-          [weakSelf updateIfNeededWithPasteboard:pasteboard];
-          // Makes sure |last_pasteboard_change_count_| was properly
-          // initialized.
-          DCHECK_NE(weakSelf.lastPasteboardChangeCount, NSIntegerMax);
-        }));
+    GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+      [weakSelf updateIfNeededWithPasteboard:pasteboard];
+      // Makes sure |last_pasteboard_change_count_| was properly
+      // initialized.
+      DCHECK_NE(weakSelf.lastPasteboardChangeCount, NSIntegerMax);
+    }));
   }
   return self;
 }
@@ -140,42 +135,12 @@ NSString* const kDefaultScheme = @"https";
   [self updateCachedClipboardState];
 
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(self.onlyUseClipboardAsync,
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
-                         [weakSelf updateIfNeededWithPasteboard:pasteboard];
-                       }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf updateIfNeededWithPasteboard:pasteboard];
+  }));
 }
 
 #pragma mark - Public
-
-- (NSURL*)recentURLFromClipboard {
-  // If the clipboard can only be accessed asynchronously, then this method
-  // cannot even check whether the existing cached URL is stil valid.
-  if (self.onlyUseClipboardAsync) {
-    return nil;
-  }
-  return [self recentURLFromPasteboard:UIPasteboard.generalPasteboard];
-}
-
-- (NSString*)recentTextFromClipboard {
-  // If the clipboard can only be accessed asynchronously, then this method
-  // cannot even check whether the existing cached text is stil valid.
-  if (self.onlyUseClipboardAsync) {
-    return nil;
-  }
-
-  return [self recentTextFromPasteboard:UIPasteboard.generalPasteboard];
-}
-
-- (UIImage*)recentImageFromClipboard {
-  // If the clipboard can only be accessed asynchronously, then this method
-  // cannot even check whether the existing cached image is stil valid.
-  if (self.onlyUseClipboardAsync) {
-    return nil;
-  }
-
-  return [self recentImageFromPasteboard:UIPasteboard.generalPasteboard];
-}
 
 - (NSSet<ContentType>*)cachedClipboardContentTypes {
   if (![self shouldReturnValueOfClipboard:nil]) {
@@ -188,39 +153,35 @@ NSString* const kDefaultScheme = @"https";
               completionHandler:
                   (void (^)(NSSet<ContentType>*))completionHandler {
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(self.onlyUseClipboardAsync,
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
-                         [weakSelf hasContentMatchingTypes:types
-                                                pasteboard:pasteboard
-                                         completionHandler:completionHandler];
-                       }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf hasContentMatchingTypes:types
+                           pasteboard:pasteboard
+                    completionHandler:completionHandler];
+  }));
 }
 
-- (void)recentURLFromClipboardAsync:(void (^)(NSURL*))callback {
+- (void)recentURLFromClipboard:(void (^)(NSURL*))callback {
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(
-      self.onlyUseClipboardAsync, base::BindOnce(^(UIPasteboard* pasteboard) {
-        [weakSelf recentURLFromClipboardAsyncWithPasteboard:pasteboard
-                                                   callback:callback];
-      }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf recentURLFromClipboardWithPasteboard:pasteboard
+                                          callback:callback];
+  }));
 }
 
-- (void)recentTextFromClipboardAsync:(void (^)(NSString*))callback {
+- (void)recentTextFromClipboard:(void (^)(NSString*))callback {
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(
-      self.onlyUseClipboardAsync, base::BindOnce(^(UIPasteboard* pasteboard) {
-        [weakSelf recentTextFromClipboardAsyncWithPasteboard:pasteboard
-                                                    callback:callback];
-      }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf recentTextFromClipboardWithPasteboard:pasteboard
+                                           callback:callback];
+  }));
 }
 
-- (void)recentImageFromClipboardAsync:(void (^)(UIImage*))callback {
+- (void)recentImageFromClipboard:(void (^)(UIImage*))callback {
   __weak __typeof(self) weakSelf = self;
-  GetGeneralPasteboard(
-      self.onlyUseClipboardAsync, base::BindOnce(^(UIPasteboard* pasteboard) {
-        [weakSelf recentImageFromClipboardAsyncWithPasteboard:pasteboard
-                                                     callback:callback];
-      }));
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+    [weakSelf recentImageFromClipboardWithPasteboard:pasteboard
+                                            callback:callback];
+  }));
 }
 
 - (NSTimeInterval)clipboardContentAge {
@@ -264,42 +225,6 @@ NSString* const kDefaultScheme = @"https";
               completionHandler:^(NSSet<ContentType>* results) {
                 weakSelf.cachedContentTypes = results;
               }];
-}
-
-// The synchronous version of this method is kept around for public APIs and old
-// iOS versions.
-- (NSURL*)recentURLFromPasteboard:(UIPasteboard*)pasteboard {
-  [self updateIfNeededWithPasteboard:pasteboard];
-
-  if (![self shouldReturnValueOfClipboard:pasteboard]) {
-    return nil;
-  }
-
-  return self.cachedURL;
-}
-
-// The synchronous version of this method is kept around for public APIs and old
-// iOS versions.
-- (NSString*)recentTextFromPasteboard:(UIPasteboard*)pasteboard {
-  [self updateIfNeededWithPasteboard:pasteboard];
-
-  if (![self shouldReturnValueOfClipboard:pasteboard]) {
-    return nil;
-  }
-
-  return self.cachedText;
-}
-
-// The synchronous version of this method is kept around for public APIs and old
-// iOS versions.
-- (UIImage*)recentImageFromPasteboard:(UIPasteboard*)pasteboard {
-  [self updateIfNeededWithPasteboard:pasteboard];
-
-  if (![self shouldReturnValueOfClipboard:pasteboard]) {
-    return nil;
-  }
-
-  return self.cachedImage;
 }
 
 // Checks for if the given `pasteboard` has content matching the provided
@@ -446,8 +371,8 @@ NSString* const kDefaultScheme = @"https";
 
 // The underlying logic to check the recent url, with the addition of a
 // `pasteboard` parameter to aid in forcing all pasteboard access to be async.
-- (void)recentURLFromClipboardAsyncWithPasteboard:(UIPasteboard*)pasteboard
-                                         callback:(void (^)(NSURL*))callback {
+- (void)recentURLFromClipboardWithPasteboard:(UIPasteboard*)pasteboard
+                                    callback:(void (^)(NSURL*))callback {
   DCHECK(callback);
   [self updateIfNeededWithPasteboard:pasteboard];
   if (![self shouldReturnValueOfClipboard:pasteboard]) {
@@ -508,9 +433,8 @@ NSString* const kDefaultScheme = @"https";
 
 // The underlying logic to check the recent text, with the addition of a
 // `pasteboard` parameter to aid in forcing all pasteboard access to be async.
-- (void)recentTextFromClipboardAsyncWithPasteboard:(UIPasteboard*)pasteboard
-                                          callback:
-                                              (void (^)(NSString*))callback {
+- (void)recentTextFromClipboardWithPasteboard:(UIPasteboard*)pasteboard
+                                     callback:(void (^)(NSString*))callback {
   DCHECK(callback);
   [self updateIfNeededWithPasteboard:pasteboard];
   if (![self shouldReturnValueOfClipboard:pasteboard]) {
@@ -541,9 +465,8 @@ NSString* const kDefaultScheme = @"https";
 
 // The underlying logic to check the recent image, with the addition of a
 // `pasteboard` parameter to aid in forcing all pasteboard access to be async.
-- (void)recentImageFromClipboardAsyncWithPasteboard:(UIPasteboard*)pasteboard
-                                           callback:
-                                               (void (^)(UIImage*))callback {
+- (void)recentImageFromClipboardWithPasteboard:(UIPasteboard*)pasteboard
+                                      callback:(void (^)(UIImage*))callback {
   DCHECK(callback);
   [self updateIfNeededWithPasteboard:pasteboard];
   if (![self shouldReturnValueOfClipboard:pasteboard]) {

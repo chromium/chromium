@@ -7,14 +7,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 
-void GetGeneralPasteboard(bool asynchronous, PasteboardCallback callback) {
-  if (asynchronous) {
-    GetGeneralPasteboard(std::move(callback));
-  } else {
-    std::move(callback).Run(UIPasteboard.generalPasteboard);
-  }
-}
-
 void GetGeneralPasteboard(PasteboardCallback callback) {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});

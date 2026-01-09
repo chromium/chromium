@@ -81,43 +81,17 @@ ClipboardContentType ClipboardContentTypeFromContentType(ContentType type) {
 
 ClipboardRecentContentIOS::ClipboardRecentContentIOS(
     std::string_view application_scheme,
-    NSUserDefaults* group_user_defaults,
-    bool only_use_clipboard_async)
+    NSUserDefaults* group_user_defaults)
     : ClipboardRecentContentIOS([[ClipboardRecentContentImplIOS alloc]
-                 initWithMaxAge:MaximumAgeOfClipboard().InSecondsF()
-              authorizedSchemes:GetAuthorizedSchemeList(application_scheme)
-                   userDefaults:group_user_defaults
-          onlyUseClipboardAsync:only_use_clipboard_async
-                       delegate:[[ClipboardRecentContentDelegateImpl alloc]
-                                    init]]) {}
+             initWithMaxAge:MaximumAgeOfClipboard().InSecondsF()
+          authorizedSchemes:GetAuthorizedSchemeList(application_scheme)
+               userDefaults:group_user_defaults
+                   delegate:[[ClipboardRecentContentDelegateImpl alloc]
+                                init]]) {}
 
 ClipboardRecentContentIOS::ClipboardRecentContentIOS(
     ClipboardRecentContentImplIOS* implementation) {
   implementation_ = implementation;
-}
-
-std::optional<GURL> ClipboardRecentContentIOS::GetRecentURLFromClipboard() {
-  NSURL* url_from_pasteboard = [implementation_ recentURLFromClipboard];
-  GURL converted_url = net::GURLWithNSURL(url_from_pasteboard);
-  if (!converted_url.is_valid()) {
-    return std::nullopt;
-  }
-
-  return converted_url;
-}
-
-std::optional<std::u16string>
-ClipboardRecentContentIOS::GetRecentTextFromClipboard() {
-  NSString* text_from_pasteboard = [implementation_ recentTextFromClipboard];
-  if (!text_from_pasteboard) {
-    return std::nullopt;
-  }
-
-  return base::SysNSStringToUTF16(text_from_pasteboard);
-}
-
-bool ClipboardRecentContentIOS::HasRecentImageFromClipboard() {
-  return GetRecentImageFromClipboardInternal().has_value();
 }
 
 void ClipboardRecentContentIOS::HasRecentContentFromClipboard(
@@ -179,7 +153,7 @@ void ClipboardRecentContentIOS::GetRecentURLFromClipboard(
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
-  [implementation_ recentURLFromClipboardAsync:^(NSURL* url) {
+  [implementation_ recentURLFromClipboard:^(NSURL* url) {
     GURL converted_url = net::GURLWithNSURL(url);
     if (!converted_url.is_valid()) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
@@ -202,7 +176,7 @@ void ClipboardRecentContentIOS::GetRecentTextFromClipboard(
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
-  [implementation_ recentTextFromClipboardAsync:^(NSString* text) {
+  [implementation_ recentTextFromClipboard:^(NSString* text) {
     if (!text) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
                               std::move(callback_for_block).Run(std::nullopt);
@@ -225,7 +199,7 @@ void ClipboardRecentContentIOS::GetRecentImageFromClipboard(
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
-  [implementation_ recentImageFromClipboardAsync:^(UIImage* image) {
+  [implementation_ recentImageFromClipboard:^(UIImage* image) {
     if (!image) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
                               std::move(callback_for_block).Run(std::nullopt);
@@ -253,14 +227,4 @@ void ClipboardRecentContentIOS::SuppressClipboardContent() {
 void ClipboardRecentContentIOS::ClearClipboardContent() {
   NOTIMPLEMENTED();
   return;
-}
-
-std::optional<gfx::Image>
-ClipboardRecentContentIOS::GetRecentImageFromClipboardInternal() {
-  UIImage* image_from_pasteboard = [implementation_ recentImageFromClipboard];
-  if (!image_from_pasteboard) {
-    return std::nullopt;
-  }
-
-  return gfx::Image(image_from_pasteboard);
 }
