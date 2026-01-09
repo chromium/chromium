@@ -51,12 +51,18 @@ rust_static_library("mojo_rust_bindings_api") {
   sources = [
     "bindings/interface.rs",
     "bindings/lib.rs",
+    "bindings/message.rs",
+    "bindings/message_header.rs",
     "bindings/message_pipe_watcher.rs",
   ]
 
   deps = [
     ":mojo_rust_system_api",
+    "mojom_parser",
+    "mojom_parser:mojom_parser_core",
     "sequences",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/bitflags/v2:lib",
   ]
 }
 

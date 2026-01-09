@@ -31,9 +31,18 @@
 {{- declare_struct(args_struct(method), method.param_struct)}}
 
 impl {{args_struct(method)}} {
-  fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::Message {
+  fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
     let payload = mojom_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
-    bindings::Message { header: (), id: {{ method.ordinal }}, payload}
+    {%- if method.response_parameters %}
+    let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
+    {%- else %}
+    let flags = bindings::message_header::MessageHeaderFlags::empty();
+    {%- endif %}
+    bindings::message::MojomMessage {
+      header: bindings::message_header::MessageHeaderV3::new(
+        0, {{ method.ordinal }}, flags, 0),
+      payload
+    }
   }
 }
 
@@ -41,15 +50,21 @@ impl {{args_struct(method)}} {
 {{declare_struct(response_struct(method), method.response_param_struct)}}
 
 impl {{response_struct(method)}} {
-  fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::Message {
+  fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {
     let payload = mojom_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
-    bindings::Message { header: (), id: {{ method.ordinal }}, payload}
+    let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
+    bindings::message::MojomMessage {
+      header: bindings::message_header::MessageHeaderV3::new(
+        0, {{ method.ordinal }}, flags, 0
+      ),
+      payload
+    }
   }
 }
 {%- endif -%}
 {% endfor %}
 
-pub trait {{interface.name}} : bindings::internal::ImplementThisViaMacro {
+pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMacro {
 {#- Define one function for each message type the interface declares #}
 {%- for method in interface.methods %}
   fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
@@ -65,11 +80,11 @@ pub trait {{interface.name}} : bindings::internal::ImplementThisViaMacro {
 {%- endfor %}
 
   // Note to users: Do not override this function when implementing the trait
-  fn handle_incoming_message(&mut self, message: bindings::Message, send_response: fn(bindings::Message))
+  fn handle_incoming_message(&mut self, message: bindings::message::MojomMessage, send_response: fn(bindings::message::MojomMessage))
     where Self: Sized
   {
     let _ = send_response; // Mark as used in case no messages take a response
-    match message.id {
+    match message.header.name {
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
@@ -101,13 +116,13 @@ pub enum {{callback_ty_name}} {
 {%- endfor %}
 }
 
-impl bindings::MojomInterface for dyn {{interface.name}} {
+impl bindings::interface::MojomInterface for dyn {{interface.name}} {
   type DynTy = dyn {{interface.name}};
 
   type ResponseCallbackTy = {{callback_ty_name}};
 
-  fn handle_incoming_response(message: bindings::Message, send_response: Self::ResponseCallbackTy) {
-    match (message.id, send_response) {
+  fn handle_incoming_response(message: bindings::message::MojomMessage, send_response: Self::ResponseCallbackTy) {
+    match (message.header.name, send_response) {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} =
@@ -124,14 +139,14 @@ impl bindings::MojomInterface for dyn {{interface.name}} {
     }
   }
 
-  fn handle_incoming_message(_message: bindings::Message, _send_response: impl FnOnce(bindings::Message)) {
+  fn handle_incoming_message(_message: bindings::message::MojomMessage, _send_response: impl FnOnce(bindings::message::MojomMessage)) {
     unimplemented!("Call the appropriate trait method directly on the Remote object instead")
   }
 }
 
-impl bindings::DynMojomInterface for dyn {{interface.name}} {}
+impl bindings::interface::DynMojomInterface for dyn {{interface.name}} {}
 
-impl {{interface.name}} for bindings::remote::Remote<dyn {{interface.name}}> {
+impl {{interface.name}} for bindings::interface::remote::Remote<dyn {{interface.name}}> {
   {%- for method in interface.methods %}
   fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
   {{- typed_fields(method.param_struct.fields)}}

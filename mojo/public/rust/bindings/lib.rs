@@ -10,4 +10,6 @@
 //! `mojo_rust_system_bindings` crate instead.
 
 pub mod interface;
+pub mod message;
+pub mod message_header;
 pub mod message_pipe_watcher;
