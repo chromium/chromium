@@ -305,11 +305,11 @@ mojom::ZhuyinSettingsPtr CreateZhuyinSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::ZhuyinSettings::New();
   settings->layout = ZhuyinLayoutToMojom(ValueOrEmpty(
-      input_method_specific_pref.FindString("zhuyinKeyboardLayout")));
-  settings->selection_keys = ZhuyinSelectionKeysToMojom(
-      ValueOrEmpty(input_method_specific_pref.FindString("zhuyinSelectKeys")));
+      input_method_specific_pref.FindString(kZhuyinPrefKeyboardLayout)));
+  settings->selection_keys = ZhuyinSelectionKeysToMojom(ValueOrEmpty(
+      input_method_specific_pref.FindString(kZhuyinPrefSelectKeys)));
   settings->page_size = ZhuyinPageSizeToInt(
-      ValueOrEmpty(input_method_specific_pref.FindString("zhuyinPageSize")));
+      ValueOrEmpty(input_method_specific_pref.FindString(kZhuyinPrefPageSize)));
   return settings;
 }
 }  // namespace

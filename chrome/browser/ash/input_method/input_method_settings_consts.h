@@ -54,6 +54,11 @@ inline constexpr std::string_view kKrPrefEnableSyllableInput =
 inline constexpr std::string_view kKrPrefKeyboardLayout =
     "koreanKeyboardLayout";
 
+inline constexpr std::string_view kZhuyinPrefKeyboardLayout =
+    "zhuyinKeyboardLayout";
+inline constexpr std::string_view kZhuyinPrefPageSize = "zhuyinPageSize";
+inline constexpr std::string_view kZhuyinPrefSelectKeys = "zhuyinSelectKeys";
+
 inline constexpr std::string_view kVnPrefVniAllowFlexibleDiacritics =
     "vietnameseVniAllowFlexibleDiacritics";
 inline constexpr std::string_view kVnPrefVniNewStyleToneMarkPlacement =
