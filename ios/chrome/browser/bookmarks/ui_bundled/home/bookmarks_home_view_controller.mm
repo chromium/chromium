@@ -2056,15 +2056,23 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [tableView addSubview:scrimView];
   // We attach our constraints to the superview because the tableView is
   // a scrollView and it seems that we get an empty frame when attaching to it.
-  [NSLayoutConstraint activateConstraints:@[
-    [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
-    [scrimView.trailingAnchor constraintEqualToAnchor:superview.trailingAnchor],
-    [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
-    [scrimView.topAnchor
-        constraintEqualToAnchor:self.navigationController.navigationBar
-                                    .bottomAnchor],
-
-  ]];
+  if (@available(iOS 26, *)) {
+    // On iOS 26+, the search bar won't be obscured by the scrim view even when
+    // the scrim view's top constraint is aligned with the superview's top,
+    // likely due to changes in UIKit's layout system or view hierarchy
+    // handling.
+    AddSameConstraints(scrimView, superview);
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+      [scrimView.trailingAnchor
+          constraintEqualToAnchor:superview.trailingAnchor],
+      [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+      [scrimView.topAnchor
+          constraintEqualToAnchor:self.navigationController.navigationBar
+                                      .bottomAnchor],
+    ]];
+  }
   tableView.accessibilityElementsHidden = YES;
   tableView.scrollEnabled = NO;
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration

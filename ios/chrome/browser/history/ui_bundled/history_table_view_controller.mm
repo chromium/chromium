@@ -534,40 +534,63 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Shows scrim overlay and hide toolbar.
 - (void)showScrim {
-  if (self.scrimView.alpha < 1.0f) {
-    self.navigationController.toolbarHidden = YES;
-    self.scrimView.alpha = 0.0f;
-    [self.tableView addSubview:self.scrimView];
-    // We attach our constraints to the superview because the tableView is
-    // a scrollView and it seems that we get an empty frame when attaching to
-    // it.
-    AddSameConstraints(self.scrimView, self.view.superview);
-    self.tableView.accessibilityElementsHidden = YES;
-    self.tableView.scrollEnabled = NO;
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
-                     animations:^{
-                       weakSelf.scrimView.alpha = 1.0f;
-                       [weakSelf.view layoutIfNeeded];
-                     }];
+  if (self.scrimView.alpha >= 1.0f) {
+    return;
   }
+  self.navigationController.toolbarHidden = YES;
+  UIView* scrimView = self.scrimView;
+  scrimView.alpha = 0.0f;
+  [self.tableView addSubview:self.scrimView];
+  UIView* superview = self.tableView.superview;
+  // We attach our constraints to the superview because the tableView is
+  // a scrollView and it seems that we get an empty frame when attaching to
+  // it.
+  if (@available(iOS 26, *)) {
+    // On iOS 26+, the search bar won't be obscured by the scrim view even when
+    // the scrim view's top constraint is aligned with the superview's top,
+    // likely due to changes in UIKit's layout system or view hierarchy
+    // handling.
+    AddSameConstraints(scrimView, superview);
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+      [scrimView.trailingAnchor
+          constraintEqualToAnchor:superview.trailingAnchor],
+      [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+      [scrimView.topAnchor
+          constraintEqualToAnchor:self.navigationController.navigationBar
+                                      .bottomAnchor],
+    ]];
+  }
+  self.tableView.accessibilityElementsHidden = YES;
+  self.tableView.scrollEnabled = NO;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+                   animations:^{
+                     scrimView.alpha = 1.0f;
+                     [superview layoutIfNeeded];
+                   }];
 }
 
 // Hides scrim and restore toolbar.
 - (void)hideScrim {
-  if (self.scrimView.alpha > 0.0f) {
-    self.navigationController.toolbarHidden = NO;
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
-        animations:^{
-          weakSelf.scrimView.alpha = 0.0f;
-        }
-        completion:^(BOOL finished) {
-          [weakSelf.scrimView removeFromSuperview];
-          weakSelf.tableView.accessibilityElementsHidden = NO;
-          weakSelf.tableView.scrollEnabled = YES;
-        }];
+  if (self.scrimView.alpha <= 0.0f) {
+    return;
   }
+  self.navigationController.toolbarHidden = NO;
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+      animations:^{
+        weakSelf.scrimView.alpha = 0.0f;
+      }
+      completion:^(BOOL finished) {
+        HistoryTableViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf.scrimView removeFromSuperview];
+        strongSelf.tableView.accessibilityElementsHidden = NO;
+        strongSelf.tableView.scrollEnabled = YES;
+      }];
 }
 
 #pragma mark - Helper Methods
