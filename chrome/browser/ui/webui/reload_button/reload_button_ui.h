@@ -38,10 +38,6 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   ReloadButtonPageHandler* page_handler_for_testing();
 
-  base::WeakPtr<ReloadButtonUI> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   // TopChromeWebUIController:
   // The controller uses `requesting_origin` to:
   // 1. Decide which resources to expose, e.g. only expose "chrome://theme"
@@ -72,8 +68,6 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   // Initialized only in tests by SetCommandUpdaterForTesting().
   raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;
-
-  base::WeakPtrFactory<ReloadButtonUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

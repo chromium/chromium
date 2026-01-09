@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
-#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -79,7 +78,6 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
@@ -869,15 +867,6 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // Pump any pending events that were created as a result of creating a
   // browser.
   content::RunAllPendingInMessageLoop();
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Wait for the initial WebUI to complete the painting and flush all the
-  // histograms, so the metrics from the initial WebUI will not affect the
-  // browser test that are checking some common histograms.
-  WaitUntilInitialWebUIPaintForTesting(browser_);
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (browser_ && global_browser_set_up_function_) {
     ASSERT_TRUE(global_browser_set_up_function_(browser_));

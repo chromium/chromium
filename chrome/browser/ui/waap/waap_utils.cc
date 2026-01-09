@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/waap/waap_utils.h"
 
-#include "base/containers/variant_map.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"

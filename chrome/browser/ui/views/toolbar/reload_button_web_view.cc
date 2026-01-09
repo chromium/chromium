@@ -70,8 +70,7 @@ void ReloadButtonWebView::AddedToWidget() {
   reload_button_ui_ = web_view_->GetWebContents()
                           ->GetWebUI()
                           ->GetController()
-                          ->GetAs<ReloadButtonUI>()
-                          ->GetWeakPtr();
+                          ->GetAs<ReloadButtonUI>();
   reload_control_.Init();
 }
 
@@ -95,25 +94,6 @@ void ReloadButtonWebView::DidFinishLoad(
 
 ReloadControl* ReloadButtonWebView::GetReloadControl() {
   return &reload_control_;
-}
-
-void ReloadButtonWebView::DidFirstVisuallyNonEmptyPaint() {
-  has_finished_first_non_empty_paint_ = true;
-  if (did_first_non_empty_paint_callback_) {
-    std::move(did_first_non_empty_paint_callback_).Run();
-  }
-}
-
-void ReloadButtonWebView::SetDidFirstNonEmptyPaintCallbackForTesting(
-    base::OnceClosure callback) {
-  if (callback.is_null()) {
-    return;
-  }
-  if (has_finished_first_non_empty_paint_) {
-    std::move(callback).Run();
-    return;
-  }
-  did_first_non_empty_paint_callback_ = std::move(callback);
 }
 
 BEGIN_METADATA(ReloadButtonWebView)
