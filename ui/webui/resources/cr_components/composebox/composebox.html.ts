@@ -15,14 +15,14 @@ export function getHtml(this: ComposeboxElement) {
         tabindex="-1"
         @focusin="${this.handleSubmitFocusIn_}">
       <div id="submitOverlay" part="submit-overlay"
-          @click="${this.submitQuery_}">
+          @click="${this.submitQuery_}"
+          title="${this.i18n('composeboxSubmitButtonTitle')}">
       </div>
       <cr-icon-button
         class="action-icon icon-arrow-upward"
         id="submitIcon"
         part="action-icon submit-icon"
         tabindex="0"
-        title="${this.i18n('composeboxSubmitButtonTitle')}"
         ?disabled="${!this.submitEnabled_ || !this.fileUploadsComplete}">
       </cr-icon-button>
     </div>`;
