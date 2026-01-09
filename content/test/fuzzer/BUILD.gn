@@ -557,23 +557,6 @@ if (enable_mojom_fuzzer) {
   }
 }
 
-if (use_fuzzing_engine) {
-  test("cookie_readiness_list_parser_fuzzer") {
-    sources = [ "../../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_fuzztest.cc" ]
-
-    fuzztests = [ "CookieReadinessListParserFuzzTest.ParseReadinessListSuccessfullyParsesAnyString" ]
-
-    testonly = true
-    deps = [
-      "//base",
-      "//base:i18n",
-      "//content/browser",
-      "//content/public/browser:browser_sources",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
-  }
-}
-
 test("devtools_protocol_encoding_json_fuzzer") {
   sources =
       [ "../../browser/devtools/devtools_protocol_encoding_json_fuzzer.cc" ]

@@ -309,8 +309,6 @@ static_library("browser") {
     "component_updater/component_updater_prefs.h",
     "component_updater/component_updater_utils.cc",
     "component_updater/component_updater_utils.h",
-    "component_updater/cookie_readiness_list_component_installer.cc",
-    "component_updater/cookie_readiness_list_component_installer.h",
     "component_updater/crl_set_component_installer.cc",
     "component_updater/crl_set_component_installer.h",
     "component_updater/crowd_deny_component_installer.cc",

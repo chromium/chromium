@@ -53,8 +53,6 @@ static_library("installer_policies_no_content_deps") {
 
 static_library("installer_policies_with_content_deps") {
   sources = [
-    "cookie_readiness_list_component_installer_policy.cc",
-    "cookie_readiness_list_component_installer_policy.h",
     "history_search_strings_component_installer.cc",
     "history_search_strings_component_installer.h",
     "on_device_head_suggest_component_installer.cc",
@@ -80,7 +78,6 @@ source_set("unit_tests") {
   sources = [
     "amount_extraction_heuristic_regexes_component_installer_unittest.cc",
     "autofill_states_component_installer_unittest.cc",
-    "cookie_readiness_list_component_installer_policy_unittest.cc",
     "first_party_sets_component_installer_policy_unittest.cc",
     "history_search_strings_component_installer_unittest.cc",
     "open_cookie_database_component_installer_policy_unittest.cc",
