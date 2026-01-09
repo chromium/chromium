@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -164,16 +165,16 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean isSeamlessSigninAllowed() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+    }
+
+    @Override
     boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount) {
         @PromoState int newState = computePromoState(visibleAccount);
         boolean wasStateChanged = mPromoState != newState;
         mPromoState = newState;
         return wasStateChanged;
-    }
-
-    @Override
-    boolean isSeamlessSigninAllowed() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
     }
 
     @Override
@@ -205,6 +206,13 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     @Override
     int getPromoShownCount() {
         return ChromeSharedPreferences.getInstance().readInt(getPromoShowCountPreferenceName());
+    }
+
+    @Override
+    @Nullable
+    @SigninSurveyController.SigninSurveyType
+    Integer getSurveyTriggerType() {
+        return SigninSurveyController.SigninSurveyType.NTP_PROMO;
     }
 
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {

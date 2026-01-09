@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -202,40 +203,45 @@ public abstract class SigninPromoDelegate {
         mOnPromoVisibilityChange.run();
     }
 
+    /** Returns a survey trigger if a signin survey should be shown after the promo. */
+    @Nullable
+    @SigninSurveyController.SigninSurveyType
+    Integer getSurveyTriggerType() {
+        return null;
+    }
+
     private BottomSheetSigninAndHistorySyncConfig getConfigForCollapsedBottomSheet() {
-        return new BottomSheetSigninAndHistorySyncConfig.Builder(
-                        getBottomSheetStrings(),
-                        NoAccountSigninMode.BOTTOM_SHEET,
-                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        getHistoryOptInMode(),
-                        mContext.getString(R.string.history_sync_title),
-                        mContext.getString(R.string.history_sync_subtitle))
-                .build();
+        return getBaseConfigBuilder(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET).build();
     }
 
     private BottomSheetSigninAndHistorySyncConfig getConfigForSeamlessSignin(
             CoreAccountInfo visibleAccount) {
-        return new BottomSheetSigninAndHistorySyncConfig.Builder(
-                        getBottomSheetStrings(),
-                        NoAccountSigninMode.BOTTOM_SHEET,
-                        WithAccountSigninMode.SEAMLESS_SIGNIN,
-                        getHistoryOptInMode(),
-                        mContext.getString(R.string.history_sync_title),
-                        mContext.getString(R.string.history_sync_subtitle))
+        return getBaseConfigBuilder(WithAccountSigninMode.SEAMLESS_SIGNIN)
                 .useSeamlessWithAccountSignin(visibleAccount.getId())
                 .build();
     }
 
     private BottomSheetSigninAndHistorySyncConfig getConfigForExpandedBottomSheet(
             boolean shownSigninSnackbar) {
-        return new BottomSheetSigninAndHistorySyncConfig.Builder(
-                        getBottomSheetStrings(),
-                        NoAccountSigninMode.BOTTOM_SHEET,
-                        WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                        getHistoryOptInMode(),
-                        mContext.getString(R.string.history_sync_title),
-                        mContext.getString(R.string.history_sync_subtitle))
+        return getBaseConfigBuilder(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET)
                 .shouldShowSigninSnackbar(shownSigninSnackbar)
                 .build();
+    }
+
+    private BottomSheetSigninAndHistorySyncConfig.Builder getBaseConfigBuilder(
+            @WithAccountSigninMode int mode) {
+        @Nullable Integer surveyType = getSurveyTriggerType();
+        BottomSheetSigninAndHistorySyncConfig.Builder config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                        getBottomSheetStrings(),
+                        NoAccountSigninMode.BOTTOM_SHEET,
+                        mode,
+                        getHistoryOptInMode(),
+                        mContext.getString(R.string.history_sync_title),
+                        mContext.getString(R.string.history_sync_subtitle));
+        if (surveyType != null) {
+            config.signinSurveyType(surveyType);
+        }
+        return config;
     }
 }

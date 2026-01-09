@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
@@ -89,7 +90,8 @@ public class SigninFirstRunFragment extends Fragment
                                 /* dismissText= */ FullscreenSigninConfig
                                         .DISMISS_TEXT_NOT_INITIALIZED,
                                 /* logoId= */ 0,
-                                /* shouldDisableSignin= */ DeviceInfo.isAutomotive()),
+                                /* shouldDisableSignin= */ DeviceInfo.isAutomotive(),
+                                /* surveyType= */ SigninSurveyController.SigninSurveyType.FRE),
                         SigninAccessPoint.START_PAGE);
 
         var pageDelegate = assumeNonNull(getPageDelegate());

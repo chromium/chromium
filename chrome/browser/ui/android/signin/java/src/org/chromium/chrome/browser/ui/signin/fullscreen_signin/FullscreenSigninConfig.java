@@ -10,6 +10,7 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ public final class FullscreenSigninConfig {
     public final String dismissText;
     public final @DrawableRes int logoId;
     public final boolean shouldDisableSignin;
+    public final @Nullable @SigninSurveyController.SigninSurveyType Integer signinSurveyType;
 
     public static final String DISMISS_TEXT_NOT_INITIALIZED = "";
 
@@ -41,7 +43,8 @@ public final class FullscreenSigninConfig {
             String subtitle,
             String dismissText,
             @DrawableRes int logoId,
-            boolean shouldDisableSignin) {
+            boolean shouldDisableSignin,
+            @Nullable @SigninSurveyController.SigninSurveyType Integer surveyType) {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(subtitle);
         // TODO(crbug.com/464416507): Restore the assert that dismissText is not empty once
@@ -51,6 +54,7 @@ public final class FullscreenSigninConfig {
         this.dismissText = dismissText;
         this.logoId = logoId;
         this.shouldDisableSignin = shouldDisableSignin;
+        this.signinSurveyType = surveyType;
     }
 
     @Override
@@ -64,7 +68,8 @@ public final class FullscreenSigninConfig {
                 && Objects.equals(subtitle, other.subtitle)
                 && Objects.equals(dismissText, other.dismissText)
                 && logoId == other.logoId
-                && shouldDisableSignin == other.shouldDisableSignin;
+                && shouldDisableSignin == other.shouldDisableSignin
+                && Objects.equals(signinSurveyType, other.signinSurveyType);
     }
 
     @Override

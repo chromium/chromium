@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -427,6 +428,7 @@ public class IdentityDiscController
                                     HistorySyncConfig.OptInMode.OPTIONAL,
                                     mContext.getString(R.string.history_sync_title),
                                     mContext.getString(R.string.history_sync_subtitle))
+                            .signinSurveyType(SigninSurveyController.SigninSurveyType.NTP_AVATAR)
                             .build();
             @Nullable Intent intent =
                     SigninAndHistorySyncActivityLauncherImpl.get()

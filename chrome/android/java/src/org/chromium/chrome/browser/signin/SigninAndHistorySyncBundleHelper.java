@@ -53,6 +53,7 @@ final class SigninAndHistorySyncBundleHelper {
             "Signin.BottomSheetSelectedAccountId";
     private static final String BOTTOM_SHEET_SHOW_SIGNIN_SNACKBAR =
             "Signin.BottomSheetShouldShowSigninSnackbar";
+    private static final String BOTTOM_SHEET_SURVEY_CONFIG = "Signin.BottomSheetSigninSurveyConfig";
 
     static Bundle getBundle(FullscreenSigninAndHistorySyncConfig config) {
         Bundle bundle = new Bundle();
@@ -101,6 +102,9 @@ final class SigninAndHistorySyncBundleHelper {
                         ? null
                         : config.selectedCoreAccountId.getId().toString());
         bundle.putBoolean(BOTTOM_SHEET_SHOW_SIGNIN_SNACKBAR, config.shouldShowSigninSnackbar);
+        if (config.signinSurveyType != null) {
+            bundle.putInt(BOTTOM_SHEET_SURVEY_CONFIG, config.signinSurveyType);
+        }
         return bundle;
     }
 
@@ -123,6 +127,10 @@ final class SigninAndHistorySyncBundleHelper {
             builder.selectedCoreAccountId(new CoreAccountId(new GaiaId(selectedAccountId)));
         }
         builder.shouldShowSigninSnackbar(bundle.getBoolean(BOTTOM_SHEET_SHOW_SIGNIN_SNACKBAR));
+        Integer surveyType = bundle.getInt(BOTTOM_SHEET_SURVEY_CONFIG, -1);
+        if (surveyType != -1) {
+            builder.signinSurveyType(surveyType);
+        }
         return builder.build();
     }
 }

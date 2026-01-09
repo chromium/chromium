@@ -380,6 +380,10 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             return;
         }
 
+        if (mConfig.signinSurveyType != null) {
+            SigninSurveyController.registerTrigger(mProfile, mConfig.signinSurveyType);
+        }
+
         mSigninBottomSheetCoordinator.destroy();
         mSigninBottomSheetCoordinator = null;
         maybeShowHistoryOptInDialog();

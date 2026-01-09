@@ -61,6 +61,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
     public final @HistorySyncConfig.OptInMode int historyOptInMode;
     public final @Nullable CoreAccountId selectedCoreAccountId;
     public final boolean shouldShowSigninSnackbar;
+    public final @Nullable @SigninSurveyController.SigninSurveyType Integer signinSurveyType;
 
     /** Builder for {@link BottomSheetSigninAndHistorySyncConfig}. */
     public static class Builder {
@@ -72,6 +73,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         private @WithAccountSigninMode int mWithAccountSigninMode;
         private @Nullable CoreAccountId mSelectedCoreAccountId;
         private boolean mShouldShowSigninSnackbar;
+        private @Nullable @SigninSurveyController.SigninSurveyType Integer mSigninSurveyType;
 
         /**
          * Constructor of the Builder.
@@ -132,6 +134,14 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         }
 
         /**
+         * @param type A {@link SigninSurveyController.SigninSurveyType} to show after sign-in.
+         */
+        public Builder signinSurveyType(@SigninSurveyController.SigninSurveyType int type) {
+            mSigninSurveyType = type;
+            return this;
+        }
+
+        /**
          * Builds the {@link BottomSheetSigninAndHistorySyncConfig} instance.
          *
          * <p>This method asserts that all necessary fields are correctly set before creating the
@@ -148,7 +158,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
                     mWithAccountSigninMode,
                     mHistoryOptInMode,
                     mSelectedCoreAccountId,
-                    mShouldShowSigninSnackbar);
+                    mShouldShowSigninSnackbar,
+                    mSigninSurveyType);
         }
     }
 
@@ -159,7 +170,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode,
             @Nullable CoreAccountId selectedCoreAccountId,
-            boolean shouldShowSigninSnackbar) {
+            boolean shouldShowSigninSnackbar,
+            @Nullable @SigninSurveyController.SigninSurveyType Integer signinSurveyType) {
         assert bottomSheetStrings != null;
         assert historySyncConfig != null;
         if (withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN) {
@@ -178,6 +190,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         this.historyOptInMode = historyOptInMode;
         this.selectedCoreAccountId = selectedCoreAccountId;
         this.shouldShowSigninSnackbar = shouldShowSigninSnackbar;
+        this.signinSurveyType = signinSurveyType;
     }
 
     @Override
@@ -194,7 +207,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
                 && withAccountSigninMode == other.withAccountSigninMode
                 && historyOptInMode == other.historyOptInMode
                 && Objects.equals(selectedCoreAccountId, other.selectedCoreAccountId)
-                && shouldShowSigninSnackbar == other.shouldShowSigninSnackbar;
+                && shouldShowSigninSnackbar == other.shouldShowSigninSnackbar
+                && Objects.equals(signinSurveyType, other.signinSurveyType);
     }
 
     @Override
@@ -206,6 +220,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
                 withAccountSigninMode,
                 historyOptInMode,
                 selectedCoreAccountId,
-                shouldShowSigninSnackbar);
+                shouldShowSigninSnackbar,
+                signinSurveyType);
     }
 }
