@@ -81,7 +81,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
 - (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState
                    sessionID:(NSString*)sessionID
               conversationID:(NSString*)conversationID {
-  // TODO(crbug.com/473852217): Handle expanded state.
+  [self.geminiViewStateDelegate didSwitchToViewState:viewState];
 }
 
 - (void)UIDidAppearWithClientID:(NSString*)clientID

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -89,6 +91,11 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
 
     bwg_session_handler_ = [[BWGSessionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
+    if (IsGeminiCopresenceEnabled()) {
+      gemini_view_state_handler_ = [[GeminiViewStateChangeHandler alloc]
+          initWithBrowserAgent:weak_factory_.GetWeakPtr()];
+      bwg_session_handler_.geminiViewStateDelegate = gemini_view_state_handler_;
+    }
     bwg_gateway_.sessionHandler = bwg_session_handler_;
 
     gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc]
@@ -165,7 +172,7 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 
   // Trigger zero state suggestions.
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  BwgTabHelper* gemini_tab_helper = BwgTabHelper::FromWebState(web_state);
+  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
   if (!gemini_tab_helper) {
     return;
   }
@@ -279,9 +286,24 @@ void BwgBrowserAgent::UpdateFloatyPageContext(
   ios::provider::UpdatePageContext(gemini_page_context);
 }
 
+void BwgBrowserAgent::OnGeminiViewStateExpanded() {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+
+  if (tab_helper) {
+    tab_helper->SetBwgUiShowing(true);
+    tab_helper->GeneratePageContext(
+        base::BindOnce(&BwgBrowserAgent::UpdateFloatyPageContext,
+                       weak_factory_.GetWeakPtr()),
+        /*full_page_context=*/true);
+  }
+}
+
 void BwgBrowserAgent::DismissFloaty() {
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  BwgTabHelper* gemini_tab_helper = BwgTabHelper::FromWebState(web_state);
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(active_web_state);
   if (gemini_tab_helper) {
     gemini_tab_helper->SetBwgUiShowing(false);
   }
@@ -400,7 +422,7 @@ void BwgBrowserAgent::PresentFloatyWithState(
 
   // Use the tab helper to set the initial floaty state, which includes the chat
   // IDs and whether it was backgrounded.
-  BwgTabHelper* gemini_tab_helper = BwgTabHelper::FromWebState(web_state);
+  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
   config.clientID = base::SysUTF8ToNSString(gemini_tab_helper->GetClientId());
   std::optional<std::string> maybe_server_id = gemini_tab_helper->GetServerId();
   config.serverID =

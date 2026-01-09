@@ -36,6 +36,7 @@ class PageContext;
 @class BWGPageStateChangeHandler;
 @class BWGSessionHandler;
 @class GeminiPageContext;
+@class GeminiViewStateChangeHandler;
 @class GeminiSuggestionHandler;
 
 @protocol BWGGatewayProtocol;
@@ -93,6 +94,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   void UpdateFloatyPageContext(
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                      PageContextWrapperError> expected_page_context);
+
+  // Called when the Gemini view state expands.
+  void OnGeminiViewStateExpanded();
 
   // Dismisses the floaty and resets the Gemini flow.
   void DismissFloaty();
@@ -167,6 +171,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
 
   // Handler for the BWG sessions.
   __strong BWGSessionHandler* bwg_session_handler_ = nullptr;
+
+  // Delegate implementation for BWGSessionHandler.
+  __strong GeminiViewStateChangeHandler* gemini_view_state_handler_ = nullptr;
 
   // Handler for Gemini suggestion chips.
   __strong GeminiSuggestionHandler* gemini_suggestion_handler_ = nullptr;

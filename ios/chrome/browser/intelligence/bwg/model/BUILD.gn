@@ -16,6 +16,7 @@ source_set("model") {
     "gemini_suggestion_delegate.h",
     "gemini_suggestion_handler.h",
     "gemini_suggestion_handler.mm",
+    "gemini_view_state_delegate.h",
   ]
   deps = [
     ":tab_helper",
@@ -38,6 +39,8 @@ source_set("browser_agent") {
   sources = [
     "bwg_browser_agent.h",
     "bwg_browser_agent.mm",
+    "gemini_view_state_change_handler.h",
+    "gemini_view_state_change_handler.mm",
   ]
   deps = [
     ":config",
