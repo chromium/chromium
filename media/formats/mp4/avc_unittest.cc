@@ -355,6 +355,19 @@ TEST_F(AVCConversionTest, StringConversionFunctions) {
   EXPECT_EQ(str, AnnexBToString(buf, subsamples));
 }
 
+TEST_F(AVCConversionTest, ReservedNalUnitsIgnored) {
+  std::string str = "FILL I EOStr";
+  std::vector<uint8_t> buf;
+  std::vector<SubsampleEntry> subsamples;
+  AvcStringToAnnexB(str, &buf, &subsamples);
+  buf[4] = 25;  // Change FILL NALU type to reserved type.
+
+  BitstreamConverter::AnalysisResult expected;
+  expected.is_conformant = false;
+  expected.is_keyframe = true;
+  EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected);
+}
+
 TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
   struct TestCases {
     const char* case_string;
