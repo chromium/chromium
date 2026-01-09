@@ -121,7 +121,7 @@ ActorNavigationThrottle::WillProcessResponse() {
   }
 
   if (!execution_engine_ ||
-      !execution_engine_->ShouldGateNavigation(
+      !execution_engine_->ShouldDeferNavigation(
           *navigation_handle(),
           base::BindOnce(
               &ActorNavigationThrottle::OnNavigationConfirmationDecision,

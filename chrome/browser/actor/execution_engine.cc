@@ -224,7 +224,7 @@ std::string ExecutionEngine::StateToString(State state) {
   }
 }
 
-bool ExecutionEngine::ShouldGateNavigation(
+bool ExecutionEngine::ShouldDeferNavigation(
     content::NavigationHandle& navigation_handle,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!IsNavigationGatingEnabled()) {

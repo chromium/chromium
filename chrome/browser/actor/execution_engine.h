@@ -171,8 +171,8 @@ class ExecutionEngine : public ToolDelegate {
   // Returns a boolean indicating if ActorNavigationThrottle should defer a
   // navigation until the decision callback is invoked. This method can only
   // be called on the primary main frame or a prerendered main frame.
-  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
-                            NavigationDecisionCallback callback);
+  bool ShouldDeferNavigation(content::NavigationHandle& navigation_handle,
+                             NavigationDecisionCallback callback);
 
   static std::string StateToString(State state);
 
@@ -265,8 +265,8 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  // `std::nullopt` is returned when the decision to gate the navigation is done
-  // async.
+  // `GatingDecision::kNeedsAsyncCheck` is returned when the decision to gate
+  // the navigation will be answered asynchronously.
   GatingDecision ShouldGateNavigationInternal(
       content::NavigationHandle& navigation_handle,
       NavigationDecisionCallback callback);
