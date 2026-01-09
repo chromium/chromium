@@ -33,8 +33,7 @@
 namespace {
 
 bool BrowserMatchesURL(BrowserWindowInterface* browser, const GURL& url) {
-  return browser->GetFeatures()
-      .tab_strip_model()
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetVisibleURL()
       .EqualsIgnoringRef(url);

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
@@ -197,18 +198,15 @@ void TabSearchContainer::TabOrganizationAnimationSession::MarkAnimationDone(
   }
 }
 
-TabSearchContainer::TabSearchContainer(
-    TabStripController* tab_strip_controller,
-    TabStripModel* tab_strip_model,
-    bool tab_search_before_chips,
-    View* locked_expansion_view,
-    BrowserWindowInterface* browser_window_interface,
-    tabs::TabDeclutterController* tab_declutter_controller,
-    TabStrip* tab_strip)
+TabSearchContainer::TabSearchContainer(bool tab_search_before_chips,
+                                       View* locked_expansion_view,
+                                       TabStrip* tab_strip)
     : AnimationDelegateViews(this),
-      locked_expansion_view_(locked_expansion_view),
-      tab_declutter_controller_(tab_declutter_controller),
-      tab_strip_model_(tab_strip_model) {
+      locked_expansion_view_(locked_expansion_view) {
+  TabStripController* const tab_strip_controller = tab_strip->controller();
+  browser_ = tab_strip_controller->GetBrowser();
+  BrowserWindowInterface* browser_window_interface =
+      tab_strip_controller->GetBrowserWindowInterface();
   SetProperty(views::kElementIdentifierKey, kTabSearchContainerElementId);
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
@@ -242,18 +240,18 @@ TabSearchContainer::TabSearchContainer(
 
   SetupButtonProperties(auto_tab_group_button_, tab_search_before_chips);
 
-  browser_ = tab_strip_controller->GetBrowser();
-
-  // `tab_declutter_controller_` will be null for some profile types and if
+  // `tab_declutter_controller` will be null for some profile types and if
   // feature is not enabled.
-  if (tab_declutter_controller_) {
+  tabs::TabDeclutterController* tab_declutter_controller =
+      browser_window_interface->GetFeatures().tab_declutter_controller();
+  if (tab_declutter_controller) {
     tab_declutter_button_ = AddChildViewAt(
         CreateTabDeclutterButton(tab_strip_controller, tab_search_before_chips),
         index);
 
     SetupButtonProperties(tab_declutter_button_, tab_search_before_chips);
 
-    tab_declutter_observation_.Observe(tab_declutter_controller_);
+    tab_declutter_observation_.Observe(tab_declutter_controller);
   }
 
   SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -398,12 +396,13 @@ void TabSearchContainer::ExecuteShowTabOrganization(
     return;
   }
 
+  TabStripModel* const tab_strip_model = browser_->tab_strip_model();
   // If the tab strip already has a modal UI showing, exit early.
-  if (!tab_strip_model_->CanShowModalUI()) {
+  if (!tab_strip_model->CanShowModalUI()) {
     return;
   }
 
-  scoped_tab_strip_modal_ui_ = tab_strip_model_->ShowModalUI();
+  scoped_tab_strip_modal_ui_ = tab_strip_model->ShowModalUI();
 
   animation_session_ = std::make_unique<TabOrganizationAnimationSession>(
       button, this, TabOrganizationAnimationSession::AnimationSessionType::SHOW,
@@ -497,7 +496,9 @@ void TabSearchContainer::OnTabDeclutterButtonClicked() {
 }
 
 void TabSearchContainer::OnTabDeclutterButtonDismissed() {
-  tab_declutter_controller_->OnActionUIDismissed(
+  tabs::TabDeclutterController* tab_declutter_controller =
+      browser_->browser_window_features()->tab_declutter_controller();
+  tab_declutter_controller->OnActionUIDismissed(
       base::PassKey<TabSearchContainer>());
 
   // Force hide the button when pressed, bypassing locked expansion mode.
@@ -505,7 +506,9 @@ void TabSearchContainer::OnTabDeclutterButtonDismissed() {
 }
 
 void TabSearchContainer::OnTriggerDeclutterUIVisibility() {
-  CHECK(tab_declutter_controller_);
+  tabs::TabDeclutterController* tab_declutter_controller =
+      browser_->browser_window_features()->tab_declutter_controller();
+  CHECK(tab_declutter_controller);
   if (locked_expansion_mode_ != LockedExpansionMode::kNone) {
     return;
   }

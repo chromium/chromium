@@ -230,9 +230,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
                                               views::LayoutAlignment::kStart);
     } else {
       tab_search_container = std::make_unique<TabSearchContainer>(
-          tab_strip_->controller(), browser->GetTabStripModel(),
-          render_tab_search_before_tab_strip_, this, browser,
-          browser->GetFeatures().tab_declutter_controller(), tab_strip_);
+          render_tab_search_before_tab_strip_, this, tab_strip_);
       tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
 

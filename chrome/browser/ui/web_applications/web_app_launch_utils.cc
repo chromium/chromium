@@ -336,29 +336,27 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
 
   std::unique_ptr<content::WebContents> contents_move =
       source_tabstrip->DetachWebContentsAtForInsertion(found_tab_index.value());
-  int location = target_browser->GetFeatures().tab_strip_model()->count();
+  TabStripModel* const target_tab_strip_model =
+      target_browser->GetTabStripModel();
+  int location = target_tab_strip_model->count();
   int add_types = (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
   if (insert_as_pinned_home_tab) {
     location = 0;
     add_types |= AddTabTypes::ADD_PINNED;
   }
   const bool target_has_pinned_home_tab =
-      HasPinnedHomeTab(target_browser->GetFeatures().tab_strip_model());
+      HasPinnedHomeTab(target_tab_strip_model);
   // This method moves a WebContents from a non-normal browser window to a
   // normal browser window. We cannot move the Tab over directly since TabModel
   // enforces the requirement that it cannot move between window types.
   // https://crbug.com/334281979): Non-normal browser windows should not have a
   // tab to begin with.
-  target_browser->GetFeatures().tab_strip_model()->InsertWebContentsAt(
+  target_tab_strip_model->InsertWebContentsAt(
       location, std::move(contents_move), add_types);
-  CHECK_EQ(
-      web_contents,
-      target_browser->GetFeatures().tab_strip_model()->GetActiveWebContents());
+  CHECK_EQ(web_contents, target_tab_strip_model->GetActiveWebContents());
 
   if (insert_as_pinned_home_tab && target_has_pinned_home_tab) {
-    target_browser->GetFeatures()
-        .tab_strip_model()
-        ->DetachAndDeleteWebContentsAt(1);
+    target_tab_strip_model->DetachAndDeleteWebContentsAt(1);
   }
 
   if (!target_app_id) {
@@ -445,9 +443,8 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   CHECK_NE(existing_app_host->tab_index, -1);
 
   content::WebContents* preexisting_web_contents =
-      existing_app_host->browser->GetFeatures()
-          .tab_strip_model()
-          ->GetWebContentsAt(existing_app_host->tab_index);
+      existing_app_host->browser->GetTabStripModel()->GetWebContentsAt(
+          existing_app_host->tab_index);
   CHECK(preexisting_web_contents != contents);
 
   // We've found a browser in the background. We need to focus it and enqueue
@@ -641,7 +638,7 @@ void MaybeAddPinnedHomeTab(BrowserWindowInterface* browser,
       registrar.GetAppPinnedHomeTabUrl(app_id);
 
   if (registrar.IsTabbedWindowModeEnabled(app_id) &&
-      !HasPinnedHomeTab(browser->GetFeatures().tab_strip_model()) &&
+      !HasPinnedHomeTab(browser->GetTabStripModel()) &&
       pinned_home_tab_url.has_value()) {
     NavigateParams home_tab_nav_params(browser->GetBrowserForMigrationOnly(),
                                        pinned_home_tab_url.value(),
@@ -962,14 +959,15 @@ void EnqueueLaunchParams(content::WebContents* contents,
 
 void FocusAppContainer(BrowserWindowInterface* browser, int tab_index) {
   CHECK(browser);
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   content::WebContents* const web_contents =
-      browser->GetFeatures().tab_strip_model()->GetWebContentsAt(tab_index);
+      tab_strip_model->GetWebContentsAt(tab_index);
   CHECK(web_contents);
   web_contents->Focus();
   // ActivateTabAt() does not work for PWA windows.
   if (!WebAppBrowserController::IsWebApp(browser)) {
     // Note: This will CHECK-fail if tab_index is invalid.
-    browser->GetFeatures().tab_strip_model()->ActivateTabAt(tab_index);
+    tab_strip_model->ActivateTabAt(tab_index);
   }
   // This call will un-minimize the window.
   browser->GetBrowserForMigrationOnly()->GetBrowserView().Activate();

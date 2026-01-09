@@ -203,9 +203,8 @@ void SessionCrashedBubbleView::Show(
 
   BrowserWindowInterface* browser = browser_observer->browser();
 
-  if (browser &&
-      (skip_tab_checking ||
-       browser->GetFeatures().tab_strip_model()->GetActiveWebContents())) {
+  if (browser && (skip_tab_checking ||
+                  browser->GetTabStripModel()->GetActiveWebContents())) {
     ShowBubble(browser, offer_uma_optin);
     return;
   }

@@ -103,6 +103,10 @@ namespace gfx {
 class AnimationRunner;
 }  // namespace gfx
 
+namespace tabs {
+class VerticalTabStripStateController;
+}  // namespace tabs
+
 namespace ui {
 class NativeTheme;
 }  // namespace ui
