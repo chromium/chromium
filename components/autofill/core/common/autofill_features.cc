@@ -920,13 +920,6 @@ BASE_FEATURE(kAutofillSupportPresentationRole,
 // TODO(crbug.com/369503318): Clean up when launched.
 BASE_FEATURE(kAutofillSupportSplitZipCode, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch: If true, AutofillManager::AfterParsingFinishesDeprecated()
-// becomes the identity function. That is, it does not delay the callback until
-// after parsing has finished.
-// TODO(crbug.com/448144129): Clean up after M144 branch point (Dec 1, 2025).
-BASE_FEATURE(kAutofillSynchronousAfterParsing,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, Autofill Services can query whether Chrome provides forms as
 // virtual view structures to third party providers.
