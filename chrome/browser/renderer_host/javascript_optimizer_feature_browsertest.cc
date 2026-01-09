@@ -1255,7 +1255,16 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag
-    : public JavascriptOptimizerOmnibarIconBrowserTest {};
+    : public JavascriptOptimizerOmnibarIconBrowserTest {
+ public:
+  JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag() {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag,
                        IconDoesNotShowWhenFlagNotEnabled) {
