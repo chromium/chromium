@@ -17,6 +17,7 @@ class GPUTextureViewDescriptor;
 class StaticBitmapImage;
 class V8GPUTextureDimension;
 class V8GPUTextureFormat;
+class V8UnionGPUTextureViewDimensionOrUndefined;
 class WebGPUMailboxTexture;
 
 struct OwnedTextureViewDescriptor {
@@ -70,11 +71,16 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   uint32_t mipLevelCount() const;
   uint32_t sampleCount() const;
   V8GPUTextureDimension dimension() const;
+  V8UnionGPUTextureViewDimensionOrUndefined* textureBindingViewDimension()
+      const;
   V8GPUTextureFormat format() const;
   uint32_t usage() const;
   // }}} End of WebIDL binding implementation.
 
   wgpu::TextureDimension Dimension() { return dimension_; }
+  wgpu::TextureViewDimension TextureBindingViewDimension() {
+    return texture_binding_view_dimension_;
+  }
   wgpu::TextureFormat Format() { return format_; }
   wgpu::TextureUsage Usage() { return usage_; }
   bool IsDestroyed() { return destroyed_; }
@@ -97,6 +103,7 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   }
 
   wgpu::TextureDimension dimension_;
+  wgpu::TextureViewDimension texture_binding_view_dimension_;
   wgpu::TextureFormat format_;
   wgpu::TextureUsage usage_;
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;

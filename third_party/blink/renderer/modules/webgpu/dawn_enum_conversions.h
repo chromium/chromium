@@ -75,6 +75,7 @@ wgpu::ComponentSwizzle AsDawnEnum(const UChar c);
 // Convert Dawn enums to WebGPU IDL enums.
 V8GPUQueryType FromDawnEnum(wgpu::QueryType dawn_enum);
 V8GPUTextureDimension FromDawnEnum(wgpu::TextureDimension dawn_enum);
+V8GPUTextureViewDimension FromDawnEnum(wgpu::TextureViewDimension dawn_enum);
 V8GPUTextureFormat FromDawnEnum(wgpu::TextureFormat dawn_enum);
 V8GPUBufferMapState FromDawnEnum(wgpu::BufferMapState dawn_enum);
 const char* FromDawnEnum(wgpu::BackendType dawn_enum);
