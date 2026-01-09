@@ -459,20 +459,19 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
 // pref.
 TEST_F(EntityDataManagerTest,
        SyncablePrefIsOffAndAccountKeyPrefIsOn_MigratePrefValue) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiSetSyncablePrefFromAccountPref};
+
   base::HistogramTester histogram_tester;
-  // Opt the user in.
+  // At first the user is not opted-in, therefore no migration happens.
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
       /*strike_database=*/nullptr));
-  ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
-  ASSERT_TRUE(GetAutofillAiOptInStatus(client()));
 
-  // This emulates the user being added to the experiment and restarting chrome
-  // (the migration happens at startup).
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiSetSyncablePrefFromAccountPref};
+  // Opt the user in.
+  ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
   // Recreate the entity data manager the trigger possible pref migration.
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
@@ -480,6 +479,14 @@ TEST_F(EntityDataManagerTest,
       /*history_service=*/nullptr,
       /*strike_database=*/nullptr));
   EXPECT_TRUE(prefs::IsAutofillAiSyncedOptInStatusEnabled(client().GetPrefs()));
+  // The first construction of the `EntityDataManager` triggered no migration
+  // because the user was not opted-in.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.OptIn.PrefMigration",
+      EntityDataManager::AutofillAiPrefMigrationStatus::
+          kPrefNotMigratedAccountPrefNeverSet,
+      1);
+  // The second construction triggers a migration.
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.OptIn.PrefMigration",
       EntityDataManager::AutofillAiPrefMigrationStatus::kPrefMigratedEnabled,
@@ -499,8 +506,10 @@ TEST_F(EntityDataManagerTest, SyncablePrefIsOn_DoNotMigrate) {
       /*history_service=*/nullptr,
       /*strike_database=*/nullptr));
 
-  // Opt the user in, which also enables the syncable pref.
+  // Opt the user in.
   ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
+  // Enable synced pref, which should lead to no migration.
+  client().GetPrefs()->SetBoolean(prefs::kAutofillAiSyncedOptInStatus, true);
 
   // Recreate the entity data manager the trigger possible pref migration.
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
