@@ -181,6 +181,8 @@ public class NewTabPageLayout extends LinearLayout
     // ENABLE_SEAMLESS_SIGNIN is removed after the experiment.
     private @Nullable NtpSigninPromoCoordinator mSigninPromoCoordinator;
 
+    private @Nullable Boolean mIsWhiteBackgroundOnSearchBoxApplied;
+
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -316,9 +318,8 @@ public class NewTabPageLayout extends LinearLayout
 
         // This should be called after both mSearchBoxCoordinator and mComposeplateCoordinator are
         // initialized.
-        if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()) {
-            onCustomizedBackgroundChanged(/* applyWhiteBackgroundOnSearchBox= */ true);
-        }
+        onCustomizedBackgroundChanged(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
 
         updateActionButtonVisibility();
         initializeLayoutChangeListener();
@@ -1399,8 +1400,25 @@ public class NewTabPageLayout extends LinearLayout
      *     search box.
      */
     void onCustomizedBackgroundChanged(boolean applyWhiteBackgroundOnSearchBox) {
-        // applyWhiteBackgroundWithShadow() will be called immediately after mSearchBoxCoordinator
-        // is initialized, it is fine to skip here.
+        // If shouldn't apply a white background and the background hasn't been updated before,
+        // returns now.
+        if (mIsWhiteBackgroundOnSearchBoxApplied == null && !applyWhiteBackgroundOnSearchBox) {
+            return;
+        }
+
+        // If the background has been updated before and it should remain the same, returns now.
+        if (mIsWhiteBackgroundOnSearchBoxApplied != null
+                && mIsWhiteBackgroundOnSearchBoxApplied == applyWhiteBackgroundOnSearchBox) {
+            return;
+        }
+
+        // If the fake search box hasn't been initialized, returns now. It is fine to skip here
+        // because applyWhiteBackgroundWithShadow() will be called immediately after the
+        // mSearchBoxCoordinator is initialized.
+        if (mSearchBoxCoordinator == null) return;
+
+        mIsWhiteBackgroundOnSearchBoxApplied = applyWhiteBackgroundOnSearchBox;
+
         if (mSearchBoxCoordinator != null) {
             mSearchBoxCoordinator.applyWhiteBackgroundWithShadow(applyWhiteBackgroundOnSearchBox);
         }

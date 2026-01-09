@@ -224,7 +224,9 @@ public class NewTabPage
     private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
             HomepageStateListener
             mHomepageStateListener;
-    // A flag to use light tint on toolbar and status bar icons.
+
+    // A flag to use light tint on toolbar and status bar icons. The light tint isn't applied on
+    // tablet mode.
     private boolean mUseLightIconTint;
 
     private @Nullable SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -836,8 +838,7 @@ public class NewTabPage
                             boolean fromInitialization,
                             @NtpBackgroundImageType int oldType,
                             @NtpBackgroundImageType int newType) {
-                        onBackgroundChangedImpl(
-                                oldType, /* applyWhiteBackgroundOnSearchBox= */ true);
+                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ true);
                     }
 
                     @Override
@@ -847,28 +848,22 @@ public class NewTabPage
                             boolean fromInitialization,
                             @NtpBackgroundImageType int oldType,
                             @NtpBackgroundImageType int newType) {
-                        onBackgroundChangedImpl(
-                                oldType, /* applyWhiteBackgroundOnSearchBox= */ false);
+                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
                     }
 
                     @Override
                     public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
-                        onBackgroundChangedImpl(
-                                oldType, /* applyWhiteBackgroundOnSearchBox= */ false);
+                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
                     }
                 };
         NtpCustomizationConfigManager.getInstance()
                 .addListener(mHomepageStateListener, mContext, /* skipNotify= */ false);
     }
 
-    private void onBackgroundChangedImpl(
-            @NtpBackgroundImageType int oldType, boolean applyWhiteBackgroundOnSearchBox) {
-        mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
-
-        if (!NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
-            return;
+    private void onBackgroundChangedImpl(boolean applyWhiteBackgroundOnSearchBox) {
+        if (!mIsTablet) {
+            mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
         }
-
         mNewTabPageLayout.onCustomizedBackgroundChanged(applyWhiteBackgroundOnSearchBox);
     }
 
