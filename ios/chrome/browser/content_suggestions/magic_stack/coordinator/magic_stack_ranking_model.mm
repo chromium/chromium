@@ -194,11 +194,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
     _templateURLService = templateURLService;
     _bookmarkModel = bookmarkModel;
-
-    if (IsTipsMagicStackEnabled()) {
-      CHECK(tipsManager);
-      _tipsManager = tipsManager;
-    }
+    _tipsManager = tipsManager;
 
     for (id mediator in moduleMediators) {
       if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
@@ -485,7 +481,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                  .empty()));
   }
 
-  if (IsTipsMagicStackEnabled() && _tipsManager) {
+  if (_tipsManager) {
     // Profile signals
     inputContext->metadata_args.emplace(
         segmentation_platform::kLensNotUsedRecently,
@@ -621,14 +617,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       }
     } else if (segmentation_platform::home_modules::HomeModulesCardRegistry::
                    IsEphemeralTipsModuleLabel(label) &&
-               IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
+               areTipsCardsEnabled) {
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
       if (tipIdentifier != TipIdentifier::kUnknown) {
         BOOL shouldShowTipsWithProductImage =
             tipIdentifier == TipIdentifier::kLensShop &&
-            TipsLensShopExperimentTypeEnabled() ==
-                TipsLensShopExperimentType::kWithProductImage &&
             _tipsMediator.state.productImageData.length > 0;
 
         _ephemeralCardToShow =
@@ -929,7 +923,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       case ContentSuggestionsModuleType::kTips:
       case ContentSuggestionsModuleType::kTipsWithProductImage: {
-        if (IsTipsMagicStackEnabled() && _tipsMediator && _tipsMediator.state) {
+        if (_tipsMediator && _tipsMediator.state) {
           [magicStackOrder addObject:_tipsMediator.state];
         }
         break;

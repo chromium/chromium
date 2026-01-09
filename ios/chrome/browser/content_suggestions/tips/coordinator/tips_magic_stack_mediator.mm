@@ -114,9 +114,7 @@ using segmentation_platform::TipIdentifier;
   _state.audience = self;
   _state.consumerSource = self;
 
-  if (_state.identifier == TipIdentifier::kLensShop &&
-      TipsLensShopExperimentTypeEnabled() ==
-          TipsLensShopExperimentType::kWithProductImage) {
+  if (_state.identifier == TipIdentifier::kLensShop) {
     [self fetchImage];
   }
 }

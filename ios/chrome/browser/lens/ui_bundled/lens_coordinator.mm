@@ -209,9 +209,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
         [weakSelf openWebLoadParams:params];
       }));
 
-  if (IsSegmentationTipsManagerEnabled()) {
-    [self recordLensUsage];
-  }
+  [self recordLensUsage];
 }
 
 - (void)lensOverlayDidDismissWithCause:
@@ -341,9 +339,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   GetApplicationContext()->GetLocalState()->SetTime(prefs::kLensLastOpened,
                                                     base::Time::Now());
 
-  if (IsSegmentationTipsManagerEnabled()) {
-    [self recordLensUsage];
-  }
+  [self recordLensUsage];
 
   // Notify Welcome Back to remove Lens from the eligible features.
   if (IsWelcomeBackEnabled()) {
@@ -492,8 +488,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 // Manager to provide relevant tips or guidance to the user about the Lens
 // feature.
 - (void)recordLensUsage {
-  CHECK(IsSegmentationTipsManagerEnabled());
-
   if (!self.browser) {
     return;
   }
@@ -501,8 +495,10 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   TipsManagerIOS* tipsManager =
       TipsManagerIOSFactory::GetForProfile(self.profile);
 
-  tipsManager->NotifySignal(
-      segmentation_platform::tips_manager::signals::kLensUsed);
+  if (tipsManager) {
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kLensUsed);
+  }
 }
 
 - (void)openWebLoadParams:(const web::NavigationManager::WebLoadParams&)params {

@@ -217,8 +217,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
         std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
                     "doodle_test/ddljson_android0.json"));
   }
-  config.features_disabled.push_back(
-      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kNTPMIAEntrypoint);

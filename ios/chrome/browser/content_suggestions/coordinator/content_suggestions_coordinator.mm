@@ -457,7 +457,7 @@ using segmentation_platform::TipIdentifier;
   BOOL areTipsCardsEnabled =
       prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
 
-  if (IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
+  if (areTipsCardsEnabled) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:TipIdentifier::kUnknown
         profilePrefService:prefs
@@ -689,7 +689,6 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
-  CHECK(IsTipsMagicStackEnabled());
   CHECK(_tipsMediator);
 
   __weak __typeof(self) weakSelf = self;
@@ -747,7 +746,6 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
-  CHECK(IsTipsMagicStackEnabled());
   CHECK(_tipsMediator);
 
   // Log the Tips (Magic Stack) Module that the user tapped on.
@@ -763,8 +761,6 @@ using segmentation_platform::TipIdentifier;
                                       : LensEntrypoint::NewTabPage;
 
       if (tip == TipIdentifier::kLensShop &&
-          TipsLensShopExperimentTypeEnabled() ==
-              TipsLensShopExperimentType::kWithProductImage &&
           _tipsMediator.state.productImageData.length > 0) {
         UIImage* productImage =
             [UIImage imageWithData:_tipsMediator.state.productImageData];
@@ -801,16 +797,9 @@ using segmentation_platform::TipIdentifier;
           showOmniboxPositionChoice];
       break;
     case TipIdentifier::kEnhancedSafeBrowsing: {
-      if (TipsSafeBrowsingExperimentTypeEnabled() ==
-          TipsSafeBrowsingExperimentType::kShowSafeBrowsingSettingsPage) {
-        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            SettingsCommands) showSafeBrowsingSettings];
-      } else {
         [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                             BrowserCoordinatorCommands)
             showEnhancedSafeBrowsingPromo];
-      }
-
       break;
     }
     case TipIdentifier::kSavePasswords:

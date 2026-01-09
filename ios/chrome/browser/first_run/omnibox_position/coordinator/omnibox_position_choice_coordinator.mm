@@ -55,9 +55,7 @@
 
   _startTime = base::ElapsedTimer();
 
-  if (IsSegmentationTipsManagerEnabled()) {
-    [self recordScreenDisplayed];
-  }
+  [self recordScreenDisplayed];
 }
 
 - (void)stop {
@@ -89,8 +87,6 @@
 // Records that the omnibox position choice screen was displayed.
 // This notifies the Tips Manager to potentially trigger related tips.
 - (void)recordScreenDisplayed {
-  CHECK(IsSegmentationTipsManagerEnabled());
-
   if (!self.browser) {
     return;
   }
@@ -98,8 +94,10 @@
   TipsManagerIOS* tipsManager =
       TipsManagerIOSFactory::GetForProfile(self.profile);
 
-  tipsManager->NotifySignal(segmentation_platform::tips_manager::signals::
-                                kAddressBarPositionChoiceScreenDisplayed);
+  if (tipsManager) {
+    tipsManager->NotifySignal(segmentation_platform::tips_manager::signals::
+                                  kAddressBarPositionChoiceScreenDisplayed);
+  }
 }
 
 /// Dismisses the omnibox position choice view controller.

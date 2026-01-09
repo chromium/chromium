@@ -24,11 +24,7 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - MagicStackModule
 
 - (ContentSuggestionsModuleType)type {
-  CHECK(IsTipsMagicStackEnabled());
-
   if (_identifier == TipIdentifier::kLensShop &&
-      TipsLensShopExperimentTypeEnabled() ==
-          TipsLensShopExperimentType::kWithProductImage &&
       _productImageData.length > 0) {
     return ContentSuggestionsModuleType::kTipsWithProductImage;
   }

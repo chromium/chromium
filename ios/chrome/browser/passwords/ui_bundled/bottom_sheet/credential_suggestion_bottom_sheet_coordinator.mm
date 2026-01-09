@@ -240,10 +240,10 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Records the usage of password autofill. This notifies the Tips Manager,
   // which may trigger tips or guidance related to password management features.
-  if (IsSegmentationTipsManagerEnabled()) {
-    TipsManagerIOS* tipsManager =
-        TipsManagerIOSFactory::GetForProfile(self.profile);
+  TipsManagerIOS* tipsManager =
+      TipsManagerIOSFactory::GetForProfile(self.profile);
 
+  if (tipsManager) {
     tipsManager->NotifySignal(
         segmentation_platform::tips_manager::signals::kUsedPasswordAutofill);
   }

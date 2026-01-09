@@ -54,15 +54,15 @@ bool ShouldPresentPriceNotifications(web::WebState* web_state) {
 // This allows the Tips Manager to provide relevant tips or guidance
 // to the user about the price tracking feature.
 void RecordPriceTrackableSiteVisit(web::WebState* web_state) {
-  CHECK(IsSegmentationTipsManagerEnabled());
-
   ProfileIOS* const profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
 
   TipsManagerIOS* tipsManager = TipsManagerIOSFactory::GetForProfile(profile);
 
-  tipsManager->NotifySignal(
-      segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite);
+  if (tipsManager) {
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite);
+  }
 }
 
 }  // namespace
@@ -85,9 +85,7 @@ void PriceNotificationsTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (IsSegmentationTipsManagerEnabled()) {
-    RecordPriceTrackableSiteVisit(web_state);
-  }
+  RecordPriceTrackableSiteVisit(web_state);
 
   // Local strong reference for binding to the callback below.
   id<HelpCommands> help_handler = help_handler_;

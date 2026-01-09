@@ -2423,9 +2423,9 @@ const char kChromeAppStoreUrl[] =
 
   // Records the usage of Google Translate. This notifies the Tips Manager,
   // which may trigger tips or guidance related to translation features.
-  if (IsSegmentationTipsManagerEnabled()) {
-    TipsManagerIOS* tipsManager = TipsManagerIOSFactory::GetForProfile(profile);
+  TipsManagerIOS* tipsManager = TipsManagerIOSFactory::GetForProfile(profile);
 
+  if (tipsManager) {
     tipsManager->NotifySignal(
         segmentation_platform::tips_manager::signals::kUsedGoogleTranslation);
   }

@@ -15,10 +15,6 @@ namespace {
 
 // Helper function to create an `TipsManagerIOS` instance.
 std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
-  if (!IsSegmentationTipsManagerEnabled()) {
-    return nullptr;
-  }
-
   return std::make_unique<TipsManagerIOS>(
       profile->GetPrefs(), GetApplicationContext()->GetLocalState());
 }
@@ -27,10 +23,6 @@ std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
 
 // static
 TipsManagerIOS* TipsManagerIOSFactory::GetForProfile(ProfileIOS* profile) {
-  if (!IsSegmentationTipsManagerEnabled()) {
-    return nullptr;
-  }
-
   return GetInstance()->GetServiceForProfileAs<TipsManagerIOS>(profile,
                                                                /*create=*/true);
 }
