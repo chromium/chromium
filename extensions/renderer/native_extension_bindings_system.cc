@@ -447,6 +447,33 @@ bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
   return true;
 }
 
+// A custom accessor for the `browser.devtools` property.
+// The `devtools` API is special because it is injected by the DevTools frontend
+// onto the `chrome` object, rather than being part of the standard extension
+// API features. This accessor allows `browser.devtools` to dynamically reflect
+// the state of `chrome.devtools`.
+void BrowserDevtoolsAccessor(v8::Local<v8::Name> name,
+                             const v8::PropertyCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = info.HolderV2()->GetCreationContextChecked();
+  v8::Context::Scope context_scope(context);
+  v8::Local<v8::Object> chrome =
+      GetOrCreateGlobalObjectProperty(context, "chrome");
+  if (chrome.IsEmpty()) {
+    return;
+  }
+  // This accessor returns the value of `chrome.devtools`. Note that this will
+  // return whatever value is present on the `chrome` object, even if it is a
+  // user-assigned value (e.g. `chrome.devtools = 3`). This is intentional to
+  // ensure `browser.devtools` perfectly mirrors `chrome.devtools`. It is
+  // necessary since chrome.devtools is set at runtime by the devtools frontend.
+  v8::Local<v8::Value> val;
+  if (chrome->Get(context, name).ToLocal(&val)) {
+    info.GetReturnValue().Set(val);
+  }
+}
+
 }  // namespace
 
 NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
@@ -729,6 +756,26 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     if (!set_restricted_accessor(accessor_name)) {
       LOG(ERROR) << "Failed to create API on Chrome object.";
       return;
+    }
+  }
+
+  // If we're exposing the `browser` namespace, we need to ensure
+  // `browser.devtools` can be accessed too. The `devtools` API is special
+  // because it is not in `feature_cache_`, but is instead injected onto the
+  // `chrome` object by the DevTools frontend (see ExtensionAPI.ts in
+  // devtools-frontend).
+  if (set_accessor_on_browser) {
+    if (!browser) {
+      browser = GetOrCreateGlobalObjectProperty(v8_context, "browser");
+    }
+    if (browser && !browser->IsEmpty()) {
+      v8::Local<v8::String> devtools_name =
+          gin::StringToSymbol(isolate, "devtools");
+      v8::Maybe<bool> browser_success = (*browser)->SetLazyDataProperty(
+          v8_context, devtools_name, &BrowserDevtoolsAccessor, devtools_name);
+      if (!browser_success.IsJust() || !browser_success.FromJust()) {
+        LOG(ERROR) << "Failed to create API on Chrome object.";
+      }
     }
   }
 }
