@@ -6985,6 +6985,7 @@ test("unit_tests") {
     "//chrome/browser/file_system_access:unit_tests",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/gcm",
+    "//chrome/browser/gcm:unit_tests",
     "//chrome/browser/google:unit_tests",
     "//chrome/browser/media:unittests",
     "//chrome/browser/media/prefs",
@@ -8553,11 +8554,6 @@ test("unit_tests") {
       # Bookmark export/import are handled via the BookmarkColumns
       # ContentProvider.
       "../browser/bookmarks/bookmark_html_writer_unittest.cc",
-    ]
-
-    sources += [
-      # GCMDriverAndroid is not yet implemented.
-      "../browser/gcm/gcm_profile_service_unittest.cc",
     ]
 
     sources += [
