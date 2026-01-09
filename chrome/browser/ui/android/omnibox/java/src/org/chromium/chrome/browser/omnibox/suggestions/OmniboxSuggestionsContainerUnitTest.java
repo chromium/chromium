@@ -321,4 +321,20 @@ public class OmniboxSuggestionsContainerUnitTest {
     public void testPerformClick_returnsFalse() {
         assertFalse(mContainer.performClick());
     }
+
+    @Test
+    public void testOnToEdgeChange_setsTopPadding() {
+        int topPadding = 50;
+        mContainer.onToEdgeChange(topPadding);
+        assertEquals(topPadding, mContainer.getPaddingTop());
+    }
+
+    @Test
+    public void testOnToEdgeChange_updatesPaddingFromNonZeroToZero() {
+        mContainer.onToEdgeChange(50);
+        assertEquals(50, mContainer.getPaddingTop());
+
+        mContainer.onToEdgeChange(0);
+        assertEquals(0, mContainer.getPaddingTop());
+    }
 }

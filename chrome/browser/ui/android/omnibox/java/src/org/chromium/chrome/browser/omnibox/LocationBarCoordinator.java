@@ -1100,6 +1100,19 @@ public class LocationBarCoordinator
     }
 
     /**
+     * Called when the edge-to-edge state changes to update the autocomplete suggestions container.
+     *
+     * @param systemTopInset The top inset from the system in pixels.
+     * @param consumeTopInset Whether the top inset should be consumed.
+     */
+    public void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+        if (mAutocompleteCoordinator != null) {
+            mAutocompleteCoordinator.onToEdgeChange(
+                    systemTopInset, consumeTopInset, isToolbarBottomAnchored());
+        }
+    }
+
+    /**
      * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
      * the bookmark button on the omnibox.
      */

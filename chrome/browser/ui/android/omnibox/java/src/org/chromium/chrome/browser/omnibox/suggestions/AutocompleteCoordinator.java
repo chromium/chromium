@@ -509,4 +509,23 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             OmniboxSuggestionsDropdownScrollListener listener) {
         mScrollListenerList.removeObserver(listener);
     }
+
+    /**
+     * Called when the edge-to-edge state changes to update the suggestions container padding.
+     *
+     * @param systemTopInset The top inset from the system in pixels.
+     * @param consumeTopInset Whether the top inset should be consumed.
+     * @param isToolbarBottomAnchored Whether the toolbar is anchored at the bottom of the screen.
+     */
+    public void onToEdgeChange(
+            int systemTopInset, boolean consumeTopInset, boolean isToolbarBottomAnchored) {
+        if (mContainer == null) {
+            return;
+        }
+        // When the toolbar is at the bottom, the omnibox suggestions container displays above the
+        // toolbar, starting from the top of the screen. In edge-to-edge mode, we need to add top
+        // padding to prevent content from entering the status bar area.
+        int topPadding = (consumeTopInset && isToolbarBottomAnchored) ? systemTopInset : 0;
+        mContainer.onToEdgeChange(topPadding);
+    }
 }
