@@ -347,6 +347,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param);
 
+  // Helper to notify event listeners about an event only if they exist.
+  void NotifyIfEventCallbackListeners(
+      base::FunctionRef<SessionEvent()> event_creator);
+
   // Whether we are waiting on the initial load of saved sessions to
   // complete.
   bool pending_initialization_ = false;

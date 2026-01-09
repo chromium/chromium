@@ -740,14 +740,14 @@ void SessionServiceImpl::UnblockDeferredRequests(
   auto it = deferred_requests_.find(session_key);
   bool has_deferred_request = it != deferred_requests_.end();
 
-  if ((has_proactive_request || has_deferred_request) &&
-      !event_callbacks_.empty()) {
-    SessionEvent event = SessionEvent::MakeRefreshEvent(
-        session_key.site, session_key.id.value(),
-        /*succeeded=*/result == RefreshResult::kRefreshed, result, fetch_error,
-        std::move(new_session_display),
-        /*was_fully_proactive_refresh=*/!has_deferred_request);
-    event_callbacks_.Notify(event);
+  if (has_proactive_request || has_deferred_request) {
+    NotifyIfEventCallbackListeners([&] {
+      return SessionEvent::MakeRefreshEvent(
+          session_key.site, session_key.id.value(),
+          /*succeeded=*/result == RefreshResult::kRefreshed, result,
+          fetch_error, std::move(new_session_display),
+          /*was_fully_proactive_refresh=*/!has_deferred_request);
+    });
   }
 
   if (!has_deferred_request) {
@@ -840,11 +840,11 @@ void SessionServiceImpl::SetChallengeForBoundSession(
     const SessionChallengeParam& param) {
   ChallengeResult result = SetChallengeForBoundSessionInternal(
       std::move(on_access_callback), request, first_party_set_metadata, param);
-  if (!event_callbacks_.empty()) {
-    event_callbacks_.Notify(SessionEvent::MakeChallengeEvent(
+  NotifyIfEventCallbackListeners([&] {
+    return SessionEvent::MakeChallengeEvent(
         SchemefulSite(request.url()), param.session_id(),
-        result == ChallengeResult::kSuccess, result, param.challenge()));
-  }
+        result == ChallengeResult::kSuccess, result, param.challenge());
+  });
 }
 
 ChallengeResult SessionServiceImpl::SetChallengeForBoundSessionInternal(
@@ -871,6 +871,13 @@ ChallengeResult SessionServiceImpl::SetChallengeForBoundSessionInternal(
                       session_key, *session);
   session->set_cached_challenge(param.challenge());
   return ChallengeResult::kSuccess;
+}
+
+void SessionServiceImpl::NotifyIfEventCallbackListeners(
+    base::FunctionRef<SessionEvent()> event_creator) {
+  if (!event_callbacks_.empty()) {
+    event_callbacks_.Notify(event_creator());
+  }
 }
 
 void SessionServiceImpl::GetAllSessionsAsync(
@@ -991,7 +998,7 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
       session_or_error = CreateSessionFromUnexportableKey(
           std::move(params), std::move(key_or_error));
 
-  if (!event_callbacks_.empty()) {
+  NotifyIfEventCallbackListeners([&] {
     bool succeeded = session_or_error.has_value();
     SessionError::ErrorType result =
         succeeded ? SessionError::kSuccess : session_or_error.error();
@@ -1003,11 +1010,10 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
       session_id = session_or_error.value()->id().value();
       display_info = session_or_error.value()->ToDisplay();
     }
-    SessionEvent event =
-        SessionEvent::MakeCreationEvent(site, std::move(session_id), succeeded,
-                                        result, std::move(display_info));
-    event_callbacks_.Notify(event);
-  }
+    return SessionEvent::MakeCreationEvent(site, std::move(session_id),
+                                           succeeded, result,
+                                           std::move(display_info));
+  });
 
   if (!session_or_error.has_value()) {
     std::move(callback).Run(session_or_error.error());
@@ -1084,11 +1090,11 @@ void SessionServiceImpl::DeleteSessionAndNotifyInternal(
   NotifySessionAccess(per_request_callback,
                       SessionAccess::AccessType::kTermination, it->first,
                       *it->second);
-  if (!event_callbacks_.empty()) {
-    event_callbacks_.Notify(
-        SessionEvent::MakeTerminationEvent(it->first.site, it->first.id.value(),
-                                           /*succeeded=*/true, reason));
-  }
+  NotifyIfEventCallbackListeners([&] {
+    return SessionEvent::MakeTerminationEvent(it->first.site,
+                                              it->first.id.value(),
+                                              /*succeeded=*/true, reason);
+  });
 
   unpartitioned_sessions_.erase(it);
 }
@@ -1158,12 +1164,11 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
                 CHECK(session);
                 const SchemefulSite site(session->origin());
                 SessionError::ErrorType success_result = SessionError::kSuccess;
-                if (!event_callbacks_.empty()) {
-                  SessionEvent event = SessionEvent::MakeCreationEvent(
+                NotifyIfEventCallbackListeners([&] {
+                  return SessionEvent::MakeCreationEvent(
                       site, session->id().value(), /*succeeded=*/true,
                       success_result, session->ToDisplay());
-                  event_callbacks_.Notify(event);
-                }
+                });
                 NotifySessionAccess(on_access_callback,
                                     SessionAccess::AccessType::kCreation,
                                     SessionKey{site, session->id()}, *session);
@@ -1180,12 +1185,11 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
                 // clean up.
                 // TODO(crbug.com/471021582): Some failed creation events could
                 // have a session_id. Can we thread that through?
-                if (!event_callbacks_.empty()) {
-                  SessionEvent event = SessionEvent::MakeCreationEvent(
+                NotifyIfEventCallbackListeners([&] {
+                  return SessionEvent::MakeCreationEvent(
                       site, /*session_id=*/std::nullopt, /*succeeded=*/false,
                       error.type, /*new_session_display=*/std::nullopt);
-                  event_callbacks_.Notify(event);
-                }
+                });
                 return error.type;
               }));
   return result;
