@@ -33,6 +33,7 @@ export interface ContextualTasksAppElement {
     threadFrame: chrome.webviewTag.WebView,
     composebox: ContextualTasksComposeboxElement,
     composeboxHeaderWrapper: HTMLElement,
+    composeboxHeader: HTMLElement,
   };
 }
 

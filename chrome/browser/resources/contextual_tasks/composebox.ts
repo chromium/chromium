@@ -21,6 +21,7 @@ import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip
 export interface ContextualTasksComposeboxElement {
   $: {
     composebox: ComposeboxElement,
+    composeboxContainer: HTMLElement,
     onboardingTooltip: ContextualTasksOnboardingTooltipElement,
   };
 }

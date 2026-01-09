@@ -28,6 +28,12 @@ const ADD_FILE_CONTEXT_FN = 'addFileContext';
 const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
 const FAKE_TOKEN_STRING_2 = '00000000000000001234567890ABCDFF';
 
+type MockContextualTasksAppElement =
+    Omit<ContextualTasksAppElement,|'isZeroState_'|'isShownInTab_'>&{
+      isZeroState_: boolean,
+      isShownInTab_: boolean,
+    };
+
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
     key: 'Enter',
@@ -159,7 +165,7 @@ function simulateUserInput(inputElement: HTMLInputElement, value: string) {
 
 
 suite('ContextualTasksComposeboxTest', () => {
-  let contextualTasksApp: ContextualTasksAppElement;
+  let contextualTasksApp: MockContextualTasksAppElement;
   let composebox: any;
   let testProxy: TestContextualTasksBrowserProxy;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
@@ -235,8 +241,8 @@ suite('ContextualTasksComposeboxTest', () => {
         mockComposeboxPageHandler as any, new ComposeboxPageCallbackRouter(),
         mockSearchboxPageHandler as any, searchboxCallbackRouter));
 
-    contextualTasksApp = document.createElement('contextual-tasks-app');
-
+    contextualTasksApp = document.createElement('contextual-tasks-app') as
+        unknown as MockContextualTasksAppElement;
     document.body.appendChild(contextualTasksApp);
     await microtasksFinished();
     composebox = contextualTasksApp.$.composebox.$.composebox;
@@ -285,7 +291,6 @@ suite('ContextualTasksComposeboxTest', () => {
           !!composebox.$.context.shadowRoot.querySelector('#carousel'),
           'Files should be empty and carousel should not render.');
     }
-
 
     mockSearchboxPageHandler.resetResolver(ADD_FILE_CONTEXT_FN);
     mockSearchboxPageHandler.setResultFor(
@@ -1061,5 +1066,107 @@ suite('ContextualTasksComposeboxTest', () => {
     }));
     await microtasksFinished();
     assertEquals(composebox.animationState, GlowAnimationState.NONE);
+  });
+
+  test(
+      'side panel handles AIM queries to show side panel zero state correctly',
+      async () => {
+        contextualTasksApp.isShownInTab_ = false;
+        contextualTasksApp.isZeroState_ = false;
+
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(
+            contextualTasksApp.$.composeboxHeader, 'font-size', '28px',
+            'When in side panel non-zero-state, composebox header font-size');
+        assertStyle(
+            contextualTasksApp.$.composebox.$.composebox, 'min-width', '200px',
+            'When in side panel non-zero-state, composebox min-width');
+
+        contextualTasksApp.isZeroState_ = true;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(
+            contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
+            'relative');
+        assertStyle(
+            contextualTasksApp.$.composebox.$.composeboxContainer,
+            'margin-bottom', '0px',
+            'When in side panel zero-state, composebox wrapper margin');
+        assertStyle(
+            contextualTasksApp.$.composebox, 'position', 'relative',
+            'When in side panel zero-state, composebox position');
+
+        contextualTasksApp.isZeroState_ = false;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(
+            contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
+            'relative', 'When returning to side panel non-zero-state,\
+                composebox wrapper position');
+        assertStyle(
+            contextualTasksApp.$.composebox.$.composeboxContainer,
+            'margin-bottom', '30px',
+            'When returning to side panel non-zero-state,\
+                composebox wrapper margin');
+        assertStyle(
+            contextualTasksApp.$.composebox, 'position', 'static',
+            'When returning to side panel non-zero-state,\
+                composebox position');
+      });
+
+  test('full tab handles AIM queries to show 0 state correctly', async () => {
+    contextualTasksApp.isShownInTab_ = true;
+    contextualTasksApp.isZeroState_ = false;
+    await contextualTasksApp.updateComplete;
+    await contextualTasksApp.$.composebox.updateComplete;
+    await microtasksFinished();
+
+    assertStyle(
+        contextualTasksApp.$.composebox.$.composebox, 'min-width', '0px',
+        'When in full tab mode non-zero-state, composebox min-width');
+    assertStyle(
+        contextualTasksApp.$.composeboxHeader, 'font-size', '32px',
+        'When in full tab mode non-zero-state, composebox header font-size');
+
+    contextualTasksApp.isZeroState_ = true;
+    await contextualTasksApp.updateComplete;
+    await contextualTasksApp.$.composebox.updateComplete;
+    await microtasksFinished();
+
+    assertStyle(
+        contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
+        'relative',
+        'When in full tab mode zero-state, composebox wrapper position');
+    assertStyle(
+        contextualTasksApp.$.composebox.$.composeboxContainer, 'margin-bottom',
+        '0px', 'When in full tab mode zero-state, composebox wrapper margin');
+    assertStyle(
+        contextualTasksApp.$.composebox, 'position', 'relative',
+        'When in full tab mode zero-state, composebox wrapper position');
+
+    contextualTasksApp.isZeroState_ = false;
+    await contextualTasksApp.updateComplete;
+    await contextualTasksApp.$.composebox.updateComplete;
+    await microtasksFinished();
+
+    assertStyle(
+        contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
+        'relative', 'When returning to full tab mode non-zero-state,\
+            composebox wrapper position');
+    assertStyle(
+        contextualTasksApp.$.composebox.$.composeboxContainer, 'margin-bottom',
+        '30px', 'When returning to full tab non-zero-state,\
+            composebox wrapper margin');
+    assertStyle(
+        contextualTasksApp.$.composebox, 'position', 'static',
+        'When returning to full tab mode non-zero-state,\
+            composebox position');
   });
 });

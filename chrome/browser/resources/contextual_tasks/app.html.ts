@@ -26,7 +26,7 @@ export function getHtml(this: ContextualTasksAppElement) {
   <div class="flex-center">
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.isInBasicMode_}">
-      <h1 class="thread-header">
+      <h1 class="thread-header" id="composeboxHeader">
           ${this.friendlyZeroStateTitle}
           ${this.friendlyZeroStateSubtitle.length > 0 ?
               html`<br>

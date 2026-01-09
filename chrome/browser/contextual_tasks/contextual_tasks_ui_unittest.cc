@@ -574,7 +574,7 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   observer.reset();
 }
 
-TEST_F(ContextualTasksUiTest, DidStartNavigation_ZeroState) {
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
   struct TestCase {
     GURL url;
     bool expected_is_zero_state;
@@ -592,6 +592,11 @@ TEST_F(ContextualTasksUiTest, DidStartNavigation_ZeroState) {
       {GURL("https://www.google.com/search?udm=50&q=&mstk=&cinpts=test"),
        false},
       {GURL("https://google.com/search"), false},
+      {GURL("https://www.google.com/search?q=test&udm=50"), false},
+      {GURL("https://www.google.com/search?udm=50&other=param"),
+       true},  // Other noise/params
+      {GURL("https://www.google.com/search?udm=50&q=%20"),
+       false},  // Whitespace
   };
 
   for (const auto& test_case : test_cases) {
@@ -623,6 +628,98 @@ TEST_F(ContextualTasksUiTest, DidStartNavigation_ZeroState) {
 
     observer->DidFinishNavigation(nav_handle.get());
   }
+}
+
+// Checks that does not create new task when fully refreshing page.
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_FiresOnReload) {
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL zero_state_url("https://www.google.com/search?udm=50");
+
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+
+  EXPECT_CALL(delegate, OnZeroStateChange(true)).Times(2);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask())
+      .Times(1)
+      .WillRepeatedly(Return(task));
+
+  // First load.
+  auto handle1 = CreateMockNavigationHandle(zero_state_url);
+  handle1->set_has_committed(true);
+  observer->DidFinishNavigation(handle1.get());
+
+  // Full refresh, with same URL.
+  auto handle2 = CreateMockNavigationHandle(zero_state_url);
+  handle2->set_has_committed(true);
+  handle2->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidFinishNavigation(handle2.get());
+}
+
+/* Ensures didFinishNavigation ignores network errors and returns early
+ * when !hasCommitted.
+ */
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_IgnoredCases) {
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  EXPECT_CALL(delegate, OnZeroStateChange(_)).Times(0);
+
+  auto failed_handle = std::make_unique<content::MockNavigationHandle>();
+  failed_handle->set_url(GURL("https://www.google.com/search?udm=50"));
+
+  failed_handle->set_is_in_primary_main_frame(true);
+
+  // Returns when !hasCommitted.
+  failed_handle->set_has_committed(false);
+  observer->DidFinishNavigation(failed_handle.get());
+}
+
+/* Goes from zero state to regular state, then refresh, and
+ * then back to zero, then regular.
+ */
+TEST_F(ContextualTasksUiTest, Transition_QueryToZeroToQuery) {
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL zero_state_url("https://www.google.com/search?udm=50");
+  GURL query_url("https://www.google.com/search?udm=50&q=cats");
+
+  // Mock functions
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTask()).WillByDefault(Return(task));
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_))
+      .WillByDefault(Return(task));
+
+  // Exit zero state; enter normal state.
+  EXPECT_CALL(delegate, OnZeroStateChange(false));
+  auto handle_query = CreateMockNavigationHandle(query_url);
+  handle_query->set_has_committed(true);
+  observer->DidFinishNavigation(handle_query.get());
+
+  // Simulate full refresh. Enter zero state again.
+  EXPECT_CALL(delegate, OnZeroStateChange(true));
+  auto handle_zero = CreateMockNavigationHandle(zero_state_url);
+  handle_zero->set_has_committed(true);
+  observer->DidFinishNavigation(handle_zero.get());
+
+  // Exit zero state; enter normal state again.
+  EXPECT_CALL(delegate, OnZeroStateChange(false));
+  auto handle_query2 = CreateMockNavigationHandle(query_url);
+  handle_query2->set_has_committed(true);
+  observer->DidFinishNavigation(handle_query2.get());
 }
 
 }  // namespace contextual_tasks
