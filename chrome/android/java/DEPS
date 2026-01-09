@@ -80,13 +80,3 @@ include_rules = [
   "+device/gamepad/android/java",
   "+ui/edge_to_edge",
 ]
-
-specific_include_rules = {
-  # Special-case where monochrome composes chrome+webview
-  "MonochromeApplicationImpl\.java": [
-    "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-  ],
-  "SplitMonochromeApplication\.java": [
-    "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-  ],
-}

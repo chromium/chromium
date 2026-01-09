@@ -1983,35 +1983,6 @@ if (_is_default_toolchain) {
     bundle_name = "ChromePublic"
   }
 
-  android_library("monochrome_java") {
-    deps = [
-      ":base_module_java",
-      ":base_monochrome_module_java",
-      "//android_webview:android_webview_java",
-      "//base:base_java",
-      "//base/version_info/android:version_constants_java",
-      "//chrome/android:chrome_java",
-      "//content/public/android:content_java",
-    ]
-    sources = [
-      "java/src/org/chromium/chrome/browser/MonochromeApplicationImpl.java",
-    ]
-  }
-
-  # Monochrome equivalent of :base_module_java.
-  android_library("base_monochrome_module_java") {
-    sources = [ "java/src/org/chromium/chrome/browser/base/SplitMonochromeApplication.java" ]
-    deps = [
-      ":base_module_java",
-      "//android_webview:android_webview_no_weblayer_java",
-      "//base:base_java",
-      "//base/version_info/android:version_constants_java",
-      "//build/android:build_java",
-      "//chrome/browser/flags:java",
-      "//content/public/android:content_java",
-    ]
-  }
-
   generate_jni("base_module_jni") {
     sources = [
       "java/src/org/chromium/chrome/browser/init/InitializeFeatureList.java",
