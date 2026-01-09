@@ -162,6 +162,8 @@ void ActorUiStateManager::OnActorTaskStateChange(
       if (base::FeatureList::IsEnabled(
               features::kGlicActorUiGlobalTaskIndicator)) {
         LOG(FATAL) << "Stopped states should be processed via StopTask event.";
+      } else {
+        NotifyActorTaskStopped(task_id);
       }
       break;
   }
