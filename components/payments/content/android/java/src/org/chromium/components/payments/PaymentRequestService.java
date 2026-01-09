@@ -71,7 +71,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PaymentRequestService
-        implements PaymentAppServiceDelegate,
+        implements PaymentAppFactoryDelegate,
                 PaymentAppFactoryParams,
                 PaymentRequestUpdateEventListener,
                 PaymentApp.AbortCallback,
@@ -87,6 +87,7 @@ public class PaymentRequestService
     private final Runnable mOnClosedListener;
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
+    private final List<PaymentApp> mPendingApps = new ArrayList<>();
     private final @Nullable Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
     @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private WebContents mWebContents;
@@ -623,7 +624,7 @@ public class PaymentRequestService
             service.addUniqueFactory(mDelegate.createAndroidPaymentAppFactory(), androidFactoryId);
         }
 
-        service.createPaymentApps(/* delegate= */ this);
+        service.create(/* delegate= */ this);
     }
 
     /**
@@ -878,33 +879,29 @@ public class PaymentRequestService
         mJourneyLogger.setSelectedMethod(category);
     }
 
-    // Implements PaymentAppServiceDelegate:
+    // Implements PaymentAppFactoryDelegate:
     @Override
     public void setCanMakePaymentEvenWithoutApps() {
         mCanMakePaymentEvenWithoutApps = true;
     }
 
-    // Implements PaymentAppServiceDelegate:
+    // Implements PaymentAppFactoryDelegate:
     @Override
-    public void onDoneCreatingPaymentApps(List<PaymentApp> createdApps) {
+    public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
         if (mBrowserPaymentRequest == null) return;
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec is destroyed only after close()";
 
         mIsFinishedQueryingPaymentApps = true;
 
-        for (PaymentApp app : createdApps) {
-            mHasEnrolledInstrument |= app.hasEnrolledInstrument();
-        }
-
         mHasEnrolledInstrument |= mCanMakePaymentEvenWithoutApps;
-
         // The kCanMakePaymentEnabled pref does not apply to SPC, where hasEnrolledInstrument() is
         // only used for feature detection and does not communicate with any applications.
         mHasEnrolledInstrument &=
                 (mDelegate.prefsCanMakePayment() || mSpec.isSecurePaymentConfirmationRequested());
 
-        mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(createdApps);
+        mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
+        mPendingApps.clear();
         // Record the number suggested payment methods and whether at least one of them was
         // complete.
         mJourneyLogger.setNumberOfSuggestionsShown(
@@ -1065,10 +1062,17 @@ public class PaymentRequestService
                 () -> sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = false);
     }
 
-    // Implements PaymentAppServiceDelegate:
+    // Implements PaymentAppFactoryDelegate:
     @Override
     public PaymentAppFactoryParams getParams() {
         return this;
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public void onPaymentAppCreated(PaymentApp paymentApp) {
+        mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
+        mPendingApps.add(paymentApp);
     }
 
     /** Responds to the CanMakePayment query from the merchant page. */
@@ -1191,7 +1195,7 @@ public class PaymentRequestService
                 || sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     }
 
-    // Implements PaymentAppServiceDelegate:
+    // Implements PaymentAppFactoryDelegate:
     @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
         mCanMakePayment = canMakePayment || mCanMakePaymentEvenWithoutApps;
@@ -1201,7 +1205,7 @@ public class PaymentRequestService
         respondCanMakePaymentQuery();
     }
 
-    // Implements PaymentAppServiceDelegate:
+    // Implements PaymentAppFactoryDelegate:
     @Override
     public void onPaymentAppCreationError(
             String errorMessage, @AppCreationFailureReason int errorReason) {
@@ -1211,7 +1215,7 @@ public class PaymentRequestService
         }
     }
 
-    // Implements PaymentAppServiceDelegate:
+    // Implements PaymentAppFactoryDelegate:
     @Override
     public void setOptOutOffered() {
         mJourneyLogger.setOptOutOffered();

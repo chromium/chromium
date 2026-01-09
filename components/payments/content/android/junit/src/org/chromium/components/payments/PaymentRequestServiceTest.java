@@ -86,7 +86,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private boolean mWaitForUpdatedDetailsDefaultValue;
     private boolean mIsUserGestureShow;
     private PaymentAppService mPaymentAppService;
-    private PaymentAppServiceDelegate mPaymentAppServiceDelegate;
+    private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
     private JourneyLogger mJourneyLogger;
     private PaymentRequestWebContentsData mPaymentRequestWebContentsData;
 
@@ -109,11 +109,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         mPaymentAppService = Mockito.mock(PaymentAppService.class);
         Mockito.doAnswer(
                         (args) -> {
-                            mPaymentAppServiceDelegate = args.getArgument(0);
+                            mPaymentAppFactoryDelegate = args.getArgument(0);
                             return null;
                         })
                 .when(mPaymentAppService)
-                .createPaymentApps(Mockito.any());
+                .create(Mockito.any());
 
         mBrowserPaymentRequest = Mockito.mock(BrowserPaymentRequest.class);
         Mockito.doAnswer(
@@ -296,8 +296,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     }
 
     private void queryPaymentApps() {
-        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(true);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of(createDefaultPaymentApp()));
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(true);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
     }
 
     private PaymentDetails getDefaultPaymentDetailsUpdate() {
@@ -628,12 +629,12 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testDefaultParamsMakeCreationSuccess() {
-        Assert.assertNull(mPaymentAppServiceDelegate);
+        Assert.assertNull(mPaymentAppFactoryDelegate);
         PaymentRequestService service = defaultBuilder().build();
         Assert.assertNotNull(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1)).onSpecValidated(Mockito.notNull());
         assertNoError();
-        Assert.assertNotNull(mPaymentAppServiceDelegate);
+        Assert.assertNotNull(mPaymentAppFactoryDelegate);
     }
 
     @Test
@@ -641,8 +642,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testCanNotMakePaymentFailsPayment() {
         PaymentRequestService service = defaultBuilder().build();
         show(service);
-        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(false);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of(createDefaultPaymentApp()));
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(false);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
         assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
         assertClosed(true);
     }
@@ -652,7 +654,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testNoPaymentAppFailsPayment() {
         PaymentRequestService service = defaultBuilder().build();
         show(service);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
         assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
         assertClosed(true);
     }
@@ -935,8 +937,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testCanMakePayment_WithTrueWhenPrivateFeature() {
         PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(false).build();
         service.canMakePayment();
-        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(true);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of(createDefaultPaymentApp()));
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(true);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
         Assert.assertEquals(
                 "PaymentRequest.canMakePayment() should return true when the feature is enabled.",
                 CanMakePaymentQueryResult.CAN_MAKE_PAYMENT,
@@ -949,8 +952,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testCanMakePayment_WithTrueWhenPrivateFeatureDisabled() {
         PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(false).build();
         service.canMakePayment();
-        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(true);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of(createDefaultPaymentApp()));
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(true);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
         Assert.assertEquals(
                 "PaymentRequest.canMakePayment() should return false when the feature is disabled.",
                 CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT,
