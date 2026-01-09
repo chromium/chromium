@@ -66,7 +66,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarReverted(
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarRead(
     InfobarType infobar_type) {
-  if (!base::Contains(infobar_badge_states_, infobar_type)) {
+  if (!infobar_badge_states_.contains(infobar_type)) {
     return;
   }
   infobar_badge_states_[infobar_type] |= BadgeStateRead;
@@ -74,7 +74,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarRead(
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerPresented(
     InfobarType infobar_type) {
-  if (!base::Contains(infobar_badge_states_, infobar_type)) {
+  if (!infobar_badge_states_.contains(infobar_type)) {
     return;
   }
   infobar_badge_states_[infobar_type] |= BadgeStatePresented;
@@ -83,7 +83,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerPresented(
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerDismissed(
     InfobarType infobar_type) {
-  if (!base::Contains(infobar_badge_states_, infobar_type)) {
+  if (!infobar_badge_states_.contains(infobar_type)) {
     return;
   }
   infobar_badge_states_[infobar_type] &= ~BadgeStatePresented;
@@ -149,7 +149,7 @@ void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
 void InfobarBadgeTabHelper::OnInfobarAcceptanceStateChanged(
     InfobarType infobar_type,
     bool accepted) {
-  if (!base::Contains(infobar_badge_states_, infobar_type)) {
+  if (!infobar_badge_states_.contains(infobar_type)) {
     return;
   }
   if (accepted) {

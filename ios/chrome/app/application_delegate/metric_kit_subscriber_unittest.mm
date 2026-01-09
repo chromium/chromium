@@ -209,7 +209,7 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
   std::map<std::string, crashpad::FileReader*> attachments =
       upload_report->GetAttachments();
   EXPECT_EQ(attachments.size(), 1u);
-  ASSERT_TRUE(base::Contains(attachments, "MetricKit"));
+  ASSERT_TRUE(attachments.contains("MetricKit"));
   char result_buffer[sizeof(file_data)];
   attachments["MetricKit"]->Read(result_buffer, sizeof(result_buffer));
 

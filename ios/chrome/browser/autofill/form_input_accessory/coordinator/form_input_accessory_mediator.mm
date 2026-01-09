@@ -74,11 +74,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
        "hidden", "image", "month", "radio", "range", "reset", "submit",
        "time"});
 
-  if (base::Contains(triggers_keyboard, field_type)) {
+  if (triggers_keyboard.contains(field_type)) {
     return true;
   }
 
-  if (base::Contains(no_keyboard, field_type)) {
+  if (no_keyboard.contains(field_type)) {
     return false;
   }
 

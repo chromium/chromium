@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 
-#import "base/containers/contains.h"
 #import "base/notreached.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

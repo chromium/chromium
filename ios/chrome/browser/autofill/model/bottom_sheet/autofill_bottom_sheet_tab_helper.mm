@@ -184,11 +184,12 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   const autofill::FieldRendererId renderer_id = params.field_renderer_id;
   std::string& frame_id = params.frame_id;
   bool is_password_related =
-      base::Contains(registered_password_renderer_ids_[frame_id], renderer_id);
+      registered_password_renderer_ids_[frame_id].contains(renderer_id);
   bool is_payments_related =
-      base::Contains(registered_payments_renderer_ids_[frame_id], renderer_id);
-  bool is_password_generation_related = base::Contains(
-      registered_password_generation_renderer_ids_[frame_id], renderer_id);
+      registered_payments_renderer_ids_[frame_id].contains(renderer_id);
+  bool is_password_generation_related =
+      registered_password_generation_renderer_ids_[frame_id].contains(
+          renderer_id);
 
   if (is_password_related) {
     ShowCredentialBottomSheet(params);

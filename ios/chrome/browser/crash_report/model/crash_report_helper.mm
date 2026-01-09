@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "base/debug/crash_logging.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
@@ -72,7 +71,7 @@
 }
 
 - (void)closingDocumentInTab:(web::WebStateID)tabId {
-  if (!base::Contains(_tabDisplayingPDFSet, tabId)) {
+  if (!_tabDisplayingPDFSet.contains(tabId)) {
     return;
   }
 
@@ -170,7 +169,7 @@
   }
 
   const web::WebStateID tabId = webState->GetUniqueIdentifier();
-  if (base::Contains(_tabDisplayingPDFSet, tabId)) {
+  if (_tabDisplayingPDFSet.contains(tabId)) {
     return;
   }
 

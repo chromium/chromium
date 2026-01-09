@@ -43,13 +43,13 @@ class CWVFlagsTest : public PlatformTest {
 TEST_F(CWVFlagsTest, SetUsesSyncAndWalletSandbox) {
   flags_.usesSyncAndWalletSandbox = YES;
   std::set<std::string> stored_flags = flags_storage_->GetFlags();
-  EXPECT_TRUE(base::Contains(stored_flags, kUseSyncSandboxFlagName));
-  EXPECT_TRUE(base::Contains(stored_flags, kUseWalletSandboxFlagNameEnabled));
+  EXPECT_TRUE(stored_flags.contains(kUseSyncSandboxFlagName));
+  EXPECT_TRUE(stored_flags.contains(kUseWalletSandboxFlagNameEnabled));
 
   flags_.usesSyncAndWalletSandbox = NO;
   stored_flags = flags_storage_->GetFlags();
-  EXPECT_FALSE(base::Contains(stored_flags, kUseSyncSandboxFlagName));
-  EXPECT_FALSE(base::Contains(stored_flags, kUseWalletSandboxFlagNameEnabled));
+  EXPECT_FALSE(stored_flags.contains(kUseSyncSandboxFlagName));
+  EXPECT_FALSE(stored_flags.contains(kUseWalletSandboxFlagNameEnabled));
 }
 
 // Tests CWVFlag's usesSyncAndWalletSandbox getter.

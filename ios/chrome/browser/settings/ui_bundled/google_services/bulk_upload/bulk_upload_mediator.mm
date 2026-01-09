@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mediator.h"
 
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
@@ -194,7 +193,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
           modelItem.title_string_id, description.item_count));
   bulkUploadViewItem.subtitle = subtitle;
   bulkUploadViewItem.selected =
-      base::Contains(_selectedTypes, modelItem.bulk_upload_type);
+      _selectedTypes.contains(modelItem.bulk_upload_type);
   bulkUploadViewItem.accessibilityIdentifier = modelItem.view_accessibility_id;
   return bulkUploadViewItem;
 }
@@ -268,7 +267,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 - (syncer::DataTypeSet)selectedDataTypeEnumSet {
   syncer::DataTypeSet dataTypeSet;
   for (auto& modelItem : GetUploadModelItems()) {
-    if (base::Contains(_selectedTypes, modelItem.bulk_upload_type) &&
+    if (_selectedTypes.contains(modelItem.bulk_upload_type) &&
         _map[modelItem.data_type].item_count > 0) {
       dataTypeSet.Put(modelItem.data_type);
     }

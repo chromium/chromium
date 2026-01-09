@@ -152,9 +152,9 @@ class MockURLDownloader : public URLDownloader {
       EXPECT_EQ(distilled_content, kDistilledPdfContent);
     } else {
       // Check that the image with the bad mime-type was dropped
-      EXPECT_TRUE(base::Contains(distilled_content, kDistilledHtmlContent));
-      EXPECT_FALSE(base::Contains(distilled_content, kBadImageUrl));
-      EXPECT_TRUE(base::Contains(distilled_content, kGoodImageUrl));
+      EXPECT_TRUE(distilled_content.contains(kDistilledHtmlContent));
+      EXPECT_FALSE(distilled_content.contains(kBadImageUrl));
+      EXPECT_TRUE(distilled_content.contains(kGoodImageUrl));
     }
   }
 

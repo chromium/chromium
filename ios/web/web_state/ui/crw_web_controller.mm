@@ -10,7 +10,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
@@ -1761,8 +1760,8 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     if (_documentURL.DeprecatedGetOriginAsURL() !=
         newURL.DeprecatedGetOriginAsURL()) {
       if (!_documentURL.GetHost().empty() &&
-          (base::Contains(newURL.GetUsername(), _documentURL.GetHost()) ||
-           base::Contains(newURL.GetPassword(), _documentURL.GetHost()))) {
+          (newURL.GetUsername().contains(_documentURL.GetHost()) ||
+           newURL.GetPassword().contains(_documentURL.GetHost()))) {
         NOTREACHED();
       }
     }

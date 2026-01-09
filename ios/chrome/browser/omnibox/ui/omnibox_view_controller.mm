@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/ui/omnibox_view_controller.h"
 
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
@@ -547,11 +546,11 @@ using base::UserMetricsAction;
     (const std::set<ClipboardContentType>&)types {
   self.hasCopiedContent = !types.empty();
   if ((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
-      base::Contains(types, ClipboardContentType::Image)) {
+      types.contains(ClipboardContentType::Image)) {
     self.copiedContentType = ClipboardContentType::Image;
-  } else if (base::Contains(types, ClipboardContentType::URL)) {
+  } else if (types.contains(ClipboardContentType::URL)) {
     self.copiedContentType = ClipboardContentType::URL;
-  } else if (base::Contains(types, ClipboardContentType::Text)) {
+  } else if (types.contains(ClipboardContentType::Text)) {
     self.copiedContentType = ClipboardContentType::Text;
   }
   self.isUpdatingCachedClipboardState = NO;

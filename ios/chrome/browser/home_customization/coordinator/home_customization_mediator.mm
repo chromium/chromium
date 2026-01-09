@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 
-#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/pref_names.h"

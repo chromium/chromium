@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_settings_test_case_base.h"
 
-#import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -52,11 +51,10 @@ std::unique_ptr<net::test_server::HttpResponse> SearchResponse(
       base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
   const std::string secondSearchEngineKeyword(
       base::UTF16ToUTF8(secondPrepopulatedSearchEngine->keyword));
-  if (base::Contains(request.GetURL().GetPath(), googleSearchEngineKeyword)) {
+  if (request.GetURL().GetPath().contains(googleSearchEngineKeyword)) {
     http_response->set_content(
         "<body>" + std::string(googleSearchEngineKeyword) + "</body>");
-  } else if (base::Contains(request.GetURL().GetPath(),
-                            secondSearchEngineKeyword)) {
+  } else if (request.GetURL().GetPath().contains(secondSearchEngineKeyword)) {
     http_response->set_content(
         "<body>" + std::string(secondSearchEngineKeyword) + "</body>");
   }

@@ -116,7 +116,7 @@ void SupervisedUserErrorContainer::HandleCommand(
 
 bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
     const GURL& url) {
-  return base::Contains(requested_hosts_, url.GetHost());
+  return requested_hosts_.contains(url.GetHost());
 }
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(

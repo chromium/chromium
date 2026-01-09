@@ -12,7 +12,6 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -94,7 +93,7 @@ ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
       base::Value::List& list = update.Get();
       for (const auto& value : list) {
         const std::string& key = value.GetString();
-        if (base::Contains(keys_to_remove, key)) {
+        if (keys_to_remove.contains(key)) {
           keys_to_remove.erase(key);
         }
       }
@@ -133,8 +132,7 @@ bool ProfileAttributesStorageIOS::HasProfileWithName(
 
 bool ProfileAttributesStorageIOS::IsProfileMarkedForDeletion(
     std::string_view profile_name) const {
-  return base::Contains(prefs_->GetList(prefs::kProfilesToRemove),
-                        profile_name);
+  return prefs_->GetList(prefs::kProfilesToRemove).contains(profile_name);
 }
 
 ProfileAttributesIOS

@@ -590,8 +590,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
         // passed to the password form above. Information may have been appended
         // to the URL argument, so we only make sure it includes the initial
         // URL.
-        return base::Contains(((OpenNewTabCommand*)value).URL.spec(),
-                              kExampleCom);
+        return ((OpenNewTabCommand*)value).URL.spec().contains(kExampleCom);
       }]]);
   [passwords_controller() tableView:passwords_controller().tableView
             didSelectRowAtIndexPath:indexPath];

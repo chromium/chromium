@@ -117,7 +117,7 @@ class ProfileManagerIOSImplTest : public TestWithProfile {
 
       const std::string& profile_name = profile->GetProfileName();
 
-      CHECK(!base::Contains(profile_names, profile_name));
+      CHECK(!profile_names.contains(profile_name));
       profile_names.insert(profile_name);
     }
     return profile_names;

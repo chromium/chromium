@@ -71,7 +71,7 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(web_state);
   if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
-    if (base::Contains(allowed_threats, threat_type)) {
+    if (allowed_threats.contains(threat_type)) {
       resource.DispatchCallback(FROM_HERE, /*proceed=*/true,
                                 /*showed_interstitial=*/false,
                                 /*has_post_commit_interstitial_skipped=*/false);

@@ -5,7 +5,6 @@
 #include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"

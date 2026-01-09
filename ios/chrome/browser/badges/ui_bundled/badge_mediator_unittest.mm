@@ -304,7 +304,7 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   std::map<InfobarType, BadgeState> badge_states =
       tab_helper->GetInfobarBadgeStates();
   ASSERT_EQ(1U, badge_states.size());
-  ASSERT_TRUE(base::Contains(badge_states, type));
+  ASSERT_TRUE(badge_states.contains(type));
   BadgeState state = badge_states[type];
   ASSERT_FALSE(state & BadgeStatePresented);
 

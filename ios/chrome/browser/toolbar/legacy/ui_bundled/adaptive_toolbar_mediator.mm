@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_mediator.h"
 
-#import "base/containers/contains.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -631,8 +630,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     std::set<ClipboardContentType> clipboardContentTypeValues =
         clipboardContentType.value();
 
-    if (base::Contains(clipboardContentTypeValues,
-                       ClipboardContentType::Image)) {
+    if (clipboardContentTypeValues.contains(ClipboardContentType::Image)) {
       if (base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage)) {
         if (search_engines::SupportsSearchImageWithLens(
                 self.templateURLService) &&
@@ -644,11 +642,10 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
           return [self.actionFactory actionToSearchCopiedImage];
         }
       }
-    } else if (base::Contains(clipboardContentTypeValues,
-                              ClipboardContentType::URL)) {
+    } else if (clipboardContentTypeValues.contains(ClipboardContentType::URL)) {
       return [self.actionFactory actionToSearchCopiedURL];
-    } else if (base::Contains(clipboardContentTypeValues,
-                              ClipboardContentType::Text)) {
+    } else if (clipboardContentTypeValues.contains(
+                   ClipboardContentType::Text)) {
       return [self.actionFactory actionToSearchCopiedText];
     }
   }

@@ -4,14 +4,13 @@
 
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
 
-#include "base/containers/contains.h"
 
 FakeHttpsUpgradeService::FakeHttpsUpgradeService() = default;
 FakeHttpsUpgradeService::~FakeHttpsUpgradeService() = default;
 
 bool FakeHttpsUpgradeService::IsHttpAllowedForHost(
     const std::string& host) const {
-  return base::Contains(allowed_http_hosts_, host);
+  return allowed_http_hosts_.contains(host);
 }
 
 void FakeHttpsUpgradeService::AllowHttpForHost(const std::string& host) {

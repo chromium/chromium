@@ -174,7 +174,7 @@ void AddAccountToManager(PushNotificationAccountContextManager* manager,
 }
 
 - (NSUInteger)registrationCountForAccount:(const GaiaId&)gaiaID {
-  DCHECK(base::Contains(_contextMap, gaiaID));
+  DCHECK(_contextMap.contains(gaiaID));
   return _contextMap[gaiaID];
 }
 

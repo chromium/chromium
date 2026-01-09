@@ -7,7 +7,6 @@
 #import <optional>
 
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "base/debug/crash_logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -140,7 +139,7 @@ WKContentWorld* JavaScriptContentWorld::GetWKContentWorld() {
 JavaScriptContentWorld::~JavaScriptContentWorld() {}
 
 bool JavaScriptContentWorld::HasFeature(const JavaScriptFeature* feature) {
-  return base::Contains(features_, feature);
+  return features_.contains(feature);
 }
 
 void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {

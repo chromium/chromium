@@ -52,7 +52,7 @@ autofill::FieldType FieldTypeFromString(std::string_view str, NSError** error) {
     }
   }
 
-  if (!base::Contains(string_to_field_type_map, str)) {
+  if (!string_to_field_type_map.contains(str)) {
     NSString* error_description = [NSString
         stringWithFormat:@"Unable to recognize autofill field type %@!",
                          base::SysUTF8ToNSString(str)];

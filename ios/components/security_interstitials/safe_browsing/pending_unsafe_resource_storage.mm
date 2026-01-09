@@ -4,7 +4,6 @@
 
 #import "ios/components/security_interstitials/safe_browsing/pending_unsafe_resource_storage.h"
 
-#import "base/containers/contains.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
@@ -21,7 +20,7 @@ bool IsUnsafeResourcePending(const UnsafeResource& resource) {
   return allow_list &&
          allow_list->IsUnsafeNavigationDecisionPending(decision_url,
                                                        &pending_threat_types) &&
-         base::Contains(pending_threat_types, resource.threat_type);
+         pending_threat_types.contains(resource.threat_type);
 }
 }  // namespace
 
@@ -119,7 +118,7 @@ void PendingUnsafeResourceStorage::ResourcePolicyObserver::
   const UnsafeResource* resource = storage_->resource();
   if (policy == SafeBrowsingUrlAllowList::Policy::kPending ||
       url != resource->navigation_url ||
-      !base::Contains(threat_types, resource->threat_type)) {
+      !threat_types.contains(resource->threat_type)) {
     return;
   }
 

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
 
-#import "base/containers/contains.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -78,7 +77,7 @@ std::unique_ptr<net::test_server::HttpResponse> OmniboxHTTPResponses(
   std::string relative_url = request.relative_url;
   if (relative_url == kHeaderPageURL) {
     std::string result = kHeaderPageFailure;
-    if (base::Contains(request.headers, "X-Client-Data")) {
+    if (request.headers.contains("X-Client-Data")) {
       result = kHeaderPageSuccess;
     }
     http_response->set_content("<html><body>" + result + "</body></html>");

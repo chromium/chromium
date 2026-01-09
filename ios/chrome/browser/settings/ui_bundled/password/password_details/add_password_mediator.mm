@@ -220,7 +220,7 @@ bool CheckForDuplicates(
 
 - (BOOL)isTLDMissing {
   std::string hostname = self.URL.GetHost();
-  return !base::Contains(hostname, '.');
+  return !hostname.contains('.');
 }
 
 - (BOOL)shouldShowSuggestPasswordItem {

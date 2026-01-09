@@ -133,7 +133,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
 
   std::string breadcrumbs = BreadcrumbAnnotations();
   // 1 incognito
-  EXPECT_TRUE(base::Contains(breadcrumbs, "I Breadcrumb Event"));
+  EXPECT_TRUE(breadcrumbs.contains("I Breadcrumb Event"));
   // 3 total
   auto iter = breadcrumbs.find(event);
   int count = 0;

@@ -39,7 +39,7 @@ std::string portForRewrite;
 bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
   DCHECK(url);
   for (const std::string& host : listHosts) {
-    if (base::Contains(url->host(), host)) {
+    if (url->host().contains(host)) {
       *url = GURL("http://127.0.0.1:" + portForRewrite + "/" + host);
       return true;
     }

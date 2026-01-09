@@ -213,7 +213,7 @@ void MigrationCompleteForProfile(
                        userDefaults:(NSUserDefaults*)userDefaults {
   CHECK(profile);
   // Do nothing if the migration for the profile already started.
-  if (base::Contains(_migratorMap, profile->GetProfileName())) {
+  if (_migratorMap.contains(profile->GetProfileName())) {
     return;
   }
 
@@ -273,7 +273,7 @@ void MigrationCompleteForProfile(
 
 // Returns whether we already own an observer for the provided passkey model.
 - (BOOL)isObservingPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
-  return base::Contains(_passkeyModelObservers, passkeyModel);
+  return _passkeyModelObservers.contains(passkeyModel);
 }
 
 // Adds an observer for the provided passkey model.

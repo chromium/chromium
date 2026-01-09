@@ -7,7 +7,6 @@
 #import <optional>
 
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -104,8 +103,8 @@ BOOL PromoteShopCardToFrontOfStack() {
 }
 
 BOOL PromoteTabResumptionShopCardToFrontOfStack() {
-  return (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm3) ||
+  return (commerce::kShopCardVariation.Get().contains(
+              commerce::kShopCardArm3) ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm5 ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm6) &&

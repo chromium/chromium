@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "components/update_client/update_query_params.h"
 #include "components/version_info/version_info.h"
@@ -18,23 +17,17 @@
 void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
   std::string params = update_client::UpdateQueryParams::Get(prod_id);
 
-  EXPECT_TRUE(base::Contains(
-      params,
+  EXPECT_TRUE(params.contains(
       base::StrCat({"os=", update_client::UpdateQueryParams::GetOS()})));
-  EXPECT_TRUE(base::Contains(
-      params,
+  EXPECT_TRUE(params.contains(
       base::StrCat({"arch=", update_client::UpdateQueryParams::GetArch()})));
-  EXPECT_TRUE(base::Contains(
-      params,
-      base::StrCat({"prod=", update_client::UpdateQueryParams::GetProdIdString(
-                                 prod_id)})));
-  EXPECT_TRUE(base::Contains(
-      params, base::StrCat({"prodchannel=", GetChannelString()})));
-  EXPECT_TRUE(base::Contains(
-      params,
+  EXPECT_TRUE(params.contains(base::StrCat(
+      {"prod=", update_client::UpdateQueryParams::GetProdIdString(prod_id)})));
+  EXPECT_TRUE(
+      params.contains(base::StrCat({"prodchannel=", GetChannelString()})));
+  EXPECT_TRUE(params.contains(
       base::StrCat({"prodversion=", version_info::GetVersionNumber()})));
-  EXPECT_TRUE(base::Contains(
-      params,
+  EXPECT_TRUE(params.contains(
       base::StrCat({"lang=", IOSChromeUpdateQueryParamsDelegate::GetLang()})));
 }
 

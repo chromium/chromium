@@ -9,7 +9,6 @@
 #import <set>
 
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

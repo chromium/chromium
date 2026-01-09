@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 
-#import "base/containers/contains.h"
 #import "base/strings/string_number_conversions.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/common/NSString+Chromium.h"

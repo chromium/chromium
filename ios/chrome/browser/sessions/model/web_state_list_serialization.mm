@@ -10,7 +10,6 @@
 #import <memory>
 
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -422,7 +421,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
     ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
     item_storage.set_identifier(web_state_id.identifier());
 
-    DCHECK(base::Contains(metadata_map, web_state_id));
+    DCHECK(metadata_map.contains(web_state_id));
     auto iter = metadata_map.find(web_state_id);
     *item_storage.mutable_metadata() = iter->second;
 
@@ -431,7 +430,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
       continue;
     }
 
-    DCHECK(base::Contains(index_mapping, opener.opener));
+    DCHECK(index_mapping.contains(opener.opener));
     const int opener_index =
         removing_indexes.IndexAfterRemoval(index_mapping[opener.opener]);
     if (opener_index == WebStateList::kInvalidIndex) {
