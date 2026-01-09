@@ -51,6 +51,12 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider,
   void UpdateExtensionPolicy(const PolicyMap& policy,
                              const std::string& extension_id);
 
+  // Utility method that invokes UpdatePolicy() with a PolicyBundle that maps
+  // the extension install policy namespace to a copy of |policy|.
+  // Note: Replaces the PolicyBundle, so any policy that has been set previously
+  // will be lost when calling this utility method.
+  void UpdateExtensionInstallPolicy(const PolicyMap& policy);
+
   // Convenience method so that tests don't need to create a registry to create
   // this mock.
   using ConfigurationPolicyProvider::Init;

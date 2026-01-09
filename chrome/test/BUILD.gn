@@ -4503,6 +4503,7 @@ if (!is_android) {
         "../browser/chrome_multiprofile_startup_browsertest.cc",
         "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
+        "../browser/policy/cloud/extension_install_policy_service_browsertest.cc",
         "../browser/profiles/avatar_menu_browsertest.cc",
         "../browser/profiles/delete_profile_helper_browsertest.cc",
         "../browser/profiles/profile_window_browsertest.cc",
@@ -9918,6 +9919,7 @@ test("unit_tests") {
   if (!is_android) {
     sources += [
       "../browser/policy/cloud/cloud_policy_invalidator_unittest.cc",
+      "../browser/policy/cloud/extension_install_policy_service_unittest.cc",
       "../browser/policy/cloud/fm_registration_token_uploader_unittest.cc",
       "../browser/policy/developer_tools_policy_checker_factory_unittest.cc",
       "../browser/policy/developer_tools_policy_checker_unittest.cc",

@@ -39,12 +39,14 @@ bool IsExtensionInstallBlocked(
   auto* value_for_version = policy_value->GetDict().FindDict(
       extension_id_and_version.extension_version);
   if (!value_for_version) {
-    return true;
+    return false;
   }
 
-  return value_for_version->FindInt("action").value_or(
-             enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW) ==
-         enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK;
+  enterprise_management::ExtensionInstallPolicy::Action action =
+      static_cast<enterprise_management::ExtensionInstallPolicy::Action>(
+          value_for_version->FindInt("action").value_or(
+              enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW));
+  return action == enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK;
 }
 
 }  // namespace
@@ -146,13 +148,16 @@ std::optional<bool> ExtensionInstallPolicyService::IsExtensionAllowed(
 
   const PolicyMap::Entry* entry =
       extension_install_policy_map.Get(extension_id_and_version.extension_id);
-  if (!IsExtensionInstallBlocked(*entry, extension_id_and_version)) {
+  if (!entry) {
+    return true;
+  }
+
+  if (IsExtensionInstallBlocked(*entry, extension_id_and_version)) {
     return false;
   }
 
   for (const auto& conflict : entry->conflicts) {
-    if (!IsExtensionInstallBlocked(conflict.entry(),
-                                   extension_id_and_version)) {
+    if (IsExtensionInstallBlocked(conflict.entry(), extension_id_and_version)) {
       return false;
     }
   }

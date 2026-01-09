@@ -116,6 +116,13 @@ std::string CloudPolicyClientTypeParams::settings_entity_id() const {
   if (std::holds_alternative<std::string>(extra_param_)) {
     return std::get<std::string>(extra_param_);
   }
+  CHECK(std::holds_alternative<ExtensionSetCallback>(extra_param_));
+  auto extension_ids_and_version =
+      std::get<ExtensionSetCallback>(extra_param_).Run();
+  if (extension_ids_and_version.size() == 1) {
+    return extension_ids_and_version.begin()->extension_id + "@" +
+           extension_ids_and_version.begin()->extension_version;
+  }
   return std::string();
 }
 
