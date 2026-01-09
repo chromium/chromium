@@ -8,7 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
 
@@ -44,7 +43,6 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   void OnActivated() override;
   void OnFailed(PrerenderFinalStatus status) override;
   void OnHostDestroyed(PrerenderFinalStatus status) override;
-  void OnHostReused() override;
 
   PrerenderHostId prerender_host_id_for_testing() const {
     return prerender_host_id_;
@@ -55,10 +53,6 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   const PrerenderHostId prerender_host_id_;
 
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
-  // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered
-  // page.
-  // TODO(crbug.com/434826191): Remove this field.
-  FrameTreeNodeId frame_tree_node_id_;
 
   const GURL prerendering_url_;
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;

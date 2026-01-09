@@ -1870,12 +1870,6 @@ void PrerenderHost::AddAdditionalRequestHeaders(
   }
 }
 
-void PrerenderHost::NotifyReused() {
-  for (auto& observer : observers_) {
-    observer.OnHostReused();
-  }
-}
-
 void PrerenderHost::OnWillBeCancelled(
     const PrerenderCancellationReason& reason) {
   if (!PreloadServingMetricsCapsule::IsFeatureEnabled()) {

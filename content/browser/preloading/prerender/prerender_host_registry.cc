@@ -798,9 +798,7 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
     // If we find a reusable prerender host under the same site. We will
     // take over its frame tree and initiate a new navigation to the new
     // prerender URL.
-    if (reuse_host) {
-      reuse_host->NotifyReused();
-    } else {
+    if (!reuse_host) {
       base::UmaHistogramCounts100(
           "Prerender.Experimental.ReusePrerenderHost.PrerenderHostCount.Failed",
           prerender_host_by_id_.size());

@@ -158,8 +158,6 @@ PrerenderHandleImpl::PrerenderHandleImpl(
     : handle_id_(GetNextHandleId()),
       prerender_host_id_(prerender_host_id),
       prerender_host_registry_(std::move(prerender_host_registry)),
-      frame_tree_node_id_(
-          PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id)),
       prerendering_url_(prerendering_url),
       no_vary_search_hint_(std::move(no_vary_search_hint)) {
   CHECK(!prerendering_url_.is_empty());
@@ -269,14 +267,6 @@ void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
 
 void PrerenderHandleImpl::OnHostDestroyed(PrerenderFinalStatus status) {
   obs_.Reset();
-}
-
-void PrerenderHandleImpl::OnHostReused() {
-  // Since the frame_tree_node_id_ is reused by the new PrerenderHost, we will
-  // stop tracking the FrameTree and reset frame_tree_node_id_.
-  // TODO(crbug.com/434826191): Add a new unique identifier for the
-  // PrerenderHost.
-  frame_tree_node_id_ = FrameTreeNodeId();
 }
 
 }  // namespace content
