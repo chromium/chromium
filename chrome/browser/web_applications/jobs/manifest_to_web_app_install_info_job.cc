@@ -92,7 +92,8 @@ blink::mojom::ManifestLocalizedTextObjectPtr MatchLocalizedText(
 
 LocalizedText GetLocalizedTitleFromManifestFields(
     const blink::mojom::Manifest& manifest) {
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLocalization)) {
     const icu::Locale application_locale(g_browser_process->GetFeatures()
                                              ->application_locale_storage()
                                              ->Get()
@@ -127,7 +128,8 @@ LocalizedText GetLocalizedTitleFromManifestFields(
 
 LocalizedText GetLocalizedDescriptionFromManifestFields(
     const blink::mojom::Manifest& manifest) {
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLocalization)) {
     const icu::Locale application_locale(g_browser_process->GetFeatures()
                                              ->application_locale_storage()
                                              ->Get()

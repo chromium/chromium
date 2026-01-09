@@ -1411,7 +1411,8 @@ class ManifestToWebAppInstallInfoLocalizationTest
  protected:
   void SetUp() override {
     ManifestToWebAppInstallInfoJobTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kWebAppManifestLocalization);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppManifestLocalization);
   }
 
   std::pair<icu::Locale, blink::mojom::ManifestLocalizedTextObjectPtr>

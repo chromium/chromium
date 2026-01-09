@@ -6837,6 +6837,9 @@ TEST_F(ManifestParserTest, VersionParseRules) {
 }
 
 TEST_F(ManifestParserTest, NameLocalizedParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebAppManifestLocalization);
+
   // Smoke test.
   {
     auto& manifest = ParseManifest(R"({
@@ -7125,6 +7128,9 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
 }
 
 TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebAppManifestLocalization);
+
   // Smoke test.
   {
     auto& manifest = ParseManifest(R"({
@@ -7270,6 +7276,9 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
 }
 
 TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebAppManifestLocalization);
+
   // Smoke test.
   {
     auto& manifest = ParseManifest(R"({
@@ -7390,6 +7399,9 @@ TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
 }
 
 TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebAppManifestLocalization);
+
   // Smoke test: if one icon with valid src, it will be present in the list.
   {
     auto& manifest = ParseManifest(R"({
