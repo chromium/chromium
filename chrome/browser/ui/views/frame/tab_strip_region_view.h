@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
 
 class TabDragContext;
@@ -19,6 +20,8 @@ class TabStripObserver;
 // backed by the View container responsible for managing the tabstrip.
 class TabStripRegionView : public views::AccessiblePaneView,
                            public BrowserRootView::DropTarget {
+  METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
+
  public:
   ~TabStripRegionView() override = default;
 

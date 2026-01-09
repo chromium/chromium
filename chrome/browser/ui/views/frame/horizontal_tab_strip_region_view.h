@@ -29,7 +29,7 @@ class TabSearchPositionMetricsLogger;
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
 class HorizontalTabStripRegionView final : public TabStripRegionView {
-  METADATA_HEADER(HorizontalTabStripRegionView, views::AccessiblePaneView)
+  METADATA_HEADER(HorizontalTabStripRegionView, TabStripRegionView)
 
  public:
   // These values are persisted to logs. Entries should not be renumbered and

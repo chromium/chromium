@@ -41,7 +41,7 @@ class FlexLayout;
 class VerticalTabStripRegionView final : public TabStripRegionView,
                                          public views::ResizeAreaDelegate,
                                          public gfx::AnimationDelegate {
-  METADATA_HEADER(VerticalTabStripRegionView, views::AccessiblePaneView)
+  METADATA_HEADER(VerticalTabStripRegionView, TabStripRegionView)
 
  public:
   static constexpr int kResizeAreaWidth = 6;
