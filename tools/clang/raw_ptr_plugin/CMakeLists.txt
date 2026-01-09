@@ -1,7 +1,8 @@
 set(plugin_sources
-  RawPtrPlugin.cpp
   FindBadRawPtrPatterns.cpp
   RawPtrHelpers.cpp
+  RawPtrManualPathsToIgnore.cpp
+  RawPtrPlugin.cpp
   StackAllocatedChecker.cpp
   Util.cpp
 )

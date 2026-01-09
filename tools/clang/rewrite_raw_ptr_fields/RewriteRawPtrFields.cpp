@@ -1492,9 +1492,7 @@ int main(int argc, const char* argv[]) {
   std::unique_ptr<raw_ptr_plugin::FilterFile> paths_to_exclude;
   if (override_exclude_paths_param == "") {
     std::vector<std::string> paths_to_exclude_lines;
-    for (auto* const line : kRawPtrManualPathsToIgnore) {
-      paths_to_exclude_lines.push_back(line);
-    }
+    raw_ptr_plugin::AddManualPathsToIgnore(paths_to_exclude_lines);
     for (auto* const line : kSeparateRepositoryPaths) {
       paths_to_exclude_lines.push_back(line);
     }
