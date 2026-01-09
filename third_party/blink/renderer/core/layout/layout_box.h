@@ -329,15 +329,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanResize() const;
 
-  DISABLE_CFI_PERF PhysicalRect NoOverflowRect() const {
-    NOT_DESTROYED();
-    return PhysicalPaddingBoxRect();
-  }
   PhysicalRect ScrollableOverflowRect() const {
     NOT_DESTROYED();
     return ScrollableOverflowIsSet()
                ? overflow_->scrollable_overflow->ScrollableOverflowRect()
-               : NoOverflowRect();
+               : PhysicalPaddingBoxRect();
   }
 
   PhysicalRect VisualOverflowRect() const final;
