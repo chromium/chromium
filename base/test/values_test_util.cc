@@ -167,6 +167,9 @@ void DictionaryHasValuesMatcher::DescribeNegationTo(std::ostream* os) const {
       << "'";
 }
 
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(std::string_view json)
+    : template_value_(test::ParseJson(json)) {}
+
 IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(const Value& template_value)
     : template_value_(template_value.Clone()) {}
 

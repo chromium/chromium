@@ -101,6 +101,10 @@ TEST(ValuesTestUtilTest, IsSupersetOfValue_Supersets) {
   EXPECT_THAT(
       ParseJson(R"json([{"bar": "baz", "list": [1, 2, 3, 100]}, 3, 42])json"),
       IsSupersetOfValue(template_list));
+
+  EXPECT_THAT(
+      ParseJson(R"json([{"bar": "baz", "list": [1, 2, 3, 100]}, 3, 42])json"),
+      IsSupersetOfValue(R"json([{"bar": "baz"}, 42])json"));
 }
 
 TEST(ValuesTestUtilTest, IsSupersetOfValue_Subsets) {

@@ -479,9 +479,8 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
           return issue_code && *issue_code == "PartitioningBlobURLIssue";
         }));
 
-    EXPECT_THAT(params,
-                base::test::IsSupersetOfValue(base::test::ParseJson(JsReplace(
-                    R"({
+    EXPECT_THAT(params, base::test::IsSupersetOfValue(JsReplace(
+                            R"({
                   "issue": {
                     "code": "PartitioningBlobURLIssue",
                     "details": {
@@ -492,7 +491,7 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
                     }
                   }
                 })",
-                    url, expected_info_enum))));
+                            url, expected_info_enum)));
 
     // Clear existing notifications so subsequent calls don't fail by checking
     // `url` against old notifications.

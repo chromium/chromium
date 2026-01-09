@@ -79,6 +79,7 @@ class DictionaryHasValuesMatcher {
 
 class IsSupersetOfValueMatcher {
  public:
+  explicit IsSupersetOfValueMatcher(std::string_view json);
   explicit IsSupersetOfValueMatcher(const Value& template_value);
   explicit IsSupersetOfValueMatcher(const Value::Dict& template_value);
   explicit IsSupersetOfValueMatcher(const Value::List& template_value);
@@ -184,6 +185,8 @@ DictionaryHasValues(T&& template_dict) {
 //
 //   base::Value::Dict template_dict = ...;
 //   EXPECT_THAT(actual, IsSupersetOfValue(template_dict));
+//
+//   EXPECT_THAT(actual, IsSupersetOfValue(R("{"goats": 3})")));
 template <typename T>
 inline testing::PolymorphicMatcher<internal::IsSupersetOfValueMatcher>
 IsSupersetOfValue(T&& template_value) {

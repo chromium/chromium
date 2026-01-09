@@ -3435,26 +3435,25 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_THAT(
       associated_cookies,
       testing::Pointee(testing::UnorderedElementsAre(
-          base::test::IsSupersetOfValue(base::test::ParseJsonDict(R"({
+          base::test::IsSupersetOfValue(R"({
                               "blockedReasons": [ "AnonymousContext" ],
                               "cookie" : {
                                 "name": "name",
                                 "value": "root"
                               }
-                          })")),
-          testing::AllOf(
-              base::test::IsSupersetOfValue(base::test::ParseJsonDict(R"({
+                          })"),
+          testing::AllOf(base::test::IsSupersetOfValue(R"({
                           "blockedReasons": [ ],
                           "cookie" : {
                             "name": "name",
                             "value": "fencedFrame"
                           }
-                        })")),
-              testing::ResultOf(
-                  [](const base::Value& dict) {
-                    return dict.GetDict().FindList("blockedReasons");
-                  },
-                  testing::Pointee(testing::IsEmpty()))))));
+                        })"),
+                         testing::ResultOf(
+                             [](const base::Value& dict) {
+                               return dict.GetDict().FindList("blockedReasons");
+                             },
+                             testing::Pointee(testing::IsEmpty()))))));
 
   fenced_frame_devtools_client.DetachProtocolClient();
 }
