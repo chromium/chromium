@@ -87,6 +87,7 @@
 #define HAVE_NEON_DOTPROD 1
 #define HAVE_NEON_I8MM 1
 #define HAVE_PTHREAD_H 1
+#define HAVE_PTHREAD_SETNAME_NP 1
 #define HAVE_RVV 0
 #define HAVE_SSE 0
 #define HAVE_SSE2 0
