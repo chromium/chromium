@@ -49,6 +49,11 @@ inline constexpr std::string_view kJpPrefAutomaticallySendStatisticsToGoogle =
     "AutomaticallySendStatisticsToGoogle";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts:JpOptionCategories)
 
+inline constexpr std::string_view kKrPrefEnableSyllableInput =
+    "koreanEnableSyllableInput";
+inline constexpr std::string_view kKrPrefKeyboardLayout =
+    "koreanKeyboardLayout";
+
 inline constexpr std::string_view kVnPrefVniAllowFlexibleDiacritics =
     "vietnameseVniAllowFlexibleDiacritics";
 inline constexpr std::string_view kVnPrefVniNewStyleToneMarkPlacement =

@@ -188,10 +188,10 @@ mojom::KoreanSettingsPtr CreateKoreanSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::KoreanSettings::New();
   settings->input_multiple_syllables =
-      !input_method_specific_pref.FindBool("koreanEnableSyllableInput")
+      !input_method_specific_pref.FindBool(kKrPrefEnableSyllableInput)
            .value_or(true);
   const std::string* prefs_layout =
-      input_method_specific_pref.FindString("koreanKeyboardLayout");
+      input_method_specific_pref.FindString(kKrPrefKeyboardLayout);
   settings->layout = prefs_layout ? KoreanLayoutToMojom(*prefs_layout)
                                   : mojom::KoreanLayout::kDubeolsik;
   return settings;
