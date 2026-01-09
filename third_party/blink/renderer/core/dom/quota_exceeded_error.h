@@ -24,6 +24,11 @@ class CORE_EXPORT QuotaExceededError : public DOMException {
   static QuotaExceededError* Create(const String& message,
                                     const QuotaExceededErrorOptions* options);
 
+  // For creating a QuotaExceededError from C++ for deserialization.
+  static QuotaExceededError* Create(const String& message,
+                                    std::optional<double> quota,
+                                    std::optional<double> requested);
+
   // For creating a QuotaExceededError from C++ to be immediately passed to
   // ScriptPromiseResolverBase::Reject or ExceptionState::ThrowDOMException.
   static v8::Local<v8::Value> Create(v8::Isolate*,
@@ -43,8 +48,6 @@ class CORE_EXPORT QuotaExceededError : public DOMException {
                      std::optional<double> quota = std::nullopt,
                      std::optional<double> requested = std::nullopt);
 
-  QuotaExceededError(const String& message,
-                     const QuotaExceededErrorOptions* options);
   QuotaExceededError(const String& message,
                      std::optional<double> quota,
                      std::optional<double> requested);

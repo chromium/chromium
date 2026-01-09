@@ -38,11 +38,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_quota_exceeded_error.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_transform_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -802,6 +804,20 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       // DOMException::Create takes its arguments in the opposite order.
       return DOMException::Create(message, name);
     }
+    case kQuotaExceededErrorTag: {
+      // See the serialization side for |stack_unused|.
+      String message, stack_unused;
+      uint32_t has_quota, has_requested;
+      double quota, requested;
+      if (!ReadUTF8String(&message) || !ReadUTF8String(&stack_unused) ||
+          !ReadUint32(&has_quota) || !ReadDouble(&quota) ||
+          !ReadUint32(&has_requested) || !ReadDouble(&requested)) {
+        return nullptr;
+      }
+      return QuotaExceededError::Create(
+          message, has_quota ? std::make_optional(quota) : std::nullopt,
+          has_requested ? std::make_optional(requested) : std::nullopt);
+    }
     case kFencedFrameConfigTag: {
       String url_string, shared_storage_context, urn_uuid_string;
       uint32_t has_shared_storage_context, has_container_size, container_width,
@@ -1076,6 +1092,8 @@ bool V8ScriptValueDeserializer::ExecutionContextExposesInterface(
     }
     case kDOMExceptionTag:
       return V8DOMException::IsExposed(execution_context);
+    case kQuotaExceededErrorTag:
+      return V8QuotaExceededError::IsExposed(execution_context);
     case kFencedFrameConfigTag:
       return V8FencedFrameConfig::IsExposed(execution_context);
     default:
