@@ -644,6 +644,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             Intent intent = getIntent();
             if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
                 getLaunchCauseMetrics().onLaunchFromRecents();
+            } else if (getSavedInstanceState() != null
+                    && getSavedInstanceState()
+                            .getBoolean(ChromeActivity.IS_FROM_RECREATING, false)) {
+                getLaunchCauseMetrics().onRecreated();
             } else {
                 getLaunchCauseMetrics().onReceivedIntent();
             }

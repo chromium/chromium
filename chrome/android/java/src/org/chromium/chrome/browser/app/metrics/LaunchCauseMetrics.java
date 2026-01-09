@@ -81,6 +81,7 @@ public abstract class LaunchCauseMetrics
         // intentional transitions between different types of ChromeActivity.
         boolean mOtherChromeActivityLastFocused;
         boolean mLaunchedFromRecents;
+        boolean mFromRecreation;
     }
 
     // State that persists through Chrome being backgrounded (but not destroyed), reset after
@@ -115,6 +116,7 @@ public abstract class LaunchCauseMetrics
         LaunchCause.SHARE_INTENT,
         LaunchCause.NFC,
         LaunchCause.AUTH_TAB,
+        LaunchCause.RECREATION,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
@@ -139,8 +141,9 @@ public abstract class LaunchCauseMetrics
         int SHARE_INTENT = 17;
         int NFC = 18;
         int AUTH_TAB = 19;
+        int RECREATION = 20;
 
-        int NUM_ENTRIES = 21;
+        int NUM_ENTRIES = 22;
     }
 
     /**
@@ -249,6 +252,9 @@ public abstract class LaunchCauseMetrics
     // Chrome, with Chrome set as the debug app, it won't work because Android clears app state and
     // resuming through Recents will instead send a MAIN intent.
     private @LaunchCause int computeNonIntentLaunchCause() {
+        if (mPerLaunchState.mFromRecreation) {
+            return LaunchCause.RECREATION;
+        }
         if (mPerLaunchState.mLaunchedFromRecents) {
             return LaunchCause.RECENTS;
         }
@@ -288,6 +294,13 @@ public abstract class LaunchCauseMetrics
     /** Called when the Activity is launched from Android Recets (aka App Overview) */
     public void onLaunchFromRecents() {
         mPerLaunchState.mLaunchedFromRecents = true;
+    }
+
+    /**
+     * Called when the Activity is launched from being recreated (usually a configuration change).
+     */
+    public void onRecreated() {
+        mPerLaunchState.mFromRecreation = true;
     }
 
     @VisibleForTesting

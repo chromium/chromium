@@ -154,6 +154,19 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
+    public void testLaunchedFromRecreation() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION);
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        metrics.onRecreated();
+        int launchCause = metrics.recordLaunchCause();
+        count++;
+
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.RECREATION, launchCause);
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION));
+    }
+
+    @Test
     public void testResumedFromScreenOn() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);

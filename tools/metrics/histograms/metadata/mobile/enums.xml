@@ -333,6 +333,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Share Intent"/>
   <int value="18" label="NFC"/>
   <int value="19" label="Auth Tab"/>
+  <int value="20" label="Re-creation (eg. configuration change)"/>
 </enum>
 
 <!-- LINT.IfChange(LoadPoint) -->

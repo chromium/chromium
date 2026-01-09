@@ -122,6 +122,25 @@ public final class TabbedActivityLaunchCauseMetricsTest {
 
     @Test
     @MediumTest
+    public void testRecreationMetrics() throws Throwable {
+        final int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION);
+        // If this is the first test in the batch, opens an NTP. Otherwise, opens a blank page.
+        mActivityTestRule
+                .startFromLauncherTo()
+                .arriveAt(CtaPageStation.newGenericBuilder().withEntryPoint().build());
+        mActivityTestRule.recreateActivity();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION),
+                            Matchers.is(count + 1));
+                },
+                CHROME_LAUNCH_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    @Test
+    @MediumTest
     public void testNoMainIntentMetricsFromRecents() throws Throwable {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
