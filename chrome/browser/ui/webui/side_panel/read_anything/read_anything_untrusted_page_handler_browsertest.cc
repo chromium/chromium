@@ -19,6 +19,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
@@ -1670,6 +1671,15 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
 
     // Open reading mode and getting the starting web contents.
     controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kAppMenu);
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    views::View* overlay_view =
+        browser_view->GetWidget()->GetContentsView()->GetViewByID(
+            VIEW_ID_READ_ANYTHING_OVERLAY);
+    ASSERT_TRUE(overlay_view);
+    ReadAnythingImmersiveWebView* web_view =
+        static_cast<ReadAnythingImmersiveWebView*>(overlay_view->children()[0]);
+    web_view->ShowUI();
     auto* original_contents = GetImmersiveWebContents();
     ASSERT_NE(original_contents, nullptr);
 
