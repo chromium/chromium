@@ -61,3 +61,12 @@
 .hr {
   border-top: var(--cr-separator-line);
 }
+
+@media (forced-colors: active) {
+   /* The color menu should not be shown when in high contrast mode because
+    * reading mode doesn't override system forced colors.
+    */
+   #color {
+    display: none;
+  }
+}
