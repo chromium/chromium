@@ -45,7 +45,7 @@ VideoCaptureDevice::Client::ReserveResult AllocateNV12SharedImage(
   multiplanar_si_format.SetPrefersExternalSampler();
 #endif
   *out_shared_image = sii->CreateSharedImage(
-      {multiplanar_si_format, buffer_size, gfx::ColorSpace(),
+      {multiplanar_si_format, buffer_size, gfx::ColorSpace::CreateREC601(),
        gpu::SharedImageUsageSet(si_usage), "AllocatedNV12SharedImage"},
       gpu::kNullSurfaceHandle,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,

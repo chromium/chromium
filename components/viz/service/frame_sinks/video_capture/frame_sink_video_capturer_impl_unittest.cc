@@ -295,7 +295,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
           info->pixel_format, info->coded_size);
       // Create a mappable shared image.
       auto shared_image = test_sii_->CreateSharedImage(
-          {si_format, si_size, gfx::ColorSpace(),
+          {si_format, si_size, info->color_space,
            gpu::SharedImageUsageSet(si_usage), "FrameSinkVideoCapturerTest"},
           gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
       // The frame is only gonna tell Letterbox to skip the test.
