@@ -8969,6 +8969,7 @@ from previous Chrome versions.
   <int value="-1839874877" label="WebXROrientationSensorDevice:enabled"/>
   <int value="-1839540507" label="OneGoogleBarModalOverlays:enabled"/>
   <int value="-1839496458" label="disable-file-manager-touch-mode"/>
+  <int value="-1839310354" label="DesktopAndroidLinkCapturing:enabled"/>
   <int value="-1838992280" label="FeedCloseRefresh:disabled"/>
   <int value="-1838482444" label="disable-settings-window"/>
   <int value="-1838155843" label="PrivacyGuide3:enabled"/>
@@ -13766,6 +13767,7 @@ from previous Chrome versions.
   <int value="-171173736" label="VrBrowsingExperimentalFeatures:disabled"/>
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>
   <int value="-170809452" label="QueryTilesOnStart:enabled"/>
+  <int value="-170706267" label="DesktopAndroidLinkCapturing:disabled"/>
   <int value="-170460394" label="test-third-party-cookie-phaseout:disabled"/>
   <int value="-169745744" label="SyncPseudoUSSPreferences:enabled"/>
   <int value="-169434837" label="FeatureManagement16Desks:enabled"/>

@@ -2404,6 +2404,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "desktop-android-link-capturing",
+    "owners": ["sinansahin@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 152
+  },
+  {
     "name": "desktop-ua-on-connected-display",
     "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150

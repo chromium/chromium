@@ -13465,6 +13465,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVerifyMTCsDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kVerifyMTCs)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"desktop-android-link-capturing",
+     flag_descriptions::kDesktopAndroidLinkCapturingName,
+     flag_descriptions::kDesktopAndroidLinkCapturingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDesktopAndroidLinkCapturing)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

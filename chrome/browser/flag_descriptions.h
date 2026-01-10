@@ -5277,6 +5277,11 @@ inline constexpr char kDeprecatedExternalPickerFunctionName[] =
 inline constexpr char kDeprecatedExternalPickerFunctionDescription[] =
     "Use the old-style opening of an External Picker when uploading files";
 
+inline constexpr char kDesktopAndroidLinkCapturingName[] =
+    "Desktop Android Link Capturing";
+inline constexpr char kDesktopAndroidLinkCapturingDescription[] =
+    "Enables Link Capturing on desktop Android.";
+
 inline constexpr char kDrawChromePagesEdgeToEdgeName[] =
     "Draw Chrome Pages Edge-to-Edge";
 inline constexpr char kDrawChromePagesEdgeToEdgeDescription[] =
