@@ -200,6 +200,7 @@ ${renderTextStyleOptions.call(this)}
   @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
 </settings-menu>
 <presentation-menu id="presentationMenu"
+  class="settings-submenu"
   .presentationState="${this.presentationState}"
   @close-all-menus="${this.onCloseAllMenus_}">
 </presentation-menu>
@@ -253,6 +254,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   </cr-lazy-render-lit>
   <highlight-menu
     id="highlightMenu"
+    class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
     .nonModal="${this.isImmersiveEnabled_}"
     .settingsPrefs="${this.settingsPrefs}"
     @highlight-change="${this.onHighlightChange_}"
@@ -260,24 +262,28 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   </highlight-menu>
   <color-menu
       id="colorMenu"
+      class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .settingsPrefs="${this.settingsPrefs}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </color-menu>
   <line-spacing-menu
       id="lineSpacingMenu"
+      class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .settingsPrefs="${this.settingsPrefs}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </line-spacing-menu>
   <letter-spacing-menu
       id="letterSpacingMenu"
+      class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .settingsPrefs="${this.settingsPrefs}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </letter-spacing-menu>
   <font-menu
       id="fontMenu"
+      class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .areFontsLoaded="${this.areFontsLoaded_}"
       .settingsPrefs="${this.settingsPrefs}"
@@ -287,11 +293,13 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   </font-menu>
   <line-focus-menu
       id="lineFocusMenu"
+      class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .settingsPrefs="${this.settingsPrefs}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </line-focus-menu>
   <voice-selection-menu id="voiceSelectionMenu"
+      class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .selectedVoice="${this.selectedVoice}"
       .availableVoices="${this.availableVoices}"

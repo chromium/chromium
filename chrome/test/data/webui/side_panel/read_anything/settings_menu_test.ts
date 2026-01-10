@@ -4,9 +4,11 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+import {MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -23,6 +25,7 @@ suite('SettingsMenuElement', () => {
     chrome.readingMode.isLineFocusEnabled = true;
 
     settingsMenu = document.createElement('settings-menu');
+    settingsMenu.id = 'settingsMenu';
     document.body.appendChild(settingsMenu);
 
     const anchor = document.createElement('div');
@@ -66,7 +69,7 @@ suite('SettingsMenuElement', () => {
         'Clicking inside should NOT fire the close-all-menus event');
   });
 
-  test('open settings submenu event is fired with menu items', () => {
+  test('open settings submenu event is fired when menu item is clicked', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =
         actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
@@ -74,12 +77,36 @@ suite('SettingsMenuElement', () => {
     let submenuEvents = 0;
     settingsMenu.addEventListener(
         ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => submenuEvents++);
+
     for (const item of menuItems) {
       item.click();
     }
 
     assertEquals(8, submenuEvents);
   });
+
+  test(
+      'open settings submenu event is fired when menu items are hovered',
+      () => {
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        const menuItems =
+            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
+
+        let submenuEvents = 0;
+        settingsMenu.addEventListener(
+            ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => submenuEvents++);
+
+        const timer = new MockTimer();
+        timer.install();
+        for (const item of menuItems) {
+          item.dispatchEvent(new PointerEvent(
+              'pointerenter', {bubbles: true, cancelable: true, view: window}));
+          timer.tick(MENU_SHOW_DELAY_MS + 10);
+        }
+        timer.uninstall();
+
+        assertEquals(8, submenuEvents);
+      });
 
   test('links event is fired when links item is clicked', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();

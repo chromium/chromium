@@ -19,6 +19,8 @@ export function getHtml(this: SettingsMenuElement) {
           data-index="${index}"
           title="${item.ariaLabel || item.title}"
           aria-label="${item.ariaLabel || item.title}"
+          @pointerenter="${this.onMenuItemHover_}"
+          @pointerleave="${this.onMenuItemLeave_}"
           @click="${this.onMenuItemClick_}">
 
 

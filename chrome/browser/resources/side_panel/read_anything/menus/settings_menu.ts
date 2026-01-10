@@ -21,6 +21,10 @@ import {openMenu} from '../shared/common.js';
 import {getCss} from './settings_menu.css.js';
 import {getHtml} from './settings_menu.html.js';
 
+// Delay, in ms, between when menus are selected or moused over and the menu
+// appears. It mirrors the value in ui/views/controls/menu/menu_config.h
+export const MENU_SHOW_DELAY_MS = 400;
+
 export enum SettingsItemType {
   MENU = 1,
   TOGGLE = 2,
@@ -139,7 +143,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   protected options_: SettingsItem[] = [];
   private currentOpenId_: string|null = null;
-  private blockedEvents_: string[] = ['click', 'pointerdown'];
+  private interceptedEvents_: string[] =
+      ['click', 'pointerdown', 'pointermove'];
+  private openTimer_: number|null = null;
+  private closeTimer_: number|null = null;
   private pointerEventCallback_: (e: Event) => void = () => {};
 
   override connectedCallback() {
@@ -232,6 +239,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       return;
     }
 
+    this.clearCloseTimer_();
+    if (this.openTimer_) {
+      clearTimeout(this.openTimer_);
+    }
+
     const newMenuId = item.id;
     if (this.currentOpenId_ === newMenuId) {
       return;
@@ -265,10 +277,67 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.requestUpdate();
   }
 
+  protected onMenuItemHover_(e: PointerEvent) {
+    this.clearCloseTimer_();
+    if (this.openTimer_) {
+      clearTimeout(this.openTimer_);
+    }
+
+    const currentTarget = e.currentTarget as HTMLElement;
+    if (!currentTarget) {
+      return;
+    }
+
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    const item = this.options_[index];
+    if (!item || item.itemType === SettingsItemType.TOGGLE) {
+      return;
+    }
+
+    const newMenuId = item.id;
+    if (this.currentOpenId_ === newMenuId) {
+      return;
+    }
+
+    this.openTimer_ = window.setTimeout(() => {
+      this.fire(ToolbarEvent.OPEN_SETTINGS_SUBMENU, {
+        id: newMenuId,
+        previousId: this.currentOpenId_,
+        target: currentTarget,
+      });
+      this.currentOpenId_ = newMenuId;
+    }, MENU_SHOW_DELAY_MS);
+  }
+
+  protected onMenuItemLeave_() {
+    this.startCloseTimer_();
+  }
+
+  private startCloseTimer_() {
+    if (this.closeTimer_) {
+      return;
+    }
+
+    this.closeTimer_ = window.setTimeout(() => {
+      this.fire(
+          ToolbarEvent.OPEN_SETTINGS_SUBMENU,
+          {id: null, previousId: this.currentOpenId_, target: null});
+      this.closeTimer_ = null;
+      this.currentOpenId_ = null;
+    }, MENU_SHOW_DELAY_MS);
+  }
+
+  private clearCloseTimer_() {
+    if (this.closeTimer_) {
+      clearTimeout(this.closeTimer_);
+      this.closeTimer_ = null;
+    }
+  }
+
   open(anchor: HTMLElement) {
     // TODO (crbug.com/470379596): Add keyboard navigation to settings menu
     openMenu(this.$.lazyMenu.get(), anchor);
-    this.blockedEvents_.forEach(eventType => {
+    this.interceptedEvents_.forEach(eventType => {
       window.addEventListener(
           eventType, this.pointerEventCallback_, {capture: true});
     });
@@ -277,7 +346,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   close() {
     this.$.lazyMenu.get().close();
     document.body.classList.remove('read-anything-menu-open');
-    this.blockedEvents_.forEach(eventType => {
+    this.interceptedEvents_.forEach(eventType => {
       window.removeEventListener(
           eventType, this.pointerEventCallback_, {capture: true});
     });
@@ -291,12 +360,31 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   // 2. Close the menu when clicking outside (simulating modal behavior).
   private onPointerEvent_(e: Event) {
     // TODO (crbug.com/470381025): Fix cursor style when settings menu is open
+    let isInsideSubmenu = false;
+    let isInsideMain = false;
     const path = e.composedPath();
-    const isInsideMenu = path.some(
-        target =>
-            target instanceof Element && (target.tagName === 'CR-ACTION-MENU'));
+    for (const el of path) {
+      if (!(el instanceof HTMLElement)) {
+        continue;
+      }
 
-    if (isInsideMenu) {
+      isInsideSubmenu = el.classList.contains('settings-submenu');
+      isInsideMain = el.id === 'settingsMenu';
+
+      if (isInsideSubmenu || isInsideMain) {
+        break;
+      }
+    }
+
+    // When the user moves out of an item, we start a close timer that
+    // closes any opened submenu. If the user moves from an item into a submenu
+    // we should cancel the close timer, as the user intentionally moved into
+    // the submenu.
+    if (e.type === 'pointermove' && isInsideSubmenu) {
+      this.clearCloseTimer_();
+    }
+
+    if (isInsideSubmenu || isInsideMain) {
       return;
     }
 

@@ -5,8 +5,11 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement, SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {SettingsOption} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {stubAnimationFrame} from './common.js';
@@ -28,6 +31,18 @@ suite('Toolbar Settings Menu', () => {
 
   function getButton(id: string): CrIconButtonElement|null {
     return shadowRoot.querySelector<CrIconButtonElement>('#' + id);
+  }
+
+  function getMenuItem(id: SettingsOption): HTMLElement|null {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const item = menuItems.find(item => item.id === id);
+    if (item instanceof HTMLElement) {
+      return item;
+    }
+
+    return null;
   }
 
   setup(async () => {
@@ -64,28 +79,81 @@ suite('Toolbar Settings Menu', () => {
   });
 
   test('settings menu opens submenus on click', () => {
-    const actionMenu = settingsMenu.$.lazyMenu.get();
-    const menuItems = actionMenu.querySelectorAll('.menu-row');
-    const targetItem = menuItems[1] as HTMLElement;
+    const targetItem = getMenuItem(SettingsOption.FONT);
     assertTrue(!!targetItem);
-    assertEquals(1, Number.parseInt(targetItem.dataset['index']!));
-
     targetItem.click();
     assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
   });
 
-  test('menus are closed when clicked out of them', () => {
-    const actionMenu = settingsMenu.$.lazyMenu.get();
-    const menuItems = actionMenu.querySelectorAll('.menu-row');
-    const targetItem = menuItems[1] as HTMLElement;
+  test('settings menu opens submenus on hover', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
     assertTrue(!!targetItem);
-    assertEquals(1, Number.parseInt(targetItem.dataset['index']!));
+    const timer = new MockTimer();
+    timer.install();
 
-    targetItem.click();
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(MENU_SHOW_DELAY_MS + 10);
+    timer.uninstall();
+    assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+  });
+
+  test('settings menu does not open submenu before delay', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
+    assertTrue(!!targetItem);
+    const timer = new MockTimer();
+    timer.install();
+
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(MENU_SHOW_DELAY_MS - 10);
+
+    assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    timer.uninstall();
+  });
+
+  test('menus are closed when clicked out of them', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
+    assertTrue(!!targetItem);
+    const timer = new MockTimer();
+    timer.install();
+
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(MENU_SHOW_DELAY_MS + 10);
+    timer.uninstall();
+
     assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
 
     menuButton.click();
+    const actionMenu = settingsMenu.$.lazyMenu.get();
     assertFalse(actionMenu.open);
+    assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+  });
+
+  test('opened menu is closed if mouse is moved out of the menus', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
+    assertTrue(!!targetItem);
+    const timer = new MockTimer();
+    timer.install();
+
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(MENU_SHOW_DELAY_MS + 10);
+
+    assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+
+    targetItem.dispatchEvent(new PointerEvent('pointerleave', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      relatedTarget: menuButton,
+    }));
+    timer.tick(MENU_SHOW_DELAY_MS + 10);
+    timer.uninstall();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    assertTrue(actionMenu.open);
     assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
   });
 });
