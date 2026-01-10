@@ -596,15 +596,23 @@ Status Transaction::DoPut(int64_t object_store_id,
 
   // Before this point, don't do any mutation. After this point, rollback the
   // transaction in case of error.
-  ASSIGN_OR_RETURN(BackingStore::RecordIdentifier new_record,
-                   BackingStoreTransaction()->PutRecord(object_store_id, key,
-                                                        std::move(value)));
+  StatusOr<BackingStore::RecordIdentifier> new_record =
+      BackingStoreTransaction()->PutRecord(object_store_id, key,
+                                           std::move(value));
+  // Only LevelDB can return an InvalidArgument, so simplify to
+  // `ASSIGN_OR_RETURN` when SQLite is the only backing store.
+  if (!new_record.has_value()) {
+    if (new_record.error().IsInvalidArgument()) {
+      std::move(bad_message_callback).Run(new_record.error().ToString());
+    }
+    return new_record.error();
+  }
 
   {
     TRACE_EVENT1("IndexedDB", "Database::PutOperation.UpdateIndexes", "txn.id",
                  id());
     for (const auto& writer : index_writers) {
-      writer->WriteIndexKeys(new_record, BackingStoreTransaction(),
+      writer->WriteIndexKeys(*new_record, BackingStoreTransaction(),
                              object_store_id);
     }
   }

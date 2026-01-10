@@ -2312,8 +2312,10 @@ StatusOr<BackingStore::RecordIdentifier> BackingStore::Transaction::PutRecord(
   std::string v;
   EncodeVarInt(version, &v);
   // The value must fit inline as larger values would have gotten wrapped.
-  CHECK_EQ(value.bits.storage_type(),
-           mojo_base::BigBuffer::StorageType::kBytes);
+  if (value.bits.storage_type() != mojo_base::BigBuffer::StorageType::kBytes) {
+    return base::unexpected(
+        Status::InvalidArgument("Value bits must be inlined"));
+  }
   v.append(value.bits.begin(), value.bits.end());
 
   s = leveldb_transaction->Put(object_store_data_key, &v);
