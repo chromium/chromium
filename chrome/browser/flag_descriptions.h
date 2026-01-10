@@ -3225,11 +3225,6 @@ inline constexpr char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
-inline constexpr char kOptimizationGuideModelExecutionName[] =
-    "Enables optimization guide model execution";
-inline constexpr char kOptimizationGuideModelExecutionDescription[] =
-    "Enables the optimization guide to execute models.";
-
 inline constexpr char kOptimizationGuideEnableDogfoodLoggingName[] =
     "Enable optimization guide dogfood logging";
 inline constexpr char kOptimizationGuideEnableDogfoodLoggingDescription[] =
