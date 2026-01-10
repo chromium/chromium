@@ -805,10 +805,6 @@ class BrowserView : public BrowserWindow,
       split_tabs::SplitTabLayout layout,
       int tab_index_in_split) const;
 
-  // Gets the string id to format a tab's accessible label based on its tab
-  // alert.
-  int GetAccessibleTabLabelFormatStringForTabAlert(tabs::TabAlert alert) const;
-
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
   BrowserViewLayout* GetBrowserViewLayoutForTesting() {

@@ -3942,7 +3942,8 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   if (const std::optional<tabs::TabAlert> alert =
           alert_controller->GetAlertStateToShow(tab_data.alert_state)) {
     title = l10n_util::GetStringFUTF16(
-        GetAccessibleTabLabelFormatStringForTabAlert(alert.value()), title);
+        tabs::TabAlertController::GetAccessibleAlertStringId(alert.value()),
+        title);
   }
 
   if (tab_data.should_show_discard_status) {
@@ -4004,54 +4005,6 @@ int BrowserView::GetAccessibleTabLabelFormatStringForSplit(
       }
     default:
       NOTREACHED();
-  }
-}
-
-int BrowserView::GetAccessibleTabLabelFormatStringForTabAlert(
-    tabs::TabAlert alert) const {
-  switch (alert) {
-    case tabs::TabAlert::kAudioPlaying:
-      return IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT;
-    case tabs::TabAlert::kUsbConnected:
-      return IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT;
-    case tabs::TabAlert::kBluetoothConnected:
-      return IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT;
-    case tabs::TabAlert::kBluetoothScanActive:
-      return IDS_TAB_AX_LABEL_BLUETOOTH_SCAN_ACTIVE_FORMAT;
-    case tabs::TabAlert::kHidConnected:
-      return IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT;
-    case tabs::TabAlert::kSerialConnected:
-      return IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT;
-    case tabs::TabAlert::kMediaRecording:
-      return IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT;
-    case tabs::TabAlert::kAudioRecording:
-      return IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT;
-    case tabs::TabAlert::kVideoRecording:
-      return IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT;
-    case tabs::TabAlert::kAudioMuting:
-      return IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT;
-    case tabs::TabAlert::kTabCapturing:
-      return IDS_TAB_AX_LABEL_TAB_CAPTURING_FORMAT;
-    case tabs::TabAlert::kPipPlaying:
-      return IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT;
-    case tabs::TabAlert::kDesktopCapturing:
-      return IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT;
-    case tabs::TabAlert::kVrPresentingInHeadset:
-      return IDS_TAB_AX_LABEL_VR_PRESENTING;
-    case tabs::TabAlert::kActorAccessing:
-    case tabs::TabAlert::kActorWaitingOnUser:
-    case tabs::TabAlert::kGlicAccessing:
-#if BUILDFLAG(ENABLE_GLIC)
-      return IDS_TAB_AX_LABEL_GLIC_ACCESSING;
-#else
-      NOTREACHED();
-#endif
-    case tabs::TabAlert::kGlicSharing:
-#if BUILDFLAG(ENABLE_GLIC)
-      return IDS_TAB_AX_LABEL_GLIC_SHARING;
-#else
-      NOTREACHED();
-#endif
   }
 }
 
