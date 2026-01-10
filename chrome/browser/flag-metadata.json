@@ -6762,7 +6762,16 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 146
+    "expiry_milestone": 148
+  },
+  {
+    "name": "local-network-access-check-split-permissions",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 148
   },
   {
     "name": "local-network-access-check-webrtc",
