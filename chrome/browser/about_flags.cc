@@ -11166,6 +11166,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsLiveEditDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsLiveEdit)},
 
+    {"mcp-server", flag_descriptions::kMCPServerName,
+     flag_descriptions::kMCPServerDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kMCPServer)},
+
     {"permissions-ai-v3", flag_descriptions::kPermissionsAIv3Name,
      flag_descriptions::kPermissionsAIv3Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv3)},

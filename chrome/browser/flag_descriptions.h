@@ -1258,6 +1258,14 @@ inline constexpr char kMagicBoostUpdateForQuickAnswersDescription[] =
     "Enables to show the new Quick Answers card with chips in the revamped "
     "Magic Boost opt-in flow";
 
+inline constexpr char kMCPServerName[] = "MCP Server";
+inline constexpr char kMCPServerDescription[] =
+    "Enables the MCP (Model Control Protocol) Server - a localhost HTTP/"
+    "WebSocket server for AI agent browser control. Provides APIs for tab "
+    "management, UI interactions, DOM queries, and monitoring. Developer-only "
+    "feature. WARNING: Only enable this if you understand the security "
+    "implications.";
+
 inline constexpr char kMediaPlaybackWhileNotVisiblePermissionPolicyName[] =
     "media-playback-while-not-visible permission policy";
 inline constexpr char

@@ -1352,6 +1352,12 @@ constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
 BASE_FEATURE(kListWebAppsSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enables MCP (Model Control Protocol) Server - a localhost HTTP/WebSocket
+// server for AI agent control. Provides programmatic browser control APIs for
+// tab management, UI interactions, DOM queries, and monitoring. Developer-only
+// feature disabled by default for security.
+BASE_FEATURE(kMCPServer, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.

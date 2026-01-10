@@ -999,6 +999,10 @@ extern const base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kListWebAppsSwitch);
 #endif
 
+// MCP Server - AI Agent Control Server
+// Enables localhost HTTP/WebSocket server for programmatic browser control
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kMCPServer);
+
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kNativeNotifications);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSystemNotifications);
