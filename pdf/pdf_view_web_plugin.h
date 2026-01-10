@@ -450,6 +450,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>& ready,
                std::vector<gfx::Rect>& pending) override;
+  SkBitmap* InstallBuffer(SkImageInfo image_info, void* data) override;
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
   void UpdateScale(float scale) override;
   void UpdateLayerTransform(float scale,

@@ -17,6 +17,9 @@ bool g_is_oopif_pdf_policy_enabled = true;
 
 BASE_FEATURE(kAccessiblePDFForm, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Reuse buffers in PaintManager.
+BASE_FEATURE(kPdfBufferedPaintManager, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // "Incremental loading" refers to loading the PDF as it arrives.
 // TODO(crbug.com/40123601): Remove this once incremental loading is fixed.
 BASE_FEATURE(kPdfIncrementalLoading, base::FEATURE_DISABLED_BY_DEFAULT);

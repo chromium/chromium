@@ -5,12 +5,17 @@
 #ifndef PDF_PAINT_MANAGER_H_
 #define PDF_PAINT_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_aggregator.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
 
 class SkImage;
@@ -60,6 +65,10 @@ class PaintManager {
     virtual void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                          std::vector<PaintReadyRect>& ready,
                          std::vector<gfx::Rect>& pending) = 0;
+
+    // Install the image buffer into the backing store used by PDFium for the
+    // purposes of the PdfBufferedPaintManager experiment.
+    virtual SkBitmap* InstallBuffer(SkImageInfo image_info, void* data) = 0;
 
     // Updates the client with the latest snapshot created by `Flush()`.
     virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
@@ -133,6 +142,18 @@ class PaintManager {
   // This does not schedule a flush.
   void ClearTransform();
 
+  struct BufferData {
+    BufferData(size_t size, base::WeakPtr<PaintManager> owner);
+    ~BufferData();
+    base::HeapArray<uint8_t> allocation;
+    base::WeakPtr<PaintManager> owner;
+  };
+
+  // Called by skia to release a data buffer back to the PaintManager, for the
+  // PdfBufferedPaintManager experiment. This is done to avoid the need for
+  // synchronization. Must be called on main thread.
+  void BufferFinishedOnMainThread(std::unique_ptr<BufferData> data);
+
  private:
   // Makes sure there is a callback that will trigger a paint at a later time.
   // This will be either a Flush callback telling us we're allowed to generate
@@ -146,6 +167,10 @@ class PaintManager {
   // Executes a Flush.
   void Flush();
 
+  // Executes a Flush when the PdfBufferedPaintManager experiment is
+  // enabled.
+  void BufferedFlush(sk_sp<SkData> flushing_buffer);
+
   // Callback for asynchronous completion of Flush.
   void OnFlushComplete();
 
@@ -153,11 +178,52 @@ class PaintManager {
   // pending.
   void OnManualCallbackComplete();
 
+  // For the PdfBufferedPaintManager experiment, return an existing or newly
+  // allocated buffer for storing pixel data at least large enough according to
+  // `image_info_`.
+  std::unique_ptr<BufferData> GetBuffer();
+
   // Non-owning pointer. See the constructor.
   const raw_ptr<Client> client_;
 
-  // Backing Skia surface.
+  // Backing Skia surface. If running PdfBufferedPaintManager, the surface's
+  // backing buffer is swapped every frame.
   sk_sp<SkSurface> surface_;
+
+  // The surface's ImageInfo, but also client_'s ImageInfo, as well as
+  // `client_`'s `engine_`'s.
+  SkImageInfo image_info_;
+
+  // In the PdfBufferedPaintManager experiment, there is a rotating stack of
+  // equally-sized buffers which are drawn into largely in sequence. They are
+  // created on demand, given to skia when they are drawn into, and kept
+  // afterwards for reuse, if possible. When buffers are passed to Skia, they
+  // enter the nether realm and it is not knowable when they will return. When
+  // they are passed back, we put them back into free_buffers_ only if
+  // PaintManager is still alive and the buffer is large enough to fit the
+  // current canvas size. UaFs if PaintManager is destroyed while Skia is
+  // holding the buffers are prevented by invaliding WeakPtrs to the
+  // PaintManager on destruction.
+  //
+  // The main buffer which is drawn into by PDFium. This buffer is popped from
+  // the stack every reraster, installed in `client_` and `surface_`, and
+  // directly modified. Only used in the PdfBufferedPaintManager experiment.
+  std::unique_ptr<BufferData> draw_buffer_;
+  // Buffers into which can currently be written. Popped from in DoPaint(), it
+  // is handed off to the compositor in BufferedFlush(), and perhaps (assuming
+  // PaintManager is alive and the buffer is not too small) put back once skia
+  // calls BufferFinishedOnMainThread(). Only used in the
+  // PdfBufferedPaintManager experiment.
+  std::vector<std::unique_ptr<BufferData>> free_buffers_;
+
+  // Pointer to the previous frame. Cleared when there is a resize. Used for
+  // scrolling. Only used in the PdfBufferedPaintManager experiment.
+  std::optional<sk_sp<SkImage>> previous_frame_;
+
+  // Buffer that is currently in use by the engine. Changes on resize, but not
+  // at any other time.
+  raw_ptr<SkBitmap> engine_bitmap_;
+  std::unique_ptr<BufferData> engine_buffer_;
 
   PaintAggregator aggregator_;
 
@@ -185,6 +251,9 @@ class PaintManager {
   bool view_size_changed_waiting_for_paint_ = false;
 
   base::WeakPtrFactory<PaintManager> weak_factory_{this};
+  // We need a separate WeakPtrFactory which is only invalidated on destruction
+  // rather than semantic callback cancellation.
+  base::WeakPtrFactory<PaintManager> buffer_return_weak_factory_{this};
 };
 
 }  // namespace chrome_pdf
