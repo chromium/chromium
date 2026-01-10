@@ -907,25 +907,29 @@ bool ExtensionTabUtil::GetSharedStateOfGroup(const tab_groups::TabGroupId& id) {
   return saved_group->is_shared_tab_group();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 std::optional<api::tab_groups::TabGroup> ExtensionTabUtil::CreateTabGroupObject(
     const tab_groups::TabGroupId& id) {
-  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  BrowserWindowInterface* browser = FindBrowserWithGroup(id);
   if (!browser) {
     return std::nullopt;
   }
 
-  CHECK(browser->tab_strip_model()->SupportsTabGroups());
-  TabGroupModel* group_model = browser->tab_strip_model()->group_model();
-  const tab_groups::TabGroupVisualData* visual_data =
-      group_model->GetTabGroup(id)->visual_data();
-
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Android does not have SupportsTabGroups() yet.
+  CHECK(browser->GetBrowserForMigrationOnly()
+            ->tab_strip_model()
+            ->SupportsTabGroups());
+#endif
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return std::nullopt;
+  }
+  std::optional<tab_groups::TabGroupVisualData> visual_data =
+      tab_list->GetTabGroupVisualData(id);
   DCHECK(visual_data);
-
   return CreateTabGroupObject(id, *visual_data);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 api::tab_groups::Color ExtensionTabUtil::ColorIdToColor(

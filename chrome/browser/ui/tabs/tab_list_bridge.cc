@@ -306,6 +306,19 @@ TabListBridge::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   return *visual_data;
 }
 
+gfx::Range TabListBridge::GetTabGroupTabIndices(
+    tab_groups::TabGroupId group_id) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return {};
+  }
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  if (!tab_group) {
+    return {};
+  }
+  return tab_group->ListTabs();
+}
+
 std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
   // Not all browsers support tab groups.

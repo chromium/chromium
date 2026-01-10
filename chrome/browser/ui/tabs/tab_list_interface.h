@@ -20,6 +20,10 @@ class BrowserWindowInterface;
 class SessionID;
 class TabListInterfaceObserver;
 
+namespace gfx {
+class Range;
+}
+
 namespace tab_groups {
 class TabGroupVisualData;
 }
@@ -116,6 +120,11 @@ class TabListInterface {
   // Returns the visual data for a tab group, or nullopt on error.
   virtual std::optional<tab_groups::TabGroupVisualData> GetTabGroupVisualData(
       tab_groups::TabGroupId group_id) = 0;
+
+  // Returns the range of tab model indices this group contains. The returned
+  // range will never be a reverse range. It will always be a forward range or
+  // the empty range (0,0) on error. See TabGroup::ListTabs() for details.
+  virtual gfx::Range GetTabGroupTabIndices(tab_groups::TabGroupId group_id) = 0;
 
   // Creates a tab group from a list of tabs and returns the group ID. Returns
   // nullopt on error (for example, if the tab list is empty).

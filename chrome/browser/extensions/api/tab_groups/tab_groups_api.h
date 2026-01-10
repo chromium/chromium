@@ -14,7 +14,8 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Browser;
+class BrowserWindowInterface;
+
 namespace tab_groups {
 class TabGroupId;
 class TabGroupVisualData;
@@ -90,8 +91,8 @@ class TabGroupsMoveFunction : public ExtensionFunction {
 
   // Moves a tab group between browser windows.
   bool MoveTabGroupBetweenBrowsers(
-      Browser* source_browser,
-      Browser* target_browser,
+      BrowserWindowInterface* source_browser,
+      BrowserWindowInterface* target_browser,
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data,
       const gfx::Range& tabs,

@@ -67,6 +67,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
   std::vector<tab_groups::TabGroupId> ListTabGroups() override;
   std::optional<tab_groups::TabGroupVisualData> GetTabGroupVisualData(
       tab_groups::TabGroupId group_id) override;
+  gfx::Range GetTabGroupTabIndices(tab_groups::TabGroupId group_id) override;
   std::optional<tab_groups::TabGroupId> CreateTabGroup(
       const std::vector<tabs::TabHandle>& tabs) override;
   void SetTabGroupVisualData(

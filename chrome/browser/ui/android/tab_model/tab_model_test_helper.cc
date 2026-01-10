@@ -28,6 +28,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 // "chrome/browser/ui/browser_window" is available on desktop Android, but not
@@ -220,6 +221,12 @@ std::optional<tab_groups::TabGroupVisualData>
 TestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+gfx::Range TestTabModel::GetTabGroupTabIndices(
+    tab_groups::TabGroupId group_id) {
+  NOTIMPLEMENTED();
+  return {};
 }
 
 std::optional<tab_groups::TabGroupId> TestTabModel::CreateTabGroup(
@@ -516,6 +523,12 @@ std::optional<tab_groups::TabGroupVisualData>
 OwningTestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+gfx::Range OwningTestTabModel::GetTabGroupTabIndices(
+    tab_groups::TabGroupId group_id) {
+  NOTIMPLEMENTED();
+  return {};
 }
 
 void OwningTestTabModel::SetTabGroupVisualData(

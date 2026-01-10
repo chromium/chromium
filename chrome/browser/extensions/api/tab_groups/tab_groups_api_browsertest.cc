@@ -500,15 +500,15 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSavedTab) {
 }
 
 // Test that moving a group to the right results in the correct tab order.
+// TODO(crbug.com/405219902): Enable on desktop Android when the JNI for
+// TabListInterface::GetTabGroupTabIndices() is implemented.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveRight) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
   // Create a group with multiple tabs.
-  TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  TabGroupId group = CreateTabGroup({1, 2, 3});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 2.
@@ -519,16 +519,17 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveRight) {
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
 
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contents(0));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contents(4));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contents(1));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contents(2));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contents(3));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(5), web_contents(5));
+  TabListInterface* tab_list = GetTabListInterface();
+  EXPECT_EQ(tab_list->GetTab(0)->GetContents(), web_contents(0));
+  EXPECT_EQ(tab_list->GetTab(1)->GetContents(), web_contents(4));
+  EXPECT_EQ(tab_list->GetTab(2)->GetContents(), web_contents(1));
+  EXPECT_EQ(tab_list->GetTab(3)->GetContents(), web_contents(2));
+  EXPECT_EQ(tab_list->GetTab(4)->GetContents(), web_contents(3));
+  EXPECT_EQ(tab_list->GetTab(5)->GetContents(), web_contents(5));
 
-  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2).value());
-  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3).value());
-  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(4).value());
+  EXPECT_EQ(group, tab_list->GetTab(2)->GetGroup().value());
+  EXPECT_EQ(group, tab_list->GetTab(3)->GetGroup().value());
+  EXPECT_EQ(group, tab_list->GetTab(4)->GetGroup().value());
 }
 
 // Test that moving a group to the right of another group results in the

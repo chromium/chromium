@@ -32,6 +32,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/range/range.h"
 
@@ -49,37 +50,46 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+constexpr char kUnableToFindTabError[] = "Unable to find tab.";
 constexpr char kCannotMoveGroupIntoMiddleOfOtherGroupError[] =
     "Cannot move the group to an index that is in the middle of another group.";
 constexpr char kCannotMoveGroupIntoMiddleOfPinnedTabsError[] =
     "Cannot move the group to an index that is in the middle of pinned tabs.";
-#else
-constexpr char kNotYetImplementedError[] =
-    "Not yet implemented on this platform.";
-#endif
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+constexpr char kMovingBetweenWindowsNotYetImplementedError[] =
+    "Moving between windows is not yet implemented on this platform.";
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Returns true if a group could be moved into the |target_index| of the given
 // |tab_strip|. Sets the |error| string otherwise.
-bool IndexSupportsGroupMove(TabStripModel* tab_strip,
+bool IndexSupportsGroupMove(TabListInterface* tab_list,
                             int target_index,
                             std::string* error) {
   // A group can always be moved to the end of the tabstrip.
-  if (target_index >= tab_strip->count() || target_index < 0) {
+  if (target_index >= tab_list->GetTabCount() || target_index < 0) {
     return true;
   }
 
-  if (tab_strip->IsTabPinned(target_index)) {
+  tabs::TabInterface* target_tab = tab_list->GetTab(target_index);
+  if (!target_tab) {
+    *error = kUnableToFindTabError;
+    return false;
+  }
+
+  if (target_tab->IsPinned()) {
     *error = kCannotMoveGroupIntoMiddleOfPinnedTabsError;
     return false;
   }
 
-  std::optional<tab_groups::TabGroupId> target_group =
-      tab_strip->GetTabGroupForTab(target_index);
-  std::optional<tab_groups::TabGroupId> adjacent_group =
-      tab_strip->GetTabGroupForTab(target_index - 1);
+  std::optional<tab_groups::TabGroupId> target_group = target_tab->GetGroup();
 
+  // Get the group to the left of the target, if there is one.
+  std::optional<tab_groups::TabGroupId> adjacent_group;
+  if (target_index > 0) {
+    tabs::TabInterface* adjacent_tab = tab_list->GetTab(target_index - 1);
+    CHECK(adjacent_tab);
+    adjacent_group = adjacent_tab->GetGroup();
+  }
   if (target_group.has_value() && target_group == adjacent_group) {
     *error = kCannotMoveGroupIntoMiddleOfOtherGroupError;
     return false;
@@ -87,7 +97,6 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 
   return true;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -291,10 +300,6 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/405219902): Port to desktop Android.
-  return RespondNow(Error(kNotYetImplementedError));
-#else
   std::optional<api::tab_groups::Move::Params> params =
       api::tab_groups::Move::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -316,7 +321,6 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
       *ExtensionTabUtil::CreateTabGroupObject(group))));
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool TabGroupsMoveFunction::MoveGroup(int group_id,
@@ -324,10 +328,6 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       const std::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
                                       std::string* error) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/405219902): Port to desktop Android.
-  return false;
-#else
   WindowController* source_window = nullptr;
   tab_groups::TabGroupVisualData visual_data;
   if (!ExtensionTabUtil::GetGroupById(
@@ -341,24 +341,38 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     return false;
   }
 
-  Browser* source_browser = source_window->GetBrowser();
+  auto* source_browser = source_window->GetBrowserWindowInterface();
   if (!source_browser) {
     *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
-  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
-  if (!source_tab_strip->SupportsTabGroups()) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Android does not have a SupportsTabGroups() method.
+  TabStripModel* tab_strip = source_browser->GetTabStripModel();
+  if (!tab_strip->SupportsTabGroups()) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  TabListInterface* source_tab_list = TabListInterface::From(source_browser);
+  if (!source_tab_list) {
     *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
 
-  gfx::Range tabs =
-      source_tab_strip->group_model()->GetTabGroup(*group)->ListTabs();
+  gfx::Range tabs = source_tab_list->GetTabGroupTabIndices(*group);
   if (tabs.length() == 0) {
     return false;
   }
 
   if (window_id) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+    // TODO(crbug.com/405219902): Support moving between windows on desktop
+    // Android.
+    *error = kMovingBetweenWindowsNotYetImplementedError;
+    return false;
+#else
     WindowController* target_window = nullptr;
     if (!windows_util::GetControllerFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
@@ -388,6 +402,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
       return MoveTabGroupBetweenBrowsers(source_browser, target_browser, *group,
                                          visual_data, tabs, new_index, error);
     }
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS
   }
 
   // Perform a move within the same window.
@@ -398,7 +413,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   const int new_index_before_group_is_removed =
       new_index > start_index ? new_index + tabs.length() : new_index;
 
-  if (!IndexSupportsGroupMove(source_tab_strip,
+  if (!IndexSupportsGroupMove(source_tab_list,
                               new_index_before_group_is_removed, error)) {
     return false;
   }
@@ -408,7 +423,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   // being moved are within the same tabstrip, they can't be added beyond the
   // end of the occupied indices, but rather just shifted among them.
   const int size_after_group_removed =
-      source_tab_strip->count() - tabs.length();
+      source_tab_list->GetTabCount() - tabs.length();
   if (new_index >= size_after_group_removed || new_index < 0) {
     new_index = size_after_group_removed;
   }
@@ -417,15 +432,14 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     return true;
   }
 
-  source_tab_strip->MoveGroupTo(*group, new_index);
+  source_tab_list->MoveGroupTo(*group, new_index);
 
   return true;
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
-    Browser* source_browser,
-    Browser* target_browser,
+    BrowserWindowInterface* source_browser,
+    BrowserWindowInterface* target_browser,
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data,
     const gfx::Range& tabs,
@@ -435,8 +449,8 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
   // TODO(crbug.com/405219902): Port to desktop Android.
   return false;
 #else
-  TabStripModel* target_tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(target_browser);
+  TabStripModel* target_tab_strip = ExtensionTabUtil::GetEditableTabStripModel(
+      target_browser->GetBrowserForMigrationOnly());
   if (!target_tab_strip) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
@@ -451,7 +465,13 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
     new_index = target_tab_strip->count();
   }
 
-  if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
+  TabListInterface* target_tab_list = TabListInterface::From(target_browser);
+  if (!target_tab_list) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
+  if (!IndexSupportsGroupMove(target_tab_list, new_index, error)) {
     return false;
   }
 
@@ -460,7 +480,7 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
   // implements it's own bulk move action, pausing must be performed here.
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          target_browser->profile());
+          target_browser->GetProfile());
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
       tab_groups_sync_movement_observation;
   if (tab_group_sync_service) {
@@ -468,7 +488,7 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
         tab_group_sync_service->CreateScopedLocalObserverPauser();
   }
 
-  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
+  TabStripModel* source_tab_strip = source_browser->GetTabStripModel();
   std::unique_ptr<DetachedTabCollection> detached_group =
       source_tab_strip->DetachTabGroupForInsertion(group);
   target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),

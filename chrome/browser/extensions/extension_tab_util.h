@@ -222,10 +222,8 @@ class ExtensionTabUtil {
   static api::tab_groups::TabGroup CreateTabGroupObject(
       const tab_groups::TabGroupId& id,
       const tab_groups::TabGroupVisualData& visual_data);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   static std::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
       const tab_groups::TabGroupId& id);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Conversions between the api::tab_groups::Color enum and the TabGroupColorId
   // enum.

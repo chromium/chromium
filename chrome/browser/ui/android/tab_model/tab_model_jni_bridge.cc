@@ -43,6 +43,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/range/range.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
@@ -644,6 +645,13 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
       Java_TabModelJniBridge_getTabGroupCollapsed(env, jobj, group_id.token());
   TabGroupVisualData visual_data(title.value(), color_id, collapsed);
   return visual_data;
+}
+
+gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
+    tab_groups::TabGroupId group_id) {
+  // TODO(crbug.com/405219902): Implement for desktop Android.
+  NOTIMPLEMENTED();
+  return {};
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
