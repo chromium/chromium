@@ -16,6 +16,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -165,6 +166,24 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   // in `fieldtrial_config`.
   default_config.MergeFrom(fieldtrial_config);
   return default_config;
+}
+
+bool ShouldShowAimContextMenuOption(Profile* profile) {
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  const bool is_aim_entrypoint_enabled =
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
+
+  if (is_aim_entrypoint_enabled) {
+    return true;
+  }
+
+  const bool is_aim_context_entrypoint_enabled =
+      omnibox::IsAimPopupEnabled(profile) &&
+      (omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() !=
+       omnibox::AddContextButtonVariant::kNone);
+
+  return is_aim_context_entrypoint_enabled;
 }
 
 bool IsAimPopupFeatureEnabled() {

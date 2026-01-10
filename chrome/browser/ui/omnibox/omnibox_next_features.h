@@ -116,6 +116,7 @@ bool IsAimPopupFeatureEnabled();
 // checks both the base::Feature flag and all other requirements like user
 // eligibility.
 bool IsAimPopupEnabled(Profile* profile);
+bool ShouldShowAimContextMenuOption(Profile* profile);
 
 bool IsCreateImagesEnabled(Profile* profile);
 bool IsDeepSearchEnabled(Profile* profile);
