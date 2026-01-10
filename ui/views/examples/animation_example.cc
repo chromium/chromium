@@ -175,51 +175,67 @@ void AnimationExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(), 10));
 
-  View* squares_container = container->AddChildView(std::make_unique<View>());
-  squares_container->SetBackground(CreateSolidBackground(
+  squares_container_ = container->AddChildView(std::make_unique<View>());
+  squares_container_->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorAnimationExampleBackground));
-  squares_container->SetPaintToLayer();
-  squares_container->layer()->SetMasksToBounds(true);
-  squares_container->layer()->SetFillsBoundsOpaquely(true);
+  squares_container_->SetPaintToLayer();
+  squares_container_->layer()->SetMasksToBounds(true);
+  squares_container_->layer()->SetFillsBoundsOpaquely(true);
 
-  squares_container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
+  squares_container_->SetLayoutManager(
+      std::make_unique<SquaresLayoutManager>());
   for (size_t i = 0; i < 5; ++i) {
-    squares_container->AddChildView(std::make_unique<AnimatingSquare>(i));
+    squares_container_->AddChildView(std::make_unique<AnimatingSquare>(i));
   }
 
-  {
-    gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
-    AnimationBuilder corners_animation_builder;
-    corners_animation_abort_handle_ =
-        corners_animation_builder.GetAbortHandle();
-    for (views::View* view : squares_container->children()) {
-      corners_animation_builder.Once()
-          .SetDuration(base::Seconds(10))
-          .SetRoundedCorners(view, rounded_corners);
-    }
+  start_button_ = container->AddChildView(std::make_unique<MdTextButton>(
+      base::BindRepeating(&AnimationExample::StartAnimations,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_START_ANIMATION_BUTTON)));
 
-    AnimationBuilder opacity_animation_builder;
-    opacity_animation_abort_handle_ =
-        opacity_animation_builder.GetAbortHandle();
-    for (views::View* view : squares_container->children()) {
-      opacity_animation_builder.Repeatedly()
-          .SetDuration(base::Seconds(2))
-          .SetOpacity(view, 0.4f, gfx::Tween::LINEAR_OUT_SLOW_IN)
-          .Then()
-          .SetDuration(base::Seconds(2))
-          .SetOpacity(view, 0.9f, gfx::Tween::EASE_OUT_3);
-    }
-  }
-
-  container->AddChildView(std::make_unique<MdTextButton>(
+  abort_button_ = container->AddChildView(std::make_unique<MdTextButton>(
       base::BindRepeating(&AnimationExample::AbortAnimations,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_ABORT_ANIMATION_BUTTON)));
+
+  StartAnimations();
+}
+
+void AnimationExample::StartAnimations() {
+  if (!squares_container_) {
+    return;
+  }
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  AnimationBuilder animation_builder;
+  animation_abort_handle_ = animation_builder.GetAbortHandle();
+  for (views::View* view : squares_container_->children()) {
+    animation_builder.Once()
+        .SetDuration(base::Seconds(10))
+        .SetRoundedCorners(view, rounded_corners);
+    animation_builder.Repeatedly()
+        .SetDuration(base::Seconds(2))
+        .SetOpacity(view, 0.4f, gfx::Tween::LINEAR_OUT_SLOW_IN)
+        .Then()
+        .SetDuration(base::Seconds(2))
+        .SetOpacity(view, 0.9f, gfx::Tween::EASE_OUT_3);
+  }
+
+  UpdateButtonsState(true);
 }
 
 void AnimationExample::AbortAnimations() {
-  corners_animation_abort_handle_.reset();
-  opacity_animation_abort_handle_.reset();
+  animation_abort_handle_.reset();
+  UpdateButtonsState(false);
+}
+
+void AnimationExample::UpdateButtonsState(bool animation_running) {
+  if (start_button_) {
+    start_button_->SetEnabled(!animation_running);
+  }
+  if (abort_button_) {
+    abort_button_->SetEnabled(animation_running);
+  }
 }
 
 }  // namespace views::examples
