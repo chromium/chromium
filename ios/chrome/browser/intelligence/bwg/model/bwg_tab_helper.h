@@ -168,6 +168,14 @@ class BwgTabHelper : public web::WebStateObserver,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
+  // Callback for the OptimizationGuide with the result to the on-demand call.
+  void OnCanApplyZeroStateSuggestionsOnDemandDecision(
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
   // Callback from OptimizationGuide metadata request.
   void OnCanApplyContextualCueingDecision(
       const GURL& main_frame_url,

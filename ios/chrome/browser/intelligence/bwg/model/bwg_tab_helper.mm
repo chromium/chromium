@@ -21,6 +21,7 @@
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
+#import "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -424,11 +425,27 @@ void BwgTabHelper::DidStartNavigation(
       ProfileIOS* profile =
           ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
       if (profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
-        optimization_guide_decider_->CanApplyOptimization(
-            current_url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-            base::BindOnce(
-                &BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
-                weak_ptr_factory_.GetWeakPtr(), current_url));
+        bool can_request_metadata = optimization_guide::
+            IsUserPermittedToFetchFromRemoteOptimizationGuide(
+                profile->IsOffTheRecord(), profile->GetPrefs());
+        if (can_request_metadata) {
+          optimization_guide_decider_->CanApplyOptimization(
+              current_url,
+              optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+              base::BindOnce(
+                  &BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
+                  weak_ptr_factory_.GetWeakPtr(), current_url));
+        } else {
+          optimization_guide_decider_->CanApplyOptimizationOnDemand(
+              {current_url},
+              {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
+              optimization_guide::proto::RequestContext::
+                  CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
+              base::BindRepeating(
+                  &BwgTabHelper::OnCanApplyZeroStateSuggestionsOnDemandDecision,
+                  weak_ptr_factory_.GetWeakPtr()),
+              std::nullopt);
+        }
       }
     }
   }
@@ -713,8 +730,39 @@ void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
     return;
   }
 
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    zero_state_suggestions_->can_apply = true;
+    return;
+  }
+
+  optimization_guide::OptimizationMetadata mutable_metadata = metadata;
+  auto suggestions_metadata = mutable_metadata.ParsedMetadata<
+      optimization_guide::proto::GlicZeroStateSuggestionsMetadata>();
+  if (!suggestions_metadata) {
+    zero_state_suggestions_->can_apply = true;
+    return;
+  }
   zero_state_suggestions_->can_apply =
-      decision == optimization_guide::OptimizationGuideDecision::kTrue;
+      suggestions_metadata->contextual_suggestions_eligible();
+}
+
+void BwgTabHelper::OnCanApplyZeroStateSuggestionsOnDemandDecision(
+    const GURL& url,
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
+  auto it =
+      decisions.find(optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS);
+  if (it == decisions.end()) {
+    // If the optimization type is missing, treat it as kTrue.
+    OnCanApplyZeroStateSuggestionsDecision(
+        url, optimization_guide::OptimizationGuideDecision::kTrue,
+        optimization_guide::OptimizationMetadata());
+    return;
+  }
+
+  OnCanApplyZeroStateSuggestionsDecision(url, it->second.decision,
+                                         it->second.metadata);
 }
 
 void BwgTabHelper::ParseSuggestionsResponse(
