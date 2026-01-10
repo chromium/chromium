@@ -57,6 +57,10 @@
 #include "third_party/boringssl/src/pki/verify_signed_data.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/root_store_proto_lite/root_store.pb.h"  // nogncheck
+#endif
+
 namespace net {
 
 namespace {
@@ -1725,8 +1729,11 @@ std::vector<uint8_t> MtcLogBuilder::MtcLogEntry::BuildTBSCertificate(
   return FinishCBBToVector(cbb.get());
 }
 
-MtcLogBuilder::MtcLogBuilder(base::span<const uint8_t> log_id)
-    : log_id_(base::ToVector(log_id)), data_(new Data(base::ToVector(log_id))) {
+MtcLogBuilder::MtcLogBuilder(base::span<const uint8_t> log_id,
+                             base::span<const uint8_t> base_id)
+    : log_id_(base::ToVector(log_id)),
+      base_id_(base::ToVector(base_id.empty() ? log_id : base_id)),
+      data_(new Data(base::ToVector(log_id))) {
   // The first landmark, numbered zero, is always a tree size of zero.
   landmarks_.push_back(0);
 }
@@ -1742,7 +1749,7 @@ bool MtcLogBuilder::AdvanceLandmark() {
   return true;
 }
 
-std::vector<bssl::Subtree> MtcLogBuilder::GetLandmarkSubtrees() {
+std::vector<bssl::Subtree> MtcLogBuilder::GetLandmarkSubtrees() const {
   // TODO(crbug.com/469624806): could cache the subtrees when adding a landmark
   // so we don't need to be recalculated.
   std::vector<bssl::Subtree> result;
@@ -1757,7 +1764,8 @@ std::vector<bssl::Subtree> MtcLogBuilder::GetLandmarkSubtrees() {
   return result;
 }
 
-std::vector<bssl::TrustedSubtree> MtcLogBuilder::GetLandmarkSubtreeHashes() {
+std::vector<bssl::TrustedSubtree> MtcLogBuilder::GetLandmarkSubtreeHashes()
+    const {
   // TODO(crbug.com/469624806): could cache the subtrees when adding a landmark
   // so they don't need to potentially be recalculated.
   std::vector<bssl::TrustedSubtree> result;
@@ -1879,5 +1887,26 @@ MtcLogBuilder::CreateSignaturelessCertificateBuffer(LogIndex index) {
   }
   return nullptr;
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void MtcLogBuilder::FillMtcMetadataAnchorProto(
+    chrome_root_store::MtcAnchorData* mtc_anchor_data) const {
+  mtc_anchor_data->set_log_id(base::as_string_view(log_id_));
+
+  mtc_anchor_data->mutable_trusted_landmark_ids_range()->set_base_id(
+      base::as_string_view(base_id_));
+  mtc_anchor_data->mutable_trusted_landmark_ids_range()
+      ->set_min_active_landmark_inclusive(GetActiveLandmarkRange().first);
+  mtc_anchor_data->mutable_trusted_landmark_ids_range()
+      ->set_last_landmark_inclusive(GetActiveLandmarkRange().second);
+
+  for (const auto& subtree_hash : GetLandmarkSubtreeHashes()) {
+    auto* subtree = mtc_anchor_data->add_trusted_subtrees();
+    subtree->set_start_inclusive(subtree_hash.range.start);
+    subtree->set_end_exclusive(subtree_hash.range.end);
+    subtree->set_hash(base::as_string_view(subtree_hash.hash));
+  }
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 }  // namespace net

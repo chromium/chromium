@@ -47,6 +47,7 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
@@ -185,11 +186,12 @@ PKIMetadataComponentInstallerService::PKIMetadataComponentInstallerService() {
   crs_trust_anchor_ids_ =
       net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
 
-  // TODO(crbug.com/452983502): Initialize crs_trusted_mtc_logids_ from
-  // compiled-in CRS data once they are available. (MTC anchors are not
-  // currently compiled into the binary, since they only work when component
-  // updater is supplying the trusted subtrees, so the current MTC
-  // implementation just depends on both components being loaded, for simplity.)
+  if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
+    auto trusted_mtc_logids =
+        net::TrustStoreChrome::GetTrustedMtcLogIDsFromCompiledInRootStore();
+    crs_trusted_mtc_logids_ = absl::flat_hash_set<std::vector<uint8_t>>(
+        trusted_mtc_logids.begin(), trusted_mtc_logids.end());
+  }
 }
 
 PKIMetadataComponentInstallerService::MtcLogIdAndLandmarkTrustAnchorId::

@@ -20,6 +20,7 @@
 #include "net/base/ip_address.h"
 #include "net/cert/qwac.h"
 #include "net/cert/x509_certificate.h"
+#include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -40,6 +41,10 @@ namespace der {
 class Input;
 }  // namespace der
 }  // namespace bssl
+
+namespace chrome_root_store {
+class MtcAnchorData;
+}
 
 namespace net {
 
@@ -486,8 +491,13 @@ class MtcLogBuilder {
   using LandmarkNumber = uint64_t;
   using LogIndex = uint64_t;
 
-  explicit MtcLogBuilder(base::span<const uint8_t> log_id);
+  // Create a log builder with the specified log id and base id.
+  // If `base_id` is empty, `log_id` will also be used as the `base_id`.
+  explicit MtcLogBuilder(base::span<const uint8_t> log_id,
+                         base::span<const uint8_t> base_id = {});
   ~MtcLogBuilder();
+
+  base::span<const uint8_t> log_id() const { return log_id_; }
 
   // Creates the next landmark. Returns false on failure (eg if there were
   // no new entries added since the last landmark).
@@ -505,21 +515,21 @@ class MtcLogBuilder {
   //
   // Landmark numbers can be used to form Trust Anchor IDs
   // https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#section-6.3.1-4
-  std::pair<LandmarkNumber, LandmarkNumber> GetActiveLandmarkRange() {
+  std::pair<LandmarkNumber, LandmarkNumber> GetActiveLandmarkRange() const {
     return {0, landmarks_.size() - 1};
   }
 
   // Returns the currently active landmark subtrees.
   //
   // https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#section-6.3.1-7
-  std::vector<bssl::Subtree> GetLandmarkSubtrees();
+  std::vector<bssl::Subtree> GetLandmarkSubtrees() const;
 
   // Returns the subtrees and subtree hashes for the currently active
   // landmarks. This information is needed by the client to verify
   // signatureless certificates.
   //
   // https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#trusted-subtrees
-  std::vector<bssl::TrustedSubtree> GetLandmarkSubtreeHashes();
+  std::vector<bssl::TrustedSubtree> GetLandmarkSubtreeHashes() const;
 
   // Add entry to the log and return the index of the entry.
   // Once the index is included in a landmark subtree, the index can be used
@@ -548,6 +558,14 @@ class MtcLogBuilder {
   // of a byte vector, or returns nullptr on error.
   bssl::UniquePtr<CRYPTO_BUFFER> CreateSignaturelessCertificateBuffer(
       LogIndex index);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Helper to fill a MtcAnchorData protobuf object with the information from
+  // this log.
+  // TODO(crbug.com/469624806): convert more tests to use this.
+  void FillMtcMetadataAnchorProto(
+      chrome_root_store::MtcAnchorData* mtc_anchor_data) const;
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
  private:
   class Data;
@@ -603,6 +621,7 @@ class MtcLogBuilder {
   std::vector<LogIndex> landmarks_;
 
   std::vector<uint8_t> log_id_;
+  std::vector<uint8_t> base_id_;
 
   std::unique_ptr<Data> data_;
 };

@@ -1191,31 +1191,57 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   }
 
   // Install MTC metadata update that contains Trust AnchorIDs for
-  // signatureless MTCs. These TAIs should not be used yet since no MTC Anchor
-  // has been loaded, however we should see that the regular TAIs are still
-  // unchanged even though the MTC Metadata component loaded before the CRS
-  // component.
+  // signatureless MTCs. Before we've loaded a CRS update proto, these TAIs
+  // should be used if they match the log_ids of the compiled-in trusted MTC
+  // anchors. The TAIs for the compiled-in classic trust anchors should also
+  // still be present.
   {
     chrome_root_store::MtcMetadata mtc_metadata_proto;
     mtc_metadata_proto.set_update_time_seconds(
         SecondsSinceEpoch(base::Time::Now()));
-    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
-        mtc_metadata_proto.add_mtc_anchor_data();
-    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
-        {0x04, 0x05});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_min_active_landmark_inclusive(1);
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_last_landmark_inclusive(2);
+
+    // MTC anchor metadata matching the fake MTC anchor that will be loaded in
+    // the CRS update proto in the next part of the test.
+    {
+      chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+          mtc_metadata_proto.add_mtc_anchor_data();
+      mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+      mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+          {0x04, 0x05});
+      mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+          ->set_min_active_landmark_inclusive(1);
+      mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+          ->set_last_landmark_inclusive(2);
+    }
+
+    // MTC anchor metadata matching a compiled-in MTC anchor.
+    auto builtin_trusted_mtc_logids =
+        net::TrustStoreChrome::GetTrustedMtcLogIDsFromCompiledInRootStore();
+    if (!builtin_trusted_mtc_logids.empty()) {
+      chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+          mtc_metadata_proto.add_mtc_anchor_data();
+      mtc_anchor_metadata->set_log_id(
+          base::as_string_view(builtin_trusted_mtc_logids[0]));
+      mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+          {0x09, 0x09});
+      mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+          ->set_min_active_landmark_inclusive(1);
+      mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+          ->set_last_landmark_inclusive(2);
+    }
+
     InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    // Test that the set of Trust Anchor IDs is still the compiled-in ones.
+    // Test that the set of Trust Anchor IDs is the compiled-in ones plus the
+    // one matching the builtin MTC Anchor that we added a matching metadata.
     std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
         net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+    if (GetParam() && !builtin_trusted_mtc_logids.empty()) {
+      expected_trust_anchor_ids.push_back({0x09, 0x09, 0x02});
+    }
     base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
     partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
         future.GetCallback());

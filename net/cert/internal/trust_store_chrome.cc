@@ -269,9 +269,8 @@ ChromeRootStoreData::CreateFromRootStoreProto(
 }
 
 ChromeRootStoreData ChromeRootStoreData::CreateFromCompiledRootStore() {
-  // TODO(crbug.com/452983502): Populate initial MTC trust anchors from
-  // compiled-in data.
   return ChromeRootStoreData(kChromeRootCertList, kEutlRootCertList,
+                             kChromeTrustedMtcAnchorList,
                              /*certs_are_static=*/true,
                              /*version=*/CompiledChromeRootStoreVersion());
 }
@@ -279,14 +278,16 @@ ChromeRootStoreData ChromeRootStoreData::CreateFromCompiledRootStore() {
 ChromeRootStoreData ChromeRootStoreData::CreateForTesting(
     base::span<const ChromeRootCertInfo> certs,
     base::span<const base::span<const uint8_t>> eutl_certs,
+    base::span<const ChromeMtcAnchorInfo> mtc_anchors,
     int64_t version) {
-  return ChromeRootStoreData(certs, eutl_certs,
+  return ChromeRootStoreData(certs, eutl_certs, mtc_anchors,
                              /*certs_are_static=*/false, version);
 }
 
 ChromeRootStoreData::ChromeRootStoreData(
     base::span<const ChromeRootCertInfo> certs,
     base::span<const base::span<const uint8_t>> eutl_certs,
+    base::span<const ChromeMtcAnchorInfo> mtc_anchors,
     bool certs_are_static,
     int64_t version)
     : version_(version) {
@@ -336,6 +337,17 @@ ChromeRootStoreData::ChromeRootStoreData(
     CHECK(parsed);
     eutl_certs_.emplace_back(std::move(parsed),
                              std::vector<ChromeRootCertConstraints>());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kVerifyMTCs)) {
+    for (const auto& mtc_anchor_info : mtc_anchors) {
+      std::vector<ChromeRootCertConstraints> cert_constraints;
+      for (const auto& constraint : mtc_anchor_info.constraints) {
+        cert_constraints.emplace_back(constraint);
+      }
+      mtc_trust_anchors_.emplace_back(base::ToVector(mtc_anchor_info.log_id),
+                                      std::move(cert_constraints));
+    }
   }
 }
 
@@ -572,7 +584,8 @@ std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
     ConstraintOverrideMap override_constraints) {
   // Note: wrap_unique is used because the constructor is private.
   return base::WrapUnique(new TrustStoreChrome(
-      ChromeRootStoreData::CreateForTesting(certs, eutl_certs, version),
+      ChromeRootStoreData::CreateForTesting(certs, eutl_certs,
+                                            /*mtc_anchors=*/{}, version),
       /*mtc_metadata=*/nullptr, std::move(override_constraints)));
 }
 
@@ -592,6 +605,22 @@ TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(
     }
   }
   return trust_anchor_ids;
+}
+
+// static
+std::vector<std::vector<uint8_t>>
+TrustStoreChrome::GetTrustedMtcLogIDsFromCompiledInRootStore(
+    base::span<const ChromeMtcAnchorInfo> anchor_list_for_testing) {
+  // TODO(crbug.com/465497426): This method should check the version
+  // constraints and not include log IDs for anchors that can't work
+  // on the running chrome version.
+  std::vector<std::vector<uint8_t>> log_ids;
+  for (const auto& anchor :
+       (anchor_list_for_testing.empty() ? kChromeTrustedMtcAnchorList
+                                        : anchor_list_for_testing)) {
+    log_ids.emplace_back(base::ToVector(anchor.log_id));
+  }
+  return log_ids;
 }
 
 int64_t CompiledChromeRootStoreVersion() {
