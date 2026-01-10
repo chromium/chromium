@@ -49,6 +49,8 @@ build_webui("build") {
     "file_thumbnail.ts",
     "file_thumbnail.html.ts",
     "icons.html.ts",
+    "threads_rail.html.ts",
+    "threads_rail.ts",
     "window_proxy.ts",
   ]
   css_files = [
@@ -65,6 +67,7 @@ build_webui("build") {
     "recent_tab_chip.css",
     "file_carousel.css",
     "file_thumbnail.css",
+    "threads_rail.css",
   ]
 
   mojo_files_deps = [

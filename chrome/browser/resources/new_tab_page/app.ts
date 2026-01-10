@@ -11,6 +11,7 @@ import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_components/composebox/composebox.js';
+import 'chrome://resources/cr_components/composebox/threads_rail.js';
 
 import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';

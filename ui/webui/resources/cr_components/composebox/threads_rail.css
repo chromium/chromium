@@ -1,0 +1,49 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  background-color: var(--google-grey-100);
+  display: block;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  z-index: 1001; /* Above the one google bar (1000) z-index. */
+  transform: translateX(0);
+  transition: transform 300ms cubic-bezier(0.2, 0.0, 0, 1.0);
+  animation: slide-in 300ms cubic-bezier(0.2, 0.0, 0, 1.0);
+}
+
+@keyframes slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+#rail {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 61px;
+  height: 100%;
+  padding: 30px 18px 0 18px;
+  width: 76px;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-size: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}

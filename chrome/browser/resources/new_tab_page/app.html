@@ -73,6 +73,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
               @voice-search-action="${this.onComposeVoiceSearchAction_}"
               searchbox-layout-mode="${this.realboxLayoutMode_}">
           </cr-composebox>
+          ${this.enableThreadsRail_ ? html`
+            <cr-threads-rail id="threadsRail">
+            </cr-threads-rail>
+          ` : ''}
         </dialog>
       ` : html`
         <cr-composebox id="composebox"
@@ -84,6 +88,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             @voice-search-query="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">
         </cr-composebox>
+        ${this.enableThreadsRail_ ? html`
+          <cr-threads-rail id="threadsRail">
+          </cr-threads-rail>
+        ` : ''}
       `}
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
