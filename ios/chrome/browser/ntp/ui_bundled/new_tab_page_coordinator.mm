@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -1023,12 +1022,6 @@
 #pragma mark - ContentSuggestionsDelegate
 
 - (void)contentSuggestionsWasUpdated {
-  // Force a layout to make sure the frame height is successfully updated,
-  // before updating height above the feed.
-  UIView* contentSuggestionsView =
-      self.NTPViewController.contentSuggestionsViewController.view;
-  [contentSuggestionsView setNeedsLayout];
-  [contentSuggestionsView layoutIfNeeded];
   [self.NTPViewController updateHeightAboveFeed];
 }
 
