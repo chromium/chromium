@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">移除分頁並離開群組</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{最多可加入 <ph name="LIMIT_COUNT_ONE" /> 個檔案、分頁或圖片}other{最多可加入 <ph name="LIMIT_COUNT_MANY" /> 個檔案、分頁或圖片}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5627941783489838464">沒有分頁更新</translation>

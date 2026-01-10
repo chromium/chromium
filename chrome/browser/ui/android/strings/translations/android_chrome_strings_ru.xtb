@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">Только на этом устройстве</translation>
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4188221736490993796">По алфавиту (от Я до А)</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome заблокировал отправку уведомлений с этого сайта из-за спама или недостоверной информации.}one{Chrome заблокировал отправку уведомлений с этих сайтов из-за спама или недостоверной информации.}few{Chrome заблокировал отправку уведомлений с этих сайтов из-за спама или недостоверной информации.}many{Chrome заблокировал отправку уведомлений с этих сайтов из-за спама или недостоверной информации.}other{Chrome заблокировал отправку уведомлений с этих сайтов из-за спама или недостоверной информации.}}</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 вкладка на этом устройстве}one{# вкладка на этом устройстве}few{# вкладки на этом устройстве}many{# вкладок на этом устройстве}other{# вкладки на этом устройстве}}</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">Поделиться ссылкой</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Все равно скачать файл <ph name="FILE_NAME" />?</translation>
+<translation id="5847265694842662173">Chrome заблокировал отправку уведомлений с ненадежных и давно не посещавшихся сайтов.</translation>
 <translation id="5848257610304005265">Открыть PDF-файл в приложении "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Закрыть доступ?</translation>
 <translation id="5853623416121554550">пауза</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">Открыть Справочный центр Chrome в новой вкладке</translation>
 <translation id="59577092665511740">Выбор аккаунта.</translation>
 <translation id="5958275228015807058">Файлы и страницы, которые вы скачали, находятся в разделе "Скачанные файлы".</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome заблокировал отправку уведомлений с сайта, который вы давно не посещали.}one{Chrome заблокировал отправку уведомлений с сайтов, которые вы давно не посещали.}few{Chrome заблокировал отправку уведомлений с сайтов, которые вы давно не посещали.}many{Chrome заблокировал отправку уведомлений с сайтов, которые вы давно не посещали.}other{Chrome заблокировал отправку уведомлений с сайтов, которые вы давно не посещали.}}</translation>
 <translation id="5962718611393537961">Нажмите, чтобы свернуть</translation>
 <translation id="5964869237734432770">Не генерировать описания</translation>
 <translation id="5972844218283131174">Отменить выбор</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">Всё нужное всегда под рукой</translation>
 <translation id="8477178913400731244">Удалить данные</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="FILE_SIZE" /> <ph name="SEPARATOR" /></translation>
+<translation id="8491317241605644838">Нет неактивных окон</translation>
 <translation id="8493948351860045254">Освободить место</translation>
 <translation id="8497242791509864205">Открыть параметры сортировки</translation>
 <translation id="8497480609928300907">Пояснение для руководства по конфиденциальности</translation>
@@ -1903,6 +1907,7 @@
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8965591936373831584">ожидание</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
+<translation id="8969796057708736017">Скачивание завершится, если файл соответствует правилам вашей организации</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="8972098258593396643">Скачать в папку по умолчанию?</translation>
 <translation id="8992769679401294069">Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chrome и сохранять их в аккаунте Google.</translation>

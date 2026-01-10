@@ -724,6 +724,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4180726336228139707">Alleen op dit apparaat</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4188221736490993796">Sorteren van Z tot A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome heeft voorkomen dat deze site meldingen stuurt vanwege spam of misleidende content}other{Chrome heeft voorkomen dat deze sites meldingen sturen vanwege spam of misleidende content}}</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tabblad op dit apparaat}other{# tabbladen op dit apparaat}}</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
@@ -1116,6 +1117,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5833984609253377421">Link delen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Wil je <ph name="FILE_NAME" /> toch downloaden?</translation>
+<translation id="5847265694842662173">Chrome heeft voorkomen dat malafide en ongebruikte sites meldingen sturen</translation>
 <translation id="5848257610304005265">Pdf openen met <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Delen stoppen?</translation>
 <translation id="5853623416121554550">onderbroken</translation>
@@ -1144,6 +1146,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5956665950594638604">Helpcentrum van Chrome openen in een nieuw tabblad</translation>
 <translation id="59577092665511740">Kies een account.</translation>
 <translation id="5958275228015807058">Vind je bestanden en pagina's in Downloads</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome heeft voorkomen dat een site die je niet recent hebt bezocht, je meldingen stuurt}other{Chrome heeft voorkomen dat sites die je niet recent hebt bezocht, je meldingen sturen}}</translation>
 <translation id="5962718611393537961">Tik om samen te vouwen</translation>
 <translation id="5964869237734432770">Afbeeldingsbeschrijvingen stoppen</translation>
 <translation id="5972844218283131174">Alles deselecteren</translation>
@@ -1804,6 +1807,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="847433688444405067">Browse op verschillende apparaten</translation>
 <translation id="8477178913400731244">Gegevens verwijderen</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Geen inactieve vensters</translation>
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>
 <translation id="8497242791509864205">Sorteeropties openen</translation>
 <translation id="8497480609928300907">Uitleg over privacygids</translation>

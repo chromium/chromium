@@ -3063,6 +3063,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3038612606416062604">Gehitu inprimagailu bat eskuz</translation>
 <translation id="3038628620670416486">Bilatu saguaren botoiak</translation>
 <translation id="3039491566278747710">Ezin izan da instalatu konexiorik gabeko gidalerroa gailuan.</translation>
+<translation id="303955801043931176">Fitxa itxi da</translation>
 <translation id="3040435070100611531">Google Diru-zorroa zerbitzuko txartelak</translation>
 <translation id="3040982432432547149">Lagun iezaguzu Chromebook-erako Steam hobetzen</translation>
 <translation id="304169924727249890">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> erabiltzailearekin</translation>
@@ -9572,7 +9573,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="756445078718366910">Ireki arakatzailearen leihoa</translation>
 <translation id="7564847347806291057">Amaitu prozesua</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan edo arakatu sarea <ph name="LINK_2_BEGIN" />ezkutuko moduko leiho<ph name="LINK_2_END" /> bat erabilita.</translation>
-<translation id="7566118625369982896">Kudeatu Play-ko aplikazioen estekak</translation>
+<translation id="7566118625369982896">Kudeatu Google Play-ko aplikazioen estekak</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Sortu tekla-konbinazio bat</translation>
 <translation id="7567100268516475532">Eraman fitxa ikuspegi zatitura</translation>

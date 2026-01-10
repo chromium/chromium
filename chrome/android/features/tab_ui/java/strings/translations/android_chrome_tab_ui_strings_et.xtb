@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Eemaldage vahekaart ja lahkuge grupist</translation>
 <translation id="5490235265819901748">Vahelehegruppi laiendati</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Lisage kuni <ph name="LIMIT_COUNT_ONE" /> fail, vahekaart või pilt.}other{Lisage kuni <ph name="LIMIT_COUNT_MANY" /> faili, vahekaarti või pilti.}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Poe teabe vaatamine, valik saadaval ekraanikuva ülaosas</translation>
 <translation id="5627941783489838464">Vahelehtede värskendused puuduvad</translation>

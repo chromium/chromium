@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Uklonite karticu i napustite grupu</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Dodajte najviše <ph name="LIMIT_COUNT_ONE" /> datoteku, karticu ili sliku}one{Dodajte najviše <ph name="LIMIT_COUNT_MANY" /> datoteku, karticu ili sliku}few{Dodajte najviše <ph name="LIMIT_COUNT_MANY" /> datoteke, kartice ili slike}other{Dodajte najviše <ph name="LIMIT_COUNT_MANY" /> datoteka, kartica ili slika}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zatvorite grupu kartica s <ph name="TABS_COUNT_ONE" /> karticom, <ph name="COLOR_NAME" /> boja.}one{Zatvorite grupu kartica s <ph name="TABS_COUNT_MANY" /> karticom, <ph name="COLOR_NAME" /> boja.}few{Zatvorite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartice, <ph name="COLOR_NAME" /> boja.}other{Zatvorite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja.}}</translation>
 <translation id="5556417849629758491">Pogledajte podatke o trgovini, opciju koja je dostupna pri vrhu zaslona</translation>
 <translation id="5627941783489838464">Nema ažuriranja kartica</translation>

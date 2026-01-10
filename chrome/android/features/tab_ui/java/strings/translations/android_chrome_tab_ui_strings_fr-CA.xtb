@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Retirer l'onglet et quitter le groupe</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Ajoutez jusqu'à <ph name="LIMIT_COUNT_ONE" /> fichier, onglet ou image}one{Ajoutez jusqu'à <ph name="LIMIT_COUNT_MANY" /> fichier, onglet ou image}other{Ajoutez jusqu'à <ph name="LIMIT_COUNT_MANY" /> fichiers, onglets ou images}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
 <translation id="5627941783489838464">Aucune mise à jour des onglets</translation>

@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="4181841719683918333">ენები</translation>
 <translation id="4188221736490993796">ჰ-დან ა-მდე დალაგება</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-მა გააჩერა ამ საიტის მიერ შეტყობინებების გაგზავნა სპამის ან შეცდომაში შემყვანი კონტენტის გამო}other{Chrome-მა გააჩერა ამ საიტების მიერ შეტყობინებების გაგზავნა სპამის ან შეცდომაში შემყვანი კონტენტის გამო}}</translation>
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ჩანართი ამ მოწყობილობაზე}other{# ჩანართი ამ მოწყობილობაზე}}</translation>
 <translation id="4198423547019359126">ჩამოსატვირთი მდებარეობები მიუწვდომელია</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">ბმულის გაზიარება</translation>
 <translation id="5839058148541733625">Chrome დინოზავრი</translation>
 <translation id="5841444063256914865">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“?</translation>
+<translation id="5847265694842662173">Chrome-მა შეწყვიტა წესების დამრღვევი და გამოუყენებელი საიტების მიერ შეტყობინებების გაგზავნა</translation>
 <translation id="5848257610304005265">გსურთ, PDF გახსნათ <ph name="APP_NAME" />-ით?</translation>
 <translation id="5849288995120328556">გსურთ, შეწყვიტოთ გაზიარება?</translation>
 <translation id="5853623416121554550">დაპაუზებულია</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">Chrome-ის დახმარების ცენტრის ახალ ჩანართში გახსნა</translation>
 <translation id="59577092665511740">აირჩიეთ ანგარიში.</translation>
 <translation id="5958275228015807058">თქვენი ფაილები და გვერდები ხელმისაწვდომია „ჩამოტვირთვების“ სექციაში</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-მა გააჩერა იმ საიტის მიერ თქვენთვის შეტყობინებების გაგზავნა, რომელზეც ბოლო დროს არ შესულხართ}other{Chrome-მა გააჩერა იმ საიტების მიერ თქვენთვის შეტყობინებების გაგზავნა, რომლებზეც ბოლო დროს არ შესულხართ}}</translation>
 <translation id="5962718611393537961">შეეხეთ ჩასაკეცად</translation>
 <translation id="5964869237734432770">სურათების აღწერის შეწყვეტა</translation>
 <translation id="5972844218283131174">ყველა არჩევანის გაუქმება</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">დაათვალიერეთ ყველა მოწყობილობაზე</translation>
 <translation id="8477178913400731244">მონაცემების წაშლა</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">არააქტიური ფანჯრები არ არის</translation>
 <translation id="8493948351860045254">მეხსიერების გამოთავისუფლება</translation>
 <translation id="8497242791509864205">დალაგების ვარიანტების გახსნა</translation>
 <translation id="8497480609928300907">კონფიდენციალურობის სახელმძღვანელოს განმარტება</translation>
@@ -1903,6 +1907,7 @@
 <translation id="8963117664422609631">საიტის პარამეტრებზე გადასვლა</translation>
 <translation id="8965591936373831584">მომლოდინე</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_ONE" /> სხვა ჩანართი დაიხურება}other{<ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_MANY" /> სხვა ჩანართი დაიხურება}}</translation>
+<translation id="8969796057708736017">თქვენი ჩამოტვირთვა შესრულდება, თუ ფაილი შეესაბამება თქვენი ორგანიზაციის წესებს</translation>
 <translation id="8970887620466824814">წარმოიქმნა შეფერხება.</translation>
 <translation id="8972098258593396643">გსურთ ნაგულისხმევ საქაღალდეში ჩამოტვირთვა?</translation>
 <translation id="8992769679401294069">თქვენი მონაცემები დაშიფრულია თქვენი საიდუმლო ფრაზით. შეიყვანეთ ის, თქვენს Google ანგარიშში Chrome-ის მონაცემები რომ გამოიყენოთ და შეინახოთ.</translation>

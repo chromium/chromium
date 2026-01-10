@@ -567,6 +567,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7347827960336370838">Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Google parol ifadəsini əldə etmir və ya saxlamır. Parol ifadəsini unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə, <ph name="BEGIN_LINK" />hesabınızdakı Chromium datasını silməlisiniz<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Sistem administratorunun konfiqurasiyasına əsasən Chromium <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq üçün <ph name="ALTERNATIVE_BROWSER_NAME" /> tətbiqini aça bilər.</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
+<translation id="7368826207863345663">Chromium güncəlləmələrini əldə etmək üçün macOS 13 və ya yeni versiya tələb olunur. Bu kompüter macOS 12 versiyasından istifadə edir.</translation>
 <translation id="7376384068949534168">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Bu artırma artıq dəstəklənmir. Chromium onu silməyinizi tövsiyə edir.</translation>
 <translation id="7413153308467572558">Qaldığınız yerdən davam edin: Chromium hər dəfə yenidən başladıldıqda tablarınızı bərpa edir. Bunu deaktiv etmək üçün keçin:</translation>

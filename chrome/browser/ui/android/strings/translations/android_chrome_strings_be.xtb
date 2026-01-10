@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">Толькі на гэтай прыладзе</translation>
 <translation id="4181841719683918333">Мовы</translation>
 <translation id="4188221736490993796">Па алфавіце (ад Я да А)</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Браўзер Chrome забараніў гэтаму сайту адпраўляць апавяшчэнні з-за спама ці падманнага змесціва}one{Браўзер Chrome забараніў гэтым сайтам адпраўляць апавяшчэнні з-за спама ці падманнага змесціва}few{Браўзер Chrome забараніў гэтым сайтам адпраўляць апавяшчэнні з-за спама ці падманнага змесціва}many{Браўзер Chrome забараніў гэтым сайтам адпраўляць апавяшчэнні з-за спама ці падманнага змесціва}other{Браўзер Chrome забараніў гэтым сайтам адпраўляць апавяшчэнні з-за спама ці падманнага змесціва}}</translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 укладка на гэтай прыладзе}one{# укладка на гэтай прыладзе}few{# укладкі на гэтай прыладзе}many{# укладак на гэтай прыладзе}other{# укладкі на гэтай прыладзе}}</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5839058148541733625">Дыназаўр у Chrome</translation>
 <translation id="5841444063256914865">Усё роўна спампаваць файл "<ph name="FILE_NAME" />"?</translation>
+<translation id="5847265694842662173">Браўзер Chrome забараніў сайтам, якія парушаюць правілы і якія вы не наведваеце, адпраўляць апавяшчэнні</translation>
 <translation id="5848257610304005265">Адкрываць PDF у праграме "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Спыніць абагульванне?</translation>
 <translation id="5853623416121554550">прыпынена</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">Адкрыць Даведачны цэнтр Chrome у новай укладцы</translation>
 <translation id="59577092665511740">Выберыце ўліковы запіс.</translation>
 <translation id="5958275228015807058">Знайсці файлы і старонкі можна ў раздзеле "Спампоўкі"</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Браўзер Chrome забараніў сайту, які вы даўно не наведвалі, адпраўляць вам апавяшчэнні}one{Браўзер Chrome забараніў сайтам, якія вы даўно не наведвалі, адпраўляць вам апавяшчэнні}few{Браўзер Chrome забараніў сайтам, якія вы даўно не наведвалі, адпраўляць вам апавяшчэнні}many{Браўзер Chrome забараніў сайтам, якія вы даўно не наведвалі, адпраўляць вам апавяшчэнні}other{Браўзер Chrome забараніў сайтам, якія вы даўно не наведвалі, адпраўляць вам апавяшчэнні}}</translation>
 <translation id="5962718611393537961">Каб згарнуць, націсніце тут</translation>
 <translation id="5964869237734432770">Не атр. апісанні відарысаў</translation>
 <translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">Праглядайце на розных прыладах</translation>
 <translation id="8477178913400731244">Выдаліць даныя</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Няма неактыўных акон</translation>
 <translation id="8493948351860045254">Вызваліць месца</translation>
 <translation id="8497242791509864205">Адкрыць параметры сартавання</translation>
 <translation id="8497480609928300907">Тлумачэнні адносна дапаможніка па прыватнасці</translation>
@@ -1903,6 +1907,7 @@
 <translation id="8963117664422609631">Перайсці ў налады сайтаў</translation>
 <translation id="8965591936373831584">у стане чакання</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>
+<translation id="8969796057708736017">Спампоўванне будзе завершана, калі файл будзе адпавядаць правілам вашай арганізацыі</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8972098258593396643">Спампаваць у стандартную папку?</translation>
 <translation id="8992769679401294069">Вашы даныя зашыфраваны фразай-паролем. Каб захоўваць даныя Chrome ва Уліковым запісе Google і выкарыстоўваць іх, увядзіце фразу-пароль.</translation>

@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Jūsu administrators bloķēja dažas funkcijas šajā ierīcē</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vēlas atjaunot jūsu sākotnējos Chrome noklusējuma iestatījumus. Tādējādi tiks atiestatīta sākumlapa, jaunas cilnes lapa un meklētājprogramma, kā arī tiks atspējoti paplašinājumi un tiks atspraustas visas cilnes. Tiks notīrīti citi īslaicīgi glabātie dati un kešatmiņā saglabātie dati, piemēram, sīkfaili, satura un vietņu dati.</translation>
 <translation id="1082725763867769612">Bezsaistes faili</translation>
+<translation id="1083050113196701330">Atjauninājumu pārbaude ir sekmīgi pabeigta. Nebija pieejams neviens atjauninājums.</translation>
 <translation id="1084026333130513768">Saglabāt, kopīgot un apraidīt</translation>
 <translation id="1084096383128641877">Noņemot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="DOMAIN" />. Nomainiet savu paroli vai dzēsiet savu kontu vietnē <ph name="DOMAIN_LINK" />, lai aizsargātu to no citām personām.</translation>
 <translation id="1084288067399862432">Uzlauztā parole tika sekmīgi nomainīta.
@@ -736,6 +737,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1486486872607808064">Skenējiet šo kvadrātkodu, izmantojot tās ierīces kameru, kurā vēlaties izveidot piekļuves atslēgu lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="1486616492435615702">Izveidojiet melnrakstu vai uzlabojiet jau paveikto.</translation>
 <translation id="1487335504823219454">Ieslēgta — pielāgoti iestatījumi</translation>
+<translation id="1488513761150925974">Skatīt uzdevumus</translation>
 <translation id="1489101155914355052">Notiek ieteikumu ģenerēšana šim dokumentam…</translation>
 <translation id="1493152297698462486">Attēla izveide, izmantojot Gemini</translation>
 <translation id="1493892686965953381">Gaida <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3063,6 +3065,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3038612606416062604">Printera manuāla pievienošana</translation>
 <translation id="3038628620670416486">Atrodiet pogas uz peles</translation>
 <translation id="3039491566278747710">Neizdevās ierīcē instalēt bezsaistes politiku.</translation>
+<translation id="303955801043931176">Cilne ir slēgta</translation>
 <translation id="3040435070100611531">Jūsu kartes lietotnē Google maks</translation>
 <translation id="3040982432432547149">Palīdziet mums uzlabot lietotni Steam Chromebook datoriem</translation>
 <translation id="304169924727249890">Pievienošanās ciļņu grupai, ko izmanto dalībnieks <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3626,6 +3629,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3450180775417907283"><ph name="MANAGER" /> pieprasa, lai jūs tūlīt izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> — jūs kopīgojat šo cilni ar Gemini</translation>
 <translation id="345078987193237421">Tādējādi kamerai drīkstēs piekļūt lietotnes, vietnes ar kameras atļauju un sistēmas pakalpojumi.</translation>
+<translation id="345163758690017738">Notiek jūsu uzdevuma apstrāde…</translation>
 <translation id="3452999110156026232">Vecāku piekļuve</translation>
 <translation id="3453082738208775226">Vai atbrīvot vietu bezsaistes krātuvē?</translation>
 <translation id="3453597230179205517">Piekļuve atrašanās vietas datiem ir bloķēta.</translation>
@@ -3795,6 +3799,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3567284462585300767">Lai varētu saņemt un apstiprināt failus no cilvēkiem tuvumā, jums ir jākļūst redzamam.</translation>
 <translation id="356738834800832239">Parole ir saglabāta</translation>
 <translation id="3568431410312984116">Atļaut automātiski atvērt funkciju “Palīdziet man uzrakstīt”</translation>
+<translation id="3569304198553566878">Rādīto notikumu skaits: <ph name="NUM_DISPLAYED_EVENTS" /> no <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Vai vēlaties, lai lietotne <ph name="APP_NAME" /> kopīgotu jūsu ekrānu?</translation>
 <translation id="3569614820047645079">Jūsu faili, kas atrodas mapē “Mans disks”, tiek automātiski sinhronizēti ar jūsu Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma.</translation>
 <translation id="3569617221227793022">Pašlaik iestatītā laika josla: <ph name="TIME_ZONE_ENTRY" />. Šo iestatījumu pārvalda jūsu administrators.</translation>
@@ -7622,6 +7627,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6206199626856438589">Jūs tiksiet izrakstīts no parādītajām vietnēm, tostarp atvērtajās cilnēs.</translation>
 <translation id="6206311232642889873">Kopēt &amp;attēlu</translation>
 <translation id="6207200176136643843">Atiestatīt noklusējuma tālummaiņas līmeni</translation>
+<translation id="6207795130974856324">Nepieciešama rīcība</translation>
 <translation id="6207937957461833379">Valsts/reģions</translation>
 <translation id="6208521041562685716">Tiek aktivizēti mobilie dati</translation>
 <translation id="6208725777148613371">Neizdevās saglabāt diskā <ph name="WEB_DRIVE" /> — <ph name="INTERRUPT_REASON" /></translation>
@@ -8342,6 +8348,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6715735940363172819">Vietnēm nav atļauts izmantot jūsu mikrofonu</translation>
 <translation id="6716049856796700977">Jūsu atrašanās vietas datus nevar izmantot. Tomēr jūsu atrašanās vieta joprojām var būt redzama lietotnēm un vietnēm, izmantojot jūsu IP adresi. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="6716798148881908873">Tīkla savienojums tika zaudēts. Pārbaudiet tīkla savienojumu vai mēģiniet izveidot savienojumu ar citu Wi-Fi tīklu.</translation>
+<translation id="671868032356459320">Atjaunināšanas rīka tvērums: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Bloķēt ekrānu</translation>
 <translation id="6719839880830057298">Faila augšupielāde ir pabeigta</translation>
 <translation id="6721744718589119342">Mēs varam nosūtīt jums e-pasta ziņojumu, ja mums būs nepieciešama plašāka informācija vai vēlēsimies paziņot jaunumus</translation>
@@ -9191,6 +9198,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7307129035224081534">Apturēta</translation>
 <translation id="7308643132139167865">Vietņu valodas</translation>
 <translation id="7309214454733221756">Vai izveidot piekļuves atslēgu, lai pierakstītos vietnē <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Uzdevumu saraksts</translation>
 <translation id="7311005168897771689">Piekļuve Google diska failiem bezsaistē</translation>
 <translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7312040805247765153">Nevar instalēt lietotni</translation>
@@ -11240,6 +11248,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8680251145628383637">Pierakstieties, lai lietotu savas grāmatzīmes, vēsturi, paroles un citus iestatījumus visās savās ierīcēs. Turklāt jūs tiksiet automātiski pierakstīts savos Google pakalpojumos.</translation>
 <translation id="8681886425883659911">Reklāmas tiek bloķētas vietnēs, kurās ir konstatēta traucējošu vai maldinošu reklāmu rādīšana</translation>
 <translation id="8682730193597992579">Printeris <ph name="PRINTER_NAME" /> ir pievienots un gatavs darbam</translation>
+<translation id="8683720831806477407">Atjaunināšanas rīka tvērums</translation>
 <translation id="8684471948980641888">Atļaut sinhronizāciju maksas tīklos</translation>
 <translation id="8685540043423825702">Jūsu Chrome profils</translation>
 <translation id="8685882652128627032">Noklikšķiniet, lai atvērtu dialoglodziņu “Pievienojiet meklēšanu vietnē”</translation>
@@ -12063,6 +12072,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9220723036554088545">augšupielādējiet failu</translation>
 <translation id="9220820413868316583">Paceliet pirkstu un pēc tam mēģiniet vēlreiz.</translation>
 <translation id="922152298093051471">Pielāgot pārlūkprogrammu Chrome</translation>
+<translation id="9222839391870847423">Ilgums: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Rādīt visus</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Lai to pārvaldītu, atveriet sadaļu “Paplašinājumi”.}zero{Lai tos pārvaldītu, atveriet sadaļu “Paplašinājumi”.}one{Lai tos pārvaldītu, atveriet sadaļu “Paplašinājumi”.}other{Lai tos pārvaldītu, atveriet sadaļu “Paplašinājumi”.}}</translation>
 <translation id="924818813611903184">Valodu pārvaldība Chrome OS iestatījumos</translation>

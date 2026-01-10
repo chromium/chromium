@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ລຶບແຖບອອກ ແລະ ອອກຈາກກຸ່ມ</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ <ph name="LIMIT_COUNT_ONE" /> ລາຍການ}other{ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ <ph name="LIMIT_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5627941783489838464">ບໍ່ມີການອັບເດດແຖບ</translation>

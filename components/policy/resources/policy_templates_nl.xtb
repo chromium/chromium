@@ -2221,6 +2221,17 @@ Opmerking: Als je een veld overslaat, betekent dit dat alle waarden overeenkomen
 <translation id="2568488785376704318">Dit beleid is beëindigd. Gebruik in plaats daarvan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Gesproken feedback uitzetten</translation>
 <translation id="2570181623957732921"><ph name="DESK_API_NAME" /> aanzetten voor een lijst met domeinen van derden</translation>
+<translation id="2571353268726025696">Dit beleid wordt aangeboden als een manier om je af te melden voor de functie First-party sets (die later is omgedoopt tot de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Als je dit beleid toepast of niet instelt, staat de functie First-party sets aan.
+
+Als je dit beleid niet toepast, staat de functie First-party sets uit.
+
+Het beleid bepaalt of Chrome aan first-party sets gerelateerde integraties ondersteunt.
+
+Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Beide beleidsregels kunnen worden gebruikt en hebben hetzelfde effect op het gedrag van de browser.
+Beide beleidsregels zijn beëindigd na de beëindiging van de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> in <ph name="PRODUCT_NAME" /> versie 144.</translation>
 <translation id="2571821662934804440">Gebruik van functie toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="2573850437942404034">Niet toestaan</translation>
 <translation id="2575198840408498393">Maken van roamingprofielen uitzetten</translation>
@@ -7409,6 +7420,35 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
 <translation id="6087413944876892918">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> gebruiken</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
+<translation id="6089118101413877627">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor first-party sets-functies (die later is omgedoopt tot de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Elke set in de lijst met first-party sets van de browser moet voldoen aan de vereisten van een first-party set.
+Een first-party set moet een primaire site en een of meer lidsites bevatten.
+Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
+Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> first-party sets gebruikt.
+
+Alle sites in een first-party set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een first-party set moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer kan worden vermeld in een first-party set.
+
+Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met first-party sets.
+
+Voor alle sites in een first-party set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, die site wordt verwijderd uit de first-party set van de browser.
+Daarna wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
+
+Voor alle sites in een first-party set uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, een update voor de first-party set van de browser wordt doorgevoerd zodat de nieuwe first-party set kan worden toegevoegd aan de lijst van de browser. Nadat een update voor de lijst van de browser is doorgevoerd, wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
+
+De lijst met first-party sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan één set is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
+
+Jokertekens (*) worden zowel in first-party sets als in deze lijsten niet ondersteund als beleidswaarde.
+
+Alle sets die in dit beleid worden vermeld, moeten geldige first-party sets zijn. Zo niet, dan krijg je de relevante foutmelding.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Beide beleidsregels kunnen worden gebruikt en hebben hetzelfde effect op het gedrag van de browser.
+Beide beleidsregels zijn beëindigd na de beëindiging van de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> in <ph name="PRODUCT_NAME" /> versie 144.</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
 <translation id="6092073071805297119">Toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
@@ -10097,6 +10137,28 @@ Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-e
       Als je het beleid instelt op True, worden de netwerkgebeurtenissen van het apparaat gerapporteerd.</translation>
 <translation id="780629758750905699">Toevoegen van Family Link-accounts aan het apparaat toestaan</translation>
 <translation id="7807139251387225825">Lijst met typen die moeten worden uitgesloten van synchronisatie</translation>
+<translation id="7812285231594048601">Dit beleid is beëindigd. Gebruik in plaats daarvan <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" />.
+
+Standaardgedrag (beleid niet ingesteld)
+Als een account wordt toegevoegd in het contentgedeelte, verschijnt er een klein dialoogvenster met de vraag om een nieuw profiel te maken. Dit dialoogvenster kan worden gesloten.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Als een gebruiker voor het eerst inlogt bij een Google-service in een <ph name="PRODUCT_NAME" />-browser, verschijnt een dialoogvenster met de vraag of de gebruiker een nieuw profiel wil maken voor het werkaccount. De gebruiker kan op Annuleren klikken en worden uitgelogd, of op Doorgaan om een nieuw profiel te maken. Bestaande browsegegevens worden niet toegevoegd aan het nieuwe profiel. Het nieuwe profiel mag secundaire accounts hebben: de gebruiker kan bijvoorbeeld inloggen op een ander account in het contentgedeelte.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, behalve dat het nieuwe profiel geen secundaire accounts mag hebben.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, behalve dat er een selectievakje wordt toegevoegd aan het dialoogvenster waarmee de gebruiker lokale browsegegevens kan bewaren.
+Als de gebruiker het selectievakje aanvinkt, worden de bestaande profielgegevens gekoppeld aan het beheerde account.
+- Alle bestaande browsegegevens zijn aanwezig in het nieuwe profiel.
+- Deze gegevens omvatten o.a. bookmarks, geschiedenis, wachtwoorden, gegevens voor automatisch invullen, geopende tabbladen, cookies, cache, webopslag en extensies.
+Als de gebruiker het selectievakje niet aanvinkt, gebeurt het volgende:
+- Het oude profiel blijft bestaan en er gaan geen gegevens verloren.
+- Er wordt een nieuw profiel gemaakt.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, behalve dat het nieuwe profiel geen secundaire accounts mag hebben.</translation>
 <translation id="781268256210530471">Instellingen voor plug-ins</translation>
 <translation id="7816326058023670173">Geheim gedeeld tussen het apparaat van het kind en het apparaat van de ouder.</translation>
 <translation id="7818131573217430250">De standaardstatus van de modus voor hoog contrast op het inlogscherm instellen</translation>

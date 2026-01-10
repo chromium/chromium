@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">O administrador bloqueou algumas funcionalidades do dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> deseja restaurar as configurações do Chrome aos padrões originais. Isso redefinirá sua página inicial, a página "Nova guia" e mecanismo de pesquisa, desativará suas extensões e liberará todas as guias. Além disso, outros dados temporários e dados armazenados em cache, tais como cookies, conteúdo e dados de site, também serão limpos.</translation>
 <translation id="1082725763867769612">Arquivos off-line</translation>
+<translation id="1083050113196701330">A verificação de atualizações foi concluída. Nenhuma atualização estava disponível</translation>
 <translation id="1084026333130513768">Salvar, compartilhar e transmitir</translation>
 <translation id="1084096383128641877">Remover a senha não excluirá a conta em <ph name="DOMAIN" />. Mude a senha ou exclua a conta em <ph name="DOMAIN_LINK" /> para protegê-la.</translation>
 <translation id="1084288067399862432">A senha comprometida foi alterada.
@@ -736,6 +737,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1486486872607808064">Leia este QR code com uma câmera no dispositivo em que você quer criar uma chave de acesso para <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crie um rascunho ou refine um trabalho.</translation>
 <translation id="1487335504823219454">Sincronização ativada - configurações personalizadas</translation>
+<translation id="1488513761150925974">Veja suas tarefas</translation>
 <translation id="1489101155914355052">Gerando sugestões para este documento…</translation>
 <translation id="1493152297698462486">Crie uma imagem com o Gemini</translation>
 <translation id="1493892686965953381">Aguardando <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3074,6 +3076,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3038612606416062604">Adicionar uma impressora manualmente</translation>
 <translation id="3038628620670416486">Localizar botões do mouse</translation>
 <translation id="3039491566278747710">Falha ao instalar a política off-line no dispositivo.</translation>
+<translation id="303955801043931176">Guia fechada</translation>
 <translation id="3040435070100611531">Seus cartões da Carteira do Google</translation>
 <translation id="3040982432432547149">Ajude a melhorar o Steam para Chromebook</translation>
 <translation id="304169924727249890">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3640,6 +3643,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3450180775417907283"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para baixar uma atualização.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Você está compartilhando esta guia com o Gemini</translation>
 <translation id="345078987193237421">Permite que apps, sites com essa permissão e serviços do sistema acessem a câmera</translation>
+<translation id="345163758690017738">Trabalhando na sua tarefa…</translation>
 <translation id="3452999110156026232">Acesso do familiar responsável</translation>
 <translation id="3453082738208775226">Limpar o armazenamento off-line?</translation>
 <translation id="3453597230179205517">O acesso à localização está bloqueado</translation>
@@ -3809,6 +3813,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3567284462585300767">Para receber e aceitar arquivos de pessoas à sua volta, fique visível</translation>
 <translation id="356738834800832239">Sua senha foi salva</translation>
 <translation id="3568431410312984116">Permitir que o recurso "Me ajude a escrever" seja aberto automaticamente</translation>
+<translation id="3569304198553566878">Mostrando <ph name="NUM_DISPLAYED_EVENTS" /> de <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Quer que o <ph name="APP_NAME" /> compartilhe sua tela?</translation>
 <translation id="3569614820047645079">Seus arquivos em "Meu Drive" são sincronizados automaticamente com o Chromebook para que possam ser acessados sem uma conexão de Internet.</translation>
 <translation id="3569617221227793022">O fuso horário está definido como <ph name="TIME_ZONE_ENTRY" />. Essas configurações são gerenciadas pelo administrador.</translation>
@@ -7641,6 +7646,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6206199626856438589">Sua conta será desconectada dos sites mostrados, inclusive nas guias abertas</translation>
 <translation id="6206311232642889873">&amp;Copiar imagem</translation>
 <translation id="6207200176136643843">Redefinir para o nível de zoom padrão</translation>
+<translation id="6207795130974856324">Esperando sua ajuda</translation>
 <translation id="6207937957461833379">País/Região</translation>
 <translation id="6208521041562685716">Ativando dados móveis</translation>
 <translation id="6208725777148613371">Falha ao salvar no <ph name="WEB_DRIVE" />: <ph name="INTERRUPT_REASON" /></translation>
@@ -8359,6 +8365,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6715735940363172819">Os sites não podem usar seu microfone</translation>
 <translation id="6716049856796700977">Nada pode usar seu local. No entanto, seu local ainda poderá ficar visível para apps e sites usando seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Conexão de rede perdida. Confira ou tente usar outra rede Wi-Fi.</translation>
+<translation id="671868032356459320">Escopo do atualizador: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Bloquear tela</translation>
 <translation id="6719839880830057298">Upload de arquivo concluído</translation>
 <translation id="6721744718589119342">Podemos enviar e-mails a você pedindo mais informações ou atualizações</translation>
@@ -9208,6 +9215,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7307129035224081534">Pausada</translation>
 <translation id="7308643132139167865">Idiomas de sites</translation>
 <translation id="7309214454733221756">Criar uma chave de acesso para fazer login no app <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Lista de tarefas</translation>
 <translation id="7311005168897771689">Acesse seus arquivos do Google Drive quando estiver off-line</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7312040805247765153">Não foi possível instalar o app</translation>
@@ -11257,6 +11265,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8680251145628383637">Faça login para ter acesso aos seus favoritos, histórico, senhas e outras configurações em todos os seus dispositivos. Sua conta será conectada automaticamente aos seus serviços do Google.</translation>
 <translation id="8681886425883659911">A publicidade é bloqueada em sites que mostram anúncios invasivos ou enganosos</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está conectada e pronta</translation>
+<translation id="8683720831806477407">Escopo do atualizador</translation>
 <translation id="8684471948980641888">Permitir a sincronização em redes limitadas</translation>
 <translation id="8685540043423825702">Seu perfil do Chrome</translation>
 <translation id="8685882652128627032">Clique para abrir a caixa de diálogo "Adicionar pesquisa do site"</translation>
@@ -12079,6 +12088,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9220723036554088545">faça upload de um arquivo</translation>
 <translation id="9220820413868316583">Levante o dedo e tente novamente.</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
+<translation id="9222839391870847423">Duração: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Mostrar tudo</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para gerenciar, abra "Extensões"}one{Para gerenciar, abra "Extensões"}other{Para gerenciar, abra "Extensões"}}</translation>
 <translation id="924818813611903184">Gerenciar idiomas nas configurações do ChromeOS</translation>

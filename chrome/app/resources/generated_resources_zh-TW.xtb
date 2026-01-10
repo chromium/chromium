@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">系統管理員已封鎖這部裝置的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求將您的 Chrome 設定還原成原始預設值。這會重設您的首頁、新分頁和搜尋引擎，停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 也會一併遭到清除。</translation>
 <translation id="1082725763867769612">離線檔案</translation>
+<translation id="1083050113196701330">已完成更新檢查，沒有可用的更新</translation>
 <translation id="1084026333130513768">儲存、分享及投放</translation>
 <translation id="1084096383128641877">移除這組密碼並不會刪除你的 <ph name="DOMAIN" /> 帳戶。請變更密碼或刪除你的 <ph name="DOMAIN_LINK" /> 帳戶，以避免遭到他人盜用。</translation>
 <translation id="1084288067399862432">已成功變更遭外洩的密碼。
@@ -734,6 +735,7 @@
 <translation id="1486486872607808064">使用裝置相機掃描這個 QR code，即可在該裝置上建立「<ph name="APP_NAME" />」的密碼金鑰</translation>
 <translation id="1486616492435615702">建立草稿或潤飾現有作品。</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
+<translation id="1488513761150925974">查看工作</translation>
 <translation id="1489101155914355052">正在生成與這份文件相關的建議…</translation>
 <translation id="1493152297698462486">使用 Gemini 生成圖像</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3061,6 +3063,7 @@
 <translation id="3038612606416062604">手動新增印表機</translation>
 <translation id="3038628620670416486">點選滑鼠按鈕</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
+<translation id="303955801043931176">已關閉分頁</translation>
 <translation id="3040435070100611531">你的 Google 錢包票證</translation>
 <translation id="3040982432432547149">協助我們改善 Chromebook 適用的 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />的分頁群組</translation>
@@ -3623,6 +3626,7 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 正在與 Gemini 分享這個分頁</translation>
 <translation id="345078987193237421">系統服務和具有攝影機權限的應用程式、網站將可存取攝影機</translation>
+<translation id="345163758690017738">處理中…</translation>
 <translation id="3452999110156026232">家長存取</translation>
 <translation id="3453082738208775226">要清理離線儲存空間嗎？</translation>
 <translation id="3453597230179205517">位置資訊存取權已停用</translation>
@@ -3792,6 +3796,7 @@
 <translation id="3567284462585300767">如要與附近的使用者互相傳送檔案，請將裝置設為可供偵測狀態</translation>
 <translation id="356738834800832239">已儲存密碼</translation>
 <translation id="3568431410312984116">允許「幫我寫」功能自動開啟</translation>
+<translation id="3569304198553566878">顯示 <ph name="NUM_DISPLAYED_EVENTS" /> 個，共 <ph name="NUM_TOTAL_EVENTS" /> 個</translation>
 <translation id="3569382839528428029">你想讓 <ph name="APP_NAME" /> 共用你的畫面嗎？</translation>
 <translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。</translation>
 <translation id="3569617221227793022">目前時區設為 <ph name="TIME_ZONE_ENTRY" />。這項設定是由管理員管理。</translation>
@@ -7613,6 +7618,7 @@
 <translation id="6206199626856438589">系統會將你登出所顯示的網站，包含已開啟的分頁</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
+<translation id="6207795130974856324">需要進一步指示</translation>
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208521041562685716">正在啟用行動數據</translation>
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
@@ -8329,6 +8335,7 @@
 <translation id="6715735940363172819">未授權網站使用麥克風</translation>
 <translation id="6716049856796700977">所有應用程式、網站和系統服務都無法使用你的位置資訊。不過，應用程式和網站仍可透過 IP 位址取得你的位置資訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">網路連線已中斷。請檢查網路連線，或改用其他 Wi-Fi 網路。</translation>
+<translation id="671868032356459320">更新工具範圍：<ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
 <translation id="6719839880830057298">檔案上傳完畢</translation>
 <translation id="6721744718589119342">我們可能會透過電子郵件要求提供更多資訊，或告知最新消息</translation>
@@ -9177,6 +9184,7 @@
 <translation id="7307129035224081534">已暫停</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7309214454733221756">要建立用於登入 <ph name="APP_NAME" /> 的密碼金鑰嗎？</translation>
+<translation id="7309517920862730287">工作清單</translation>
 <translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312040805247765153">無法安裝應用程式</translation>
@@ -11226,6 +11234,7 @@
 <translation id="8680251145628383637">只要登入帳戶，你在任何裝置上都能取得自己的書籤、歷史記錄和密碼，並套用相同的設定。此外，系統還會自動讓您登入各項 Google 服務。</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的侵入式廣告或誤導性廣告</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已連接且準備就緒</translation>
+<translation id="8683720831806477407">更新工具範圍</translation>
 <translation id="8684471948980641888">允許透過計量付費網路進行同步處理</translation>
 <translation id="8685540043423825702">你的 Chrome 設定檔</translation>
 <translation id="8685882652128627032">點選即可開啟「新增網站搜尋引擎」對話方塊</translation>
@@ -12047,6 +12056,7 @@
 <translation id="9220723036554088545">上傳檔案</translation>
 <translation id="9220820413868316583">請移開手指，然後再試一次。</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
+<translation id="9222839391870847423">時間長度：<ph name="DURATION" /></translation>
 <translation id="923467487918828349">全部顯示</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{如要管理這個項目，請開啟「擴充功能」}other{如要管理這些項目，請開啟「擴充功能」}}</translation>
 <translation id="924818813611903184">在 Chrome OS 設定中管理語言</translation>

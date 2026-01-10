@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">માત્ર આ જ ડિવાઇસ પર</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4188221736490993796">Zથી A અનુસાર સૉર્ટ કરો</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}one{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}other{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}}</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{આ ડિવાઇસ પર 1 ટૅબ}one{આ ડિવાઇસ પર # ટૅબ}other{આ ડિવાઇસ પર # ટૅબ}}</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">શું તેમ છતાં તમે "<ph name="FILE_NAME" />" ડાઉનલોડ કરવા માગો છો?</translation>
+<translation id="5847265694842662173">Chrome દ્વારા દુરુપયોગ કરનારી અને ઉપયોગમાં ન લેવાતી સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> વડે PDF ખોલીએ?</translation>
 <translation id="5849288995120328556">શેર કરવાનું રોકીએ?</translation>
 <translation id="5853623416121554550">થોભાવેલ</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">Chrome સહાયતા કેન્દ્રમાં એક નવું ટૅબ ખોલો</translation>
 <translation id="59577092665511740">એકાઉન્ટ પસંદ કરો.</translation>
 <translation id="5958275228015807058">ડાઉનલોડમાં તમારી ફાઇલો અને પેજ શોધો</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{તમે તાજેતરમાં મુલાકાત લીધી ન હોય એવી સાઇટને Chrome દ્વારા તમને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}one{Chrome દ્વારા તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી સાઇટને તમને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}other{Chrome દ્વારા તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી સાઇટને તમને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}}</translation>
 <translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
 <translation id="5964869237734432770">છબીના વર્ણનો મેળવવાનું બંધ કરો</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">કોઈ નિષ્ક્રિય વિન્ડો નથી</translation>
 <translation id="8493948351860045254">સ્થાન ખાલી કરો</translation>
 <translation id="8497242791509864205">સૉર્ટ કરવા માટેના વિકલ્પો ખોલો</translation>
 <translation id="8497480609928300907">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી</translation>

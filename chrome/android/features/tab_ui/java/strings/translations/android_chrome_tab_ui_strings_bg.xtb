@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Премахване на раздела и напускане на групата</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Добавете до <ph name="LIMIT_COUNT_ONE" /> файл, раздел или изображение}other{Добавете до <ph name="LIMIT_COUNT_MANY" /> файла, раздела или изображения}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затваряне на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
 <translation id="5627941783489838464">Няма актуализации на разделите</translation>

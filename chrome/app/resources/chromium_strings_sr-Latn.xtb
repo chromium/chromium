@@ -571,6 +571,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7347827960336370838">Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, moraćete da <ph name="BEGIN_LINK" />izbrišete Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administrator sistema je konfigurisao Chromium da otvara pregledač <ph name="ALTERNATIVE_BROWSER_NAME" /> da bi pristupao <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
+<translation id="7368826207863345663">Da biste dobijali buduća Chromium ažuriranja, treba vam macOS 13 ili novija verzija. Ovaj računar koristi macOS 12.</translation>
 <translation id="7376384068949534168">Niste skoro posećivali sajt. Chromium je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Ovaj dodatak više nije podržan. Chromium preporučuje da ga uklonite.</translation>
 <translation id="7413153308467572558">Nastavite tamo gde ste stali: Chromium vraća kartice svaki put kada ga restartujete. Da biste to isključili, idite u</translation>

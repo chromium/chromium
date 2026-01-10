@@ -562,6 +562,7 @@
 <translation id="7347827960336370838">パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chromium データを削除<ph name="END_LINK" />する必要があります。</translation>
 <translation id="7349591376906416160">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに <ph name="ALTERNATIVE_BROWSER_NAME" /> を開くよう Chromium を設定しています。</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
+<translation id="7368826207863345663">今後、Chromium のアップデートを受信するには、macOS 13 以降が必要となります。このコンピュータでは macOS 12 が実行されています。</translation>
 <translation id="7376384068949534168">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" /> と <ph name="PERMISSION_2" /> の権限を削除しました。</translation>
 <translation id="7384121030444253939">この拡張機能は現在サポートされていません。代わりに削除することをおすすめします。</translation>
 <translation id="7413153308467572558">前回開いていたページを開く: Chromium で再起動するたびにタブが復元されます。この機能をオフにするには、</translation>

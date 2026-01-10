@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Tab entfernen und Gruppe verlassen</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Du kannst maximal <ph name="LIMIT_COUNT_ONE" /> Datei, Tab oder Bild hinzufügen}other{Du kannst maximal <ph name="LIMIT_COUNT_MANY" /> Dateien, Tabs oder Bilder hinzufügen}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab schließen, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs schließen, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5627941783489838464">Keine Tab-Updates</translation>

@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Administratören har blockerat vissa funktioner för den här enheten</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> önskar återställa inställningarna för Chrome till de ursprungliga standardinställningarna. Detta innebär att din startsida tillsammans med sidan ny flik och sökmotorn återställs liksom att tillägg inaktiveras och alla flikar lossas. Dessutom rensas alla tillfälliga och cachelagrade data, såsom cookies, innehåll och webbplatsdata</translation>
 <translation id="1082725763867769612">Offlinefiler</translation>
+<translation id="1083050113196701330">Uppdateringskontrollen har slutförts. Ingen uppdatering var tillgänglig.</translation>
 <translation id="1084026333130513768">Spara, dela och casta</translation>
 <translation id="1084096383128641877">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="DOMAIN" /> raderas. Skydda kontot genom att ändra lösenordet eller ta bort ditt konto på <ph name="DOMAIN_LINK" />.</translation>
 <translation id="1084288067399862432">Det utsatta lösenordet har ändrats.
@@ -735,6 +736,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1486486872607808064">Skanna den här QR-koden med kameran på enheten där du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Skapa ett utkast eller finjustera befintligt arbete.</translation>
 <translation id="1487335504823219454">Aktiverat – anpassade inställningar</translation>
+<translation id="1488513761150925974">Kontrollera uppgifterna</translation>
 <translation id="1489101155914355052">Genererar förslag för det här dokumentet …</translation>
 <translation id="1493152297698462486">Skapa bild med Gemini</translation>
 <translation id="1493892686965953381">Väntar på <ph name="LOAD_STATE_PARAMETER" /> ...</translation>
@@ -3074,6 +3076,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3038612606416062604">Lägg till en skrivare manuellt</translation>
 <translation id="3038628620670416486">Hitta knappar på musen</translation>
 <translation id="3039491566278747710">Det gick inte att installera offlinepolicyn på enheten.</translation>
+<translation id="303955801043931176">Fliken har stängts</translation>
 <translation id="3040435070100611531">Dina värdekort i Google Wallet</translation>
 <translation id="3040982432432547149">Hjälp oss att förbättra Steam för Chromebook</translation>
 <translation id="304169924727249890">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3639,6 +3642,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3450180775417907283"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Du delar den här fliken med Gemini</translation>
 <translation id="345078987193237421">Detta ger kameraåtkomst för appar, webbplatser med kamerabehörighet och systemtjänster</translation>
+<translation id="345163758690017738">Arbetar på din uppgift …</translation>
 <translation id="3452999110156026232">Föräldraåtkomst</translation>
 <translation id="3453082738208775226">Vill du rensa i lagringsutrymmet offline?</translation>
 <translation id="3453597230179205517">Platsåtkomst har blockerats</translation>
@@ -3808,6 +3812,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3567284462585300767">Gör dig själv synlig för att ta emot och acceptera filer från personer i omgivningen</translation>
 <translation id="356738834800832239">Lösenordet har sparats</translation>
 <translation id="3568431410312984116">Tillåt att Hjälp mig skriva öppnas automatiskt</translation>
+<translation id="3569304198553566878">Visar <ph name="NUM_DISPLAYED_EVENTS" /> av <ph name="NUM_TOTAL_EVENTS" />.</translation>
 <translation id="3569382839528428029">Vill du att <ph name="APP_NAME" /> ska dela din skärm?</translation>
 <translation id="3569614820047645079">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning.</translation>
 <translation id="3569617221227793022">Tidszonen är för närvarande inställd på <ph name="TIME_ZONE_ENTRY" />. Den här inställningen hanteras av administratören.</translation>
@@ -7639,6 +7644,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6206199626856438589">Du loggas ut från webbplatserna som visas, även på öppna flikar</translation>
 <translation id="6206311232642889873">Kopiera &amp;bild</translation>
 <translation id="6207200176136643843">Återställ standardzoomnivån</translation>
+<translation id="6207795130974856324">Väntar på din hjälp</translation>
 <translation id="6207937957461833379">Land/region</translation>
 <translation id="6208521041562685716">Mobildata aktiveras</translation>
 <translation id="6208725777148613371">Det gick inte att spara till <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8355,6 +8361,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6715735940363172819">Webbplatser får inte använda mikrofonen</translation>
 <translation id="6716049856796700977">Ingenting kan använda din plats. Appar och webbplatser kanske fortfarande kan se din plats via IP-adressen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Nätverksanslutningen avbröts. Kontrollera nätverksanslutningen eller testa ett annat wifi-nätverk.</translation>
+<translation id="671868032356459320">Omfattning för uppdateringsprogrammet: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Lås skärmen</translation>
 <translation id="6719839880830057298">Filuppladdningen är klar</translation>
 <translation id="6721744718589119342">Det kan hända att vi kontaktar dig via e-post för mer information eller uppdateringar</translation>
@@ -9204,6 +9211,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7307129035224081534">Pausad</translation>
 <translation id="7308643132139167865">Språk på webbplatser</translation>
 <translation id="7309214454733221756">Vill du skapa en nyckel för att logga in i <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Uppgiftslista</translation>
 <translation id="7311005168897771689">Få åtkomst till dina Google Drive-filer när du är offline</translation>
 <translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7312040805247765153">Det gick inte att installera appen</translation>
@@ -11253,6 +11261,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8680251145628383637">Logga in om du vill få tillgång till samma bokmärken, historik, lösenord och andra inställningar på alla dina enheter. Dessutom blir du automatiskt inloggad på Googles tjänster.</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> är ansluten och klar</translation>
+<translation id="8683720831806477407">Omfattning för uppdateringsprogrammet</translation>
 <translation id="8684471948980641888">Tillåt synkronisering i nätverk med datapriser</translation>
 <translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8685882652128627032">Klicka för att öppna dialogrutan Lägg till webbplatssökning</translation>
@@ -12074,6 +12083,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9220723036554088545">ladda upp en fil</translation>
 <translation id="9220820413868316583">Lyft fingret och testa igen.</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
+<translation id="9222839391870847423">Längd: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Visa alla</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Öppna Tillägg för att hantera den}other{Öppna Tillägg för att hantera dem}}</translation>
 <translation id="924818813611903184">Hantera språk i inställningarna för ChromeOS</translation>

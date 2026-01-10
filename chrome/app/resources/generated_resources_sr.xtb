@@ -3061,6 +3061,7 @@
 <translation id="3038612606416062604">Ручно додајте штампач</translation>
 <translation id="3038628620670416486">Пронађите дугмад на мишу</translation>
 <translation id="3039491566278747710">Инсталирање офлајн смерница на уређају није успело.</translation>
+<translation id="303955801043931176">Картица је затворена</translation>
 <translation id="3040435070100611531">Карте у Google новчанику</translation>
 <translation id="3040982432432547149">Помозите нам да побољшамо Steam за Chromebook</translation>
 <translation id="304169924727249890">Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /></translation>
@@ -5103,6 +5104,7 @@
 <translation id="4426857487270413362">Преузимање фајлова програма за инсталацију није успело. Проверите интернет везу и да ли имате довољно слободног простора на диску, па пробајте поново. Кôд грешке је <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Откривено је <ph name="COUNT" /> пута</translation>
 <translation id="4427365070557649936">Верификује се кôд за потврду…</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Задатак је обављен}one{Задаци су обављени}few{Задаци су обављени}other{Задаци су обављени}}</translation>
 <translation id="4429163740524851942">Распоред тастера на физичкој тастатури</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
 <translation id="443031431654216610">Користите само цифре</translation>

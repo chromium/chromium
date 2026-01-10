@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Verwyder oortjie en verlaat groep</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Voeg tot <ph name="LIMIT_COUNT_ONE" /> lêer, oortjie of prent by}other{Voeg tot <ph name="LIMIT_COUNT_MANY" /> lêers, oortjies of prente by}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Maak oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> toe.}other{Maak oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> toe.}}</translation>
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
 <translation id="5627941783489838464">Geen oortjie-opdaterings nie</translation>

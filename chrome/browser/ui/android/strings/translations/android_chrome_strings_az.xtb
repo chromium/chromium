@@ -724,6 +724,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4180726336228139707">Yalnız bu cihazda</translation>
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4188221736490993796">Z-dən A-ya sıralayın</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Spam və ya aldadıcı kontent səbəbindən Chrome bu saytın bildiriş göndərməsini dayandırdı}other{Spam və ya aldadıcı kontent səbəbindən Chrome bu saytların bildiriş göndərməsini dayandırdı}}</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu cihazda 1 tab}other{Bu cihazda # tab}}</translation>
 <translation id="4198423547019359126">Əlçatan endirmə məkanı yoxdur</translation>
@@ -1116,6 +1117,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5833984609253377421">Linki paylaşın</translation>
 <translation id="5839058148541733625">Chrome Dinozavr</translation>
 <translation id="5841444063256914865">Yenə də "<ph name="FILE_NAME" />" faylını endirmək istəyirsiniz?</translation>
+<translation id="5847265694842662173">Chrome sui-istifadə edən və istifadə olunmayan saytların bildiriş göndərməsini dayandırdı</translation>
 <translation id="5848257610304005265">PDF <ph name="APP_NAME" /> ilə açılsın?</translation>
 <translation id="5849288995120328556">Paylaşım dayandırılsın?</translation>
 <translation id="5853623416121554550">dayandırıldı</translation>
@@ -1144,6 +1146,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5956665950594638604">Chrome Yardım Mərkəzini yeni paneldə açın</translation>
 <translation id="59577092665511740">Hesab seçin.</translation>
 <translation id="5958275228015807058">Fayl və səhifələri Endirilənlər bölməsində tapın</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome son vaxtlar daxil olmadığınız saytın sizə bildiriş göndərməsini dayandırdı}other{Chrome son vaxtlar daxil olmadığınız saytların sizə bildiriş göndərməsini dayandırdı}}</translation>
 <translation id="5962718611393537961">Yığcamlaşdırmaq üçün klikləyin</translation>
 <translation id="5964869237734432770">Şəkil təsvirini dayandırın</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
@@ -1802,6 +1805,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8477178913400731244">Datanı silin</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Qeyri-aktiv pəncərə yoxdur</translation>
 <translation id="8493948351860045254">Yaddaşı boşaldın</translation>
 <translation id="8497242791509864205">Çeşidləmə seçimlərini açın</translation>
 <translation id="8497480609928300907">Məxfilik bələdçisi izahı</translation>
@@ -1901,6 +1905,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8965591936373831584">gözlənilir</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> anonim və digər <ph name="TAB_COUNT_ONE" /> tab bağlanacaq}other{<ph name="INCOGNITO_TAB_COUNT" /> anonim və digər <ph name="TAB_COUNT_MANY" /> tab bağlanacaq}}</translation>
+<translation id="8969796057708736017">Fayl təşkilatınızın siyasətlərinə uyğun gələrsə, endirmə tamamlanacaq</translation>
 <translation id="8970887620466824814">Xəta baş verdi.</translation>
 <translation id="8972098258593396643">Defolt qovluğa endirilsin?</translation>
 <translation id="8992769679401294069">Data parol ifadəsi ilə şifrələnib. Google Hesabında Chrome datasını istifadə etmək və yadda saxlamaq üçün onu daxil edin.</translation>

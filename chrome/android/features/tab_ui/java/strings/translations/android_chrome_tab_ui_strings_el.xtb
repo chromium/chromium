@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Κατάργηση καρτέλας και αποχώρηση από την ομάδα</translation>
 <translation id="5490235265819901748">Η ομάδα καρτελών αναπτύχθηκε</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Προσθέστε έως <ph name="LIMIT_COUNT_ONE" /> αρχείο, καρτέλα ή εικόνα}other{Προσθέστε έως <ph name="LIMIT_COUNT_MANY" /> αρχεία, καρτέλες ή εικόνες}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
 <translation id="5627941783489838464">Δεν υπάρχουν ενημερώσεις καρτελών</translation>

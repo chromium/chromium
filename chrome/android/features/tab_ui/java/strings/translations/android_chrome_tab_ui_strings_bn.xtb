@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ট্যাব সরান এবং গ্রুপ থেকে বেরিয়ে আসুন</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{সর্বাধিক <ph name="LIMIT_COUNT_ONE" />টি ফাইল, ট্যাব বা ছবি যোগ করুন}one{সর্বাধিক <ph name="LIMIT_COUNT_MANY" />টি ফাইল, ট্যাব বা ছবি যোগ করুন}other{সর্বাধিক <ph name="LIMIT_COUNT_MANY" />টি ফাইল, ট্যাব বা ছবি যোগ করুন}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}}</translation>
 <translation id="5556417849629758491">স্টোর সংক্রান্ত তথ্য দেখুন, স্ক্রিনের সবচেয়ে উপরের অংশে এই বিকল্প উপলভ্য আছে</translation>
 <translation id="5627941783489838464">কোনও ট্যাব সম্পর্কিত আপডেট নেই</translation>

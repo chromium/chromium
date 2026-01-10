@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Tu administrador ha bloqueado algunas funciones para este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración predeterminada original de Chrome. Se restablecerá la página principal, la página Nueva pestaña y el motor de búsqueda. Asimismo, se inhabilitarán las extensiones y no se fijará ninguna pestaña. También se borrarán los datos temporales y los almacenados en la memoria caché, como las cookies, el contenido y los datos de sitios.</translation>
 <translation id="1082725763867769612">Archivos sin conexión</translation>
+<translation id="1083050113196701330">La comprobación de actualizaciones se ha completado correctamente. No había ninguna actualización disponible.</translation>
 <translation id="1084026333130513768">Guardar, compartir y enviar</translation>
 <translation id="1084096383128641877">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="DOMAIN" />. Cambia la contraseña o elimina tu cuenta de <ph name="DOMAIN_LINK" /> para protegerla de otros.</translation>
 <translation id="1084288067399862432">Contraseña vulnerada cambiada correctamente.
@@ -734,6 +735,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1486486872607808064">Escanea este código QR con una cámara en el dispositivo donde quieras crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crea un borrador o perfecciona un trabajo actual.</translation>
 <translation id="1487335504823219454">Activada: configuración personalizada</translation>
+<translation id="1488513761150925974">Consulta tus tareas</translation>
 <translation id="1489101155914355052">Generando sugerencias para este documento…</translation>
 <translation id="1493152297698462486">Crear imagen con Gemini</translation>
 <translation id="1493892686965953381">Esperando <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3062,6 +3064,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3038612606416062604">Añadir una impresora manualmente</translation>
 <translation id="3038628620670416486">Localizar botones en tu ratón</translation>
 <translation id="3039491566278747710">Se ha producido un error al instalar la política sin conexión en el dispositivo.</translation>
+<translation id="303955801043931176">Pestaña cerrada</translation>
 <translation id="3040435070100611531">Tus pases de Google Wallet</translation>
 <translation id="3040982432432547149">Ayúdanos a mejorar Steam para Chromebook</translation>
 <translation id="304169924727249890">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3627,6 +3630,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3450180775417907283"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estás compartiendo esta pestaña con Gemini</translation>
 <translation id="345078987193237421">Esto permite que las aplicaciones, los sitios web con el permiso de cámara y los servicios del sistema puedan acceder a la cámara</translation>
+<translation id="345163758690017738">Procesando tu tarea…</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453082738208775226">¿Liberar espacio de almacenamiento sin conexión?</translation>
 <translation id="3453597230179205517">El acceso a la ubicación está bloqueado</translation>
@@ -3796,6 +3800,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3567284462585300767">Para recibir y aceptar archivos de personas que estén cerca, haz que tu dispositivo sea visible</translation>
 <translation id="356738834800832239">Se ha guardado tu contraseña</translation>
 <translation id="3568431410312984116">Permitir que Ayúdame a escribir se abra automáticamente</translation>
+<translation id="3569304198553566878">Mostrando <ph name="NUM_DISPLAYED_EVENTS" /> de <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">¿Quieres que <ph name="APP_NAME" /> comparta tu pantalla?</translation>
 <translation id="3569614820047645079">Tus archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
 <translation id="3569617221227793022">La zona horaria definida es <ph name="TIME_ZONE_ENTRY" />. Este ajuste lo gestiona tu administrador.</translation>
@@ -5101,6 +5106,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4426857487270413362">No se pueden descargar los archivos de instalación. Comprueba tu conexión a Internet y si tienes suficiente espacio libre en disco, e inténtalo de nuevo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Detectado <ph name="COUNT" /> veces</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Tarea hecha}other{Tareas hechas}}</translation>
 <translation id="4429163740524851942">Diseño de teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="443031431654216610">Usa solo dígitos numéricos</translation>
@@ -7624,6 +7630,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6206199626856438589">Se cerrarán tus sesiones en los sitios mostrados, incluso si están en pestañas abiertas</translation>
 <translation id="6206311232642889873">Copia&amp;r imagen</translation>
 <translation id="6207200176136643843">Restablecer el nivel de zoom predeterminado</translation>
+<translation id="6207795130974856324">Esperando tu ayuda</translation>
 <translation id="6207937957461833379">País o región</translation>
 <translation id="6208521041562685716">Se están activando los datos móviles</translation>
 <translation id="6208725777148613371">No se ha podido guardar en <ph name="WEB_DRIVE" />. <ph name="INTERRUPT_REASON" />.</translation>
@@ -8340,6 +8347,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6715735940363172819">Los sitios web no tienen permiso para usar tu micrófono</translation>
 <translation id="6716049856796700977">Nada puede usar tu ubicación. Sin embargo, es posible que tu ubicación siga siendo visible para aplicaciones y sitios web a través de tu dirección IP. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Se ha perdido la conexión de red. Comprueba la conexión o prueba con otra red Wi‑Fi.</translation>
+<translation id="671868032356459320">Alcance de la herramienta de actualización: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
 <translation id="6719839880830057298">Subida de archivo completada</translation>
 <translation id="6721744718589119342">Podemos enviarte un correo para pedirte más información o notificarte cambios</translation>
@@ -9189,6 +9197,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomas de sitios web</translation>
 <translation id="7309214454733221756">¿Crear una llave de acceso para iniciar sesión en <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Lista de tareas</translation>
 <translation id="7311005168897771689">Accede a tus archivos de Google Drive sin conexión a Internet</translation>
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7312040805247765153">No se puede instalar la aplicación</translation>
@@ -11238,6 +11247,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8680251145628383637">Inicia sesión para acceder a tus marcadores, tu historial, tus contraseñas y tu configuración en todos tus dispositivos. Además, iniciarás sesión automáticamente en tus servicios de Google.</translation>
 <translation id="8681886425883659911">Los anuncios se bloquean en sitios que se caracterizan por mostrar anuncios invasivos o engañosos</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista</translation>
+<translation id="8683720831806477407">Alcance de la herramienta de actualización</translation>
 <translation id="8684471948980641888">Permitir la sincronización en redes de uso medido</translation>
 <translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8685882652128627032">Haz clic para abrir el cuadro de diálogo Añadir búsqueda en el sitio</translation>
@@ -12059,6 +12069,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9220723036554088545">sube un archivo</translation>
 <translation id="9220820413868316583">Levanta el dedo y vuelve a intentarlo.</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
+<translation id="9222839391870847423">Duración: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Mostrar todo</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para poder gestionarla, abre Extensiones}other{Para poder gestionarlas, abre Extensiones}}</translation>
 <translation id="924818813611903184">Gestionar idiomas en la configuración de ChromeOS</translation>

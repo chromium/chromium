@@ -3076,6 +3076,7 @@
 <translation id="3038612606416062604">एक प्रिंटर व्यक्तिचलितपणे जोडा</translation>
 <translation id="3038628620670416486">तुमच्या माउसवरील बटणे शोधा</translation>
 <translation id="3039491566278747710">डिव्हाइसवर ऑफलाइन धोरण इंस्टॉल करता आले नाही.</translation>
+<translation id="303955801043931176">टॅब बंद</translation>
 <translation id="3040435070100611531">तुमचे Google Wallet पास</translation>
 <translation id="3040982432432547149">Chromebook साठी Steam मध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> सोबत टॅब गटामध्ये सामील व्हा</translation>
@@ -5116,6 +5117,7 @@
 <translation id="4426857487270413362">इंस्टॉलर फाइल डाउनलोड करता आल्या नाहीत. कृपया तुमचे इंटरनेट कनेक्शन तपासा आणि तुमच्या डिस्कमध्ये पुरेशी मोकळी जागा असल्याचे तपासा व पुन्हा प्रयत्न करा. <ph name="ERROR" /> हा एरर कोड आहे.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> वेळा डिटेक्ट केले आहे</translation>
 <translation id="4427365070557649936">कन्फर्मेशन कोडची पडताळणी करत आहे…</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{टास्क पूर्ण झाली आहे}other{टास्क पूर्ण झाल्या आहेत}}</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
 <translation id="443031431654216610">फक्त अंक वापरा</translation>

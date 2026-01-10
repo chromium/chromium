@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Администраторът ви е блокирал някои от функциите на това устройство</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> иска да възстанови настройките ви на Chrome към първоначалните им стандартни стойности. Това ще нулира началната ви страница, новия раздел в браузъра и търсещата машина, ще деактивира разширенията ви и ще освободи всички раздели. Също така ще се изчистят други временни и кеширани данни, като „бисквитки“, съдържание и информация за сайтове.</translation>
 <translation id="1082725763867769612">Офлайн файлове</translation>
+<translation id="1083050113196701330">Проверката за актуализации завърши успешно. Нямаше налична актуализация</translation>
 <translation id="1084026333130513768">Запазване, споделяне и предаване</translation>
 <translation id="1084096383128641877">Премахването на тази парола няма да изтрие профила ви в(ъв) <ph name="DOMAIN" />. За да го защитите от други хора, променете паролата си или изтрийте профила си в(ъв) <ph name="DOMAIN_LINK" />.</translation>
 <translation id="1084288067399862432">Успешно променихте компрометираната парола.
@@ -735,6 +736,7 @@
 <translation id="1486486872607808064">Сканирайте този QR код с камерата на устройството, на което искате да създадете ключ за достъп за <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Създаване на чернова или прецизиране на съществуващ текст.</translation>
 <translation id="1487335504823219454">Включено – персонализирани настройки</translation>
+<translation id="1488513761150925974">Проверка на задачите ви</translation>
 <translation id="1489101155914355052">Генерират се предложения за този документ…</translation>
 <translation id="1493152297698462486">Създаване на изображение с Gemini</translation>
 <translation id="1493892686965953381">Изчаква се <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3070,6 +3072,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3038612606416062604">Ръчно добавяне на принтер</translation>
 <translation id="3038628620670416486">Намиране на бутони на мишката ви</translation>
 <translation id="3039491566278747710">Правилото за работа офлайн не бе инсталирано успешно на устройството.</translation>
+<translation id="303955801043931176">Затворихте раздела</translation>
 <translation id="3040435070100611531">Картите ви в Google Wallet</translation>
 <translation id="3040982432432547149">Помогнете ни да подобрим Steam за Chromebook</translation>
 <translation id="304169924727249890">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3635,6 +3638,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3450180775417907283"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Споделяте този раздел с Gemini</translation>
 <translation id="345078987193237421">Това разрешава достъп до камерата за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
+<translation id="345163758690017738">Работим по задачата ви…</translation>
 <translation id="3452999110156026232">Достъп на родител</translation>
 <translation id="3453082738208775226">Искате ли да изчистите офлайн хранилището?</translation>
 <translation id="3453597230179205517">Достъпът до местоположението е блокиран</translation>
@@ -3804,6 +3808,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3567284462585300767">За да получавате и приемате файлове от хора в района, направете устройството си видимо</translation>
 <translation id="356738834800832239">Паролата ви е запазена</translation>
 <translation id="3568431410312984116">Разрешаване функцията „Помощ при писане“ да се отваря автоматично</translation>
+<translation id="3569304198553566878">Показани са <ph name="NUM_DISPLAYED_EVENTS" /> от <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Искате ли <ph name="APP_NAME" /> да споделя екрана ви?</translation>
 <translation id="3569614820047645079">Файловете в „Моят диск“ се синхронизират автоматично с вашия Chromebook, за да имате достъп до тях без връзка с интернет.</translation>
 <translation id="3569617221227793022">Понастоящем зададената часова зона е <ph name="TIME_ZONE_ENTRY" />. Тази настройка се управлява от администратора ви.</translation>
@@ -7637,6 +7642,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6206199626856438589">Ще излезете от профила си в показаните сайтове, включително в отворените раздели</translation>
 <translation id="6206311232642889873">Копи&amp;ране на изображението</translation>
 <translation id="6207200176136643843">Възстановяване на стандартното ниво на мащаба</translation>
+<translation id="6207795130974856324">Изчаква се помощ от вас</translation>
 <translation id="6207937957461833379">Държава/Регион</translation>
 <translation id="6208521041562685716">Мобилните данни се активират</translation>
 <translation id="6208725777148613371">Запазването в(ъв) <ph name="WEB_DRIVE" /> не бе успешно – <ph name="INTERRUPT_REASON" /></translation>
@@ -8353,6 +8359,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6715735940363172819">На уебсайтовете е забранено да използват микрофона ви</translation>
 <translation id="6716049856796700977">Местоположението ви не може да се използва, но е възможно да е видимо за приложенията и уебсайтовете чрез IP адреса ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Връзката с мрежата бе прекъсната. Проверете я или опитайте с друга Wi-Fi мрежа.</translation>
+<translation id="671868032356459320">Обхват на програмата за актуализиране: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Заключване на екрана</translation>
 <translation id="6719839880830057298">Качването на файла завърши</translation>
 <translation id="6721744718589119342">Възможно е да ви изпратим имейл за още информация или актуализации</translation>
@@ -9202,6 +9209,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7307129035224081534">На пауза</translation>
 <translation id="7308643132139167865">Езици на уебсайтовете</translation>
 <translation id="7309214454733221756">Искате ли да създадете ключ за достъп, с който да влизате в(ъв) <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Списък със задачи</translation>
 <translation id="7311005168897771689">Работете с файловете си в Google Диск, когато сте офлайн</translation>
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7312040805247765153">Приложението не може да бъде инсталирано</translation>
@@ -11251,6 +11259,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8680251145628383637">Влезте в профила си, за да получите своите отметки, история, пароли и други настройки на всичките си устройства. Също така ще влезете автоматично в използваните от вас услуги на Google.</translation>
 <translation id="8681886425883659911">Рекламите са блокирани на сайтовете, за които е известно, че показват натрапчиви или подвеждащи реклами</translation>
 <translation id="8682730193597992579">Принтерът <ph name="PRINTER_NAME" /> е свързан и готов</translation>
+<translation id="8683720831806477407">Обхват на програмата за актуализиране</translation>
 <translation id="8684471948980641888">Разрешаване на синхронизирането при мрежи с отчитане</translation>
 <translation id="8685540043423825702">Вашият потребителски профил в Chrome</translation>
 <translation id="8685882652128627032">Кликнете, за да отворите диалоговия прозорец за добавяне на функцията за търсене в сайта</translation>
@@ -12072,6 +12081,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9220723036554088545">качете файл</translation>
 <translation id="9220820413868316583">Вдигнете пръст и след това опитайте отново.</translation>
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
+<translation id="9222839391870847423">Продължителност: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Показване на всички</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{За да го управлявате, отворете „Разширения“}other{За да ги управлявате, отворете „Разширения“}}</translation>
 <translation id="924818813611903184">Управление на езиците в настройките на Chrome OS</translation>

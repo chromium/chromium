@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">តែ​នៅ​លើ​ឧបករណ៍​នេះ​ប៉ុណ្ណោះ</translation>
 <translation id="4181841719683918333">ភាសា</translation>
 <translation id="4188221736490993796">តម្រៀប​តាមលំដាប់ Z ទៅ A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome បានបញ្ឈប់​គេហទំព័រនេះ​មិនឱ្យផ្ញើ​ការជូនដំណឹង ដោយសារតែ​ខ្លឹមសារបញ្ឆោត ឬ​ឥតបានការ}other{Chrome បានបញ្ឈប់​គេហទំព័រ​ទាំងនេះ​មិនឱ្យ​ផ្ញើការជូនដំណឹង ដោយសារតែ​ខ្លឹមសារបញ្ឆោត ឬ​ឥតបានការ}}</translation>
 <translation id="4195643157523330669">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ផ្ទាំង 1 នៅលើ​ឧបករណ៍នេះ}other{ផ្ទាំង # នៅលើ​ឧបករណ៍នេះ}}</translation>
 <translation id="4198423547019359126">មិនមាន​ទីតាំង​សម្រាប់​ការទាញយក​ទេ</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">ចែក​រំលែក​តំណ</translation>
 <translation id="5839058148541733625">Chrome ដាយណូស័រ</translation>
 <translation id="5841444063256914865">តើអ្នក​នៅតែចង់​ទាញយក "<ph name="FILE_NAME" />" ឬ?</translation>
+<translation id="5847265694842662173">Chrome បានបញ្ឈប់​គេហទំព័រ​ដែល​មិនបានប្រើ និងមាន​លក្ខណៈ​បំពាន​មិនឱ្យ​ផ្ញើការជូនដំណឹង</translation>
 <translation id="5848257610304005265">បើក PDF ដោយប្រើ <ph name="APP_NAME" /> ឬ?</translation>
 <translation id="5849288995120328556">ឈប់​ចែករំលែក​ឬ?</translation>
 <translation id="5853623416121554550">បាន​ផ្អាក</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">បើកមជ្ឈមណ្ឌលជំនួយ Chrome នៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="59577092665511740">ជ្រើសរើស​គណនី។</translation>
 <translation id="5958275228015807058">ស្វែងរក​ឯកសារ​ និងទំព័ររបស់អ្នកនៅក្នុង ទាញយក</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome បានបញ្ឈប់​គេហទំព័រ​ដែលអ្នក​មិនបាន​ចូលមើល​ថ្មីៗនេះ​មិនឱ្យ​ផ្ញើការ​ជូនដំណឹង​ទៅអ្នក}other{Chrome បានបញ្ឈប់​គេហទំព័រ​ដែលអ្នក​មិនបាន​ចូលមើល​ថ្មីៗនេះ​មិនឱ្យ​ផ្ញើការ​ជូនដំណឹង​ទៅអ្នក}}</translation>
 <translation id="5962718611393537961">ចុច​ដើម្បី​លាក់</translation>
 <translation id="5964869237734432770">ឈប់យក​ការពណ៌នា​អំពីរូបភាព</translation>
 <translation id="5972844218283131174">ដកការជ្រើសរើសទាំងអស់</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">រុករក​ឆ្លង​ឧបករណ៍</translation>
 <translation id="8477178913400731244">លុប​ទិន្នន័យ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">គ្មាន​វិនដូអសកម្ម​ទេ</translation>
 <translation id="8493948351860045254">បង្កើនទំហំផ្ទុក</translation>
 <translation id="8497242791509864205">បើក​ជម្រើស​តម្រៀប</translation>
 <translation id="8497480609928300907">ការពន្យល់ពី​ការណែនាំ​អំពីឯកជនភាព</translation>

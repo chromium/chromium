@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ჩანართის ამოშლა და ჯგუფიდან გასვლა</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{დაამატეთ მაქსიმუმ <ph name="LIMIT_COUNT_ONE" /> ფაილი, ჩანართი ან სურათი}other{დაამატეთ მაქსიმუმ <ph name="LIMIT_COUNT_MANY" /> ფაილი, ჩანართი ან სურათი}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5627941783489838464">ჩანართის შესახებ განახლებები არ არის</translation>

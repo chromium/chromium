@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Հեռացնել ներդիրը և լքել խումբը</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Ավելացրեք մինչև <ph name="LIMIT_COUNT_ONE" /> ֆայլ, ներդիր կամ պատկեր}one{Ավելացրեք մինչև <ph name="LIMIT_COUNT_MANY" /> ֆայլ, ներդիր կամ պատկեր}other{Ավելացրեք մինչև <ph name="LIMIT_COUNT_MANY" /> ֆայլ, ներդիր կամ պատկեր}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5627941783489838464">Ներդիրների մասին թարմացումներ չկան</translation>

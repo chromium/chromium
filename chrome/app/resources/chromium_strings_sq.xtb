@@ -570,6 +570,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7347827960336370838">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, do të të duhet të <ph name="BEGIN_LINK" />fshish të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administratori i sistemit ka konfiguruar Chromium që të hapë <ph name="ALTERNATIVE_BROWSER_NAME" /> për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
+<translation id="7368826207863345663">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet macOS 13 ose një version i mëvonshëm. Ky kompjuter përdor macOS 12.</translation>
 <translation id="7376384068949534168">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />".</translation>
 <translation id="7384121030444253939">Kjo shtesë nuk mbështetet më. Chromium rekomandon që ta heqësh më mirë atë.</translation>
 <translation id="7413153308467572558">Vazhdo aty ku e ke lënë: Chromium i restauron skedat e tua sa herë që e rinis. Për ta çaktivizuar këtë, shko te</translation>

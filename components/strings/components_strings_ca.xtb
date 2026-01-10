@@ -1060,7 +1060,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2690699652723742414">30 darrers dies</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Advertiment de seguretat</translation>
-<translation id="2694088736180584846">xarxa de bucle invertit</translation>
+<translation id="2694088736180584846">xarxa d'autobucle</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core et permet gestionar les polítiques, les aplicacions i les extensions del navegador des del núvol</translation>
 <translation id="2697248912349197812">Pregunta a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">El submenú està disponible. Utilitza <ph name="SHORTCUT" /> per navegar fins a les opcions addicionals.</translation>
@@ -1393,7 +1393,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3238395604961564389">Obre l'enllaç en una finestra d'incògnit</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar l'aspecte del teu navegador</translation>
 <translation id="3240791268468473923">S'ha obert el full de credencials no coincidents de credencials de pagament segur</translation>
-<translation id="3241320538788585298">Xarxa loopback</translation>
+<translation id="3241320538788585298">Xarxa d'autobucle</translation>
 <translation id="324180406144491771">Els enllaços de "<ph name="HOST_NAME" />" estan bloquejats</translation>
 <translation id="3243650379537999343">Dibuixa</translation>
 <translation id="3248329428895535435">No ho mostris en aquest lloc web</translation>

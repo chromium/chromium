@@ -724,6 +724,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4180726336228139707">Only on this device</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4188221736490993796">Sort by Z to A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped this site from sending notifications because of spam or deceptive content}other{Chrome stopped these sites from sending notifications because of spam or deceptive content}}</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab on this device}other{# tabs on this device}}</translation>
 <translation id="4198423547019359126">No available download locations</translation>
@@ -1116,6 +1117,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
 <translation id="5841444063256914865">Do you want to download '<ph name="FILE_NAME" />' anyway?</translation>
+<translation id="5847265694842662173">Chrome stopped abusive and unused sites from sending notifications</translation>
 <translation id="5848257610304005265">Open PDF with <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Stop sharing?</translation>
 <translation id="5853623416121554550">paused</translation>
@@ -1144,6 +1146,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5956665950594638604">Open the Chrome Help Centre in a new tab</translation>
 <translation id="59577092665511740">Choose an account.</translation>
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped a site that you haven't visited recently from sending you notifications}other{Chrome stopped sites that you haven't visited recently from sending you notifications}}</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5972844218283131174">Deselect all</translation>
@@ -1804,6 +1807,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="847433688444405067">Browse across devices</translation>
 <translation id="8477178913400731244">Delete data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">No inactive windows</translation>
 <translation id="8493948351860045254">Free up space</translation>
 <translation id="8497242791509864205">Open sort options</translation>
 <translation id="8497480609928300907">Privacy guide explanation</translation>
@@ -1903,6 +1907,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8965591936373831584">pending</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>
+<translation id="8969796057708736017">Your download will complete if the file meets your organisation's policies</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
 <translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>

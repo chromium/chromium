@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">탭 삭제 및 그룹 나가기</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5494920125229734069">모두 선택</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{파일, 탭 또는 이미지를 최대 <ph name="LIMIT_COUNT_ONE" />개 추가하세요.}other{파일, 탭 또는 이미지를 최대 <ph name="LIMIT_COUNT_MANY" />개 추가하세요.}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 닫습니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 닫습니다.}}</translation>
 <translation id="5556417849629758491">스토어 정보 보기, 화면 상단에 옵션 있음</translation>
 <translation id="5627941783489838464">탭 업데이트 없음</translation>

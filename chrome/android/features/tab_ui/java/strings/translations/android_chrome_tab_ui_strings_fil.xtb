@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Alisin ang tab at umalis sa grupo</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Magdagdag nang hanggang <ph name="LIMIT_COUNT_ONE" /> file, tab, o larawan}one{Magdagdag nang hanggang <ph name="LIMIT_COUNT_MANY" /> file, tab, o larawan}other{Magdagdag nang hanggang <ph name="LIMIT_COUNT_MANY" /> na file, tab, o larawan}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
 <translation id="5627941783489838464">Walang update sa tab</translation>

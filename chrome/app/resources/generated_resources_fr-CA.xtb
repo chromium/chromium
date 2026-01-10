@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Votre administrateur a bloqué certaines fonctionnalités pour cet appareil</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite restaurer vos paramètres Chrome par défaut. Votre page d'accueil, la page Nouvel onglet et votre moteur de recherche seront réinitialisés. Vos extensions seront désactivées et vos onglets ne seront plus épinglés. Les autres données temporaires ou mises en cache, telles que les témoins, les données relatives aux contenus et aux sites, seront effacées.</translation>
 <translation id="1082725763867769612">Fichiers hors ligne</translation>
+<translation id="1083050113196701330">La vérification de mise à jour a bien été effectuée. Aucune mise à jour n'était proposée</translation>
 <translation id="1084026333130513768">Enregistrer, partager et diffuser</translation>
 <translation id="1084096383128641877">La suppression de ce mot de passe ne supprimera pas votre compte sur <ph name="DOMAIN" />. Changez votre mot de passe ou supprimez votre compte sur <ph name="DOMAIN_LINK" /> pour le protéger des autres.</translation>
 <translation id="1084288067399862432">Le mot de passe compromis a été changé.
@@ -735,6 +736,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1486486872607808064">Scannez ce code QR avec une caméra sur l'appareil sur lequel vous souhaitez créer une clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Créez un brouillon ou affinez un texte existant.</translation>
 <translation id="1487335504823219454">Paramètres personnalisés activés</translation>
+<translation id="1488513761150925974">Vérifier vos tâches</translation>
 <translation id="1489101155914355052">Génération de suggestions pour ce document en cours…</translation>
 <translation id="1493152297698462486">Créer une image avec Gemini</translation>
 <translation id="1493892686965953381">En attente de <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3064,6 +3066,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
 <translation id="3038628620670416486">Localiser les boutons de votre souris</translation>
 <translation id="3039491566278747710">Échec de l'installation de la politique hors ligne sur l'appareil.</translation>
+<translation id="303955801043931176">Onglet fermé</translation>
 <translation id="3040435070100611531">Vos cartes Google Portefeuille</translation>
 <translation id="3040982432432547149">Aidez-nous à améliorer Steam sur Chromebook</translation>
 <translation id="304169924727249890">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3629,6 +3632,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3450180775417907283"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Vous partagez cet onglet avec Gemini</translation>
 <translation id="345078987193237421">Cela permet l'accès à l'appareil photo pour les applis, les sites Web avec l'autorisation de l'appareil photo et les services système</translation>
+<translation id="345163758690017738">Traitement de la tâche en cours…</translation>
 <translation id="3452999110156026232">Accès parental</translation>
 <translation id="3453082738208775226">Nettoyer le stockage hors ligne?</translation>
 <translation id="3453597230179205517">L'accès à la position est bloqué</translation>
@@ -3798,6 +3802,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3567284462585300767">Devenez visible afin de recevoir et d'accepter des fichiers provenant de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
 <translation id="3568431410312984116">Autoriser l'ouverture automatique de l'« Aide à la rédaction »</translation>
+<translation id="3569304198553566878">Affichage de <ph name="NUM_DISPLAYED_EVENTS" /> sur <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran?</translation>
 <translation id="3569614820047645079">Vos fichiers dans Mon Disque sont automatiquement synchronisés avec votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="3569617221227793022">Le fuseau horaire est actuellement défini à <ph name="TIME_ZONE_ENTRY" />. Ce paramètre est géré par votre administrateur.</translation>
@@ -7627,6 +7632,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6206199626856438589">Vous serez déconnecté des sites affichés, y compris dans les onglets ouverts</translation>
 <translation id="6206311232642889873">Cop&amp;ier l'image</translation>
 <translation id="6207200176136643843">Rétablir le niveau de zoom par défaut</translation>
+<translation id="6207795130974856324">En attente de votre aide</translation>
 <translation id="6207937957461833379">Pays/région</translation>
 <translation id="6208521041562685716">Activation des données cellulaires en cours…</translation>
 <translation id="6208725777148613371">Échec de l'enregistrement dans <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8345,6 +8351,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6715735940363172819">Les sites Web ne sont pas autorisés à utiliser votre microphone</translation>
 <translation id="6716049856796700977">Aucun client ni service ne peut utiliser votre position. Cependant, votre position peut toujours être visible pour les applications et les sites Web par le biais de votre adresse IP. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">La connexion réseau a été perdue. Vérifiez votre connexion réseau ou essayez un autre réseau Wi-Fi.</translation>
+<translation id="671868032356459320">Portée de l'outil de mise à jour : <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Verrouiller l'écran</translation>
 <translation id="6719839880830057298">Téléversement du fichier terminé</translation>
 <translation id="6721744718589119342">Nous pourrions vous envoyer un courriel pour vous demander davantage de renseignements ou pour vous offrir des mises à jour</translation>
@@ -9193,6 +9200,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7307129035224081534">Suspendue</translation>
 <translation id="7308643132139167865">Langues du site Web</translation>
 <translation id="7309214454733221756">Créer une clé d'accès pour se connecter à <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Liste de tâches</translation>
 <translation id="7311005168897771689">Accéder facilement à vos fichiers Google Disque lorsque vous êtes hors ligne</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7312040805247765153">Impossible d'installer l'appli</translation>
@@ -11241,6 +11249,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8680251145628383637">Connectez-vous pour accéder à vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils. Vous serez également automatiquement connecté(e) à vos services Google.</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour présenter des annonces intrusives ou trompeuses</translation>
 <translation id="8682730193597992579">L'imprimante <ph name="PRINTER_NAME" /> est connectée et prête à être utilisée</translation>
+<translation id="8683720831806477407">Portée de l'outil de mise à jour</translation>
 <translation id="8684471948980641888">Autoriser la synchronisation sur les réseaux mesurés</translation>
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8685882652128627032">Cliquer sur le bouton pour ouvrir la boîte de dialogue Ajouter une recherche de site</translation>
@@ -12062,6 +12071,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9220723036554088545">téléverser un fichier</translation>
 <translation id="9220820413868316583">Levez le doigt, puis réessayez.</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
+<translation id="9222839391870847423">Durée : <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Tout afficher</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Pour la gérer, ouvrez Extensions}one{Pour la gérer, ouvrez Extensions}other{Pour les gérer, ouvrez Extensions}}</translation>
 <translation id="924818813611903184">Gérer les langues dans les paramètres de Chrome OS</translation>

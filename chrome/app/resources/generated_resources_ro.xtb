@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Administratorul a blocat unele funcții pentru acest dispozitiv</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> dorește să restabilească setările Chrome la valorile inițiale. Astfel, pagina de pornire, pagina Filă nouă și motorul de căutare vor fi resetate, extensiile vor fi dezactivate și fixarea filelor va fi anulată. De asemenea, vor fi șterse alte date temporare și memorate în cache, cum ar fi cookie-urile, conținutul și datele despre site-uri.</translation>
 <translation id="1082725763867769612">Fișiere offline</translation>
+<translation id="1083050113196701330">Verificarea actualizărilor s-a finalizat. Nu sunt disponibile actualizări.</translation>
 <translation id="1084026333130513768">Salvează, trimite și proiectează</translation>
 <translation id="1084096383128641877">Eliminarea acestei parole nu îți va șterge contul din <ph name="DOMAIN" />. Schimbă-ți parola sau șterge contul din <ph name="DOMAIN_LINK" /> ca să-l păstrezi în siguranță.</translation>
 <translation id="1084288067399862432">Parola compromisă a fost schimbată.
@@ -735,6 +736,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1486486872607808064">Scanează codul QR folosind camera foto a dispozitivului pe care vrei să creezi o cheie de acces pentru <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Creează o schiță sau optimizează o lucrare existentă.</translation>
 <translation id="1487335504823219454">Activat – setări personalizate</translation>
+<translation id="1488513761150925974">Verifică activitățile</translation>
 <translation id="1489101155914355052">Se generează sugestii pentru acest document…</translation>
 <translation id="1493152297698462486">Creează o imagine cu Gemini</translation>
 <translation id="1493892686965953381">Se așteaptă <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3062,6 +3064,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3038612606416062604">Adaugă manual o imprimantă</translation>
 <translation id="3038628620670416486">Apasă butoanele mouse-ului</translation>
 <translation id="3039491566278747710">Nu a putut fi instalată politica offline pe dispozitiv.</translation>
+<translation id="303955801043931176">Fila a fost închisă</translation>
 <translation id="3040435070100611531">Permisele tale din Portofelul Google</translation>
 <translation id="3040982432432547149">Ajută-ne să îmbunătățim Steam pentru Chromebook</translation>
 <translation id="304169924727249890">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3626,6 +3629,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – afișezi fila serviciului Gemini</translation>
 <translation id="345078987193237421">Astfel, se permite accesul la cameră pentru aplicații, site-uri care au permisiunea adecvată pentru camera foto și servicii de sistem</translation>
+<translation id="345163758690017738">Se lucrează la activitatea ta…</translation>
 <translation id="3452999110156026232">Acces pentru părinți</translation>
 <translation id="3453082738208775226">Eliberezi spațiul de stocare offline?</translation>
 <translation id="3453597230179205517">Accesul la locație este blocat</translation>
@@ -3795,6 +3799,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3567284462585300767">Pentru a primi și a accepta fișiere de la persoane din jur, setează dispozitivul ca vizibil</translation>
 <translation id="356738834800832239">Parola s-a salvat</translation>
 <translation id="3568431410312984116">Permite ca funcția Ajută-mă să scriu să se deschidă automat</translation>
+<translation id="3569304198553566878">Se afișează <ph name="NUM_DISPLAYED_EVENTS" /> din <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Doriți ca aplicația <ph name="APP_NAME" /> să aibă acces la ecran?</translation>
 <translation id="3569614820047645079">Fișierele din Contul meu Drive se sincronizează automat cu Chromebookul, ca să le poți accesa fără conexiune la internet.</translation>
 <translation id="3569617221227793022">Fusul orar este setat momentan la <ph name="TIME_ZONE_ENTRY" />. Această setare este gestionată de administrator.</translation>
@@ -7624,6 +7629,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6206199626856438589">Te vei deconecta de la site-urile afișate, inclusiv din filele deschise</translation>
 <translation id="6206311232642889873">Cop&amp;iază imaginea</translation>
 <translation id="6207200176136643843">Resetează la nivelul de zoom prestabilit</translation>
+<translation id="6207795130974856324">Este nevoie de ajutorul tău</translation>
 <translation id="6207937957461833379">Țară/Regiune</translation>
 <translation id="6208521041562685716">Se activează datele mobile</translation>
 <translation id="6208725777148613371">Nu s-a salvat în <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8342,6 +8348,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6715735940363172819">Site-urile nu au permisiunea de a folosi microfonul</translation>
 <translation id="6716049856796700977">Nimic nu îți poate folosi locația. Cu toate acestea, locația poate fi vizibilă pentru aplicații și site-uri prin adresa IP. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">S-a pierdut conexiunea la rețea. Verifică starea conexiunii la rețea sau încearcă o altă rețea Wi-Fi.</translation>
+<translation id="671868032356459320">Aplicabilitatea instrumentului pentru actualizări: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Blocați ecranul</translation>
 <translation id="6719839880830057298">Încărcarea fișierului s-a finalizat</translation>
 <translation id="6721744718589119342">Îți putem trimite e-mailuri pentru mai multe informații sau noutăți</translation>
@@ -9191,6 +9198,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7307129035224081534">Întreruptă</translation>
 <translation id="7308643132139167865">Limbi pentru site-uri</translation>
 <translation id="7309214454733221756">Creezi o cheie de acces pentru a te conecta la <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Lista de activități</translation>
 <translation id="7311005168897771689">Accesează fișierele din Google Drive când ești offline</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7312040805247765153">Aplicația nu poate fi instalată</translation>
@@ -11240,6 +11248,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8680251145628383637">Conectează-te pentru a-ți accesa marcajele, istoricul, parolele și alte setări pe toate dispozitivele. În plus, te vei conecta automat la serviciile Google.</translation>
 <translation id="8681886425883659911">Anunțurile sunt blocate pe site-urile despre care se știe că afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> este conectată și pregătită</translation>
+<translation id="8683720831806477407">Aplicabilitatea instrumentului pentru actualizări</translation>
 <translation id="8684471948980641888">Permite sincronizarea în rețelele contorizate</translation>
 <translation id="8685540043423825702">Profilul Chrome</translation>
 <translation id="8685882652128627032">Dă clic pentru a deschide caseta de dialog Adaugă o căutare pe site</translation>
@@ -12062,6 +12071,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9220723036554088545">încarcă un fișier</translation>
 <translation id="9220820413868316583">Ridică, apoi încearcă din nou.</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
+<translation id="9222839391870847423">Durată: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Afișează-le pe toate</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Pentru a gestiona opțiunea, deschide Extensii}few{Pentru a gestiona opțiunile, deschide Extensii}other{Pentru a gestiona opțiunile, deschide Extensii}}</translation>
 <translation id="924818813611903184">Gestionează limbile în setările sistemului de operare Chrome</translation>

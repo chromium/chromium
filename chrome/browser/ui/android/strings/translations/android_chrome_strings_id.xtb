@@ -724,6 +724,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4180726336228139707">Hanya di perangkat ini</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4188221736490993796">Urutkan menurut Z ke A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome menghentikan situs ini mengirimkan notifikasi karena spam atau konten tidak jujur}other{Chrome menghentikan situs ini mengirimkan notifikasi karena spam atau konten tidak jujur}}</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab di perangkat ini}other{# tab di perangkat ini}}</translation>
 <translation id="4198423547019359126">Tidak tersedia lokasi download</translation>
@@ -1116,6 +1117,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5833984609253377421">Bagikan link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Ingin tetap mendownload "<ph name="FILE_NAME" />"?</translation>
+<translation id="5847265694842662173">Chrome menghentikan situs yang disalahgunakan dan tidak digunakan agar tidak mengirimkan notifikasi</translation>
 <translation id="5848257610304005265">Buka PDF dengan <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Berhenti berbagi?</translation>
 <translation id="5853623416121554550">dijeda</translation>
@@ -1144,6 +1146,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5956665950594638604">Membuka Pusat Bantuan Chrome di tab baru</translation>
 <translation id="59577092665511740">Pilih akun.</translation>
 <translation id="5958275228015807058">Temukan file dan halaman di Download</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome menghentikan situs yang tidak Anda buka baru-baru ini agar tidak mengirimkan notifikasi kepada Anda}other{Chrome menghentikan situs yang tidak Anda buka baru-baru ini agar tidak mengirimkan notifikasi kepada Anda}}</translation>
 <translation id="5962718611393537961">Ketuk untuk menciutkan</translation>
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>
@@ -1804,6 +1807,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
 <translation id="8477178913400731244">Hapus data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Tidak ada jendela yang tidak aktif</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
 <translation id="8497242791509864205">Buka opsi pengurutan</translation>
 <translation id="8497480609928300907">Penjelasan panduan privasi</translation>
@@ -1903,6 +1907,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8965591936373831584">ditunda</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> tab samaran dan <ph name="TAB_COUNT_ONE" /> tab lainnya akan ditutup}other{<ph name="INCOGNITO_TAB_COUNT" /> tab samaran dan <ph name="TAB_COUNT_MANY" /> tab lainnya akan ditutup}}</translation>
+<translation id="8969796057708736017">Download akan selesai jika file memenuhi kebijakan organisasi Anda</translation>
 <translation id="8970887620466824814">Terjadi error.</translation>
 <translation id="8972098258593396643">Download ke folder default?</translation>
 <translation id="8992769679401294069">Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di Akun Google Anda.</translation>

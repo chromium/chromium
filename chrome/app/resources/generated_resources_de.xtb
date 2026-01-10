@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Dein Administrator hat einige Funktionen für dieses Gerät blockiert</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> möchte deine Chrome-Einstellungen auf ihre ursprünglichen Standardwerte zurücksetzen. Hierdurch werden deine Startseite, die "Neuer Tab"-Seite und die Suchmaschine zurückgesetzt, deine Erweiterungen deaktiviert und sämtliche Tabs losgelöst. Außerdem werden sonstige temporäre und im Cache gespeicherte Daten wie Cookies, Inhalte und Websitedaten gelöscht.</translation>
 <translation id="1082725763867769612">Offlinedateien</translation>
+<translation id="1083050113196701330">Prüfung auf Updates abgeschlossen. Es war kein Update verfügbar.</translation>
 <translation id="1084026333130513768">Speichern, teilen und streamen</translation>
 <translation id="1084096383128641877">Durch das Entfernen dieses Passworts wird dein <ph name="DOMAIN" />-Konto nicht gelöscht. Ändere dein Passwort oder lösche dein <ph name="DOMAIN_LINK" />-Konto, um es vor anderen zu schützen.</translation>
 <translation id="1084288067399862432">Das gehackte Passwort wurde geändert.
@@ -734,6 +735,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1486486872607808064">Scanne diesen QR-Code mit der Kamera des Geräts, auf dem du einen Passkey für <ph name="APP_NAME" /> erstellen möchtest</translation>
 <translation id="1486616492435615702">Du kannst einen Entwurf erstellen oder vorhandene Texte optimieren.</translation>
 <translation id="1487335504823219454">An – benutzerdefinierte Einstellungen</translation>
+<translation id="1488513761150925974">Prüfe deine Aufgaben</translation>
 <translation id="1489101155914355052">Vorschläge für dieses Dokument werden generiert…</translation>
 <translation id="1493152297698462486">Bild mit Gemini erstellen</translation>
 <translation id="1493892686965953381">Warten auf <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3058,6 +3060,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3038612606416062604">Drucker manuell hinzufügen</translation>
 <translation id="3038628620670416486">Tasten an deiner Maus erkennen</translation>
 <translation id="3039491566278747710">Fehler beim Installieren der Offlinerichtlinie auf dem Gerät.</translation>
+<translation id="303955801043931176">Tab geschlossen</translation>
 <translation id="3040435070100611531">Karten und Tickets in Google Wallet öffnen</translation>
 <translation id="3040982432432547149">Hilf uns, Steam für Chromebook zu verbessern</translation>
 <translation id="304169924727249890">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> beitreten</translation>
@@ -3621,6 +3624,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> erfordert, dass du dein Gerät jetzt mit dem WLAN verbindest und ein Update herunterlädst.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – du teilst diesen Tab gerade mit Gemini</translation>
 <translation id="345078987193237421">Dadurch können Apps, Websites mit Kameraberechtigung und Systemdienste auf deine Kamera zugreifen</translation>
+<translation id="345163758690017738">Deine Aufgabe wird bearbeitet…</translation>
 <translation id="3452999110156026232">Elternfreigabe</translation>
 <translation id="3453082738208775226">Offlinespeicherplatz freigeben?</translation>
 <translation id="3453597230179205517">Standortzugriff blockiert</translation>
@@ -3790,6 +3794,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3567284462585300767">Sichtbar werden, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="356738834800832239">Dein Passwort wurde gespeichert</translation>
 <translation id="3568431410312984116">Automatisches Öffnen von „Formuliere für mich“ zulassen</translation>
+<translation id="3569304198553566878"><ph name="NUM_DISPLAYED_EVENTS" /> von <ph name="NUM_TOTAL_EVENTS" /> werden angezeigt</translation>
 <translation id="3569382839528428029">Soll <ph name="APP_NAME" /> deinen Bildschirm freigeben?</translation>
 <translation id="3569614820047645079">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="3569617221227793022">Die Zeitzone ist derzeit auf <ph name="TIME_ZONE_ENTRY" /> eingestellt. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
@@ -7616,6 +7621,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6206199626856438589">Du wirst von angezeigten Websites abgemeldet, auch in geöffneten Tabs</translation>
 <translation id="6206311232642889873">Bild kop&amp;ieren</translation>
 <translation id="6207200176136643843">Auf Standard-Zoomstufe zurücksetzen</translation>
+<translation id="6207795130974856324">Deine Hilfe ist erforderlich</translation>
 <translation id="6207937957461833379">Land/Region</translation>
 <translation id="6208521041562685716">Mobile Daten werden aktiviert</translation>
 <translation id="6208725777148613371">Fehler beim Speichern in <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8332,6 +8338,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6715735940363172819">Websites dürfen dein Mikrofon nicht verwenden</translation>
 <translation id="6716049856796700977">Apps, Websites und Systemdienste dürfen deinen Standort nicht verwenden. Apps und Websites können ihn aber möglicherweise anhand deiner IP-Adresse sehen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Die Netzwerkverbindung wurde unterbrochen. Prüfe deine Netzwerkverbindung oder stelle eine Verbindung zu einem anderen WLAN her.</translation>
+<translation id="671868032356459320">Updater-Anwendungsbereich: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Sperren</translation>
 <translation id="6719839880830057298">Datei-Upload abgeschlossen</translation>
 <translation id="6721744718589119342">Unter Umständen werden wir dich per E-Mail um weitere bzw. aktuelle Informationen bitten</translation>
@@ -9181,6 +9188,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7307129035224081534">Pausiert</translation>
 <translation id="7308643132139167865">Websitesprachen</translation>
 <translation id="7309214454733221756">Einen Passkey zur Anmeldung in <ph name="APP_NAME" /> erstellen?</translation>
+<translation id="7309517920862730287">Aufgabenliste</translation>
 <translation id="7311005168897771689">Offline auf Google Drive-Dateien zugreifen</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312040805247765153">Die App kann nicht installiert werden</translation>
@@ -11230,6 +11238,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8680251145628383637">Melde dich an, um deine Lesezeichen, den Verlauf und deine anderen Einstellungen auf allen deinen Geräten zu sehen. Du wirst auch automatisch in deinen Google-Diensten angemeldet.</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ist verbunden und bereit</translation>
+<translation id="8683720831806477407">Updater-Anwendungsbereich</translation>
 <translation id="8684471948980641888">Synchronisierung in kostenpflichtigen Netzwerken zulassen</translation>
 <translation id="8685540043423825702">Mein Chrome-Profil</translation>
 <translation id="8685882652128627032">Klicken, um das Dialogfeld „Website-Suchmaschine hinzufügen“ zu öffnen</translation>
@@ -12051,6 +12060,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9220723036554088545">Datei hochladen</translation>
 <translation id="9220820413868316583">Finger hochheben und dann Versuch wiederholen.</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
+<translation id="9222839391870847423">Dauer: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Alle anzeigen</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Öffne zum Verwalten „Erweiterungen“}other{Öffne zum Verwalten „Erweiterungen“}}</translation>
 <translation id="924818813611903184">Sprachen in den Chrome OS-Einstellungen verwalten</translation>

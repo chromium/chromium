@@ -1903,6 +1903,7 @@
 <translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
 <translation id="8965591936373831584">սպասում է</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
+<translation id="8969796057708736017">Ներբեռնումը կկատարվի, եթե ֆայլը համապատասխանի ձեր կազմակերպության կանոններին</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8972098258593396643">Ներբեռնե՞լ կանխադրված պանակ</translation>
 <translation id="8992769679401294069">Ձեր տվյալները գաղտնագրված են անցաբառով։ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար մուտքագրեք ձեր անցաբառը։</translation>

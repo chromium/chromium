@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">您的管理员已禁用此设备的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />要将您的 Chrome 设置恢复为原始默认设置。这不仅会重置您的主页、“打开新的标签页”页面和搜索引擎，而且还会禁用您的扩展程序并取消固定所有标签页。此外，其他临时数据和缓存的数据（例如 Cookie、内容和网站数据）也将被清除。</translation>
 <translation id="1082725763867769612">离线文件</translation>
+<translation id="1083050113196701330">更新检查已成功完成。没有可用的更新</translation>
 <translation id="1084026333130513768">保存、分享和投放</translation>
 <translation id="1084096383128641877">移除此密码不会删除您在 <ph name="DOMAIN" /> 上的账号。如需保护您在 <ph name="DOMAIN_LINK" /> 上的账号免遭他人盗用，请更改您的密码或删除该账号。</translation>
 <translation id="1084288067399862432">已成功更改这个已泄露的密码。
@@ -732,6 +733,7 @@
 <translation id="1486486872607808064">只需使用设备上的摄像头扫描此二维码，即可为 <ph name="APP_NAME" /> 创建通行密钥</translation>
 <translation id="1486616492435615702">撰写草稿或润色现有作品。</translation>
 <translation id="1487335504823219454">开启 - 自定义设置</translation>
+<translation id="1488513761150925974">查看您的任务</translation>
 <translation id="1489101155914355052">正在为此文档生成建议…</translation>
 <translation id="1493152297698462486">使用 Gemini 制作图片</translation>
 <translation id="1493892686965953381">正在等待<ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3053,6 +3055,7 @@
 <translation id="3038612606416062604">手动添加打印机</translation>
 <translation id="3038628620670416486">寻找鼠标按钮</translation>
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
+<translation id="303955801043931176">标签页已关闭</translation>
 <translation id="3040435070100611531">您的 Google 钱包卡券</translation>
 <translation id="3040982432432547149">欢迎帮助我们改进 Chromebook 版 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组</translation>
@@ -3616,6 +3619,7 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 您正在与 Gemini 分享此标签页</translation>
 <translation id="345078987193237421">这将允许具有相机权限的应用和网站以及系统服务使用相机</translation>
+<translation id="345163758690017738">正在处理您的任务…</translation>
 <translation id="3452999110156026232">家长访问</translation>
 <translation id="3453082738208775226">清理离线存储空间？</translation>
 <translation id="3453597230179205517">已禁止使用位置信息</translation>
@@ -3785,6 +3789,7 @@
 <translation id="3567284462585300767">若要与附近的人互发文件，请将您的设备设为对他人可见</translation>
 <translation id="356738834800832239">您的密码已保存</translation>
 <translation id="3568431410312984116">允许自动打开“帮我写”功能</translation>
+<translation id="3569304198553566878">当前显示了 <ph name="NUM_DISPLAYED_EVENTS" /> 个事件（共 <ph name="NUM_TOTAL_EVENTS" /> 个）</translation>
 <translation id="3569382839528428029">您允许 <ph name="APP_NAME" /> 共享您的屏幕吗？</translation>
 <translation id="3569614820047645079">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
 <translation id="3569617221227793022">时区当前设置为 <ph name="TIME_ZONE_ENTRY" />。此设置由您的管理员管理。</translation>
@@ -7610,6 +7615,7 @@
 <translation id="6206199626856438589">您将从显示的网站（包括已打开的标签页中的网站）退出账号</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
 <translation id="6207200176136643843">重置为默认缩放级别</translation>
+<translation id="6207795130974856324">正在等待您处理</translation>
 <translation id="6207937957461833379">国家/地区</translation>
 <translation id="6208521041562685716">正在激活移动数据</translation>
 <translation id="6208725777148613371">未能保存到“<ph name="WEB_DRIVE" />”- <ph name="INTERRUPT_REASON" /></translation>
@@ -8326,6 +8332,7 @@
 <translation id="6715735940363172819">不允许网站使用您的麦克风</translation>
 <translation id="6716049856796700977">所有应用、网站和系统服务均无法使用您的位置信息。不过，应用和网站或许仍可通过您的 IP 地址获取您的位置信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
+<translation id="671868032356459320">更新程序作用域：<ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">锁定屏幕</translation>
 <translation id="6719839880830057298">文件上传完成</translation>
 <translation id="6721744718589119342">我们可能会向您发送电子邮件，让您提供更多信息或向您告知最新进展</translation>
@@ -9175,6 +9182,7 @@
 <translation id="7307129035224081534">已暂停</translation>
 <translation id="7308643132139167865">网站语言</translation>
 <translation id="7309214454733221756">要创建通行密钥以便登录“<ph name="APP_NAME" />”吗？</translation>
+<translation id="7309517920862730287">任务列表</translation>
 <translation id="7311005168897771689">在离线状态下访问您的 Google 云端硬盘文件</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7312040805247765153">无法安装应用</translation>
@@ -11224,6 +11232,7 @@
 <translation id="8680251145628383637">登录后即可在您的任何设备上获取自己的书签、历史记录、密码和其他设置。此外，您还会自动登录到 Google 服务。</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已连接且已准备就绪</translation>
+<translation id="8683720831806477407">更新程序作用域</translation>
 <translation id="8684471948980641888">允许通过按流量计费的网络同步</translation>
 <translation id="8685540043423825702">您的 Chrome 个人资料</translation>
 <translation id="8685882652128627032">点击即可打开“添加网站搜索引擎”对话框</translation>
@@ -12045,6 +12054,7 @@
 <translation id="9220723036554088545">上传文件</translation>
 <translation id="9220820413868316583">请抬起手指，然后重试。</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
+<translation id="9222839391870847423">时长：<ph name="DURATION" /></translation>
 <translation id="923467487918828349">显示全部</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{如需管理这款扩展程序，请打开“扩展程序”页面}other{如需管理这些扩展程序，请打开“扩展程序”页面}}</translation>
 <translation id="924818813611903184">在 Chrome 操作系统设置中管理语言</translation>

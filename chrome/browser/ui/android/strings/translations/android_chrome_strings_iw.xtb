@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">רק במכשיר הזה</translation>
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4188221736490993796">מיון בסדר אלפביתי יורד</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome הפסיק להציג ההתראות מהאתר הזה בגלל ספאם או תוכן מטעה}one{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}two{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}other{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}}</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{כרטיסייה אחת במכשיר הזה}one{# כרטיסיות במכשיר הזה}two{# כרטיסיות במכשיר הזה}other{# כרטיסיות במכשיר הזה}}</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">שיתוף קישור</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
+<translation id="5847265694842662173">‏‫Chrome הפסיק להציג התראות מאתרים פוגעניים ומאתרים שלא נמצאים בשימוש</translation>
 <translation id="5848257610304005265">‏לפתוח את קובץ ה-PDF באמצעות <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">להפסיק את השיתוף?</translation>
 <translation id="5853623416121554550">ההורדה בהשהיה</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">‏פתיחת מרכז העזרה של Chrome בכרטיסייה חדשה</translation>
 <translation id="59577092665511740">בחירת חשבון.</translation>
 <translation id="5958275228015807058">הקבצים והדפים שלך נמצאים ב'הורדות'</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome הפסיק להציג לך התראות מאתר שלא ביקרת בו לאחרונה}one{‏‫Chrome הפסיק להציג לך התראות מאתרים שלא ביקרת בהם לאחרונה}two{‏‫Chrome הפסיק להציג לך התראות מאתרים שלא ביקרת בהם לאחרונה}other{‏‫Chrome הפסיק להציג לך התראות מאתרים שלא ביקרת בהם לאחרונה}}</translation>
 <translation id="5962718611393537961">יש ללחוץ כדי לכווץ</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">גלישה בכמה מכשירים</translation>
 <translation id="8477178913400731244">מחיקת נתונים</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">אין חלונות לא פעילים</translation>
 <translation id="8493948351860045254">פינוי נפח אחסון</translation>
 <translation id="8497242791509864205">פתיחה של אפשרויות המיון</translation>
 <translation id="8497480609928300907">הסבר על המדריך בנושא פרטיות</translation>

@@ -725,6 +725,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4180726336228139707">Ar y ddyfais hon yn unig</translation>
 <translation id="4181841719683918333">Ieithoedd</translation>
 <translation id="4188221736490993796">Trefnu yn ôl Z i A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Gwnaeth Chrome atal y wefan hon rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}zero{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}two{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}few{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}many{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}other{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}}</translation>
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab ar y ddyfais hon}zero{# tab ar y ddyfais hon}two{# dab ar y ddyfais hon}few{# thab ar y ddyfais hon}many{# thab ar y ddyfais hon}other{# tab ar y ddyfais hon}}</translation>
 <translation id="4198423547019359126">Nid oes unrhyw leoliadau lawrlwytho ar gael</translation>
@@ -1117,6 +1118,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5833984609253377421">Rhannu'r ddolen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" beth bynnag?</translation>
+<translation id="5847265694842662173">Gwnaeth Chrome atal gwefannau ymosodol a heb eu defnyddio rhag anfon hysbysiadau</translation>
 <translation id="5848257610304005265">Agor y PDF gyda <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Stopio rhannu?</translation>
 <translation id="5853623416121554550">seibiwyd</translation>
@@ -1145,6 +1147,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5956665950594638604">Agor Canolfan Gymorth Chrome mewn tab newydd</translation>
 <translation id="59577092665511740">Dewis cyfrif.</translation>
 <translation id="5958275228015807058">Gallwch ddod o hyd i'ch ffeiliau a'ch tudalennau yn Lawrlwythiadau</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Gwnaeth Chrome atal gwefan nad ydych wedi ymweld â hi yn ddiweddar rhag anfon hysbysiadau atoch}zero{Gwnaeth Chrome atal gwefannau nad ydych wedi ymweld â nhw yn ddiweddar rhag anfon hysbysiadau atoch}two{Gwnaeth Chrome atal gwefannau nad ydych wedi ymweld â nhw yn ddiweddar rhag anfon hysbysiadau atoch}few{Gwnaeth Chrome atal gwefannau nad ydych wedi ymweld â nhw yn ddiweddar rhag anfon hysbysiadau atoch}many{Gwnaeth Chrome atal gwefannau nad ydych wedi ymweld â nhw yn ddiweddar rhag anfon hysbysiadau atoch}other{Gwnaeth Chrome atal gwefannau nad ydych wedi ymweld â nhw yn ddiweddar rhag anfon hysbysiadau atoch}}</translation>
 <translation id="5962718611393537961">Tapiwch i grebachu</translation>
 <translation id="5964869237734432770">Stopio disgrifio lluniau</translation>
 <translation id="5972844218283131174">Dad-ddewis popeth</translation>
@@ -1805,6 +1808,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="847433688444405067">Pori ar draws dyfeisiau</translation>
 <translation id="8477178913400731244">Dileu data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Dim ffenestri anweithredol</translation>
 <translation id="8493948351860045254">Rhyddhau lle storio</translation>
 <translation id="8497242791509864205">Agor opsiynau didoli</translation>
 <translation id="8497480609928300907">Esboniad canllaw preifatrwydd</translation>
@@ -1904,6 +1908,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8963117664422609631">Ewch i'r gosodiadau gwefan</translation>
 <translation id="8965591936373831584">ar y gweill</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}two{Bydd <ph name="INCOGNITO_TAB_COUNT" /> dab anhysbys a <ph name="TAB_COUNT_MANY" /> dab arall yn cael eu cau}few{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}many{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}other{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>
+<translation id="8969796057708736017">Bydd eich lawrlwythiad yn cael ei gwblhau os yw'r ffeil yn bodloni polisïau eich sefydliad</translation>
 <translation id="8970887620466824814">Aeth rywbeth o'i le.</translation>
 <translation id="8972098258593396643">Lawrlwytho i'r ffolder ddiofyn?</translation>
 <translation id="8992769679401294069">Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a chadw data Chrome yn eich Cyfrif Google.</translation>

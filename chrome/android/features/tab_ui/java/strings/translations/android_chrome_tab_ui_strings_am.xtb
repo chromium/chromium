@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ትርን ያስወግዱ እና ከቡድን ይውጡ</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{እስከ <ph name="LIMIT_COUNT_ONE" /> ፋይል፣ ትር ወይም ምስል ድረስ ያክሉ}one{እስከ <ph name="LIMIT_COUNT_MANY" /> ድረስ ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ}other{እስከ <ph name="LIMIT_COUNT_MANY" /> ድረስ ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}}</translation>
 <translation id="5556417849629758491">የመደብር መረጃን ይመልከቱ፣ አማራጩ ከማያ ገጹ አናት አጠገብ ይገኛል</translation>
 <translation id="5627941783489838464">ምንም የትር ዝማኔዎች የሉም</translation>

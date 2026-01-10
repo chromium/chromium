@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> が Chrome 設定を元のデフォルトに戻すことを求めています。これにより、ホームページ、新しいタブの画面、検索エンジンがリセットされ、拡張機能が無効となり、すべてのタブの固定が解除されます。また、その他の一時的なキャッシュ データ（Cookie、コンテンツ データ、サイトデータなど）も消去されます。</translation>
 <translation id="1082725763867769612">オフライン ファイル</translation>
+<translation id="1083050113196701330">アップデートの確認が正常に完了しました。アップデートはありませんでした</translation>
 <translation id="1084026333130513768">保存、共有、キャスト</translation>
 <translation id="1084096383128641877">このパスワードを削除しても、<ph name="DOMAIN" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="DOMAIN_LINK" /> のアカウントを削除してください。</translation>
 <translation id="1084288067399862432">不正使用されたパスワードを変更しました。
@@ -734,6 +735,7 @@
 <translation id="1486486872607808064"><ph name="APP_NAME" /> のパスキーを作成するデバイスのカメラで、この QR コードをスキャンしてください</translation>
 <translation id="1486616492435615702">下書きを作成したり、既存の文章を修正したりできます。</translation>
 <translation id="1487335504823219454">オン - カスタム設定</translation>
+<translation id="1488513761150925974">タスクを確認</translation>
 <translation id="1489101155914355052">このドキュメントの提案を生成しています…</translation>
 <translation id="1493152297698462486">Gemini で画像を作成</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> を待機しています...</translation>
@@ -3056,6 +3058,7 @@
 <translation id="3038612606416062604">プリンタを手動で追加</translation>
 <translation id="3038628620670416486">マウスのボタン設定</translation>
 <translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
+<translation id="303955801043931176">タブを閉じました</translation>
 <translation id="3040435070100611531">Google ウォレットのパス</translation>
 <translation id="3040982432432547149">Chromebook の Steam の改善にご協力ください</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加</translation>
@@ -3619,6 +3622,7 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> が、Wi-Fi に接続して、今すぐアップデートをダウンロードするよう求めています。</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - このタブは Gemini と共有されています</translation>
 <translation id="345078987193237421">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、カメラへのアクセスを許可します</translation>
+<translation id="345163758690017738">タスクを処理しています…</translation>
 <translation id="3452999110156026232">保護者によるアクセス</translation>
 <translation id="3453082738208775226">オフライン ストレージをクリーンアップしますか？</translation>
 <translation id="3453597230179205517">位置情報へのアクセスはブロックされています</translation>
@@ -3787,6 +3791,7 @@
 <translation id="3567284462585300767">近くのユーザーとファイルを送受信するには、デバイスを公開してください</translation>
 <translation id="356738834800832239">パスワードを保存しました</translation>
 <translation id="3568431410312984116">「文書作成サポート」を自動的に開くことを許可する</translation>
+<translation id="3569304198553566878"><ph name="NUM_DISPLAYED_EVENTS" />/<ph name="NUM_TOTAL_EVENTS" /> 件を表示中</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> と画面を共有しますか？</translation>
 <translation id="3569614820047645079">マイドライブ内のファイルは Chromebook と自動的に同期されるので、インターネット接続がなくてもアクセスできます。</translation>
 <translation id="3569617221227793022">タイムゾーンは現在 <ph name="TIME_ZONE_ENTRY" /> に設定されています。この設定は管理者によって管理されています。</translation>
@@ -5091,6 +5096,7 @@
 <translation id="4426857487270413362">インストーラ ファイルをダウンロードできません。インターネット接続とディスクの空き容量を確認し、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> 回検出</translation>
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{タスクが完了しました}other{タスクが完了しました}}</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">数字のみ指定可能</translation>
@@ -7611,6 +7617,7 @@
 <translation id="6206199626856438589">開いているタブを含め、表示されたサイトからログアウトします</translation>
 <translation id="6206311232642889873">画像をコピー(&amp;Y)</translation>
 <translation id="6207200176136643843">リセットしてデフォルトのズームレベルに戻す</translation>
+<translation id="6207795130974856324">確認してください</translation>
 <translation id="6207937957461833379">国/地域</translation>
 <translation id="6208521041562685716">モバイルデータを有効化しています</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> に保存できませんでした - <ph name="INTERRUPT_REASON" /></translation>
@@ -8326,6 +8333,7 @@
 <translation id="6715735940363172819">ウェブサイトでのマイクの使用は許可されていません</translation>
 <translation id="6716049856796700977">位置情報の利用を許可されているアプリやウェブサイトはありません。ただし、IP アドレスを通じて位置情報がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
+<translation id="671868032356459320">アップデータのスコープ: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">画面をロック</translation>
 <translation id="6719839880830057298">ファイルのアップロードが完了しました</translation>
 <translation id="6721744718589119342">Google から追加情報や最新情報についてメールを受け取る</translation>
@@ -9174,6 +9182,7 @@
 <translation id="7307129035224081534">一時停止中</translation>
 <translation id="7308643132139167865">ウェブサイトの言語</translation>
 <translation id="7309214454733221756"><ph name="APP_NAME" /> にログインするパスキーを作成しますか？</translation>
+<translation id="7309517920862730287">タスクリスト</translation>
 <translation id="7311005168897771689">オフラインでも Google ドライブのファイルにアクセス</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312040805247765153">アプリをインストールできません</translation>
@@ -11222,6 +11231,7 @@
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> が接続され、準備が整いました</translation>
+<translation id="8683720831806477407">アップデータのスコープ</translation>
 <translation id="8684471948980641888">従量制ネットワークを使用した同期を許可する</translation>
 <translation id="8685540043423825702">自分の Chrome プロフィール</translation>
 <translation id="8685882652128627032">クリックすると [サイト内検索を追加] ダイアログが開きます</translation>
@@ -12043,6 +12053,7 @@
 <translation id="9220723036554088545">ファイルをアップロードします</translation>
 <translation id="9220820413868316583">いったん指を放してもう一度お試しください。</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
+<translation id="9222839391870847423">期間: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">すべて表示</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{管理するには、拡張機能を開きます}other{管理するには、拡張機能を開きます}}</translation>
 <translation id="924818813611903184">ChromeOS の設定で言語を管理する</translation>

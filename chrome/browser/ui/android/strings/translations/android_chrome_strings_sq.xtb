@@ -724,6 +724,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4180726336228139707">Vetëm në këtë pajisje</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4188221736490993796">Rendit nga Zh-ja në A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome e ndaloi këtë sajt që të mos dërgojë njoftime për shkak të përmbajtjeve të bezdisshme ose mashtruese}other{Chrome i ndaloi këto sajte që të mos dërgojnë njoftime për shkak të përmbajtjeve të bezdisshme ose mashtruese}}</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 skedë në këtë pajisje}other{# skeda në këtë pajisje}}</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
@@ -1116,6 +1117,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5833984609253377421">Ndaj lidhjen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Dëshiron ta shkarkosh "<ph name="FILE_NAME" />" gjithsesi?</translation>
+<translation id="5847265694842662173">Chrome i ndaloi sajtet abuzive dhe të papërdorura që të dërgojnë njoftime</translation>
 <translation id="5848257610304005265">Të hapet skedari PDF me aplikacionin "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Të ndalohet ndarja?</translation>
 <translation id="5853623416121554550">në pauzë</translation>
@@ -1144,6 +1146,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5956665950594638604">Hap "Qendrën e ndihmës së Chrome" në një skedë të re</translation>
 <translation id="59577092665511740">Zgjidh një llogari.</translation>
 <translation id="5958275228015807058">Gjej skedarët dhe faqet e tua te "Shkarkimet"</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ndaloi një sajt që nuk e ke vizituar së fundi që të të dërgojë njoftime}other{Chrome i ndaloi sajtet që nuk i ke vizituar së fundi që të të dërgojnë njoftime}}</translation>
 <translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
 <translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
@@ -1804,6 +1807,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="847433688444405067">Shfleto nëpër pajisje</translation>
 <translation id="8477178913400731244">Fshi të dhënat</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nuk ka dritare joaktive</translation>
 <translation id="8493948351860045254">Liro hapësirë</translation>
 <translation id="8497242791509864205">Hap opsionet e renditjes</translation>
 <translation id="8497480609928300907">Shpjegim i udhëzuesit të privatësisë</translation>
@@ -1903,6 +1907,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8963117664422609631">Shko te cilësimet e faqes</translation>
 <translation id="8965591936373831584">në pritje</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> skedë "e fshehtë" dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="INCOGNITO_TAB_COUNT" /> skeda "të fshehta" dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>
+<translation id="8969796057708736017">Shkarkimi yt do të përfundojë nëse skedari është në përputhje me politikat e organizatës sate</translation>
 <translation id="8970887620466824814">Ndodhi një gabim.</translation>
 <translation id="8972098258593396643">Të shkarkohet në dosjen e parazgjedhur?</translation>
 <translation id="8992769679401294069">Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>

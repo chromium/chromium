@@ -1003,6 +1003,17 @@ Yönetilen profillerde <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" />
 
       Bu politika ayarlanmadan bırakılırsa boş disk alanınız 20 GB'tan (varsayılan değer) az olduğunda <ph name="PLUGIN_VM_NAME" /> yüklemesi başarısız olur.
       Politika ayarlanırsa cihazda yetersiz disk alanı olduğunda <ph name="PLUGIN_VM_NAME" /> yüklemesi başarısız olur.</translation>
+<translation id="1682893353675650337">Lens Yer Paylaşımı, kullanıcıların ekran görüntüsü üzerinden veya geçerli sayfanın içeriği hakkında soru sorarak içerikle ilgili bağlamsal Google aramaları yapmasına olanak tanır. Bu özellik son kullanıcının etkinleştirmesini gerektirir.
+
+Bu özellik, bu politika ile devre dışı bırakılmadığı sürece varsayılan arama motoru Google olan herkes tarafından kullanılabilir.
+
+Politika, 0 - Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bu özellik kullanıcılara sunulur.
+
+Politika, "1 - İzin verme" değerine ayarlanırsa bu özellik kullanılamaz.
+
+<ph name="PRODUCT_NAME" /> 140 sürümünden itibaren, politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Bu politikanın desteği, <ph name="PRODUCT_NAME" /> 147 sürümünden itibaren sonlandırılacak. BT yöneticileri, gelecekte bu özelliği kontrol etmek için <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> politikasını kullanabilir.</translation>
 <translation id="1686952487081322272">Bil Bakalım'ı Devre Dışı Bırak</translation>
 <translation id="1690383938831887552">İmzalanmış HTTP Takaslarının yüklenmesini engelle</translation>
 <translation id="1692325295652827195">Politikayı Doğru değerine ayarlamak, politika tarafından tetiklenen önemli Android uygulaması yükleme etkinliklerinin raporlarını Google'a gönderir.
@@ -4052,6 +4063,8 @@ Politika, 2 değerine ayarlanırsa yalıtılmış web uygulaması kaynaklarını
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında dikte özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
+<translation id="3811407842708673996">Politika ayarlanmadan bırakılır veya Etkin değerine ayarlanırsa kullanıcıların <ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge arama menü öğesini içerik menüsünde görüntüleyip kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa <ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge arama desteklendiğinde kullanıcılar <ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge arama menü öğesini içerik menüsünde görmez.
+Bu politikanın desteği, <ph name="PRODUCT_NAME" /> 147 sürümünden itibaren sonlandırılacak. BT yöneticileri, gelecekte bu özelliği kontrol etmek için <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> politikasını kullanabilir.</translation>
 <translation id="3811562426301733860">Tüm sitelerde reklamlara izin ver</translation>
 <translation id="3816312845600780067">Otomatik giriş için kurtarma klavye kısayolunu etkinleştir</translation>
 <translation id="3817323252437541502">Gelişmiş Koruma programına kayıtlı kullanıcılar için ek koruma özelliklerini etkinleştir</translation>
@@ -5460,6 +5473,23 @@ Bu politika ayarlanmadan bırakılırsa tüm hizmetler etkinleştirilir.
 Aksi takdirde, yalnızca seçilen hizmetler etkinleştirilir.</translation>
 <translation id="4767059955897420757">Politika ayarlanmaz veya Etkin değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzantısı promosyonu, kullanıcıya gösterilebilir.
 Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzantısı promosyonu, kullanıcıya gösterilmez.</translation>
+<translation id="4767618783249265266">Bu politika, <ph name="PRODUCT_NAME" /> yan paneli veya sekmeleri aracılığıyla sayfa ve dosya içeriğinin <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ve <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ile paylaşılmasını kontrol eder.
+
+Bu politikanın web'deki <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> özelliğini etkilemediğini unutmayın. Yalnızca kullanıcıların <ph name="PRODUCT_NAME" /> kullanırken bu özellikle nasıl bilgi paylaşabileceğini kontrol eder.
+
+0/ayarlanmadı = Kullanıcılar, sayfa veya dosya içeriğini <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ile paylaşabilir.
+
+1 = Kullanıcılar, sayfa veya dosya içeriğini <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ile paylaşamaz. Bağlam paylaşımı için giriş noktaları devre dışı bırakılır veya gizlenir.
+
+Bu politika, <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> kullanıcıların varsayılan arama motoru olmadığında, özellik devre dışı bırakıldığından yok sayılır.
+
+Bu politika, <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> politikasından bağımsızdır. <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> politikası yalnızca çok amaçlı adres çubuğu veya yeni sekme sayfası arama kutusundaki giriş noktalarını kontrol ederken bu politika, yan panel veya sekmeler aracılığıyla bağlam paylaşımını kontrol eder.
+
+Bu politika, <ph name="GEMINI_SETTINGS_POLICY_NAME" /> tarafından devre dışı bırakılabilen <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu da kontrol etmez.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="4768446404233019970">TLS'de 3DES şifre paketlerini etkinleştir</translation>
 <translation id="4770334626033858263">Ebeveyn Erişim Kodu'nu oluşturmak ve doğrulamak için kullanılan yapılandırma.</translation>
 <translation id="4773997835955617342">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
@@ -7382,6 +7412,8 @@ Politika, <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (1 değeri) ola
 
       ECH, sürekli gelişen bir protokol olduğu için <ph name="PRODUCT_NAME" /> hizmetinin uygulama sürecinde değişiklikler yapılabilir. Dolayısıyla bu politika ilk deneysel uygulama sürecini kontrol etmek için kullanıma sunulmuş geçici bir önlemdir. Protokol kesinleştiğinde politika da son kontrollere göre değiştirilecektir.</translation>
 <translation id="5939873071468124100"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> entegrasyonunu kullanabilen hesapları kısıtlar</translation>
+<translation id="594085996886561267">Politika ayarlanmadan bırakılır veya Etkin değerine ayarlanırsa kullanıcıların, yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesini görüntüleyip kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesini görmez.
+Bu politikanın desteği, <ph name="PRODUCT_NAME" /> 147 sürümünden itibaren sonlandırılacak. BT yöneticileri, gelecekte bu özelliği kontrol etmek için <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> politikasını kullanabilir.</translation>
 <translation id="5945312246863177268">Kullanıcıların Eche uygulamasını başlatmak için Telefon Merkezi bildirimini tıklamasına izin vermez.</translation>
 <translation id="5946082169633555022">Beta kanalı</translation>
 <translation id="5946329690214660966">Güncellemeleri kontrol etmek için özel bir program belirle</translation>
@@ -10440,6 +10472,7 @@ Politika, Etkin değerine ayarlanırsa cihaz için uzaktan onaya izin verilir. O
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa hiçbir sertifika oluşturulmaz ve <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> için yapılan çağrılar başarısız olur.</translation>
 <translation id="7906983682927840536">Kapanışta keepalive süresini getir</translation>
 <translation id="7908384265697653397"><ph name="PRODUCT_OS_NAME" /> sürümü, belirtilen <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> sürümünden düşükse kullanıcı oturumunun kaç gün sonra kapatılacağı</translation>
+<translation id="7908762897332688196"><ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ve <ph name="GOOGLE_LENS_PRODUCT_NAME" /> entegrasyonlarıyla içerik paylaşımını etkinleştir</translation>
 <translation id="7909751052609510518">Yazdırma İşleri (sürüm 129'dan beri destekleniyor)</translation>
 <translation id="7909839744818798105">Alan adı listesi için eski çerez kapsamı davranışını etkinleştir</translation>
 <translation id="7911685775490889216">Kilit ekranındaki ekran koruyucunun göstereceği birden fazla resim olduğunda bir resmin gösterileceği zaman aralığını saniye cinsinden yapılandırır.

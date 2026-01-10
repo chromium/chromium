@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Jou administrateur het sommige funksies op hierdie toestel geblokkeer</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wil jou Chrome-instellings na hul oorspronklike verstekwaardes herstel. Dit sal jou tuisblad, nuwe oortjie-bladsy en soekenjin terugstel, jou uitbreidings deaktiveer en alle oortjies ontspeld. Dit sal ook alle tydelike en gekaste data soos koekies, inhoud en werfdata uitvee.</translation>
 <translation id="1082725763867769612">Vanlyn lêers</translation>
+<translation id="1083050113196701330">Opdateringkontrole is suksesvol voltooi. Geen opdatering was beskikbaar nie</translation>
 <translation id="1084026333130513768">Stoor, deel en saai uit</translation>
 <translation id="1084096383128641877">As hierdie wagwoord verwyder word, sal dit nie jou rekening op <ph name="DOMAIN" /> uitvee nie. Verander jou wagwoord of vee jou rekening op <ph name="DOMAIN_LINK" /> uit om dit veilig te hou van ander mense.</translation>
 <translation id="1084288067399862432">Die gekompromitteerde wagwoord is suksesvol verander.
@@ -735,6 +736,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1486486872607808064">Skandeer hierdie QR-kode met ’n kamera op die toestel waarop jy ’n toegangsleutel vir <ph name="APP_NAME" /> wil skep</translation>
 <translation id="1486616492435615702">Skep 'n konsep of verfyn bestaande werk.</translation>
 <translation id="1487335504823219454">Aan – gepasmaakte instellings</translation>
+<translation id="1488513761150925974">Gaan jou take na</translation>
 <translation id="1489101155914355052">Genereer tans voorstelle vir hierdie dokument …</translation>
 <translation id="1493152297698462486">Skep prent met Gemini</translation>
 <translation id="1493892686965953381">Wag tans vir <ph name="LOAD_STATE_PARAMETER" /> …</translation>
@@ -3074,6 +3076,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3038612606416062604">Voeg self 'n drukker by</translation>
 <translation id="3038628620670416486">Vind knoppies op jou muis</translation>
 <translation id="3039491566278747710">Kon nie vanlyn beleid op die toestel installeer nie.</translation>
+<translation id="303955801043931176">Oortjie toegemaak</translation>
 <translation id="3040435070100611531">Jou Google Wallet-passe</translation>
 <translation id="3040982432432547149">Help ons om Steam vir Chromebook te verbeter</translation>
 <translation id="304169924727249890">Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3639,6 +3642,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Jy deel tans hierdie oortjie met Gemini</translation>
 <translation id="345078987193237421">Dit laat kameratoegang vir apps, webwerwe met die kameratoestemming en stelseldienste toe</translation>
+<translation id="345163758690017738">Werk tans aan jou taak …</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453082738208775226">Maak vanlyn berging skoon?</translation>
 <translation id="3453597230179205517">Liggingtoegang is geblokkeer</translation>
@@ -3808,6 +3812,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3567284462585300767">Word sigbaar om lêers van mense rondom jou af te ontvang en te aanvaar</translation>
 <translation id="356738834800832239">Jou wagwoord is gestoor</translation>
 <translation id="3568431410312984116">Stel “Help My Skryf” in staat om outomaties oop te maak</translation>
+<translation id="3569304198553566878">Wys tans <ph name="NUM_DISPLAYED_EVENTS" /> van <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Wil jy hê <ph name="APP_NAME" /> moet jou skerm deel?</translation>
 <translation id="3569614820047645079">Jou lêers in My Drive sinkroniseer outomaties met jou Chromebook sodat jy hulle sonder ’n internetverbinding kan kry.</translation>
 <translation id="3569617221227793022">Tydsone is tans gestel op <ph name="TIME_ZONE_ENTRY" />. Jou administrateur bestuur hierdie instelling.</translation>
@@ -7640,6 +7645,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6206199626856438589">Jy sal by vertoonde werwe afgemeld word, insluitend in oop oortjies</translation>
 <translation id="6206311232642889873">Kopieer prent</translation>
 <translation id="6207200176136643843">Stel terug na verstek-zoemvlak</translation>
+<translation id="6207795130974856324">Wag tans vir jou hulp</translation>
 <translation id="6207937957461833379">Land/Streek</translation>
 <translation id="6208521041562685716">Mobiele data word tans geaktiveer</translation>
 <translation id="6208725777148613371">Kon nie in <ph name="WEB_DRIVE" /> stoor nie – <ph name="INTERRUPT_REASON" /></translation>
@@ -8356,6 +8362,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6715735940363172819">Webwerwe word nie toegelaat om jou mikrofoon te gebruik nie</translation>
 <translation id="6716049856796700977">Niks kan jou ligging gebruik nie. Jou ligging kan egter steeds via jou IP-adres sigbaar wees vir apps en webwerwe. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Netwerkverbinding is onderbreek. Gaan jou netwerkverbinding na of probeer 'n ander wi-fi-netwerk.</translation>
+<translation id="671868032356459320">Omvang van opdateerder: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Sluit skerm</translation>
 <translation id="6719839880830057298">Lêeroplaai is voltooi</translation>
 <translation id="6721744718589119342">Ons sal dalk vir jou ’n e-pos stuur vir meer inligting of opdaterings</translation>
@@ -9204,6 +9211,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7307129035224081534">Wag tans</translation>
 <translation id="7308643132139167865">Webwerftale</translation>
 <translation id="7309214454733221756">Skep toegangsleutel om by <ph name="APP_NAME" /> aan te meld?</translation>
+<translation id="7309517920862730287">Taaklys</translation>
 <translation id="7311005168897771689">Kry toegang tot jou Google Drive-lêers terwyl jy vanlyn is</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>
 <translation id="7312040805247765153">Kan nie app installeer nie</translation>
@@ -11252,6 +11260,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8680251145628383637">Meld aan om jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle te kry. Jy sal ook outomaties by jou Google-dienste aangemeld word.</translation>
 <translation id="8681886425883659911">Advertensies word geblokkeer op werwe wat bekend is daarvoor dat hulle indringerige of misleidende advertensies wys</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is gekoppel en gereed</translation>
+<translation id="8683720831806477407">Omvang van opdateerder</translation>
 <translation id="8684471948980641888">Laat sinkronisering op beperkte netwerke toe</translation>
 <translation id="8685540043423825702">Jou Chrome-profiel</translation>
 <translation id="8685882652128627032">Klik om Voeg Webwerfsoektog By-dialoog oop te maak</translation>
@@ -12073,6 +12082,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9220723036554088545">laai ’n lêer op</translation>
 <translation id="9220820413868316583">Lig en probeer dan weer.</translation>
 <translation id="922152298093051471">Pasmaak Chrome</translation>
+<translation id="9222839391870847423">Tydsduur: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Wys almal</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Maak Uitbreidings oop om dit te bestuur}other{Maak Uitbreidings oop om hulle te bestuur}}</translation>
 <translation id="924818813611903184">Bestuur tale in Chrome-bedryfstelselinstellings</translation>

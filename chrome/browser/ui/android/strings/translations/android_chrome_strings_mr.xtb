@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">फक्त या डिव्हाइसवर</translation>
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4188221736490993796">ज्ञ-अ नुसार क्रमाने लावा</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{स्पॅम किंवा फसवा आशय यामुळे Chrome ने या साइटला नोटिफिकेशन पाठवण्यापासून थांबवले आहे}other{स्पॅम किंवा फसवा आशय यामुळे Chrome ने या साइटना नोटिफिकेशन पाठवण्यापासून थांबवले आहे}}</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">लिंक शेअर करा</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">तुम्हाला तरीही "<ph name="FILE_NAME" />" डाउनलोड करायची आहे का?</translation>
+<translation id="5847265694842662173">Chrome ने गैरवापर करणाऱ्या आणि न वापरलेल्या साइटना नोटिफिकेशन पाठवण्यापासून थांबवले आहे</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> वापरून PDF उघडायची आहे का?</translation>
 <translation id="5849288995120328556">शेअर करणे थांबवायचे आहे का?</translation>
 <translation id="5853623416121554550">थांबवले</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">नवीन टॅबमध्ये Chrome मदत केंद्र उघडा</translation>
 <translation id="59577092665511740">खाते निवडा.</translation>
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{तुम्ही अलीकडे भेट न दिलेल्या साइटला Chrome ने तुम्हाला नोटिफिकेशन पाठवण्यापासून थांबवले आहे}other{तुम्ही अलीकडे भेट न दिलेल्या साइटना Chrome ने तुम्हाला नोटिफिकेशन पाठवण्यापासून थांबवले आहे}}</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
 <translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
 <translation id="5972844218283131174">सर्व निवड रद्द करा</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8477178913400731244">डेटा हटवा</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">कोणत्याही इनॅक्टिव्ह विंडो नाहीत</translation>
 <translation id="8493948351860045254">जागा मोकळी करा</translation>
 <translation id="8497242791509864205">क्रमाने लावण्याचे पर्याय उघडा</translation>
 <translation id="8497480609928300907">गोपनीयता मार्गदर्शक स्पष्टीकरण</translation>

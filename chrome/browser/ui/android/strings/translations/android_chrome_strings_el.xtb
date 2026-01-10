@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">Μόνο σε αυτή τη συσκευή</translation>
 <translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="4188221736490993796">Ταξινόμηση από Ω έως A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Το Chrome διέκοψε την αποστολή ειδοποιήσεων από αυτόν τον ιστότοπο λόγω ανεπιθύμητου ή παραπλανητικού περιεχομένου}other{Το Chrome διέκοψε την αποστολή ειδοποιήσεων από αυτούς τους ιστοτόπους λόγω ανεπιθύμητου ή παραπλανητικού περιεχομένου}}</translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 καρτέλα σε αυτήν τη συσκευή}other{# καρτέλες σε αυτήν τη συσκευή}}</translation>
 <translation id="4198423547019359126">Δεν υπάρχουν διαθέσιμες τοποθεσίες λήψης</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">Κοινοποίηση συνδέσμου</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" />;</translation>
+<translation id="5847265694842662173">Το Chrome διέκοψε την αποστολή ειδοποιήσεων από καταχρηστικούς και μη χρησιμοποιούμενους ιστοτόπους</translation>
 <translation id="5848257610304005265">Άνοιγμα PDF με την εφαρμογή <ph name="APP_NAME" />;</translation>
 <translation id="5849288995120328556">Διακοπή κοινής χρήσης;</translation>
 <translation id="5853623416121554550">σε παύση</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">Άνοιγμα Κέντρου βοήθειας Chrome σε νέα καρτέλα</translation>
 <translation id="59577092665511740">Επιλέξτε λογαριασμό.</translation>
 <translation id="5958275228015807058">Βρείτε τα αρχεία και τις σελίδες σας στις Λήψεις</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Το Chrome διέκοψε την αποστολή ειδοποιήσεων από έναν ιστότοπο τον οποίο δεν έχετε επισκεφτεί πρόσφατα}other{Το Chrome διέκοψε την αποστολή ειδοποιήσεων από ιστοτόπους τους οποίους δεν έχετε επισκεφτεί πρόσφατα}}</translation>
 <translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5964869237734432770">Διακοπή περιγραφών εικόνων</translation>
 <translation id="5972844218283131174">Αποεπιλογή όλων</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">Περιηγηθείτε σε διάφορες συσκευές</translation>
 <translation id="8477178913400731244">Διαγραφή δεδομένων</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Δεν υπάρχουν ανενεργά παράθυρα</translation>
 <translation id="8493948351860045254">Αποδεσμεύστε χώρο</translation>
 <translation id="8497242791509864205">Άνοιγμα επιλογών ταξινόμησης</translation>
 <translation id="8497480609928300907">Επεξήγηση Οδηγού απορρήτου</translation>
@@ -1903,6 +1907,7 @@
 <translation id="8963117664422609631">Μετάβαση στις ρυθμίσεις ιστοτόπου</translation>
 <translation id="8965591936373831584">σε εκκρεμότητα</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει <ph name="INCOGNITO_TAB_COUNT" /> καρτέλα ανώνυμης περιήγησης και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα.}other{Πρόκειται να κλείσουν <ph name="INCOGNITO_TAB_COUNT" /> καρτέλες ανώνυμης περιήγησης και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες.}}</translation>
+<translation id="8969796057708736017">Η λήψη θα ολοκληρωθεί, εάν το αρχείο συμμορφώνεται με τις πολιτικές του οργανισμού σας</translation>
 <translation id="8970887620466824814">Προέκυψε πρόβλημα.</translation>
 <translation id="8972098258593396643">Λήψη στον προεπιλεγμένο φάκελο;</translation>
 <translation id="8992769679401294069">Τα δεδομένα σας κρυπτογραφούνται με τη φράση πρόσβασης. Εισαγάγετε τη φράση πρόσβασης, για να χρησιμοποιήσετε και να αποθηκεύσετε δεδομένα Chrome στον Λογαριασμό σας Google.</translation>

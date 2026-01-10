@@ -1012,6 +1012,17 @@ Untuk Profil terkelola, jika kebijakan <ph name="CLOUD_PROFILE_REPORTING_ENABLED
 
       Jika kebijakan ini tidak disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari 20 GB (nilai default).
       Jika kebijakan ini disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari yang ditentukan oleh kebijakan.</translation>
+<translation id="1682893353675650337">Overlay Lens memungkinkan pengguna melakukan penelusuran Google yang kontekstual, baik melalui screenshot atau dengan mengajukan pertanyaan tentang konten halaman saat ini. Fitur ini memerlukan keikutsertaan pengguna akhir.
+
+Fitur ini tersedia bagi semua pengguna yang menggunakan Google sebagai mesin telusur default, kecuali jika dinonaktifkan oleh kebijakan ini.
+
+Jika kebijakan disetel ke 0 - Izinkan atau tidak disetel, fitur tersebut akan tersedia bagi pengguna.
+
+Jika kebijakan disetel ke 1 - Jangan izinkan, fitur tersebut tidak akan tersedia.
+
+Mulai <ph name="PRODUCT_NAME" /> 140, jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Mulai <ph name="PRODUCT_NAME" /> 147, kebijakan ini tidak akan digunakan lagi. Admin IT dapat menggunakan <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> untuk mengontrol fitur ini ke depannya.</translation>
 <translation id="1686952487081322272">Nonaktifkan Jawaban Instan</translation>
 <translation id="1690383938831887552">Cegah pemuatan Signed HTTP Exchange</translation>
 <translation id="1692325295652827195">Jika kebijakan disetel ke Benar (True), laporan peristiwa tombol saat penginstalan aplikasi Android yang dipicu kebijakan akan dikirimkan ke Google.
@@ -2313,6 +2324,17 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 <translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
+<translation id="2571353268726025696">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
+
+Kebijakan ini mengontrol apakah Chrome akan mendukung integrasi terkait Set Pihak Pertama.
+
+Kebijakan ini setara dengan kebijakan <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Kedua kebijakan tersebut dapat digunakan dengan efek yang sama pada perilaku browser.
+Kedua kebijakan ini tidak digunakan lagi setelah penghentian penggunaan fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> di <ph name="PRODUCT_NAME" /> versi 144.</translation>
 <translation id="2571821662934804440">Izinkan penggunaan fitur tanpa meningkatkan kualitas model AI</translation>
 <translation id="2573850437942404034">Jangan izinkan</translation>
 <translation id="2575198840408498393">Nonaktifkan pembuatan profil roaming</translation>
@@ -4119,6 +4141,8 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, dikte mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="3811407842708673996">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan melihat dan menggunakan item menu penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di menu konteks. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melihat item menu penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di menu konteks saat penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> didukung.
+Mulai <ph name="PRODUCT_NAME" /> 147, kebijakan ini tidak akan digunakan lagi. Admin IT dapat menggunakan <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> untuk mengontrol fitur ini ke depannya.</translation>
 <translation id="3811562426301733860">Izinkan iklan di semua situs</translation>
 <translation id="3816312845600780067">Aktifkan pintasan keyboard penyelamatan untuk masuk otomatis</translation>
 <translation id="3817323252437541502">Mengaktifkan perlindungan tambahan untuk pengguna yang terdaftar di Program Perlindungan Lanjutan</translation>
@@ -5565,6 +5589,23 @@ Jika kebijakan ini tidak disetel, semua layanan akan diaktifkan.
 Jika tidak, hanya layanan yang dipilih yang akan diaktifkan.</translation>
 <translation id="4767059955897420757">Jika kebijakan disetel ke Aktif atau tidak disetel, promo Ekstensi Penyedia Kredensial dapat ditampilkan kepada pengguna.
 Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak akan ditampilkan kepada pengguna.</translation>
+<translation id="4767618783249265266">Kebijakan ini mengontrol berbagi konten halaman dan file dengan <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> dan <ph name="GOOGLE_LENS_PRODUCT_NAME" /> melalui panel samping atau tab <ph name="PRODUCT_NAME" />.
+
+Perhatikan bahwa kebijakan ini tidak memengaruhi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> di web. Kebijakan ini hanya mengontrol cara pengguna dapat berbagi informasi dengannya saat menggunakan <ph name="PRODUCT_NAME" />.
+
+0/tidak disetel = pengguna dapat membagikan konten halaman atau file ke <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = pengguna tidak dapat membagikan konten halaman atau file ke <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Titik entri untuk berbagi konteks akan dinonaktifkan atau disembunyikan.
+
+Kebijakan ini akan diabaikan jika <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> bukan mesin telusur default pengguna karena fitur ini dinonaktifkan.
+
+Kebijakan ini terpisah dari kebijakan <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Kebijakan <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> hanya mengontrol titik entri di kotak penelusuran omnibox atau NTP, sedangkan kebijakan ini mengontrol berbagi konteks melalui panel samping atau tab.
+
+Kebijakan ini juga tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> yang dapat dinonaktifkan oleh <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4768446404233019970">Mengaktifkan cipher suite 3DES di TLS</translation>
 <translation id="4770334626033858263">Konfigurasi yang digunakan untuk membuat dan memverifikasi Kode Akses Orang Tua.</translation>
 <translation id="4773997835955617342">Mengubah konfigurasi <ph name="KRB5_CONFIG" /> yang disarankan untuk tiket baru yang dibuat secara manual.
@@ -7529,6 +7570,8 @@ Jika kebijakan ini disetel ke <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE
 
       ECH adalah protokol yang berkembang, sehingga penerapan <ph name="PRODUCT_NAME" /> dapat berubah sewaktu-waktu. Oleh karena itu, kebijakan ini merupakan tindakan sementara untuk mengontrol penerapan eksperimental awal. Kebijakan ini akan diganti dengan kontrol akhir saat protokol diselesaikan.</translation>
 <translation id="5939873071468124100">Membatasi akun yang dapat menggunakan integrasi <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="594085996886561267">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan melihat dan menggunakan tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran pada halaman Tab Baru. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan melihat tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran pada halaman Tab Baru.
+Mulai <ph name="PRODUCT_NAME" /> 147, kebijakan ini tidak akan digunakan lagi. Admin IT dapat menggunakan <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> untuk mengontrol fitur ini ke depannya.</translation>
 <translation id="5945312246863177268">Melarang pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5946082169633555022">Saluran beta</translation>
 <translation id="5946329690214660966">Menetapkan jadwal kustom untuk memeriksa update</translation>
@@ -7691,6 +7734,44 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="6083631234867522991">Windows (klien Windows):</translation>
 <translation id="6087413944876892918">Menggunakan algoritma <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
+<translation id="6089118101413877627">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
+Set Pihak Pertama harus berisi situs utama dan satu atau beberapa situs anggota.
+Set juga dapat berisi daftar situs layanan yang dimilikinya, serta peta dari situs ke semua varian ccTLD-nya.
+Lihat https://github.com/WICG/first-party-sets untuk mendapatkan informasi selengkapnya terkait Set Pihak Pertama yang digunakan oleh <ph name="PRODUCT_NAME" />.
+
+Semua situs dalam Set Pihak Pertama harus berupa domain yang dapat didaftarkan yang disajikan melalui HTTPS. Setiap situs dalam Set Pihak Pertama juga harus unik.
+Artinya, situs tidak boleh tercantum lebih dari sekali dalam Set Pihak Pertama.
+
+Jika kebijakan ini diberi kamus kosong, browser akan menggunakan daftar Set Pihak Pertama publik.
+
+Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
+di Set Pihak Pertama dalam daftar browser, situs tersebut akan dihapus dari Set Pihak Pertama browser.
+Setelahnya, Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
+
+Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
+di Set Pihak Pertama dalam daftar browser, Set Pihak Pertama browser akan diperbarui agar
+Set Pihak Pertama baru dapat ditambahkan ke daftar browser. Setelah daftar browser diperbarui,
+Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
+
+Daftar Set Pihak Pertama browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
+lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
+dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
+<ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
+
+Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
+
+Semua set yang disediakan oleh kebijakan harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
+error yang sesuai akan ditampilkan.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Kebijakan ini setara dengan kebijakan <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Kedua kebijakan tersebut dapat digunakan dengan efek yang sama pada perilaku browser.
+Kedua kebijakan ini tidak digunakan lagi setelah penghentian penggunaan fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> di <ph name="PRODUCT_NAME" /> versi 144.</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
 <translation id="6092073071805297119">Izinkan penggunaan Filter Performa Aksesibilitas.</translation>
@@ -10555,6 +10636,28 @@ Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /
       Jika kebijakan disetel ke benar (true), peristiwa jaringan perangkat akan dilaporkan.</translation>
 <translation id="780629758750905699">Mengizinkan penambahan akun Family Link ke perangkat</translation>
 <translation id="7807139251387225825">Daftar jenis yang harus dikecualikan dari sinkronisasi</translation>
+<translation id="7812285231594048601">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" />.
+
+Perilaku default (Kebijakan tidak disetel)
+Saat akun ditambahkan di area konten, dialog kecil mungkin akan muncul yang meminta pengguna membuat profil baru. Dialog ini dapat ditutup.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Jika pengguna login ke layanan Google untuk pertama kalinya di browser <ph name="PRODUCT_NAME" />, dialog akan muncul yang meminta pengguna membuat profil baru untuk akun perusahaannya. Pengguna dapat mengklik Batal dan logout, atau Lanjutkan untuk membuat profil baru. Data penjelajahan yang ada tidak akan ditambahkan ke profil baru. Profil yang baru dibuat diizinkan memiliki akun sekunder, misalnya pengguna dapat login ke akun lain dalam area konten.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> kecuali profil yang baru dibuat tidak diizinkan memiliki akun sekunder.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> kecuali kotak centang akan ditambahkan ke dialog untuk memungkinkan pengguna menyimpan data penjelajahan lokal.
+Jika pengguna mencentang kotak tersebut, data profil yang ada akan dikaitkan dengan Akun terkelola.
+- Semua data penjelajahan yang ada akan ada di profil baru.
+- Data ini mencakup bookmark, histori, sandi, data isi otomatis, tab terbuka, cookie, cache, penyimpanan web, ekstensi, dll.
+Jika pengguna tidak mencentang kotak:
+- Profil lama akan tetap ada, tidak akan ada data yang hilang.
+- Profil baru akan dibuat.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> kecuali profil yang baru dibuat tidak diizinkan memiliki akun sekunder.</translation>
 <translation id="781268256210530471">Setelan plugin</translation>
 <translation id="7816326058023670173">Rahasia dibagikan antara perangkat anak dan orang tua.</translation>
 <translation id="7818131573217430250">Menyetel status default mode kontras tinggi di layar masuk</translation>
@@ -10694,6 +10797,7 @@ Jika kebijakan disetel ke Aktif, pengesahan jarak jauh untuk perangkat dapat dil
 Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak akan ada sertifikat yang dihasilkan dan panggilan ke <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> akan gagal.</translation>
 <translation id="7906983682927840536">Mengambil durasi keepalive saat Penutupan</translation>
 <translation id="7908384265697653397">Waktu dalam satuan hari sebelum pengguna logout jika versi <ph name="PRODUCT_OS_NAME" /> lebih rendah dari <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> yang ditentukan.</translation>
+<translation id="7908762897332688196">Aktifkan berbagi konten dengan integrasi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> dan <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="7909751052609510518">Tugas Pencetakan (didukung sejak versi 129)</translation>
 <translation id="7909839744818798105">Mengaktifkan perilaku Cakupan Cookie Versi Lama untuk daftar domain</translation>
 <translation id="7911685775490889216">Mengonfigurasi internal dalam detik untuk menampilkan gambar saat screensaver layar kunci memiliki beberapa gambar yang akan ditampilkan.

@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಗುಂಪನ್ನು ತೊರೆಯಿರಿ</translation>
 <translation id="5490235265819901748">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> ಫೈಲ್, ಟ್ಯಾಬ್ ಅಥವಾ ಚಿತ್ರದವರೆಗೆ ಸೇರಿಸಿ}one{ಗರಿಷ್ಠ <ph name="LIMIT_COUNT_MANY" /> ಫೈಲ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}other{ಗರಿಷ್ಠ <ph name="LIMIT_COUNT_MANY" /> ಫೈಲ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}}</translation>
 <translation id="5556417849629758491">ಸ್ಟೋರ್ ಮಾಹಿತಿ ವೀಕ್ಷಿಸಿ, ಆಯ್ಕೆಯು ಸ್ಕ್ರೀನ್ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5627941783489838464">ಯಾವುದೇ ಟ್ಯಾಬ್ ಅಪ್‌ಡೇಟ್‌ಗಳಿಲ್ಲ</translation>

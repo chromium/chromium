@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Your administrator has blocked some functionality for this device</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wants to restore your Chrome settings to their original defaults. This will reset your homepage, new tab page and search engine, disable your extensions and unpin all tabs. It will also clear other temporary and cached data, such as cookies, content and site data.</translation>
 <translation id="1082725763867769612">Offline files</translation>
+<translation id="1083050113196701330">Update check completed successfully. No update was available</translation>
 <translation id="1084026333130513768">Save, share and cast</translation>
 <translation id="1084096383128641877">Removing this password will not delete your account on <ph name="DOMAIN" />. Change your password or delete your account on <ph name="DOMAIN_LINK" /> to keep it safe from others.</translation>
 <translation id="1084288067399862432">Successfully changed the compromised password.
@@ -735,6 +736,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1486486872607808064">Scan this QR code with a camera on the device where you want to create a passkey for <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Create a draft or refine existing work.</translation>
 <translation id="1487335504823219454">On – customised settings</translation>
+<translation id="1488513761150925974">Check your tasks</translation>
 <translation id="1489101155914355052">Generating suggestions for this document…</translation>
 <translation id="1493152297698462486">Create image with Gemini</translation>
 <translation id="1493892686965953381">Waiting for <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3074,6 +3076,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3038612606416062604">Add a printer manually</translation>
 <translation id="3038628620670416486">Locate buttons on your mouse</translation>
 <translation id="3039491566278747710">Failed to install offline policy on the device.</translation>
+<translation id="303955801043931176">Tab closed</translation>
 <translation id="3040435070100611531">Your Google Wallet passes</translation>
 <translation id="3040982432432547149">Help us improve Steam for Chromebook</translation>
 <translation id="304169924727249890">Join tab group with <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3639,6 +3642,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3450180775417907283"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – you're sharing this tab with Gemini</translation>
 <translation id="345078987193237421">This allows camera access for apps, websites with the camera permission and system services</translation>
+<translation id="345163758690017738">Working on your task…</translation>
 <translation id="3452999110156026232">Parent access</translation>
 <translation id="3453082738208775226">Clean up offline storage?</translation>
 <translation id="3453597230179205517">Location access is blocked</translation>
@@ -3808,6 +3812,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3567284462585300767">To receive and accept files with people around you, become visible</translation>
 <translation id="356738834800832239">Your password is saved</translation>
 <translation id="3568431410312984116">Allow 'Help me write' to automatically open</translation>
+<translation id="3569304198553566878">Displaying <ph name="NUM_DISPLAYED_EVENTS" /> of <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Do you want <ph name="APP_NAME" /> to share your screen?</translation>
 <translation id="3569614820047645079">Your files in My Drive sync to your Chromebook automatically so that you can access them without an Internet connection.</translation>
 <translation id="3569617221227793022">Time zone is currently set to <ph name="TIME_ZONE_ENTRY" />. This setting is managed by your administrator.</translation>
@@ -5114,6 +5119,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4426857487270413362">Unable to download installer files. Please check your Internet connection, and that you have enough free disk space and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Detected <ph name="COUNT" /> times</translation>
 <translation id="4427365070557649936">Verifying confirmation code…</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Task done}other{Tasks done}}</translation>
 <translation id="4429163740524851942">Physical keyboard layout</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="443031431654216610">Use numerical digits only</translation>
@@ -7639,6 +7645,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6206199626856438589">You'll be signed out of displayed sites, including in open tabs</translation>
 <translation id="6206311232642889873">Cop&amp;y Image</translation>
 <translation id="6207200176136643843">Reset to default zoom level</translation>
+<translation id="6207795130974856324">Waiting for your help</translation>
 <translation id="6207937957461833379">Country/Region</translation>
 <translation id="6208521041562685716">Mobile data being activated</translation>
 <translation id="6208725777148613371">Failed to save to <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -8355,6 +8362,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6715735940363172819">Websites are not allowed to use your microphone</translation>
 <translation id="6716049856796700977">Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Network connection was lost. Check your network connection or try another Wi-Fi network.</translation>
+<translation id="671868032356459320">Updater scope: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Lock screen</translation>
 <translation id="6719839880830057298">File upload complete</translation>
 <translation id="6721744718589119342">We may email you for more information or updates</translation>
@@ -9204,6 +9212,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7307129035224081534">Paused</translation>
 <translation id="7308643132139167865">Website languages</translation>
 <translation id="7309214454733221756">Create a passkey to sign in to <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Task list</translation>
 <translation id="7311005168897771689">Access your Google Drive files when you're offline</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7312040805247765153">Can't install app</translation>
@@ -11253,6 +11262,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8680251145628383637">Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is connected and ready</translation>
+<translation id="8683720831806477407">Updater scope</translation>
 <translation id="8684471948980641888">Allow syncing on metered networks</translation>
 <translation id="8685540043423825702">Your Chrome profile</translation>
 <translation id="8685882652128627032">Click to open Add Site Search dialogue</translation>
@@ -12074,6 +12084,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9220723036554088545">upload a file</translation>
 <translation id="9220820413868316583">Lift then try again.</translation>
 <translation id="922152298093051471">Customise Chrome</translation>
+<translation id="9222839391870847423">Duration: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Show all</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{To manage it, open Extensions}other{To manage them, open Extensions}}</translation>
 <translation id="924818813611903184">Manage languages in Chrome OS settings</translation>

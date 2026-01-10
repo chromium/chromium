@@ -979,6 +979,17 @@ En el caso de los perfiles gestionados, si no se establece la política <ph name
 
       Si no se asigna ningún valor a esta política, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos de 20 GB (valor predeterminado) de espacio disponible en disco.
       Si se le asigna un valor, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos espacio disponible en disco del requerido por la política.</translation>
+<translation id="1682893353675650337">Superposición de Lens permite a los usuarios hacer búsquedas contextuales en Google mediante una captura de pantalla o haciendo una pregunta sobre el contenido de la página actual. Para usar esta función, el usuario final debe habilitarla.
+
+Esta función está disponible para todos los usuarios que tienen Google como buscador predeterminado, a menos que esta política lo inhabilite.
+
+Si se asigna el valor 0 (permitir o sin definir) a esta política, la función estará disponible para los usuarios.
+
+Si se asigna el valor 1 (no permitir) a esta política, la función no estará disponible.
+
+A partir de la versión 140 de <ph name="PRODUCT_NAME" />, si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+A partir de la versión 147 de <ph name="PRODUCT_NAME" />, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función de ahora en adelante.</translation>
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
 <translation id="1690383938831887552">Evitar que se cargue contenido Signed HTTP Exchange</translation>
 <translation id="1692325295652827195">Si se le asigna el valor True a esta política, se enviarán a Google informes de los principales eventos de instalación de aplicaciones de Android activados por la política.
@@ -2214,6 +2225,17 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo concret
 <translation id="2568488785376704318">Esta política está obsoleta. Se debe usar la política <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2570059561924004903">Inhabilitar los mensajes de voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
+<translation id="2571353268726025696">Esta política se proporciona como método para inhabilitar la función de conjuntos propios (que más tarde se pasó a llamar "<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />").
+
+Si esta política se habilita o no se define, se habilitará la función de conjuntos propios.
+
+Si esta política se inhabilita, la función de conjuntos propios quedará inhabilitada.
+
+Esta función controla si Chrome admite integraciones relacionadas con conjuntos propios.
+
+Esta política equivale a la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Las dos tienen el mismo efecto en el comportamiento del navegador.
+Estas dos políticas están obsoletas tras la discontinuación de la función <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> en la versión 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2571821662934804440">Permitir el uso de la función sin mejorar los modelos de IA</translation>
 <translation id="2573850437942404034">No permitir</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
@@ -3960,6 +3982,8 @@ Si se le asigna el valor 2 a esta política, se impedirá que los orígenes de a
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, la función de dictado estará inhabilitada inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="3811407842708673996">Si se habilita esta política o no se define, los usuarios podrán ver y usar la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si se inhabilita la política, los usuarios no verán la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual cuando se admita la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.
+A partir de la versión 147 de <ph name="PRODUCT_NAME" />, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función de ahora en adelante.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios web</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas de rescate para inicio de sesión automático</translation>
 <translation id="3817323252437541502">Permitir que los usuarios registrados en el Programa de Protección Avanzada cuenten con más opciones de protección</translation>
@@ -5370,6 +5394,23 @@ Si no se define esta política, se habilitarán todos los servicios.
 De lo contrario, solo se habilitarán los servicios seleccionados.</translation>
 <translation id="4767059955897420757">Si se habilita esta política o no se establece, la promoción de la extensión del proveedor de credenciales se podrá mostrar al usuario.
 Si se inhabilita esta política, la promoción de la extensión del proveedor de credenciales no se mostrará al usuario.</translation>
+<translation id="4767618783249265266">Esta política controla el uso compartido de contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> mediante el panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo pueden los usuarios compartir información con la función cuando usan <ph name="PRODUCT_NAME" />.
+
+0/sin definir: los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1: los usuarios no pueden compartir contenido de páginas ni archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Los puntos de entrada para compartir contexto se inhabilitarán u ocultarán.
+
+Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el buscador predeterminado de los usuarios, ya que la función está inhabilitada.
+
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el omnibox o en el cuadro de búsqueda de la página Nueva pestaña, mientras que esta política controla el uso compartido de contexto mediante el panel lateral o de las pestañas.
+
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que se puede inhabilitar mediante <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4768446404233019970">Habilitar los paquetes de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">Configuración que se utiliza para generar y verificar códigos de acceso parental.</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
@@ -7298,6 +7339,8 @@ Si se le asigna el valor <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> 
 
       ECH es un protocolo en constante evolución. Esto implica que la implementación de <ph name="PRODUCT_NAME" /> está sujeta a cambios. Por lo tanto, esta política es una medida temporal para controlar la implementación experimental inicial. Se sustituirá por unos controles finales cuando se complete el protocolo.</translation>
 <translation id="5939873071468124100">Restringe las cuentas que pueden usar la integración con <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="594085996886561267">Si esta política se habilita o no se define, los usuarios podrán ver y usar el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña. Si esta política se inhabilita, los usuarios no verán el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña.
+A partir de la versión 147 de <ph name="PRODUCT_NAME" />, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función de ahora en adelante.</translation>
 <translation id="5945312246863177268">No permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Define la programación personalizada para buscar actualizaciones</translation>
@@ -7448,6 +7491,35 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
 <translation id="6087413944876892918">Usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Establece el umbral de batería de Peak Shift en forma de porcentaje</translation>
+<translation id="6089118101413877627">Esta política proporciona una forma de anular la lista de conjuntos que el navegador usa para las funciones de conjuntos propios (que más tarde se pasó a llamar "<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />").
+
+Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
+Un conjunto propio debe contener un sitio principal y uno o varios sitios miembros.
+Un conjunto también puede contener una lista de los sitios de servicio de los que es propietario, así como un mapa de un sitio a todas sus variantes de ccTLD.
+Consulta https://github.com/WICG/first-party-sets para obtener más información sobre los conjuntos propios que usa <ph name="PRODUCT_NAME" />.
+
+Todos los sitios de un conjunto propio deben ser dominios registrables publicados mediante HTTPS. Los sitios de un conjunto propio también deben ser únicos, es decir, un sitio no puede incluirse más de una vez en un conjunto propio.
+
+Cuando esta política tiene un diccionario vacío, el navegador usa la lista pública de conjuntos propios.
+
+En el caso de los sitios que se encuentran en un conjunto propio de la lista de <ph name="REPLACEMENTS" />, si un sitio también se incluye en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
+Una vez hecho esto, el conjunto propio de la política se añadirá a la lista de conjuntos propios del navegador.
+
+En el caso de los sitios que se encuentran en un conjunto propio de la lista de <ph name="ADDITIONS" />, si un sitio también se incluye en un conjunto propio de la lista del navegador, el conjunto propio del navegador se actualizará para que el nuevo conjunto propio pueda añadirse a la lista del navegador. Cuando se haya actualizado la lista del navegador, el conjunto propio de la política se añadirá a la lista de conjuntos propios del navegador.
+
+La lista de conjuntos propios del navegador requiere que ninguno de los sitios incluidos en ella aparezca en más de un conjunto. Este requisito también se aplica tanto a la lista de <ph name="REPLACEMENTS" /> como a la lista de <ph name="ADDITIONS" />. Del mismo modo, un sitio no puede incluirse en la lista de <ph name="REPLACEMENTS" /> y en la lista de <ph name="ADDITIONS" /> al mismo tiempo.
+
+Los comodines (*) no se admiten como valor de la política ni en los conjuntos propios de estas listas.
+
+Todos los conjuntos proporcionados mediante esta política deben ser conjuntos propios válidos. En caso contrario, se mostrará el error correspondiente.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Esta política equivale a la política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Las dos tienen el mismo efecto en el comportamiento del navegador.
+Estas dos políticas están obsoletas tras la discontinuación de la función <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> en la versión 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Controla los ajustes del controlador de diagnóstico y telemetría wilco.</translation>
 <translation id="6091233616732024397">Forzar a los usuarios a iniciar sesión para usar el navegador</translation>
 <translation id="6092073071805297119">Permitir el uso de filtros de rendimiento de accesibilidad.</translation>
@@ -10163,6 +10235,28 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si se le asigna el valor true, se enviará información sobre los eventos de red del dispositivo.</translation>
 <translation id="780629758750905699">Permitir que se añadan cuentas de Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos que se deben excluir de la sincronización</translation>
+<translation id="7812285231594048601">Esta política está obsoleta. Se debe usar la política <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" /> en su lugar.
+
+Comportamiento predeterminado (política sin definir)
+Cuando se añade una cuenta en el área de contenido, puede aparecer un pequeño cuadro de diálogo que le pedirá al usuario que cree un perfil nuevo. Este cuadro de diálogo se puede cerrar.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Si un usuario inicia sesión en un servicio de Google por primera vez en un navegador <ph name="PRODUCT_NAME" />, se mostrará un cuadro de diálogo en el que se le pedirá al usuario que cree un perfil nuevo para su cuenta de empresa. El usuario puede hacer clic en Cancelar y cerrar sesión, o bien en Continuar para crear un perfil nuevo. Los datos de navegación previos no se añadirán al perfil nuevo. El perfil nuevo puede tener cuentas secundarias; por ejemplo, el usuario puede iniciar sesión en otra cuenta en el área de contenido.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, pero el perfil recién creado no puede tener cuentas secundarias.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, pero se añade una casilla al cuadro de diálogo para permitir que el usuario conserve los datos de navegación locales.
+Si el usuario marca la casilla, los datos del perfil se asociarán a la cuenta gestionada.
+- Todos los datos de navegación estarán presentes en el perfil nuevo.
+- Entre estos datos se incluyen los marcadores, el historial, las contraseñas, los datos de Autocompletar, las pestañas abiertas, las cookies, la caché, el almacenamiento web, las extensiones, etc.
+Si el usuario no marca la casilla:
+- El perfil antiguo seguirá existiendo y no se perderá ningún dato.
+- Se creará un perfil nuevo.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, pero el perfil recién creado no puede tener cuentas secundarias.</translation>
 <translation id="781268256210530471">Configuración de complementos</translation>
 <translation id="7816326058023670173">Secreto compartido entre los dispositivos del niño/a y del padre o madre.</translation>
 <translation id="7818131573217430250">Establecer el estado predeterminado del modo Contraste alto en la pantalla de inicio de sesión</translation>
@@ -10291,6 +10385,7 @@ Si se habilita esta política, se permitirá la atestación remota en el disposi
 Si se inhabilita esta política o no se define, no se generará ningún certificado y se producirán errores en las llamadas a la <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.</translation>
 <translation id="7906983682927840536">Obtener duración de keepalive al cerrar</translation>
 <translation id="7908384265697653397">Número de días tras los que se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
+<translation id="7908762897332688196">Habilitar que se comparta contenido con integraciones de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="7909751052609510518">Trabajos de impresión (compatibles a partir de la versión 129)</translation>
 <translation id="7909839744818798105">Habilitar el comportamiento anterior de alcance de las cookies para una lista de dominios</translation>
 <translation id="7911685775490889216">Configura el intervalo (en segundos) durante el que se mostrará una imagen si el salvapantallas de la pantalla de bloqueo de sesión dispone de varias imágenes para mostrar.

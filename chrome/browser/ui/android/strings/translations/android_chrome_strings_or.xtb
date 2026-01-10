@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">କେବଳ ଏହି ଡିଭାଇସରେ</translation>
 <translation id="4181841719683918333">ଭାଷାସମୂହ</translation>
 <translation id="4188221736490993796">Zରୁ A ଅନୁସାରେ ସର୍ଟ କର</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{ସ୍ପାମ କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ଏହି ସାଇଟକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}other{ସ୍ପାମ କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ଏହି ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}}</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ଏହି ଡିଭାଇସରେ 1ଟି ଟାବ}other{ଏହି ଡିଭାଇସରେ #ଟି ଟାବ}}</translation>
 <translation id="4198423547019359126">କୌଣସି ଡାଉନ୍‍‍‍ଲୋଡ୍ ହୋଇଥିବା ଲୋକେସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">ଲିଙ୍କ ସେୟାର୍‌ କରନ୍ତୁ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ "<ph name="FILE_NAME" />"କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="5847265694842662173">ଅପମାନଜନକ ଏବଂ ଅବ୍ୟବହୃତ ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ PDF ଖୋଲିବେ?</translation>
 <translation id="5849288995120328556">ସେୟାର କରିବା ବନ୍ଦ କରିବେ?</translation>
 <translation id="5853623416121554550">ବିରତ ହୋଇଛି</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">ଏକ ନୂଆ ଟାବ୍‌ରେ Chrome ସାହାଯ୍ୟ କେନ୍ଦ୍ର ଖୋଲନ୍ତୁ</translation>
 <translation id="59577092665511740">ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ।</translation>
 <translation id="5958275228015807058">ଡାଉନ୍‌ଲୋଡ୍‌ରେ ଆପଣଙ୍କର ଫାଇଲ୍‌ ଏବଂ ପୃଷ୍ଠାଗୁଡ଼ିକ ଖୋଜନ୍ତୁ</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଏକ ସାଇଟକୁ ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}other{ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}}</translation>
 <translation id="5962718611393537961">ସଙ୍କୁଚିତ କରିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="5964869237734432770">ଛବିର ବର୍ଣ୍ଣନା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5972844218283131174">ସମସ୍ତ ଅଚୟନ କରନ୍ତୁ</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">ସମଗ୍ର ଡିଭାଇସରେ ବ୍ରାଉଜ କରନ୍ତୁ</translation>
 <translation id="8477178913400731244">ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">କୌଣସି ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋ ନାହିଁ</translation>
 <translation id="8493948351860045254">ଜାଗା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8497242791509864205">ସର୍ଟ କରିବା ବିକଳ୍ପଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8497480609928300907">ଗୋପନୀୟତା ଗାଇଡର ବ୍ୟାଖ୍ୟା</translation>

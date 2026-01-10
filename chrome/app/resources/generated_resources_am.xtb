@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">የእርስዎ አስተዳዳሪ ለዚህ መሣሪያ አንዳንድ ተግባራትን አግዷል</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />የእርስዎ Chrome ቅንብሮች ወደ የመጀመሪያቸው ነባሪዎች መመለስ ፈልጓል። ይሄ የእርስዎን መነሻ ገፅ፣ አዲስ የትር ገፅ እና የፍለጋ ፕሮግራም ዳግም ያስጀምራቸዋል፣ ቅጥያዎችዎን ያሰናክላቸዋል፣ እና ሁሉንም ትሮች ይነቅላቸዋል። እንዲሁም ሌሎች እንደ ኩኪዎች፣ ይዘት እና የጣቢያ ውሂብ ያለ ጊዜያዊ እና የተሸጎጠ ውሂብንም ያጸዳል።</translation>
 <translation id="1082725763867769612">የመስመር ውጭ ፋይሎች</translation>
+<translation id="1083050113196701330">የዝማኔ ፍተሻ በተሳካ ሁኔታ ተጠናቅቋል። ምንም ዝማኔ አልነበረም</translation>
 <translation id="1084026333130513768">አስቀምጥ፣ አጋራ እና ውሰድ</translation>
 <translation id="1084096383128641877">ይህን የይለፍ ቃል ማስወገድ <ph name="DOMAIN" /> ላይ መለያዎን አይሰርዘውም። መለያዎን ከሌሎች ለመጠበቅ የይለፍ ቃልዎን ይቀይሩት ወይም <ph name="DOMAIN_LINK" /> ላይ መለያዎን ይሰርዙት።</translation>
 <translation id="1084288067399862432">የተጠለፈው የይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል።
@@ -735,6 +736,7 @@
 <translation id="1486486872607808064">ይህን QR ኮድ ለ<ph name="APP_NAME" /> የይለፍ ቁልፍ መፍጠር በሚፈልጉበት መሣሪያ ላይ ባለ ካሜራ ይቃኙት።</translation>
 <translation id="1486616492435615702">ረቂቅ ይፍጠሩ ወይም ነባር ስራን ያጥሩ።</translation>
 <translation id="1487335504823219454">በርቷል - ብጁ ቅንብሮች</translation>
+<translation id="1488513761150925974">ተግባሮችህን ፈትሽ</translation>
 <translation id="1489101155914355052">ለዚህ ሰነድ ጥቆማዎችን በማመንጨት ላይ…</translation>
 <translation id="1493152297698462486">በGemini ምስል ይፍጠሩ</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />ን በመጠበቅ ላይ...</translation>
@@ -3070,6 +3072,7 @@
 <translation id="3038612606416062604">አታሚን ራስዎ ያክሉ</translation>
 <translation id="3038628620670416486">መዳፊትዎ ላይ አዝራሮችን ያግኙ</translation>
 <translation id="3039491566278747710">በመሣሪያው ላይ ከመስመር ውጭ መመሪያን መጫን አልተሳካም።</translation>
+<translation id="303955801043931176">ትር ተዘግቷል</translation>
 <translation id="3040435070100611531">የእርስዎ Google Wallet ይለፎች</translation>
 <translation id="3040982432432547149">Steam ለChromebookን እንድናሻሽል ያግዙን</translation>
 <translation id="304169924727249890">ከ<ph name="OWNER_FIRST_NAME" /> ጋር የትር ቡድን ይቀላቀላሉ</translation>
@@ -3635,6 +3638,7 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> አሁን ከWi-Fi ጋር እንዲገናኙ እና አንድ ዝማኔ እንዲያወርዱ ይፈልግብዎታል።</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - ይህን ትር ለGemini እያጋሩ ነው</translation>
 <translation id="345078987193237421">ይህ ለመተግበሪያዎች፣ የካሜራ ፈቃድ ላላቸው ድር ጣቢያዎች እና ለስርዓት አገልግሎቶች የካሜራ መዳረሻን ይፈቅዳል</translation>
+<translation id="345163758690017738">በተግባርዎ ላይ በመሥራት ላይ…</translation>
 <translation id="3452999110156026232">የወላጅ መዳረሻ</translation>
 <translation id="3453082738208775226">ከመስመር ውጭ የሆነ ማከማቻ ይጸዳ?</translation>
 <translation id="3453597230179205517">የአካባቢ መዳረሻ ታግዷል</translation>
@@ -3804,6 +3808,7 @@
 <translation id="3567284462585300767">በዙሪያዎ ካሉ ሰዎች ፋይሎችን ማግኘት እና መቀበል እንዲችሉ የሚታዩ ይሁኑ</translation>
 <translation id="356738834800832239">የይለፍ ቃልዎ ተቀምጧል</translation>
 <translation id="3568431410312984116">«እንድጽፍ እርዳኝ» በራስ-ሰር እንዲከፈት ይፍቀዱ</translation>
+<translation id="3569304198553566878">ከ<ph name="NUM_TOTAL_EVENTS" /> <ph name="NUM_DISPLAYED_EVENTS" /> በማሳየት ላይ</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> ማያ ገጽዎን እንዲያጋራ ይፈልጋሉ?</translation>
 <translation id="3569614820047645079">My Drive ውስጥ ያሉት የእርስዎ ፋይሎች ያለ የበይነመረብ ግንኙነት ሊደርሷቸው እንዲችሉ በራስ-ሰር ወደ እርስዎ Chromebook ይሰምራሉ።</translation>
 <translation id="3569617221227793022">የሰዓት ሰቅ አሁን ላይ <ph name="TIME_ZONE_ENTRY" /> ላይ ተቀናብሯል። ይህ ቅንብር በአስተዳዳሪዎ የሚተዳደር ነው።</translation>
@@ -7633,6 +7638,7 @@
 <translation id="6206199626856438589">በክፍት ትሮች ውስጥ ጨምሮ ከሚታዩት ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="6206311232642889873">ምስል ቅ&amp;ዳ</translation>
 <translation id="6207200176136643843">ወደ ነባሪ የማጉላት ደረጃ ዳግም አስጀምር</translation>
+<translation id="6207795130974856324">የእርስዎን እገዛ በመጠባበቅ ላይ</translation>
 <translation id="6207937957461833379">አገር/ክልል</translation>
 <translation id="6208521041562685716">የሞባይል ውሂብን በማግበር ላይ</translation>
 <translation id="6208725777148613371">ወደ <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> ማስቀመጥ አልተሳካም</translation>
@@ -8351,6 +8357,7 @@
 <translation id="6715735940363172819">ድር ጣቢያዎች የእርስዎን ማይክሮፎን እንዲጠቀሙ አልተፈቀደላቸውም</translation>
 <translation id="6716049856796700977">ምንም ነገር አካባቢዎን ጠቀም አይችልም። ይሁንና፣ አካባቢዎ አሁንም በአይፒ አድራሻዎ በኩል ለመተግበሪያዎች እና ድር ጣቢያዎች ሊታይ ይችላል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">የአውታረ መረብ ግንኙነት ጠፍቷል። የአውታረ መረብ ግንኙነትዎን ይፈትሹት ወይም ሌላ የWi-Fi አውታረ መረብ ይሞክሩ።</translation>
+<translation id="671868032356459320">የአዘማሚ ወሰን፦ <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">ማያ ገፅ ይቆልፉ</translation>
 <translation id="6719839880830057298">የፋይል ሰቀላ ተጠናቅቋል</translation>
 <translation id="6721744718589119342">ለተጨማሪ መረጃ ወይም ዝማኔዎች በኢሜይል ልንልክልዎ እንችላለን</translation>
@@ -9200,6 +9207,7 @@
 <translation id="7307129035224081534">ባለበት ቆሟል</translation>
 <translation id="7308643132139167865">የድር ጣቢያ ቋንቋዎች</translation>
 <translation id="7309214454733221756">ወደ <ph name="APP_NAME" /> ለመግባት የይለፍ ቁልፍ ይፈጠር?</translation>
+<translation id="7309517920862730287">የተግባር ዝርዝር</translation>
 <translation id="7311005168897771689">ከመስመር ውጭ በሚሆኑበት ጊዜ የGoogle Drive ፋይሎችዎን ይድረሱ</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
 <translation id="7312040805247765153">መተግበሪያን መጫን አልተቻለም</translation>
@@ -11254,6 +11262,7 @@ nil</translation>
 <translation id="8680251145628383637">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃሎች እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ። እንዲሁም በራስ-ሰር ወደ የእርስዎ Google አገልግሎቶች እንዲገቡ ይደረጋሉ።</translation>
 <translation id="8681886425883659911">ማስታወቂያዎች ጣልቃ ገቢ ወይም አሳሳች ማስታወቂያዎችን በማሳየት በሚታወቁ ጣቢያዎች ላይ ታግደዋል</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ተገናኝቶ ዝግጁ ነው</translation>
+<translation id="8683720831806477407">የአዘማሚ ወሰን</translation>
 <translation id="8684471948980641888">በሚለኩ አውታረ መረቦች ላይ ማስመርን ፍቀድ</translation>
 <translation id="8685540043423825702">የChrome መገለጫዎ</translation>
 <translation id="8685882652128627032">የጣቢያ ፍለጋ መገናኛ አክል የሚለውን ለመክፈት ጠቅ ያድርጉ</translation>
@@ -12076,6 +12085,7 @@ nil</translation>
 <translation id="9220723036554088545">ፋይል ይስቀሉ</translation>
 <translation id="9220820413868316583">ያንሱ እና ከዚያ እንደገና ይሞክሩ።</translation>
 <translation id="922152298093051471">Chromeን አብጅ</translation>
+<translation id="9222839391870847423">የቆይታ ጊዜ፦ <ph name="DURATION" /></translation>
 <translation id="923467487918828349">ሁሉንም አሳይ</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{እሱን ለማስተዳደር ቅጥያ ይክፈቱ}one{እሱን ለማስተዳደር ቅጥያ ይክፈቱ}other{እነሱን ለማስተዳደር ቅጥያዎች ይክፈቱ}}</translation>
 <translation id="924818813611903184">ቋንቋዎችን በChromeO ቅንብሮች ውስጥ ያቀናብሩ</translation>

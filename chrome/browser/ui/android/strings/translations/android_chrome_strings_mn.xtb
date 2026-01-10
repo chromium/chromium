@@ -1903,6 +1903,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8963117664422609631">Сайтын тохиргоо руу очих</translation>
 <translation id="8965591936373831584">хүлээгдэж байна</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> нууцлалтай таб болон бусад <ph name="TAB_COUNT_ONE" /> табыг хаана}other{<ph name="INCOGNITO_TAB_COUNT" /> нууцлалтай таб болон бусад <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
+<translation id="8969796057708736017">Хэрэв файл танай байгууллагын бодлогод нийцсэн бол таны таталтыг гүйцээнэ</translation>
 <translation id="8970887620466824814">Алдаа гарлаа.</translation>
 <translation id="8972098258593396643">Өгөгдмөл фолдерт татаж авах уу?</translation>
 <translation id="8992769679401294069">Таны өгөгдлийг нэвтрэх үгээр тань шифрлэсэн. Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд үүнийг оруулна уу.</translation>

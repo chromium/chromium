@@ -982,6 +982,17 @@ Wenn die Richtlinie „<ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" />
 
       Wenn die Richtlinie nicht konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn weniger als 20 GB (Standardwert) freier Speicherplatz auf dem Gerät verfügbar sind.
       Wenn die Richtlinie konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn der freie Speicherplatz auf dem Gerät nicht dem in der Richtlinie angegebenen Mindestwert entspricht.</translation>
+<translation id="1682893353675650337">Mit „Lens Overlay“ können Nutzer kontextsensitive Google-Suchanfragen ausführen, entweder über einen Screenshot oder indem sie eine Frage zu den Inhalten der aktuellen Seite stellen. Bei dieser Funktion muss der Endnutzer zustimmen.
+
+Sofern die Funktion nicht durch diese Richtlinie deaktiviert wird, ist sie standardmäßig für alle Nutzer verfügbar, die Google als Standardsuchmaschine verwenden.
+
+Wenn die Richtlinie auf „0 – Zulassen“ festgelegt oder nicht konfiguriert ist, ist die Funktion für Nutzer verfügbar.
+
+Ist die Richtlinie auf „1 – Nicht zulassen“ festgelegt, ist die Funktion nicht verfügbar.
+
+Ab <ph name="PRODUCT_NAME" /> 140 wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt, wenn die Richtlinie nicht konfiguriert ist.
+
+Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt. IT-Administratoren können diese Funktion künftig über <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> steuern.</translation>
 <translation id="1686952487081322272">Schnellinfo deaktivieren</translation>
 <translation id="1690383938831887552">Verhindern, dass Signed HTTP Exchanges geladen werden</translation>
 <translation id="1692325295652827195">Wenn diese Richtlinie auf „True“ gesetzt ist, werden Informationen über wichtige richtlinienbasierte Android-App-Installationsereignisse an Google gesendet.
@@ -3949,6 +3960,8 @@ Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Un
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Spracheingabe" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="3811407842708673996">Wenn diese Richtlinie nicht konfiguriert oder aktiviert ist, können Nutzer den Menüpunkt „Ausschnittsuche“ von <ph name="GOOGLE_LENS_PRODUCT_NAME" /> im Kontextmenü verwenden. Ist die Richtlinie deaktiviert, wird Nutzern der Menüpunkt „Ausschnittsuche“ von <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nicht im Kontextmenü angezeigt, wenn die <ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche nicht unterstützt wird.
+Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt. IT-Administratoren können diese Funktion künftig über <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> steuern.</translation>
 <translation id="3811562426301733860">Werbung auf allen Websites zulassen</translation>
 <translation id="3816312845600780067">Tastenkombination zur Umgehung der automatischen Anmeldung aktivieren</translation>
 <translation id="3817323252437541502">Erweiterte Sicherheitsfunktionen für Teilnehmer des erweiterten Sicherheitsprogramms aktivieren</translation>
@@ -5344,6 +5357,23 @@ Ist die Richtlinie nicht konfiguriert, werden alle Dienste aktiviert.
 Andernfalls werden nur ausgewählte Dienste aktiviert.</translation>
 <translation id="4767059955897420757">Wenn die Richtlinie nicht konfiguriert ist oder wenn sie aktiviert ist, wird dem Nutzer möglicherweise Werbung zur Erweiterung für Anmeldeinformationsanbieter angezeigt.
 Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmeldeinformationsanbieter.</translation>
+<translation id="4767618783249265266">Mit dieser Richtlinie wird das Teilen von Seiten- und Dateiinhalten mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> und <ph name="GOOGLE_LENS_PRODUCT_NAME" /> über die Seitenleiste oder Tabs von <ph name="PRODUCT_NAME" /> gesteuert.
+
+Diese Richtlinie wirkt sich nicht auf die Webversion von <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> aus. Sie legt nur fest, wie Nutzer Informationen teilen können, wenn sie <ph name="PRODUCT_NAME" /> verwenden.
+
+0 / nicht festgelegt = Nutzer können Seiten- oder Dateiinhalte mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> teilen.
+
+1 = Nutzer können keine Seiten- oder Dateiinhalte mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> teilen. Die Zugangspunkte zum Teilen von Kontext werden deaktiviert oder ausgeblendet.
+
+Diese Richtlinie wird ignoriert, wenn <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> nicht die Standardsuchmaschine der Nutzer ist, da die Funktion deaktiviert ist.
+
+Diese Richtlinie ist unabhängig von der Richtlinie „<ph name="AI_MODE_SETTINGS_POLICY_NAME" />“. Die Richtlinie „<ph name="AI_MODE_SETTINGS_POLICY_NAME" />“ steuert nur Zugangspunkte in der Omnibox oder im Suchfeld auf der Seite „Neuer Tab“, während diese Richtlinie das Teilen von Kontext über die Seitenleiste oder Tabs steuert.
+
+Diese Richtlinie steuert auch nicht die <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die von <ph name="GEMINI_SETTINGS_POLICY_NAME" /> deaktiviert werden kann.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4768446404233019970">Cipher Suites von 3DES in TLS aktivieren</translation>
 <translation id="4770334626033858263">Konfigurationseinstellungen, die bestimmen, wie der Eltern-Zugangscode generiert und bestätigt wird.</translation>
 <translation id="4773997835955617342">Ändert die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets.
@@ -7256,6 +7286,8 @@ Ist die Richtlinie auf „<ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" />
 
       ECH ist ein Protokoll, das ständig weiterentwickelt wird. Die Implementierung von <ph name="PRODUCT_NAME" /> kann sich also ändern. Diese Richtlinie ist daher eine vorübergehende Maßnahme, um die ursprüngliche experimentelle Implementierung zu steuern. Sie wird durch eine endgültige Lösung ersetzt, wenn die Entwicklung des Protokolls abgeschlossen ist.</translation>
 <translation id="5939873071468124100">Schränkt Konten ein, die die <ph name="MICROSOFT_ONE_DRIVE_NAME" />-Integration verwenden können</translation>
+<translation id="594085996886561267">Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, können Nutzer den Button „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld auf der Seite „Neuer Tab“ sehen und verwenden. Ist sie deaktiviert, sehen Nutzer den Button „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld auf der Seite „Neuer Tab“ nicht.
+Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt. IT-Administratoren können diese Funktion künftig über <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> steuern.</translation>
 <translation id="5945312246863177268">Verhindert, dass Nutzer auf eine Phone Hub-Benachrichtigung klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5946082169633555022">Beta-Kanal</translation>
 <translation id="5946329690214660966">Benutzerdefinierten Zeitplan zum Prüfen auf Updates festlegen</translation>
@@ -10224,6 +10256,7 @@ Ist diese Richtlinie aktiviert, ist Remote Attestation für das Gerät erlaubt. 
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Zertifikat erstellt und Aufrufe der <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> schlagen fehl.</translation>
 <translation id="7906983682927840536">Fetch-Keepalive-Dauer beim Herunterfahren</translation>
 <translation id="7908384265697653397">Zeitraum in Tagen, nach dem der Nutzer abgemeldet wird, wenn die Version von <ph name="PRODUCT_OS_NAME" /> niedriger ist als der angegebene <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />-Wert.</translation>
+<translation id="7908762897332688196">Teilen von Inhalten mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />- und <ph name="GOOGLE_LENS_PRODUCT_NAME" />-Integrationen aktivieren</translation>
 <translation id="7909751052609510518">Druckaufträge (seit Version 129 unterstützt)</translation>
 <translation id="7909839744818798105">Altes Verhalten des Cookie-Bereichs für eine Liste von Domains aktivieren</translation>
 <translation id="7911685775490889216">Dadurch wird festgelegt, für wie viele Sekunden ein Bild angezeigt wird, wenn für den Bildschirmschoner des Sperrbildschirms mehrere Bilder verwendet werden.

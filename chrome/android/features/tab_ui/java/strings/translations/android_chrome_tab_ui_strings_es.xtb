@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Quitar pestaña y salir del grupo</translation>
 <translation id="5490235265819901748">Grupo de pestañas desplegado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Añade <ph name="LIMIT_COUNT_ONE" /> archivo, pestaña o imagen como máximo}other{Añade <ph name="LIMIT_COUNT_MANY" /> archivos, pestañas o imágenes como máximo}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver información de la tienda, opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5627941783489838464">No hay actualizaciones de pestañas</translation>

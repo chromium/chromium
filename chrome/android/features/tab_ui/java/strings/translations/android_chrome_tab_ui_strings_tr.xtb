@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Sekmeyi kaldır ve gruptan ayrıl</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{En fazla <ph name="LIMIT_COUNT_ONE" /> dosya, sekme veya resim ekleyin}other{En fazla <ph name="LIMIT_COUNT_MANY" /> dosya, sekme veya resim ekleyin}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}}</translation>
 <translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5627941783489838464">Sekme güncellemesi yok</translation>

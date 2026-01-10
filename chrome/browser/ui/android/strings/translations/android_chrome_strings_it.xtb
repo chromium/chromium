@@ -1903,6 +1903,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8965591936373831584">in attesa</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> scheda di navigazione in incognito e <ph name="TAB_COUNT_ONE" /> altra scheda verranno chiuse}other{<ph name="INCOGNITO_TAB_COUNT" /> schede di navigazione in incognito e altre <ph name="TAB_COUNT_MANY" /> schede verranno chiuse}}</translation>
+<translation id="8969796057708736017">Il download verrà completato se il file è conforme alle policy della tua organizzazione</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8972098258593396643">Scaricare nella cartella predefinita?</translation>
 <translation id="8992769679401294069">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>

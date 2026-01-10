@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">टैब हटाएं और ग्रुप छोड़ें</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_ONE" /> फ़ाइल, टैब या इमेज जोड़ें}one{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_MANY" /> फ़ाइल, टैब या इमेज जोड़ें}other{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_MANY" /> फ़ाइलें, टैब या इमेज जोड़ें}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बंद करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}}</translation>
 <translation id="5556417849629758491">स्क्रीन पर सबसे ऊपर मौजूद विकल्प से स्टोर की जानकारी देखें</translation>
 <translation id="5627941783489838464">टैब के बारे में कोई अपडेट नहीं है</translation>

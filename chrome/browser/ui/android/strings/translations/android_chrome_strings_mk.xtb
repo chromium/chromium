@@ -1903,6 +1903,7 @@
 <translation id="8963117664422609631">Оди на поставките за сајтот</translation>
 <translation id="8965591936373831584">чека на ред</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_ONE" /> картичка ќе се затворат}one{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>
+<translation id="8969796057708736017">Преземањето ќе заврши ако датотеката е сообразна со правилата на вашата организација</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>
 <translation id="8992769679401294069">Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>

@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">El teu administrador ha bloquejat algunes funcions en aquest dispositiu</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vol restaurar la configuració de Chrome i aplicar-hi els valors predeterminats originals. Es restablirà la pàgina d'inici, la pàgina Pestanya nova i el motor de cerca, es desactivaran les extensions i s'anul·larà la fixació de totes les pestanyes. També s'esborraran altres dades temporals i emmagatzemades a la memòria cau, com ara galetes i dades de contingut i de llocs.</translation>
 <translation id="1082725763867769612">Fitxers sense connexió</translation>
+<translation id="1083050113196701330">La comprovació d'actualitzacions s'ha completat correctament. No hi havia cap actualització disponible.</translation>
 <translation id="1084026333130513768">Desa, comparteix i emet</translation>
 <translation id="1084096383128641877">Encara que suprimeixis aquesta contrasenya, el teu compte de <ph name="DOMAIN" /> no se suprimirà. Canvia la contrasenya o suprimeix el teu compte de <ph name="DOMAIN_LINK" /> per protegir-lo dels altres.</translation>
 <translation id="1084288067399862432">La contrasenya en perill s'ha canviat correctament.
@@ -734,6 +735,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1486486872607808064">Escaneja aquest codi QR amb la càmera del dispositiu en què vulguis crear una clau d'accés per a <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crea un esborrany o poleix un treball existent.</translation>
 <translation id="1487335504823219454">Sincronització activada: configuració personalitzada</translation>
+<translation id="1488513761150925974">Comprova les tasques</translation>
 <translation id="1489101155914355052">S'estan generant suggeriments per a aquest document…</translation>
 <translation id="1493152297698462486">Crea una imatge amb Gemini</translation>
 <translation id="1493892686965953381">S'està esperant <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3061,6 +3063,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3038612606416062604">Afegeix una impressora manualment</translation>
 <translation id="3038628620670416486">Localitza botons al ratolí</translation>
 <translation id="3039491566278747710">No s'ha pogut instal·lar la política sense connexió al dispositiu.</translation>
+<translation id="303955801043931176">Pestanya tancada</translation>
 <translation id="3040435070100611531">Els teus passis de Google Wallet</translation>
 <translation id="3040982432432547149">Ajuda'ns a millorar Steam per a Chromebook</translation>
 <translation id="304169924727249890">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3624,6 +3627,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3450180775417907283"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estàs compartint aquesta pestanya amb Gemini</translation>
 <translation id="345078987193237421">Permet l'accés a la càmera per a les aplicacions, per als llocs web que tenen permís per accedir a la càmera i per als serveis del sistema</translation>
+<translation id="345163758690017738">S'està treballant en la teva tasca…</translation>
 <translation id="3452999110156026232">Accés parental</translation>
 <translation id="3453082738208775226">Vols netejar l'emmagatzematge sense connexió?</translation>
 <translation id="3453597230179205517">L'accés a la ubicació està bloquejat</translation>
@@ -3793,6 +3797,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3567284462585300767">Per rebre i acceptar fitxers de les persones que t'envolten, fes-te visible</translation>
 <translation id="356738834800832239">La contrasenya s'ha desat</translation>
 <translation id="3568431410312984116">Permet que la funció Ajuda'm a escriure s'obri automàticament</translation>
+<translation id="3569304198553566878">S'estan mostrant <ph name="NUM_DISPLAYED_EVENTS" /> de <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Voleu que <ph name="APP_NAME" /> comparteixi la vostra pantalla?</translation>
 <translation id="3569614820047645079">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet.</translation>
 <translation id="3569617221227793022">Actualment, la zona horària està establerta en <ph name="TIME_ZONE_ENTRY" />. El teu administrador gestiona aquesta opció de configuració.</translation>
@@ -7620,6 +7625,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6206199626856438589">Se't tancarà la sessió dels llocs web que es mostren, també de les pestanyes obertes</translation>
 <translation id="6206311232642889873">Cop&amp;ia la imatge</translation>
 <translation id="6207200176136643843">Restableix el nivell de zoom predeterminat</translation>
+<translation id="6207795130974856324">En espera de la teva ajuda</translation>
 <translation id="6207937957461833379">País/Regió</translation>
 <translation id="6208521041562685716">S'estan activant les dades mòbils</translation>
 <translation id="6208725777148613371">No s'ha pogut desar a <ph name="WEB_DRIVE" />: <ph name="INTERRUPT_REASON" /></translation>
@@ -8336,6 +8342,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6715735940363172819">Els llocs web no tenen permís per utilitzar el micròfon</translation>
 <translation id="6716049856796700977">Res no pot utilitzar la teva ubicació. Tanmateix, és possible que la teva ubicació continuï sent visible per a les aplicacions i per als llocs web a través de l'adreça IP. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">S'ha perdut la connexió de xarxa. Comprova la connexió o prova una altra xarxa Wi-Fi.</translation>
+<translation id="671868032356459320">Abast de l'actualitzador: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Pantalla de bloqueig</translation>
 <translation id="6719839880830057298">S'ha completat la pujada del fitxer</translation>
 <translation id="6721744718589119342">Pot ser que et demanem més informació o t'enviem novetats per correu electrònic</translation>
@@ -9185,6 +9192,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomes del lloc web</translation>
 <translation id="7309214454733221756">Vols crear una clau d'accés per iniciar la sessió a <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Llista de tasques</translation>
 <translation id="7311005168897771689">Accedeix als teus fitxers de Google Drive sense connexió</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
 <translation id="7312040805247765153">No es pot instal·lar l'aplicació</translation>
@@ -11234,6 +11242,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8680251145628383637">Inicieu la sessió per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions en tots els dispositius. A més, iniciareu la sessió automàticament als serveis de Google.</translation>
 <translation id="8681886425883659911">Els anuncis es bloquegen en llocs web que se sap que mostren anuncis intrusius o enganyosos</translation>
 <translation id="8682730193597992579">La impressora <ph name="PRINTER_NAME" /> està connectada i a punt</translation>
+<translation id="8683720831806477407">Abast de l'actualitzador</translation>
 <translation id="8684471948980641888">Permet la sincronització en xarxes d'ús mesurat</translation>
 <translation id="8685540043423825702">El teu perfil de Chrome</translation>
 <translation id="8685882652128627032">Fes clic per obrir el quadre de diàleg Afegeix una cerca al lloc web</translation>
@@ -12055,6 +12064,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9220723036554088545">penja un fitxer</translation>
 <translation id="9220820413868316583">Aixeca el dit i torna-ho a provar.</translation>
 <translation id="922152298093051471">Personalitza Chrome</translation>
+<translation id="9222839391870847423">Durada: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Mostra-ho tot</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Per gestionar-la, obre Extensions}other{Per gestionar-les, obre Extensions}}</translation>
 <translation id="924818813611903184">Gestiona els idiomes a la configuració de Chrome OS</translation>

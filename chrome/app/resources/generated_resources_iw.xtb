@@ -3075,6 +3075,7 @@
 <translation id="3038612606416062604">הוספה ידנית של מדפסת</translation>
 <translation id="3038628620670416486">איתור כפתורים בעכבר</translation>
 <translation id="3039491566278747710">התקנת המדיניות במצב אופליין במכשיר נכשלה.</translation>
+<translation id="303955801043931176">הכרטיסייה נסגרה</translation>
 <translation id="3040435070100611531">‏הכרטיסים שלך ב-Google Wallet</translation>
 <translation id="3040982432432547149">‏נשמח לעזרתך בשיפור של Steam ב-Chromebook</translation>
 <translation id="304169924727249890">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
@@ -5118,6 +5119,7 @@
 <translation id="4426857487270413362">לא ניתן להוריד את הקבצים של מנהל ההתקנה. צריך לבדוק את החיבור לאינטרנט, לוודא שיש מספיק מקום פנוי בכונן ולנסות שוב. קוד השגיאה הוא <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">התנועה זוהתה <ph name="COUNT" /> פעמים</translation>
 <translation id="4427365070557649936">בתהליך אימות של קוד האישור...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{המשימה הושלמה}one{המשימות הושלמו}two{המשימות הושלמו}other{המשימות הושלמו}}</translation>
 <translation id="4429163740524851942">פריסת מקלדת פיזית</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
 <translation id="443031431654216610">יש להשתמש בספרות בלבד</translation>

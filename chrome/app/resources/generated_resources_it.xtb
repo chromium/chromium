@@ -138,6 +138,7 @@
 <translation id="1082214733466244292">Il tuo amministratore ha bloccato alcune funzionalità per questo dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vuole ripristinare le impostazioni predefinite originali di Chrome. Questa operazione comporta la reimpostazione di pagina iniziale, pagina Nuova scheda e motore di ricerca, oltre alla disattivazione delle estensioni e allo sblocco di tutte le schede. Verranno inoltre cancellati altri dati temporanei e memorizzati nella cache, come cookie e dati relativi a contenuti e siti.</translation>
 <translation id="1082725763867769612">File offline</translation>
+<translation id="1083050113196701330">Controllo aggiornamenti completato. Nessun aggiornamento disponibile</translation>
 <translation id="1084026333130513768">Salva, condividi e trasmetti</translation>
 <translation id="1084096383128641877">La rimozione di questa password non comporta l'eliminazione del tuo account su <ph name="DOMAIN" />. Cambia la password o elimina il tuo account su <ph name="DOMAIN_LINK" /> per proteggerlo dagli altri.</translation>
 <translation id="1084288067399862432">Password compromessa cambiata.
@@ -734,6 +735,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1486486872607808064">Scansiona questo codice QR con una fotocamera sul dispositivo in cui vuoi creare una passkey per <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crea una bozza o perfeziona il lavoro esistente.</translation>
 <translation id="1487335504823219454">Con: impostazioni personalizzate</translation>
+<translation id="1488513761150925974">Controlla le attività</translation>
 <translation id="1489101155914355052">Generazione di suggerimenti per questo documento in corso…</translation>
 <translation id="1493152297698462486">Crea immagine con Gemini</translation>
 <translation id="1493892686965953381">In attesa di <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -3061,6 +3063,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3038612606416062604">Aggiungi manualmente una stampante</translation>
 <translation id="3038628620670416486">Individua i pulsanti sul mouse</translation>
 <translation id="3039491566278747710">Impossibile installare le norme offline sul dispositivo.</translation>
+<translation id="303955801043931176">Scheda chiusa</translation>
 <translation id="3040435070100611531">Le tue tessere di Google Wallet</translation>
 <translation id="3040982432432547149">Aiutaci a migliorare Steam per Chromebook</translation>
 <translation id="304169924727249890">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /></translation>
@@ -3626,6 +3629,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3450180775417907283"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento.</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" />: stai condividendo questa scheda con Gemini</translation>
 <translation id="345078987193237421">Consente l'accesso alla fotocamera per le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera e ai servizi di sistema</translation>
+<translation id="345163758690017738">Elaborazione dell'attività in corso…</translation>
 <translation id="3452999110156026232">Accesso genitori</translation>
 <translation id="3453082738208775226">Vuoi liberare spazio di archiviazione offline?</translation>
 <translation id="3453597230179205517">L'accesso alla posizione è bloccato</translation>
@@ -3795,6 +3799,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3567284462585300767">Per ricevere e accettare i file con le persone intorno a te, renditi visibile</translation>
 <translation id="356738834800832239">La password è stata salvata</translation>
 <translation id="3568431410312984116">Consenti l'apertura automatica di "Aiutami a scrivere"</translation>
+<translation id="3569304198553566878">Visualizzazione di <ph name="NUM_DISPLAYED_EVENTS" /> su <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Vuoi consentire a <ph name="APP_NAME" /> di condividere il tuo schermo?</translation>
 <translation id="3569614820047645079">I tuoi file in Il mio Drive verranno sincronizzati automaticamente con Chromebook per potervi accedere senza connessione a internet.</translation>
 <translation id="3569617221227793022">Il fuso orario è attualmente impostato su <ph name="TIME_ZONE_ENTRY" />. Questa impostazione è gestita dall'amministratore.</translation>
@@ -7622,6 +7627,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6206199626856438589">Uscirai dai siti visualizzati, schede aperte incluse</translation>
 <translation id="6206311232642889873">Cop&amp;ia immagine</translation>
 <translation id="6207200176136643843">Ripristina il livello di zoom predefinito</translation>
+<translation id="6207795130974856324">In attesa del tuo aiuto</translation>
 <translation id="6207937957461833379">Paese/Regione</translation>
 <translation id="6208521041562685716">Attivazione dei dati mobili in corso</translation>
 <translation id="6208725777148613371">Impossibile salvare su <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
@@ -8338,6 +8344,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6715735940363172819">I siti web non sono autorizzati a utilizzare il microfono</translation>
 <translation id="6716049856796700977">La tua posizione non può essere mai utilizzata. Tuttavia, potrebbe essere ancora visibile in app e siti web tramite il tuo indirizzo IP. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Connessione di rete interrotta. Controlla la connessione o prova a usare un'altra rete Wi-Fi.</translation>
+<translation id="671868032356459320">Ambito del programma di aggiornamento: <ph name="OUTCOMES" /></translation>
 <translation id="671928215901716392">Blocca schermo</translation>
 <translation id="6719839880830057298">Caricamento file completato</translation>
 <translation id="6721744718589119342">Possiamo inviarti un'email per maggiori informazioni o aggiornamenti</translation>
@@ -9187,6 +9194,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7307129035224081534">In pausa</translation>
 <translation id="7308643132139167865">Lingue dei siti web</translation>
 <translation id="7309214454733221756">Creare una passkey per accedere all'app <ph name="APP_NAME" />?</translation>
+<translation id="7309517920862730287">Elenco di attività</translation>
 <translation id="7311005168897771689">Accedi ai file di Google Drive quando sei offline</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7312040805247765153">Impossibile installare l'app</translation>
@@ -11236,6 +11244,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8680251145628383637">Accedi per trovare i tuoi segnalibri, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi. Verrà inoltre eseguito l'accesso automatico ai tuoi servizi Google.</translation>
 <translation id="8681886425883659911">Gli annunci vengono bloccati sui siti noti che mostrano annunci invasivi o fuorvianti</translation>
 <translation id="8682730193597992579">La stampante <ph name="PRINTER_NAME" /> è collegata e pronta</translation>
+<translation id="8683720831806477407">Ambito del programma di aggiornamento</translation>
 <translation id="8684471948980641888">Consenti sincronizzazione sulle reti a consumo</translation>
 <translation id="8685540043423825702">Il tuo profilo Chrome</translation>
 <translation id="8685882652128627032">Fai clic per aprire la finestra di dialogo Aggiungi ricerca su sito</translation>
@@ -12057,6 +12066,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9220723036554088545">carica un file</translation>
 <translation id="9220820413868316583">Solleva, quindi riprova.</translation>
 <translation id="922152298093051471">Personalizza Chrome</translation>
+<translation id="9222839391870847423">Durata: <ph name="DURATION" /></translation>
 <translation id="923467487918828349">Mostra tutto</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Per gestirla, apri le Estensioni}other{Per gestirle, apri le Estensioni}}</translation>
 <translation id="924818813611903184">Gestisci le lingue nelle impostazioni di ChromeOS</translation>

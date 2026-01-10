@@ -3062,6 +3062,7 @@
 <translation id="3038612606416062604">પ્રિન્ટરને મેન્યુઅલી ઉમેરો</translation>
 <translation id="3038628620670416486">તમારા માઉસ પર બટન શોધો</translation>
 <translation id="3039491566278747710">ડિવાઇસ પર ઑફલાઇન પૉલિસી ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
+<translation id="303955801043931176">ટેબ બંધ કર્યું છે</translation>
 <translation id="3040435070100611531">Google Walletમાંના તમારા પાસ</translation>
 <translation id="3040982432432547149">Chromebook માટેની Steam બહેતર બનાવવામાં અમારી સહાય કરો</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
@@ -5104,6 +5105,7 @@
 <translation id="4426857487270413362">ઇન્સ્ટૉલર ફાઇલો ડાઉનલોડ કરી શકતા નથી. કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ચેક કરો કે તમારી પાસે પર્યાપ્ત ખાલી ડિસ્ક સ્પેસ હોય અને ફરી પ્રયાસ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> વાર ભાળ મળી</translation>
 <translation id="4427365070557649936">કન્ફર્મેશન કોડ ચકાસી રહ્યાં છીએ...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{કાર્ય પૂર્ણ થઈ ગયું}one{કાર્ય પૂર્ણ થઈ ગયું}other{કાર્ય પૂર્ણ થઈ ગયા}}</translation>
 <translation id="4429163740524851942">વાસ્તવિક કીબોર્ડનું લેઆઉટ</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
 <translation id="443031431654216610">માત્ર સંખ્યાવાચક અંકનો ઉપયોગ કરો</translation>

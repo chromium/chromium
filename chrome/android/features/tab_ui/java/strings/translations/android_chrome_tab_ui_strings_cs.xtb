@@ -128,6 +128,7 @@
 <translation id="5446043142172831860">Odstranit kartu a opustit skupinu</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Přidejte až <ph name="LIMIT_COUNT_ONE" /> soubor, kartu nebo obrázek}few{Přidejte až <ph name="LIMIT_COUNT_MANY" /> soubory, karty nebo obrázky}many{Přidejte až <ph name="LIMIT_COUNT_MANY" /> souboru, karty nebo obrázku}other{Přidejte až <ph name="LIMIT_COUNT_MANY" /> souborů, karet nebo obrázků}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavřít skupinu karet s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Zavřít skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Zobrazit informace o obchodu, možnost dostupná v horní části obrazovky</translation>
 <translation id="5627941783489838464">Žádné aktualizace karet</translation>

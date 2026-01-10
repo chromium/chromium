@@ -978,6 +978,17 @@ Pour les profils gérés, si la règle <ph name="CLOUD_PROFILE_REPORTING_ENABLED
 
       Si cette règle n'est pas configurée et que l'espace disque libre sur l'appareil est inférieur à 20 Go (valeur par défaut), le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas être installé.
       Si cette règle est configurée, mais que l'espace disque libre sur l'appareil est inférieur à celui requis, le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas non plus être installé.</translation>
+<translation id="1682893353675650337">Lens Overlay permet aux utilisateurs d'effectuer des recherches Google contextuelles à partir d'une capture d'écran ou en posant une question sur le contenu de la page actuelle. Cette fonctionnalité nécessite l'activation par l'utilisateur final.
+
+Elle est disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
+
+Si cette règle est définie sur 0 (Autoriser) ou n'est pas configurée, la fonctionnalité est disponible pour les utilisateurs.
+
+Si la règle est définie sur 1 (Ne pas autoriser), la fonctionnalité n'est pas disponible.
+
+À partir de <ph name="PRODUCT_NAME" /> 140, si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+À partir de <ph name="PRODUCT_NAME" /> 147, cette règle sera supprimée. Les administrateurs informatiques pourront utiliser <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> pour contrôler cette fonctionnalité à l'avenir.</translation>
 <translation id="1686952487081322272">Désactiver Réponses rapides</translation>
 <translation id="1690383938831887552">Empêcher le chargement de Signed HTTP Exchange</translation>
 <translation id="1692325295652827195">Si la règle est définie sur "True", des rapports sur les événements critiques d'installation d'applis Android déclenchée par des règles sont transmis à Google.
@@ -3948,6 +3959,8 @@ Si cette règle est définie sur "2", les origines d'applis Web isolées ne peu
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la dictée est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="3811407842708673996">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent voir et utiliser l'élément de menu de recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir l'élément de menu de recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le menu contextuel lorsque la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> est prise en charge.
+À partir de <ph name="PRODUCT_NAME" /> 147, cette règle sera supprimée. Les administrateurs informatiques pourront utiliser <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> pour contrôler cette fonctionnalité à l'avenir.</translation>
 <translation id="3811562426301733860">Autoriser les annonces sur tous les sites</translation>
 <translation id="3816312845600780067">Activer le raccourci clavier permettant d'ignorer le processus de connexion automatique</translation>
 <translation id="3817323252437541502">Activer les protections supplémentaires pour les utilisateurs inscrits au Programme Protection Avancée</translation>
@@ -5355,6 +5368,23 @@ Si cette règle n'est pas configurée, tous les services sont activés.
 Sinon, seuls les services sélectionnés sont activés.</translation>
 <translation id="4767059955897420757">Si cette règle n'est pas définie ou qu'elle est définie sur "Activée", la promo concernant l'extension du fournisseur d'informations d'identification peut être présentée à l'utilisateur.
 Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</translation>
+<translation id="4767618783249265266">Cette règle contrôle le partage du contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> et <ph name="GOOGLE_LENS_PRODUCT_NAME" /> via le panneau latéral ou les onglets de <ph name="PRODUCT_NAME" />.
+
+Sachez que cette règle n'a pas d'incidence sur le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sur le Web. Elle contrôle uniquement la façon dont les utilisateurs peuvent partager des informations avec ce mode lorsqu'ils utilisent <ph name="PRODUCT_NAME" />.
+
+0/Non configurée : les utilisateurs peuvent partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 : les utilisateurs ne peuvent pas partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Les points d'entrée pour partager le contexte seront désactivés ou masqués.
+
+Cette règle sera ignorée lorsque la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> ne sera pas le moteur de recherche par défaut des utilisateurs, car la fonctionnalité sera désactivée.
+
+Cette règle est indépendante de la règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> ne contrôle que les points d'entrée sur l'omnibox ou le champ de recherche de la page "Nouvel onglet", tandis que cette règle contrôle le partage de contexte via le panneau latéral ou les onglets.
+
+Cette règle ne contrôle pas non plus l'intégration de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, qui peut être désactivée par <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si cette règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
 <translation id="4770334626033858263">Configuration utilisée pour générer et valider le code d'accès parental.</translation>
 <translation id="4773997835955617342">Modifie la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
@@ -7270,6 +7300,8 @@ Si vous définissez cette valeur sur <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIEN
 
       ECH est un protocole qui évolue. L'implémentation de <ph name="PRODUCT_NAME" /> est donc susceptible d'être modifiée. Par conséquent, cette règle est une mesure temporaire pour contrôler l'implémentation expérimentale initiale. Elle sera remplacée par les commandes finales à la fin du protocole.</translation>
 <translation id="5939873071468124100">Limite les comptes pouvant utiliser l'intégration <ph name="MICROSOFT_ONE_DRIVE_NAME" />.</translation>
+<translation id="594085996886561267">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent afficher et utiliser le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche de la page "Nouvel onglet". Si cette règle est désactivée, les utilisateurs ne verront pas le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans ce champ de recherche.
+À partir de <ph name="PRODUCT_NAME" /> 147, cette règle sera supprimée. Les administrateurs informatiques pourront utiliser <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> pour contrôler cette fonctionnalité à l'avenir.</translation>
 <translation id="5945312246863177268">Empêche les utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5946082169633555022">Version bêta</translation>
 <translation id="5946329690214660966">Planifier de manière personnalisée la recherche de mises à jour</translation>
@@ -10242,6 +10274,7 @@ Si vous activez cette règle, l'attestation à distance est activée pour l'appa
 Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certificat n'est généré, et les appels à l'API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> échouent.</translation>
 <translation id="7906983682927840536">Durée de traitement des demandes keepalive à la fermeture</translation>
 <translation id="7908384265697653397">Durée en jours au terme de laquelle l'utilisateur est déconnecté si la version de <ph name="PRODUCT_OS_NAME" /> est antérieure à la version <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> spécifiée</translation>
+<translation id="7908762897332688196">Activer le partage de contenu avec les intégrations du <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> et de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="7909751052609510518">Tâches d'impression (compatibles depuis la version 129)</translation>
 <translation id="7909839744818798105">Activer l'ancien comportement du champ d'application des cookies pour une liste de domaines</translation>
 <translation id="7911685775490889216">Configure l'intervalle d'affichage des images, en secondes, lorsque l'économiseur d'écran de l'écran de verrouillage doit afficher plusieurs images.

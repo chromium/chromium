@@ -1012,6 +1012,17 @@ En el caso de los perfiles administrados, si no estableces la política <ph name
 
       Si no estableces esta política, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior a 20 GB (valor predeterminado).
       Si la estableces, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior al espacio que requiere la política.</translation>
+<translation id="1682893353675650337">Lens Overlay permite a los usuarios realizar búsquedas contextuales en Google a través de una captura de pantalla o haciendo una pregunta sobre el contenido de la página actual. Esta función requiere que el usuario final habilite la opción.
+
+Esta función está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
+
+Si estableces la política con el valor "0" (permitir) o no la estableces, los usuarios podrán acceder a la función.
+
+Si la estableces con el valor "1" (no permitir), la función no estará disponible.
+
+A partir de la versión <ph name="PRODUCT_NAME" /> 140, si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+A partir de <ph name="PRODUCT_NAME" /> 147, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función en el futuro.</translation>
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
 <translation id="1690383938831887552">No permitir que se carguen los intercambios HTTP firmados</translation>
 <translation id="1692325295652827195">Si estableces la política como verdadera, se enviarán a Google los informes sobre los eventos clave de instalación de apps para Android que activa la política.
@@ -4109,6 +4120,8 @@ Si estableces la política en 2, los orígenes de apps web aisladas no podrán u
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, el dictado estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="3811407842708673996">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).
+A partir de <ph name="PRODUCT_NAME" /> 147, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función en el futuro.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas para acceso directo de rescate para el acceso automático</translation>
 <translation id="3817323252437541502">Habilitar protecciones adicionales para los usuarios inscritos en el Programa de Protección Avanzada</translation>
@@ -5555,6 +5568,23 @@ Si no estableces esta política, se habilitarán todos los servicios.
 De lo contrario, solo se habilitarán los servicios seleccionados.</translation>
 <translation id="4767059955897420757">Si no estableces la política o la habilitas, es posible que la promoción para la extensión del Proveedor de credenciales se muestre al usuario.
 Si la inhabilitas, no se le mostrará la promoción para la extensión del Proveedor de credenciales al usuario.</translation>
+<translation id="4767618783249265266">Esta política controla el uso compartido del contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> a través del panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo los usuarios pueden compartir información cuando usan <ph name="PRODUCT_NAME" />.
+
+0 o sin establecer = los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = los usuarios no pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Se inhabilitarán o se ocultarán los puntos de entrada para compartir contexto.
+
+Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el motor de búsqueda predeterminado de los usuarios, ya que la función estará inhabilitada.
+
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda del cuadro multifunción o de la NTP, mientras que esta política controla el uso compartido de contexto a través del panel lateral o las pestañas.
+
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede inhabilitarla la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si no estableces esta política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4768446404233019970">Habilitar los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">La configuración que se usa para generar y verificar el código de acceso parental.</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
@@ -7517,6 +7547,8 @@ Si se establece como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (val
 
       ECH es un protocolo en evolución, por lo que la implementación de <ph name="PRODUCT_NAME" /> está sujeta a cambios. Por lo tanto, esta política es una medida temporal para controlar la implementación experimental inicial. Se reemplazará con controles finales a medida que finalice el protocolo.</translation>
 <translation id="5939873071468124100">Restringir las cuentas que pueden usar la integración de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="594085996886561267">Si no estableces la política o si la habilitas, los usuarios podrán ver y usar el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña. Si la inhabilitas, los usuarios no verán el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña.
+A partir de <ph name="PRODUCT_NAME" /> 147, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función en el futuro.</translation>
 <translation id="5945312246863177268">No permitir a los usuarios hacer clic en la notificación de Phone Hub para iniciar la aplicación Eche</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Establecer un cronograma personalizado para buscar actualizaciones</translation>
@@ -10681,6 +10713,7 @@ Si habilitas la política, se permite la certificación remota para el dispositi
 Si la inhabilitas o no la estableces, no se generará ningún certificado y las llamadas a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> fallarán.</translation>
 <translation id="7906983682927840536">Recupera la duración de keepalive al momento del cierre</translation>
 <translation id="7908384265697653397">El tiempo restante (en días) para que se haga salir al usuario de la cuenta si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la versión <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
+<translation id="7908762897332688196">Habilitar el uso compartido de contenido con las integraciones de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="7909751052609510518">Trabajos de impresión (compatible a partir de la versión 129)</translation>
 <translation id="7909839744818798105">Habilitar el comportamiento heredado del alcance de las cookies para una lista de dominios</translation>
 <translation id="7911685775490889216">Configura el intervalo en segundos para que se muestre una imagen cuando el protector de pantalla de la pantalla de bloqueo tenga varias imágenes para mostrar.

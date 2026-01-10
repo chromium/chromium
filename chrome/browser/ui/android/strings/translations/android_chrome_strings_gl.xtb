@@ -1903,6 +1903,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8963117664422609631">Ir á configuración do sitio</translation>
 <translation id="8965591936373831584">pendente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
+<translation id="8969796057708736017">A descarga completarase se o ficheiro cumpre as políticas da túa organización</translation>
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8972098258593396643">Queres gardar a descarga no cartafol predeterminado?</translation>
 <translation id="8992769679401294069">Os teus datos están encriptados cunha frase de acceso. Escríbea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
