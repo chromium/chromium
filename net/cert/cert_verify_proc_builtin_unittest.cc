@@ -294,6 +294,11 @@ class BlockingTrustStore : public bssl::TrustStore {
     return backing_trust_store_.GetTrust(cert);
   }
 
+  std::shared_ptr<const bssl::MTCAnchor> GetTrustedMTCIssuerOf(
+      const bssl::ParsedCertificate* cert) override {
+    return backing_trust_store_.GetTrustedMTCIssuerOf(cert);
+  }
+
   void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                         bssl::ParsedCertificateList* issuers) override {
     sync_get_issuer_started_event_.Signal();

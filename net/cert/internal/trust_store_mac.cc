@@ -1075,6 +1075,11 @@ bssl::CertificateTrust TrustStoreMac::GetTrust(
   return TrustStatusToCertificateTrust(trust_cache_->IsCertTrusted(cert));
 }
 
+std::shared_ptr<const bssl::MTCAnchor> TrustStoreMac::GetTrustedMTCIssuerOf(
+    const bssl::ParsedCertificate* cert) {
+  return nullptr;
+}
+
 std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreMac::GetAllUserAddedCerts() {
   return trust_cache_->GetAllUserAddedCerts();

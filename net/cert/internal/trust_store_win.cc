@@ -512,6 +512,11 @@ bssl::CertificateTrust TrustStoreWin::GetTrust(
   return MaybeInitializeAndGetImpl()->GetTrust(cert);
 }
 
+std::shared_ptr<const bssl::MTCAnchor> TrustStoreWin::GetTrustedMTCIssuerOf(
+    const bssl::ParsedCertificate* cert) {
+  return nullptr;
+}
+
 std::vector<net::PlatformTrustStore::CertWithTrust>
 TrustStoreWin::GetAllUserAddedCerts() {
   return MaybeInitializeAndGetImpl()->GetAllUserAddedCerts();

@@ -39,6 +39,8 @@ class ThreadSafeTrustStoreInMemory : public bssl::TrustStore {
   void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                         bssl::ParsedCertificateList* issuers) override;
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+  std::shared_ptr<const bssl::MTCAnchor> GetTrustedMTCIssuerOf(
+      const bssl::ParsedCertificate* cert) override;
 
  private:
   mutable base::Lock lock_;

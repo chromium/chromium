@@ -81,6 +81,8 @@ class NET_EXPORT TrustStoreWin : public PlatformTrustStore {
                         bssl::ParsedCertificateList* issuers) override;
 
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+  std::shared_ptr<const bssl::MTCAnchor> GetTrustedMTCIssuerOf(
+      const bssl::ParsedCertificate* cert) override;
 
   // net::PlatformTrustStore implementation:
   std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
