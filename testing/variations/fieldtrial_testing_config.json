@@ -16346,6 +16346,21 @@
             ]
         }
     ],
+    "MoveToFrontInLaunchIntentDispatcher": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MoveToFrontInLaunchIntentDispatcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "MultiCalendarSupport": [
         {
             "platforms": [

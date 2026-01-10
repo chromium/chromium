@@ -957,7 +957,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMostVisitedTilesReselect =
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMoveToFrontInLaunchIntentDispatcher =
-            newCachedFlag(MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER, false);
+            newCachedFlag(
+                    MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sMvcUpdateViewWhenModelChanged =
