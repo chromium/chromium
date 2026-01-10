@@ -2653,13 +2653,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void InitializeCrashReportStorage(
       uint64_t length,
       InitializeCrashReportStorageCallback callback) override;
-  void SetCrashReportStorageKey(
-      const std::string& key,
-      const std::string& value,
-      SetCrashReportStorageKeyCallback callback) override;
-  void RemoveCrashReportStorageKey(
-      const std::string& key,
-      RemoveCrashReportStorageKeyCallback callback) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
@@ -4086,6 +4079,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Based on the termination |status| and |exit_code|, may generate a crash
   // report to be routed to the Reporting API.
   void MaybeGenerateCrashReport(base::TerminationStatus status, int exit_code);
+  base::Value::Dict ReadCrashReportAPIBody();
 
   // Bitfield values for recording navigation frame-type (main or subframe)
   // combined with whether a sudden termination disabler is present. Currently

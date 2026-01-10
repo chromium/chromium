@@ -227,13 +227,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void InitializeCrashReportStorage(
       uint64_t length,
       InitializeCrashReportStorageCallback callback) override;
-  void SetCrashReportStorageKey(
-      const String& key,
-      const String& value,
-      SetCrashReportStorageKeyCallback callback) override;
-  void RemoveCrashReportStorageKey(
-      const String& key,
-      RemoveCrashReportStorageKeyCallback callback) override;
   void NotifyDocumentInteractive() override;
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
 

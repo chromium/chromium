@@ -800,8 +800,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   EXPECT_TRUE(NavigateToURL(contents, main_url));
 
   // Use the crash reporting storage API, to collect some data about the current
-  // page. In this case, just the current origin and a custom key, to verify
-  // they come out on the other end of the crash report.
+  // page. In this case, a custom key gets written to twice, to verify that the
+  // most recent write gets recorded and comes out on the other end of the crash
+  // report.
   EXPECT_TRUE(content::EvalJs(contents->GetPrimaryMainFrame(), R"(
     (async () => {
       await crashReport.initialize(100);
@@ -838,6 +839,64 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   EXPECT_EQ(main_url, *url);
   EXPECT_EQ("unresponsive", *reason);
   EXPECT_EQ("value_2", *custom_key);
+}
+
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
+                       CrashStorageAPIFullBuffer) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to reporting-enabled page.
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  // It takes exactly 29 bytes to write the JSON stringified data containing
+  // this key/value pair to shared memory, because of the extra JSON characters.
+  // Request exactly 29 bytes, and verify that the key/value are preserved.
+  // Because the browser needs to store a leading integer before the
+  // developer-supplied bytes to track how many bytes of shared memory are
+  // actually used, this means that the browser must internally allocate
+  // 29 + `sizeof(uint32_t)` bytes, the first `sizeof(uint32_t)` of which are
+  // reserved for the leading integer. This test ensures that the browser
+  // allocates the right number of bytes, instead of using some of the
+  // developer-requested bytes to store the leading integer; if it did that, the
+  // key/value data that requires all 29 bytes will be truncated.
+  EXPECT_TRUE(content::EvalJs(contents->GetPrimaryMainFrame(), R"(
+    (async () => {
+      await crashReport.initialize(29);
+      crashReport.set('custom_key', 'custom_value');
+    })();
+  )")
+                  .is_ok());
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List request =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = request.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const base::Value::Dict* crash_report_api_body =
+      body->FindDict("crash_report_api");
+  const std::string* custom_key =
+      crash_report_api_body->FindString("custom_key");
+
+  EXPECT_EQ(*type, "crash");
+  EXPECT_EQ(*url, main_url);
+  EXPECT_EQ(*reason, "unresponsive");
+  EXPECT_EQ(*custom_key, "custom_value");
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,

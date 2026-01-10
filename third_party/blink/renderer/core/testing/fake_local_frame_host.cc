@@ -327,15 +327,6 @@ void FakeLocalFrameHost::InitializeCrashReportStorage(
     uint64_t length,
     InitializeCrashReportStorageCallback callback) {}
 
-void FakeLocalFrameHost::SetCrashReportStorageKey(
-    const String& key,
-    const String& value,
-    SetCrashReportStorageKeyCallback callback) {}
-
-void FakeLocalFrameHost::RemoveCrashReportStorageKey(
-    const String& key,
-    RemoveCrashReportStorageKeyCallback callback) {}
-
 void FakeLocalFrameHost::NotifyDocumentInteractive() {}
 
 void FakeLocalFrameHost::SetStorageAccessApiStatus(

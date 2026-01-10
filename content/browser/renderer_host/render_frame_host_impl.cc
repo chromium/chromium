@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span_reader.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -11081,43 +11082,39 @@ void RenderFrameHostImpl::InitializeCrashReportStorage(
     return;
   }
 
-  // A renderer process must not try and create and initialize its crash report
-  // memory more than once. For now, this "initilization" is trivial since the
-  // backing memory is a `std::map`, but in the future when the backing memory
-  // might be a shared memory buffer, this becomes more important. See
+  // A renderer process must not try and create and initialize its shared memory
+  // buffer for crash reports more than once. See
   // `CrashReportStorage::initialize()`.
-  if (document_associated_data_->crash_storage_requested_length()) {
+  if (document_associated_data_->crash_report_storage_region().IsValid()) {
     bad_message::ReceivedBadMessage(
         GetProcess(),
         bad_message::RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED);
     return;
   }
 
-  document_associated_data_->set_crash_storage_requested_length(length);
-  std::move(callback).Run();
-}
+  // The shared memory buffer that the browser allocates needs to be as many
+  // bytes as the renderer requests, plus `sizeof(uint32_t)` bytes for a leading
+  // integer that describes how many bytes of the buffer are used/written to.
+  //
+  // Every time a value is added or removed from the shared memory, this leading
+  // integer is updated by the renderer, and the browser process finally uses it
+  // in `MaybeGenerateCrashReport()` when parsing the bytes.
+  base::CheckedNumeric<uint32_t> total_size = length;
+  total_size += sizeof(uint32_t);
 
-void RenderFrameHostImpl::SetCrashReportStorageKey(
-    const std::string& key,
-    const std::string& value,
-    SetCrashReportStorageKeyCallback callback) {
-  if (!document_associated_data_->crash_storage_requested_length()) {
-    mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
+  // We can use `ValueOrDie()` below because we know `length` is sufficiently
+  // far enough from the boundary of `uint32_t` (because of the
+  // `kMaxCrashReportStorageSize` check) such that it cannot have overflown at
+  // this point.
+  base::UnsafeSharedMemoryRegion region =
+      base::UnsafeSharedMemoryRegion::Create(total_size.ValueOrDie());
+  if (!region.IsValid()) {
+    std::move(callback).Run(base::UnsafeSharedMemoryRegion());
+    return;
   }
 
-  document_associated_data_->crash_storage_map().insert_or_assign(key, value);
-  std::move(callback).Run();
-}
-
-void RenderFrameHostImpl::RemoveCrashReportStorageKey(
-    const std::string& key,
-    RemoveCrashReportStorageKeyCallback callback) {
-  if (!document_associated_data_->crash_storage_requested_length()) {
-    mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
-  }
-
-  document_associated_data_->crash_storage_map().erase(key);
-  std::move(callback).Run();
+  document_associated_data_->SetCrashReportStorageRegion(region.Duplicate());
+  std::move(callback).Run(std::move(region));
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(
@@ -16402,10 +16399,10 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
                                                                    : "hidden");
   }
 
-  base::Value::Dict crash_report_api_body;
-  for (const auto& pair : document_associated_data_->crash_storage_map()) {
-    crash_report_api_body.Set(pair.first, pair.second);
-  }
+  // Read the key/value data from the document associated data shared memory
+  // buffer that the renderer may have written to; parse it as JSON, and add it
+  // to the crash report.
+  base::Value::Dict crash_report_api_body = ReadCrashReportAPIBody();
   body.Set("crash_report_api", std::move(crash_report_api_body));
 
   if (!reason.empty()) {
@@ -16436,6 +16433,66 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
       /*type=*/"crash", crash_reporting_group_, last_committed_url_,
       GetReportingSource(), isolation_info_.network_anonymization_key(),
       std::move(body));
+}
+
+base::Value::Dict RenderFrameHostImpl::ReadCrashReportAPIBody() {
+  base::Value::Dict crash_report_api_body;
+  if (!document_associated_data_->crash_report_storage_region().IsValid()) {
+    return crash_report_api_body;
+  }
+
+  // Create a writable mapping that we only read from; we cannot create a
+  // read-only mapping from an unsafe shared memory region, since the
+  // read-only mapping has no way to guarantee that the platform handle
+  // backing the unsafe region is truly no longer writable.
+  base::WritableSharedMemoryMapping mapping =
+      document_associated_data_->crash_report_storage_region().Map();
+
+  if (!mapping.IsValid() || mapping.size() < sizeof(uint32_t)) {
+    return crash_report_api_body;
+  }
+
+  base::SpanReader<const uint8_t> reader(
+      mapping.GetMemoryAsSpan<const uint8_t>());
+  // The first uint32_t-sized chunk of the memory tells us how large the
+  // *remaining* amount of data that we need to read is.
+  uint32_t data_size = 0;
+  reader.ReadU32NativeEndian(data_size);
+
+  // Only attempt to read the report data if the recorded size of the data
+  // fits inside the real size of the shared memory. Only a compromised
+  // renderer could set us up to fail this condition; see
+  // `CrashReportStorage::set()`, which ensures that the writes of oversized
+  // reports are not attempted.
+  if (mapping.size() < sizeof(data_size) + data_size) {
+    return crash_report_api_body;
+  }
+
+  // Take a copy of the entire crash report API memory, to snapshot the data so
+  // that a malicious writer can't change it while it's being parsed. Note that
+  // a malicious writer could technically change the data that we're about to
+  // snapshot, after we've read `data_size`, but changing the contents or format
+  // of this data after we snapshot the body below shouldn't matter; the worst
+  // that can happen is the data is no longer valid JSON, and it gets omitted
+  // from the report.
+  std::string body_copy(data_size, '\0');
+  const bool read_success =
+      reader.ReadCopy(base::as_writable_bytes(base::span(body_copy)));
+  DCHECK(read_success);
+  // We use `JSON_PARSE_RFC` here, because the writer uses
+  // `JSONValue::ToJSONString()` which outputs RFC-compliant JSON.
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      body_copy, base::JSONParserOptions::JSON_PARSE_RFC);
+
+  if (parsed_json && parsed_json->is_dict()) {
+    for (auto it : parsed_json->GetDict()) {
+      if (it.second.is_string()) {
+        crash_report_api_body.Set(it.first, it.second.GetString());
+      }
+    }
+  }
+
+  return crash_report_api_body;
 }
 
 void RenderFrameHostImpl::UpdateOrDisableCompositorMetricRecorder() const {
