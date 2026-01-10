@@ -14,6 +14,8 @@ source_set("on_device_translation") {
     "features.h",
     "metrics.cc",
     "metrics.h",
+    "pref_names.cc",
+    "pref_names.h",
   ]
   deps = [
     ":public",

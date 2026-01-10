@@ -711,7 +711,7 @@
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "chrome/browser/on_device_translation/component_manager.h"
-#include "chrome/browser/on_device_translation/pref_names.h"
+#include "components/on_device_translation/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
