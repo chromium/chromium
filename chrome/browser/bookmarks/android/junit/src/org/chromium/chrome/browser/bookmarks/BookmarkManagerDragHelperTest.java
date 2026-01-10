@@ -95,7 +95,13 @@ public class BookmarkManagerDragHelperTest {
 
         // Perform action down.
         boolean consumed =
-                mDragHelper.onRowBodyTouch(mItemView, obtainEvent(MotionEvent.ACTION_DOWN));
+                mDragHelper.onRowBodyTouch(
+                        mItemView,
+                        obtainEvent(
+                                /* action= */ MotionEvent.ACTION_DOWN,
+                                /* x= */ 50f,
+                                /* y= */ 50f,
+                                /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
         assertTrue(consumed);
 
         // Checkpoint 1: Advance time to 499ms, just before selection.
@@ -124,7 +130,13 @@ public class BookmarkManagerDragHelperTest {
         doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
 
         // Perform action down.
-        mDragHelper.onRowBodyTouch(mItemView, obtainEvent(MotionEvent.ACTION_DOWN));
+        mDragHelper.onRowBodyTouch(
+                mItemView,
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
 
         // Verify drag starts quickly (100ms) without toggling selection.
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
@@ -139,7 +151,13 @@ public class BookmarkManagerDragHelperTest {
         doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
 
         // Perform action down.
-        mDragHelper.onRowBodyTouch(mItemView, obtainEvent(MotionEvent.ACTION_DOWN));
+        mDragHelper.onRowBodyTouch(
+                mItemView,
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
 
         // Verify that we long-press for 500ms. Drag should not have started at 499ms.
         ShadowLooper.idleMainLooper(499, TimeUnit.MILLISECONDS);
@@ -157,7 +175,13 @@ public class BookmarkManagerDragHelperTest {
     @Test
     public void test_onViewDetachedFromWindow() {
         // Perform action down.
-        mDragHelper.onRowBodyTouch(mItemView, obtainEvent(MotionEvent.ACTION_DOWN));
+        mDragHelper.onRowBodyTouch(
+                mItemView,
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
 
         // Simulate the recyclerView recycling the view (ImprovedBookmarkRow gets detached).
         mDragHelper.onViewDetachedFromWindow(mItemView);
@@ -179,7 +203,12 @@ public class BookmarkManagerDragHelperTest {
         // Expectation: It behaves like a normal semi-instant drag (100ms delay).
 
         // 1. Action Down.
-        MotionEvent event = obtainEvent(MotionEvent.ACTION_DOWN);
+        MotionEvent event =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_FINGER);
         mDragHelper.onDragHandleTouch(mDragHandle, event);
 
         // 2. Verify that the drag has not started immediately.
@@ -201,7 +230,12 @@ public class BookmarkManagerDragHelperTest {
         // Expectation: Drag starts immediately after exceeding touch slop.
 
         // 1. Mouse Down at (50, 50).
-        MotionEvent downEvent = obtainMouseEvent(MotionEvent.ACTION_DOWN, 50f, 50f);
+        MotionEvent downEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
         mDragHelper.onDragHandleTouch(mDragHandle, downEvent);
 
         // 2. Verify that the drag has not started yet.
@@ -209,11 +243,20 @@ public class BookmarkManagerDragHelperTest {
 
         // 3. Mouse Move to (100, 100).
         // Distance is about 70px, which is > TouchSlop.
-        MotionEvent moveEvent = obtainMouseEvent(MotionEvent.ACTION_MOVE, 100f, 100f);
+        MotionEvent moveEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_MOVE,
+                        /* x= */ 100f,
+                        /* y= */ 100f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
         mDragHelper.onDragHandleTouch(mDragHandle, moveEvent);
 
         // 4. Verify start drag.
         verify(mItemTouchHelper).startDrag(mViewHolder);
+
+        // 5. Verify the Row View (mItemView) gets the "closed hand" cursor.
+        verify(mItemView)
+                .setPointerIcon(PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRABBING));
 
         // 5. Verify the synthetic event is dispatched to the Recycler View to ensuring the "closed
         // hand" cursor persists correctly during the drag.
@@ -230,7 +273,12 @@ public class BookmarkManagerDragHelperTest {
         doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
 
         // 1. Mouse down.
-        MotionEvent event = obtainMouseEvent(MotionEvent.ACTION_DOWN, 50f, 50f);
+        MotionEvent event =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
         mDragHelper.onDragHandleTouch(mDragHandle, event);
 
         // Verify: Icon becomes "Closed Hand" (GRABBING).
@@ -238,7 +286,12 @@ public class BookmarkManagerDragHelperTest {
         verify(mDragHandle).setPointerIcon(grabbingIcon);
 
         // 2. Mouse up.
-        MotionEvent upEvent = obtainMouseEvent(MotionEvent.ACTION_UP, 50f, 50f);
+        MotionEvent upEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_UP,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
         mDragHelper.onDragHandleTouch(mDragHandle, upEvent);
 
         // Verify: Icon reverts to "Open Hand" (GRAB).
@@ -246,35 +299,102 @@ public class BookmarkManagerDragHelperTest {
         verify(mDragHandle).setPointerIcon(grabIcon);
     }
 
-    // Obtain the action event we want to perform (ACTION_DOWN, etc.).
-    private MotionEvent obtainEvent(int action) {
-        // Use coordinates that are definitely not (0,0) and likely not where the drag handle is.
-        long downTime = android.os.SystemClock.uptimeMillis();
-        return MotionEvent.obtain(
-                /* downTime= */ downTime,
-                /* eventTime= */ downTime,
-                /* action= */ action,
-                /* x= */ 50f,
-                /* y= */ 50f,
-                /* metaState= */ 0);
+    @Test
+    public void testHover_DragHandle_ShowsOpenHand() {
+        // Scenario: Mouse hovers over the drag handle.
+        // Expectation: Cursor changes from default to open hand.
+
+        MotionEvent hoverEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_HOVER_MOVE,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
+        mDragHelper.onDragHandleHover(mDragHandle, hoverEvent);
+
+        // Verify cursor set to Open Hand.
+        PointerIcon openHand = PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRAB);
+        verify(mDragHandle).setPointerIcon(openHand);
+
+        // Also verify it ensures the handle is visible (by calling onRowBodyHover logic
+        // internally).
+        verify(mDragHandle).setVisibility(View.VISIBLE);
     }
 
-    // Simulate a mouse movement.
-    private MotionEvent obtainMouseEvent(int action, float x, float y) {
+    @Test
+    public void testHover_UnselectedRowBody_ShowsAndHidesHandle() {
+        // Scenario: Mouse enters row -> Handle is visible. Mouse exits -> Handle disappear after a
+        // 50ms delay. This case only happens when the item is unselected.
+        doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
+
+        // 1. Mouse hover enter.
+        MotionEvent enterEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
+        mDragHelper.onRowBodyHover(mItemView, enterEvent);
+
+        // Verify handle becomes visible.
+        verify(mDragHandle).setVisibility(View.VISIBLE);
+
+        // 2. Mouse hover exit.
+        MotionEvent exitEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
+        mDragHelper.onRowBodyHover(mItemView, exitEvent);
+
+        // Verify handle is not hidden immediately.
+        verify(mDragHandle, never()).setVisibility(View.GONE);
+
+        // 3. Fast forward 50ms.
+        ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS);
+
+        // Verify handle is now hidden.
+        verify(mDragHandle).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void testHover_SelectedRowBody_DoesNotHideHandle() {
+        // Scenario: Item is selected. When the mouse exits the row, the handle should stay visible.
+        doReturn(true).when(mSelectionDelegate).isItemSelected(mBookmarkId);
+
+        // 1. Hover exit.
+        MotionEvent exitEvent =
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_MOUSE);
+        mDragHelper.onRowBodyHover(mItemView, exitEvent);
+
+        // 2. Fast forward delay.
+        ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS);
+
+        // Verify handle is still visible.
+        verify(mDragHandle, never()).setVisibility(View.GONE);
+    }
+
+    // Obtain the action event we want to perform (ACTION_DOWN, etc.).
+    private MotionEvent obtainEvent(int action, float x, float y, int toolType) {
         // We get the current time since Android rejects times that are 0 or in the past.
 
-        // When the finger first touches the screen.
+        // When the finger/mouse first touches the screen.
         long downTime = SystemClock.uptimeMillis();
         // When the specific event happens (finger down, drag, lift finger, etc.).
         long eventTime = SystemClock.uptimeMillis();
 
-        // Describes what (the mouse) is touching the screen.
+        // Describes what (the mouse, finger, etc.) is touching the screen.
         MotionEvent.PointerProperties[] pointerProperties = new MotionEvent.PointerProperties[1];
         pointerProperties[0] = new MotionEvent.PointerProperties();
         pointerProperties[0].id = 0;
-        pointerProperties[0].toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        pointerProperties[0].toolType = toolType;
 
-        // Describes where the mouse is touch the screen.
+        // Describes where the mouse/finger is touching the screen.
         MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[1];
         pointerCoords[0] = new MotionEvent.PointerCoords();
         pointerCoords[0].x = x;
