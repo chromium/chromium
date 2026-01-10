@@ -10,11 +10,9 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -532,16 +530,16 @@ Status Transaction::DoPut(int64_t object_store_id,
   bool key_was_generated = false;
   in_flight_memory_ -= value.SizeEstimate();
   CHECK(in_flight_memory_.IsValid());
-  auto on_put_error = [&txn](blink::mojom::IDBTransaction::PutCallback callback,
+  auto on_put_error = [this](blink::mojom::IDBTransaction::PutCallback callback,
                              blink::mojom::IDBException code,
                              const std::u16string& message) {
-    txn->IncrementNumErrorsSent();
+    IncrementNumErrorsSent();
     std::move(callback).Run(
         blink::mojom::IDBTransactionPutResult::NewErrorResult(
             blink::mojom::IDBError::New(code, message)));
   };
 
-  const blink::IndexedDBObjectStoreMetadata* object_store =
+  const IndexedDBObjectStoreMetadata* object_store =
       connection()->database()->GetObjectStoreMetadataIfExists(object_store_id);
   if (!object_store) {
     std::move(bad_message_callback).Run("Invalid object_store_id");
@@ -666,8 +664,7 @@ Status Transaction::DoSetIndexKeys(int64_t object_store_id,
                                    IndexedDBIndexKeys index_keys,
                                    Transaction* transaction) {
   CHECK_EQ(this, transaction);
-  TRACE_EVENT1("IndexedDB", "Database::SetIndexKeysOperation", "txn.id",
-               transaction->id());
+  TRACE_EVENT1("IndexedDB", "Database::SetIndexKeysOperation", "txn.id", id());
   CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
 
   ASSIGN_OR_RETURN(std::optional<BackingStore::RecordIdentifier> found_record,
@@ -729,7 +726,7 @@ void Transaction::SetIndexKeysDone() {
           [](mojo::ReportBadMessageCallback report_bad_message_callback,
              Transaction& transaction) {
             if (transaction.pending_preemptive_events_ == 0) {
-              constexpr const std::string_view kErrorMessage =
+              constexpr std::string_view kErrorMessage =
                   "SetIndexKeysDone called without beginning indexing";
               std::move(report_bad_message_callback).Run(kErrorMessage);
               return Status::InvalidArgument(kErrorMessage);
@@ -1196,7 +1193,7 @@ void Transaction::TimeoutFired() {
   CHECK(!diagnostics_.mojo_receiver_disconnected, base::NotFatalUntil::M145);
   CHECK(task_queue_.empty(), base::NotFatalUntil::M145);
   CHECK(preemptive_task_queue_.empty(), base::NotFatalUntil::M145);
-  CHECK(connection_.get() != nullptr);
+  CHECK(connection_);
 
   const size_t num_transactions_across_all_connections =
       database_->GetNumTransactionsAcrossAllConnections();
