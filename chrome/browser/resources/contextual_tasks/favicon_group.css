@@ -18,6 +18,10 @@
   width: fit-content;
 }
 
+:host([hidden]) {
+  display: none !important;
+}
+
 :host(:hover) {
   background-color: rgba(var(--cr-hover-background-color), 0.7);
 }

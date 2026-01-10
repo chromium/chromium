@@ -86,15 +86,18 @@ suite('TopToolbarTest', () => {
             '#sources');
     assertTrue(!!sourcesButton);
 
-    // Initially, there are no attached tabs, so the favicon group should not
-    // render any items.
+    // Initially, there are no attached tabs, so the sources button should be
+    // hidden and contain no items.
+    assertTrue(sourcesButton.hidden);
     assertFalse(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
 
     topToolbar.attachedTabs =
         [{tabId: 1, title: 'Tab 1', url: {url: 'https://example.com'}}];
     await microtasksFinished();
 
-    // After attaching a tab, the favicon group should render a favicon item.
+    // After attaching a tab, the sources button should be visible and contain
+    // items.
+    assertFalse(sourcesButton.hidden);
     assertTrue(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
   });
 

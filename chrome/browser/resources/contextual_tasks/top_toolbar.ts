@@ -67,6 +67,11 @@ export class TopToolbarElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  protected shouldShowSourcesMenuButton_(): boolean {
+    // TODO(crbug.com/467166272): Update this when adding images and files.
+    return this.attachedTabs.length > 0;
+  }
+
   protected onCloseButtonClick_() {
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.CloseSidePanel');
