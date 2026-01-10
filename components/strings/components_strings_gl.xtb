@@ -1472,7 +1472,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3384522979010096022">A túa organización non che permite ver este sitio</translation>
 <translation id="3391030046425686457">Enderezo de entrega</translation>
 <translation id="3391482648489541560">modificación de ficheiros</translation>
-<translation id="3392028486601120379">O padrón do URL "<ph name="URL_PATTERN" />" ten unha ruta especificada. Esta clave non admite rutas. Elimina a ruta en téntao de novo. Por exemplo: *://exemplo.com/ =&gt; *://exemplo.com",</translation>
+<translation id="3392028486601120379">O padrón do URL "<ph name="URL_PATTERN" />" ten unha ruta especificada. Esta clave non admite rutas. Elimina a ruta en téntao de novo. Por exemplo: *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Método de recollida</translation>
 <translation id="3399161914051569225">Tecnoloxía poñible</translation>
 <translation id="3399952811970034796">Enderezo de entrega</translation>

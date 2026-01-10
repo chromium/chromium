@@ -793,7 +793,7 @@
 <translation id="445059817448385655">పాత పాస్‌వర్డ్</translation>
 <translation id="4453205916657964690">సబ్‌నెట్ మాస్క్</translation>
 <translation id="4454245904991689773">స్కాన్ చేసి ఇక్కడ సేవ్ చేయండి</translation>
-<translation id="4456812688969919973">APNను సేవ్ చేయండి బటన్ డిజేబుల్ చేయబడింది</translation>
+<translation id="4456812688969919973">APNను సేవ్ చేయండి బటన్ డిజేబుల్ అయింది</translation>
 <translation id="4469288414739283461">ఎర్త్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="4474142134969976028">మ్యాచ్ అయ్యే ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
@@ -1111,7 +1111,7 @@
 <translation id="5915794087373112615">మీ టీచర్ మీ స్క్రీన్‌ను<ph name="NUM_SECONDS" /> సెకన్లలలో చూస్తారు</translation>
 <translation id="5916084858004523819">నిషేధించబడింది</translation>
 <translation id="5916664084637901428">ఆన్‌లో ఉంది</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{మీ ఫైల్ విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడింది.}other{మీ ఫైళ్లు విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడ్డాయి.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{మీ ఫైల్ విజయవంతంగా స్కాన్ అయి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />లో సేవ్ అయింది.}other{మీ ఫైళ్లు విజయవంతంగా స్కాన్ అయి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />లో సేవ్ అయ్యాయి.}}</translation>
 <translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> కోసం తొలగించు బటన్.</translation>
 <translation id="5930669310554144537">డ్రీమ్‌స్పేస్</translation>
 <translation id="5931523347251946569">ఫైల్ కనుగొనబడలేదు</translation>
@@ -1828,7 +1828,7 @@
 <translation id="9036971622563146214">ఫలితాలు</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">పుస్తకాలు</translation>
-<translation id="9049868303458988905">APNను సేవ్ చేయండి బటన్ ఎనేబుల్ చేయబడింది</translation>
+<translation id="9049868303458988905">APNను సేవ్ చేయండి బటన్ ఎనేబుల్ అయింది</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>

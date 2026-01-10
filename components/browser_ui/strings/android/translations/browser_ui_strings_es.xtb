@@ -126,7 +126,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Precisa</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}}</translation>
-<translation id="2404857459073803936">Acceso a la ubicación de este sitio</translation>
+<translation id="2404857459073803936">Acceso a mi ubicación por parte de este sitio</translation>
 <translation id="2410940059315936967">Un sitio que visites puede insertar contenido de otros sitios, como imágenes, anuncios y texto. Las cookies creadas por estos sitios se denominan cookies de terceros.</translation>
 <translation id="2411116727035790889">Activar las combinaciones de teclas</translation>
 <translation id="2433507940547922241">Aspecto</translation>
@@ -454,7 +454,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5877248419911025165">Ocultar todas las solicitudes</translation>
 <translation id="5878945009165002849">Bloquear notificaciones de inicio de sesión de servicios de identidad</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
-<translation id="5884085660368669834">Preferencia de sitio</translation>
+<translation id="5884085660368669834">Preferencia para este sitio</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5908617755156109052">No permitir que los sitios creen un mapa 3D de tu entorno ni hacer un seguimiento de la posición de la cámara</translation>
 <translation id="5916664084637901428">Activado</translation>
