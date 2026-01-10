@@ -39,12 +39,17 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "url/gurl.h"
 #import "url/origin.h"
+#import "url/url_constants.h"
 
 namespace {
 
 // The default Page Context execution timeout.
 base::TimeDelta kDefaultPageContextTimeout = base::Seconds(1);
+
+// Url used for for data urls.
+constexpr const char kDataUrl[] = "data:";
 
 // The key for whether the PageContext should be detached. The value is a
 // bool.
@@ -231,7 +236,12 @@ result.links = linksArray;
 
     // Create the PageContext proto/object.
     _pageContext = std::make_unique<optimization_guide::proto::PageContext>();
-    _pageContext->set_url(_webState->GetVisibleURL().spec());
+    GURL url = _webState->GetVisibleURL();
+    if (url.SchemeIs(url::kDataScheme)) {
+      _pageContext->set_url(kDataUrl);
+    } else {
+      _pageContext->set_url(url.spec());
+    }
     _pageContext->set_title(base::UTF16ToUTF8(_webState->GetTitle()));
   }
   return self;
@@ -892,7 +902,11 @@ result.links = linksArray;
 
   const std::string* urlPtr = value->GetDict().FindString(kSourceURLDictKey);
   if (urlPtr) {
-    frameDataNode->set_url(*urlPtr);
+    if (GURL(*urlPtr).SchemeIs(url::kDataScheme)) {
+      frameDataNode->set_url(kDataUrl);
+    } else {
+      frameDataNode->set_url(*urlPtr);
+    }
   }
 }
 

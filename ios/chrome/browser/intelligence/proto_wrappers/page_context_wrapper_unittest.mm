@@ -1259,6 +1259,125 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_WebStateDestroyed) {
   EXPECT_EQ(captured_response.error(), PageContextWrapperError::kGenericError);
 }
 
+// Tests that the page context correctly handles data URLs by truncating them.
+TEST_P(PageContextWrapperTest, PopulatePageContext_DataURL) {
+  const std::string data_url = "data:text/html,<p>Hello Data</p>";
+  web::test::LoadHtml(@"<p>Hello Data</p>", GURL(data_url), web_state());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+  EXPECT_EQ(page_context->url(), "data:");
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+  const auto& main_frame_data =
+      page_context->annotated_page_content().main_frame_data();
+  EXPECT_EQ(main_frame_data.url(), "data:");
+}
+
+// Tests that an iframe with a data URL is treated as cross-origin (opaque
+// origin).
+TEST_P(PageContextWrapperTest, PopulatePageContext_DataURLIframe) {
+  const std::string data_iframe_content =
+      "<html><body><p>Data Iframe</p></body></html>";
+  const std::string data_iframe_url = "data:text/html," + data_iframe_content;
+  const std::string main_html = "<html><body><p>Main</p><iframe src='" +
+                                data_iframe_url + "'></iframe></body></html>";
+
+  // We need to use a real URL for the main frame to have a distinct origin.
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& root_node = page_context->annotated_page_content().root_node();
+
+  // Find the iframe node.
+  const optimization_guide::proto::ContentNode* iframe_node = nullptr;
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      iframe_node = &node;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(iframe_node) << "Iframe node not found. Data URL iframe might "
+                              "not have been extracted.";
+
+  // Check the URL of the iframe.
+  EXPECT_EQ(iframe_node->content_attributes().iframe_data().frame_data().url(),
+            "data:");
+
+  // Check security origin
+  // The main frame origin should be http://127.0.0.1:...
+  // The iframe origin should be opaque (unique).
+  const auto& main_frame_data =
+      page_context->annotated_page_content().main_frame_data();
+  const auto& iframe_frame_data =
+      iframe_node->content_attributes().iframe_data().frame_data();
+
+  // Main frame should NOT be opaque.
+  EXPECT_FALSE(main_frame_data.security_origin().opaque());
+  EXPECT_FALSE(main_frame_data.security_origin().value().empty());
+
+  // Iframe should be opaque.
+  EXPECT_TRUE(iframe_frame_data.security_origin().opaque());
+  EXPECT_FALSE(iframe_frame_data.security_origin().value().empty());
+
+  // The value of an opaque origin is a nonce, so it should be different from
+  // the main frame's value.
+  EXPECT_NE(main_frame_data.security_origin().value(),
+            iframe_frame_data.security_origin().value());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),
