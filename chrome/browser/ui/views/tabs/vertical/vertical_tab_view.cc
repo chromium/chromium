@@ -488,21 +488,21 @@ void VerticalTabView::OnDataChanged() {
   split_ = tab->IsSplit();
   pinned_ = tab->IsPinned();
 
-  int index =
-      tab->GetBrowserWindowInterface()->GetTabStripModel()->GetIndexOfTab(tab);
-  TabRendererData tab_data = TabRendererData::FromTabInModel(
-      tab->GetBrowserWindowInterface()->GetTabStripModel(), index);
+  const TabStripModel* tab_strip_model =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
+  int index = tab_strip_model->GetIndexOfTab(tab);
+  tab_data_ = TabRendererData::FromTabInModel(tab_strip_model, index);
 
-  icon_->SetData(tab_data);
+  icon_->SetData(tab_data_);
   icon_->SetActiveState(tab->IsActivated());
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
-                      tab->IsActivated() && tab_data.blocked);
+                      tab->IsActivated() && tab->IsBlocked());
 
-  title_->SetText(tab_data.title);
+  title_->SetText(tab_data_.title);
   title_->SetVisible(!pinned_);
 
   alert_indicator_->TransitionToAlertState(
-      tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
+      tabs::TabAlertController::GetAlertStateToShow(tab_data_.alert_state));
 
   UpdateAlertIndicatorVisibility();
   UpdateCloseButtonVisibility();

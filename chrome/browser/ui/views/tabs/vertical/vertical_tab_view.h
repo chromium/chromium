@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
@@ -56,6 +57,7 @@ class VerticalTabView : public views::View,
 
   void OnTabDragOver();
   const TabStyle* tab_style() { return tab_style_; }
+  const TabRendererData& tab_data() const { return tab_data_; }
   TabCloseButton* close_button_for_testing() { return close_button_; }
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
 
@@ -150,6 +152,7 @@ class VerticalTabView : public views::View,
   base::CallbackListSubscription data_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
+  TabRendererData tab_data_;
   bool active_ = false;
   bool selected_ = false;
   bool hovered_ = false;

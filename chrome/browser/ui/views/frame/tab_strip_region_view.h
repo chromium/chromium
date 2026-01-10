@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,6 +34,7 @@ class TabStripRegionView : public views::AccessiblePaneView,
   virtual void StopAnimating() = 0;
   virtual void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) = 0;
   virtual std::optional<int> GetFocusedTabIndex() const = 0;
+  virtual const TabRendererData& GetTabRendererData(int tab_index) = 0;
 
   // -- UI anchoring --
   virtual views::View* GetTabAnchorViewAt(int tab_index) = 0;

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -1021,7 +1022,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
   // AccessibleName update with alert on tab
   tab_renderer_data = tab_strip()->tab_at(new_index)->data();
   tab_renderer_data.network_state = TabNetworkState::kLoading;
-  tab_renderer_data.alert_state.push_back(tabs::TabAlert::kAudioPlaying);
+  RecentlyAudibleHelper::FromWebContents(
+      tab_strip_model()->GetWebContentsAt(new_index))
+      ->SetCurrentlyAudibleForTesting();
   tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
   data = ui::AXNodeData();
   tab_strip()->tab_at(new_index)->GetViewAccessibility().GetAccessibleNodeData(

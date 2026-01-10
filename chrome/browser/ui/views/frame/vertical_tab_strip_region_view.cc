@@ -207,6 +207,21 @@ std::optional<int> VerticalTabStripRegionView::GetFocusedTabIndex() const {
   return std::nullopt;
 }
 
+const TabRendererData& VerticalTabStripRegionView::GetTabRendererData(
+    int tab_index) {
+  tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+  CHECK(tab);
+
+  const TabCollectionNode* node =
+      root_node_->GetNodeForHandle(tab->GetHandle());
+  CHECK(node);
+
+  VerticalTabView* tab_view = views::AsViewClass<VerticalTabView>(node->view());
+  CHECK(tab_view);
+
+  return tab_view->tab_data();
+}
+
 views::View* VerticalTabStripRegionView::GetTabAnchorViewAt(int tab_index) {
   tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
   CHECK(tab) << "No tab found for tab_index: " << tab_index;

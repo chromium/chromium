@@ -47,6 +47,7 @@ source_set("frame") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views",
     "//components/tab_groups",
     "//ui/base",

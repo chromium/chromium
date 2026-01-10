@@ -3909,10 +3909,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PINNED_FORMAT, title);
   }
 
-  // TODO(dljames): Add a function to TabStripRegionView interface which returns
-  // the TabRendererData.
-  const TabRendererData& tab_data =
-      horizontal_tab_strip_region_view_->tab_strip()->tab_at(index)->data();
+  const TabRendererData& tab_data = tab_strip_view()->GetTabRendererData(index);
 
   // Tab has crashed.
   if (tab_data.IsCrashed()) {
@@ -3936,11 +3933,12 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   // Alert tab states.
-  tabs::TabAlertController* alert_controller =
+  const tabs::TabAlertController* tab_alert_controller =
       tabs::TabAlertController::From(tab);
-  CHECK(alert_controller);
+  CHECK(tab_alert_controller);
+
   if (const std::optional<tabs::TabAlert> alert =
-          alert_controller->GetAlertStateToShow(tab_data.alert_state)) {
+          tab_alert_controller->GetAlertToShow()) {
     title = l10n_util::GetStringFUTF16(
         tabs::TabAlertController::GetAccessibleAlertStringId(alert.value()),
         title);
