@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -465,7 +466,15 @@ class PasswordRedactionMultiSourcePageContextFetcherBrowserTest
   PasswordRedactionMultiSourcePageContextFetcherBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
         {kGlicScreenshotPasswordRedaction, {}},
-    };
+        // Effectively disables timeouts.
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "30s"},
+         }},
+        {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
+         {{"timeout", "30s"}}
+
+        }};
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             /*disabled_features=*/{});
   }
@@ -482,17 +491,9 @@ class PasswordRedactionMultiSourcePageContextFetcherBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-// TODO(crbug.com/469749590): Fix ASAN/MSAN failures on trybot.
-// TODO(crbug.com/470852852): Fix failures on Linux CFI.
-#define MAYBE_BasicRedaction DISABLED_BasicRedaction
-#else
-#define MAYBE_BasicRedaction BasicRedaction
-#endif
 IN_PROC_BROWSER_TEST_F(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
-    MAYBE_BasicRedaction) {
+    BasicRedaction) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GetURL(kHostA, "/password.html")));
 
@@ -524,19 +525,9 @@ IN_PROC_BROWSER_TEST_F(
               IsColorWithinTolerance(SK_ColorBLACK, 0x20));
 }
 
-#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-// TODO(crbug.com/469749590): Fix ASAN/MSAN failures on trybot.
-// TODO(crbug.com/470852852): Fix failures on Linux CFI.
-#define MAYBE_RedactionWhenScreenshotReceivedFirst \
-  DISABLED_RedactionWhenScreenshotReceivedFirst
-#else
-#define MAYBE_RedactionWhenScreenshotReceivedFirst \
-  RedactionWhenScreenshotReceivedFirst
-#endif
 IN_PROC_BROWSER_TEST_F(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
-    MAYBE_RedactionWhenScreenshotReceivedFirst) {
+    RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
