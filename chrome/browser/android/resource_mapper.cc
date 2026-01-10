@@ -66,8 +66,7 @@ int ResourceMapper::MapToJavaDrawableId(int resource_id) {
     return iterator->second;
   }
 
-  // The resource couldn't be found.
-  NOTREACHED();
+  NOTREACHED() << "Resource not found for ID: " << resource_id;
 }
 
 DEFINE_JNI(ResourceMapper)
