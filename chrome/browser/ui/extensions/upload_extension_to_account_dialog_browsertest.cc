@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -81,7 +82,9 @@ class UploadExtensionToAccountDialogBrowserTest
     // for extensions to be uploaded to.
     SignIn(browser()->profile());
 
-    ShowUploadExtensionToAccountDialog(browser(), *extension,
+    ShowUploadExtensionToAccountDialog(browser()->profile(),
+                                       browser()->window()->GetNativeWindow(),
+                                       *extension,
                                        /*accept_callback=*/base::DoNothing(),
                                        /*cancel_callback=*/base::DoNothing());
   }

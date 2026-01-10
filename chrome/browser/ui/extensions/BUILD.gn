@@ -141,11 +141,13 @@ source_set("impl") {
       "extensions_toolbar_view_model.cc",
       "reload_page_dialog_controller.cc",
       "settings_overridden_dialog.cc",
+      "upload_extension_to_account_dialog.cc",
     ]
     deps += [
       ":extension_post_install_dialog_utils",
       "//chrome/browser/extensions",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
       "//chrome/browser/signin",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",

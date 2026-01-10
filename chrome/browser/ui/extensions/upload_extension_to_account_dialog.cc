@@ -9,8 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/consent_level.h"
@@ -19,22 +17,23 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 
 namespace extensions {
 
-void ShowUploadExtensionToAccountDialog(Browser* browser,
+void ShowUploadExtensionToAccountDialog(Profile* profile,
+                                        gfx::NativeWindow parent,
                                         const Extension& extension,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback) {
   CHECK(switches::IsExtensionsExplicitBrowserSigninEnabled());
-  CHECK(AccountExtensionTracker::Get(browser->profile())
-            ->CanUploadAsAccountExtension(extension));
+  CHECK(AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
+      extension));
 
   // Show the avatar and email of the signed-in account as a custom view
   // between the dialog's subtitle and buttons.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          browser->profile()->GetOriginalProfile());
+      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   CHECK(!account_info.IsEmpty());
@@ -42,29 +41,32 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
   auto split_cancel_callback =
       base::SplitOnceCallback(std::move(cancel_callback));
 
-  ui::DialogModel::Builder builder;
-  builder.SetInternalName("UploadExtensionToAccountDialog")
-      .SetTitle(
-          l10n_util::GetStringUTF16(IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE))
-      .OverrideShowCloseButton(false)
-      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
-          util::GetFixupExtensionNameForUIDisplay(extension.name()))))
-      .AddMenuItem(
-          ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-              account_info.account_image, 16, 16, profiles::SHAPE_CIRCLE)),
-          base::UTF8ToUTF16(account_info.email), base::DoNothing(),
-          ui::DialogModelMenuItem::Params().SetIsEnabled(false))
-      .AddOkButton(
-          std::move(accept_callback),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL)))
-      .AddCancelButton(std::move(split_cancel_callback.first))
-      .SetCloseActionCallback(std::move(split_cancel_callback.second));
+  auto dialog_model =
+      ui::DialogModel::Builder()
+          .SetInternalName("UploadExtensionToAccountDialog")
+          .SetTitle(l10n_util::GetStringUTF16(
+              IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE))
+          .OverrideShowCloseButton(false)
+          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+              IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
+              util::GetFixupExtensionNameForUIDisplay(extension.name()))))
+          .AddMenuItem(
+              ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+                  account_info.account_image, 16, 16, profiles::SHAPE_CIRCLE)),
+              base::UTF8ToUTF16(account_info.email), base::DoNothing(),
+              ui::DialogModelMenuItem::Params().SetIsEnabled(false))
+          .AddOkButton(
+              std::move(accept_callback),
+              ui::DialogModel::Button::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL)))
+          .AddCancelButton(std::move(split_cancel_callback.first))
+          .SetCloseActionCallback(std::move(split_cancel_callback.second))
+          .Build();
 
   // Show a browser modal instead of one attached to the extensions icon to be
   // consistent with upload dialogs for other syncable types (e.g. bookmarks).
-  chrome::ShowBrowserModal(browser, builder.Build());
+  ShowModalDialog(parent, std::move(dialog_model));
 }
 
 }  // namespace extensions

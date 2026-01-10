@@ -148,7 +148,8 @@ void ShowExtensionInstallBlockedByParentDialog(
     base::OnceClosure done_callback);
 
 // Shows a dialog when the user tries to upload an extension to their account.
-void ShowUploadExtensionToAccountDialog(Browser* browser,
+void ShowUploadExtensionToAccountDialog(Profile* profile,
+                                        gfx::NativeWindow parent,
                                         const Extension& extension,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback);

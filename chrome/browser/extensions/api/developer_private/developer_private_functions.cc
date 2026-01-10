@@ -2199,15 +2199,12 @@ DeveloperPrivateUploadExtensionToAccountFunction::Run() {
     return RespondNow(Error(kCouldNotFindWebContentsError));
   }
 
-// TODO(crbug.com/424013333): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser) {
-    return RespondNow(Error(kCouldNotFindWebContentsError));
-  }
+  gfx::NativeWindow parent_window =
+      web_contents ? web_contents->GetTopLevelNativeWindow()
+                   : gfx::NativeWindow();
 
   ShowUploadExtensionToAccountDialog(
-      browser, *extension,
+      profile_, parent_window, *extension,
       base::BindOnce(
           &DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted,
           this),
@@ -2215,10 +2212,6 @@ DeveloperPrivateUploadExtensionToAccountFunction::Run() {
           &DeveloperPrivateUploadExtensionToAccountFunction::OnDialogCancelled,
           this));
   return RespondLater();
-#else
-  OnDialogAccepted();
-  return AlreadyResponded();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 base::expected<const Extension*, std::string>

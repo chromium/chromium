@@ -5018,6 +5018,8 @@ if (!is_android) {
           "//media/test/data/90rotation.mp4",
           "//media/test/data/id3_png_test.mp3",
         ]
+      } else {
+        sources += [ "../browser/ui/extensions/upload_extension_to_account_dialog_browsertest.cc" ]
       }
 
       deps += [
@@ -5296,7 +5298,6 @@ if (!is_android) {
         deps += [ "//chromeos/ash/services/multidevice_setup/public/cpp:prefs" ]
       } else {
         sources += [
-          "../browser/ui/views/extensions/dialogs/upload_extension_to_account_dialog_browsertest.cc",
           "../browser/ui/views/extensions/extension_post_install_dialog_view_utils_signin_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
