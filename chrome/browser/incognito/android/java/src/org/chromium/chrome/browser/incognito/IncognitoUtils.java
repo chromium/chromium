@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.os.Build;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -28,7 +29,6 @@ import org.chromium.ui.display.DisplayUtil;
 @NullMarked
 public class IncognitoUtils {
     private static @Nullable Boolean sIsEnabledForTesting;
-    private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
     private static @Nullable Boolean sShouldOpenIncognitoAsWindowForTesting;
 
     private IncognitoUtils() {}
@@ -94,8 +94,9 @@ public class IncognitoUtils {
             }
             return sShouldOpenIncognitoAsWindowForTesting;
         }
-        assertNonNull(sIsMultiInstanceApi31Enabled);
-        if (!sIsMultiInstanceApi31Enabled) {
+        // Simplified check based on MultiWindowUtils#isMultiInstanceApi31Enabled. Skips the
+        // Manifest launchMode check due to dependency restrictions on ChromeTabbedActivity.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
             return false;
         }
         return DisplayUtil.isGlobalDefaultDisplayTabletSized();
@@ -116,26 +117,6 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoThemeOverlayEnabledForTesting() {
         return ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
-    }
-
-    /**
-     * Set {@code sIsMultiInstanceApi31Enabled} if not already.
-     *
-     * @param isMultiInstanceApi31Enabled Whether the new launch mode 'singleInstancePerTask' is
-     *     configured to allow multiple instantiation of Chrome instance.
-     */
-    public static void setIsMultiInstanceApi31Enabled(boolean isMultiInstanceApi31Enabled) {
-        if (sIsMultiInstanceApi31Enabled != null) {
-            return;
-        }
-        sIsMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled;
-    }
-
-    /**
-     * @return True if {@code sIsMultiInstanceApi31Enabled} has been initialized (is not null).
-     */
-    public static boolean isMultiInstanceApi31EnabledInitialized() {
-        return sIsMultiInstanceApi31Enabled != null;
     }
 
     @NativeMethods

@@ -690,11 +690,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        if (ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && !IncognitoUtils.isMultiInstanceApi31EnabledInitialized()) {
-            IncognitoUtils.setIsMultiInstanceApi31Enabled(
-                    MultiWindowUtils.isMultiInstanceApi31Enabled());
-        }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && getIntent() != null) {
             // Check for incognito extras here if intent is available to allow for override
             // day/night theme.
@@ -4986,10 +4981,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     public void onPreAttachIntentAvailable(Intent intent) {
-        if (ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
-            IncognitoUtils.setIsMultiInstanceApi31Enabled(
-                    MultiWindowUtils.isMultiInstanceApi31Enabled());
-        }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             setHasIncognitoExtra(intent);
         }
