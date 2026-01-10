@@ -955,10 +955,12 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
       return Fatal(Status::Corruption("Missing data format version"),
                    SpecificEvent::kV8FormatTooNewOrMissing);
     }
-    if (!current_data_format.IsAtLeast(
-            IndexedDBDataFormatVersion::Decode(data_format_version))) {
+    std::optional<IndexedDBDataFormatVersion> decoded =
+        IndexedDBDataFormatVersion::Decode(data_format_version);
+    if (!decoded || !current_data_format.IsAtLeast(*decoded)) {
       return Fatal(
-          Status::NotFound("Unintelligible data format version: too new"),
+          Status::NotFound(
+              "Unintelligible data format version: invalid or too new"),
           SpecificEvent::kV8FormatTooNewOrMissing);
     }
   }

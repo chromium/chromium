@@ -284,12 +284,13 @@ std::tuple<bool, Status> AreSchemasKnown(TransactionalLevelDBDatabase* db) {
   if (!found) {
     return {true, s};
   }
-  if (raw_db_data_version < 0) {
+  std::optional<IndexedDBDataFormatVersion> db_data_version =
+      IndexedDBDataFormatVersion::Decode(raw_db_data_version);
+  if (!db_data_version) {
     return {false, Status::Corruption("Invalid IndexedDB data version.")};
   }
 
-  return {IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(
-              IndexedDBDataFormatVersion::Decode(raw_db_data_version)),
+  return {IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(*db_data_version),
           s};
 }
 
@@ -1232,7 +1233,13 @@ Status BackingStore::Initialize(bool clean_active_journal) {
       INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
       return InternalInconsistencyStatus();
     }
-    db_data_version = IndexedDBDataFormatVersion::Decode(raw_db_data_version);
+    std::optional<IndexedDBDataFormatVersion> decoded =
+        IndexedDBDataFormatVersion::Decode(raw_db_data_version);
+    if (!decoded) {
+      INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
+      return InternalInconsistencyStatus();
+    }
+    db_data_version = *decoded;
   }
   if (latest_known_data_version == db_data_version) {
     // Up to date. Nothing to do.
