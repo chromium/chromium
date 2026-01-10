@@ -158,6 +158,10 @@ class AIManager : public base::SupportsUserData::Data,
 
   // Eagerly initializes a broad set of features.
   void MaybeTryEagerInit();
+  // Eagerly initialize a feature depending on its eligibility.
+  void MaybeTryEagerInitWithEligibility(
+      optimization_guide::mojom::OnDeviceFeature feature,
+      optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,
