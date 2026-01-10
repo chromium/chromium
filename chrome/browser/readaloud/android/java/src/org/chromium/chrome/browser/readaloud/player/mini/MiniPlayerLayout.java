@@ -144,6 +144,14 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        // Consuming the event is necessary to prevent it from passing through to the
+        // content view and triggering the link hover status bar.
+        super.onHoverEvent(event);
+        return true;
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         return mTouchDelegate != null && mTouchDelegate.onTouchEvent(event);
     }
