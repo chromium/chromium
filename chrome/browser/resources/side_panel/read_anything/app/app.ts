@@ -188,6 +188,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.$.containerParent.addEventListener('mousemove', mouseEvent => {
         this.lineFocusController_.onMouseMove(mouseEvent.clientY);
       });
+      this.$.toolbar.addEventListener('mousemove', mouseEvent => {
+        this.lineFocusController_.onMouseMoveInToolbar(mouseEvent.clientY);
+      });
       this.lineFocusController_.addListener(this);
     }
     this.contentController_.addListener(this);
@@ -589,6 +592,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.speechController_.onHighlightGranularityChange(event.detail.data);
     // Apply highlighting changes to the DOM.
     this.styleUpdater_.setHighlight();
+  }
+
+  protected onAllMenusClose_() {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.lineFocusController_.onAllMenusClose();
+    }
   }
 
   protected onLineFocusChange_(event: CustomEvent<{data: number}>) {

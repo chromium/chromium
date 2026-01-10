@@ -68,6 +68,30 @@ suite('AppContent', () => {
     assertStringContains(emptyState.imagePath, spinner);
   });
 
+  test(
+      'menus close after toolbar mouse movement updates line focus',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS,
+            {detail: {data: chrome.readingMode.lineFocusCursorLine}});
+        const newPos = 202;
+        app.connectedCallback();
+        await microtasksFinished();
+
+        // Line focus should not move during toolbar movement.
+        app.$.toolbar.dispatchEvent(
+            new MouseEvent('mousemove', {clientY: newPos}));
+        await microtasksFinished();
+        assertEquals('', app.style.getPropertyValue('--line-focus-y'));
+
+        // After the menus close, then the line focus position should update.
+        emitEvent(app, ToolbarEvent.CLOSE_ALL_MENUS);
+        await microtasksFinished();
+        assertEquals(
+            `${newPos}px`, app.style.getPropertyValue('--line-focus-y'));
+      });
+
   test('connected callback adds line focus mouse listener', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     emitEvent(

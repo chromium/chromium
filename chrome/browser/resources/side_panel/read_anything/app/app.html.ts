@@ -48,6 +48,7 @@ export function getHtml(this: AppElement) {
         @language-menu-open="${this.onLanguageMenuOpen_}"
         @language-menu-close="${this.onLanguageMenuClose_}"
         @line-focus-change="${this.onLineFocusChange_}"
+        @close-all-menus="${this.onAllMenusClose_}"
         id="toolbar">
     </read-anything-toolbar>
   </div>

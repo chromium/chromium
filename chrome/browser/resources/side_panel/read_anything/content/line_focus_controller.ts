@@ -88,6 +88,21 @@ export class LineFocusController {
     }
   }
 
+  onMouseMoveInToolbar(y: number) {
+    if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
+        !this.isStatic_()) {
+      // Store the new position, but do not notify listeners since the mouse is
+      // in the toolbar, which means they are likely trying to change some
+      // settings. onAllMenusClose will notify them of the final position when
+      // all the settings menus are closed.
+      this.setY_(Math.max(this.model_.getMinY(), y), /* quietly= */ true);
+    }
+  }
+
+  onAllMenusClose() {
+    this.listeners_.forEach(l => l.onLineFocusMove());
+  }
+
   onTextLocationsChange(container: HTMLElement, height: number) {
     if (this.isEnabled()) {
       const previousMaxY = this.model_.getMaxY();
@@ -243,19 +258,12 @@ export class LineFocusController {
     }
   }
 
-  private setY_(y: number) {
-    const oldY = this.model_.getY();
+  private setY_(y: number, quietly: boolean = false) {
     this.model_.setY(y);
-
-    const oldHeight = this.model_.getWindowHeight();
     this.calculateHeight_();
-
-    if (oldY === this.model_.getY() &&
-        oldHeight === this.model_.getWindowHeight()) {
-      return;
+    if (!quietly) {
+      this.listeners_.forEach(l => l.onLineFocusMove());
     }
-
-    this.listeners_.forEach(l => l.onLineFocusMove());
   }
 
   private calculateHeight_() {
