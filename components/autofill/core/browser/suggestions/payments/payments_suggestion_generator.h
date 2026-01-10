@@ -33,9 +33,11 @@ namespace autofill {
 // BNPL suggestion should be appended together with the credit card suggestions.
 // TODO(crbug.com/448688721): Consolidate the input parameters.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
-    AutofillClient& client,
+    const FormData& form,
+    const FormStructure& form_structure,
     const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
     bool should_show_scan_credit_card,

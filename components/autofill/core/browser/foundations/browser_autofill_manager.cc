@@ -3080,8 +3080,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      client(), trigger_field,
-      autofill_trigger_field.Type().GetCreditCardType(), summary,
+      form, form_structure, trigger_field, autofill_trigger_field, client(),
+      summary,
       form_structure.IsCompleteCreditCardForm(
           FormStructure::CreditCardFormCompleteness::
               kCompleteCreditCardFormIncludingCvcAndName),

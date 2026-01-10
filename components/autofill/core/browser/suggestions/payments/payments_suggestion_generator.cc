@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -325,9 +326,11 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
 }
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
-    AutofillClient& client,
+    const FormData& form,
+    const FormStructure& form_structure,
     const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
     bool should_show_scan_credit_card,
@@ -335,16 +338,35 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status) {
-  std::pair<SuggestionDataSource, std::vector<SuggestionData>> suggestion_data =
-      FetchCreditCardSuggestionDataSync(
-          client, trigger_field, trigger_field_type, summary, is_complete_form,
-          four_digit_combinations_in_dom,
-          autofilled_last_four_digits_in_form_for_filtering);
-  return GenerateCreditCardSuggestionsSync(
-      client, trigger_field, trigger_field_type, summary,
-      should_show_scan_credit_card, four_digit_combinations_in_dom,
-      {std::move(suggestion_data)}, is_card_number_field_empty,
-      amount_extraction_status);
+  std::vector<Suggestion> suggestions;
+  CreditCardSuggestionGenerator credit_card_suggestion_generator(
+      four_digit_combinations_in_dom,
+      autofilled_last_four_digits_in_form_for_filtering,
+      should_show_scan_credit_card, summary, is_card_number_field_empty,
+      is_complete_form, amount_extraction_status);
+
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
+      };
+
+  auto on_suggestion_data_returned =
+      [&](std::pair<SuggestionGenerator::SuggestionDataSource,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        credit_card_suggestion_generator.GenerateSuggestions(
+            form, trigger_field, &form_structure, &autofill_trigger_field,
+            client, {std::move(suggestion_data)},
+            std::move(on_suggestions_generated));
+      };
+
+  // Since the `on_suggestions_generated` callback is called synchronously,
+  // we can assume that `suggestions` will hold correct value.
+  credit_card_suggestion_generator.FetchSuggestionData(
+      form, trigger_field, &form_structure, &autofill_trigger_field, client,
+      std::move(on_suggestion_data_returned));
+  return suggestions;
 }
 
 }  // namespace autofill
