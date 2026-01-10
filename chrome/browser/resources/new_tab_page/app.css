@@ -302,6 +302,7 @@ cr-composebox {
   --cr-composebox-width: var(--ntp-search-box-width);
   --cr-composebox-background-color:
       var(--color-composebox-background);
+  --text-input-inline-end-spacing: 90px;
 }
 
 cr-composebox,
