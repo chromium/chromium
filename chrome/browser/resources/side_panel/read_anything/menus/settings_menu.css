@@ -69,4 +69,8 @@
    #color {
     display: none;
   }
+
+   .menu-row {
+    color: LinkText;
+  }
 }

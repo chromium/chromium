@@ -62,3 +62,9 @@ cr-icon {
 cr-action-menu::part(dialog) {
   z-index: 9999;
 }
+
+@media (forced-colors: active) {
+  .dropdown-item {
+    color: LinkText;
+  }
+}

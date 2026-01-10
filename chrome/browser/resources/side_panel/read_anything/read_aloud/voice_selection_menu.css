@@ -109,3 +109,10 @@ cr-action-menu::part(dialog) {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+@media (forced-colors: active) {
+  .dropdown-voice-selection-button {
+    color: LinkText;
+  }
+}
+
