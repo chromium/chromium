@@ -1880,7 +1880,6 @@ android_library("chrome_unit_test_java_various") {
     "src/org/chromium/chrome/browser/crypto/CipherFactoryTest.java",
     "src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImplTest.java",
     "src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandlerTest.java",
-    "src/org/chromium/chrome/browser/native_page/NativePageNavigationDelegateImplUnitTest.java",
     "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
     "src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
     "src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
@@ -1899,8 +1898,6 @@ android_library("chrome_unit_test_java_various") {
 
   deps = [
     ":common_unit_test_deps_java",
-    "//chrome/browser/ui/android/native_page:java",
     "//components/omnibox/common:features_java",
-    "//ui/base/mojom:mojom_java",
   ]
 }
