@@ -106,6 +106,12 @@ class TabUnderlineViewControllerImpl
     kUserInputSubmitted,
   };
 
+  enum class UnderlineState {
+    kHidden,
+    kShowingForGlic,
+    kShowingForContextualTasks,
+  };
+
   GlicKeyedService* GetGlicKeyedService();
 
   // Returns the TabInterface corresponding to `underline_view_`, if it is
@@ -123,14 +129,14 @@ class TabUnderlineViewControllerImpl
 
   // Off to On. Throw away everything we have and start the animation from
   // the beginning.
-  void ShowAndAnimateUnderline();
+  void ShowAndAnimateUnderline(bool triggered_by_glic);
 
-  void HideUnderline();
+  void HideUnderline(bool triggered_by_glic);
 
   // Replay the animation without hiding and re-showing the view.
   void AnimateUnderline();
 
-  void ShowOrAnimatePinnedUnderline();
+  void ShowOrAnimatePinnedUnderline(bool triggered_by_glic);
 
   bool IsGlicWindowShowing() const;
 
@@ -176,6 +182,10 @@ class TabUnderlineViewControllerImpl
 
   // TODO(crbug.com/469102481): Remove after missing underlines cause is found.
   int32_t tab_handle_id_ = 0;
+
+  // The current showing state of the underline, used to differentiate between
+  // underlines that were shown due to signals from Glic vs Contextual Tasks.
+  UnderlineState state_ = UnderlineState::kHidden;
 };
 
 }  // namespace glic
