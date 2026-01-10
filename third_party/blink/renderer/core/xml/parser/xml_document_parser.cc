@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
@@ -1133,7 +1134,7 @@ void XMLDocumentParser::StartElementNs(
       q_name,
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
                         : CreateElementFlags::ByParser(document_),
-      is, /*registry*/ nullptr);
+      is, CustomElementRegistry::DefaultRegistry(current_node_->GetDocument()));
   // Check IsStopped() because custom element constructors may synchronously
   // trigger removal of the document and cancellation of this parser.
   if (IsStopped()) {

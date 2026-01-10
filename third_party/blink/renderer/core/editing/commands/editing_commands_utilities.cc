@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -377,9 +378,9 @@ bool LineBreakExistsAtVisiblePosition(const VisiblePosition& visible_position) {
 HTMLElement* CreateHTMLElement(Document& document, const QualifiedName& name) {
   DCHECK_EQ(name.NamespaceURI(), html_names::xhtmlNamespaceURI)
       << "Unexpected namespace: " << name;
-  return To<HTMLElement>(
-      document.CreateElement(name, CreateElementFlags::ByCloneNode(),
-                             g_null_atom, /*registry*/ nullptr));
+  return To<HTMLElement>(document.CreateElement(
+      name, CreateElementFlags::ByCloneNode(), g_null_atom,
+      CustomElementRegistry::DefaultRegistry(document)));
 }
 
 HTMLElement* EnclosingList(const Node* node) {

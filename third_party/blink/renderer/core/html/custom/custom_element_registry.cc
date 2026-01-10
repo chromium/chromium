@@ -90,6 +90,11 @@ CustomElementRegistry* CustomElementRegistry::Create(
       LocalDOMWindow::From(script_state));
 }
 
+CustomElementRegistry* CustomElementRegistry::DefaultRegistry(
+    Document& document) {
+  return document.customElementRegistry();
+}
+
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
       owner_(owner),

@@ -1415,7 +1415,8 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
     const V8UnionElementCreationOptionsOrString* string_or_options,
     ExceptionState& exception_state) {
   DCHECK(string_or_options);
-  CustomElementRegistry* registry = nullptr;
+  CustomElementRegistry* registry =
+      CustomElementRegistry::DefaultRegistry(*document);
   AtomicString is = AtomicString();
 
   switch (string_or_options->GetContentType()) {
@@ -1424,14 +1425,28 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
         kElementCreationOptions: {
       const ElementCreationOptions* options =
           string_or_options->GetAsElementCreationOptions();
-      // 3-1. If options["customElementRegistry"] exists, then set registry to
-      // it.
+      // 3-1. If options["is"] exists, then set "is" to it.
+      if (options->hasIs()) {
+        is = AtomicString(options->is());
+      }
+      // 3-2. If options["customElementRegistry"] exists:
       if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
           options->hasCustomElementRegistry()) {
+        // 3-2-1. If is is non-null, then throw a "notSupportedError"
+        // DOMException.
+        if (!is.IsNull()) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "The custom element registry and \"is\" option can't be set at "
+              "the same time.");
+          return std::pair(registry, is);
+        }
+        // 3-2-2. Set registry to options["customElementRegistry"]
         registry = options->customElementRegistry();
       }
-      // 3-2. If registry's "is scoped" is false and registry is not document's
-      // custom element registry, then throw a "NotSupportedError" DOMException.
+      // 3-3. If registry is non-null, and registry's "is scoped" is false and
+      // registry is not document's custom element registry, then throw a
+      // "NotSupportedError" DOMException.
       if (registry && registry->IsGlobalRegistry() &&
           registry != document->customElementRegistry()) {
         exception_state.ThrowDOMException(
@@ -1439,29 +1454,11 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
             "The registry provided is a global registry from another document");
         return std::pair(registry, is);
       }
-      // 3-3. If options["is"] exists, then set is to it.
-      if (options->hasIs())
-        is = AtomicString(options->is());
-      // 3-3. If registry is non-null and is is non-null, then throw a
-      // "notSupportedError" DOMException.
-      if (registry && !is.IsNull()) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            "The custom element registry and is option can't be set at the "
-            "same time.");
-        return std::pair(registry, is);
-      }
-      // 4. If registry is null then set registry to the result of looking up a
-      // custom element registry given document.
-      if (!registry) {
-        registry = document->customElementRegistry();
-      }
       break;
     }
     case V8UnionElementCreationOptionsOrString::ContentType::kString:
       UseCounter::Count(document,
                         WebFeature::kDocumentCreateElement2ndArgStringHandling);
-      is = AtomicString(string_or_options->GetAsString());
       break;
   }
   // 5. Return registry and is.
@@ -1505,7 +1502,6 @@ Element* Document::CreateElementForBinding(
   // 5. Let element be the result of creating an element given ...
   Element* element = CreateElement(
       q_name, CreateElementFlags::ByCreateElement(), is, registry);
-
   return element;
 }
 
@@ -1594,13 +1590,10 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   CustomElementDefinition* definition = nullptr;
   // 2. If registry is "default", set registry to the result of looking
   // up a custom element registry given document.
-  // Note that this step is currently only applicable to scenario when
-  // scoped registry is disabled as a valid registry should be assigned for
-  // default cases while flattening options. We could overload
-  // Document::CreateElement without registry argument and assign
-  // default value in implementation if the use case is ever needed.
+  // Note that we need to assign default registry when scoped registry is
+  // disabled
   if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    registry = customElementRegistry();
+    registry = CustomElementRegistry::DefaultRegistry(*this);
   }
   if (flags.IsCustomElements() &&
       q_name.NamespaceURI() == html_names::xhtmlNamespaceURI) {
@@ -1618,7 +1611,7 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   }
 
   return CustomElement::CreateUncustomizedOrUndefinedElement(
-      *this, q_name, flags, is, registry, /*wait_for_registry=*/false);
+      *this, q_name, flags, is, registry, /*wait_for_registry*/ !registry);
 }
 
 DocumentFragment* Document::createDocumentFragment() {

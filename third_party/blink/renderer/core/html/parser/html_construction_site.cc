@@ -602,9 +602,9 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
   DCHECK(document_);
   HTMLHtmlElement* element;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
-    element = To<HTMLHtmlElement>(
-        document_->CreateElement(html_names::kHTMLTag, GetCreateElementFlags(),
-                                 is_attribute->Value(), /*registry*/ nullptr));
+    element = To<HTMLHtmlElement>(document_->CreateElement(
+        html_names::kHTMLTag, GetCreateElementFlags(), is_attribute->Value(),
+        CustomElementRegistry::DefaultRegistry(*document_)));
   } else {
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
@@ -1095,7 +1095,7 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
     element = To<HTMLScriptElement>(OwnerDocumentForCurrentNode().CreateElement(
         html_names::kScriptTag, flags, is_attribute->Value(),
-        /*registry*/ nullptr));
+        CustomElementRegistry::DefaultRegistry(OwnerDocumentForCurrentNode())));
   } else {
     element = MakeGarbageCollected<HTMLScriptElement>(
         OwnerDocumentForCurrentNode(), flags);
