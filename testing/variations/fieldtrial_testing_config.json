@@ -7130,7 +7130,26 @@
             ]
         }
     ],
-    "ContextualTasks": [
+    "ContextualTasksContext": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualTasksContext",
+                        "ContextualTasksContextLogging",
+                        "ContextualTasksContextMqlsLogging"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ContextualTasksDesktop": [
         {
             "platforms": [
                 "chromeos",
@@ -7146,26 +7165,8 @@
                     },
                     "enable_features": [
                         "ContextualTasks",
+                        "HappinessTrackingSurveysForDesktopNextPanel",
                         "TabbedBrowserUseNewLayout"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ContextualTasksContext": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextualTasksContext",
-                        "ContextualTasksContextLogging",
-                        "ContextualTasksContextMqlsLogging"
                     ]
                 }
             ]
