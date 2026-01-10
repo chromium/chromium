@@ -197,9 +197,29 @@ NET_EXPORT std::vector<uint8_t> AppendOidComponent(
     base::span<const uint8_t> oid,
     uint64_t component);
 
+// Given a DER-encoded OID or relative OID that starts with |base|, returns the
+// single component of the OID that follows base. Returns nullopt if |oid| does
+// not start with |base|, if the bytes are not well-formed after |base|, if it
+// does not contain exactly one component following |base|, or if the single
+// component does not fit in a uint64_t.
+//
+// This function performs steps 1 thru 3 of the procedure described in
+// https://www.ietf.org/archive/id/draft-davidben-tls-merkle-tree-certs-09.html#section-8.1
+NET_EXPORT std::optional<uint64_t> LastOidComponentFromBase(
+    base::span<const uint8_t> oid,
+    base::span<const uint8_t> base);
+
 // Returns the textual representation of a DER-encoded Relative-OID.
 NET_EXPORT std::string RelativeOidToString(
     base::span<const uint8_t> relative_oid);
+
+// Converts the wire format of the trust anchor ID TLS extension (see
+// https://www.ietf.org/archive/id/draft-ietf-tls-trust-anchor-ids-02.html#section-4.1)
+// into a vector of trust anchor IDs. If the input is unparsable, returns an
+// empty vector. Note that |wire_ids| should not include the 16-bit length for
+// the whole list.
+NET_EXPORT std::vector<std::vector<uint8_t>> ParseTlsTrustAnchorIDs(
+    base::span<const uint8_t> wire_ids);
 
 }  // namespace x509_util
 

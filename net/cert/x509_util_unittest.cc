@@ -765,4 +765,136 @@ TEST(X509UtilTest, HasRsaPkcs1Sha1Signature) {
   EXPECT_FALSE(HasRsaPkcs1Sha1Signature(ok_cert->cert_buffer()));
 }
 
+TEST(X509UtilTest, LastOidComponentFromBase) {
+  const uint8_t base[] = {0x1, 0x2, 0x3};
+
+  {
+    const uint8_t oid[] = {0x1, 0x2, 0x3, 0x4};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, 4);
+  }
+  {
+    const uint8_t oid[] = {0x1,  0x2,  0x3,  0x81, 0xff, 0xff, 0xff,
+                           0xff, 0xff, 0xff, 0xff, 0xff, 0x7f};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::numeric_limits<uint64_t>::max());
+  }
+  {
+    // Last component is too big.
+    const uint8_t oid[] = {0x1, 0x2, 0x3, 0x82, 0x0, 0x0, 0x0,
+                           0x0, 0x0, 0x0, 0x0,  0x0, 0x0};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+  {
+    // Last component is not minimally encoded.
+    const uint8_t oid[] = {0x1, 0x2, 0x3, 0x80, 0x01};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+  {
+    // Last component is truncated.
+    const uint8_t oid[] = {0x1, 0x2, 0x3, 0x81};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+  {
+    // More than one OID component after base.
+    const uint8_t oid[] = {0x1, 0x2, 0x3, 0x4, 0x5};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+  {
+    // No OID components after base.
+    const uint8_t oid[] = {0x1, 0x2, 0x3};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+  {
+    // Base doesn't match.
+    const uint8_t oid[] = {0x1, 0x2, 0x4, 0x5};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+  {
+    // OID shorter than base.
+    const uint8_t oid[] = {0x1, 0x2};
+    auto last = LastOidComponentFromBase(oid, base);
+    EXPECT_EQ(last, std::nullopt);
+  }
+}
+
+TEST(X509UtilTest, ParseTlsTrustAnchorIDs) {
+  std::vector<uint8_t> id1{0x82, 0xda, 0x4b, 0x30, 0x07};
+  std::vector<uint8_t> id2{0x82, 0xda, 0x4b, 0x30, 0x07, 0x7f};
+
+  {
+    // clang-format off
+    const uint8_t wire_ids[] = {
+        5,  //  length of following OID
+        // 44363.48.7 encoded as a relative OID
+        0x82, 0xda, 0x4b, 0x30, 0x07,
+        6,  // length of following OID
+        // 44363.48.7.127 encoded as a relative OID
+        0x82, 0xda, 0x4b, 0x30, 0x07, 0x7f,
+    };
+    // clang-format on
+    std::vector<std::vector<uint8_t>> parsed_ids =
+        ParseTlsTrustAnchorIDs(wire_ids);
+    ASSERT_EQ(parsed_ids.size(), 2u);
+    EXPECT_EQ(parsed_ids[0], id1);
+    EXPECT_EQ(parsed_ids[1], id2);
+  }
+
+  {
+    // clang-format off
+    const uint8_t wire_ids[] = {
+        5,  //  length of following OID
+        // 44363.48.7 encoded as a relative OID
+        0x82, 0xda, 0x4b, 0x30, 0x07,
+    };
+    // clang-format on
+    std::vector<std::vector<uint8_t>> parsed_ids =
+        ParseTlsTrustAnchorIDs(wire_ids);
+    ASSERT_EQ(parsed_ids.size(), 1u);
+    EXPECT_EQ(parsed_ids[0], id1);
+  }
+
+  {
+    // ParseTlsTrustAnchorIDs doesn't care whether the IDs are well-formatted.
+    const uint8_t wire_ids[] = {
+        1,     // length
+        0xff,  // invalid relative OID
+    };
+    std::vector<std::vector<uint8_t>> parsed_ids =
+        ParseTlsTrustAnchorIDs(wire_ids);
+    EXPECT_EQ(parsed_ids.size(), 1u);
+  }
+
+  {
+    // 0-length IDs should be rejected.
+    const uint8_t wire_ids[] = {
+        0,  // length
+    };
+    std::vector<std::vector<uint8_t>> parsed_ids =
+        ParseTlsTrustAnchorIDs(wire_ids);
+    EXPECT_TRUE(parsed_ids.empty());
+  }
+
+  {
+    // clang-format off
+    const uint8_t wire_ids[] = {
+        5,  //  length of following OID
+        // 44363.48.7 encoded as a relative OID
+        0x82, 0xda, 0x4b, 0x30, 0x07,
+        2,  // length of next OID, but not enough bytes
+        0x01,  // valid encoding of a relative OID
+    };
+    // clang-format on
+    std::vector<std::vector<uint8_t>> parsed_ids =
+        ParseTlsTrustAnchorIDs(wire_ids);
+    EXPECT_TRUE(parsed_ids.empty());
+  }
+}
+
 }  // namespace net::x509_util
