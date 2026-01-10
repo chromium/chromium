@@ -857,6 +857,41 @@ public class TopControlsStackerUnitTest {
     }
 
     @Test
+    public void repositionLayer_ChangeHeight_AddBottomLayer_ScrollDisabled() {
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer bookmark = TestLayer.bookmarkLayer();
+
+        mTopControlsStacker.setScrollingDisabled(true);
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        // All layers should be at resting.
+        assertControlsHeight(150, 150);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+
+        var simulator = new TestBrowserControlsOffsetHelper(0, 150);
+        simulator.commitCurrentOffset();
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+
+        mTopControlsStacker.addControl(bookmark);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        assertControlsHeight(270, 270);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+        bookmark.assertOffset(150).assertAtResting(true);
+
+        simulator.driveMinHeightOffsetBy(120);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+        bookmark.assertOffset(150).assertAtResting(true);
+    }
+
+    @Test
     public void testPrepForAnimation() {
         doReturn(false).when(mBrowserControlsSizer).offsetOverridden();
 
@@ -1369,7 +1404,6 @@ public class TopControlsStackerUnitTest {
         }
 
         public void driveMinHeightOffsetBy(int delta) {
-            mCurrentTopOffset += delta;
             mCurrentTopControlsMinHeightOffset += delta;
             commitCurrentOffset();
         }
@@ -1405,7 +1439,7 @@ public class TopControlsStackerUnitTest {
             doReturn(mCurrentTopOffset).when(mBrowserControlsSizer).getTopControlOffset();
             doReturn(mCurrentTopControlsMinHeightOffset)
                     .when(mBrowserControlsSizer)
-                    .getTopControlOffset();
+                    .getTopControlsMinHeightOffset();
             mTopControlsStacker.onControlsOffsetChanged(
                     mCurrentTopOffset,
                     mCurrentTopControlsMinHeightOffset,
