@@ -227,9 +227,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public void closeInstance(int instanceId) {
+    public void closeInstances(List<Integer> instanceIds) {
         RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
-        closeWindows(Collections.singletonList(instanceId), CloseWindowAppSource.WINDOW_MANAGER);
+        closeWindows(instanceIds, CloseWindowAppSource.WINDOW_MANAGER);
     }
 
     @Override

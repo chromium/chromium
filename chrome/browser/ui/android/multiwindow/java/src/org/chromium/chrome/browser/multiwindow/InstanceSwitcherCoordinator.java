@@ -60,6 +60,8 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -548,7 +550,7 @@ public class InstanceSwitcherCoordinator {
 
     private void closeWindow(InstanceInfo item) {
         if (canSkipConfirm(item)) {
-            removeInstance(item.instanceId);
+            removeInstances(Collections.singletonList(item.instanceId));
         } else {
             showConfirmationMessage(item);
         }
@@ -722,30 +724,32 @@ public class InstanceSwitcherCoordinator {
         return numActiveInstances + numInactiveInstances;
     }
 
-    private void removeInstance(Integer instanceId) {
-        if (UiUtils.isInstanceSwitcherV2Enabled()) {
-            addInstanceListGlobalLayoutListener(
-                    assumeNonNull(mInstanceListContainer),
-                    assumeNonNull(mActiveInstancesList),
-                    mIsInactiveListShowing,
-                    assumeNonNull(mNewWindowLayout),
-                    mMinCommandItemHeightPx);
-            assert mDialog != null;
-            mSelectedItems.remove(instanceId);
-            updateActionButtons();
-            removeItemFromModelList(
-                    instanceId, mIsInactiveListShowing ? mInactiveModelList : mActiveModelList);
-            updateActionButtons();
-            updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
-            updateTabTitle(mActiveModelList.size(), mInactiveModelList.size());
-            updateMoreMenu();
-            updateInactiveListEmptyStateVisibility();
-        } else {
-            removeItemFromModelList(instanceId, mModelList);
-            // Update new window item based on instance count after instance removal.
-            enableNewWindowCommand(getTotalInstanceCount() < mMaxInstanceCount);
+    private void removeInstances(List<Integer> instanceIds) {
+        for (Integer instanceId : instanceIds) {
+            if (UiUtils.isInstanceSwitcherV2Enabled()) {
+                addInstanceListGlobalLayoutListener(
+                        assumeNonNull(mInstanceListContainer),
+                        assumeNonNull(mActiveInstancesList),
+                        mIsInactiveListShowing,
+                        assumeNonNull(mNewWindowLayout),
+                        mMinCommandItemHeightPx);
+                assert mDialog != null;
+                mSelectedItems.remove(instanceId);
+                updateActionButtons();
+                removeItemFromModelList(
+                        instanceId, mIsInactiveListShowing ? mInactiveModelList : mActiveModelList);
+                updateActionButtons();
+                updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
+                updateTabTitle(mActiveModelList.size(), mInactiveModelList.size());
+                updateMoreMenu();
+                updateInactiveListEmptyStateVisibility();
+            } else {
+                removeItemFromModelList(instanceId, mModelList);
+                // Update new window item based on instance count after instance removal.
+                enableNewWindowCommand(getTotalInstanceCount() < mMaxInstanceCount);
+            }
         }
-        mDelegate.closeInstance(instanceId);
+        mDelegate.closeInstances(instanceIds);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
     }
 
@@ -795,7 +799,7 @@ public class InstanceSwitcherCoordinator {
                     CheckBox skipConfirm = dialog.findViewById(R.id.no_more_check);
                     if (skipConfirm.isChecked()) setSkipCloseConfirmation();
                     dialog.dismiss();
-                    removeInstance(mItemToDelete.instanceId);
+                    removeInstances(Collections.singletonList(mItemToDelete.instanceId));
                 });
         TextView negativeButton = dialog.findViewById(R.id.negative_button);
         negativeButton.setText(res.getString(R.string.cancel));
@@ -925,10 +929,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private void closeSelectedInstances() {
-        // Create a copy of the set to iterate over, to avoid ConcurrentModificationException.
-        for (Integer instanceId : new HashSet<>(mSelectedItems)) {
-            removeInstance(instanceId);
-        }
+        removeInstances(new ArrayList(mSelectedItems));
         unselectItems(/* hideVisibleList= */ true);
     }
 }

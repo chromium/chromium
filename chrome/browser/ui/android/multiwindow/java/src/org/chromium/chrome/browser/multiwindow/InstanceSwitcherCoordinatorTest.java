@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -80,6 +81,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link InstanceSwitcherCoordinator}. */
@@ -288,7 +290,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -323,7 +325,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close the selected instance.
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[1].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[1].instanceId));
 
         // Verify "Restore" button is now disabled.
         onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
@@ -347,7 +349,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -382,7 +384,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close the first instance.
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[1].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[1].instanceId));
 
         // Verify "Restore" button is still enabled.
         onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
@@ -564,7 +566,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -595,7 +597,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         onView(withText(R.string.close)).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
-        verify(mDelegate).closeInstance(instances[2].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[2].instanceId));
     }
 
     @Test
@@ -652,7 +654,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
         doAnswer(
                         invocation -> {
                             newWindowCallbackHelper.notifyCalled();
@@ -689,7 +691,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close an instance.
         closeInstanceAt(2, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[2].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[2].instanceId));
 
         // Verify that we show info message that users can have up to 5 windows when there are
         // maximum number of windows.
@@ -701,7 +703,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close another instance.
         closeInstanceAt(2, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[3].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[3].instanceId));
 
         // List positions 0 ~ 3: instances. 4: 'new window' command.
         onData(anything()).inRoot(isDialog()).atPosition(4).perform(click());
@@ -730,7 +732,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
         doAnswer(
                         invocation -> {
                             newWindowCallbackHelper.notifyCalled();
@@ -793,7 +795,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed()));
 
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[5].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[5].instanceId));
 
         // Switch to the active instance tab.
         onView(
@@ -804,7 +806,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close an active instance (e.g., the third one, at index 2).
         closeInstanceAt(2, /* isActiveInstance= */ true, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[2].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[2].instanceId));
 
         // Verify max instance info message is gone.
         onView(withId(R.id.max_instance_info))
@@ -999,7 +1001,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1015,13 +1017,13 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Closing a hidden, tab-less instance skips the confirmation.
         closeInstanceAt(2, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[2].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[2].instanceId));
 
         // Verify that the close callback skips the confirmation when the skip checkbox
         // was ticked on.
         InstanceSwitcherCoordinator.setSkipCloseConfirmation();
         closeInstanceAt(1, closeCallbackHelper);
-        verify(mDelegate).closeInstance(instances[1].instanceId);
+        verify(mDelegate).closeInstances(Collections.singletonList(instances[1].instanceId));
     }
 
     @Test
@@ -1794,7 +1796,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
@@ -1823,9 +1825,9 @@ public class InstanceSwitcherCoordinatorTest {
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
 
-        // Expect 2 calls to closeCallback.
-        closeCallbackHelper.waitForCallback(initialCloseCallCount, 2);
-        assertEquals(initialCloseCallCount + 2, closeCallbackHelper.getCallCount());
+        // Expect exactly 1 call to closeCallback.
+        closeCallbackHelper.waitForCallback(initialCloseCallCount, 1);
+        assertEquals(initialCloseCallCount + 1, closeCallbackHelper.getCallCount());
 
         // After closing 2 instances, there should be 2 left.
         onView(withId(R.id.active_instance_list)).check(matches(withItemCount(2)));
@@ -1856,7 +1858,7 @@ public class InstanceSwitcherCoordinatorTest {
                             return null;
                         })
                 .when(mDelegate)
-                .closeInstance(anyInt());
+                .closeInstances(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

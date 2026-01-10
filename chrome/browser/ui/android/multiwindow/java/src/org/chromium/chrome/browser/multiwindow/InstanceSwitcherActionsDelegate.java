@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.multiwindow;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.List;
+
 /** Delegate for handling actions from the instance switcher UI. */
 @NullMarked
 public interface InstanceSwitcherActionsDelegate {
@@ -17,11 +19,11 @@ public interface InstanceSwitcherActionsDelegate {
     void openInstance(int instanceId);
 
     /**
-     * Closes the specified instance.
+     * Closes the specified instances.
      *
-     * @param instanceId The ID of the instance to close.
+     * @param instanceIds The list of IDs of the instances to close.
      */
-    void closeInstance(int instanceId);
+    void closeInstances(List<Integer> instanceIds);
 
     /**
      * Renames the specified instance.
