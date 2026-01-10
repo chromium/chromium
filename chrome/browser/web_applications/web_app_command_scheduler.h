@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -109,8 +110,11 @@ enum class RewriteIconResult;
 //   reading/writing from the various data storage of the system.
 // * Operations have the necessary dependencies from the WebAppProvider system.
 //
-// Note: When adding new commands to this scheduler, please avoid including them
-// in this file, and instead forward declare needed types above.
+// Note: When adding new commands to this scheduler, either:
+// - have a dedicated file in scheduler/ which is just for result and callback
+//   types (forward declaring everything possible to reduce compile size), or
+// - forward declare needed types above and redefine the callback type in the
+//   scheduler class.
 class WebAppCommandScheduler {
  public:
   using ManifestWriteCallback =
@@ -242,8 +246,6 @@ class WebAppCommandScheduler {
       ManifestSilentUpdateCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
-  using ApplyPendingManifestUpdateCallback =
-      base::OnceCallback<void(ApplyPendingManifestUpdateResult check_result)>;
   // Applies any stored pending update metadata to the web app, updating its
   // security sensitive fields in accordance to a more predictable app updating
   // algorithm as defined in go/predictable-app-updating-design-doc.
@@ -251,7 +253,7 @@ class WebAppCommandScheduler {
       const webapps::AppId& app_id,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      ApplyPendingManifestUpdateCallback callback,
+      ApplyPendingManifestUpdateCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Finalizes a manifest update by writing the new `install_info` to the

@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "url/gurl.h"
 
@@ -25,35 +26,15 @@ enum class ApplyPendingManifestUpdateCommandStage {
   kDeletingPendingUpdateInfo,
 };
 
-// This enum is recorded by UMA, the numeric values must not change.
-// LINT.IfChange(ApplyPendingManifestUpdateResult)
-enum class ApplyPendingManifestUpdateResult {
-  kSystemShutdown = 0,
-  kAppNotInstalled = 1,
-  kIconChangeAppliedSuccessfully = 2,
-  kFailedToOverwriteIconsFromPendingIcons = 3,
-  kNoPendingUpdate = 4,
-  kFailedToRemovePendingIconsFromDisk = 5,
-  kAppNameUpdatedSuccessfully = 6,
-  kAppNameAndIconsUpdatedSuccessfully = 7,
-  kMaxValue = kAppNameAndIconsUpdatedSuccessfully
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppApplyPendingManifestUpdateResult)
-
-std::ostream& operator<<(std::ostream& os,
-                         ApplyPendingManifestUpdateResult stage);
-
 class ApplyPendingManifestUpdateCommand
     : public WebAppCommand<AppLock, ApplyPendingManifestUpdateResult> {
  public:
   using PassKey = base::PassKey<ApplyPendingManifestUpdateCommand>;
-  using CompletedCallback =
-      base::OnceCallback<void(ApplyPendingManifestUpdateResult update_result)>;
   ApplyPendingManifestUpdateCommand(
       const webapps::AppId& app_id,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      CompletedCallback callback);
+      ApplyPendingManifestUpdateCompletedCallback callback);
 
   ~ApplyPendingManifestUpdateCommand() override;
 

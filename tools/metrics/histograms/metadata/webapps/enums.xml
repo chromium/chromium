@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="App name and icon updated successfully"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h:ApplyPendingManifestUpdateResult) -->
+<!-- LINT.ThenChange(/chrome/browser/web_applications/commands/scheduler/apply_pending_manifest_update_result.h:ApplyPendingManifestUpdateResult) -->
 
 <enum name="WebAppIconDownloaderResult">
   <int value="0" label="Success"/>
