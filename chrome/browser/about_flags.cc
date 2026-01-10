@@ -1800,17 +1800,14 @@ const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
 const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
     {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
-    {"NtpNextClientSensitivityCheckParam", "true"},
 };
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUI[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
-    {"NtpNextClientSensitivityCheckParam", "true"},
 };
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDeepDive[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
     {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
-    {"NtpNextClientSensitivityCheckParam", "true"},
 };
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
