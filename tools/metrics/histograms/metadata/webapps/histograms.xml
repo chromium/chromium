@@ -1855,6 +1855,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.LaunchUrlIsInScope" enum="LaunchUrlInScopeResult"
+    expires_after="2027-01-15">
+  <owner>japhet@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>Whether the given launch url is in the web app's scope.</summary>
+</histogram>
+
 <histogram name="WebApp.ManifestIconDownloader.ChromeUrl.Result"
     enum="ManifestIconDownloaderResult" expires_after="2026-04-05">
   <owner>dibyapal@chromium.org</owner>

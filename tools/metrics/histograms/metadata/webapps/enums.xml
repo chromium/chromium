@@ -316,6 +316,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Launched as a tab"/>
 </enum>
 
+<!-- LINT.IfChange(LaunchUrlInScopeResult) -->
+
+<enum name="LaunchUrlInScopeResult">
+  <int value="0" label="In scope"/>
+  <int value="1" label="Not in scope"/>
+  <int value="2" label="In scope but missing trailing slash"/>
+</enum>
+
+<!-- LINT.ThenChange(chrome/browser/ui/web_applications/web_app_launch_process.cc:LaunchUrlInScopeResult) -->
+
 <enum name="ManagedSessionType">
   <int value="0" label="Managed User Session"/>
   <int value="1" label="Managed Guest Session"/>
