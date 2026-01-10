@@ -2460,18 +2460,11 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
   engine_->PostPaint();
 
-  if (base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
-    for (const gfx::Rect& ready_rect : ready_rects) {
-      ready.emplace_back(ready_rect, nullptr);
-    }
-  } else {
-    // TODO(crbug.com/40203030): Write pixels directly to the `SkSurface` in
-    // `PaintManager`, rather than using an intermediate `SkBitmap` and
-    // `SkImage`.
-    sk_sp<SkImage> painted_image = image_data_.asImage();
-    for (const gfx::Rect& ready_rect : ready_rects) {
-      ready.emplace_back(ready_rect, painted_image);
-    }
+  // TODO(crbug.com/40203030): Write pixels directly to the `SkSurface` in
+  // `PaintManager`, rather than using an intermediate `SkBitmap` and `SkImage`.
+  sk_sp<SkImage> painted_image = image_data_.asImage();
+  for (const gfx::Rect& ready_rect : ready_rects) {
+    ready.emplace_back(ready_rect, painted_image);
   }
 
   InvalidateAfterPaintDone();
@@ -2486,13 +2479,8 @@ void PdfViewWebPlugin::PrepareForFirstPaint(
   // Fill the image data buffer with the background color.
   first_paint_ = false;
   image_data_.eraseColor(background_color_);
-  if (base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
-    ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()), nullptr,
-                       /*flush_now=*/true);
-  } else {
-    ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()),
-                       image_data_.asImage(), /*flush_now=*/true);
-  }
+  ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()),
+                     image_data_.asImage(), /*flush_now=*/true);
 }
 
 void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
@@ -2594,12 +2582,6 @@ void PdfViewWebPlugin::ClearDeferredInvalidates() {
   deferred_invalidates_.clear();
 }
 
-SkBitmap* PdfViewWebPlugin::InstallBuffer(SkImageInfo image_info, void* data) {
-  image_data_.installPixels(image_info, data, image_info.minRowBytes());
-  first_paint_ = true;
-  return &image_data_;
-}
-
 void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
   // Every time something changes (e.g. scale or scroll position),
   // `UpdateSnapshot()` is called, so the snapshot is effectively used only
@@ -2697,23 +2679,20 @@ void PdfViewWebPlugin::OnViewportChanged(
                          .size();
 
   paint_manager_.SetSize(plugin_rect_.size(), device_scale_);
-  // In the PdfBufferedPaintManager experiment, all these calculations and
-  // allocations are done in the PaintManager.
-  if (!base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
-    // Initialize the image data buffer if the context size changes.
-    const gfx::Size old_image_size =
-        gfx::SkISizeToSize(image_data_.dimensions());
-    const gfx::Size new_image_size =
-        PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
-    if (new_image_size != old_image_size) {
-      // Ignore the result. If the allocation fails, the image data buffer
-      // will be empty and the code below will handle that.
-      (void)image_data_.tryAllocPixels(
-          SkImageInfo::MakeN32(new_image_size.width(), new_image_size.height(),
-                               kUnpremul_SkAlphaType));
 
-      first_paint_ = true;
-    }
+  // Initialize the image data buffer if the context size changes.
+  const gfx::Size old_image_size = gfx::SkISizeToSize(image_data_.dimensions());
+  const gfx::Size new_image_size =
+      PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
+  if (new_image_size != old_image_size) {
+    SkAlphaType alpha_type = UseSkiaPremultipliedAlpha()
+                                 ? kPremul_SkAlphaType
+                                 : kUnpremul_SkAlphaType;
+    // Ignore the result. If the allocation fails, the image data buffer will be
+    // empty and the code below will handle that.
+    (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
+        new_image_size.width(), new_image_size.height(), alpha_type));
+    first_paint_ = true;
   }
 
   // Skip updating the geometry if the new image data buffer is empty.
