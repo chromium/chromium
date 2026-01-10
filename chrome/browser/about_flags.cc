@@ -2167,19 +2167,19 @@ const FeatureEntry::FeatureParam kOmniboxAimMultiContextCompactFusebox[] = {
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Dedicated Button", kOmniboxAimDedicatedModeButton,
-     std::size(kOmniboxAimDedicatedModeButton), nullptr},
+     std::size(kOmniboxAimDedicatedModeButton), "3395755"},
     {"Button with Hint", kOmniboxAimDedicatedModeButtonWithHint,
-     std::size(kOmniboxAimDedicatedModeButtonWithHint), nullptr},
+     std::size(kOmniboxAimDedicatedModeButtonWithHint), "3395755"},
     {"Compact", kOmniboxAimCompactFusebox, std::size(kOmniboxAimCompactFusebox),
-     nullptr},
+     "3395755"},
     {"MC (Multi context)", kOmniboxAimMultiContext,
-     std::size(kOmniboxAimMultiContext), nullptr},
+     std::size(kOmniboxAimMultiContext), "3395755"},
     {"MC Dedicated Button", kOmniboxAimMultiContextDedicatedModeButton,
-     std::size(kOmniboxAimMultiContextDedicatedModeButton), nullptr},
+     std::size(kOmniboxAimMultiContextDedicatedModeButton), "3395755"},
     {"MC Button with Hint", kOmniboxAimMultiContextDedicatedModeButtonWithHint,
-     std::size(kOmniboxAimMultiContextDedicatedModeButtonWithHint), nullptr},
+     std::size(kOmniboxAimMultiContextDedicatedModeButtonWithHint), "3395755"},
     {"MC Compact", kOmniboxAimMultiContextCompactFusebox,
-     std::size(kOmniboxAimMultiContextCompactFusebox), nullptr},
+     std::size(kOmniboxAimMultiContextCompactFusebox), "3395755"},
 };
 
 const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
