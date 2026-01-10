@@ -393,6 +393,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.SchemeIsFile" enum="Boolean" expires_after="2027-01-09">
+  <owner>thestig@chromium.org</owner>
+  <owner>andyphan@chromium.org</owner>
+  <summary>
+    When loading a full-page PDF in the PDF Viewer, records whether the PDF is
+    loaded from a file:// URL or not.
+  </summary>
+</histogram>
+
 <histogram name="PDF.SearchifyAddedText" enum="Boolean"
     expires_after="2026-06-30">
   <owner>rhalavati@chromium.org</owner>

@@ -27,6 +27,10 @@ MetricsHandler::MetricsHandler() = default;
 
 MetricsHandler::~MetricsHandler() = default;
 
+void MetricsHandler::RecordAccessibilityIsDocTagged(bool is_tagged) {
+  base::UmaHistogramBoolean("Accessibility.PDF.IsPDFTagged", is_tagged);
+}
+
 void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
   base::UmaHistogramEnumeration("PDF.Version", metadata.version);
   base::UmaHistogramCustomCounts("PDF.PageCount", metadata.page_count, 1,
@@ -37,8 +41,8 @@ void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
   base::UmaHistogramEnumeration("PDF.FormType", metadata.form_type);
 }
 
-void MetricsHandler::RecordAccessibilityIsDocTagged(bool is_tagged) {
-  base::UmaHistogramBoolean("Accessibility.PDF.IsPDFTagged", is_tagged);
+void MetricsHandler::RecordUrlSchemeIsFile(bool is_file) {
+  base::UmaHistogramBoolean("PDF.SchemeIsFile", is_file);
 }
 
 }  // namespace chrome_pdf

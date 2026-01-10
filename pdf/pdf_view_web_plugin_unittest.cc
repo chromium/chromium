@@ -672,6 +672,25 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, InitializeForPrintPreview) {
   EXPECT_TRUE(plugin_->InitializeForTesting());
 }
 
+TEST_F(PdfViewWebPluginWithoutInitializeTest,
+       RecordSchemeIsFileMetricForHttps) {
+  base::HistogramTester histograms;
+
+  SetUpPluginWithUrl("https://www.example.com/path/to/the.pdf");
+  EXPECT_TRUE(plugin_->InitializeForTesting());
+
+  histograms.ExpectUniqueSample("PDF.SchemeIsFile", 0, 1);
+}
+
+TEST_F(PdfViewWebPluginWithoutInitializeTest, RecordSchemeIsFileMetricForFile) {
+  base::HistogramTester histograms;
+
+  SetUpPluginWithUrl("file:///path/to/the.pdf");
+  EXPECT_TRUE(plugin_->InitializeForTesting());
+
+  histograms.ExpectUniqueSample("PDF.SchemeIsFile", 1, 1);
+}
+
 TEST_F(PdfViewWebPluginTest, CreateUrlLoader) {
   EXPECT_CALL(*client_ptr_, DidStartLoading).Times(0);
   EXPECT_CALL(pdf_host_, UpdateContentRestrictions).Times(0);

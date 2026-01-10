@@ -600,6 +600,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
   url_ = params->original_url;
 
   metrics_handler_ = std::make_unique<MetricsHandler>();
+  metrics_handler_->RecordUrlSchemeIsFile(GURL(url_).SchemeIsFile());
   return true;
 }
 
