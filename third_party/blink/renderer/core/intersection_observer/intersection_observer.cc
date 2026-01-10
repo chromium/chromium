@@ -211,10 +211,11 @@ String StringifyMargin(const Vector<Length>& margin) {
   StringBuilder string_builder;
 
   const auto append_length = [&](const Length& length) {
-    string_builder.AppendNumber(length.IntValue());
     if (length.IsPercent()) {
+      string_builder.AppendNumber(length.Percent());
       string_builder.Append('%');
     } else {
+      string_builder.AppendNumber(length.IntValue());
       string_builder.Append(base::byte_span_from_cstring("px"));
     }
   };
