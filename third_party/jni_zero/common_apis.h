@@ -141,6 +141,13 @@ FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long);
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaLong(
     JNIEnv* env,
     int64_t val);
+
+//
+// android.os.Process
+//
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool ProcessIsIsolated(JNIEnv* env);
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_COMMON_APIS_H_

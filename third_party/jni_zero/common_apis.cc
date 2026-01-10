@@ -12,6 +12,7 @@
 #include "third_party/jni_zero/system_jni/List_jni.h"
 #include "third_party/jni_zero/system_jni/Long_jni.h"
 #include "third_party/jni_zero/system_jni/Map_jni.h"
+#include "third_party/jni_zero/system_jni/Process_jni.h"
 
 namespace jni_zero {
 
@@ -142,6 +143,14 @@ int64_t FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long) {
 
 ScopedJavaLocalRef<jobject> ToJavaLong(JNIEnv* env, int64_t val) {
   return JNI_Long::Java_Long_valueOf__long(env, val);
+}
+
+//
+// android.os.Process
+//
+
+bool ProcessIsIsolated(JNIEnv* env) {
+  return JNI_Process::Java_Process_isIsolated(env);
 }
 
 }  // namespace jni_zero
