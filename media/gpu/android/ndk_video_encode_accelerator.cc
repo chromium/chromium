@@ -51,7 +51,13 @@ std::vector<VideoPixelFormat> GetSupportedSharedImagePixelFormats() {
     // If kVulkanFromANGLE = true (e.g. Desktop Android)
     // we we get shared images with AngleVulkanImageBacking, NDK VEA can't
     // handle such shared images yet.
-    return {};
+    if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
+      // If zero-copy camera capture is enabled, let's allow XBGR shared images
+      // for testing, even though it breaks the canvas copy case.
+      return {PIXEL_FORMAT_XBGR};
+    } else {
+      return {};
+    }
   }
   return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
 }
