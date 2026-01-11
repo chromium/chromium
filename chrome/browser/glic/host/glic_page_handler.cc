@@ -93,6 +93,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -904,6 +905,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
     state->onboarding_completed =
         GlicEnabling::HasConsentedForProfile(profile_);
+    state->enable_skills =
+        base::FeatureList::IsEnabled(features::kSkillsEnabled);
 
     std::move(callback).Run(std::move(state));
   }

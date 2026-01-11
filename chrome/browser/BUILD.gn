@@ -2398,6 +2398,7 @@ static_library("browser") {
     "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/site_isolation",
+    "//components/skills:features",
     "//components/spellcheck:buildflags",
     "//components/sqlite_proto",
     "//components/startup_metric_utils",

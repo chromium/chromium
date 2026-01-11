@@ -318,6 +318,7 @@ source_set("impl") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/sessions",
+    "//components/skills:features",
     "//components/variations/service",
     "//components/webui/chrome_urls",
     "//third_party/metrics_proto",
