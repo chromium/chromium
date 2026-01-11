@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/mcp_server/accessibility_snapshot/accessibility_snapshot.h"
 #include "chrome/browser/mcp_server/action_runner/action_runner.h"
 #include "chrome/browser/mcp_server/tab_controller/tab_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -100,6 +101,11 @@ void Dispatcher::RegisterRoutes() {
                                     base::Unretained(this)));
   RegisterRoute("POST", "/mcp/tabs/:id/screenshot",
                 base::BindRepeating(&Dispatcher::HandleScreenshotAction,
+                                    base::Unretained(this)));
+
+  // Accessibility route
+  RegisterRoute("GET", "/mcp/tabs/:id/accessibility",
+                base::BindRepeating(&Dispatcher::HandleAccessibilitySnapshot,
                                     base::Unretained(this)));
 
   LOG(INFO) << "Registered " << routes_.size() << " routes";
@@ -669,6 +675,40 @@ Response Dispatcher::HandleScreenshotAction(const RequestContext& ctx) {
             *out_success = success;
             *out_error = error;
             *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleAccessibilitySnapshot(const RequestContext& ctx) {
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  // Use RunLoop to wait for async snapshot
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  AccessibilitySnapshot::TakeSnapshot(
+      web_contents,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool snapshot_success,
+             const std::string& snapshot_error, base::Value::Dict snapshot_data) {
+            *out_success = snapshot_success;
+            *out_error = snapshot_error;
+            *out_data = std::move(snapshot_data);
             loop->Quit();
           },
           &run_loop, &success, &error_message, &result_data));

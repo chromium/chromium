@@ -109,6 +109,9 @@ class Dispatcher {
   Response HandleEvaluateAction(const RequestContext& ctx);
   Response HandleScreenshotAction(const RequestContext& ctx);
 
+  // Route handler for accessibility snapshot
+  Response HandleAccessibilitySnapshot(const RequestContext& ctx);
+
   // Helper: Get WebContents from tab ID in params
   content::WebContents* GetWebContentsFromParams(
       const std::map<std::string, std::string>& params);

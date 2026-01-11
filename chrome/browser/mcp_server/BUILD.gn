@@ -15,6 +15,7 @@ source_set("mcp_server") {
   ]
 
   deps = [
+    ":accessibility_snapshot",
     ":action_runner",
     ":dispatcher",
     ":tab_controller",
@@ -29,6 +30,20 @@ source_set("mcp_server") {
   ]
 }
 
+# Accessibility Snapshot - LLM-friendly page structure
+source_set("accessibility_snapshot") {
+  sources = [
+    "accessibility_snapshot/accessibility_snapshot.cc",
+    "accessibility_snapshot/accessibility_snapshot.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/accessibility",
+  ]
+}
+
 # Dispatcher component - API routing and request handling
 source_set("dispatcher") {
   sources = [
@@ -37,6 +52,7 @@ source_set("dispatcher") {
   ]
 
   deps = [
+    ":accessibility_snapshot",
     ":action_runner",
     ":tab_controller",
     "//base",
