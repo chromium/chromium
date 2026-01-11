@@ -4,40 +4,314 @@
 
 #include "chrome/browser/mcp_server/dispatcher/dispatcher.h"
 
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/mcp_server/tab_controller/tab_controller.h"
 
 namespace mcp_server {
 
+// RequestContext implementation
+RequestContext::RequestContext() = default;
+RequestContext::~RequestContext() = default;
+
+// Response implementation
+Response::Response() : status_code(200) {}
+Response::~Response() = default;
+Response::Response(Response&&) = default;
+Response& Response::operator=(Response&&) = default;
+
+// Response helper implementations
+Response Response::Ok(base::Value::Dict data) {
+  Response response;
+  response.status_code = 200;
+  response.body = std::move(data);
+  return response;
+}
+
+Response Response::Error(int code, const std::string& message) {
+  Response response;
+  response.status_code = code;
+  response.body.Set("error", message);
+  response.body.Set("code", code);
+  return response;
+}
+
+// Dispatcher implementation
 Dispatcher::Dispatcher() {
   LOG(INFO) << "Dispatcher initialized";
 }
 
 Dispatcher::~Dispatcher() = default;
 
-void Dispatcher::RegisterRoutes() {
-  // TODO: Register API routes
-  // GET /mcp/tabs
-  // POST /mcp/tabs
-  // DELETE /mcp/tabs/:id
-  // POST /mcp/tabs/:id/activate
-  // GET /mcp/tabs/:id/state
-  // POST /click
-  // POST /type
-  // POST /scroll
-  // GET /dom/query
-  // GET /html
-  // GET /screenshot
-  // GET /logs
-  // GET /network
+void Dispatcher::SetTabController(TabController* tab_controller) {
+  tab_controller_ = tab_controller;
 }
 
-std::string Dispatcher::HandleRequest(const std::string& method,
-                                       const std::string& path,
-                                       const std::string& body) {
+void Dispatcher::RegisterRoutes() {
+  // Tab management routes
+  RegisterRoute("GET", "/mcp/tabs",
+                base::BindRepeating(&Dispatcher::HandleListTabs,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs",
+                base::BindRepeating(&Dispatcher::HandleCreateTab,
+                                    base::Unretained(this)));
+  RegisterRoute("DELETE", "/mcp/tabs/:id",
+                base::BindRepeating(&Dispatcher::HandleCloseTab,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/activate",
+                base::BindRepeating(&Dispatcher::HandleActivateTab,
+                                    base::Unretained(this)));
+  RegisterRoute("GET", "/mcp/tabs/:id/state",
+                base::BindRepeating(&Dispatcher::HandleGetTabState,
+                                    base::Unretained(this)));
+
+  LOG(INFO) << "Registered " << routes_.size() << " routes";
+}
+
+Response Dispatcher::HandleRequest(const std::string& method,
+                                    const std::string& path,
+                                    const std::string& body) {
   LOG(INFO) << "Handling request: " << method << " " << path;
 
-  // TODO: Route to appropriate handler
-  return "{\"status\": \"not_implemented\"}";
+  // Find matching route and extract path parameters
+  std::map<std::string, std::string> params;
+  RouteHandler* handler = FindRoute(method, path, &params);
+
+  if (!handler) {
+    LOG(WARNING) << "No route found for: " << method << " " << path;
+    return Response::Error(404, "Route not found");
+  }
+
+  // Parse JSON body (if present)
+  base::Value::Dict body_dict;
+  if (!body.empty()) {
+    auto parsed = base::JSONReader::ReadDict(body, base::JSON_PARSE_RFC);
+    if (!parsed.has_value()) {
+      LOG(ERROR) << "Failed to parse JSON body: " << body;
+      return Response::Error(400, "Invalid JSON in request body");
+    }
+    body_dict = std::move(parsed.value());
+  }
+
+  // Build request context
+  RequestContext ctx;
+  ctx.method = method;
+  ctx.path = path;
+  ctx.params = std::move(params);
+  ctx.body = std::move(body_dict);
+
+  // Call the handler
+  return handler->Run(ctx);
+}
+
+void Dispatcher::RegisterRoute(const std::string& method,
+                                const std::string& path_pattern,
+                                RouteHandler handler) {
+  std::string key = method + " " + path_pattern;
+  routes_[key] = std::move(handler);
+  LOG(INFO) << "Registered route: " << key;
+}
+
+RouteHandler* Dispatcher::FindRoute(
+    const std::string& method,
+    const std::string& path,
+    std::map<std::string, std::string>* params) {
+  // Try each registered route pattern
+  for (auto& [route_key, handler] : routes_) {
+    // Extract method and pattern from key "METHOD /path/pattern"
+    size_t space_pos = route_key.find(' ');
+    if (space_pos == std::string::npos) {
+      continue;
+    }
+
+    std::string route_method = route_key.substr(0, space_pos);
+    std::string route_pattern = route_key.substr(space_pos + 1);
+
+    // Check if method matches
+    if (route_method != method) {
+      continue;
+    }
+
+    // Check if path matches pattern
+    if (MatchPath(route_pattern, path, params)) {
+      return &handler;
+    }
+  }
+
+  return nullptr;
+}
+
+bool Dispatcher::MatchPath(const std::string& pattern,
+                            const std::string& path,
+                            std::map<std::string, std::string>* params) {
+  // Split both pattern and path by '/'
+  std::vector<std::string> pattern_parts = base::SplitString(
+      pattern, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> path_parts = base::SplitString(
+      path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  // Must have same number of parts
+  if (pattern_parts.size() != path_parts.size()) {
+    return false;
+  }
+
+  // Match each part
+  params->clear();
+  for (size_t i = 0; i < pattern_parts.size(); ++i) {
+    const std::string& pattern_part = pattern_parts[i];
+    const std::string& path_part = path_parts[i];
+
+    // Check if this is a parameter (starts with :)
+    if (base::StartsWith(pattern_part, ":")) {
+      // Extract parameter name (remove leading ':')
+      std::string param_name = pattern_part.substr(1);
+      (*params)[param_name] = path_part;
+    } else {
+      // Exact match required
+      if (pattern_part != path_part) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+// Route handlers for tab management
+
+Response Dispatcher::HandleListTabs(const RequestContext& ctx) {
+  if (!tab_controller_) {
+    LOG(ERROR) << "Tab controller not set";
+    return Response::Error(500, "Tab controller not available");
+  }
+
+  // TODO: Tab controller will return base::Value::Dict instead of string
+  std::string tabs_json = tab_controller_->ListTabs();
+
+  // For now, parse the string response and wrap it
+  auto parsed = base::JSONReader::ReadDict(tabs_json, base::JSON_PARSE_RFC);
+  if (!parsed.has_value()) {
+    LOG(ERROR) << "Failed to parse tab controller response";
+    return Response::Error(500, "Internal server error");
+  }
+
+  return Response::Ok(std::move(parsed.value()));
+}
+
+Response Dispatcher::HandleCreateTab(const RequestContext& ctx) {
+  if (!tab_controller_) {
+    LOG(ERROR) << "Tab controller not set";
+    return Response::Error(500, "Tab controller not available");
+  }
+
+  // Extract URL from request body
+  const std::string* url = ctx.body.FindString("url");
+  if (!url) {
+    return Response::Error(400, "Missing required field: url");
+  }
+
+  // TODO: Tab controller will return base::Value::Dict instead of string
+  std::string result = tab_controller_->CreateTab(*url);
+
+  auto parsed = base::JSONReader::ReadDict(result, base::JSON_PARSE_RFC);
+  if (!parsed.has_value()) {
+    LOG(ERROR) << "Failed to parse tab controller response";
+    return Response::Error(500, "Internal server error");
+  }
+
+  return Response::Ok(std::move(parsed.value()));
+}
+
+Response Dispatcher::HandleCloseTab(const RequestContext& ctx) {
+  if (!tab_controller_) {
+    LOG(ERROR) << "Tab controller not set";
+    return Response::Error(500, "Tab controller not available");
+  }
+
+  // Extract tab ID from path parameters
+  auto it = ctx.params.find("id");
+  if (it == ctx.params.end()) {
+    return Response::Error(400, "Missing required parameter: id");
+  }
+
+  // Parse tab ID as integer
+  int tab_id;
+  if (!base::StringToInt(it->second, &tab_id)) {
+    return Response::Error(400, "Invalid tab ID format");
+  }
+
+  bool success = tab_controller_->CloseTab(tab_id);
+  if (!success) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  base::Value::Dict result;
+  result.Set("success", true);
+  result.Set("tab_id", tab_id);
+  return Response::Ok(std::move(result));
+}
+
+Response Dispatcher::HandleActivateTab(const RequestContext& ctx) {
+  if (!tab_controller_) {
+    LOG(ERROR) << "Tab controller not set";
+    return Response::Error(500, "Tab controller not available");
+  }
+
+  // Extract tab ID from path parameters
+  auto it = ctx.params.find("id");
+  if (it == ctx.params.end()) {
+    return Response::Error(400, "Missing required parameter: id");
+  }
+
+  // Parse tab ID as integer
+  int tab_id;
+  if (!base::StringToInt(it->second, &tab_id)) {
+    return Response::Error(400, "Invalid tab ID format");
+  }
+
+  bool success = tab_controller_->ActivateTab(tab_id);
+  if (!success) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  base::Value::Dict result;
+  result.Set("success", true);
+  result.Set("tab_id", tab_id);
+  return Response::Ok(std::move(result));
+}
+
+Response Dispatcher::HandleGetTabState(const RequestContext& ctx) {
+  if (!tab_controller_) {
+    LOG(ERROR) << "Tab controller not set";
+    return Response::Error(500, "Tab controller not available");
+  }
+
+  // Extract tab ID from path parameters
+  auto it = ctx.params.find("id");
+  if (it == ctx.params.end()) {
+    return Response::Error(400, "Missing required parameter: id");
+  }
+
+  // Parse tab ID as integer
+  int tab_id;
+  if (!base::StringToInt(it->second, &tab_id)) {
+    return Response::Error(400, "Invalid tab ID format");
+  }
+
+  // TODO: Tab controller will return base::Value::Dict instead of string
+  std::string state_json = tab_controller_->GetTabState(tab_id);
+
+  auto parsed = base::JSONReader::ReadDict(state_json, base::JSON_PARSE_RFC);
+  if (!parsed.has_value()) {
+    LOG(ERROR) << "Failed to parse tab controller response";
+    return Response::Error(500, "Internal server error");
+  }
+
+  return Response::Ok(std::move(parsed.value()));
 }
 
 }  // namespace mcp_server

@@ -4,13 +4,16 @@
 
 #include "chrome/browser/mcp_server/mcp_server.h"
 
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
+#include "chrome/browser/mcp_server/dispatcher/dispatcher.h"
 #include "chrome/browser/mcp_server/mcp_server_prefs.h"
+#include "chrome/browser/mcp_server/tab_controller/tab_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -56,11 +59,31 @@ constexpr net::NetworkTrafficAnnotationTag kMCPServerTrafficAnnotation =
 // Internal implementation of MCPServer
 class MCPServer::Impl : public net::HttpServer::Delegate {
  public:
-  Impl() : pref_service_(nullptr), running_(false), port_(0) {}
+  Impl() : pref_service_(nullptr), running_(false), port_(0) {
+    // Create Dispatcher and TabController on UI thread
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MCPServer::Impl::InitializeOnUIThread,
+                       base::Unretained(this)));
+  }
   ~Impl() override {
     if (http_server_) {
       Stop();
     }
+  }
+
+  void InitializeOnUIThread() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // Create TabController on UI thread
+    tab_controller_ = std::make_unique<TabController>();
+
+    // Create Dispatcher on UI thread
+    dispatcher_ = std::make_unique<Dispatcher>();
+    dispatcher_->SetTabController(tab_controller_.get());
+    dispatcher_->RegisterRoutes();
+
+    LOG(INFO) << "Dispatcher and TabController initialized on UI thread";
   }
 
   // net::HttpServer::Delegate implementation
@@ -241,7 +264,26 @@ class MCPServer::Impl : public net::HttpServer::Delegate {
 
   void HandleHttpRequest(int connection_id,
                          const net::HttpServerRequestInfo& info) {
-    // Basic routing - will be expanded in Week 2
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+    // Handle special endpoints on IO thread (don't need UI thread)
+    if (info.path == "/" || info.path == "/health") {
+      HandleSpecialEndpoint(connection_id, info);
+      return;
+    }
+
+    // For all other endpoints, post to UI thread for Dispatcher handling
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MCPServer::Impl::HandleRequestOnUIThread,
+                       base::Unretained(this), connection_id, info.method,
+                       info.path, info.data));
+  }
+
+  void HandleSpecialEndpoint(int connection_id,
+                             const net::HttpServerRequestInfo& info) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
     std::string response_body;
     net::HttpStatusCode status_code = net::HTTP_OK;
 
@@ -260,19 +302,49 @@ class MCPServer::Impl : public net::HttpServer::Delegate {
     } else if (info.path == "/health") {
       // Health check endpoint
       response_body = R"({"status": "ok", "uptime": "running"})";
-    } else if (base::StartsWith(info.path, "/mcp/tabs",
-                                 base::CompareCase::SENSITIVE)) {
-      // Tab management endpoints (TODO: Week 2)
-      response_body = R"({"error": "Not implemented yet", "message": "Tab management APIs coming in Week 2"})";
-      status_code = net::HTTP_NOT_IMPLEMENTED;
-    } else {
-      // 404 for unknown paths
-      response_body = R"({"error": "Not found", "path": ")" + info.path + R"("})";
-      status_code = net::HTTP_NOT_FOUND;
     }
 
     // Send JSON response
     http_server_->Send(connection_id, status_code, response_body,
+                       "application/json", kMCPServerTrafficAnnotation);
+  }
+
+  void HandleRequestOnUIThread(int connection_id,
+                                const std::string& method,
+                                const std::string& path,
+                                const std::string& body) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // Use Dispatcher to route and handle the request
+    Response response = dispatcher_->HandleRequest(method, path, body);
+
+    // Convert response to JSON string
+    std::string response_json;
+    base::JSONWriter::Write(response.body, &response_json);
+
+    // Post back to IO thread to send response
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MCPServer::Impl::SendResponseOnIOThread,
+                       base::Unretained(this), connection_id,
+                       response.status_code, response_json));
+  }
+
+  void SendResponseOnIOThread(int connection_id,
+                               int status_code,
+                               const std::string& response_body) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+    if (!http_server_) {
+      LOG(WARNING) << "HTTP server not available, cannot send response";
+      return;
+    }
+
+    // Map our status codes to net::HttpStatusCode
+    net::HttpStatusCode http_status =
+        static_cast<net::HttpStatusCode>(status_code);
+
+    http_server_->Send(connection_id, http_status, response_body,
                        "application/json", kMCPServerTrafficAnnotation);
   }
 
@@ -300,11 +372,15 @@ class MCPServer::Impl : public net::HttpServer::Delegate {
   bool running_;
   int port_;
 
-  // HTTP/WebSocket server instance
+  // HTTP/WebSocket server instance (IO thread)
   std::unique_ptr<net::HttpServer> http_server_;
 
   // Preference change observer
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Dispatcher and TabController (UI thread)
+  std::unique_ptr<Dispatcher> dispatcher_;
+  std::unique_ptr<TabController> tab_controller_;
 };
 
 // Static

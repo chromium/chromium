@@ -8,6 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
+
+namespace content {
+class WebContents;
+}
+
 namespace mcp_server {
 
 // TabController manages browser tabs
@@ -17,23 +23,33 @@ class TabController {
   TabController();
   ~TabController();
 
-  // List all tabs
+  // List all tabs across all browser windows
+  // Returns JSON array with tab information
   std::string ListTabs();
 
-  // Create a new tab with optional URL
+  // Create a new tab with specified URL
+  // Returns JSON object with created tab info
   std::string CreateTab(const std::string& url);
 
-  // Close a tab by ID
-  bool CloseTab(int tab_id);
+  // Close a tab by session ID
+  // Returns true if tab was found and closed
+  bool CloseTab(int session_id);
 
-  // Activate/focus a tab
-  bool ActivateTab(int tab_id);
+  // Activate/focus a tab by session ID
+  // Returns true if tab was found and activated
+  bool ActivateTab(int session_id);
 
-  // Get tab state (URL, title, loading status)
-  std::string GetTabState(int tab_id);
+  // Get tab state (URL, title, loading status) by session ID
+  // Returns JSON object with tab state
+  std::string GetTabState(int session_id);
 
  private:
-  // TODO: Implement tab management
+  // Find WebContents by session ID
+  // Returns nullptr if not found
+  content::WebContents* FindWebContentsBySessionId(int session_id);
+
+  // Build JSON object for a single tab
+  base::Value::Dict BuildTabInfo(content::WebContents* web_contents);
 };
 
 }  // namespace mcp_server

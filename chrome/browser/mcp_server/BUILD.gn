@@ -15,7 +15,10 @@ source_set("mcp_server") {
   ]
 
   deps = [
+    ":dispatcher",
+    ":tab_controller",
     "//base",
+    "//chrome/browser/ui",
     "//chrome/common:constants",
     "//components/pref_registry",
     "//components/prefs",
@@ -33,7 +36,7 @@ source_set("dispatcher") {
   ]
 
   deps = [
-    ":mcp_server",
+    ":tab_controller",
     "//base",
     "//content/public/browser",
   ]
@@ -47,10 +50,10 @@ source_set("tab_controller") {
   ]
 
   deps = [
-    ":mcp_server",
     "//base",
-    "//content/public/browser",
     "//chrome/browser/ui",
+    "//content/public/browser",
+    "//url",
   ]
 }
 
