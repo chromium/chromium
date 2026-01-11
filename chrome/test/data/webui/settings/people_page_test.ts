@@ -632,6 +632,26 @@ suite('PeoplePageAccountSettings', function() {
         accountSubtitle.textContent.trim());
   });
 
+  test('AccountRowSubtitleUpdatedForBookmarksLimitError_AccountSettings',
+       async function() {
+         const testEmail = 'test@email.com';
+         await simulateSignedInState(SignedInState.SIGNED_IN, [{email: testEmail}]);
+
+    // First, it shows the user's email.
+    const accountSubtitle =
+        peoplePage.shadowRoot!.querySelector('#account-subtitle')!;
+    assertEquals(testEmail, accountSubtitle.textContent.trim());
+
+    const bookmarksLimitError =
+        'To save bookmarks in your account, delete your unused bookmarks';
+    simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
+      statusText: bookmarksLimitError,
+    });
+    assertEquals(bookmarksLimitError, accountSubtitle.textContent.trim());
+  });
+
   test('RecordSigninPendingOfferedMetrics', async function() {
     syncBrowserProxy.resetResolver('recordSigninPendingOffered');
 

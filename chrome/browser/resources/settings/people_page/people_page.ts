@@ -464,10 +464,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private getAccountRowSubtitle_(): string {
-    if (!!this.syncStatus && !!this.syncStatus.statusText &&
-        this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
-      return loadTimeData.substituteString(
-          this.syncStatus.statusText, this.primaryAccountEmail_);
+    if (this.syncStatus && this.syncStatus.statusText) {
+      if (this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
+        return loadTimeData.substituteString(
+            this.syncStatus.statusText, this.primaryAccountEmail_);
+      }
+
+      if (this.syncStatus.statusAction ===
+          StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE) {
+        return this.syncStatus.statusText;
+      }
     }
 
     return this.primaryAccountEmail_;
