@@ -85,10 +85,19 @@ impl<T> Slice<T> {
     /// Divides one slice into two at an index.
     ///
     /// ***Panics*** if `index > len`.
+    /// For a non-panicking alternative see [`split_at_checked`][Self::split_at_checked].
     #[track_caller]
     pub fn split_at(&self, index: usize) -> (&Self, &Self) {
         let (first, second) = self.entries.split_at(index);
         (Self::from_slice(first), Self::from_slice(second))
+    }
+
+    /// Divides one slice into two at an index.
+    ///
+    /// Returns `None` if `index > len`.
+    pub fn split_at_checked(&self, index: usize) -> Option<(&Self, &Self)> {
+        let (first, second) = self.entries.split_at_checked(index)?;
+        Some((Self::from_slice(first), Self::from_slice(second)))
     }
 
     /// Returns the first value and the rest of the slice,

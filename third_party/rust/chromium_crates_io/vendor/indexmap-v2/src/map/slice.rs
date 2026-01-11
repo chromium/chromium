@@ -27,7 +27,7 @@ pub struct Slice<K, V> {
 // and reference lifetimes are bound together in function signatures.
 #[allow(unsafe_code)]
 impl<K, V> Slice<K, V> {
-    pub(super) const fn from_slice(entries: &[Bucket<K, V>]) -> &Self {
+    pub(crate) const fn from_slice(entries: &[Bucket<K, V>]) -> &Self {
         unsafe { &*(entries as *const [Bucket<K, V>] as *const Self) }
     }
 
@@ -124,6 +124,7 @@ impl<K, V> Slice<K, V> {
     /// Divides one slice into two at an index.
     ///
     /// ***Panics*** if `index > len`.
+    /// For a non-panicking alternative see [`split_at_checked`][Self::split_at_checked].
     #[track_caller]
     pub fn split_at(&self, index: usize) -> (&Self, &Self) {
         let (first, second) = self.entries.split_at(index);
@@ -133,10 +134,27 @@ impl<K, V> Slice<K, V> {
     /// Divides one mutable slice into two at an index.
     ///
     /// ***Panics*** if `index > len`.
+    /// For a non-panicking alternative see [`split_at_mut_checked`][Self::split_at_mut_checked].
     #[track_caller]
     pub fn split_at_mut(&mut self, index: usize) -> (&mut Self, &mut Self) {
         let (first, second) = self.entries.split_at_mut(index);
         (Self::from_mut_slice(first), Self::from_mut_slice(second))
+    }
+
+    /// Divides one slice into two at an index.
+    ///
+    /// Returns `None` if `index > len`.
+    pub fn split_at_checked(&self, index: usize) -> Option<(&Self, &Self)> {
+        let (first, second) = self.entries.split_at_checked(index)?;
+        Some((Self::from_slice(first), Self::from_slice(second)))
+    }
+
+    /// Divides one mutable slice into two at an index.
+    ///
+    /// Returns `None` if `index > len`.
+    pub fn split_at_mut_checked(&mut self, index: usize) -> Option<(&mut Self, &mut Self)> {
+        let (first, second) = self.entries.split_at_mut_checked(index)?;
+        Some((Self::from_mut_slice(first), Self::from_mut_slice(second)))
     }
 
     /// Returns the first key-value pair and the rest of the slice,

@@ -1,6 +1,6 @@
 //! This is the core implementation that doesn't depend on the hasher at all.
 //!
-//! The methods of `IndexMapCore` don't use any Hash properties of K.
+//! The methods of `Core` don't use any Hash properties of K.
 //!
 //! It's cleaner to separate them out, then the compiler checks that we are not
 //! using Hash at all in these methods.
@@ -9,8 +9,6 @@
 
 mod entry;
 mod extract;
-
-pub mod raw_entry_v1;
 
 use alloc::vec::{self, Vec};
 use core::mem;
@@ -23,12 +21,12 @@ use crate::{Bucket, Equivalent, HashValue, TryReserveError};
 type Indices = hash_table::HashTable<usize>;
 type Entries<K, V> = Vec<Bucket<K, V>>;
 
-pub use entry::{Entry, IndexedEntry, OccupiedEntry, VacantEntry};
+pub use entry::{OccupiedEntry, VacantEntry};
 pub(crate) use extract::ExtractCore;
 
 /// Core of the map that does not depend on S
-#[derive(Debug)]
-pub(crate) struct IndexMapCore<K, V> {
+#[cfg_attr(feature = "test_debug", derive(Debug))]
+pub(crate) struct Core<K, V> {
     /// indices mapping from the entry hash to its index.
     indices: Indices,
     /// entries is a dense vec maintaining entry order.
@@ -76,7 +74,7 @@ fn insert_bulk_no_grow<K, V>(indices: &mut Indices, entries: &[Bucket<K, V>]) {
     }
 }
 
-impl<K, V> Clone for IndexMapCore<K, V>
+impl<K, V> Clone for Core<K, V>
 where
     K: Clone,
     V: Clone,
@@ -98,13 +96,13 @@ where
     }
 }
 
-impl<K, V> IndexMapCore<K, V> {
+impl<K, V> Core<K, V> {
     /// The maximum capacity before the `entries` allocation would exceed `isize::MAX`.
     const MAX_ENTRIES_CAPACITY: usize = (isize::MAX as usize) / size_of::<Bucket<K, V>>();
 
     #[inline]
     pub(crate) const fn new() -> Self {
-        IndexMapCore {
+        Core {
             indices: Indices::new(),
             entries: Vec::new(),
         }
@@ -112,7 +110,7 @@ impl<K, V> IndexMapCore<K, V> {
 
     #[inline]
     pub(crate) fn with_capacity(n: usize) -> Self {
-        IndexMapCore {
+        Core {
             indices: Indices::with_capacity(n),
             entries: Vec::with_capacity(n),
         }
@@ -302,6 +300,15 @@ impl<K, V> IndexMapCore<K, V> {
         Q: ?Sized + Equivalent<K>,
     {
         let eq = equivalent(key, &self.entries);
+        self.indices.find(hash.get(), eq).copied()
+    }
+
+    /// Return the index in `entries` where an equivalent key can be found
+    pub(crate) fn get_index_of_raw<F>(&self, hash: HashValue, mut is_match: F) -> Option<usize>
+    where
+        F: FnMut(&K) -> bool,
+    {
+        let eq = move |&i: &usize| is_match(&self.entries[i].key);
         self.indices.find(hash.get(), eq).copied()
     }
 
@@ -509,7 +516,13 @@ impl<K, V> IndexMapCore<K, V> {
 
     /// Insert a key-value pair in `entries` at a particular index,
     /// *without* checking whether it already exists.
-    fn shift_insert_unique(&mut self, index: usize, hash: HashValue, key: K, value: V) {
+    pub(crate) fn shift_insert_unique(
+        &mut self,
+        index: usize,
+        hash: HashValue,
+        key: K,
+        value: V,
+    ) -> &mut Bucket<K, V> {
         let end = self.indices.len();
         assert!(index <= end);
         // Increment others first so we don't have duplicate indices.
@@ -527,6 +540,7 @@ impl<K, V> IndexMapCore<K, V> {
             self.reserve_entries(1);
         }
         self.entries.insert(index, Bucket { hash, key, value });
+        &mut self.entries[index]
     }
 
     /// Remove an entry by shifting all entries that follow it
@@ -680,8 +694,5 @@ impl<K, V> IndexMapCore<K, V> {
 #[test]
 fn assert_send_sync() {
     fn assert_send_sync<T: Send + Sync>() {}
-    assert_send_sync::<IndexMapCore<i32, i32>>();
-    assert_send_sync::<Entry<'_, i32, i32>>();
-    assert_send_sync::<IndexedEntry<'_, i32, i32>>();
-    assert_send_sync::<raw_entry_v1::RawEntryMut<'_, i32, i32, ()>>();
+    assert_send_sync::<Core<i32, i32>>();
 }

@@ -1,11 +1,11 @@
 #![allow(unsafe_code)]
 
-use super::{Bucket, IndexMapCore};
+use super::{Bucket, Core};
 use crate::util::simplify_range;
 
 use core::ops::RangeBounds;
 
-impl<K, V> IndexMapCore<K, V> {
+impl<K, V> Core<K, V> {
     #[track_caller]
     pub(crate) fn extract<R>(&mut self, range: R) -> ExtractCore<'_, K, V>
     where
@@ -29,7 +29,7 @@ impl<K, V> IndexMapCore<K, V> {
 }
 
 pub(crate) struct ExtractCore<'a, K, V> {
-    map: &'a mut IndexMapCore<K, V>,
+    map: &'a mut Core<K, V>,
     new_len: usize,
     current: usize,
     end: usize,

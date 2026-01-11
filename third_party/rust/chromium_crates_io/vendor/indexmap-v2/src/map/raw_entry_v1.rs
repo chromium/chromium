@@ -9,7 +9,7 @@
 //! `hash_raw_entry` feature (or some replacement), matching *inherent* methods will be added to
 //! `IndexMap` without such an opt-in trait.
 
-use super::{IndexMapCore, OccupiedEntry};
+use super::{Core, OccupiedEntry};
 use crate::{Equivalent, HashValue, IndexMap};
 use core::fmt;
 use core::hash::{BuildHasher, Hash};
@@ -224,14 +224,12 @@ impl<'a, K, V, S> RawEntryBuilder<'a, K, V, S> {
     }
 
     /// Access the index of an entry by hash.
-    pub fn index_from_hash<F>(self, hash: u64, mut is_match: F) -> Option<usize>
+    pub fn index_from_hash<F>(self, hash: u64, is_match: F) -> Option<usize>
     where
         F: FnMut(&K) -> bool,
     {
         let hash = HashValue(hash as usize);
-        let entries = &*self.map.core.entries;
-        let eq = move |&i: &usize| is_match(&entries[i].key);
-        self.map.core.indices.find(hash.get(), eq).copied()
+        self.map.core.get_index_of_raw(hash, is_match)
     }
 }
 
@@ -273,6 +271,7 @@ impl<'a, K, V, S> RawEntryBuilderMut<'a, K, V, S> {
     where
         F: FnMut(&K) -> bool,
     {
+        let hash = HashValue(hash as usize);
         match OccupiedEntry::from_hash(&mut self.map.core, hash, is_match) {
             Ok(inner) => RawEntryMut::Occupied(RawOccupiedEntryMut {
                 inner,
@@ -557,7 +556,7 @@ impl<'a, K, V, S> RawOccupiedEntryMut<'a, K, V, S> {
 /// A view into a vacant raw entry in an [`IndexMap`].
 /// It is part of the [`RawEntryMut`] enum.
 pub struct RawVacantEntryMut<'a, K, V, S> {
-    map: &'a mut IndexMapCore<K, V>,
+    map: &'a mut Core<K, V>,
     hash_builder: &'a S,
 }
 
@@ -622,11 +621,16 @@ impl<'a, K, V, S> RawVacantEntryMut<'a, K, V, S> {
         value: V,
     ) -> (&'a mut K, &'a mut V) {
         let hash = HashValue(hash as usize);
-        self.map.shift_insert_unique(index, hash, key, value);
-        self.map.entries[index].muts()
+        self.map.shift_insert_unique(index, hash, key, value).muts()
     }
 }
 
 trait Sealed {}
 
 impl<K, V, S> Sealed for IndexMap<K, V, S> {}
+
+#[test]
+fn assert_send_sync() {
+    fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<RawEntryMut<'_, i32, i32, ()>>();
+}

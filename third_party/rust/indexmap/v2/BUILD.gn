@@ -17,15 +17,16 @@ cargo_crate("lib") {
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/arbitrary.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/borsh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/inner.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/inner/entry.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/inner/extract.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/macros.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core/entry.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core/extract.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core/raw_entry_v1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/entry.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/iter.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/mutable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/raw_entry_v1.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/serde_seq.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/slice.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/tests.rs",
@@ -49,7 +50,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A hash table with consistent order and fast iteration."
   cargo_pkg_repository = "https://github.com/indexmap-rs/indexmap"
-  cargo_pkg_version = "2.12.1"
+  cargo_pkg_version = "2.13.0"
 
   allow_unsafe = true
 

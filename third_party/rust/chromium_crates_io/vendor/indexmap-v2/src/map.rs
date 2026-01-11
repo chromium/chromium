@@ -1,10 +1,12 @@
 //! [`IndexMap`] is a hash table where the iteration order of the key-value
 //! pairs is independent of the hash values of the keys.
 
-mod core;
+mod entry;
 mod iter;
 mod mutable;
 mod slice;
+
+pub mod raw_entry_v1;
 
 #[cfg(feature = "serde")]
 #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
@@ -13,31 +15,33 @@ pub mod serde_seq;
 #[cfg(test)]
 mod tests;
 
-pub use self::core::raw_entry_v1::{self, RawEntryApiV1};
-pub use self::core::{Entry, IndexedEntry, OccupiedEntry, VacantEntry};
+pub use self::entry::{Entry, IndexedEntry};
+pub use crate::inner::{OccupiedEntry, VacantEntry};
+
 pub use self::iter::{
     Drain, ExtractIf, IntoIter, IntoKeys, IntoValues, Iter, IterMut, IterMut2, Keys, Splice,
     Values, ValuesMut,
 };
 pub use self::mutable::MutableEntryKey;
 pub use self::mutable::MutableKeys;
+pub use self::raw_entry_v1::RawEntryApiV1;
 pub use self::slice::Slice;
 
 #[cfg(feature = "rayon")]
 pub use crate::rayon::map as rayon;
 
-use ::core::cmp::Ordering;
-use ::core::fmt;
-use ::core::hash::{BuildHasher, Hash};
-use ::core::mem;
-use ::core::ops::{Index, IndexMut, RangeBounds};
 use alloc::boxed::Box;
 use alloc::vec::Vec;
+use core::cmp::Ordering;
+use core::fmt;
+use core::hash::{BuildHasher, Hash};
+use core::mem;
+use core::ops::{Index, IndexMut, RangeBounds};
 
 #[cfg(feature = "std")]
 use std::hash::RandomState;
 
-pub(crate) use self::core::{ExtractCore, IndexMapCore};
+use crate::inner::Core;
 use crate::util::{third, try_simplify_range};
 use crate::{Bucket, Equivalent, GetDisjointMutError, HashValue, TryReserveError};
 
@@ -86,12 +90,12 @@ use crate::{Bucket, Equivalent, GetDisjointMutError, HashValue, TryReserveError}
 /// ```
 #[cfg(feature = "std")]
 pub struct IndexMap<K, V, S = RandomState> {
-    pub(crate) core: IndexMapCore<K, V>,
+    pub(crate) core: Core<K, V>,
     hash_builder: S,
 }
 #[cfg(not(feature = "std"))]
 pub struct IndexMap<K, V, S> {
-    pub(crate) core: IndexMapCore<K, V>,
+    pub(crate) core: Core<K, V>,
     hash_builder: S,
 }
 
@@ -126,7 +130,7 @@ where
 
     #[cfg(feature = "test_debug")]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Let the inner `IndexMapCore` print all of its details
+        // Let the inner `Core` print all of its details
         f.debug_struct("IndexMap")
             .field("core", &self.core)
             .finish()
@@ -163,7 +167,7 @@ impl<K, V, S> IndexMap<K, V, S> {
             Self::with_hasher(hash_builder)
         } else {
             IndexMap {
-                core: IndexMapCore::with_capacity(n),
+                core: Core::with_capacity(n),
                 hash_builder,
             }
         }
@@ -175,7 +179,7 @@ impl<K, V, S> IndexMap<K, V, S> {
     /// can be called in `static` contexts.
     pub const fn with_hasher(hash_builder: S) -> Self {
         IndexMap {
-            core: IndexMapCore::new(),
+            core: Core::new(),
             hash_builder,
         }
     }
