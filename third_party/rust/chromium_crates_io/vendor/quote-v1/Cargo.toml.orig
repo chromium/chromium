@@ -1,12 +1,12 @@
 [package]
 name = "quote"
-version = "1.0.42"
+version = "1.0.43"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
 description = "Quasi-quoting macro quote!(...)"
 documentation = "https://docs.rs/quote/"
-edition = "2018"
+edition = "2021"
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/quote"

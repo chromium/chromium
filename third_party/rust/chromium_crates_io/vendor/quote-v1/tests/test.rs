@@ -561,6 +561,7 @@ fn test_type_inference_for_span() {
     let inferred = CallSite::get();
     let _ = quote_spanned!(inferred=> ...);
 
+    #[cfg(feature = "proc-macro")]
     if false {
         let proc_macro_span = proc_macro::Span::call_site();
         let _ = quote_spanned!(proc_macro_span.into()=> ...);

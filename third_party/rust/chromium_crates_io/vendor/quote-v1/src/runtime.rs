@@ -9,6 +9,8 @@ use proc_macro2::{Group, Ident, Punct, Spacing, TokenTree};
 pub use alloc::format;
 #[doc(hidden)]
 pub use core::option::Option;
+#[doc(hidden)]
+pub use core::stringify;
 
 #[doc(hidden)]
 pub type Delimiter = proc_macro2::Delimiter;
@@ -73,6 +75,7 @@ pub mod ext {
     use super::{HasIterator, RepInterp};
     use crate::ToTokens;
     use alloc::collections::btree_set::{self, BTreeSet};
+    use alloc::vec::Vec;
     use core::slice;
 
     /// Extension trait providing the `quote_into_iter` method on iterators.
