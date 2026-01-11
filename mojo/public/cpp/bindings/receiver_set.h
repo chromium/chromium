@@ -382,7 +382,7 @@ class ReceiverSetBase {
   //
   // Returns |true| if the receiver is in the set and |false| if not.
   bool HasReceiver(ReceiverId id) const {
-    return base::Contains(state_.entries(), id);
+    return state_.entries().contains(id);
   }
 
   // Returns a pointer to the context associated with a receiver.

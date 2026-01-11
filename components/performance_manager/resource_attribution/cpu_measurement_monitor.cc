@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/variant_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -230,7 +229,7 @@ void CPUMeasurementMonitor::RepeatingQueryStopped(internal::QueryId query_id) {
 bool CPUMeasurementMonitor::IsTrackingQueryForTesting(
     internal::QueryId query_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(dead_context_results_, query_id);
+  return dead_context_results_.contains(query_id);
 }
 
 size_t CPUMeasurementMonitor::GetDeadContextCountForTesting() const {

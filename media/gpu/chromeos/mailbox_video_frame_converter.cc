@@ -4,7 +4,6 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -191,7 +190,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   DCHECK(shared_image);
 
   const UniqueID origin_frame_id = origin_frame->unique_id();
-  DCHECK(base::Contains(shared_images_, origin_frame_id));
+  DCHECK(shared_images_.contains(origin_frame_id));
 
   // GenerateSharedImage() should have checked the |origin_frame|'s format
   // (which should be the same as the |frame|'s format).
@@ -275,7 +274,7 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
   DVLOGF(4) << "frame: " << origin_frame->unique_id();
   DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(client_shared_image);
-  DCHECK(!base::Contains(shared_images_, origin_frame->unique_id()) ||
+  DCHECK(!shared_images_.contains(origin_frame->unique_id()) ||
          shared_images_.find(origin_frame->unique_id())->second !=
              client_shared_image);
 

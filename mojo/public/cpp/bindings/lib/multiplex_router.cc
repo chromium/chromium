@@ -479,7 +479,7 @@ InterfaceId MultiplexRouter::AssociateInterface(
       if (set_interface_id_namespace_bit_) {
         id |= kInterfaceIdNamespaceMask;
       }
-    } while (base::Contains(endpoints_, id));
+    } while (endpoints_.contains(id));
 
     auto endpoint_ref = base::MakeRefCounted<InterfaceEndpoint>(this, id);
     // Raw pointer use is safe because the InterfaceEndpoint will remain alive
@@ -540,7 +540,7 @@ void MultiplexRouter::CloseEndpointHandle(
   }
 
   MayAutoLock locker(&lock_);
-  DCHECK(base::Contains(endpoints_, id));
+  DCHECK(endpoints_.contains(id));
   InterfaceEndpoint* endpoint = endpoints_[id].get();
   DCHECK(!endpoint->client());
   DCHECK(!endpoint->closed());
@@ -578,7 +578,7 @@ InterfaceEndpointController* MultiplexRouter::AttachEndpointClient(
   DCHECK(client);
 
   MayAutoLock locker(&lock_);
-  DCHECK(base::Contains(endpoints_, id));
+  DCHECK(endpoints_.contains(id));
 
   InterfaceEndpoint* endpoint = endpoints_[id].get();
   endpoint->AttachClient(client, std::move(runner));
@@ -598,7 +598,7 @@ void MultiplexRouter::DetachEndpointClient(
   DCHECK(IsValidInterfaceId(id));
 
   MayAutoLock locker(&lock_);
-  DCHECK(base::Contains(endpoints_, id));
+  DCHECK(endpoints_.contains(id));
 
   InterfaceEndpoint* endpoint = endpoints_[id].get();
   endpoint->DetachClient();
@@ -685,7 +685,7 @@ bool MultiplexRouter::HasAssociatedEndpoints() const {
     return false;
   }
 
-  return !base::Contains(endpoints_, kPrimaryInterfaceId);
+  return !endpoints_.contains(kPrimaryInterfaceId);
 }
 
 void MultiplexRouter::EnableBatchDispatch() {

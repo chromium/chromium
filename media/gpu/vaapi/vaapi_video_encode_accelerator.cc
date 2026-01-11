@@ -14,7 +14,6 @@
 #include <variant>
 
 #include "base/bits.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -741,7 +740,7 @@ VaapiVideoEncodeAccelerator::GetOrCreateInputSurface(
     const gfx::Size& encode_size,
     const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  if (!base::Contains(input_surfaces_, encode_size)) {
+  if (!input_surfaces_.contains(encode_size)) {
     auto surface =
         CreateScopedSurface(vaapi_wrapper, encode_size, surface_usage_hints);
     if (!surface) {
@@ -768,7 +767,7 @@ VaapiVideoEncodeAccelerator::GetOrCreateReconstructedSurface(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   const size_t max_allocated_surfaces = num_frames_in_flight_ + 1;
   const bool no_surfaces_available =
-      !base::Contains(available_encode_surfaces_, encode_size) ||
+      !available_encode_surfaces_.contains(encode_size) ||
       available_encode_surfaces_[encode_size].empty();
   if (no_surfaces_available &&
       encode_surfaces_count_[encode_size] >= max_allocated_surfaces) {

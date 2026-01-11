@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/permissions/manifest_permission.h"
@@ -161,7 +160,7 @@ void ManifestHandlerRegistry::SortManifestHandlers() {
         CHECK(prereq_iter != handlers_.end())
             << "Extension manifest handler depends on unrecognized key " << key;
         // Prerequisite is in our map.
-        if (base::Contains(priority_map_, prereq_iter->second)) {
+        if (priority_map_.contains(prereq_iter->second)) {
           unsatisfied--;
         }
       }

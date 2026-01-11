@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -210,23 +209,21 @@ class SkiaFontMapper {
                                           int weight,
                                           int pitch_family,
                                           SkFontStyle style) {
-    if (base::Contains(face, "Gothic") ||
-        base::Contains(face, "\x83\x53\x83\x56\x83\x62\x83\x4e")) {
-      if (base::Contains(face, "UI Gothic")) {
+    if (face.contains("Gothic") ||
+        face.contains("\x83\x53\x83\x56\x83\x62\x83\x4e")) {
+      if (face.contains("UI Gothic")) {
         return manager_->matchFamilyStyle("MS UI Gothic", style);
-      } else if (base::Contains(face, "PGothic") ||
-                 base::Contains(face,
-                                "\x82\x6f\x83\x53\x83\x56\x83\x62\x83\x4e") ||
-                 base::Contains(face, "HGSGothicM") ||
-                 base::Contains(face, "HGMaruGothicMPRO")) {
+      } else if (face.contains("PGothic") ||
+                 face.contains("\x82\x6f\x83\x53\x83\x56\x83\x62\x83\x4e") ||
+                 face.contains("HGSGothicM") ||
+                 face.contains("HGMaruGothicMPRO")) {
         return manager_->matchFamilyStyle("MS PGothic", style);
       }
       return manager_->matchFamilyStyle("MS Gothic", style);
     }
-    if (base::Contains(face, "Mincho") ||
-        base::Contains(face, "\x96\xbe\x92\xa9")) {
-      if (base::Contains(face, "PMincho") ||
-          base::Contains(face, "\x82\x6f\x96\xbe\x92\xa9")) {
+    if (face.contains("Mincho") || face.contains("\x96\xbe\x92\xa9")) {
+      if (face.contains("PMincho") ||
+          face.contains("\x82\x6f\x96\xbe\x92\xa9")) {
         auto typeface = manager_->matchFamilyStyle("MS PMincho", style);
         if (typeface) {
           return typeface;
@@ -251,16 +248,13 @@ class SkiaFontMapper {
                                     SkFontStyle style) {
     // KaiTi and SimHei are Windows supplemental fonts so assume they were not
     // found by skia.
-    if (base::Contains(face, "KaiTi") || base::Contains(face, "\xbf\xac")) {
+    if (face.contains("KaiTi") || face.contains("\xbf\xac")) {
       return manager_->matchFamilyStyle("SimSun", style);
-    } else if (base::Contains(face, "FangSong") ||
-               base::Contains(face, "\xb7\xc2\xcb\xce")) {
+    } else if (face.contains("FangSong") || face.contains("\xb7\xc2\xcb\xce")) {
       return manager_->matchFamilyStyle("SimSun", style);
-    } else if (base::Contains(face, "SimSun") ||
-               base::Contains(face, "\xcb\xce")) {
+    } else if (face.contains("SimSun") || face.contains("\xcb\xce")) {
       return manager_->matchFamilyStyle("SimSun", style);
-    } else if (base::Contains(face, "SimHei") ||
-               base::Contains(face, "\xba\xda")) {
+    } else if (face.contains("SimHei") || face.contains("\xba\xda")) {
       return manager_->matchFamilyStyle("SimHei", style);
     } else if (!(pitch_family & FXFONT_FF_ROMAN) && weight > 550) {
       return manager_->matchFamilyStyle("SimHei", style);
@@ -290,7 +284,7 @@ class SkiaFontMapper {
       case FXFONT_HANGEUL_CHARSET:
         return GetHangeulPreference(style);
       case FXFONT_CHINESEBIG5_CHARSET:
-        if (base::Contains(face, "MSung")) {
+        if (face.contains("MSung")) {
           // Monospace.
           return manager_->matchFamilyStyle("Microsoft YaHei", style);
         }

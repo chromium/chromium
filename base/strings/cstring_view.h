@@ -340,6 +340,14 @@ class basic_cstring_view final {
     return std::basic_string_view<Char>(*this).ends_with(character);
   }
 
+  // Returns whether the cstring view contains an instance of `search`.
+  constexpr bool contains(std::basic_string_view<Char> search) const noexcept {
+    return find(search) != npos;
+  }
+  constexpr bool contains(Char search) const noexcept {
+    return find(search) != npos;
+  }
+
   // Returns the first position in the cstring view at which `search` is found,
   // starting from the offset `pos`. If `pos` is not specified, the entire
   // cstring view is searched. Returns `npos` if `search` is not found or if

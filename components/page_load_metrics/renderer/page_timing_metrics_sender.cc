@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -223,8 +222,9 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
   // ResourceFetcher::EmulateLoadStartedForInspector(). In this case, ignore
   // multiple resources being loaded in the document, as memory cache resources
   // are only reported once per context by design in all other cases.
-  if (base::Contains(page_resource_data_use_, request_id))
+  if (page_resource_data_use_.contains(request_id)) {
     return;
+  }
 
   FindOrInsertPageResourceDataUse(request_id)
       ->DidLoadFromMemoryCache(response_url, encoded_body_length, mime_type);

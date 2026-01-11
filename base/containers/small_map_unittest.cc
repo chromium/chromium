@@ -453,6 +453,51 @@ class unordered_map_add_item_initializer {
   int item_;
 };
 
+class ImplicitlyConvertibleFromInt {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ImplicitlyConvertibleFromInt(int value) : value_(value) {
+    g_num_created_instances++;
+  }
+
+  ImplicitlyConvertibleFromInt(const ImplicitlyConvertibleFromInt&) = default;
+  ImplicitlyConvertibleFromInt& operator=(const ImplicitlyConvertibleFromInt&) =
+      default;
+
+  ~ImplicitlyConvertibleFromInt() = default;
+
+  std::strong_ordering operator<=>(
+      const ImplicitlyConvertibleFromInt& rhs) const = default;
+
+  int value() const { return value_; }
+
+  static int GetNumCreatedInstances() { return g_num_created_instances; }
+
+  static void ResetNumCreatedInstances() { g_num_created_instances = 0; }
+
+ private:
+  static int g_num_created_instances;
+
+  int value_;
+};
+
+int ImplicitlyConvertibleFromInt::g_num_created_instances = 0;
+
+struct TransparentEqual {
+  using is_transparent = void;
+  bool operator()(const ImplicitlyConvertibleFromInt& lhs,
+                  const ImplicitlyConvertibleFromInt& rhs) const {
+    return lhs.value() == rhs.value();
+  }
+  bool operator()(int lhs, int rhs) const { return lhs == rhs; }
+  bool operator()(const ImplicitlyConvertibleFromInt& lhs, int rhs) const {
+    return lhs.value() == rhs;
+  }
+  bool operator()(int lhs, const ImplicitlyConvertibleFromInt& rhs) const {
+    return lhs == rhs.value();
+  }
+};
+
 }  // anonymous namespace
 
 TEST(SmallMap, SubclassInitializationWithFunctionPointer) {
@@ -584,6 +629,25 @@ TEST(SmallMap, Emplace) {
     EXPECT_EQ(sm.size(), i);
     EXPECT_FALSE(sm.empty());
   }
+}
+
+TEST(SmallMap, Contains) {
+  small_map<std::map<int, int>> m;
+  EXPECT_FALSE(m.contains(1));
+  m[1] = 2;
+  EXPECT_TRUE(m.contains(1));
+  m.erase(1);
+  EXPECT_FALSE(m.contains(1));
+}
+
+TEST(SmallMap, HeterogenousContains) {
+  ImplicitlyConvertibleFromInt::ResetNumCreatedInstances();
+  small_map<std::map<ImplicitlyConvertibleFromInt, int>, 4, TransparentEqual> m;
+  ASSERT_EQ(ImplicitlyConvertibleFromInt::GetNumCreatedInstances(), 0);
+  m[ImplicitlyConvertibleFromInt(1)] = 2;
+  ASSERT_EQ(ImplicitlyConvertibleFromInt::GetNumCreatedInstances(), 1);
+  m.contains(1);
+  EXPECT_EQ(ImplicitlyConvertibleFromInt::GetNumCreatedInstances(), 1);
 }
 
 }  // namespace base

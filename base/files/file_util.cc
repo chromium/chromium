@@ -24,7 +24,6 @@
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -515,7 +514,7 @@ FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
                                        base::cstring_view suffix_format) {
   DCHECK(!path.empty());
   DCHECK_EQ(std::ranges::count(suffix_format, '%'), 1);
-  DCHECK(base::Contains(suffix_format, "%d"));
+  DCHECK(suffix_format.contains("%d"));
 
   if (!PathExists(path)) {
     return path;

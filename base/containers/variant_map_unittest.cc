@@ -82,6 +82,14 @@ TEST_P(VariantMapTest, Find) {
   EXPECT_EQ(map.find(kUnusedKey), map.end());
 }
 
+TEST_P(VariantMapTest, Contains) {
+  VariantMap<KeyType, ValueType> map(GetParam());
+  map[kTestKey] = kTestValue;
+
+  EXPECT_TRUE(map.contains(kTestKey));
+  EXPECT_FALSE(map.contains(kUnusedKey));
+}
+
 TEST_P(VariantMapTest, Iteration) {
   VariantMap<KeyType, ValueType> map(GetParam());
 
