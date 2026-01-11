@@ -980,7 +980,8 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
     // device removal.
     // TODO(crbug.com/364445586): Move non-GPU backends like TFLite outside of
     // the GPU process.
-    DestroyAllContextsAndKillGpuProcess("device removed.");
+    OnLost("Device removed.");
+    DestroyAllContextsAndKillGpuProcess();
     return;
   }
 

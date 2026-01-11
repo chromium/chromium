@@ -239,9 +239,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       WebNNTensorImpl::RepresentationPtr representation) = 0;
 
 #if BUILDFLAG(IS_WIN)
-  // Inform the provider that this context is lost so it can inform the renderer
-  // process and kill the GPU process to destroy all contexts.
-  void DestroyAllContextsAndKillGpuProcess(const std::string& reason);
+  // Kill the GPU process to destroy all contexts.
+  void DestroyAllContextsAndKillGpuProcess();
 #endif  // BUILDFLAG(IS_WIN)
 
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);

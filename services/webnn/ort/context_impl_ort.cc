@@ -369,7 +369,14 @@ void ContextImplOrt::HandleContextLostOrCrash(const std::string& error_message,
   // any error code.
   // TODO(crbug.com/462937875): Handle errors differently when ORT can report a
   // device-removal error code in the future.
-  DestroyAllContextsAndKillGpuProcess(error_message);
+  //
+  // Currently, we decide to not broadcast the lost reason across all contexts
+  // especially for contexts created from different origins as it may leak
+  // information about one origin to another.
+  // TODO(crbug.com/474141334): Broadcast the context lost reason across all
+  // contexts from the same origin.
+  OnLost(error_message);
+  DestroyAllContextsAndKillGpuProcess();
 }
 
 void ContextImplOrt::CreateGraphImpl(

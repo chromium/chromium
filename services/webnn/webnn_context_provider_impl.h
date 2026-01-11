@@ -78,9 +78,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
 
 #if BUILDFLAG(IS_WIN)
-  // Send the contexts lost reason to the renderer process and kill the GPU
-  // process to destroy all contexts.
-  void DestroyAllContextsAndKillGpuProcess(const std::string& reason);
+  // Kill the GPU process to destroy all contexts.
+  void DestroyAllContextsAndKillGpuProcess();
 #endif  // BUILDFLAG(IS_WIN)
 
   // Retrieves a `WebNNContextImpl` instance created from this provider.
