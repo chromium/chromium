@@ -1,6 +1,6 @@
 [package]
 name = "proc-macro2"
-version = "1.0.104"
+version = "1.0.105"
 authors = ["David Tolnay <dtolnay@gmail.com>", "Alex Crichton <alex@alexcrichton.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]

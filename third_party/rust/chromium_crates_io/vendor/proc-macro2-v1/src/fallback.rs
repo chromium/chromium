@@ -5,14 +5,22 @@ use crate::location::LineColumn;
 use crate::parse::{self, Cursor};
 use crate::rcvec::{RcVec, RcVecBuilder, RcVecIntoIter, RcVecMut};
 use crate::{Delimiter, Spacing, TokenTree};
+use alloc::borrow::ToOwned as _;
+use alloc::boxed::Box;
 #[cfg(all(span_locations, not(fuzzing)))]
 use alloc::collections::BTreeMap;
+use alloc::format;
+use alloc::string::{String, ToString as _};
+#[cfg(all(span_locations, not(fuzzing)))]
+use alloc::vec;
+use alloc::vec::Vec;
 #[cfg(all(span_locations, not(fuzzing)))]
 use core::cell::RefCell;
 #[cfg(span_locations)]
 use core::cmp;
 #[cfg(all(span_locations, not(fuzzing)))]
 use core::cmp::Ordering;
+use core::ffi::CStr;
 use core::fmt::{self, Debug, Display, Write};
 use core::mem::ManuallyDrop;
 #[cfg(span_locations)]
@@ -22,11 +30,12 @@ use core::ptr;
 use core::str;
 #[cfg(feature = "proc-macro")]
 use core::str::FromStr;
-use std::ffi::CStr;
 #[cfg(wrap_proc_macro)]
 use std::panic;
 #[cfg(span_locations)]
 use std::path::PathBuf;
+#[cfg(all(span_locations, not(fuzzing)))]
+use std::thread_local;
 
 /// Force use of proc-macro2's fallback implementation of the API for now, even
 /// if the compiler's implementation is available.
