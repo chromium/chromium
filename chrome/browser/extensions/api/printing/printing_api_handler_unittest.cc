@@ -258,10 +258,21 @@ ConstructPrinterCapabilities() {
   capabilities.duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
   capabilities.copies_max = 5;
   capabilities.dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
+#if BUILDFLAG(IS_CHROMEOS)
+  const printing::PaperMargins kMargins(/*top_um=*/500, /*right_um=*/800,
+                                        /*bottom_um=*/200, /*left_um=*/600);
+  capabilities.papers.emplace_back(
+      /*display_name=*/"", kMediaSizeVendorId,
+      /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
+      /*printable_area_um=*/gfx::Rect(), /*max_height_um=*/0,
+      /*has_borderless_variant=*/false,
+      /*supported_margins_um=*/kMargins);
+#else
   printing::PrinterSemanticCapsAndDefaults::Paper paper(
       /*display_name=*/"", kMediaSizeVendorId,
       {kMediaSizeWidth, kMediaSizeHeight});
   capabilities.papers.push_back(std::move(paper));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   capabilities.collate_capable = true;
   return capabilities;
 }

@@ -492,9 +492,12 @@ TEST(PrintingApiUtilsTest, ParsePrintTicketInvalidVendorItem) {
 TEST(PrintingApiUtilsTest, ParsePrintTicketInvalidMarginsItem) {
   const std::string kInvalidMarginsCjt =
       base::StringPrintf(kTemplateMargingsItemCjt, -40, 20, -30, 40);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      printing::features::kApiPrintingMarginsAndScale);
   EXPECT_TRUE(ParsePrintTicket(base::test::ParseJsonDict(kInvalidMarginsCjt)));
 
-  base::test::ScopedFeatureList feature_list;
+  feature_list.Reset();
   feature_list.InitAndEnableFeature(
       printing::features::kApiPrintingMarginsAndScale);
   EXPECT_FALSE(ParsePrintTicket(base::test::ParseJsonDict(kInvalidMarginsCjt)));
@@ -709,7 +712,10 @@ TEST(PrintingApiUtilsTest,
       printing::mojom::PrintScalingType::kNone,
   };
 
+  base::test::ScopedFeatureList feature_list;
   // Test with feature disabled - all types should pass as check is skipped.
+  feature_list.InitAndDisableFeature(
+      printing::features::kApiPrintingMarginsAndScale);
   for (const auto& scaling_type : kScalingTypes) {
     settings->set_print_scaling(scaling_type);
     EXPECT_TRUE(
@@ -717,7 +723,8 @@ TEST(PrintingApiUtilsTest,
   }
 
   // Re-enable feature for further tests.
-  base::test::ScopedFeatureList feature_list(
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(
       printing::features::kApiPrintingMarginsAndScale);
 
   capabilities.print_scaling_types.clear();

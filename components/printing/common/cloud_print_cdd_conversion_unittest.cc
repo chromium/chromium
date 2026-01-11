@@ -463,11 +463,10 @@ TEST(CloudPrintCddConversionTest, MissingEntry) {
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 8;
 #if BUILDFLAG(IS_CHROMEOS)
-  ++expected_dict_size;
+  expected_dict_size += 2;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   ASSERT_FALSE(printer_dict->contains("collate"));
-  ASSERT_FALSE(printer_dict->contains("margins"));
 }
 
 TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
@@ -481,7 +480,7 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 9;
 #if BUILDFLAG(IS_CHROMEOS)
-  ++expected_dict_size;
+  expected_dict_size += 2;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(printer_dict->Find("collate"),
@@ -554,7 +553,7 @@ TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
-  size_t expected_dict_size = 11;
+  size_t expected_dict_size = 13;
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(
       *printer_dict,
@@ -566,6 +565,10 @@ TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
 }
 
 TEST(CloudPrintCddConversionTest, MarginsAndFitToPageCapabilities) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      printing::features::kApiPrintingMarginsAndScale);
+
   printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults(
           printing::SampleWithScaleAndPinAndAdvancedCapabilities());
@@ -578,7 +581,8 @@ TEST(CloudPrintCddConversionTest, MarginsAndFitToPageCapabilities) {
   EXPECT_FALSE(printer_dict->contains("fit_to_page"));
   EXPECT_FALSE(printer_dict->contains("margins"));
 
-  base::test::ScopedFeatureList feature_list(
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(
       printing::features::kApiPrintingMarginsAndScale);
 
   output = PrinterSemanticCapsAndDefaultsToCdd(input);
