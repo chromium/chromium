@@ -1037,22 +1037,28 @@ fn test_parse_number() {
 
     #[cfg(feature = "arbitrary_precision")]
     test_parse_ok(vec![
-        ("1e999", Number::from_string_unchecked("1e999".to_owned())),
+        ("1e999", Number::from_string_unchecked("1e+999".to_owned())),
         ("1e+999", Number::from_string_unchecked("1e+999".to_owned())),
-        ("-1e999", Number::from_string_unchecked("-1e999".to_owned())),
+        (
+            "-1e999",
+            Number::from_string_unchecked("-1e+999".to_owned()),
+        ),
         ("1e-999", Number::from_string_unchecked("1e-999".to_owned())),
-        ("1E999", Number::from_string_unchecked("1E999".to_owned())),
-        ("1E+999", Number::from_string_unchecked("1E+999".to_owned())),
-        ("-1E999", Number::from_string_unchecked("-1E999".to_owned())),
-        ("1E-999", Number::from_string_unchecked("1E-999".to_owned())),
-        ("1E+000", Number::from_string_unchecked("1E+000".to_owned())),
+        ("1E999", Number::from_string_unchecked("1e+999".to_owned())),
+        ("1E+999", Number::from_string_unchecked("1e+999".to_owned())),
+        (
+            "-1E999",
+            Number::from_string_unchecked("-1e+999".to_owned()),
+        ),
+        ("1E-999", Number::from_string_unchecked("1e-999".to_owned())),
+        ("1E+000", Number::from_string_unchecked("1e+000".to_owned())),
         (
             "2.3e999",
-            Number::from_string_unchecked("2.3e999".to_owned()),
+            Number::from_string_unchecked("2.3e+999".to_owned()),
         ),
         (
             "-2.3e999",
-            Number::from_string_unchecked("-2.3e999".to_owned()),
+            Number::from_string_unchecked("-2.3e+999".to_owned()),
         ),
     ]);
 }

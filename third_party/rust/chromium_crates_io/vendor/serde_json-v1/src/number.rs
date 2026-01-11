@@ -279,8 +279,11 @@ impl Number {
         Some(Number { n })
     }
 
-    /// Returns the exact original JSON representation that this Number was
-    /// parsed from.
+    /// Returns the JSON representation that this Number was parsed from.
+    ///
+    /// When parsing with serde_json's `arbitrary_precision` feature enabled,
+    /// positive exponents are normalized to include an explicit `+` sign so
+    /// that `1e140` becomes `1e+140`.
     ///
     /// For numbers constructed not via parsing, such as by `From<i32>`, returns
     /// the JSON representation that serde\_json would serialize for this
