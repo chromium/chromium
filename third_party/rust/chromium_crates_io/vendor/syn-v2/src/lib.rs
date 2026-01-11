@@ -248,8 +248,8 @@
 //! - **`proc-macro`** *(enabled by default)* — Runtime dependency on the
 //!   dynamic library libproc_macro from rustc toolchain.
 
-// Syn types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/syn/2.0.111")]
+#![no_std]
+#![doc(html_root_url = "https://docs.rs/syn/2.0.114")]
 #![cfg_attr(docsrs, feature(doc_cfg), doc(auto_cfg = false))]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types)]
@@ -309,6 +309,9 @@
     clippy::wildcard_imports,
 )]
 #![allow(unknown_lints, mismatched_lifetime_syntaxes)]
+
+extern crate alloc;
+extern crate std;
 
 extern crate self as syn;
 
@@ -881,6 +884,9 @@ pub use crate::gen::visit_mut;
 #[doc(hidden)]
 #[path = "export.rs"]
 pub mod __private;
+
+#[cfg(all(feature = "parsing", feature = "full"))]
+use alloc::string::ToString;
 
 /// Parse tokens of source code into the chosen syntax tree node.
 ///
