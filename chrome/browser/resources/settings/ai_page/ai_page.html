@@ -45,3 +45,19 @@
     </cr-link-row>
   </div>
 </settings-section>
+
+<!-- MCP Server Control -->
+<settings-section page-title="$i18n{mcpServerSectionTitle}">
+  <settings-toggle-button id="mcpServerToggle"
+      pref="{{prefs.mcp_server.enabled}}"
+      label="$i18n{mcpServerLabel}"
+      sub-label="[[getMcpServerSubLabel_(mcpServerStatus_.running, mcpServerStatus_.port)]]">
+  </settings-toggle-button>
+  <div class="settings-box" hidden="[[!mcpServerStatus_.running]]">
+    <div class="start settings-box-text">
+      $i18n{mcpServerConnectionInfo}
+      <div>HTTP: http://localhost:[[mcpServerStatus_.port]]/mcp/tabs</div>
+      <div>WebSocket: ws://127.0.0.1:[[mcpServerStatus_.port]]/ws</div>
+    </div>
+  </div>
+</settings-section>

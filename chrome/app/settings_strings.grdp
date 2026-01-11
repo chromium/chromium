@@ -4526,6 +4526,23 @@
     This feature is disabled by your organization
   </message>
 
+  <!-- MCP Server Control -->
+  <message name="IDS_SETTINGS_MCP_SERVER_SECTION_TITLE" desc="Title for the MCP Server control section in AI innovations settings">
+    MCP Server (Model Control Protocol)
+  </message>
+  <message name="IDS_SETTINGS_MCP_SERVER_LABEL" desc="Label for the MCP Server toggle">
+    Enable MCP Server
+  </message>
+  <message name="IDS_SETTINGS_MCP_SERVER_STOPPED" desc="Sublabel when MCP Server is stopped">
+    Stopped
+  </message>
+  <message name="IDS_SETTINGS_MCP_SERVER_RUNNING_ON_PORT" desc="Sublabel when MCP Server is running. $1 is the port number.">
+    Running on port <ph name="PORT">$1<ex>9224</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MCP_SERVER_CONNECTION_INFO" desc="Label for connection information display">
+    Connection information:
+  </message>
+
   <!-- Experimental settings - Tab Organization -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description">
     Tab organizer

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_section.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -56,6 +57,14 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
       },
+
+      mcpServerStatus_: {
+        type: Object,
+        value: () => ({
+          running: false,
+          port: 9224,
+        }),
+      },
     };
   }
 
@@ -64,6 +73,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
+  declare private mcpServerStatus_: {running: boolean, port: number};
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -223,6 +233,13 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         this.shadowRoot!.querySelector<HTMLElement>(`#${triggerId}`);
     assert(control);
     return control;
+  }
+
+  private getMcpServerSubLabel_(running: boolean, port: number): string {
+    if (running) {
+      return loadTimeData.getStringF('mcpServerRunningOnPort', port);
+    }
+    return loadTimeData.getString('mcpServerStopped');
   }
 }
 

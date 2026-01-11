@@ -1418,6 +1418,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(policy::policy_prefs::kReadAloudEnabled, true);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // MCP Server preferences
+  registry->RegisterBooleanPref(prefs::kMCPServerEnabled, false);
+  registry->RegisterIntegerPref(prefs::kMCPServerPort, 9224);
+
   // Below this point is for platform-specific and compile-time conditional
   // calls. Please follow the helper-function-first-then-direct-calls pattern
   // established above, and keep things alphabetized.

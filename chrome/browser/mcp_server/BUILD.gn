@@ -14,13 +14,10 @@ source_set("mcp_server") {
 
   deps = [
     "//base",
+    "//chrome/common:constants",
+    "//components/prefs",
     "//content/public/browser",
   ]
-
-  # Feature flag controlled
-  if (enable_mcp_server) {
-    defines = [ "ENABLE_MCP_SERVER" ]
-  }
 }
 
 # Dispatcher component - API routing and request handling
@@ -121,6 +118,8 @@ source_set("unit_tests") {
     ":mcp_server",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:constants",
+    "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

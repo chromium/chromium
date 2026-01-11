@@ -11,6 +11,9 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 
+class PrefService;
+class PrefRegistrySimple;
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -43,9 +46,14 @@ class MCPServer {
   MCPServer(const MCPServer&) = delete;
   MCPServer& operator=(const MCPServer&) = delete;
 
+  // Set the PrefService for persistent storage
+  // Must be called before Start() to enable preference persistence
+  void SetPrefService(PrefService* pref_service);
+
   // Start the MCP server on the specified port
+  // If port is 0, uses the port from preferences (default 9224)
   // Returns true if server started successfully
-  bool Start(int port = 9224);
+  bool Start(int port = 0);
 
   // Stop the MCP server
   void Stop();
@@ -55,6 +63,15 @@ class MCPServer {
 
   // Get the current port the server is running on
   int GetPort() const;
+
+  // Check if MCP Server is enabled in preferences
+  bool IsEnabledInPrefs() const;
+
+  // Enable/disable MCP Server in preferences
+  void SetEnabledInPrefs(bool enabled);
+
+  // Save current running state to preferences
+  void SaveStateToPrefs();
 
  private:
   friend class base::NoDestructor<MCPServer>;

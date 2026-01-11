@@ -1574,6 +1574,7 @@ static_library("browser") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/google",
+    "//chrome/browser/mcp_server:mcp_server",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
 
@@ -1865,6 +1866,7 @@ static_library("browser") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/mcp_server:mcp_server",
     "//chrome/browser/metrics",
     "//chrome/browser/metrics:expired_histograms_array",
     "//chrome/browser/metrics/structured",

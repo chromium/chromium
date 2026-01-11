@@ -4,6 +4,10 @@
 
 MCP (Model Control Protocol) Server is an embedded HTTP/WebSocket server in Chromium that provides programmatic browser control for AI agents. It runs on `localhost:9224` and offers a comprehensive API for tab management, UI interactions, DOM queries, and monitoring.
 
+**Status:** Week 1 Complete ✅ | Week 2 In Progress 🔄
+**Settings UI:** `chrome://settings/ai` (MCP Server section)
+**Feature Flag:** `chrome://flags#mcp-server`
+
 ## Architecture
 
 ```
@@ -106,26 +110,54 @@ source_set("mcp_server") {
 
 ```cpp
 #include "chrome/browser/mcp_server/mcp_server.h"
+#include "components/prefs/pref_service.h"
 
-// Start the server
+// Get the server instance
 mcp_server::MCPServer* server = mcp_server::MCPServer::GetInstance();
-server->Start(9224);
+
+// Set PrefService for preference persistence (required)
+server->SetPrefService(local_state);
+
+// Start the server (uses port from preferences, default 9224)
+server->Start();  // Uses preference or default port
+// OR specify explicit port
+server->Start(8080);  // Override preference
 
 // Check if running
 if (server->IsRunning()) {
-  // Server is active on localhost:9224
+  // Server is active on localhost
+  int port = server->GetPort();
 }
 
-// Stop the server
+// Check/update preference state
+if (server->IsEnabledInPrefs()) {
+  // MCP Server is enabled in preferences
+}
+server->SetEnabledInPrefs(true);
+
+// Stop the server (automatically saves state to preferences)
 server->Stop();
 ```
+
+## Preferences
+
+MCP Server uses two local state preferences:
+
+- `prefs::kMCPServerEnabled` (boolean): Whether the server is enabled
+- `prefs::kMCPServerPort` (integer): Port number (default: 9224)
+
+Preferences are automatically saved when:
+- Server is started or stopped
+- Port is changed
+- `SaveStateToPrefs()` is called manually
 
 ## Development Status
 
 **Phase 1: Infrastructure** (Current)
 - [x] Project structure
-- [ ] Feature flag
-- [ ] Settings UI
+- [x] Feature flag
+- [x] Preferences storage
+- [x] Settings UI (chrome://settings → Developer)
 - [ ] HTTP server implementation
 - [ ] WebSocket server implementation
 

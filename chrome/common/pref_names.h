@@ -2027,6 +2027,15 @@ inline constexpr char kStaticStorageQuotaEnabled[] =
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
+// A boolean specifying whether the MCP (Model Control Protocol) Server is
+// enabled. When enabled, a localhost HTTP/WebSocket server runs on port 9224
+// providing programmatic browser control APIs for AI agents. Developer-only
+// feature for security.
+inline constexpr char kMCPServerEnabled[] = "mcp_server.enabled";
+
+// An integer specifying the port number for the MCP Server. Default is 9224.
+inline constexpr char kMCPServerPort[] = "mcp_server.port";
+
 // Used to store the value of the SerialAllowAllPortsForUrls policy.
 inline constexpr char kManagedSerialAllowAllPortsForUrls[] =
     "managed.serial_allow_all_ports_for_urls";

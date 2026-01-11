@@ -479,6 +479,13 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"passwordChangeSettingEncryption",
        IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION},
       {"passwordChangeLearnMore", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
+
+      // MCP Server strings.
+      {"mcpServerSectionTitle", IDS_SETTINGS_MCP_SERVER_SECTION_TITLE},
+      {"mcpServerLabel", IDS_SETTINGS_MCP_SERVER_LABEL},
+      {"mcpServerStopped", IDS_SETTINGS_MCP_SERVER_STOPPED},
+      {"mcpServerRunningOnPort", IDS_SETTINGS_MCP_SERVER_RUNNING_ON_PORT},
+      {"mcpServerConnectionInfo", IDS_SETTINGS_MCP_SERVER_CONNECTION_INFO},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
