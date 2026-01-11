@@ -2,28 +2,24 @@ use core::fmt::Display;
 use core::ops::{Add, BitAnd, BitOr, BitOrAssign, BitXorAssign, Div, Mul, Shl, Shr, Sub};
 
 pub trait Float: Copy {
-    type UInt: UInt;
     const MANTISSA_DIGITS: u32;
+    const MIN_10_EXP: i32;
+    const MAX_10_EXP: i32;
     const MAX_DIGITS10: u32;
-    fn to_bits(self) -> Self::UInt;
 }
 
 impl Float for f32 {
-    type UInt = u32;
     const MANTISSA_DIGITS: u32 = Self::MANTISSA_DIGITS;
+    const MIN_10_EXP: i32 = Self::MIN_10_EXP;
+    const MAX_10_EXP: i32 = Self::MAX_10_EXP;
     const MAX_DIGITS10: u32 = 9;
-    fn to_bits(self) -> Self::UInt {
-        self.to_bits()
-    }
 }
 
 impl Float for f64 {
-    type UInt = u64;
     const MANTISSA_DIGITS: u32 = Self::MANTISSA_DIGITS;
+    const MIN_10_EXP: i32 = Self::MIN_10_EXP;
+    const MAX_10_EXP: i32 = Self::MAX_10_EXP;
     const MAX_DIGITS10: u32 = 17;
-    fn to_bits(self) -> Self::UInt {
-        self.to_bits()
-    }
 }
 
 pub trait UInt:

@@ -42,6 +42,21 @@ jobs:
         if: matrix.rust != '1.68.0'
       - run: cargo test --release
         if: matrix.rust != '1.68.0'
+      - run: cargo check
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
+      - run: cargo build --tests --features no-panic --release
+        if: matrix.rust == 'nightly'
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
+      - run: cargo test
+        if: matrix.rust != '1.68.0'
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
+      - run: cargo test --release
+        if: matrix.rust != '1.68.0'
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
       - uses: actions/upload-artifact@v6
         if: matrix.rust == 'nightly' && matrix.arch == 'x86_64' && always()
         with:
@@ -71,7 +86,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@clippy
+        with:
+          targets: aarch64-unknown-linux-gnu
       - run: cargo clippy --tests --benches -- -Dclippy::all -Dclippy::pedantic
+      - run: cargo clippy --target=aarch64-unknown-linux-gnu -- -Dclippy::all -Dclippy::pedantic
+      - run: cargo clippy -- -Dclippy::all -Dclippy::pedantic
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
 
   miri:
     name: Miri (${{matrix.name}})

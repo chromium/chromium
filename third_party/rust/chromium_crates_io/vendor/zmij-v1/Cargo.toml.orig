@@ -1,6 +1,6 @@
 [package]
 name = "zmij"
-version = "1.0.2"
+version = "1.0.12"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "A double-to-string conversion algorithm based on Schubfach and yy"
@@ -16,7 +16,9 @@ rust-version = "1.68"
 no-panic = { version = "0.1", optional = true }
 
 [dev-dependencies]
+num-bigint = "0.4"
 num_cpus = "1.8"
+num-integer = "0.1"
 opt-level = "1"
 rand = "0.9"
 ryu = "1"
@@ -27,9 +29,6 @@ criterion = { version = "0.8", default-features = false }
 [[bench]]
 name = "bench"
 harness = false
-
-[workspace]
-members = ["gen-pow10"]
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

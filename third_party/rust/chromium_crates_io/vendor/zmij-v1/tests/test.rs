@@ -62,7 +62,6 @@ mod dtoa_test {
     #[test]
     fn inf() {
         assert_eq!(dtoa(f64::INFINITY), "inf");
-        assert_eq!(dtoa(f64::NEG_INFINITY), "-inf");
     }
 
     #[test]
@@ -93,6 +92,11 @@ mod dtoa_test {
         assert_eq!(dtoa(9.061488e15), "9061488000000000.0");
         assert_eq!(dtoa(f64::NAN.copysign(1.0)), "NaN");
     }
+
+    #[test]
+    fn no_buffer() {
+        assert_eq!(dtoa(6.62607015e-34), "6.62607015e-34");
+    }
 }
 
 mod ftoa_test {
@@ -108,5 +112,10 @@ mod ftoa_test {
     #[test]
     fn subnormal() {
         assert_eq!(ftoa(0.0f32.next_up()), "1e-45");
+    }
+
+    #[test]
+    fn no_buffer() {
+        assert_eq!(ftoa(6.62607e-34), "6.62607e-34");
     }
 }
