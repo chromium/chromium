@@ -3,18 +3,22 @@
 //! Note that The l4re port of uclibc doesn't yet support all `pthread_*` API that is
 //! available upstream.
 
-pub use crate::new::common::linux_like::pthread::pthread_getattr_np;
-#[cfg(not(target_os = "l4re"))]
 pub use crate::new::common::linux_like::pthread::{
     pthread_getaffinity_np,
-    pthread_getname_np,
+    pthread_getattr_np,
     pthread_setaffinity_np,
+};
+#[cfg(not(target_os = "l4re"))]
+pub use crate::new::common::linux_like::pthread::{
+    pthread_getname_np,
     pthread_setname_np,
 };
 #[cfg(not(target_os = "l4re"))]
 pub use crate::new::common::posix::pthread::{
     pthread_atfork,
     pthread_barrierattr_getpshared,
+    pthread_condattr_getclock,
+    pthread_condattr_setclock,
     pthread_getcpuclockid,
     pthread_mutex_consistent,
     pthread_mutexattr_getprotocol,
@@ -41,9 +45,7 @@ pub use crate::new::common::posix::pthread::{
     pthread_barrierattr_init,
     pthread_barrierattr_setpshared,
     pthread_cancel,
-    pthread_condattr_getclock,
     pthread_condattr_getpshared,
-    pthread_condattr_setclock,
     pthread_condattr_setpshared,
     pthread_create,
     pthread_getschedparam,

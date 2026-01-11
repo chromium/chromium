@@ -10,16 +10,16 @@ s! {
         pub msg_namelen: crate::socklen_t,
         pub msg_iov: *mut crate::iovec,
         #[cfg(all(target_pointer_width = "64", target_endian = "big"))]
-        __pad1: c_int,
+        __pad1: Padding<c_int>,
         pub msg_iovlen: c_int,
         #[cfg(all(target_pointer_width = "64", target_endian = "little"))]
-        __pad1: c_int,
+        __pad1: Padding<c_int>,
         pub msg_control: *mut c_void,
         #[cfg(all(target_pointer_width = "64", target_endian = "big"))]
-        __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub msg_controllen: crate::socklen_t,
         #[cfg(all(target_pointer_width = "64", target_endian = "little"))]
-        __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub msg_flags: c_int,
     }
 
@@ -41,6 +41,7 @@ extern "C" {
         vlen: c_uint,
         flags: c_uint,
     ) -> c_int;
+    #[cfg_attr(musl32_time64, link_name = "__recvmmsg_time64")]
     pub fn recvmmsg(
         sockfd: c_int,
         msgvec: *mut crate::mmsghdr,

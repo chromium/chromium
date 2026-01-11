@@ -240,10 +240,10 @@ s! {
         pub st_ino: crate::ino_t,
         pub st_nlink: crate::nlink_t,
         pub st_mode: crate::mode_t,
-        st_padding0: i16,
+        st_padding0: Padding<i16>,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
-        st_padding1: i32,
+        st_padding1: Padding<i32>,
         pub st_rdev: crate::dev_t,
         #[cfg(target_arch = "x86")]
         st_atim_ext: i32,

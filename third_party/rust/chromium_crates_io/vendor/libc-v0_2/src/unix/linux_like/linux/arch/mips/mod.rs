@@ -243,6 +243,7 @@ pub const TIOCM_DSR: c_int = 0x400;
 pub const BOTHER: crate::speed_t = 0o010000;
 pub const IBSHIFT: crate::tcflag_t = 16;
 pub const IUCLC: crate::tcflag_t = 0o0001000;
+pub const XCASE: crate::tcflag_t = 0o0000004;
 
 // RLIMIT Constants
 

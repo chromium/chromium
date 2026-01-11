@@ -3,6 +3,9 @@ use crate::prelude::*;
 
 pub type pthread_t = *mut c_void;
 pub type clock_t = c_long;
+#[cfg(musl32_time64)]
+pub type time_t = i64;
+#[cfg(not(musl32_time64))]
 #[cfg_attr(
     not(feature = "rustc-dep-of-std"),
     deprecated(
@@ -13,6 +16,18 @@ pub type clock_t = c_long;
     )
 )]
 pub type time_t = c_long;
+#[cfg(musl32_time64)]
+pub type suseconds_t = i64;
+#[cfg(not(musl32_time64))]
+#[cfg_attr(
+    not(feature = "rustc-dep-of-std"),
+    deprecated(
+        since = "0.2.80",
+        note = "This type is changed to 64-bit in musl 1.2.0, \
+                we'll follow that change in the future release. \
+                See #1848 for more info."
+    )
+)]
 pub type suseconds_t = c_long;
 pub type ino_t = u64;
 pub type off_t = i64;
@@ -190,7 +205,7 @@ s! {
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_reserved: [c_int; 6],
+        __f_reserved: Padding<[c_int; 6]>,
     }
 
     pub struct statvfs64 {
@@ -210,7 +225,7 @@ s! {
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
-        __f_reserved: [c_int; 6],
+        __f_reserved: Padding<[c_int; 6]>,
     }
 
     // PowerPC implementations are special, see the subfolders
@@ -247,7 +262,7 @@ s! {
         __opaque: *mut c_void,
         __padding: Padding<[*mut c_void; 4usize]>,
         __nsub2: size_t,
-        __padding2: c_char,
+        __padding2: Padding<c_char>,
     }
 
     pub struct rtentry {
@@ -562,8 +577,6 @@ pub const O_NDELAY: c_int = O_NONBLOCK;
 pub const NI_MAXHOST: crate::socklen_t = 255;
 pub const PTHREAD_STACK_MIN: size_t = 2048;
 
-pub const POSIX_MADV_DONTNEED: c_int = 4;
-
 pub const MAP_ANONYMOUS: c_int = MAP_ANON;
 
 pub const SOCK_SEQPACKET: c_int = 5;
@@ -582,11 +595,8 @@ pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 
-// FIXME(musl): Value is 1024 for all architectures since 1.2.4
-#[cfg(not(target_arch = "loongarch64"))]
-pub const CPU_SETSIZE: c_int = 128;
-#[cfg(target_arch = "loongarch64")]
-pub const CPU_SETSIZE: c_int = 1024;
+// Value was changed in 1.2.4
+pub const CPU_SETSIZE: c_int = if cfg!(musl_v1_2_3) { 1024 } else { 128 };
 
 pub const PTRACE_TRACEME: c_int = 0;
 pub const PTRACE_PEEKTEXT: c_int = 1;
@@ -755,6 +765,7 @@ extern "C" {
         new_limit: *const crate::rlimit,
         old_limit: *mut crate::rlimit,
     ) -> c_int;
+    #[cfg_attr(musl32_time64, link_name = "__gettimeofday_time64")]
     pub fn gettimeofday(tp: *mut crate::timeval, tz: *mut c_void) -> c_int;
     pub fn ptrace(request: c_int, ...) -> c_long;
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
@@ -790,7 +801,9 @@ extern "C" {
     // Added in `musl` 1.2.2
     pub fn reallocarray(ptr: *mut c_void, nmemb: size_t, size: size_t) -> *mut c_void;
 
+    #[cfg_attr(musl32_time64, link_name = "__adjtimex_time64")]
     pub fn adjtimex(buf: *mut crate::timex) -> c_int;
+    #[cfg_attr(musl32_time64, link_name = "__clock_adjtime64")]
     pub fn clock_adjtime(clk_id: crate::clockid_t, buf: *mut crate::timex) -> c_int;
 
     pub fn ctermid(s: *mut c_char) -> *mut c_char;
@@ -856,6 +869,16 @@ extern "C" {
         note = "musl provides `utmp` as stubs and an alternative should be preferred; see https://wiki.musl-libc.org/faq.html"
     )]
     pub fn utmpxname(file: *const c_char) -> c_int;
+    pub fn pthread_tryjoin_np(thread: crate::pthread_t, retval: *mut *mut c_void) -> c_int;
+    #[cfg_attr(
+        all(musl32_time64, target_pointer_width = "32"),
+        link_name = "__pthread_timedjoin_np_time64"
+    )]
+    pub fn pthread_timedjoin_np(
+        thread: crate::pthread_t,
+        retval: *mut *mut c_void,
+        abstime: *const crate::timespec,
+    ) -> c_int;
 }
 
 // Alias <foo> to <foo>64 to mimic glibc's LFS64 support

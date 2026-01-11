@@ -468,7 +468,7 @@ s! {
         __d_version: u32,
         pub d_ino: ino_t,
         pub d_type: c_uchar,
-        __d_unused1: [c_uchar; 3],
+        __d_unused1: Padding<[c_uchar; 3]>,
         __d_internal1: u32,
         pub d_name: [c_char; 256],
     }

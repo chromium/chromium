@@ -7,8 +7,8 @@ pub(crate) const _ALIGNBYTES: usize = size_of::<c_longlong>() - 1;
 
 pub const PT_GETREGS: c_int = PT_FIRSTMACH + 1;
 pub const PT_SETREGS: c_int = PT_FIRSTMACH + 2;
-pub const PT_GETFPREGS: c_int = PT_FIRSTMACH + 3;
-pub const PT_SETFPREGS: c_int = PT_FIRSTMACH + 4;
+pub const PT_GETFPREGS: c_int = PT_FIRSTMACH + 5;
+pub const PT_SETFPREGS: c_int = PT_FIRSTMACH + 6;
 
 pub const _REG_R0: c_int = 0;
 pub const _REG_R1: c_int = 1;
@@ -61,10 +61,10 @@ pub const _REG_X30: c_int = 30;
 pub const _REG_X31: c_int = 31;
 pub const _REG_ELR: c_int = 32;
 pub const _REG_SPSR: c_int = 33;
-pub const _REG_TIPDR: c_int = 34;
+pub const _REG_TPIDR: c_int = 34;
 
 pub const _REG_RV: c_int = _REG_R0;
 pub const _REG_FP: c_int = _REG_R11;
-pub const _REG_LR: c_int = _REG_R13;
-pub const _REG_SP: c_int = _REG_R14;
+pub const _REG_SP: c_int = _REG_R13;
+pub const _REG_LR: c_int = _REG_R14;
 pub const _REG_PC: c_int = _REG_R15;

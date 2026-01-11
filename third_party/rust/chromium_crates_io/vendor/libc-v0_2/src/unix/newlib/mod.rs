@@ -64,21 +64,6 @@ cfg_if! {
     }
 }
 
-cfg_if! {
-    if #[cfg(not(target_os = "horizon"))] {
-        s! {
-            pub struct hostent {
-                pub h_name: *mut c_char,
-                pub h_aliases: *mut *mut c_char,
-                pub h_addrtype: c_int,
-                pub h_length: c_int,
-                pub h_addr_list: *mut *mut c_char,
-                pub h_addr: *mut c_char,
-            }
-        }
-    }
-}
-
 s! {
     // The order of the `ai_addr` field in this struct is crucial
     // for converting between the Rust and C types.
@@ -108,19 +93,8 @@ s! {
         pub imr_interface: in_addr,
     }
 
-    pub struct linger {
-        pub l_onoff: c_int,
-        pub l_linger: c_int,
-    }
-
     pub struct in_addr {
         pub s_addr: crate::in_addr_t,
-    }
-
-    pub struct pollfd {
-        pub fd: c_int,
-        pub events: c_int,
-        pub revents: c_int,
     }
 
     pub struct lconv {

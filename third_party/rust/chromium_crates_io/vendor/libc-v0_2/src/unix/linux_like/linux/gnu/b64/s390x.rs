@@ -20,7 +20,7 @@ s! {
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_sigaction: crate::sighandler_t,
-        __glibc_reserved0: c_int,
+        __glibc_reserved0: Padding<c_int>,
         pub sa_flags: c_int,
         pub sa_restorer: Option<extern "C" fn()>,
         pub sa_mask: crate::sigset_t,
@@ -89,7 +89,7 @@ s! {
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
-        __glibc_reserved: [c_long; 3],
+        __glibc_reserved: Padding<[c_long; 3]>,
     }
 
     pub struct stat64 {
@@ -110,7 +110,7 @@ s! {
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
-        __glibc_reserved: [c_long; 3],
+        __glibc_reserved: Padding<[c_long; 3]>,
     }
 
     pub struct pthread_attr_t {
@@ -570,7 +570,6 @@ pub const CIBAUD: crate::tcflag_t = 0o02003600000;
 
 pub const ISIG: crate::tcflag_t = 0o000001;
 pub const ICANON: crate::tcflag_t = 0o000002;
-pub const XCASE: crate::tcflag_t = 0o000004;
 pub const ECHOE: crate::tcflag_t = 0o000020;
 pub const ECHOK: crate::tcflag_t = 0o000040;
 pub const ECHONL: crate::tcflag_t = 0o000100;

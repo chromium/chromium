@@ -4,7 +4,7 @@ pub type ucontext_t = sigcontext;
 
 s! {
     pub struct sigcontext {
-        __sc_unused: c_int,
+        __sc_unused: Padding<c_int>,
         pub sc_mask: c_int,
         pub sc_ra: c_long,
         pub sc_sp: c_long,

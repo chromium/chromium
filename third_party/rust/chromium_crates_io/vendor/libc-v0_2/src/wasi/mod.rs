@@ -407,13 +407,7 @@ pub const _SC_SYMLOOP_MAX: c_int = 173;
 #[allow(unused_unsafe)]
 pub static CLOCK_MONOTONIC: clockid_t = unsafe { clockid_t(core::ptr::addr_of!(_CLOCK_MONOTONIC)) };
 #[allow(unused_unsafe)]
-pub static CLOCK_PROCESS_CPUTIME_ID: clockid_t =
-    unsafe { clockid_t(core::ptr::addr_of!(_CLOCK_PROCESS_CPUTIME_ID)) };
-#[allow(unused_unsafe)]
 pub static CLOCK_REALTIME: clockid_t = unsafe { clockid_t(core::ptr::addr_of!(_CLOCK_REALTIME)) };
-#[allow(unused_unsafe)]
-pub static CLOCK_THREAD_CPUTIME_ID: clockid_t =
-    unsafe { clockid_t(core::ptr::addr_of!(_CLOCK_THREAD_CPUTIME_ID)) };
 
 pub const ABDAY_1: crate::nl_item = 0x20000;
 pub const ABDAY_2: crate::nl_item = 0x20001;
@@ -586,9 +580,7 @@ extern "C" {
     pub fn ctime_r(a: *const time_t, b: *mut c_char) -> *mut c_char;
 
     static _CLOCK_MONOTONIC: u8;
-    static _CLOCK_PROCESS_CPUTIME_ID: u8;
     static _CLOCK_REALTIME: u8;
-    static _CLOCK_THREAD_CPUTIME_ID: u8;
     pub fn nanosleep(a: *const timespec, b: *mut timespec) -> c_int;
     pub fn clock_getres(a: clockid_t, b: *mut timespec) -> c_int;
     pub fn clock_gettime(a: clockid_t, b: *mut timespec) -> c_int;

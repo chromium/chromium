@@ -8,6 +8,7 @@ pub type greg_t = u64;
 pub type __u64 = u64;
 pub type __s64 = i64;
 pub type statfs64 = statfs;
+pub type stat64 = stat;
 
 s! {
     pub struct ipc_perm {
@@ -39,34 +40,29 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
         pub st_size: off_t,
+
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime_nsec: c_long,
+
+        #[cfg(musl_v1_2_3)]
+        pub st_atim: crate::timespec,
+        #[cfg(musl_v1_2_3)]
+        pub st_mtim: crate::timespec,
+        #[cfg(musl_v1_2_3)]
+        pub st_ctim: crate::timespec,
+
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
-        __unused: Padding<[c_long; 3]>,
-    }
-
-    pub struct stat64 {
-        pub st_dev: crate::dev_t,
-        pub st_ino: crate::ino64_t,
-        pub st_nlink: crate::nlink_t,
-        pub st_mode: crate::mode_t,
-        pub st_uid: crate::uid_t,
-        pub st_gid: crate::gid_t,
-        pub st_rdev: crate::dev_t,
-        pub st_size: off_t,
-        pub st_atime: crate::time_t,
-        pub st_atime_nsec: c_long,
-        pub st_mtime: crate::time_t,
-        pub st_mtime_nsec: c_long,
-        pub st_ctime: crate::time_t,
-        pub st_ctime_nsec: c_long,
-        pub st_blksize: crate::blksize_t,
-        pub st_blocks: crate::blkcnt64_t,
         __unused: Padding<[c_long; 3]>,
     }
 
@@ -161,8 +157,8 @@ pub const SA_NOCLDWAIT: c_int = 2;
 pub const SA_ONSTACK: c_int = 0x08000000;
 pub const SA_SIGINFO: c_int = 4;
 pub const SIGBUS: c_int = 7;
-pub const SIGSTKSZ: size_t = 0x2000;
-pub const MINSIGSTKSZ: size_t = 2048;
+pub const SIGSTKSZ: size_t = 10240;
+pub const MINSIGSTKSZ: size_t = 4096;
 pub const SIG_SETMASK: c_int = 2;
 
 pub const O_NOCTTY: c_int = 256;
@@ -362,7 +358,6 @@ pub const CIBAUD: crate::tcflag_t = 0o02003600000;
 
 pub const ISIG: crate::tcflag_t = 0o000001;
 pub const ICANON: crate::tcflag_t = 0o000002;
-pub const XCASE: crate::tcflag_t = 0o000004;
 pub const ECHOE: crate::tcflag_t = 0o000020;
 pub const ECHOK: crate::tcflag_t = 0o000040;
 pub const ECHONL: crate::tcflag_t = 0o000100;

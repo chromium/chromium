@@ -215,7 +215,7 @@ s! {
         pub cr_uid: crate::uid_t,
         pub cr_ngroups: c_short,
         pub cr_groups: [crate::gid_t; 16],
-        __cr_unused1: *mut c_void,
+        __cr_unused1: Padding<*mut c_void>,
     }
 
     pub struct stack_t {
@@ -260,8 +260,8 @@ s! {
         pub cp_sys: u64,
         pub cp_intr: u64,
         pub cp_idel: u64,
-        cp_unused01: u64,
-        cp_unused02: u64,
+        cp_unused01: Padding<u64>,
+        cp_unused02: Padding<u64>,
         pub cp_sample_pc: u64,
         pub cp_sample_sp: u64,
         pub cp_msg: [c_char; 32],
@@ -382,8 +382,8 @@ s! {
         pub vm_daddr: *mut c_char,
         pub vm_maxsaddr: *mut c_char,
         pub vm_minsaddr: *mut c_char,
-        _unused1: c_int,
-        _unused2: c_int,
+        _unused1: Padding<c_int>,
+        _unused2: Padding<c_int>,
         pub vm_pagesupply: c_int,
         pub vm_holdcnt: c_uint,
         pub vm_refcnt: c_uint,

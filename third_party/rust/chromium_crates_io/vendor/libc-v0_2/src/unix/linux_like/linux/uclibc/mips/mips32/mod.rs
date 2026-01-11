@@ -150,27 +150,27 @@ s! {
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
         #[cfg(target_endian = "big")]
-        __glibc_reserved1: c_ulong,
+        __glibc_reserved1: Padding<c_ulong>,
         pub msg_stime: crate::time_t,
         #[cfg(target_endian = "little")]
-        __glibc_reserved1: c_ulong,
+        __glibc_reserved1: Padding<c_ulong>,
         #[cfg(target_endian = "big")]
-        __glibc_reserved2: c_ulong,
+        __glibc_reserved2: Padding<c_ulong>,
         pub msg_rtime: crate::time_t,
         #[cfg(target_endian = "little")]
-        __glibc_reserved2: c_ulong,
+        __glibc_reserved2: Padding<c_ulong>,
         #[cfg(target_endian = "big")]
-        __glibc_reserved3: c_ulong,
+        __glibc_reserved3: Padding<c_ulong>,
         pub msg_ctime: crate::time_t,
         #[cfg(target_endian = "little")]
-        __glibc_reserved3: c_ulong,
+        __glibc_reserved3: Padding<c_ulong>,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __glibc_reserved4: c_ulong,
-        __glibc_reserved5: c_ulong,
+        __glibc_reserved4: Padding<c_ulong>,
+        __glibc_reserved5: Padding<c_ulong>,
     }
 
     pub struct statfs {
@@ -235,7 +235,7 @@ s! {
         pub l_len: off_t,
         pub l_sysid: c_long,
         pub l_pid: crate::pid_t,
-        pad: [c_long; 4],
+        pad: Padding<[c_long; 4]>,
     }
 
     pub struct sysinfo {

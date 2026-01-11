@@ -14,7 +14,7 @@ pub type idtype_t = c_int;
 type __pthread_spin_t = __cpu_simple_lock_nv_t;
 pub type shmatt_t = c_uint;
 pub type cpuset_t = _cpuset;
-pub type pthread_spin_t = c_uchar;
+pub type pthread_spin_t = __pthread_spin_t;
 
 // elf.h
 
@@ -80,6 +80,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
+            #[cfg(target_pointer_width = "64")]
             __pad1: Padding<c_int>,
             _pid: crate::pid_t,
         }
@@ -92,6 +93,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
+            #[cfg(target_pointer_width = "64")]
             __pad1: Padding<c_int>,
             _pid: crate::pid_t,
             _uid: crate::uid_t,
@@ -105,6 +107,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
+            #[cfg(target_pointer_width = "64")]
             __pad1: Padding<c_int>,
             _pid: crate::pid_t,
             _uid: crate::uid_t,
@@ -119,12 +122,10 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
+            #[cfg(target_pointer_width = "64")]
             __pad1: Padding<c_int>,
             _pid: crate::pid_t,
             _uid: crate::uid_t,
-            _value: crate::sigval,
-            _cpid: crate::pid_t,
-            _cuid: crate::uid_t,
             status: c_int,
         }
         (*(self as *const siginfo_t as *const siginfo_timer)).status
@@ -211,9 +212,13 @@ s! {
         pub si_signo: c_int,
         pub si_code: c_int,
         pub si_errno: c_int,
+        #[cfg(target_pointer_width = "64")]
         __pad1: Padding<c_int>,
         pub si_addr: *mut c_void,
+        #[cfg(target_pointer_width = "64")]
         __pad2: Padding<[u64; 13]>,
+        #[cfg(target_pointer_width = "32")]
+        __pad2: Padding<[u64; 14]>,
     }
 
     pub struct pthread_attr_t {
@@ -231,16 +236,16 @@ s! {
             target_arch = "x86",
             target_arch = "x86_64"
         ))]
-        ptm_pad1: [u8; 3],
+        ptm_pad1: Padding<[u8; 3]>,
         // actually a union with a non-unused, 0-initialized field
-        ptm_unused: __pthread_spin_t,
+        ptm_unused: Padding<__pthread_spin_t>,
         #[cfg(any(
             target_arch = "sparc",
             target_arch = "sparc64",
             target_arch = "x86",
             target_arch = "x86_64"
         ))]
-        ptm_pad2: [u8; 3],
+        ptm_pad2: Padding<[u8; 3]>,
         ptm_owner: crate::pthread_t,
         ptm_waiters: *mut u8,
         ptm_recursed: c_uint,
@@ -1282,9 +1287,9 @@ cfg_if! {
         pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
             ptm_magic: 0x33330003,
             ptm_errorcheck: 0,
-            ptm_pad1: [0; 3],
-            ptm_unused: 0,
-            ptm_pad2: [0; 3],
+            ptm_pad1: Padding::uninit(),
+            ptm_unused: Padding::uninit(),
+            ptm_pad2: Padding::uninit(),
             ptm_waiters: 0 as *mut _,
             ptm_owner: 0,
             ptm_recursed: 0,
@@ -1294,7 +1299,7 @@ cfg_if! {
         pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
             ptm_magic: 0x33330003,
             ptm_errorcheck: 0,
-            ptm_unused: 0,
+            ptm_unused: Padding::uninit(),
             ptm_waiters: 0 as *mut _,
             ptm_owner: 0,
             ptm_recursed: 0,

@@ -252,7 +252,7 @@ s! {
         pub ai_socktype: c_int,
         pub ai_protocol: c_int,
         #[cfg(target_arch = "sparc64")]
-        __sparcv9_pad: c_int,
+        __sparcv9_pad: Padding<c_int>,
         pub ai_addrlen: crate::socklen_t,
         pub ai_canonname: *mut c_char,
         pub ai_addr: *mut crate::sockaddr,

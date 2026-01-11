@@ -3,6 +3,8 @@ use crate::prelude::*;
 
 pub type wchar_t = i32;
 
+pub type stat64 = stat;
+
 s! {
     pub struct termios {
         pub c_iflag: crate::tcflag_t,
@@ -23,38 +25,44 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __st_rdev_padding: c_short,
+        __st_rdev_padding: Padding<c_short>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
+
+        #[cfg(musl32_time64)]
+        __st_atim32: Padding<__c_anonymous_timespec32>,
+        #[cfg(musl32_time64)]
+        __st_mtim32: Padding<__c_anonymous_timespec32>,
+        #[cfg(musl32_time64)]
+        __st_ctim32: Padding<__c_anonymous_timespec32>,
+
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime_nsec: c_long,
+
         __unused: Padding<[c_long; 2]>,
+
+        #[cfg(musl32_time64)]
+        pub st_atim: crate::timespec,
+        #[cfg(musl32_time64)]
+        pub st_mtim: crate::timespec,
+        #[cfg(musl32_time64)]
+        pub st_ctim: crate::timespec,
     }
 
-    pub struct stat64 {
-        pub st_dev: crate::dev_t,
-        pub st_ino: crate::ino_t,
-        pub st_mode: crate::mode_t,
-        pub st_nlink: crate::nlink_t,
-        pub st_uid: crate::uid_t,
-        pub st_gid: crate::gid_t,
-        pub st_rdev: crate::dev_t,
-        __st_rdev_padding: c_short,
-        pub st_size: off_t,
-        pub st_blksize: crate::blksize_t,
-        pub st_blocks: crate::blkcnt_t,
-        pub st_atime: crate::time_t,
-        pub st_atime_nsec: c_long,
-        pub st_mtime: crate::time_t,
-        pub st_mtime_nsec: c_long,
-        pub st_ctime: crate::time_t,
-        pub st_ctime_nsec: c_long,
-        __unused: Padding<[c_long; 2]>,
+    struct __c_anonymous_timespec32 {
+        __tv_sec: c_long,
+        __tv_nsec: c_long,
     }
 
     pub struct stack_t {
@@ -86,29 +94,83 @@ s! {
 
     pub struct shmid_ds {
         pub shm_perm: crate::ipc_perm,
+
+        #[cfg(musl32_time64)]
+        __shm_atime_hi: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __shm_atime_lo: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __shm_dtime_hi: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __shm_dtime_lo: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __shm_ctime_hi: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __shm_ctime_lo: Padding<c_ulong>,
+
+        #[cfg(not(musl32_time64))]
         __unused1: Padding<c_int>,
+        #[cfg(not(musl32_time64))]
         pub shm_atime: crate::time_t,
+        #[cfg(not(musl32_time64))]
         __unused2: Padding<c_int>,
+        #[cfg(not(musl32_time64))]
         pub shm_dtime: crate::time_t,
+        #[cfg(not(musl32_time64))]
         __unused3: Padding<c_int>,
+        #[cfg(not(musl32_time64))]
         pub shm_ctime: crate::time_t,
+        #[cfg(not(musl32_time64))]
         __unused4: Padding<c_int>,
+
+        #[cfg(musl32_time64)]
+        __pad1: Padding<c_ulong>,
+
         pub shm_segsz: size_t,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
+        #[cfg(not(musl32_time64))]
         __pad1: Padding<c_ulong>,
         __pad2: Padding<c_ulong>,
+
+        #[cfg(musl32_time64)]
+        pub shm_atime: crate::time_t,
+        #[cfg(musl32_time64)]
+        pub shm_dtime: crate::time_t,
+        #[cfg(musl32_time64)]
+        pub shm_ctime: crate::time_t,
     }
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
+
+        #[cfg(musl32_time64)]
+        __msg_stime_hi: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __msg_stime_lo: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __msg_rtime_hi: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __msg_rtime_lo: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __msg_ctime_hi: Padding<c_ulong>,
+        #[cfg(musl32_time64)]
+        __msg_ctime_lo: Padding<c_ulong>,
+
+        #[cfg(not(musl32_time64))]
         __unused1: Padding<c_int>,
+        #[cfg(not(musl32_time64))]
         pub msg_stime: crate::time_t,
+        #[cfg(not(musl32_time64))]
         __unused2: Padding<c_int>,
+        #[cfg(not(musl32_time64))]
         pub msg_rtime: crate::time_t,
+        #[cfg(not(musl32_time64))]
         __unused3: Padding<c_int>,
+        #[cfg(not(musl32_time64))]
         pub msg_ctime: crate::time_t,
+
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
@@ -116,6 +178,13 @@ s! {
         pub msg_lrpid: crate::pid_t,
         __pad1: Padding<c_ulong>,
         __pad2: Padding<c_ulong>,
+
+        #[cfg(musl32_time64)]
+        pub msg_stime: crate::time_t,
+        #[cfg(musl32_time64)]
+        pub msg_rtime: crate::time_t,
+        #[cfg(musl32_time64)]
+        pub msg_ctime: crate::time_t,
     }
 }
 

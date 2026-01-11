@@ -46,7 +46,7 @@ s! {
         pub ut_exit: __exit_status, // FIXME(netbsd): when anonymous struct are supported
         pub ut_ss: crate::sockaddr_storage,
         pub ut_tv: crate::timeval,
-        ut_pad: [u8; _UTX_PADSIZE],
+        ut_pad: Padding<[u8; _UTX_PADSIZE]>,
     }
 
     pub struct __exit_status {

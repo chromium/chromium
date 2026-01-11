@@ -1,10 +1,7 @@
 //! RISC-V-specific definitions for 64-bit linux-like values
 
+use crate::off_t;
 use crate::prelude::*;
-use crate::{
-    off64_t,
-    off_t,
-};
 
 pub type wchar_t = c_int;
 
@@ -12,6 +9,8 @@ pub type nlink_t = c_uint;
 pub type blksize_t = c_int;
 pub type __u64 = c_ulonglong;
 pub type __s64 = c_longlong;
+
+pub type stat64 = stat;
 
 s! {
     pub struct stat {
@@ -22,40 +21,33 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        pub __pad1: crate::dev_t,
+        __pad1: Padding<crate::dev_t>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
-        pub __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub st_blocks: crate::blkcnt_t,
-        pub st_atime: crate::time_t,
-        pub st_atime_nsec: c_long,
-        pub st_mtime: crate::time_t,
-        pub st_mtime_nsec: c_long,
-        pub st_ctime: crate::time_t,
-        pub st_ctime_nsec: c_long,
-        __unused: Padding<[c_int; 2usize]>,
-    }
 
-    pub struct stat64 {
-        pub st_dev: crate::dev_t,
-        pub st_ino: crate::ino64_t,
-        pub st_mode: crate::mode_t,
-        pub st_nlink: crate::nlink_t,
-        pub st_uid: crate::uid_t,
-        pub st_gid: crate::gid_t,
-        pub st_rdev: crate::dev_t,
-        pub __pad1: crate::dev_t,
-        pub st_size: off64_t,
-        pub st_blksize: crate::blksize_t,
-        pub __pad2: c_int,
-        pub st_blocks: crate::blkcnt_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime_nsec: c_long,
-        __unused: Padding<[c_int; 2]>,
+
+        #[cfg(musl_v1_2_3)]
+        pub st_atim: crate::timespec,
+        #[cfg(musl_v1_2_3)]
+        pub st_mtim: crate::timespec,
+        #[cfg(musl_v1_2_3)]
+        pub st_ctim: crate::timespec,
+
+        __unused: Padding<[c_int; 2usize]>,
     }
 
     pub struct ipc_perm {

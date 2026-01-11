@@ -563,7 +563,7 @@ s! {
         pub mode: mode_t,
         pub seq: c_uint,
         pub key: crate::key_t,
-        _reserved: [c_int; 4],
+        _reserved: Padding<[c_int; 4]>,
     }
 
     pub struct regex_t {
@@ -615,7 +615,7 @@ s! {
         pub bs_recv: u64,
         pub bs_drop: u64,
         pub bs_capt: u64,
-        bs_padding: [u64; 13],
+        bs_padding: Padding<[u64; 13]>,
     }
 
     #[cfg(target_env = "nto71_iosock")]
@@ -876,8 +876,18 @@ pub const MS_SYNC: c_int = 2;
 
 pub const SCM_RIGHTS: c_int = 0x01;
 pub const SCM_TIMESTAMP: c_int = 0x02;
+
+// QNX Network Stack Versioning:
+//
+// The `if` block targets the legacy `io-pkt` stack.
+// - target_env = "nto70": QNX 7.0
+// - target_env = "nto71": Standard QNX 7.1 (default legacy stack)
+//
+// The `else` block targets the modern `io-sock` stack.
+// - target_env = "nto71_iosock": QNX 7.1 with the optional new stack
+// - target_env = "nto80": QNX 8.0
 cfg_if! {
-    if #[cfg(not(target_env = "nto71_iosock"))] {
+    if #[cfg(any(target_env = "nto70", target_env = "nto71"))] {
         pub const SCM_CREDS: c_int = 0x04;
         pub const IFF_NOTRAILERS: c_int = 0x00000020;
         pub const AF_INET6: c_int = 24;

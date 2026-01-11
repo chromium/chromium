@@ -164,8 +164,6 @@ pub const EAI_MEMORY: c_int = -10;
 pub const EAI_SYSTEM: c_int = -11;
 pub const EAI_OVERFLOW: c_int = -12;
 
-pub const _SC_PAGESIZE: c_int = 8;
-pub const _SC_GETPW_R_SIZE_MAX: c_int = 51;
 pub const PTHREAD_STACK_MIN: size_t = 32 * 1024;
 
 pub const IP_HDRINCL: c_int = 2;
