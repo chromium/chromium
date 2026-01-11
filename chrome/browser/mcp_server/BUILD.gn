@@ -20,6 +20,8 @@ source_set("mcp_server") {
     "//components/pref_registry",
     "//components/prefs",
     "//content/public/browser",
+    "//net",
+    "//net:net",
   ]
 }
 

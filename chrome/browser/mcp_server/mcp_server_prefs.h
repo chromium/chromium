@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_MCP_SERVER_MCP_SERVER_PREFS_H_
 #define CHROME_BROWSER_MCP_SERVER_MCP_SERVER_PREFS_H_
 
+class PrefRegistrySimple;
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -15,7 +17,10 @@ namespace mcp_server {
 extern const char kMcpServerEnabled[];
 extern const char kMcpServerPort[];
 
-// Registers profile-level preferences for MCP Server
+// Registers local-state preferences for MCP Server (browser-wide)
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+// Registers profile-level preferences for MCP Server (for Settings UI)
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace mcp_server

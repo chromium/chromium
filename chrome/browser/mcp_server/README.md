@@ -4,9 +4,9 @@
 
 MCP (Model Control Protocol) Server is an embedded HTTP/WebSocket server in Chromium that provides programmatic browser control for AI agents. It runs on `localhost:9224` and offers a comprehensive API for tab management, UI interactions, DOM queries, and monitoring.
 
-**Status:** Week 1 Complete ✅ | Week 2 In Progress 🔄
+**Status:** Task 5 Complete ✅ (HTTP Server on localhost:9224)
 **Settings UI:** `chrome://settings/ai` (MCP Server section)
-**Feature Flag:** `chrome://flags#mcp-server`
+**HTTP Server:** http://localhost:9224 (auto-start with toggle ON)
 
 ## Architecture
 

@@ -70,9 +70,6 @@ class MCPServer {
   // Enable/disable MCP Server in preferences
   void SetEnabledInPrefs(bool enabled);
 
-  // Save current running state to preferences
-  void SaveStateToPrefs();
-
  private:
   friend class base::NoDestructor<MCPServer>;
 

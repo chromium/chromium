@@ -60,6 +60,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
+#include "chrome/browser/mcp_server/mcp_server.h"
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/media/chrome_media_session_client.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
@@ -1397,6 +1398,10 @@ void BrowserProcessImpl::PreCreateThreads() {
       std::make_unique<SecureOriginPrefsObserver>(local_state());
   site_isolation_prefs_observer_ =
       std::make_unique<SiteIsolationPrefsObserver>(local_state());
+
+  // Initialize MCP Server with local state preferences
+  // This sets up automatic start/stop based on chrome://settings/ai
+  mcp_server::MCPServer::GetInstance()->SetPrefService(local_state());
 
   // Create SystemNetworkContextManager without a NetworkService if it has not
   // been requested yet.

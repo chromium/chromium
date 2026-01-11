@@ -49,15 +49,15 @@
 <!-- MCP Server Control -->
 <settings-section page-title="$i18n{mcpServerSectionTitle}">
   <settings-toggle-button id="mcpServerToggle"
-      pref="{{prefs.mcp_server.enabled}}"
+      pref="{{prefs.ai_features.mcp_server_enabled}}"
       label="$i18n{mcpServerLabel}"
-      sub-label="[[getMcpServerSubLabel_(prefs.mcp_server.enabled.value, prefs.mcp_server.port.value)]]">
+      sub-label="[[getMcpServerSubLabel_(prefs.ai_features.mcp_server_enabled.value, prefs.ai_features.mcp_server_port.value)]]">
   </settings-toggle-button>
-  <div class="settings-box" hidden="[[!prefs.mcp_server.enabled.value]]">
+  <div class="settings-box" hidden="[[!prefs.ai_features.mcp_server_enabled.value]]">
     <div class="start settings-box-text">
       $i18n{mcpServerConnectionInfo}
-      <div>HTTP: http://localhost:[[prefs.mcp_server.port.value]]/mcp/tabs</div>
-      <div>WebSocket: ws://127.0.0.1:[[prefs.mcp_server.port.value]]/ws</div>
+      <div>HTTP: http://localhost:[[prefs.ai_features.mcp_server_port.value]]/mcp/tabs</div>
+      <div>WebSocket: ws://127.0.0.1:[[prefs.ai_features.mcp_server_port.value]]/ws</div>
     </div>
   </div>
 </settings-section>

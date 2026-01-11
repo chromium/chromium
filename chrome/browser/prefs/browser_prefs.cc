@@ -1362,6 +1362,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   invalidation::PerUserTopicSubscriptionManager::RegisterPrefs(registry);
   language::GeoLanguageProvider::RegisterLocalStatePrefs(registry);
   language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
+  mcp_server::RegisterLocalStatePrefs(registry);
   memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
   metrics::RegisterDemographicsLocalStatePrefs(registry);
   metrics::TabStatsTracker::RegisterPrefs(registry);
@@ -1682,7 +1683,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   media_device_salt::MediaDeviceIDSalt::RegisterProfilePrefs(registry);
   MediaEngagementService::RegisterProfilePrefs(registry);
   MediaStorageIdSalt::RegisterProfilePrefs(registry);
-  mcp_server::RegisterProfilePrefs(registry);
+  // MCP Server uses local_state prefs (browser-wide), not profile prefs
   metrics::RegisterDemographicsProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);

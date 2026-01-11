@@ -5,7 +5,7 @@
 #include "chrome/browser/mcp_server/mcp_server.h"
 
 #include "base/test/task_environment.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/mcp_server/mcp_server_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,9 +21,9 @@ class MCPServerTest : public testing::Test {
     server_ = MCPServer::GetInstance();
 
     // Register MCP Server preferences
-    pref_service_.registry()->RegisterBooleanPref(prefs::kMCPServerEnabled,
+    pref_service_.registry()->RegisterBooleanPref(mcp_server::kMcpServerEnabled,
                                                    false);
-    pref_service_.registry()->RegisterIntegerPref(prefs::kMCPServerPort, 9224);
+    pref_service_.registry()->RegisterIntegerPref(mcp_server::kMcpServerPort, 9224);
 
     // Set the pref service on the server
     server_->SetPrefService(&pref_service_);
@@ -151,14 +151,14 @@ TEST_F(MCPServerTest, RejectHighPortNumber) {
 // Test: Initial preference state
 TEST_F(MCPServerTest, PrefsInitialState) {
   EXPECT_FALSE(server_->IsEnabledInPrefs());
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 9224);
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 9224);
 }
 
 // Test: Set enabled in preferences
 TEST_F(MCPServerTest, SetEnabledInPrefs) {
   server_->SetEnabledInPrefs(true);
   EXPECT_TRUE(server_->IsEnabledInPrefs());
-  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
+  EXPECT_TRUE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
 }
 
 // Test: Set disabled in preferences
@@ -168,29 +168,29 @@ TEST_F(MCPServerTest, SetDisabledInPrefs) {
 
   server_->SetEnabledInPrefs(false);
   EXPECT_FALSE(server_->IsEnabledInPrefs());
-  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
+  EXPECT_FALSE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
 }
 
 // Test: Starting server saves state to preferences
 TEST_F(MCPServerTest, StartServerSavesStateToPrefs) {
   server_->Start(8080);
-  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 8080);
+  EXPECT_TRUE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 8080);
 }
 
 // Test: Stopping server updates preferences
 TEST_F(MCPServerTest, StopServerUpdatesPrefs) {
   server_->Start(8080);
-  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
+  EXPECT_TRUE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
 
   server_->Stop();
-  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
+  EXPECT_FALSE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
 }
 
 // Test: Start with port 0 uses port from preferences
 TEST_F(MCPServerTest, StartWithPortZeroUsesPrefs) {
   // Set custom port in preferences
-  pref_service_.SetInteger(prefs::kMCPServerPort, 7777);
+  pref_service_.SetInteger(mcp_server::kMcpServerPort, 7777);
 
   // Start with port 0 should use preference
   bool result = server_->Start(0);
@@ -201,7 +201,7 @@ TEST_F(MCPServerTest, StartWithPortZeroUsesPrefs) {
 // Test: Start with explicit port overrides preferences
 TEST_F(MCPServerTest, StartWithExplicitPortOverridesPrefs) {
   // Set custom port in preferences
-  pref_service_.SetInteger(prefs::kMCPServerPort, 7777);
+  pref_service_.SetInteger(mcp_server::kMcpServerPort, 7777);
 
   // Start with explicit port should override preference
   bool result = server_->Start(8888);
@@ -209,32 +209,32 @@ TEST_F(MCPServerTest, StartWithExplicitPortOverridesPrefs) {
   EXPECT_EQ(server_->GetPort(), 8888);
 
   // Preference should be updated to match
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 8888);
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 8888);
 }
 
 // Test: Save state manually
 TEST_F(MCPServerTest, ManualSaveStateToPrefs) {
   server_->Start(9999);
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 9999);
-  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 9999);
+  EXPECT_TRUE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
 
   // Manual save should persist current state
   server_->SaveStateToPrefs();
-  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 9999);
+  EXPECT_TRUE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 9999);
 }
 
 // Test: Preferences persist across start/stop cycles
 TEST_F(MCPServerTest, PreferencesPersistAcrossCycles) {
   // First cycle
   server_->Start(5555);
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 5555);
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 5555);
 
   server_->Stop();
-  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kMCPServerEnabled));
+  EXPECT_FALSE(pref_service_.GetBoolean(mcp_server::kMcpServerEnabled));
 
   // Port preference should still be saved
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kMCPServerPort), 5555);
+  EXPECT_EQ(pref_service_.GetInteger(mcp_server::kMcpServerPort), 5555);
 
   // Second cycle with port 0 should restore previous port
   server_->Start(0);
