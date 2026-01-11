@@ -355,8 +355,8 @@ content::WebContents* Dispatcher::GetWebContentsFromParams(
     return nullptr;
   }
 
-  int tab_id = 0;
-  if (!base::StringToInt(it->second, &tab_id)) {
+  int64_t tab_id = 0;
+  if (!base::StringToInt64(it->second, &tab_id)) {
     return nullptr;
   }
 
@@ -365,7 +365,7 @@ content::WebContents* Dispatcher::GetWebContentsFromParams(
     TabStripModel* tab_strip = browser->tab_strip_model();
     for (int i = 0; i < tab_strip->count(); ++i) {
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
-      if (reinterpret_cast<intptr_t>(web_contents) == tab_id) {
+      if (reinterpret_cast<intptr_t>(web_contents) == static_cast<intptr_t>(tab_id)) {
         return web_contents;
       }
     }
@@ -392,7 +392,7 @@ Response Dispatcher::HandleClickAction(const RequestContext& ctx) {
   }
 
   // Use RunLoop to wait for async callback
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;
@@ -439,7 +439,7 @@ Response Dispatcher::HandleTypeAction(const RequestContext& ctx) {
     return Response::Error(400, "Missing required field: text");
   }
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;
@@ -481,7 +481,7 @@ Response Dispatcher::HandleHoverAction(const RequestContext& ctx) {
     return Response::Error(400, "Missing required field: selector");
   }
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;
@@ -528,7 +528,7 @@ Response Dispatcher::HandleSelectAction(const RequestContext& ctx) {
     return Response::Error(400, "Missing required field: value");
   }
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;
@@ -573,7 +573,7 @@ Response Dispatcher::HandleWaitAction(const RequestContext& ctx) {
   // Optional timeout (default 30 seconds)
   int timeout_ms = ctx.body.FindInt("timeout_ms").value_or(30000);
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;
@@ -615,7 +615,7 @@ Response Dispatcher::HandleEvaluateAction(const RequestContext& ctx) {
     return Response::Error(400, "Missing required field: code");
   }
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;
@@ -655,7 +655,7 @@ Response Dispatcher::HandleScreenshotAction(const RequestContext& ctx) {
   // Optional full_page parameter (default false)
   bool full_page = ctx.body.FindBool("full_page").value_or(false);
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool success = false;
   std::string error_message;
   base::Value::Dict result_data;

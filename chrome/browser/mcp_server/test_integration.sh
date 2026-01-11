@@ -2,7 +2,8 @@
 # MCP Server Integration Test Suite
 # Tests all Dispatcher and Tab Controller endpoints
 
-set -e
+# Note: Removed 'set -e' to allow tests to continue even if some fail
+# We want to run all tests and report results at the end
 
 # Colors for output
 RED='\033[0;31m'
@@ -155,36 +156,60 @@ run_test() {
 
     # Make HTTP request
     local response
+    local curl_exit_code=0
+
     if [ "$method" = "GET" ]; then
-        response=$(curl -s "$MCP_SERVER_URL$path")
+        response=$(curl -s -w "\n%{http_code}" "$MCP_SERVER_URL$path" 2>&1) || curl_exit_code=$?
     elif [ "$method" = "POST" ]; then
-        response=$(curl -s -X POST "$MCP_SERVER_URL$path" \
+        response=$(curl -s -w "\n%{http_code}" -X POST "$MCP_SERVER_URL$path" \
             -H "Content-Type: application/json" \
-            -d "$data")
+            -d "$data" 2>&1) || curl_exit_code=$?
     elif [ "$method" = "DELETE" ]; then
-        response=$(curl -s -X DELETE "$MCP_SERVER_URL$path")
+        response=$(curl -s -w "\n%{http_code}" -X DELETE "$MCP_SERVER_URL$path" 2>&1) || curl_exit_code=$?
+    fi
+
+    # Check if curl command failed
+    if [ $curl_exit_code -ne 0 ]; then
+        print_fail "$test_name" "Successful HTTP request" "curl failed with exit code $curl_exit_code"
+        echo "{}"
+        return 1
+    fi
+
+    # Extract HTTP status code and body
+    local http_code=$(echo "$response" | tail -n1)
+    local body=$(echo "$response" | head -n-1)
+
+    # Debug output
+    print_info "HTTP Status: $http_code"
+
+    # Check HTTP status code
+    if [[ ! "$http_code" =~ ^2[0-9]{2}$ ]]; then
+        print_info "Response body: $body"
     fi
 
     # Validate response
     if [ ! -z "$expected_field" ]; then
-        local actual_value=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('$expected_field', ''))" 2>/dev/null || echo "")
+        local actual_value=$(echo "$body" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('$expected_field', ''))" 2>/dev/null || echo "PARSE_ERROR")
 
-        if [ "$actual_value" = "$expected_value" ]; then
+        if [ "$actual_value" = "PARSE_ERROR" ]; then
+            print_fail "$test_name" "Valid JSON response" "Failed to parse JSON: $body"
+        elif [ "$actual_value" = "$expected_value" ]; then
             print_pass "$test_name"
         else
             print_fail "$test_name" "$expected_value" "$actual_value"
         fi
     else
         # Just check if response is valid JSON
-        if echo "$response" | python3 -m json.tool > /dev/null 2>&1; then
+        if echo "$body" | python3 -m json.tool > /dev/null 2>&1; then
             print_pass "$test_name"
         else
-            print_fail "$test_name" "Valid JSON" "Invalid JSON: $response"
+            print_fail "$test_name" "Valid JSON" "Invalid JSON: $body"
         fi
     fi
 
     # Store response for next tests
-    echo "$response"
+    echo "$body"
+    return 0
 }
 
 # JSON validation helper
@@ -210,15 +235,19 @@ run_tests() {
     print_header "MCP Server Integration Tests"
 
     # Test 1: Server Info
+    print_info "Starting Test 1..."
     local response
-    response=$(run_test "GET / - Server Info" "GET" "/" "" "name" "MCP Server")
+    response=$(run_test "GET / - Server Info" "GET" "/" "" "name" "MCP Server") || true
 
     # Test 2: Health Check
-    response=$(run_test "GET /health - Health Check" "GET" "/health" "" "status" "ok")
+    print_info "Starting Test 2..."
+    response=$(run_test "GET /health - Health Check" "GET" "/health" "" "status" "ok") || true
 
     # Test 3: List Tabs (initially should have 1 new tab)
+    print_info "Starting Test 3..."
     print_test "GET /mcp/tabs - List Tabs (initial)"
-    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs")
+    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs" 2>&1)
+    print_info "Response: $response"
     local tab_count=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(len(data.get('tabs', [])))" 2>/dev/null || echo "0")
 
     if [ "$tab_count" -ge "1" ]; then
@@ -228,11 +257,13 @@ run_tests() {
     fi
 
     # Test 4: Create Tab
+    print_info "Starting Test 4..."
     print_test "POST /mcp/tabs - Create Tab"
     response=$(curl -s -X POST "$MCP_SERVER_URL/mcp/tabs" \
         -H "Content-Type: application/json" \
-        -d '{"url": "https://example.com"}')
+        -d '{"url": "https://example.com"}' 2>&1)
 
+    print_info "Response: $response"
     local new_tab_id=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('id', ''))" 2>/dev/null || echo "")
     local new_tab_url=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('url', ''))" 2>/dev/null || echo "")
 
@@ -246,8 +277,9 @@ run_tests() {
     sleep 2
 
     # Test 5: List Tabs (should now have 2+ tabs)
+    print_info "Starting Test 5..."
     print_test "GET /mcp/tabs - List Tabs (after create)"
-    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs")
+    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs" 2>&1)
     local new_tab_count=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(len(data.get('tabs', [])))" 2>/dev/null || echo "0")
 
     if [ "$new_tab_count" -ge "2" ]; then
@@ -258,8 +290,9 @@ run_tests() {
 
     # Test 6: Get Tab State
     if [ ! -z "$new_tab_id" ]; then
+        print_info "Starting Test 6..."
         print_test "GET /mcp/tabs/:id/state - Get Tab State"
-        response=$(curl -s "$MCP_SERVER_URL/mcp/tabs/$new_tab_id/state")
+        response=$(curl -s "$MCP_SERVER_URL/mcp/tabs/$new_tab_id/state" 2>&1)
         local tab_title=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('title', ''))" 2>/dev/null || echo "")
 
         if [[ "$tab_title" == *"Example"* ]] || [ ! -z "$tab_title" ]; then
@@ -270,8 +303,9 @@ run_tests() {
     fi
 
     # Test 7: Get first tab ID for activation test
+    print_info "Starting Test 7..."
     print_test "Finding first tab for activation test"
-    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs")
+    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs" 2>&1)
     local first_tab_id=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); tabs = data.get('tabs', []); print(tabs[0]['id'] if tabs else '')" 2>/dev/null || echo "")
 
     if [ ! -z "$first_tab_id" ]; then
@@ -282,8 +316,9 @@ run_tests() {
 
     # Test 8: Activate Tab
     if [ ! -z "$first_tab_id" ]; then
+        print_info "Starting Test 8..."
         print_test "POST /mcp/tabs/:id/activate - Activate Tab"
-        response=$(curl -s -X POST "$MCP_SERVER_URL/mcp/tabs/$first_tab_id/activate")
+        response=$(curl -s -X POST "$MCP_SERVER_URL/mcp/tabs/$first_tab_id/activate" 2>&1)
         local success=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('success', False))" 2>/dev/null || echo "False")
 
         if [ "$success" = "True" ]; then
@@ -294,8 +329,9 @@ run_tests() {
 
         # Verify activation
         sleep 1
+        print_info "Starting Test 8b (verify activation)..."
         print_test "Verify tab activation"
-        response=$(curl -s "$MCP_SERVER_URL/mcp/tabs")
+        response=$(curl -s "$MCP_SERVER_URL/mcp/tabs" 2>&1)
         local active_tab_id=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); tabs = data.get('tabs', []); active = [t for t in tabs if t.get('active')]; print(active[0]['id'] if active else '')" 2>/dev/null || echo "")
 
         if [ "$active_tab_id" = "$first_tab_id" ]; then
@@ -307,8 +343,9 @@ run_tests() {
 
     # Test 9: Close Tab
     if [ ! -z "$new_tab_id" ]; then
+        print_info "Starting Test 9..."
         print_test "DELETE /mcp/tabs/:id - Close Tab"
-        response=$(curl -s -X DELETE "$MCP_SERVER_URL/mcp/tabs/$new_tab_id")
+        response=$(curl -s -X DELETE "$MCP_SERVER_URL/mcp/tabs/$new_tab_id" 2>&1)
         local success=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('success', False))" 2>/dev/null || echo "False")
 
         if [ "$success" = "True" ]; then
@@ -319,8 +356,9 @@ run_tests() {
 
         # Verify tab is gone
         sleep 1
+        print_info "Starting Test 9b (verify closure)..."
         print_test "Verify tab closure"
-        response=$(curl -s "$MCP_SERVER_URL/mcp/tabs/$new_tab_id/state")
+        response=$(curl -s "$MCP_SERVER_URL/mcp/tabs/$new_tab_id/state" 2>&1)
         local error=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('error', ''))" 2>/dev/null || echo "")
 
         if [[ "$error" == *"not found"* ]]; then
@@ -331,8 +369,9 @@ run_tests() {
     fi
 
     # Test 10: Error - Invalid Tab ID
+    print_info "Starting Test 10..."
     print_test "GET /mcp/tabs/99999/state - Invalid Tab ID"
-    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs/99999/state")
+    response=$(curl -s "$MCP_SERVER_URL/mcp/tabs/99999/state" 2>&1)
     local error=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print('error' in data)" 2>/dev/null || echo "False")
 
     if [ "$error" = "True" ]; then
@@ -342,8 +381,9 @@ run_tests() {
     fi
 
     # Test 11: Error - Invalid Route
+    print_info "Starting Test 11..."
     print_test "GET /invalid/path - Invalid Route"
-    response=$(curl -s "$MCP_SERVER_URL/invalid/path")
+    response=$(curl -s "$MCP_SERVER_URL/invalid/path" 2>&1)
     local error=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('error', ''))" 2>/dev/null || echo "")
 
     if [[ "$error" == *"not found"* ]] || [[ "$error" == *"Route not found"* ]]; then
@@ -353,10 +393,11 @@ run_tests() {
     fi
 
     # Test 12: Error - Invalid JSON
+    print_info "Starting Test 12..."
     print_test "POST /mcp/tabs - Invalid JSON"
     response=$(curl -s -X POST "$MCP_SERVER_URL/mcp/tabs" \
         -H "Content-Type: application/json" \
-        -d '{invalid json}')
+        -d '{invalid json}' 2>&1)
     local error=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('error', ''))" 2>/dev/null || echo "")
 
     if [[ "$error" == *"Invalid JSON"* ]]; then
@@ -366,10 +407,11 @@ run_tests() {
     fi
 
     # Test 13: Error - Missing Required Field
+    print_info "Starting Test 13..."
     print_test "POST /mcp/tabs - Missing URL Field"
     response=$(curl -s -X POST "$MCP_SERVER_URL/mcp/tabs" \
         -H "Content-Type: application/json" \
-        -d '{}')
+        -d '{}' 2>&1)
     local error=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('error', ''))" 2>/dev/null || echo "")
 
     if [[ "$error" == *"url"* ]] || [[ "$error" == *"Missing"* ]]; then
@@ -379,6 +421,7 @@ run_tests() {
     fi
 
     # Test 14: Create Multiple Tabs
+    print_info "Starting Test 14..."
     print_test "POST /mcp/tabs - Create Multiple Tabs"
     local urls=("https://www.google.com" "https://github.com" "https://stackoverflow.com")
     local created_count=0
@@ -386,7 +429,7 @@ run_tests() {
     for url in "${urls[@]}"; do
         response=$(curl -s -X POST "$MCP_SERVER_URL/mcp/tabs" \
             -H "Content-Type: application/json" \
-            -d "{\"url\": \"$url\"}")
+            -d "{\"url\": \"$url\"}" 2>&1)
         local tab_id=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('id', ''))" 2>/dev/null || echo "")
 
         if [ ! -z "$tab_id" ]; then
@@ -399,6 +442,8 @@ run_tests() {
     else
         print_fail "Created 3 tabs" "3 tabs" "$created_count tabs"
     fi
+
+    print_info "All tests completed!"
 }
 
 # Print test summary

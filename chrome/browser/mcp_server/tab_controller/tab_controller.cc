@@ -34,8 +34,8 @@ base::Value::Dict TabController::BuildTabInfo(
   base::Value::Dict tab_info;
 
   // Use WebContents pointer value as unique ID
-  int session_id = reinterpret_cast<intptr_t>(web_contents);
-  tab_info.Set("id", session_id);
+  intptr_t session_id = reinterpret_cast<intptr_t>(web_contents);
+  tab_info.Set("id", static_cast<double>(session_id));
 
   // Get URL
   GURL url = web_contents->GetURL();
@@ -66,7 +66,7 @@ base::Value::Dict TabController::BuildTabInfo(
 }
 
 content::WebContents* TabController::FindWebContentsBySessionId(
-    int session_id) {
+    intptr_t session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Iterate through all browser windows
@@ -162,7 +162,7 @@ std::string TabController::CreateTab(const std::string& url) {
   return json_string;
 }
 
-bool TabController::CloseTab(int session_id) {
+bool TabController::CloseTab(intptr_t session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents = FindWebContentsBySessionId(session_id);
@@ -187,7 +187,7 @@ bool TabController::CloseTab(int session_id) {
   return false;
 }
 
-bool TabController::ActivateTab(int session_id) {
+bool TabController::ActivateTab(intptr_t session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents = FindWebContentsBySessionId(session_id);
@@ -212,7 +212,7 @@ bool TabController::ActivateTab(int session_id) {
   return false;
 }
 
-std::string TabController::GetTabState(int session_id) {
+std::string TabController::GetTabState(intptr_t session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents = FindWebContentsBySessionId(session_id);
