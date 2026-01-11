@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -330,11 +330,8 @@ void DirectoryImpl::WriteFile(const std::string& raw_path,
   }
 
   // If we're given empty data, we don't write and just truncate the file.
-  if (data.size()) {
-    const int data_size = static_cast<int>(data.size());
-    if (UNSAFE_TODO(base_file.Write(
-            0, reinterpret_cast<const char*>(&data.front()), data_size)) ==
-        -1) {
+  if (!data.empty()) {
+    if (!base_file.Write(0, data)) {
       std::move(callback).Run(GetError(base_file));
       return;
     }
