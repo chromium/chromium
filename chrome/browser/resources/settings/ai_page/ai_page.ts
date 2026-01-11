@@ -57,14 +57,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
       },
-
-      mcpServerStatus_: {
-        type: Object,
-        value: () => ({
-          running: false,
-          port: 9224,
-        }),
-      },
     };
   }
 
@@ -73,7 +65,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
-  declare private mcpServerStatus_: {running: boolean, port: number};
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =

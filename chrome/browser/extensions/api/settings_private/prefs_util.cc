@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/mcp_server/mcp_server_prefs.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
@@ -1287,6 +1288,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::
                      kAutofillPredictionImprovementsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
+
+  // MCP Server prefs
+  (*s_allowlist)[mcp_server::kMcpServerEnabled] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[mcp_server::kMcpServerPort] = settings_api::PrefType::kNumber;
 
   // Glic prefs
 #if BUILDFLAG(ENABLE_GLIC)

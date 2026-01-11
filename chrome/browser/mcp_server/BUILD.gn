@@ -10,11 +10,14 @@ source_set("mcp_server") {
   sources = [
     "mcp_server.cc",
     "mcp_server.h",
+    "mcp_server_prefs.cc",
+    "mcp_server_prefs.h",
   ]
 
   deps = [
     "//base",
     "//chrome/common:constants",
+    "//components/pref_registry",
     "//components/prefs",
     "//content/public/browser",
   ]

@@ -51,13 +51,13 @@
   <settings-toggle-button id="mcpServerToggle"
       pref="{{prefs.mcp_server.enabled}}"
       label="$i18n{mcpServerLabel}"
-      sub-label="[[getMcpServerSubLabel_(mcpServerStatus_.running, mcpServerStatus_.port)]]">
+      sub-label="[[getMcpServerSubLabel_(prefs.mcp_server.enabled.value, prefs.mcp_server.port.value)]]">
   </settings-toggle-button>
-  <div class="settings-box" hidden="[[!mcpServerStatus_.running]]">
+  <div class="settings-box" hidden="[[!prefs.mcp_server.enabled.value]]">
     <div class="start settings-box-text">
       $i18n{mcpServerConnectionInfo}
-      <div>HTTP: http://localhost:[[mcpServerStatus_.port]]/mcp/tabs</div>
-      <div>WebSocket: ws://127.0.0.1:[[mcpServerStatus_.port]]/ws</div>
+      <div>HTTP: http://localhost:[[prefs.mcp_server.port.value]]/mcp/tabs</div>
+      <div>WebSocket: ws://127.0.0.1:[[prefs.mcp_server.port.value]]/ws</div>
     </div>
   </div>
 </settings-section>
