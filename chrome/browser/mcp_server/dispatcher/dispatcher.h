@@ -12,8 +12,13 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace mcp_server {
 
+class ActionRunner;
 class TabController;
 
 // HTTP request context
@@ -59,6 +64,9 @@ class Dispatcher {
   // Set tab controller for routing
   void SetTabController(TabController* tab_controller);
 
+  // Set action runner for routing
+  void SetActionRunner(ActionRunner* action_runner);
+
   // Register all API routes
   void RegisterRoutes();
 
@@ -92,11 +100,27 @@ class Dispatcher {
   Response HandleActivateTab(const RequestContext& ctx);
   Response HandleGetTabState(const RequestContext& ctx);
 
+  // Route handlers for actions
+  Response HandleClickAction(const RequestContext& ctx);
+  Response HandleTypeAction(const RequestContext& ctx);
+  Response HandleHoverAction(const RequestContext& ctx);
+  Response HandleSelectAction(const RequestContext& ctx);
+  Response HandleWaitAction(const RequestContext& ctx);
+  Response HandleEvaluateAction(const RequestContext& ctx);
+  Response HandleScreenshotAction(const RequestContext& ctx);
+
+  // Helper: Get WebContents from tab ID in params
+  content::WebContents* GetWebContentsFromParams(
+      const std::map<std::string, std::string>& params);
+
   // Route storage: "METHOD /path/pattern" -> handler
   std::map<std::string, RouteHandler> routes_;
 
   // Tab controller (not owned)
   raw_ptr<TabController> tab_controller_ = nullptr;
+
+  // Action runner (not owned)
+  raw_ptr<ActionRunner> action_runner_ = nullptr;
 };
 
 }  // namespace mcp_server

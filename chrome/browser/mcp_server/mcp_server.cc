@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
+#include "chrome/browser/mcp_server/action_runner/action_runner.h"
 #include "chrome/browser/mcp_server/dispatcher/dispatcher.h"
 #include "chrome/browser/mcp_server/mcp_server_prefs.h"
 #include "chrome/browser/mcp_server/tab_controller/tab_controller.h"
@@ -78,9 +79,13 @@ class MCPServer::Impl : public net::HttpServer::Delegate {
     // Create TabController on UI thread
     tab_controller_ = std::make_unique<TabController>();
 
+    // Create ActionRunner on UI thread
+    action_runner_ = std::make_unique<ActionRunner>();
+
     // Create Dispatcher on UI thread
     dispatcher_ = std::make_unique<Dispatcher>();
     dispatcher_->SetTabController(tab_controller_.get());
+    dispatcher_->SetActionRunner(action_runner_.get());
     dispatcher_->RegisterRoutes();
 
     LOG(INFO) << "Dispatcher and TabController initialized on UI thread";
@@ -378,9 +383,10 @@ class MCPServer::Impl : public net::HttpServer::Delegate {
   // Preference change observer
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  // Dispatcher and TabController (UI thread)
+  // Dispatcher, TabController, and ActionRunner (UI thread)
   std::unique_ptr<Dispatcher> dispatcher_;
   std::unique_ptr<TabController> tab_controller_;
+  std::unique_ptr<ActionRunner> action_runner_;
 };
 
 // Static

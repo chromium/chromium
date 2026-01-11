@@ -15,6 +15,7 @@ source_set("mcp_server") {
   ]
 
   deps = [
+    ":action_runner",
     ":dispatcher",
     ":tab_controller",
     "//base",
@@ -36,8 +37,10 @@ source_set("dispatcher") {
   ]
 
   deps = [
+    ":action_runner",
     ":tab_controller",
     "//base",
+    "//chrome/browser/ui",
     "//content/public/browser",
   ]
 }
@@ -65,7 +68,6 @@ source_set("action_runner") {
   ]
 
   deps = [
-    ":mcp_server",
     "//base",
     "//content/public/browser",
   ]

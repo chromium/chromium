@@ -7,32 +7,115 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
+
+namespace content {
+class WebContents;
+}
+
 namespace mcp_server {
 
-// ActionRunner executes UI interactions
-// Uses CDP Input domain for native input simulation
+// ActionRunner executes UI interactions on web pages
+// Uses JavaScript evaluation for element-based actions
+// Uses CDP Input domain for low-level mouse/keyboard events
 class ActionRunner {
  public:
   ActionRunner();
   ~ActionRunner();
 
-  // Click at coordinates
-  bool Click(int x, int y);
+  // Result callback: (success, error_message, result_data)
+  using ActionCallback =
+      base::OnceCallback<void(bool, const std::string&, base::Value::Dict)>;
 
-  // Type text with realistic delays
-  bool Type(const std::string& text);
+  // Click on element matching selector
+  // Returns element bounds if successful
+  void Click(content::WebContents* web_contents,
+             const std::string& selector,
+             ActionCallback callback);
 
-  // Scroll to element or coordinates
-  bool Scroll(int x, int y);
+  // Type text into element matching selector
+  // Clears existing text first, then types with realistic delays
+  void Type(content::WebContents* web_contents,
+            const std::string& selector,
+            const std::string& text,
+            ActionCallback callback);
 
-  // Drag from start to end
-  bool Drag(int x1, int y1, int x2, int y2);
+  // Hover over element matching selector
+  // Useful for dropdowns and tooltips
+  void Hover(content::WebContents* web_contents,
+             const std::string& selector,
+             ActionCallback callback);
 
-  // Press single key
-  bool KeyPress(const std::string& key);
+  // Select option in dropdown by value or text
+  // Works with <select> elements
+  void SelectOption(content::WebContents* web_contents,
+                    const std::string& selector,
+                    const std::string& value,
+                    ActionCallback callback);
+
+  // Wait for element matching selector to appear
+  // Polls with timeout (default 30 seconds)
+  void WaitForSelector(content::WebContents* web_contents,
+                       const std::string& selector,
+                       int timeout_ms,
+                       ActionCallback callback);
+
+  // Execute arbitrary JavaScript code
+  // Returns the result as JSON-serializable value
+  void Evaluate(content::WebContents* web_contents,
+                const std::string& js_code,
+                ActionCallback callback);
+
+  // Capture screenshot of the page
+  // Returns base64-encoded PNG image
+  void Screenshot(content::WebContents* web_contents,
+                  bool full_page,
+                  ActionCallback callback);
 
  private:
-  // TODO: Implement CDP Input integration
+  // Execute JavaScript and get result
+  void ExecuteScript(content::WebContents* web_contents,
+                     const std::string& script,
+                     ActionCallback callback);
+
+  // Callback for JavaScript execution
+  void OnScriptExecuted(ActionCallback callback, base::Value result);
+
+  // Helper: Get element center coordinates
+  std::string GetElementCenterScript(const std::string& selector);
+
+  // Helper: Check if element exists
+  std::string CheckElementExistsScript(const std::string& selector);
+
+  // Helper: Simulate click via JS
+  std::string ClickElementScript(const std::string& selector);
+
+  // Helper: Type into element
+  std::string TypeIntoElementScript(const std::string& selector,
+                                     const std::string& text);
+
+  // Helper: Hover over element
+  std::string HoverElementScript(const std::string& selector);
+
+  // Helper: Select option
+  std::string SelectOptionScript(const std::string& selector,
+                                  const std::string& value);
+
+  // Helper: Capture screenshot via CDP
+  void CaptureScreenshotCDP(content::WebContents* web_contents,
+                             bool full_page,
+                             ActionCallback callback);
+
+  // Wait for selector implementation (polling)
+  void PollForSelector(content::WebContents* web_contents,
+                       const std::string& selector,
+                       int timeout_ms,
+                       int elapsed_ms,
+                       ActionCallback callback);
+
+  base::WeakPtrFactory<ActionRunner> weak_factory_{this};
 };
 
 }  // namespace mcp_server

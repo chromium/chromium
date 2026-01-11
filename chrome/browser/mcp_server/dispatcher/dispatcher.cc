@@ -7,10 +7,16 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/mcp_server/action_runner/action_runner.h"
 #include "chrome/browser/mcp_server/tab_controller/tab_controller.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/web_contents.h"
 
 namespace mcp_server {
 
@@ -51,6 +57,10 @@ void Dispatcher::SetTabController(TabController* tab_controller) {
   tab_controller_ = tab_controller;
 }
 
+void Dispatcher::SetActionRunner(ActionRunner* action_runner) {
+  action_runner_ = action_runner;
+}
+
 void Dispatcher::RegisterRoutes() {
   // Tab management routes
   RegisterRoute("GET", "/mcp/tabs",
@@ -67,6 +77,29 @@ void Dispatcher::RegisterRoutes() {
                                     base::Unretained(this)));
   RegisterRoute("GET", "/mcp/tabs/:id/state",
                 base::BindRepeating(&Dispatcher::HandleGetTabState,
+                                    base::Unretained(this)));
+
+  // Action routes
+  RegisterRoute("POST", "/mcp/tabs/:id/click",
+                base::BindRepeating(&Dispatcher::HandleClickAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/type",
+                base::BindRepeating(&Dispatcher::HandleTypeAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/hover",
+                base::BindRepeating(&Dispatcher::HandleHoverAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/select",
+                base::BindRepeating(&Dispatcher::HandleSelectAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/wait",
+                base::BindRepeating(&Dispatcher::HandleWaitAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/evaluate",
+                base::BindRepeating(&Dispatcher::HandleEvaluateAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/screenshot",
+                base::BindRepeating(&Dispatcher::HandleScreenshotAction,
                                     base::Unretained(this)));
 
   LOG(INFO) << "Registered " << routes_.size() << " routes";
@@ -312,6 +345,341 @@ Response Dispatcher::HandleGetTabState(const RequestContext& ctx) {
   }
 
   return Response::Ok(std::move(parsed.value()));
+}
+
+// Helper: Get WebContents from tab ID in params
+content::WebContents* Dispatcher::GetWebContentsFromParams(
+    const std::map<std::string, std::string>& params) {
+  auto it = params.find("id");
+  if (it == params.end()) {
+    return nullptr;
+  }
+
+  int tab_id = 0;
+  if (!base::StringToInt(it->second, &tab_id)) {
+    return nullptr;
+  }
+
+  // Find WebContents by tab ID (pointer value)
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    TabStripModel* tab_strip = browser->tab_strip_model();
+    for (int i = 0; i < tab_strip->count(); ++i) {
+      content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
+      if (reinterpret_cast<intptr_t>(web_contents) == tab_id) {
+        return web_contents;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
+// Action Handlers
+
+Response Dispatcher::HandleClickAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* selector = ctx.body.FindString("selector");
+  if (!selector) {
+    return Response::Error(400, "Missing required field: selector");
+  }
+
+  // Use RunLoop to wait for async callback
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->Click(
+      web_contents, *selector,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleTypeAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* selector = ctx.body.FindString("selector");
+  const std::string* text = ctx.body.FindString("text");
+
+  if (!selector) {
+    return Response::Error(400, "Missing required field: selector");
+  }
+  if (!text) {
+    return Response::Error(400, "Missing required field: text");
+  }
+
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->Type(
+      web_contents, *selector, *text,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleHoverAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* selector = ctx.body.FindString("selector");
+  if (!selector) {
+    return Response::Error(400, "Missing required field: selector");
+  }
+
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->Hover(
+      web_contents, *selector,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleSelectAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* selector = ctx.body.FindString("selector");
+  const std::string* value = ctx.body.FindString("value");
+
+  if (!selector) {
+    return Response::Error(400, "Missing required field: selector");
+  }
+  if (!value) {
+    return Response::Error(400, "Missing required field: value");
+  }
+
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->SelectOption(
+      web_contents, *selector, *value,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleWaitAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* selector = ctx.body.FindString("selector");
+  if (!selector) {
+    return Response::Error(400, "Missing required field: selector");
+  }
+
+  // Optional timeout (default 30 seconds)
+  int timeout_ms = ctx.body.FindInt("timeout_ms").value_or(30000);
+
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->WaitForSelector(
+      web_contents, *selector, timeout_ms,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleEvaluateAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* js_code = ctx.body.FindString("code");
+  if (!js_code) {
+    return Response::Error(400, "Missing required field: code");
+  }
+
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->Evaluate(
+      web_contents, *js_code,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleScreenshotAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  // Optional full_page parameter (default false)
+  bool full_page = ctx.body.FindBool("full_page").value_or(false);
+
+  base::RunLoop run_loop;
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->Screenshot(
+      web_contents, full_page,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
 }
 
 }  // namespace mcp_server
