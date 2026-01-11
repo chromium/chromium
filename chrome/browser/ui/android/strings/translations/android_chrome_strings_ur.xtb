@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">صرف اس آلے پر</translation>
 <translation id="4181841719683918333">زبانیں</translation>
 <translation id="4188221736490993796">‏Z سے A کے لحاظ سے ترتیب دیں</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{‏اسپام یا گمراہ کن مواد کی وجہ سے Chrome نے اس سائٹ کو اطلاعات بھیجنے سے روک دیا}other{‏اسپام یا گمراہ کن مواد کی وجہ سے Chrome نے ان سائٹس کو اطلاعات بھیجنے سے روک دیا}}</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{اس آلہ پر 1 ٹیب}other{اس آلہ پر # ٹیبز}}</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">لنک کا اشتراک کریں</translation>
 <translation id="5839058148541733625">‏Chrome ڈائنوسار گیم</translation>
 <translation id="5841444063256914865">کیا آپ بہر صورت "<ph name="FILE_NAME" />" کو ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
+<translation id="5847265694842662173">‏‫Chrome نے بیجا استعمال اور غیر استعمال شدہ سائٹس کو اطلاعات بھیجنے سے روک دیا</translation>
 <translation id="5848257610304005265">‏<ph name="APP_NAME" /> کے ساتھ PDF کھولیں؟</translation>
 <translation id="5849288995120328556">اشتراک کرنا روکیں؟</translation>
 <translation id="5853623416121554550">موقوف ہو گیا</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">‏Chrome امدادی مرکز کو ایک نئے ٹیب میں کھولیں</translation>
 <translation id="59577092665511740">ایک اکاؤنٹ منتخب کریں۔</translation>
 <translation id="5958275228015807058">اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome نے آپ کو اطلاعات بھیجنے سے ایک ایسی سائٹ کو روک دیا ہے جسے آپ نے حال ہی میں ملاحظہ نہیں کیا ہے}other{‏‫Chrome نے آپ کو اطلاعات بھیجنے سے ان سائٹس کو روک دیا ہے جنہیں آپ نے حال ہی میں ملاحظہ نہیں کیا ہے}}</translation>
 <translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
 <translation id="5964869237734432770">تصویری تفصیلات کو روکیں</translation>
 <translation id="5972844218283131174">سبھی کو غیر منتخب کریں</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">آلات پر براؤز کریں</translation>
 <translation id="8477178913400731244">ڈیٹا حذف کریں</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">کوئی غیر فعال ونڈو نہیں ہے</translation>
 <translation id="8493948351860045254">جگہ خالی کریں</translation>
 <translation id="8497242791509864205">ترتیب دینے کے اختیارات کھولیں</translation>
 <translation id="8497480609928300907">رازداری کی گائیڈ کی وضاحت</translation>

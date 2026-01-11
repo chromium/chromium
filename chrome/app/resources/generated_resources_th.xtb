@@ -5104,6 +5104,7 @@
 <translation id="4426857487270413362">ดาวน์โหลดไฟล์โปรแกรมติดตั้งไม่ได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่ามีพื้นที่ว่างในดิสก์เพียงพอ แล้วลองอีกครั้ง รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="4427111270137140798">ตรวจพบ <ph name="COUNT" /> ครั้ง</translation>
 <translation id="4427365070557649936">กำลังตรวจสอบรหัสยืนยัน...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{งานเสร็จแล้ว}other{งานเสร็จแล้ว}}</translation>
 <translation id="4429163740524851942">รูปแบบแป้นพิมพ์จริง</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
 <translation id="443031431654216610">ใส่เฉพาะตัวเลขเท่านั้น</translation>

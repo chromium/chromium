@@ -724,6 +724,7 @@
 <translation id="4180726336228139707">เฉพาะในอุปกรณ์นี้</translation>
 <translation id="4181841719683918333">ภาษา</translation>
 <translation id="4188221736490993796">จัดเรียงจาก ฮ ถึง ก</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome หยุดไม่ให้เว็บไซต์นี้ส่งการแจ้งเตือนเนื่องจากมีเนื้อหาสแปมหรือเนื้อหาหลอกลวง}other{Chrome หยุดไม่ให้เว็บไซต์เหล่านี้ส่งการแจ้งเตือนเนื่องจากมีเนื้อหาสแปมหรือเนื้อหาหลอกลวง}}</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 แท็บในอุปกรณ์นี้}other{# แท็บในอุปกรณ์นี้}}</translation>
 <translation id="4198423547019359126">ไม่มีตำแหน่งการดาวน์โหลดที่ใช้ได้</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5833984609253377421">แชร์ลิงก์</translation>
 <translation id="5839058148541733625">ไดโนเสาร์ Chrome</translation>
 <translation id="5841444063256914865">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" ต่อไปไหม</translation>
+<translation id="5847265694842662173">Chrome หยุดเว็บไซต์ที่ละเมิดและไม่ได้ใช้งานไม่ให้ส่งการแจ้งเตือน</translation>
 <translation id="5848257610304005265">เปิด PDF ด้วย "<ph name="APP_NAME" />" ใช่ไหม</translation>
 <translation id="5849288995120328556">หยุดการแชร์ใช่ไหม</translation>
 <translation id="5853623416121554550">หยุดชั่วคราว</translation>
@@ -1144,6 +1146,7 @@
 <translation id="5956665950594638604">เปิดศูนย์ช่วยเหลือของ Chrome ในแท็บใหม่</translation>
 <translation id="59577092665511740">เลือกบัญชี</translation>
 <translation id="5958275228015807058">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลด</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome หยุดไม่ให้เว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ส่งการแจ้งเตือนถึงคุณ}other{Chrome หยุดไม่ให้เว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ส่งการแจ้งเตือนถึงคุณ}}</translation>
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
 <translation id="5964869237734432770">หยุดรับคำอธิบายรูปภาพ</translation>
 <translation id="5972844218283131174">ยกเลิกการเลือกทั้งหมด</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">ท่องเว็บในอุปกรณ์ต่างๆ</translation>
 <translation id="8477178913400731244">ลบข้อมูล</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">ไม่มีหน้าต่างที่ไม่ได้ใช้งาน</translation>
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>
 <translation id="8497242791509864205">เปิดตัวเลือกการจัดเรียง</translation>
 <translation id="8497480609928300907">คำอธิบายคู่มือความเป็นส่วนตัว</translation>

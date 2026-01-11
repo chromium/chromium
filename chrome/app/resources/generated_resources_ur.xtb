@@ -5105,6 +5105,7 @@
 <translation id="4426857487270413362">انسٹالر فائلیں ڈاؤن لوڈ کرنے سے قاصر۔ براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں اور یہ کہ آپ کے پاس کافی خالی جگہ ہے اور دوبارہ کوشش کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> بار پتا چلا</translation>
 <translation id="4427365070557649936">توثیقی کوڈ کی توثیق کی جا رہی ہے...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{ٹاسک ہو گیا}other{ٹاسکس ہو گئے}}</translation>
 <translation id="4429163740524851942">جسمانی کی بورڈ لے آؤٹ</translation>
 <translation id="4430019312045809116">والیوم</translation>
 <translation id="443031431654216610">صرف عددی ہندسے استعمال کریں</translation>

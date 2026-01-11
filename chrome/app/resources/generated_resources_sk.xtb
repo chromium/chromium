@@ -5108,6 +5108,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4426857487270413362">Súbory inštalátora sa nedajú stiahnuť. Skontrolujte internetové pripojenie a to, či máte dostatok voľného miesta na disku. Potom to skúste znova. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Rozpoznané <ph name="COUNT" />-krát</translation>
 <translation id="4427365070557649936">Overuje sa potvrdzovací kód…</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Úloha je dokončená}few{Úlohy sú dokončené}many{Tasks done}other{Úlohy sú dokončené}}</translation>
 <translation id="4429163740524851942">Rozloženie fyzickej klávesnice</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
 <translation id="443031431654216610">Použite iba číslice</translation>
