@@ -51,58 +51,6 @@ public class PaymentAppService {
     }
 
     /**
-     * Trigger creation of payment apps by the factories owned by this class.
-     *
-     * <p>Deprecated: Use {@link createPaymentApps(PaymentAppServiceDelegate)} instead.
-     */
-    public void create(PaymentAppFactoryDelegate delegate) {
-        createPaymentApps(
-                new PaymentAppServiceDelegate() {
-                    @Override
-                    public PaymentAppFactoryParams getParams() {
-                        return delegate.getParams();
-                    }
-
-                    @Override
-                    public void onCanMakePaymentCalculated(boolean canMakePayment) {
-                        delegate.onCanMakePaymentCalculated(canMakePayment);
-                    }
-
-                    @Override
-                    public void onPaymentAppCreationError(
-                            String errorMessage, @AppCreationFailureReason int errorReason) {
-                        delegate.onPaymentAppCreationError(errorMessage, errorReason);
-                    }
-
-                    @Override
-                    public void onDoneCreatingPaymentApps(List<PaymentApp> apps) {
-                        for (PaymentApp app : apps) {
-                            delegate.onPaymentAppCreated(app);
-                        }
-                        // This method is only used in a single internal test, which will shortly be
-                        // migrated to use createPaymentApps(). The test doesn't care about the
-                        // passed-in factory here, so we just create one. We cannot pass null as
-                        // this field is @NonNull.
-                        delegate.onDoneCreatingPaymentApps(
-                                new PaymentAppFactoryInterface() {
-                                    @Override
-                                    public void create(PaymentAppFactoryDelegate delegate) {}
-                                });
-                    }
-
-                    @Override
-                    public void setCanMakePaymentEvenWithoutApps() {
-                        delegate.setCanMakePaymentEvenWithoutApps();
-                    }
-
-                    @Override
-                    public void setOptOutOffered() {
-                        delegate.setOptOutOffered();
-                    }
-                });
-    }
-
-    /**
      * @param factoryId The id that is used to identified a factory in this class.
      * @return Whether this contains the factory identified with factoryId.
      */
