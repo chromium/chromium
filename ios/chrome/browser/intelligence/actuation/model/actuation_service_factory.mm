@@ -31,5 +31,5 @@ std::unique_ptr<KeyedService> ActuationServiceFactory::BuildServiceInstanceFor(
   if (!IsActuationEnabled()) {
     return nullptr;
   }
-  return std::make_unique<ActuationService>();
+  return std::make_unique<ActuationService>(profile);
 }

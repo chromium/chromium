@@ -6,13 +6,27 @@
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/navigate_tool.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/web/public/web_state.h"
+
+using ActuationError = ActuationTool::ActuationError;
+using ActuationErrorCode = ActuationTool::ActuationErrorCode;
 
 ActuationToolFactory::ActuationToolFactory() = default;
 ActuationToolFactory::~ActuationToolFactory() = default;
 
-std::unique_ptr<ActuationTool> ActuationToolFactory::CreateTool(
-    const optimization_guide::proto::Action& action) {
-  // TODO(crbug.com/472291687): Implement tool creation logic using the
-  // proto based on the type.
-  return nullptr;
+base::expected<std::unique_ptr<ActuationTool>, ActuationError>
+ActuationToolFactory::CreateTool(
+    const optimization_guide::proto::Action& action,
+    ProfileIOS* profile) {
+  switch (action.action_case()) {
+    case optimization_guide::proto::Action::kNavigate:
+      return NavigateTool::Create(action.navigate(), profile);
+    default:
+      return base::unexpected(ActuationError{
+          ActuationErrorCode::kUnsupportedAction, "Unsupported action"});
+  }
 }

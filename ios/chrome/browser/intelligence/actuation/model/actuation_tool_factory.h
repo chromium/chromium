@@ -8,24 +8,26 @@
 #include <memory>
 #include <string>
 
+#import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
+
 namespace optimization_guide {
 namespace proto {
 class Action;
 }  // namespace proto
 }  // namespace optimization_guide
 
-class ActuationTool;
+class ProfileIOS;
 
-// Factory for creating ActuationTool objects from raw tool data.
+// Factory for creating ActuationTool objects from raw action data.
 class ActuationToolFactory {
  public:
   ActuationToolFactory();
   ~ActuationToolFactory();
 
-  // Creates an ActuationTool based on the provided tool proto.
-  // Returns nullptr if the tool type is unknown or disabled.
-  std::unique_ptr<ActuationTool> CreateTool(
-      const optimization_guide::proto::Action& tool);
+  // Creates an ActuationTool based on the provided action proto.
+  base::expected<std::unique_ptr<ActuationTool>, ActuationTool::ActuationError>
+  CreateTool(const optimization_guide::proto::Action& action,
+             ProfileIOS* profile);
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTUATION_MODEL_ACTUATION_TOOL_FACTORY_H_

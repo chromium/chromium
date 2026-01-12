@@ -7,3 +7,41 @@ source_set("actuation_interface") {
 
   deps = [ "//base" ]
 }
+
+source_set("navigate_tool") {
+  sources = [
+    "navigate_tool.h",
+    "navigate_tool.mm",
+  ]
+
+  deps = [
+    ":actuation_interface",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "navigate_tool_unittest.mm" ]
+  deps = [
+    ":actuation_interface",
+    ":navigate_tool",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

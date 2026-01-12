@@ -1,0 +1,181 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/intelligence/actuation/model/tools/navigate_tool.h"
+
+#import "base/test/task_environment.h"
+#import "base/test/test_future.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+
+using ActuationResult = ActuationTool::ActuationResult;
+using ActuationErrorCode = ActuationTool::ActuationErrorCode;
+
+namespace {
+
+class TestUrlLoadingObserver : public UrlLoadingObserver {
+ public:
+  void TabWillLoadUrl(const GURL& url,
+                      ui::PageTransition transition_type) override {
+    last_url_ = url;
+  }
+  GURL last_url_;
+};
+
+}  // namespace
+
+class NavigateToolTest : public PlatformTest {
+ public:
+  NavigateToolTest() {
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    BrowserList* browser_list =
+        BrowserListFactory::GetForProfile(profile_.get());
+    browser_list->AddBrowser(browser_.get());
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
+        ->AddObserver(&url_loading_observer_);
+    UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
+  }
+
+  ~NavigateToolTest() override {
+    UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
+        ->RemoveObserver(&url_loading_observer_);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
+  TestUrlLoadingObserver url_loading_observer_;
+};
+
+TEST_F(NavigateToolTest, Create_MissingProtoFields) {
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://example.com");
+
+  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+      result = NavigateTool::Create(action.navigate(), profile_.get());
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
+  EXPECT_EQ("NavigateAction proto is missing tab id or url.",
+            result.error().message);
+
+  action.mutable_navigate()->clear_url();
+  action.mutable_navigate()->set_tab_id(1);
+
+  result = NavigateTool::Create(action.navigate(), profile_.get());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
+  EXPECT_EQ("NavigateAction proto is missing tab id or url.",
+            result.error().message);
+}
+
+TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://example.com");
+  // Intentionally don't add a WebState to the browser for the target tab id.
+  action.mutable_navigate()->set_tab_id(1);
+
+  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+      result = NavigateTool::Create(action.navigate(), profile_.get());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
+  EXPECT_EQ("Target tab isn't in any Browser.", result.error().message);
+}
+
+TEST_F(NavigateToolTest, Execute_InvalidUrl) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("");
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  EXPECT_TRUE(maybe_tool.has_value());
+  std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
+
+  base::test::TestFuture<ActuationResult> future;
+  tool->Execute(future.GetCallback());
+
+  ActuationResult result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
+  EXPECT_EQ("Invalid URL", result.error().message);
+}
+
+TEST_F(NavigateToolTest, Execute_Success) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  std::string kUrl = "https://www.example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  EXPECT_TRUE(maybe_tool.has_value());
+  std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
+
+  base::test::TestFuture<ActuationResult> future;
+  tool->Execute(future.GetCallback());
+
+  ActuationResult result = future.Get();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+}
+
+TEST_F(NavigateToolTest,
+       Execute_TargetTabInBackground_SwitchesToTabAndNavigates) {
+  for (int i = 0; i < 2; i++) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(i).Activate());
+  }
+  ASSERT_EQ(browser_->GetWebStateList()->GetActiveWebState(),
+            browser_->GetWebStateList()->GetWebStateAt(1));
+
+  web::WebState* target_web_state =
+      browser_->GetWebStateList()->GetWebStateAt(0);
+  int tab_id = target_web_state->GetUniqueIdentifier().identifier();
+  std::string kUrl = "https://www.example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  EXPECT_TRUE(maybe_tool.has_value());
+  std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
+
+  base::test::TestFuture<ActuationResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(), target_web_state);
+  EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
+}

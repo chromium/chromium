@@ -16,13 +16,11 @@ class ActuationTool {
   enum class ActuationErrorCode {
     // Default error code for unknown or unspecified failures.
     kUnknown,
-    // The kActuationTools feature flag is disabled.
-    kFeatureDisabled,
     // The specific tool type is disabled via the 'DisabledTools' feature
     // parameter.
     kToolDisabled,
-    // The tool type provided in the proto is not recognized or supported.
-    kUnknownToolType,
+    // The action provided in the proto is not recognized or supported.
+    kUnsupportedAction,
     // The factory failed to create a valid tool object from the tool data.
     kToolCreationFailed,
     // The tool encountered an error during execution (e.g., invalid
