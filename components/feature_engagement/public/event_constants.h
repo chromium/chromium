@@ -70,6 +70,9 @@ extern const char kExtensionsRequestAccessButtonClicked[];
 // The user has opened the cookie controls bubble.
 extern const char kCookieControlsBubbleShown[];
 
+// The user has accepted the Glic onboarding.
+extern const char kGlicOnboardingCompleted[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

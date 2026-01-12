@@ -48,6 +48,8 @@ const char kExtensionsRequestAccessButtonClicked[] =
 
 const char kCookieControlsBubbleShown[] = "cookie_controls_bubble_shown";
 
+const char kGlicOnboardingCompleted[] = "glic_onboarding_completed";
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
