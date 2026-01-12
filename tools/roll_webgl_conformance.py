@@ -25,6 +25,10 @@ extra_trybots = [
     },
     {
         "mastername": "luci.chromium.try",
+        "buildernames": ["gpu-fyi-cq-mac-arm64"]
+    },
+    {
+        "mastername": "luci.chromium.try",
         "buildernames": ["linux_optional_gpu_tests_rel"]
     },
     {
