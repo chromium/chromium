@@ -4509,11 +4509,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // for instance, remove the element's id first and then remove it from the
   // DOM.
   if (auto* container = OverscrollContainer()) {
-    container->OverscrollAreaTracker()->RemoveOverscroll(this);
+    container->GetOverscrollAreaTracker()->RemoveOverscroll(this);
   }
 
   // Remove all of the overscroll areas from this tracker.
-  if (auto* tracker = OverscrollAreaTracker()) {
+  if (auto* tracker = GetOverscrollAreaTracker()) {
     tracker->RemoveAllOverscroll();
   }
 }
@@ -5455,7 +5455,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (OverscrollContainer() &&
       (!new_style || !new_style->IsInternalOverscrollPositionAuto() ||
        OverscrollContainer() != style_recalc_context.overscroll_container)) {
-    auto* tracker = OverscrollContainer()->OverscrollAreaTracker();
+    auto* tracker = OverscrollContainer()->GetOverscrollAreaTracker();
     // We should've created a tracker when we set the OverscrollContainer on
     // `this`.
     CHECK(tracker);
@@ -12333,44 +12333,40 @@ void Element::InvalidateStyleAttribute(
 void Element::UpdateOverscrollPseudoElements(
     const StyleRecalcChange style_recalc_change,
     const StyleRecalcContext& style_recalc_context) {
-  size_t overscroll_area_count = 0;
-  if (const ComputedStyle* computed_style = GetComputedStyle()) {
-    if (const ScopedCSSNameList* overscroll_area =
-            computed_style->OverscrollArea()) {
-      overscroll_area_count = overscroll_area->GetNames().size();
+  OverscrollAreaTracker* tracker = GetOverscrollAreaTracker();
+  ElementRareDataVector* data = GetElementRareData();
+
+  if (!tracker) {
+    if (data) {
+      data->ClearOverscrollPseudoElements(/*to_keep=*/0);
     }
+    return;
   }
 
-  ElementRareDataVector* data = GetElementRareData();
-  const OverscrollAreaParentPseudoElementsVector* overscroll_elements =
-      data ? data->GetOverscrollAreaParentPseudoElements() : nullptr;
+  const VectorOf<Element>& overscroll_elements = tracker->DOMSortedElements();
 
   // Detect if the declared overscroll areas have changed.
+  const OverscrollAreaParentPseudoElementsVector* current_overscroll_elements =
+      data ? data->GetOverscrollAreaParentPseudoElements() : nullptr;
   wtf_size_t current_overscroll_area_count =
-      overscroll_elements ? overscroll_elements->size() : 0;
-  bool overscroll_areas_changed =
-      overscroll_area_count != current_overscroll_area_count;
-  if (!overscroll_areas_changed) {
+      current_overscroll_elements ? current_overscroll_elements->size() : 0;
+
+  // Detect if the declared overscroll areas have changed.
+  if (overscroll_elements.size() == current_overscroll_area_count) {
     return;
   }
 
   if (data) {
-    data->ClearOverscrollPseudoElements(/* to_keep */ 0);
-  }
-  if (overscroll_area_count == 0) {
-    return;
+    data->ClearOverscrollPseudoElements(/*to_keep=*/overscroll_elements.size());
   }
 
-  const ScopedCSSNameList* overscroll_area =
-      GetComputedStyle()->OverscrollArea();
-  wtf_size_t index = 0;
-  for (const ScopedCSSName* name : overscroll_area->GetNames()) {
+  for (wtf_size_t i = current_overscroll_area_count;
+       i < overscroll_elements.size(); ++i) {
     IndexedPseudoElement* pseudo_element =
         MakeGarbageCollected<IndexedPseudoElement>(
-            this, kPseudoIdOverscrollAreaParent, index, name->GetName());
+            this, kPseudoIdOverscrollAreaParent, i);
     CHECK(SetAssociatedPseudoElement(pseudo_element, style_recalc_context));
     pseudo_element->SetNeedsReattachLayoutTree();
-    ++index;
   }
 }
 
@@ -13390,7 +13386,7 @@ OverscrollAreaTracker& Element::EnsureOverscrollAreaTracker() {
   return EnsureElementRareData().EnsureOverscrollAreaTracker(this);
 }
 
-OverscrollAreaTracker* Element::OverscrollAreaTracker() const {
+OverscrollAreaTracker* Element::GetOverscrollAreaTracker() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->OverscrollAreaTracker();
   }

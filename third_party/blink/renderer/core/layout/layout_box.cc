@@ -498,7 +498,7 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
     return kOverflowClipPaintLayer;
   }
 
-  if (Style()->HasOverscrollArea()) {
+  if (Style()->IsInternalOverscrollAreaAuto()) {
     return kForcedPaintLayer;
   }
 

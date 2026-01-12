@@ -1518,7 +1518,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // pseudo check after they can host scrollable overflow.
   bool IsOverscrollContainer() const {
     NOT_DESTROYED();
-    return StyleRef().HasOverscrollArea() ||
+    return StyleRef().IsInternalOverscrollAreaAuto() ||
            IsPseudo(kPseudoIdOverscrollAreaParent);
   }
 

@@ -40,7 +40,7 @@ class OverscrollAreaTrackerTest : public testing::Test,
 
   OverscrollAreaTracker* OverscrollAreaTrackerById(const char* id) {
     if (auto* element = GetDocument().getElementById(AtomicString(id))) {
-      return element->OverscrollAreaTracker();
+      return element->GetOverscrollAreaTracker();
     }
     return nullptr;
   }
@@ -143,7 +143,7 @@ TEST_F(OverscrollAreaTrackerTest, EmptyCommandForIsNotValid) {
   EXPECT_TRUE(GetDocument().OverscrollCommandTargets().empty());
   EXPECT_FALSE(GetDocument()
                    .getElementById(AtomicString("container"))
-                   ->OverscrollAreaTracker());
+                   ->GetOverscrollAreaTracker());
 }
 
 TEST_F(OverscrollAreaTrackerTest, MultipleElementsPerController) {

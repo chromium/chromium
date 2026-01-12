@@ -1097,7 +1097,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Similarly, overscroll-position elements must be out of flow positioned
     // with a box.
     if (is_in_top_layer || builder.StyleType() == kPseudoIdBackdrop ||
-        builder.OverscrollPosition()) {
+        builder.InternalOverscrollPosition() ==
+            EInternalOverscrollPosition::kAuto) {
       if (!builder.HasOutOfFlowPosition()) {
         builder.SetPosition(EPosition::kAbsolute);
       }
@@ -1166,8 +1167,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     if (is_transition_scope && !is_document_element) {
       builder.SetContain(builder.Contain() | kContainsLayout);
-    } else if (builder.OverscrollArea() &&
-               !builder.OverscrollArea()->GetNames().empty()) {
+    } else if (builder.InternalOverscrollArea() ==
+               EInternalOverscrollArea::kAuto) {
       // TODO(crbug.com/467112943): Layout containment is currently forced to
       // ensure that the container of the overscroll areas actually contains
       // the overscroll areas. However, requiring layout containment is

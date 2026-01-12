@@ -324,7 +324,8 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (!old_style->ScrollMarkerGroupEqual(*new_style)) {
     return true;
   }
-  if (old_style->OverscrollArea() != new_style->OverscrollArea()) {
+  if (old_style->IsInternalOverscrollAreaAuto() !=
+      new_style->IsInternalOverscrollAreaAuto()) {
     return true;
   }
   // We need to perform a reattach if a "display: layout(foo)" has changed to a
@@ -457,7 +458,8 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     }
     return Difference::kPseudoElementStyle;
   }
-  if (old_style.OverscrollArea() != new_style.OverscrollArea()) {
+  if (old_style.IsInternalOverscrollAreaAuto() !=
+      new_style.IsInternalOverscrollAreaAuto()) {
     // TODO(crbug.com/447642032): Should we return kDescendantAffecting since
     // descendants may move into or out of a newly declared or no longer
     // declared overscroll area?

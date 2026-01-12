@@ -1997,7 +1997,7 @@ class CORE_EXPORT Element : public ContainerNode {
   bool SupportsBaseAppearance(AppearanceValue) const;
 
   OverscrollAreaTracker& EnsureOverscrollAreaTracker();
-  OverscrollAreaTracker* OverscrollAreaTracker() const;
+  OverscrollAreaTracker* GetOverscrollAreaTracker() const;
 
   Element* OverscrollContainer() const;
   void SetOverscrollContainer(Element*);

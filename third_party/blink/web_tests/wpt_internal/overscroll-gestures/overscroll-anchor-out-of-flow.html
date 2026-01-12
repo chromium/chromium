@@ -5,9 +5,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-.overscrollpos {
-  overscroll-position: --foo;
-}
 .fixed {
   position: fixed;
 }
@@ -26,14 +23,20 @@
 }
 
 </style>
-
-<div id="e1" class="overscrollpos"></div>
-<div id="e2" class="overscrollpos fixed"></div>
-<div id="e3" class="overscrollpos absolute"></div>
-<div id="e4" class="overscrollpos contents"></div>
-<div id="e5" class="overscrollpos inline"></div>
-<div id="e6" class="overscrollpos inlineblock"></div>
-
+<div overscrollcontainer>
+  <button command="toggle-overscroll" commandfor="e1"></button>
+  <button command="toggle-overscroll" commandfor="e2"></button>
+  <button command="toggle-overscroll" commandfor="e3"></button>
+  <button command="toggle-overscroll" commandfor="e4"></button>
+  <button command="toggle-overscroll" commandfor="e5"></button>
+  <button command="toggle-overscroll" commandfor="e6"></button>
+  <div id="e1" class="overscrollpos"></div>
+  <div id="e2" class="overscrollpos fixed"></div>
+  <div id="e3" class="overscrollpos absolute"></div>
+  <div id="e4" class="overscrollpos contents"></div>
+  <div id="e5" class="overscrollpos inline"></div>
+  <div id="e6" class="overscrollpos inlineblock"></div>
+</div>
 <script>
 test(() => {
   assert_equals(getComputedStyle(e1).position, "absolute", "e1");

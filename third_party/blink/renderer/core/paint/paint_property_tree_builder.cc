@@ -2575,6 +2575,10 @@ static bool NeedsOverflowClip(const LayoutObject& object) {
   if (!object.IsBox())
     return false;
 
+  if (object.IsOverscrollContainer()) {
+    return true;
+  }
+
   if (!To<LayoutBox>(object).ShouldClipOverflowAlongEitherAxis())
     return false;
 
@@ -3631,6 +3635,9 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
     return false;
   if (IsA<LayoutView>(object))
     return true;
+  if (object.IsOverscrollContainer()) {
+    return true;
+  }
   for (const TransformPaintPropertyNode* transform :
        properties->AllCSSTransformPropertiesOutsideToInside()) {
     if (transform && IsLayoutShiftRootTransform(*transform))
