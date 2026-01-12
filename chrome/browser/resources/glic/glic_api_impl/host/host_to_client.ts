@@ -298,6 +298,11 @@ export class WebClientImpl implements WebClientInterface {
         'glicWebClientNotifyActOnWebCapabilityChanged', {canActOnWeb});
   }
 
+  notifyOnboardingCompletedChanged(completed: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientOnboardingCompletedChanged', {completed});
+  }
+
   async requestToShowAutofillSuggestionsDialog(
       request: SelectAutofillSuggestionsDialogRequestMojo):
       Promise<{response: SelectAutofillSuggestionsDialogResponseMojo}> {

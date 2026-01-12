@@ -384,6 +384,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.actOnWebCapabilityValue.assignAndSignal(payload.canActOnWeb);
   }
 
+  glicWebClientOnboardingCompletedChanged(payload: {completed: boolean}): void {
+    this.host.onboardingCompleted.assignAndSignal(payload.completed);
+  }
+
   async glicWebClientRequestToShowAutofillSuggestionsDialog(payload: {
     request: SelectAutofillSuggestionsDialogRequestPrivate,
   }): Promise<{response: SelectAutofillSuggestionsDialogResponsePrivate}> {
@@ -451,6 +455,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   closedCaptioningState = ObservableValueImpl.withNoValue<boolean>();
   actuationOnWebState = ObservableValueImpl.withNoValue<boolean>();
   private osHotkeyState = ObservableValueImpl.withNoValue<{hotkey: string}>();
+  onboardingCompleted = ObservableValueImpl.withNoValue<boolean>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   isBrowserOpenValue = ObservableValueImpl.withNoValue<boolean>();
   private journalHost: GlicBrowserHostJournalImpl;
@@ -556,6 +561,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.hostCapabilities.add(capability);
     }
     this.actOnWebCapabilityValue.assignAndSignal(state.canActOnWeb);
+    this.onboardingCompleted.assignAndSignal(state.onboardingCompleted);
 
     // Set the method to undefined since it's gated behind a mojo
     // RuntimeFeature. Calling a such a method when the feature is disabled
@@ -661,6 +667,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       // TODO(crbug.com/458761731): Mark this as MOJO_RUNTIME_FEATURE_GATED once
       // `loadAndExtractContent` is defined in the handler interface.
       this.loadAndExtractContent = undefined;
+    }
+
+    if (!state.enableTrustFirstOnboarding) {
+      this.setOnboardingCompleted = undefined;
+      this.isOnboardingCompleted = undefined;
     }
   }
 
@@ -1234,6 +1245,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserLoadAndExtractContent', {urls, options});
 
     return response.results.map(convertTabContextResultFromPrivate);
+  }
+
+  setOnboardingCompleted?(): void {
+    return this.sender.requestNoResponse(
+        'glicBrowserSetOnboardingCompleted', undefined);
+  }
+
+  isOnboardingCompleted?(): ObservableValue<boolean> {
+    return this.onboardingCompleted;
   }
 }
 

@@ -927,6 +927,18 @@ export declare interface GlicBrowserHost {
    */
   loadAndExtractContent?(urls: string[], options: TabContextOptions[]):
       Promise<TabContextResult[]>;
+
+  /**
+   * Called when the user has completed the onboarding flow.
+   */
+  setOnboardingCompleted?(): void;
+
+  /**
+   * Returns an observable that emits whether the user has completed the
+   * onboarding flow. The observable will be updated when the value changes to
+   * allow coordination between multiple Glic instances.
+   */
+  isOnboardingCompleted?(): ObservableValue<boolean>;
 }
 
 /** Information about a conversation. */

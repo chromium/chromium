@@ -128,7 +128,8 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     }
   }
 
-  if (!HasConsentedForProfile(profile)) {
+  if (!HasConsentedForProfile(profile) &&
+      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
     result.not_consented = true;
   }
 

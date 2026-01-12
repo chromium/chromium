@@ -55,6 +55,12 @@ class GlicFreControllerTest : public testing::Test {
     return *glic_fre_controller_;
   }
 
+  static void OnCheckIsDefaultBrowserFinished(
+      version_info::Channel channel,
+      shell_integration::DefaultWebClientState state) {
+    GlicLauncherConfiguration::OnCheckIsDefaultBrowserFinished(channel, state);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -140,14 +146,14 @@ TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {
 
   // The launcher should remain disabled because another channel is the default
   // browser.
-  GlicFreController::OnCheckIsDefaultBrowserFinished(
+  GlicFreControllerTest::OnCheckIsDefaultBrowserFinished(
       version_info::Channel::STABLE,
       shell_integration::DefaultWebClientState::OTHER_MODE_IS_DEFAULT);
   EXPECT_FALSE(GlicLauncherConfiguration::IsEnabled());
 
   // The launcher should be enabled even though the channel is not known because
   // the browser is the default.
-  GlicFreController::OnCheckIsDefaultBrowserFinished(
+  GlicFreControllerTest::OnCheckIsDefaultBrowserFinished(
       version_info::Channel::UNKNOWN,
       shell_integration::DefaultWebClientState::IS_DEFAULT);
   EXPECT_TRUE(GlicLauncherConfiguration::IsEnabled());
@@ -155,14 +161,14 @@ TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {
   // Browser is not on the stable channel and is not the default so the
   // launcher should not be enabled.
   pref_service->SetBoolean(prefs::kGlicLauncherEnabled, false);
-  GlicFreController::OnCheckIsDefaultBrowserFinished(
+  GlicFreControllerTest::OnCheckIsDefaultBrowserFinished(
       version_info::Channel::UNKNOWN,
       shell_integration::DefaultWebClientState::NOT_DEFAULT);
   EXPECT_FALSE(GlicLauncherConfiguration::IsEnabled());
 
   // Since another browser is the default, a stable channel should allow the
   // launcher to be enabled.
-  GlicFreController::OnCheckIsDefaultBrowserFinished(
+  GlicFreControllerTest::OnCheckIsDefaultBrowserFinished(
       version_info::Channel::STABLE,
       shell_integration::DefaultWebClientState::NOT_DEFAULT);
   EXPECT_TRUE(GlicLauncherConfiguration::IsEnabled());

@@ -837,6 +837,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.onModeChange(webClientModeToMojo(request.newMode));
   }
 
+  glicBrowserSetOnboardingCompleted(): void {
+    this.handler.setOnboardingCompleted();
+  }
+
   // TODO(crbug.com/458761731): Function parameters is prefixed with "_" to
   // bypass compiler error on variables declared but never used. Remove once
   // function body is implemented.

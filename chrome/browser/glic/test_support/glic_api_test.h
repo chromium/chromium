@@ -134,7 +134,9 @@ template <typename T>
       T>::value
 class GlicApiTestBase : public T {
  public:
-  explicit GlicApiTestBase(std::string_view js_source_path) {
+  template <typename... Args>
+  explicit GlicApiTestBase(std::string_view js_source_path, Args&&... args)
+      : T(std::forward<Args>(args)...) {
     T::embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &GlicApiTestBase::SorryPageRequestHandler, base::Unretained(this)));
     T::embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
