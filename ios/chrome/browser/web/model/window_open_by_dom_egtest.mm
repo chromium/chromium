@@ -175,23 +175,15 @@ id<GREYMatcher> PopupBlocker() {
   [ChromeEarlGrey tapWebStateElementWithID:
                       @"webScenarioLocationReplaceInWindowOpenWithEmptyTarget"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  // WebKit doesn't parse 'about:blank#hash' as about:blank with URL fragment.
-  // Instead, it percent encodes '#hash' and considers 'blank%23hash' as the
-  // resource identifier. Nevertheless, the '#' is significant in triggering the
-  // edge case in the bug. TODO(crbug.com/41414501): Change back to '#'.
-  // Since about scheme URLs are also trimmed to about:blank, check the url
-  // directly instead.
-  //
-  // TODO(crbug.com/40932726): Confirm the expected behavior of [ChromeEarlGrey
-  // webStateLastCommittedURL] here. After https://crrev.com/c/4823237, this
-  // returns empty URL ("").
-  DCHECK_EQ("", [ChromeEarlGrey webStateLastCommittedURL]);
-  // And confirm the location bar and focused omnibox are empty.
+  DCHECK_EQ(GURL("about:blank#hash"),
+            [ChromeEarlGrey webStateLastCommittedURL]);
+  // And confirm the location bar shows "about:blank".
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      assertWithMatcher:chrome_test_util::LocationViewEmpty()];
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            "about:blank")];
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText("")];
+      assertWithMatcher:chrome_test_util::OmniboxText("about:blank")];
   [OmniboxEarlGrey defocusOmnibox];
 }
 
