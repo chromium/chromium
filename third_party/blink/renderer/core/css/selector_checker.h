@@ -156,11 +156,6 @@ class CORE_EXPORT SelectorChecker {
     // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
 
-    // This is only used for crash key debugging, so that we can serialize
-    // the selector when debugging a :has() hang. It is _not_ changed when
-    // going into a sub-selector.
-    const CSSSelector* original_selector = nullptr;
-
     // The "tree context" [1] whenever the selector is "matched against
     // a tree" [2].
     //

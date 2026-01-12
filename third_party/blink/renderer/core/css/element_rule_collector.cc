@@ -622,7 +622,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
     } else {
       context.context.selector = &selector;
-      context.context.original_selector = &selector;
       context.context.match_visited =
           !suppress_visited_ &&
           rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
