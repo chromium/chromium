@@ -9,13 +9,14 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/notimplemented.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
@@ -26,10 +27,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#else
-#include "base/notimplemented.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -54,34 +51,37 @@ ExtensionInstallPrompt* mock_install_prompt_for_testing = nullptr;
 std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
     Profile* profile,
     const DownloadItem& download_item) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Use a mock if one is present.  Otherwise, create a real extensions
   // install UI.
   if (mock_install_prompt_for_testing) {
     ExtensionInstallPrompt* result = mock_install_prompt_for_testing;
     mock_install_prompt_for_testing = nullptr;
     return std::unique_ptr<ExtensionInstallPrompt>(result);
-  } else {
-    content::WebContents* web_contents =
-        content::DownloadItemUtils::GetWebContents(
-            const_cast<DownloadItem*>(&download_item));
-    if (!web_contents) {
-      Browser* browser = chrome::FindLastActiveWithProfile(profile);
-      if (!browser) {
-        browser = Browser::Create(
-            Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
-      }
-      web_contents = browser->tab_strip_model()->GetActiveWebContents();
-    }
-    return std::make_unique<ExtensionInstallPrompt>(web_contents);
   }
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(
+          const_cast<DownloadItem*>(&download_item));
+  if (!web_contents) {
+    BrowserWindowInterface* browser =
+        extensions::browser_window_util::GetLastActiveBrowserWithProfile(
+            *profile, false);
+    if (!browser) {
+#if BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/474161414): Implement fallback if no browser is found.
+      // Android does not have Browser implementation yet, but we are okay with
+      // not showing an installed dialog if no window is open. The caller
+      // handles having an empty ExtensionInstallPrompt.
+      return nullptr;
 #else
-  // TODO(crbug.com/397754565): Show extension install UI on desktop Android.
-  NOTIMPLEMENTED() << "CreateExtensionInstallPrompt";
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      browser = Browser::Create(
+          Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+#endif
+    }
+    TabListInterface* tab_list = TabListInterface::From(browser);
+    web_contents = tab_list->GetActiveTab()->GetContents();
+  }
+  return std::make_unique<ExtensionInstallPrompt>(web_contents);
 }
-
 }  // namespace
 
 bool OffStoreInstallAllowedByPrefs(Profile* profile, const DownloadItem& item) {
