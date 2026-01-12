@@ -633,8 +633,6 @@ component("base") {
     "strings/durable_string_view.h",
     "strings/escape.cc",
     "strings/escape.h",
-    "strings/latin1_string_conversions.cc",
-    "strings/latin1_string_conversions.h",
     "strings/lazy_string_builder.cc",
     "strings/lazy_string_builder.h",
     "strings/levenshtein_distance.cc",
