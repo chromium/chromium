@@ -53,4 +53,8 @@ void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity) {}
 
 void UpdateGeminiViewState(GeminiViewState view_state) {}
 
+GeminiViewState GetCurrentGeminiViewState() {
+  return GeminiViewState::kUnknown;
+}
+
 }  // namespace ios::provider

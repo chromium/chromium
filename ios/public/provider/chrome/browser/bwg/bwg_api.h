@@ -138,6 +138,9 @@ void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity);
 // Updates Gemini floaty view state.
 void UpdateGeminiViewState(GeminiViewState view_state);
 
+// Returns the current `GeminiViewState` of the floaty.
+GeminiViewState GetCurrentGeminiViewState();
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_
