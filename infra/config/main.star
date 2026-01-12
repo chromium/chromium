@@ -329,6 +329,7 @@ chromium_luci.configure_targets(
             "win10_nvidia_gtx_1660_stable": targets.IGNORE_UNUSED,
             "win11_amd_780m_experimental": targets.IGNORE_UNUSED,
             "win11_amd_890m_experimental": targets.IGNORE_UNUSED,
+            "win11_amd_rx_5500_xt_experimental": targets.IGNORE_UNUSED,
             "win11_amd_rx_7600_stable": targets.IGNORE_UNUSED,
             "win11_nvidia_rtx_4070_super_experimental": targets.IGNORE_UNUSED,
             "win11_nvidia_rtx_4070_super_stable": targets.IGNORE_UNUSED,
