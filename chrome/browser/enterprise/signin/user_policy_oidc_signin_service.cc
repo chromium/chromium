@@ -8,12 +8,10 @@
 #include <utility>
 #include <variant>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
@@ -102,14 +100,11 @@ void ShutdownUserPolicySigninService(Profile* profile) {
 }
 
 void UserPolicyOidcSigninService::ShutdownCloudPolicyManager() {
-  if (base::FeatureList::IsEnabled(
-          profile_management::features::kEnableOidcProfileRemoteCommands)) {
-    auto* remote_command_service =
-        enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
-            profile_);
-    if (remote_command_service) {
-      remote_command_service->Shutdown();
-    }
+  auto* remote_command_service =
+      enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+          profile_);
+  if (remote_command_service) {
+    remote_command_service->Shutdown();
   }
 
   UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
@@ -343,8 +338,6 @@ void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
   }
   UserPolicySigninServiceBase::InitializeCloudPolicyManager(account_id,
                                                             std::move(client));
-  if (base::FeatureList::IsEnabled(
-          profile_management::features::kEnableOidcProfileRemoteCommands)) {
     auto* remote_command_service =
         enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
             profile_);
@@ -354,7 +347,6 @@ void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
       return;
     }
     remote_command_service->Init();
-  }
 }
 
 std::string UserPolicyOidcSigninService::GetProfileId() {

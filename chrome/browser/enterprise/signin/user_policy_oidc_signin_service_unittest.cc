@@ -118,15 +118,9 @@ class UnittestProfileManager : public FakeProfileManager {
 
 class UserPolicyOidcSigninServiceTest
     : public BrowserWithTestWindowTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public testing::WithParamInterface<bool>,
       public ProfileAttributesStorageObserver {
  public:
-  UserPolicyOidcSigninServiceTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        profile_management::features::kEnableOidcProfileRemoteCommands,
-        is_remote_commands_enabled());
-  }
-
   ~UserPolicyOidcSigninServiceTest() override = default;
 
   void SetUp() override {
@@ -173,11 +167,9 @@ class UserPolicyOidcSigninServiceTest
     BrowserWithTestWindowTest::TearDown();
   }
 
-  bool is_remote_commands_enabled() { return std::get<0>(GetParam()); }
-
   // If the 3P identity is not synced to Google, the interceptor should follow
   // the Dasherless workflow.
-  bool is_3p_identity_synced() { return std::get<1>(GetParam()); }
+  bool is_3p_identity_synced() { return GetParam(); }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -373,14 +365,9 @@ TEST_P(UserPolicyOidcSigninServiceTest, UninitializedStorePolicyRecovery) {
   }
 
   run_loop.Run();
-  if (is_remote_commands_enabled()) {
-    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
-              job_type_1);
-  } else {
-    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-              job_type_1);
-  }
 
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
+            job_type_1);
   ConfirmHasPolicy();
 }
 
@@ -392,19 +379,13 @@ TEST_P(UserPolicyOidcSigninServiceTest, InitializedStorePolicyRecovery) {
   DeviceManagementService::JobForTesting job;
 
   base::RunLoop run_loop;
-  if (is_remote_commands_enabled()) {
+
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
         .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
                         SaveArg<0>(&job)))
         .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_2),
                         SaveArg<0>(&job),
                         testing::Invoke(&run_loop, &base::RunLoop::Quit)));
-  } else {
-    EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
-                        SaveArg<0>(&job),
-                        testing::Invoke(&run_loop, &base::RunLoop::Quit)));
-  }
 
   is_3p_identity_synced()
       ? unit_test_profile_manager_->SetPolicyManagerForNextProfile(
@@ -420,15 +401,11 @@ TEST_P(UserPolicyOidcSigninServiceTest, InitializedStorePolicyRecovery) {
 
   run_loop.Run();
 
-  if (is_remote_commands_enabled()) {
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
               job_type_1);
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
               job_type_2);
-  } else {
-    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-              job_type_1);
-  }
+
   ConfirmHasPolicy();
 }
 
@@ -472,6 +449,4 @@ TEST_P(UserPolicyOidcSigninServiceTest, UninitializedSuccessLoad) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UserPolicyOidcSigninServiceTest,
-                         testing::Combine(
-                             /*is_remote_commands_enabled=*/testing::Bool(),
-                             /*is_3p_identity_synced=*/testing::Bool()));
+                         /*is_3p_identity_synced=*/testing::Bool());

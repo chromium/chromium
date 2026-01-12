@@ -8327,11 +8327,6 @@ inline constexpr char kEnableGenericOidcAuthProfileManagementName[] =
 inline constexpr char kEnableGenericOidcAuthProfileManagementDescription[] =
     "Enables profile management triggered by generic OIDC authentications.";
 
-inline constexpr char kEnableOidcProfileRemoteCommandsName[] =
-    "Enable OIDC profile remote commands";
-inline constexpr char kEnableOidcProfileRemoteCommandsDescription[] =
-    "Enables remote commands for OIDC profiles.";
-
 inline constexpr char kProfilesReorderingName[] = "Profiles Reordering";
 inline constexpr char kProfilesReorderingDescription[] =
     "Enables profiles reordering in the Profile Picker main view by drag and "
