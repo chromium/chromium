@@ -42,6 +42,10 @@ class StorageLoadedDataAndroid {
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
 };
 
+base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
+    JNIEnv* env,
+    tabs_pb::TabState& tab_state);
+
 }  // namespace tabs
 
 namespace jni_zero {
@@ -58,6 +62,15 @@ inline tabs::StorageLoadedDataAndroid*
 FromJniType<tabs::StorageLoadedDataAndroid*>(JNIEnv* env,
                                              const JavaRef<jobject>& obj) {
   return tabs::StorageLoadedDataAndroid::FromJavaObject(env, obj);
+}
+
+// TODO(469809169): Rather than using a const_cast, declare the function as
+// tabs_pb::TabState&& and having our codegen use std::move().
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<tabs_pb::TabState>(
+    JNIEnv* env,
+    const tabs_pb::TabState& input) {
+  return tabs::CreateLoadedTabState(env, const_cast<tabs_pb::TabState&>(input));
 }
 
 }  // namespace jni_zero

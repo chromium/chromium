@@ -69,8 +69,9 @@ public class StorageLoadedData implements Destroyable {
     @CalledByNative
     public static StorageLoadedData createData(
             long nativePtr,
-            LoadedTabState[] loadedTabStates,
-            TabGroupCollectionData[] groups,
+            @JniType("std::vector<tabs_pb::TabState>") LoadedTabState[] loadedTabStates,
+            @JniType("std::vector<tabs::TabGroupCollectionDataAndroid*>")
+                    TabGroupCollectionData[] groups,
             int activeTabIndex) {
         return new StorageLoadedData(nativePtr, loadedTabStates, groups, activeTabIndex);
     }

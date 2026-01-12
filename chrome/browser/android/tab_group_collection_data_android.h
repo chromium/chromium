@@ -57,6 +57,14 @@ ToJniType<tabs::TabGroupCollectionDataAndroid>(
   return input.GetJavaObject(env);
 }
 
+template <>
+inline ScopedJavaLocalRef<jobject>
+ToJniType<tabs::TabGroupCollectionDataAndroid*>(
+    JNIEnv* env,
+    tabs::TabGroupCollectionDataAndroid* const& input) {
+  return input->GetJavaObject(env);
+}
+
 }  // namespace jni_zero
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_GROUP_COLLECTION_DATA_ANDROID_H_

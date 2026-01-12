@@ -28,10 +28,6 @@
 
 namespace tabs {
 
-namespace {
-
-using ScopedJavaLocalRef = base::android::ScopedJavaLocalRef<jobject>;
-
 base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
     JNIEnv* env,
     tabs_pb::TabState& tab_state) {
@@ -72,49 +68,19 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
                                                      j_tab_state);
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray> CreateLoadedTabStates(
-    JNIEnv* env,
-    std::vector<tabs_pb::TabState>& loaded_tabs) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>>
-      j_loaded_tab_state_vector;
-  for (auto& loaded_tab : loaded_tabs) {
-    j_loaded_tab_state_vector.push_back(CreateLoadedTabState(env, loaded_tab));
-  }
-
-  base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/tab/StorageLoadedData$LoadedTabState");
-  return base::android::ToTypedJavaArrayOfObjects(
-      env, j_loaded_tab_state_vector, type.obj());
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray> CreateGroupCollectionData(
-    JNIEnv* env,
-    std::vector<std::unique_ptr<TabGroupCollectionData>>& loaded_groups) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_loaded_group_vector;
-  for (auto& loaded_group : loaded_groups) {
-    auto* android_group =
-        new TabGroupCollectionDataAndroid(std::move(loaded_group));
-    j_loaded_group_vector.push_back(android_group->GetJavaObject(env));
-  }
-
-  base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/tab/TabGroupCollectionData");
-  return base::android::ToTypedJavaArrayOfObjects(env, j_loaded_group_vector,
-                                                  type.obj());
-}
-
-}  // namespace
-
 StorageLoadedDataAndroid::StorageLoadedDataAndroid(
     JNIEnv* env,
     std::unique_ptr<StorageLoadedData> data)
     : data_(std::move(data)) {
-  base::android::ScopedJavaLocalRef<jobjectArray> loaded_tab_states =
-      CreateLoadedTabStates(env, data_->GetLoadedTabs());
-  base::android::ScopedJavaLocalRef<jobjectArray> loaded_groups =
-      CreateGroupCollectionData(env, data_->GetLoadedGroups());
+  std::vector<TabGroupCollectionDataAndroid*> tab_group_collection_data_android;
+  for (auto& loaded_group : data_->GetLoadedGroups()) {
+    auto* android_group =
+        new TabGroupCollectionDataAndroid(std::move(loaded_group));
+    tab_group_collection_data_android.push_back(android_group);
+  }
   j_object_ = Java_StorageLoadedData_createData(
-      env, reinterpret_cast<intptr_t>(this), loaded_tab_states, loaded_groups,
+      env, reinterpret_cast<intptr_t>(this), data_->GetLoadedTabs(),
+      tab_group_collection_data_android,
       data_->GetActiveTabIndex().value_or(-1));
 }
 
