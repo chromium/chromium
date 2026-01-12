@@ -128,8 +128,8 @@ void BnplManager::OnDidAcceptBnplSuggestion(
       CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
           .ShowSelectBnplIssuerUi(
               GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
-              base::BindOnce(&BnplManager::OnIssuerSelected,
-                             weak_factory_.GetWeakPtr()),
+              base::BindRepeating(&BnplManager::OnIssuerSelected,
+                                  weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
               HasSeenAmountExtractionAiTerms());
 
@@ -158,8 +158,8 @@ void BnplManager::OnDidAcceptBnplSuggestion(
         CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
             .ShowSelectBnplIssuerUi(
                 GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
-                base::BindOnce(&BnplManager::OnIssuerSelected,
-                               weak_factory_.GetWeakPtr()),
+                base::BindRepeating(&BnplManager::OnIssuerSelected,
+                                    weak_factory_.GetWeakPtr()),
                 base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
                 HasSeenAmountExtractionAiTerms());
       } else {

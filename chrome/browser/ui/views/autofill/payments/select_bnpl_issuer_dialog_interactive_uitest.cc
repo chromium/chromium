@@ -90,7 +90,7 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
-  base::MockOnceCallback<void(BnplIssuer)> accept_callback_;
+  base::MockRepeatingCallback<void(BnplIssuer)> accept_callback_;
   base::MockOnceClosure cancel_callback_;
   base::test::ScopedFeatureList feature_list_{
       features::kAutofillEnableAiBasedAmountExtraction};

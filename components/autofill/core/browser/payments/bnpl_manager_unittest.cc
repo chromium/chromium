@@ -178,14 +178,15 @@ class MockBnplUiDelegate : public BnplUiDelegate {
   MockBnplUiDelegate() = default;
   ~MockBnplUiDelegate() override = default;
 
-  MOCK_METHOD(void,
-              ShowSelectBnplIssuerUi,
-              (std::vector<BnplIssuerContext> bnpl_issuer_context,
-               std::string app_locale,
-               base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
-               base::OnceClosure cancel_callback,
-               bool has_seen_ai_terms),
-              (override));
+  MOCK_METHOD(
+      void,
+      ShowSelectBnplIssuerUi,
+      (std::vector<BnplIssuerContext> bnpl_issuer_context,
+       std::string app_locale,
+       base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
+       base::OnceClosure cancel_callback,
+       bool has_seen_ai_terms),
+      (override));
   MOCK_METHOD(void,
               UpdateBnplIssuerDialogUi,
               (std::vector<BnplIssuerContext> bnpl_issuer_context),
