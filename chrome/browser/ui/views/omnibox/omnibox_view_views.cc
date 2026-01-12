@@ -27,6 +27,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/histogram_scope.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -93,6 +96,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -2355,10 +2359,21 @@ void OmniboxViewViews::OnDidPresentCompositorFrame(
     const gfx::PresentationFeedback& feedback) {
   if (latency_histogram_state_ == LatencyHistogramState::kCompositingStarted) {
     DCHECK(!insert_char_time_.is_null());
+
+    uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
+    base::trace_event::HistogramScope scoped_event(event_id);
+
+    const base::TimeTicks now = base::TimeTicks::Now();
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency",
-                        base::TimeTicks::Now() - insert_char_time_);
-    insert_char_time_ = base::TimeTicks();
+                        now - insert_char_time_);
+
+    auto track = perfetto::NamedTrack("Omnibox.Latency");
+    TRACE_EVENT_BEGIN("omnibox", "CharTypedToRepaint", track, insert_char_time_,
+                      perfetto::Flow::ProcessScoped(event_id));
+    TRACE_EVENT_END("omnibox", track, now);
+
     latency_histogram_state_ = LatencyHistogramState::kNotActive;
+    insert_char_time_ = base::TimeTicks();
   }
 }
 
