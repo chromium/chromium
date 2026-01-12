@@ -105,19 +105,25 @@ void ChromeCameraSaveDelegate::PerformUpload(
                          thumbnail))
             .second);
   } else {
-    ash::cloud_upload::DriveUploadObserver::Observe(
-        profile, upload_from_path,
-        policy::local_user_files::UploadTrigger::kCamera, file_size,
-        progress_callback, std::move(done_callback));
+    google_drive_uploaders_.emplace(
+        file_name,
+        ash::cloud_upload::DriveUploadObserver::Observe(
+            profile, upload_from_path,
+            policy::local_user_files::UploadTrigger::kCamera, file_size,
+            progress_callback,
+            base::BindOnce(&ChromeCameraSaveDelegate::OnGoogleDriveUploadDone,
+                           weak_ptr_factory_.GetWeakPtr(), file_name,
+                           std::move(done_callback))));
   }
 }
 
 void ChromeCameraSaveDelegate::CancelUploads() {
+  // When Cancel() is called, OnOnedriveUploadDone() / OnGoogleDriveUploadDone()
+  // will be called which would modify `onedrive_uploaders_` or
+  // `google_drive_uploaders_`. So make a copy of the uploaders, and explicitly
+  // clear the map here to control cancellation, and iterate over the uploaders
+  // instead.
   if (is_onedrive()) {
-    // When Cancel() is called, OnOnedriveUploadDone() will be called which
-    // would modify `onedrive_uploaders_`. So make a copy of the uploaders, and
-    // explicitly clear the map here to control cancellation, and iterate over
-    // the uploaders instead.
     std::vector<base::WeakPtr<ash::cloud_upload::OdfsSkyvaultUploader>>
         uploaders;
     uploaders.reserve(onedrive_uploaders_.size());
@@ -134,7 +140,20 @@ void ChromeCameraSaveDelegate::CancelUploads() {
     }
   } else {
     CHECK(is_google_drive());
-    // TODO(crbug.com/454152412) Implement Google Drive upload cancellation.
+    std::vector<base::WeakPtr<ash::cloud_upload::DriveUploadObserver>>
+        uploaders;
+    uploaders.reserve(google_drive_uploaders_.size());
+    for (auto& [_, uploader] : google_drive_uploaders_) {
+      uploaders.push_back(uploader);
+    }
+    // Clear map before OnGoogleDriveUploadDone() can be called to indicate
+    // uploads have been cancelled, so that it doesn't call the done callbacks.
+    google_drive_uploaders_.clear();
+    for (auto& uploader : uploaders) {
+      if (uploader) {
+        uploader->Cancel();
+      }
+    }
   }
 }
 
@@ -165,11 +184,22 @@ void ChromeCameraSaveDelegate::OnOnedriveUploadDone(
     storage::FileSystemURL,
     std::optional<ash::cloud_upload::OdfsSkyvaultUploader::UploadError> error,
     base::FilePath /*upload_root_path*/) {
-  if (onedrive_uploaders_.empty()) {
+  if (!onedrive_uploaders_.erase(file_name)) {
     // Uploads have been cancelled by the user. So don't invoke the done
     // callback.
     return;
   }
-  onedrive_uploaders_.erase(file_name);
   std::move(callback).Run(!error);
+}
+
+void ChromeCameraSaveDelegate::OnGoogleDriveUploadDone(
+    const std::string& file_name,
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  if (!google_drive_uploaders_.erase(file_name)) {
+    // Uploads have been cancelled by the user. So don't invoke the done
+    // callback.
+    return;
+  }
+  std::move(callback).Run(success);
 }
