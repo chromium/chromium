@@ -765,7 +765,6 @@ gfx::Size EcheTray::CalculateSizeForEche() const {
   height_scale = std::min(height_scale, 1.0f);
   gfx::Size size = gfx::ScaleToFlooredSize(kDefaultBubbleSize, height_scale);
 
-  // TODO(b/258306301): Verify the correct sizing for Landscape
   if (is_landscape_) {
     size = gfx::Size(size.height(), size.width());
   }
