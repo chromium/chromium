@@ -858,38 +858,6 @@ suite('EventListItemElement', () => {
       assertEquals('cr:warning', icon.getAttribute('icon'));
     });
 
-    test('displays Omaha logo for Omaha request', async () => {
-      item.event = {
-        eventType: 'POST_REQUEST',
-        startEvent: {
-          eventType: 'POST_REQUEST',
-          eventId: '1',
-          deviceUptime: 0,
-          pid: 0,
-          processToken: '',
-          bound: 'START',
-          errors: [],
-          request: btoa(')]}\'{"request":{"@os":"win"}}'),
-        },
-        endEvent: {
-          eventType: 'POST_REQUEST',
-          eventId: '1',
-          deviceUptime: 1000,
-          pid: 0,
-          processToken: '',
-          bound: 'END',
-          errors: [],
-          response: btoa(')]}\'{"response":{"protocol":"3.0"}}'),
-        },
-      };
-      await microtasksFinished();
-      const icon = item.shadowRoot.querySelector(
-          '.event-description-icon-column cr-icon');
-      assertTrue(!!icon);
-      assertEquals('updater:omaha', icon.getAttribute('icon'));
-    });
-
-
     test('does not display for other events', async () => {
       item.event = {
         eventType: 'INSTALL',

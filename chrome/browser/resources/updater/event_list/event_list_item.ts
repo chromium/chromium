@@ -286,11 +286,6 @@ export class EventListItemElement extends CrLitElement {
           default:
             return undefined;
         }
-      case 'POST_REQUEST':
-        return (this.omahaRequest !== undefined ||
-                this.omahaResponse !== undefined) ?
-            'updater:omaha' :
-            '';
       default:
         return undefined;
     }
