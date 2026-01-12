@@ -782,6 +782,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   // the pointer passed back to the client has to remain valid for eternity.
   std::set<std::string> gl_strings_;
 
+  // TODO(crbug.com/40285824): Spanify `mapped_buffers_` to use
+  // base::span<uint8_t> instead of void*.
   typedef std::map<const void*, MappedBuffer> MappedBufferMap;
   MappedBufferMap mapped_buffers_;
 
@@ -789,6 +791,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   typedef std::unordered_map<GLuint, MappedBuffer> MappedBufferRangeMap;
   MappedBufferRangeMap mapped_buffer_range_map_;
 
+  // TODO(crbug.com/40285824): Spanify `mapped_textures_` to use
+  // base::span<uint8_t> instead of void*.
   typedef std::map<const void*, MappedTexture> MappedTextureMap;
   MappedTextureMap mapped_textures_;
 

@@ -70,12 +70,12 @@ bool QuerySyncManager::Alloc(QuerySyncManager::QueryInfo* info) {
   if (!bucket) {
     int32_t shm_id;
     unsigned int shm_offset;
-    void* mem = mapped_memory_->Alloc(
+    base::span<uint8_t> buffer = mapped_memory_->Alloc(
         kSyncsPerBucket * sizeof(QuerySync), &shm_id, &shm_offset);
-    if (!mem) {
+    if (buffer.empty()) {
       return false;
     }
-    QuerySync* syncs = static_cast<QuerySync*>(mem);
+    QuerySync* syncs = reinterpret_cast<QuerySync*>(buffer.data());
     buckets_.push_back(std::make_unique<Bucket>(syncs, shm_id, shm_offset));
     bucket = buckets_.back().get();
   }
@@ -384,13 +384,13 @@ bool QueryTracker::SetDisjointSync(QueryTrackerClient* client) {
     // Allocate memory for disjoint value sync.
     int32_t shm_id = -1;
     uint32_t shm_offset;
-    void* mem = mapped_memory_->Alloc(sizeof(*disjoint_count_sync_),
-                                      &shm_id,
-                                      &shm_offset);
-    if (mem) {
+    base::span<uint8_t> buffer = mapped_memory_->Alloc(
+        sizeof(*disjoint_count_sync_), &shm_id, &shm_offset);
+    if (!buffer.empty()) {
       disjoint_count_sync_shm_id_ = shm_id;
       disjoint_count_sync_shm_offset_ = shm_offset;
-      disjoint_count_sync_ = static_cast<DisjointValueSync*>(mem);
+      disjoint_count_sync_ =
+          reinterpret_cast<DisjointValueSync*>(buffer.data());
       disjoint_count_sync_->Reset();
       client->IssueSetDisjointValueSync(shm_id, shm_offset);
     }
