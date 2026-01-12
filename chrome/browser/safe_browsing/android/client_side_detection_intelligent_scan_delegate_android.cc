@@ -430,6 +430,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::StartModelDownload() {
   if (!model_broker_client_) {
     return;
   }
+  base::ScopedUmaHistogramTimer scoped_timer(
+      "SBClientPhishing.OnDeviceModelStartModelDownloadFunctionRunTime."
+      "Android");
   model_broker_client_->GetSubscriber(kScamDetection)
       .WaitForClient(base::BindOnce(
           [](base::TimeTicks download_start_time,

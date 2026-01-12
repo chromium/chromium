@@ -1148,6 +1148,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.OnDeviceModelStartModelDownloadFunctionRunTime.Android"
+    units="ms" expires_after="2026-07-09">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to run the StartModelDownload function in the
+    intelligent scan delegate. Note that this measures the function running
+    time, not the actual model download time (which is measured by
+    SBClientPhishing.OnDeviceModelFetchTime).
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive"
     enum="BooleanExists" expires_after="2026-06-28">
   <owner>andysjlim@chromium.org</owner>
