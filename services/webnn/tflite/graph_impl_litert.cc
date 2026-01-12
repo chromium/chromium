@@ -207,9 +207,13 @@ class GraphImplLiteRt::ComputeResources {
 
   ~ComputeResources() {
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
-    // TODO(crbug.com/454732289): Update this when profiler summarizer is
-    // supported in LiteRT.
-    profiler_.Reset();
+    auto profile_summary = profiler_.GetProfileSummary(model_->Get());
+    if (profile_summary) {
+      VLOG(1) << "LiteRt Profiler Summary:\n" << *profile_summary;
+    } else {
+      VLOG(1) << "Failed to get LiteRt profiler summary: "
+              << profile_summary.Error().Message();
+    }
 #endif
   }
 
@@ -340,6 +344,14 @@ class GraphImplLiteRt::ComputeResources {
     }
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     cpu_options->SetXNNPackFlags(XNN_FLAG_BASIC_PROFILING);
+    auto runtime_options = options->GetRuntimeOptions();
+    if (!runtime_options) {
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kUnknownError,
+          base::StringPrintf("Unable to create Runtime Options: %s",
+                             runtime_options.Error().Message())));
+    }
+    runtime_options->SetEnableProfiling(true);
 #endif
     // On a lower-end system, use only one thread for 1 or 2 cores, use half
     // of the cores for less than 8 cores. On systems with more cores, the max
@@ -367,7 +379,7 @@ class GraphImplLiteRt::ComputeResources {
   std::optional<::litert::CompiledModel> model_;
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
-  LiteRtProfiler profiler_;
+  ::litert::Profiler profiler_;
 #endif
 };
 
