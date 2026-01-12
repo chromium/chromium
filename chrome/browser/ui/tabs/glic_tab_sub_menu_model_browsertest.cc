@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithMultipleTabs) {
   EXPECT_FALSE(instance3);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, RecentConversationsShown) {
+IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, SwitchToRecentConversation) {
   // Ensure Glic is enabled for the profile.
   EXPECT_TRUE(GlicEnabling::IsReadyForProfile(browser()->profile()));
 
@@ -347,6 +347,51 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, RecentConversationsShown) {
         base::UTF8ToUTF16("Title " + base::NumberToString(5 - i));
     EXPECT_EQ(submenu->GetLabelAt(i), expected_title);
   }
+
+  // Now verify that we can switch a tab to a recent conversation.
+  // Select tabs 1 and 2.
+  ui::ListSelectionModel selection;
+  selection.AddIndexToSelection(1);
+  selection.AddIndexToSelection(2);
+  selection.set_active(1);
+  tab_strip_model->SetSelectionFromModel(selection);
+
+  menu = std::make_unique<TabMenuModel>(
+      /*delegate=*/nullptr, browser()->GetFeatures().tab_menu_model_delegate(),
+      tab_strip_model, /*index=*/1);
+
+  share_index = menu->GetIndexOfCommandId(TabStripModel::CommandGlicShare);
+  ASSERT_TRUE(share_index.has_value());
+  submenu = menu->GetSubmenuModelAt(share_index.value());
+  ASSERT_TRUE(submenu);
+
+  // Select the third conversation and pin tabs to it.
+  size_t target_index = 0;
+  bool found_target = false;
+  for (size_t i = 0; i < submenu->GetItemCount(); ++i) {
+    if (submenu->GetLabelAt(i) == u"Title 3") {
+      target_index = i;
+      found_target = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(found_target);
+  submenu->ActivatedAt(target_index);
+
+  tabs::TabInterface* tab1 = tab_strip_model->GetTabAtIndex(1);
+  tabs::TabInterface* tab2 = tab_strip_model->GetTabAtIndex(2);
+
+  // Verify tabs 1 and 2 are pinned to conv3.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* inst1 = glic_instance_coordinator->GetInstanceForTab(tab1);
+    auto* inst2 = glic_instance_coordinator->GetInstanceForTab(tab2);
+    // conv3
+    return inst1 &&
+           static_cast<GlicInstanceImpl*>(inst1)->conversation_id() ==
+               "conv3" &&
+           inst2 &&
+           static_cast<GlicInstanceImpl*>(inst2)->conversation_id() == "conv3";
+  }));
 }
 
 class TestMenuDelegate : public ui::SimpleMenuModel::Delegate {

@@ -244,14 +244,26 @@ void GlicInstanceCoordinatorImpl::CreateNewConversationForTabs(
   }
 
   GlicInstanceImpl* instance = CreateGlicInstance();
-  for (tabs::TabInterface* tab : tabs) {
-    SidePanelShowOptions side_panel_options(*tab);
-    side_panel_options.pin_trigger = GlicPinTrigger::kContextMenu;
-    ShowOptions show_opts(side_panel_options);
-    show_opts.focus_on_show =
-        IsActive(GetBrowserWindowInterface(tab)) && tab->IsActivated();
-    instance->Show(show_opts);
+  ShowInstanceForTabs(instance, tabs, GlicPinTrigger::kContextMenu);
+}
+
+void GlicInstanceCoordinatorImpl::MoveTabsToConversation(
+    const std::vector<tabs::TabInterface*>& tabs,
+    const std::string& conversation_id) {
+  GlicInstanceImpl* target_instance = nullptr;
+  for (const auto& [id, instance] : instances_) {
+    if (instance->conversation_id().has_value() &&
+        instance->conversation_id().value() == conversation_id) {
+      target_instance = instance.get();
+      break;
+    }
   }
+
+  if (!target_instance) {
+    return;
+  }
+
+  ShowInstanceForTabs(target_instance, tabs, GlicPinTrigger::kContextMenu);
 }
 
 void GlicInstanceCoordinatorImpl::Toggle(
@@ -515,6 +527,20 @@ GlicInstanceCoordinatorImpl::CreateInstanceImpl() {
 
 void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
   warmed_instance_ = CreateInstanceImpl();
+}
+
+void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
+    GlicInstanceImpl* instance,
+    const std::vector<tabs::TabInterface*>& tabs,
+    GlicPinTrigger pin_trigger) {
+  for (tabs::TabInterface* tab : tabs) {
+    SidePanelShowOptions side_panel_options(*tab);
+    side_panel_options.pin_trigger = pin_trigger;
+    ShowOptions show_opts(side_panel_options);
+    show_opts.focus_on_show =
+        tab->GetBrowserWindowInterface()->IsActive() && tab->IsActivated();
+    instance->Show(show_opts);
+  }
 }
 
 GlicInstanceImpl*

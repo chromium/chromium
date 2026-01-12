@@ -78,6 +78,9 @@ class GlicWindowController {
       const tabs::TabInterface* tab) const = 0;
   virtual void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) = 0;
+  virtual void MoveTabsToConversation(
+      const std::vector<tabs::TabInterface*>& tabs,
+      const std::string& conversation_id) = 0;
   virtual std::vector<ConversationInfo> GetRecentConversations(
       size_t limit) = 0;
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
@@ -104,6 +105,9 @@ class GlicInstanceCoordinatorImpl
   // of the given tabs.
   void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) override;
+  // Moves the given tabs to the conversation with the provided ID.
+  void MoveTabsToConversation(const std::vector<tabs::TabInterface*>& tabs,
+                              const std::string& conversation_id) override;
 
   // Toggles the side panel for the active tab if `browser` is provided,
   // otherwise toggles the floating window for the instance. Focus is given
@@ -174,6 +178,10 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* CreateGlicInstance();
   std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl();
   void CreateWarmedInstance();
+
+  void ShowInstanceForTabs(GlicInstanceImpl* instance,
+                           const std::vector<tabs::TabInterface*>& tabs,
+                           GlicPinTrigger pin_trigger);
 
   void ToggleFloaty(bool prevent_close,
                     glic::mojom::InvocationSource source,

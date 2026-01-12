@@ -27,16 +27,16 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
     return;
   }
 
-  std::vector<ConversationInfo> conversations =
+  recent_conversations_ =
       glic_service->window_controller().GetRecentConversations(
           kMaxRecentConversations);
 
-  for (const auto& conversation : conversations) {
-    AddItem(TabStripModel::CommandGlicSwitchToRecentConversation,
-            base::UTF8ToUTF16(conversation.title));
+  for (size_t i = 0; i < recent_conversations_.size(); ++i) {
+    AddItem(kMinRecentConversationCommandId + i,
+            base::UTF8ToUTF16(recent_conversations_[i].title));
   }
 
-  if (!conversations.empty()) {
+  if (!recent_conversations_.empty()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
@@ -44,37 +44,48 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
           l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT));
 }
 
+GlicTabSubMenuModel::~GlicTabSubMenuModel() = default;
+
 bool GlicTabSubMenuModel::IsCommandIdChecked(int command_id) const {
   return false;
 }
 
 bool GlicTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
+  if (command_id >= kMinRecentConversationCommandId &&
+      command_id <= kMaxRecentConversationCommandId) {
+    return true;
+  }
   return tab_strip_model_->IsContextMenuCommandEnabled(
       context_index_,
       static_cast<TabStripModel::ContextMenuCommand>(command_id));
 }
 
 void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  if (command_id == TabStripModel::CommandGlicCreateNewChat) {
-    std::vector<tabs::TabInterface*> tabs;
-    for (tabs::TabInterface* tab :
-         tab_strip_model_->selection_model().selected_tabs()) {
-      tabs.push_back(tab);
-    }
+  std::vector<tabs::TabInterface*> tabs;
+  if (tab_strip_model_->IsTabSelected(context_index_)) {
+    const auto& selected_tabs =
+        tab_strip_model_->selection_model().selected_tabs();
+    tabs.assign(selected_tabs.begin(), selected_tabs.end());
+  } else {
+    tabs.push_back(tabs::TabInterface::GetFromContents(
+        tab_strip_model_->GetWebContentsAt(context_index_)));
+  }
 
-    GlicKeyedService* service =
-        GlicKeyedService::Get(tab_strip_model_->profile());
-    if (!service) {
-      return;
-    }
-
-    service->window_controller().CreateNewConversationForTabs(tabs);
+  GlicKeyedService* service =
+      GlicKeyedService::Get(tab_strip_model_->profile());
+  if (!service) {
     return;
   }
 
-  tab_strip_model_->ExecuteContextMenuCommand(
-      context_index_,
-      static_cast<TabStripModel::ContextMenuCommand>(command_id));
+  if (command_id == TabStripModel::CommandGlicCreateNewChat) {
+    service->window_controller().CreateNewConversationForTabs(tabs);
+  } else if (command_id >= kMinRecentConversationCommandId &&
+             command_id <= kMaxRecentConversationCommandId) {
+    size_t conversation_index = command_id - kMinRecentConversationCommandId;
+    CHECK_LT(conversation_index, recent_conversations_.size());
+    service->window_controller().MoveTabsToConversation(
+        tabs, recent_conversations_[conversation_index].id);
+  }
 }
 
 }  // namespace glic

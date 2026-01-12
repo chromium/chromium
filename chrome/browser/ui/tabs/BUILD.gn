@@ -87,6 +87,8 @@ if (!is_android) {
 
     if (enable_glic) {
       sources += [ "glic_tab_sub_menu_model.h" ]
+
+      public_deps += [ "//chrome/browser/glic" ]
     }
   }
 
