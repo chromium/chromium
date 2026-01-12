@@ -108,6 +108,25 @@ void Dispatcher::RegisterRoutes() {
                 base::BindRepeating(&Dispatcher::HandleAccessibilitySnapshot,
                                     base::Unretained(this)));
 
+  // Ref-based action routes
+  RegisterRoute("POST", "/mcp/tabs/:id/click-ref",
+                base::BindRepeating(&Dispatcher::HandleClickByRefAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/type-ref",
+                base::BindRepeating(&Dispatcher::HandleTypeByRefAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/hover-ref",
+                base::BindRepeating(&Dispatcher::HandleHoverByRefAction,
+                                    base::Unretained(this)));
+  RegisterRoute("POST", "/mcp/tabs/:id/select-ref",
+                base::BindRepeating(&Dispatcher::HandleSelectByRefAction,
+                                    base::Unretained(this)));
+
+  // Scroll action route
+  RegisterRoute("POST", "/mcp/tabs/:id/scroll",
+                base::BindRepeating(&Dispatcher::HandleScrollAction,
+                                    base::Unretained(this)));
+
   LOG(INFO) << "Registered " << routes_.size() << " routes";
 }
 
@@ -277,9 +296,9 @@ Response Dispatcher::HandleCloseTab(const RequestContext& ctx) {
     return Response::Error(400, "Missing required parameter: id");
   }
 
-  // Parse tab ID as integer
-  int tab_id;
-  if (!base::StringToInt(it->second, &tab_id)) {
+  // Parse tab ID as 64-bit integer (tab IDs are pointer values)
+  int64_t tab_id;
+  if (!base::StringToInt64(it->second, &tab_id)) {
     return Response::Error(400, "Invalid tab ID format");
   }
 
@@ -290,7 +309,7 @@ Response Dispatcher::HandleCloseTab(const RequestContext& ctx) {
 
   base::Value::Dict result;
   result.Set("success", true);
-  result.Set("tab_id", tab_id);
+  result.Set("tab_id", static_cast<double>(tab_id));
   return Response::Ok(std::move(result));
 }
 
@@ -306,9 +325,9 @@ Response Dispatcher::HandleActivateTab(const RequestContext& ctx) {
     return Response::Error(400, "Missing required parameter: id");
   }
 
-  // Parse tab ID as integer
-  int tab_id;
-  if (!base::StringToInt(it->second, &tab_id)) {
+  // Parse tab ID as 64-bit integer (tab IDs are pointer values)
+  int64_t tab_id;
+  if (!base::StringToInt64(it->second, &tab_id)) {
     return Response::Error(400, "Invalid tab ID format");
   }
 
@@ -319,7 +338,7 @@ Response Dispatcher::HandleActivateTab(const RequestContext& ctx) {
 
   base::Value::Dict result;
   result.Set("success", true);
-  result.Set("tab_id", tab_id);
+  result.Set("tab_id", static_cast<double>(tab_id));
   return Response::Ok(std::move(result));
 }
 
@@ -335,9 +354,9 @@ Response Dispatcher::HandleGetTabState(const RequestContext& ctx) {
     return Response::Error(400, "Missing required parameter: id");
   }
 
-  // Parse tab ID as integer
-  int tab_id;
-  if (!base::StringToInt(it->second, &tab_id)) {
+  // Parse tab ID as 64-bit integer (tab IDs are pointer values)
+  int64_t tab_id;
+  if (!base::StringToInt64(it->second, &tab_id)) {
     return Response::Error(400, "Invalid tab ID format");
   }
 
@@ -709,6 +728,258 @@ Response Dispatcher::HandleAccessibilitySnapshot(const RequestContext& ctx) {
             *out_success = snapshot_success;
             *out_error = snapshot_error;
             *out_data = std::move(snapshot_data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+// ===== Ref-based action handlers =====
+
+Response Dispatcher::HandleClickByRefAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* ref_id = ctx.body.FindString("ref");
+  if (!ref_id) {
+    return Response::Error(400, "Missing required field: ref");
+  }
+
+  // Use RunLoop to wait for async callback
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->ClickByRef(
+      web_contents, *ref_id,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleTypeByRefAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* ref_id = ctx.body.FindString("ref");
+  const std::string* text = ctx.body.FindString("text");
+
+  if (!ref_id) {
+    return Response::Error(400, "Missing required field: ref");
+  }
+  if (!text) {
+    return Response::Error(400, "Missing required field: text");
+  }
+
+  // Use RunLoop to wait for async callback
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->TypeByRef(
+      web_contents, *ref_id, *text,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleHoverByRefAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* ref_id = ctx.body.FindString("ref");
+  if (!ref_id) {
+    return Response::Error(400, "Missing required field: ref");
+  }
+
+  // Use RunLoop to wait for async callback
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->HoverByRef(
+      web_contents, *ref_id,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+Response Dispatcher::HandleSelectByRefAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  const std::string* ref_id = ctx.body.FindString("ref");
+  const std::string* value = ctx.body.FindString("value");
+
+  if (!ref_id) {
+    return Response::Error(400, "Missing required field: ref");
+  }
+  if (!value) {
+    return Response::Error(400, "Missing required field: value");
+  }
+
+  // Use RunLoop to wait for async callback
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->SelectOptionByRef(
+      web_contents, *ref_id, *value,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
+            loop->Quit();
+          },
+          &run_loop, &success, &error_message, &result_data));
+
+  run_loop.Run();
+
+  if (!success) {
+    return Response::Error(500, error_message);
+  }
+
+  return Response::Ok(std::move(result_data));
+}
+
+// ===== Scroll action handler =====
+
+Response Dispatcher::HandleScrollAction(const RequestContext& ctx) {
+  if (!action_runner_) {
+    return Response::Error(500, "Action runner not initialized");
+  }
+
+  content::WebContents* web_contents = GetWebContentsFromParams(ctx.params);
+  if (!web_contents) {
+    return Response::Error(404, "Tab not found");
+  }
+
+  // Get scroll parameters
+  const std::string* mode = ctx.body.FindString("mode");
+  if (!mode) {
+    return Response::Error(400, "Missing required field: mode");
+  }
+
+  // Default values
+  int x = 0;
+  int y = 0;
+  std::string selector = "";
+  std::string behavior = "auto";
+
+  // Extract optional parameters
+  std::optional<int> x_val = ctx.body.FindInt("x");
+  if (x_val.has_value()) {
+    x = x_val.value();
+  }
+  std::optional<int> y_val = ctx.body.FindInt("y");
+  if (y_val.has_value()) {
+    y = y_val.value();
+  }
+  if (const std::string* sel = ctx.body.FindString("selector")) {
+    selector = *sel;
+  }
+  if (const std::string* behav = ctx.body.FindString("behavior")) {
+    behavior = *behav;
+  }
+
+  // Use RunLoop to wait for async callback
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  bool success = false;
+  std::string error_message;
+  base::Value::Dict result_data;
+
+  action_runner_->Scroll(
+      web_contents, *mode, x, y, selector, behavior,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* out_success, std::string* out_error,
+             base::Value::Dict* out_data, bool success,
+             const std::string& error, base::Value::Dict data) {
+            *out_success = success;
+            *out_error = error;
+            *out_data = std::move(data);
             loop->Quit();
           },
           &run_loop, &success, &error_message, &result_data));

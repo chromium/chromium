@@ -112,6 +112,15 @@ class Dispatcher {
   // Route handler for accessibility snapshot
   Response HandleAccessibilitySnapshot(const RequestContext& ctx);
 
+  // Route handlers for ref-based actions
+  Response HandleClickByRefAction(const RequestContext& ctx);
+  Response HandleTypeByRefAction(const RequestContext& ctx);
+  Response HandleHoverByRefAction(const RequestContext& ctx);
+  Response HandleSelectByRefAction(const RequestContext& ctx);
+
+  // Route handler for scroll action
+  Response HandleScrollAction(const RequestContext& ctx);
+
   // Helper: Get WebContents from tab ID in params
   content::WebContents* GetWebContentsFromParams(
       const std::map<std::string, std::string>& params);

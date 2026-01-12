@@ -37,16 +37,41 @@ base::Value::Dict TabController::BuildTabInfo(
   intptr_t session_id = reinterpret_cast<intptr_t>(web_contents);
   tab_info.Set("id", static_cast<double>(session_id));
 
-  // Get URL
-  GURL url = web_contents->GetURL();
-  tab_info.Set("url", url.spec());
+  // Get URL with fallbacks - NEVER return empty/null
+  GURL url = web_contents->GetVisibleURL();
+  if (!url.is_valid() || url.is_empty()) {
+    url = web_contents->GetURL();
+  }
+  // Provide default for completely empty URLs
+  std::string url_str = url.spec();
+  if (url_str.empty()) {
+    url_str = "about:blank";
+  }
+  tab_info.Set("url", url_str);
 
-  // Get title
+  // Get title with fallback - NEVER return empty/null
   std::u16string title = web_contents->GetTitle();
-  tab_info.Set("title", base::UTF16ToUTF8(title));
+  std::string title_str = base::UTF16ToUTF8(title);
+  if (title_str.empty()) {
+    if (web_contents->IsLoading()) {
+      title_str = "Loading...";
+    } else {
+      title_str = "Untitled";
+    }
+  }
+  tab_info.Set("title", title_str);
 
   // Get loading status
   tab_info.Set("loading", web_contents->IsLoading());
+
+  // Get navigation capabilities
+  content::NavigationController& controller = web_contents->GetController();
+  tab_info.Set("canGoBack", controller.CanGoBack());
+  tab_info.Set("canGoForward", controller.CanGoForward());
+
+  // Get current navigation entry index (for history position)
+  tab_info.Set("currentEntryIndex", controller.GetCurrentEntryIndex());
+  tab_info.Set("entryCount", controller.GetEntryCount());
 
   // Get visibility (is tab active in its window)
   Browser* browser = nullptr;
@@ -61,6 +86,12 @@ base::Value::Dict TabController::BuildTabInfo(
   if (!browser) {
     tab_info.Set("active", false);
   }
+
+  // Get crash status
+  tab_info.Set("crashed", web_contents->IsCrashed());
+
+  // Get audible state (is tab playing audio)
+  tab_info.Set("audible", web_contents->IsCurrentlyAudible());
 
   return tab_info;
 }

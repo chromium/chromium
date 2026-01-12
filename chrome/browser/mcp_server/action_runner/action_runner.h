@@ -74,6 +74,43 @@ class ActionRunner {
                   bool full_page,
                   ActionCallback callback);
 
+  // ===== Reference ID-based actions =====
+  // These methods work with ref IDs from accessibility snapshots
+  // They convert ref IDs to CSS selectors and call the selector-based methods
+
+  // Click on element by reference ID
+  void ClickByRef(content::WebContents* web_contents,
+                  const std::string& ref_id,
+                  ActionCallback callback);
+
+  // Type text into element by reference ID
+  void TypeByRef(content::WebContents* web_contents,
+                 const std::string& ref_id,
+                 const std::string& text,
+                 ActionCallback callback);
+
+  // Hover over element by reference ID
+  void HoverByRef(content::WebContents* web_contents,
+                  const std::string& ref_id,
+                  ActionCallback callback);
+
+  // Select option by reference ID
+  void SelectOptionByRef(content::WebContents* web_contents,
+                         const std::string& ref_id,
+                         const std::string& value,
+                         ActionCallback callback);
+
+  // Scroll the page or element into view
+  // Supports multiple modes: scrollBy, scrollTo, scrollIntoView
+  // Returns new scroll position after scrolling
+  void Scroll(content::WebContents* web_contents,
+              const std::string& mode,  // "scrollBy", "scrollTo", or "scrollIntoView"
+              int x,
+              int y,
+              const std::string& selector,  // For scrollIntoView mode
+              const std::string& behavior,  // "smooth" or "auto"
+              ActionCallback callback);
+
  private:
   // Execute JavaScript and get result
   void ExecuteScript(content::WebContents* web_contents,
