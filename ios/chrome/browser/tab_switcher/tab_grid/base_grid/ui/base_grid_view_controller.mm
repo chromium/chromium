@@ -2231,7 +2231,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       }
       break;
     case DragEntrySideNone:
-      NOTREACHED();
+      return NO;
   }
   return YES;
 }
