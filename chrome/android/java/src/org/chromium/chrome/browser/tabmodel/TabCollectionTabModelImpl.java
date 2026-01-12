@@ -853,6 +853,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    protected int[] getTabGroupTabIndices(Token tabGroupId) {
+        List<Tab> tabs = getTabsInGroup(tabGroupId);
+        if (tabs.isEmpty()) return new int[] {};
+
+        Tab firstTab = tabs.get(0);
+        int firstIndex = indexOf(firstTab);
+        assert firstIndex != INVALID_TAB_INDEX;
+
+        Tab lastTab = tabs.get(tabs.size() - 1);
+        int lastIndex = indexOf(lastTab);
+        assert lastIndex != INVALID_TAB_INDEX;
+
+        // The returned array stores 2 values representing a range. The lastIndex + 1 is odd, but we
+        // use non-inclusive tab index ranges for tab groups. See native TabGroup::ListTabs().
+        return new int[] {firstIndex, lastIndex + 1};
+    }
+
+    @Override
     protected @Nullable Token createTabGroup(List<Tab> tabs) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0) return null;

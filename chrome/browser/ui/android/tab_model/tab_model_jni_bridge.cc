@@ -649,9 +649,18 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
 
 gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
     tab_groups::TabGroupId group_id) {
-  // TODO(crbug.com/405219902): Implement for desktop Android.
-  NOTIMPLEMENTED();
-  return {};
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  std::vector<int> range =
+      Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id.token());
+  if (range.empty()) {
+    return {};
+  }
+
+  // The vector is used to hold a range, since our JNI doesn't have a way to
+  // return a pair<> or Range directly.
+  CHECK_EQ(range.size(), 2u);
+  return gfx::Range(range[0], range[1]);
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
@@ -704,6 +713,7 @@ void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
 
 void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
                                     int index) {
+  LOG(ERROR) << "JAMES MoveGroupTo " << index;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   Java_TabModelJniBridge_moveGroupToIndex(env, jobj, group_id.token(), index);

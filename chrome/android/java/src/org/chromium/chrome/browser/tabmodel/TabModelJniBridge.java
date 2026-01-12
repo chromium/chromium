@@ -543,6 +543,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract boolean getTabGroupCollapsed(@JniType("base::Token") Token tabGroupId);
 
+    /**
+     * Returns two integers representing a range of tab indices. The range is non-inclusive and
+     * spans (startIndex, endIndex + 1).
+     */
+    @CalledByNative
+    protected abstract @JniType("std::vector<int>") int[] getTabGroupTabIndices(
+            @JniType("base::Token") Token tabGroupId);
+
     @CalledByNative
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token createTabGroup(
             @JniType("std::vector<TabAndroid*>") List<Tab> tabs);

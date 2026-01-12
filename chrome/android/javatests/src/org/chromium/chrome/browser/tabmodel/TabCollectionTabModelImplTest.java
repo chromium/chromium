@@ -3843,4 +3843,25 @@ public class TabCollectionTabModelImplTest {
                     assertThat(groupIds).containsExactly(groupId);
                 });
     }
+
+    @Test
+    @MediumTest
+    public void testGetTabGroupTabIndices() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        List<Tab> tabs = List.of(tab0, tab1, tab2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token groupId = mCollectionModel.createTabGroup(tabs);
+                    assertNotNull(groupId);
+
+                    int[] tabIndices = mCollectionModel.getTabGroupTabIndices(groupId);
+                    assertEquals(2, tabIndices.length);
+                    // The list contains the range 0 to 3, as the end is non-inclusive.
+                    assertEquals(0, tabIndices[0]);
+                    assertEquals(3, tabIndices[1]);
+                });
+    }
 }
