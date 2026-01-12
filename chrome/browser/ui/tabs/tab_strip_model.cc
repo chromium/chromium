@@ -4254,6 +4254,8 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     }
   }
 
+  CompleteModelUpdateTransaction();
+
   tabs::TabStripModelSelectionState new_selection_model = selection_model_;
   if (old_selection_model != new_selection_model) {
     TabStripSelectionChange selection(
@@ -4264,7 +4266,6 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
   }
 
   NotifySplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
-
   return split_id;
 }
 
@@ -4284,13 +4285,18 @@ void TabStripModel::RemoveSplitImpl(
     }
   }
 
-  tabs::TabStripModelSelectionState new_selection_model = selection_model_;
+  CompleteModelUpdateTransaction();
 
   // If there was an update to the selection model, notify observers.
-  if (old_selection_model != new_selection_model) {
+  if (old_selection_model != selection_model_) {
     TabStripSelectionChange selection(
         GetActiveTab(), old_selection_model.GetListSelectionModel());
     TabStripModelChange change;
+    selection.new_tab = GetActiveTab();
+    selection.new_contents = GetActiveWebContents();
+    selection.new_model = selection_model().GetListSelectionModel();
+    selection.reason = TabStripModelObserver::CHANGE_REASON_NONE;
+
     OnChange(change, selection);
   }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
@@ -193,21 +194,57 @@ void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
     return;
   }
 
-  UpdateTabData(tab, model_index);
+  UpdateTabData(tab);
 }
 
 void RootTabCollectionNode::OnTabPinnedStateChanged(tabs::TabInterface* tab,
                                                     int model_index) {
-  UpdateTabData(tab, model_index);
+  UpdateTabData(tab);
 }
 
 void RootTabCollectionNode::OnTabBlockedStateChanged(tabs::TabInterface* tab,
                                                      int model_index) {
-  UpdateTabData(tab, model_index);
+  UpdateTabData(tab);
 }
 
-void RootTabCollectionNode::UpdateTabData(tabs::TabInterface* tab,
-                                          int model_index) {
+void RootTabCollectionNode::OnSplitTabChanged(const SplitTabChange& change) {
+  if (tab_strip_model_->closing_all()) {
+    return;
+  }
+
+  std::set<tabs::TabInterface*> tabs_to_update;
+
+  switch (change.type) {
+    case SplitTabChange::Type::kAdded:
+      if (const auto* added = change.GetAddedChange()) {
+        for (const auto& pair : added->tabs()) {
+          tabs_to_update.insert(pair.first);
+        }
+      }
+      break;
+
+    case SplitTabChange::Type::kContentsChanged:
+      if (const auto* contents = change.GetContentsChange()) {
+        for (const auto& pair : contents->prev_tabs()) {
+          tabs_to_update.insert(pair.first);
+        }
+        for (const auto& pair : contents->new_tabs()) {
+          tabs_to_update.insert(pair.first);
+        }
+      }
+      break;
+
+    case SplitTabChange::Type::kRemoved:
+    case SplitTabChange::Type::kVisualsChanged:
+      break;
+  }
+
+  for (auto* tab : tabs_to_update) {
+    UpdateTabData(tab);
+  }
+}
+
+void RootTabCollectionNode::UpdateTabData(tabs::TabInterface* tab) {
   TabCollectionNode* tab_node = GetNodeForHandle(tab->GetHandle());
   if (tab_node) {
     tab_node->NotifyDataChanged();

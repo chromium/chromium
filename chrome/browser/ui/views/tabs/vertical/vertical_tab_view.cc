@@ -482,15 +482,16 @@ void VerticalTabView::OnDataChanged() {
   const tabs::TabInterface* tab = GetTabInterface();
   CHECK(tab);
 
-  // TODO(crbug.com/470155950): Ensure proper observations for updates.
-  active_ = tab->IsVisible();
+  const TabStripModel* tab_strip_model =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
+  int index = tab_strip_model->GetIndexOfTab(tab);
+  CHECK(index != TabStripModel::kNoTab);
+
+  active_ = tab_strip_model->IsTabInForeground(index);
   selected_ = tab->IsSelected();
   split_ = tab->IsSplit();
   pinned_ = tab->IsPinned();
 
-  const TabStripModel* tab_strip_model =
-      tab->GetBrowserWindowInterface()->GetTabStripModel();
-  int index = tab_strip_model->GetIndexOfTab(tab);
   tab_data_ = TabRendererData::FromTabInModel(tab_strip_model, index);
 
   icon_->SetData(tab_data_);
