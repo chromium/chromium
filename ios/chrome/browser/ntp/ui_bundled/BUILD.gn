@@ -95,6 +95,7 @@ source_set("component_factory") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/home_customization/model",
     "//ios/chrome/browser/image_fetcher/model",
+    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/regional_capabilities/model",

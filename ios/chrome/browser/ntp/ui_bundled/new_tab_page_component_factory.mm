@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
+#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service_factory.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
@@ -106,6 +107,8 @@
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
   HomeBackgroundCustomizationService* backgroundCustomizationService =
       HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
+  NTPBackgroundImageCacheService* backgroundImageCacheService =
+      NTPBackgroundImageCacheServiceFactory::GetForProfile(profile);
   image_fetcher::ImageFetcherService* imageFetcherService =
       ImageFetcherServiceFactory::GetForProfile(profile);
   UserUploadedImageManager* userUploadedImageManager =
@@ -131,6 +134,7 @@
                              syncService:syncService
              regionalCapabilitiesService:regionalCapabilitiesService
           backgroundCustomizationService:backgroundCustomizationService
+             backgroundImageCacheService:backgroundImageCacheService
                      imageFetcherService:imageFetcherService
                 userUploadedImageManager:userUploadedImageManager
            browserViewVisibilityNotifier:
