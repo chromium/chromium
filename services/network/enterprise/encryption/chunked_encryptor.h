@@ -113,8 +113,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedEncryptor {
                                               bool is_last_chunk) const;
 
  private:
-  crypto::Aead aead_;
+  std::array<uint8_t, kKeySize> derived_key_;
   std::array<uint8_t, kNoncePrefixSize> nonce_prefix_;
+  crypto::Aead aead_;
 };
 
 }  // namespace network::enterprise_encryption
