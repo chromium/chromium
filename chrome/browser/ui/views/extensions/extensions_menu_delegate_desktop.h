@@ -55,8 +55,8 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   void OnHostAccessRequestAddedOrUpdated(
       const extensions::ExtensionId& extension_id,
       int index) override;
-  void OnHostAccessRequestRemoved(
-      const extensions::ExtensionId& extension_id) override;
+  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+                                  int index) override;
   void OnHostAccessRequestsCleared() override;
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,

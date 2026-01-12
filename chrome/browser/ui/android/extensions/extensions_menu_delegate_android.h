@@ -46,8 +46,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
       const extensions::ExtensionId& extension_id,
       int index) override;
   void OnHostAccessRequestsCleared() override;
-  void OnHostAccessRequestRemoved(
-      const extensions::ExtensionId& extension_id) override;
+  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+                                  int index) override;
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;

@@ -1251,10 +1251,11 @@ void ExtensionsMenuViewModel::RemoveHostAccessRequest(
     return;
   }
 
+  int index = std::distance(host_access_requests_.begin(), it);
   host_access_requests_.erase(it);
 
   for (Observer& observer : observers_) {
-    observer.OnHostAccessRequestRemoved(extension_id);
+    observer.OnHostAccessRequestRemoved(extension_id, index);
   }
 }
 

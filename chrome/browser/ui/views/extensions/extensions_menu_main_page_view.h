@@ -63,7 +63,8 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Remove the entry in the `requests_access_section_` corresponding to `id`,
   // if existent. Doesn't update the requests section view visibility.
-  void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
+  void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id,
+                                       int index);
 
   // Clears the entries in the `request_access_section_`, if existent. Doesn't
   // update the requests section view visibility.

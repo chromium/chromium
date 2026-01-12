@@ -121,7 +121,8 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestRemoved(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    int index) {
   CHECK(current_page_);
 
   // Site access requests only affect the main page.
@@ -137,7 +138,7 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestRemoved(
     return;
   }
 
-  main_page->RemoveExtensionRequestingAccess(extension_id);
+  main_page->RemoveExtensionRequestingAccess(extension_id, index);
   main_page->SetOptionalSectionVisibility(optional_section);
 }
 

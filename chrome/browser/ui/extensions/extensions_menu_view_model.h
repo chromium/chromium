@@ -61,9 +61,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
         int index) = 0;
 
     // Notifies the delegate that the host access request for
-    // `extension_id` was removed.
+    // `extension_id` on `index` was removed.
     virtual void OnHostAccessRequestRemoved(
-        const extensions::ExtensionId& extension_id) = 0;
+        const extensions::ExtensionId& extension_id,
+        int index) = 0;
 
     // Notifies the delegate that host access requests on the current site were
     // cleared.

@@ -309,14 +309,28 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
 }
 
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
-    const extensions::ExtensionId& id) {
-  views::View* request_entry = GetExtensionRequestEntry(id);
-  if (!request_entry) {
-    return;
-  }
+    const extensions::ExtensionId& id,
+    int index) {
+  // Verify the index is valid for the current layout.
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index),
+           requests_entries_view_->children().size());
 
-  requests_entries_view_->RemoveChildViewT(request_entry);
-  requests_entries_.erase(id);
+  // Retrieve the view at the specific index (Source of truth: ViewModel order).
+  views::View* view_at_index = requests_entries_view_->children().at(index);
+
+  // Retrieve the view mapped to the ID (Source of truth: Internal Map).
+  auto iter = requests_entries_.find(id);
+  CHECK(iter != requests_entries_.end());
+  views::View* view_from_map = iter->second;
+
+  // Safety Check: Ensure the view at the index is the same as the view for the
+  // ID.
+  CHECK_EQ(view_at_index, view_from_map);
+
+  // Remove the view and update the map.
+  requests_entries_view_->RemoveChildViewT(view_at_index);
+  requests_entries_.erase(iter);
 }
 
 void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {

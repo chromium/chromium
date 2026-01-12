@@ -69,7 +69,8 @@ void ExtensionsMenuDelegateAndroid::OnHostAccessRequestsCleared() {
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestRemoved(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    int index) {
   // TODO(crbug.com/473213114)
 }
 
