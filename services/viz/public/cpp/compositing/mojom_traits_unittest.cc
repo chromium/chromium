@@ -403,8 +403,8 @@ TEST_F(StructTraitsTest, CopyOutputRequest_CallbackRunsOnce) {
       std::move(result_sender_pending_remote));
   for (int i = 0; i < 10; i++)
     result_sender_remote->SendResult(std::make_unique<CopyOutputResult>(
-        request->result_format(), request->result_destination(), gfx::Rect(),
-        false));
+        request->result_format(), request->result_destination(),
+        gfx::Rect(10, 10), false));
   EXPECT_EQ(0, n_called);
   result_sender_remote.FlushForTesting();
   EXPECT_EQ(1, n_called);
@@ -1379,7 +1379,8 @@ TEST_F(StructTraitsTest, SharedImageFormatWithUnknownPlane) {
 TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
   auto input = std::make_unique<CopyOutputResult>(
       CopyOutputRequest::ResultFormat::RGBA,
-      CopyOutputRequest::ResultDestination::kSystemMemory, gfx::Rect(), false);
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      CopyOutputResult::Error::kUnknown);
   std::unique_ptr<CopyOutputResult> output;
   mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 
@@ -1399,7 +1400,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
 
   auto input = std::make_unique<CopyOutputResult>(
       CopyOutputRequest::ResultFormat::RGBA,
-      CopyOutputRequest::ResultDestination::kSharedImage, gfx::Rect(), false);
+      CopyOutputRequest::ResultDestination::kSharedImage,
+      CopyOutputResult::Error::kUnknown);
   EXPECT_TRUE(input->IsEmpty());
 
   std::unique_ptr<CopyOutputResult> output;

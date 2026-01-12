@@ -354,9 +354,10 @@ void HostFrameSinkManager::EvictSurfaces(
 void HostFrameSinkManager::RequestCopyOfOutput(
     const SurfaceId& surface_id,
     std::unique_ptr<CopyOutputRequest> request,
-    bool capture_exact_surface_id) {
+    bool capture_exact_surface_id,
+    base::TimeDelta timeout) {
   frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
-                                           capture_exact_surface_id);
+                                           capture_exact_surface_id, timeout);
 }
 
 void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(

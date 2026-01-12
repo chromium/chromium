@@ -70,6 +70,15 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     kSharedImage,
   };
 
+  // A CopyOutputResult may be empty and this enum can provide some reasoning
+  // why the result might be empty.
+  enum class Error : uint8_t {
+    kNone,
+    kUnknown,
+    kTimeout,
+    kEmbeddingTokenChanged,
+  };
+
   // Maximum number of planes allowed when returning software NV12 results.
   static constexpr size_t kNV12MaxPlanes = 2;
 
@@ -88,6 +97,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
                    const gfx::Rect& rect,
                    bool needs_lock_for_bitmap);
 
+  // Constructor for when we have an error.
+  CopyOutputResult(Format format, Destination destination, Error error);
+
   CopyOutputResult(const CopyOutputResult&) = delete;
   CopyOutputResult& operator=(const CopyOutputResult&) = delete;
 
@@ -101,6 +113,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   Format format() const { return format_; }
   // Returns the destination of this result.
   Destination destination() const { return destination_; }
+  // Returns the error code of this result.
+  Error error() const { return error_; }
 
   // Returns the result Rect, which is the position and size of the image data
   // within the surface/layer (see CopyOutputRequest::set_area()). If a scale
@@ -213,10 +227,17 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   SkBitmap* cached_bitmap() const { return &cached_bitmap_; }
 
  private:
+  CopyOutputResult(Format format,
+                   Destination destination,
+                   const gfx::Rect& rect,
+                   bool needs_lock_for_bitmap,
+                   Error error);
+
   const Format format_;
   const Destination destination_;
   const gfx::Rect rect_;
   const bool needs_lock_for_bitmap_;
+  const Error error_;
 
   // Cached bitmap returned by the default implementation of AsSkBitmap().
   mutable SkBitmap cached_bitmap_;

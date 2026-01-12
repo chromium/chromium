@@ -178,7 +178,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override;
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,
-                           bool capture_exact_surface_id) override;
+                           bool capture_exact_surface_id,
+                           base::TimeDelta timeout) override;
 #if BUILDFLAG(IS_ANDROID)
   void CacheBackBuffer(uint32_t cache_id,
                        const FrameSinkId& root_frame_sink_id) override;

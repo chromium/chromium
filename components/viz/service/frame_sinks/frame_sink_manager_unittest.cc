@@ -974,7 +974,8 @@ TEST_F(FrameSinkManagerTest,
       base::BindOnce([](std::unique_ptr<CopyOutputResult> result) {}));
   auto* request_ptr = request.get();
   manager_->RequestCopyOfOutput(surface_id1, std::move(request),
-                                /*capture_exact_surface_id=*/true);
+                                /*capture_exact_surface_id=*/true,
+                                base::TimeDelta());
 
   manager_->DiscardPendingCopyOfOutputRequests(&source);
   ASSERT_TRUE(surface_observer_->IsSurfaceDamaged(surface_id1));
@@ -1022,7 +1023,8 @@ TEST_F(FrameSinkManagerTest, ExactCopyOutputRequestTakenBySurfaceRightAway) {
       base::BindOnce([](std::unique_ptr<CopyOutputResult> result) {}));
   auto* request_ptr = request.get();
   manager_->RequestCopyOfOutput(surface_id1, std::move(request),
-                                /*capture_exact_surface_id=*/true);
+                                /*capture_exact_surface_id=*/true,
+                                base::TimeDelta());
   ASSERT_TRUE(surface_observer_->IsSurfaceDamaged(surface_id1));
   // `request` is emplaced at the end of the root RenderPass.
   const auto& preserved_request = *(
@@ -1060,7 +1062,8 @@ TEST_F(FrameSinkManagerTest,
       base::BindOnce([](std::unique_ptr<CopyOutputResult> result) {}));
   auto* request_ptr = request.get();
   manager_->RequestCopyOfOutput(surface_id1, std::move(request),
-                                /*capture_exact_surface_id=*/true);
+                                /*capture_exact_surface_id=*/true,
+                                base::TimeDelta());
   // Won't be marked because the surface does not exist.
   ASSERT_FALSE(surface_observer_->IsSurfaceDamaged(surface_id1));
 

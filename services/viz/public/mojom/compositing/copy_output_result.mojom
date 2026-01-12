@@ -23,6 +23,14 @@ enum CopyOutputResultDestination {
   kSharedImage,
 };
 
+// Error states of the CopyOutputResult.
+enum CopyOutputResultError {
+  kNone,
+  kUnknown,
+  kTimeout,
+  kEmbeddingTokenChanged,
+};
+
 // See components/viz/common/frame_sinks/copy_output_result.h.
 struct CopyOutputResult {
   CopyOutputResultFormat format;
@@ -38,4 +46,7 @@ struct CopyOutputResult {
   gfx.mojom.ColorSpace? color_space;
   // Present when the destination is kSharedImage and |mailbox| is non-empty.
   pending_remote<TextureReleaser>? releaser;
+
+  // Error information for a result.
+  CopyOutputResultError error;
 };

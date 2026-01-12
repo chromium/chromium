@@ -26,12 +26,33 @@ namespace viz {
 
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
+                                   Error error)
+    : CopyOutputResult(format,
+                       destination,
+                       gfx::Rect(),
+                       /*needs_lock_for_bitmap=*/false,
+                       error) {}
+
+CopyOutputResult::CopyOutputResult(Format format,
+                                   Destination destination,
                                    const gfx::Rect& rect,
                                    bool needs_lock_for_bitmap)
+    : CopyOutputResult(format,
+                       destination,
+                       rect,
+                       needs_lock_for_bitmap,
+                       Error::kNone) {}
+
+CopyOutputResult::CopyOutputResult(Format format,
+                                   Destination destination,
+                                   const gfx::Rect& rect,
+                                   bool needs_lock_for_bitmap,
+                                   Error error)
     : format_(format),
       destination_(destination),
       rect_(rect),
-      needs_lock_for_bitmap_(needs_lock_for_bitmap) {
+      needs_lock_for_bitmap_(needs_lock_for_bitmap),
+      error_(error) {
   DCHECK(format_ == Format::RGBA || format_ == Format::RGBAF16 ||
          format_ == Format::I420_PLANES || format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||

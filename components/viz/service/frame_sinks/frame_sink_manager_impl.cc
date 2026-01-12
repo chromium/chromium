@@ -531,11 +531,12 @@ void FrameSinkManagerImpl::EvictSurfaces(
 void FrameSinkManagerImpl::RequestCopyOfOutput(
     const SurfaceId& surface_id,
     std::unique_ptr<CopyOutputRequest> request,
-    bool capture_exact_surface_id) {
+    bool capture_exact_surface_id,
+    base::TimeDelta timeout) {
   TRACE_EVENT0("viz", "FrameSinkManagerImpl::RequestCopyOfOutput");
   auto pending_request = std::make_unique<PendingCopyOutputRequest>(
       surface_id.local_surface_id(), SubtreeCaptureId(), std::move(request),
-      capture_exact_surface_id);
+      capture_exact_surface_id, timeout);
   // The exact request can be picked up by the targeted surface right away,
   // instead of being queued up in the `CompositorFrameSinkSupport`. In some
   // cases (e.g., a request issued against the old surface after the old

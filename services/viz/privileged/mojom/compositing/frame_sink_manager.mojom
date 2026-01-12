@@ -195,9 +195,15 @@ interface FrameSinkManager {
   //
   // `capture_exact_surface_id`, when set to true, makes sure the snapshot will
   // only be taken by the surface with the exact `surface_id`.
+  //
+  // `timeout` when non-zero will ensure the CopyOutputResultSender is called
+  // by, even with an empty snapshot. Note that there may be an arbitrary delay
+  // in receiving the mojo message and this is not accounted for. The timeout
+  // starts when this message is received.
   RequestCopyOfOutput(SurfaceId surface_id,
                       CopyOutputRequest request,
-                      bool capture_exact_surface_id);
+                      bool capture_exact_surface_id,
+                      mojo_base.mojom.TimeDelta timeout);
 
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is
   // keyed using |cache_id| and evicted when EvictBackBuffer with the same id is

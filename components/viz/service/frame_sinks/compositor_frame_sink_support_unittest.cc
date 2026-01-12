@@ -1481,6 +1481,8 @@ TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestEmbeddingTokenChanges) {
   const auto& copy_result = result_future.Get();
   ASSERT_TRUE(copy_result);
   EXPECT_TRUE(copy_result->IsEmpty());
+  EXPECT_EQ(copy_result->error(),
+            CopyOutputResult::Error::kEmbeddingTokenChanged);
 }
 
 // Verifies that CopyOutputRequests are added to the appropriate surface
@@ -1531,6 +1533,33 @@ TEST_P(CompositorFrameSinkSupportTest,
   EXPECT_CALL(frame_sink_manager_client_,
               OnFrameTokenChanged(_, frame_token, _));
   support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
+}
+
+// Verifies that CopyOutputRequests expire after timeout if provided.
+TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestWithTimeout) {
+  LocalSurfaceId local_surface_id1(1, kArbitraryToken);
+  SurfaceId id1(support_->frame_sink_id(), local_surface_id1);
+
+  base::test::TestFuture<std::unique_ptr<CopyOutputResult>> result_future;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      result_future.GetCallback());
+  support_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      local_surface_id1, SubtreeCaptureId(), std::move(request),
+      /*capture_exact_id=*/false, base::Milliseconds(1)));
+
+  const auto& copy_result = result_future.Get();
+  ASSERT_TRUE(copy_result);
+  EXPECT_TRUE(copy_result->IsEmpty());
+  EXPECT_EQ(copy_result->error(), CopyOutputResult::Error::kTimeout);
+
+  // Create Surface1.
+  support_->SubmitCompositorFrame(local_surface_id1,
+                                  MakeDefaultInteractiveCompositorFrame());
+
+  GetSurfaceForId(id1)->TakeCopyOutputRequestsFromClient();
+  EXPECT_FALSE(GetSurfaceForId(id1)->HasCopyOutputRequests());
 }
 
 // Test that `PendingCopyOutputRequest` with `capture_exact_surface_id` set to

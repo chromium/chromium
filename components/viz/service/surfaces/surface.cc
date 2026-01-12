@@ -390,7 +390,7 @@ void Surface::RequestCopyOfOutput(
     std::unique_ptr<PendingCopyOutputRequest> pending_copy_output_request) {
   TRACE_EVENT1("viz", "Surface::RequestCopyOfOutput", "has_active_frame_data",
                !!active_frame_data_);
-
+  CHECK(!pending_copy_output_request->IsTimedOut());
   if (!pending_copy_output_request->subtree_capture_id.is_valid()) {
     RequestCopyOfOutputOnRootRenderPass(
         std::move(pending_copy_output_request->copy_output_request));

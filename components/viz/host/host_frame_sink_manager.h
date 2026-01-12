@@ -233,7 +233,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // useful to take a snapshot of an old `Surface` post-navigation.
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,
-                           bool capture_exact_surface_id = false);
+                           bool capture_exact_surface_id = false,
+                           base::TimeDelta timeout = base::TimeDelta());
 
   // Setup the connection between the Browser (at RenderWidgetHost level) and
   // the VizCompositor thread (at InputManager level) to allow transferring

@@ -520,8 +520,11 @@ CompositorFrameSinkSupport::TakeCopyOutputRequests(
   std::vector<std::unique_ptr<PendingCopyOutputRequest>> results;
   for (auto it = copy_output_requests_.begin();
        it != copy_output_requests_.end();) {
+    if ((*it)->IsTimedOut()) {
+      it = copy_output_requests_.erase(it);
+    }
     // Pick up the requests that require an exact `LocalSurfaceId` match.
-    if ((*it)->capture_exact_surface_id) {
+    else if ((*it)->capture_exact_surface_id) {  // NOLINT
       // `ui::DelegatedFrameHostAndroid` won't send a `CopyOutputRequest`
       // without a valid `LocalSurfaceId`. This is guaranteed as we can't
       // serialize/deserialize an empty `LocalSurfaceId`.
@@ -544,6 +547,8 @@ CompositorFrameSinkSupport::TakeCopyOutputRequests(
                latest_local_id.embed_token() !=
                    (*it)->local_surface_id.embed_token()) {
       // This must be that the embedding changed, so discard.
+      (*it)->copy_output_request->SendError(
+          CopyOutputResult::Error::kEmbeddingTokenChanged);
       it = copy_output_requests_.erase(it);
     } else {
       ++it;
@@ -1708,20 +1713,22 @@ bool CompositorFrameSinkSupport::IsEvicted(
 void CompositorFrameSinkSupport::ClearAllPendingCopyOutputRequests() {
   CHECK(surface_manager_);
   for (auto& request : copy_output_requests_) {
-    // If the frame sink is getting destroyed while there are still
-    // outstanding `CopyOutputRequest`s to capture an associated surface,
-    // transfer these requests to the corresponding `Surface`s.
-    //
-    // Resources reclamation: once frame sink is destroyed, the `Surface`s
-    // won't be able to notify the client code (the renderer's
-    // `cc::LayerTreeHostImpl`) to reclaim the resources. This is fine,
-    // because the destruction of the renderer and its CC (as part of a
-    // cross-RenderFrame navigation) will implicitly reclaim all the
-    // resources. The `Surface` kept alive will still have a reference to
-    // the underlying GPU resources. The GPU resources will finally be
-    // released when the `Surface` is destroyed (in this case, after the
-    // CopyOutputRequest is fulfilled).
-    if (request->capture_exact_surface_id) {
+    if (request->IsTimedOut()) {
+      // Do nothing, request will be discarded.
+    } else if (request->capture_exact_surface_id) {
+      // If the frame sink is getting destroyed while there are still
+      // outstanding `CopyOutputRequest`s to capture an associated surface,
+      // transfer these requests to the corresponding `Surface`s.
+      //
+      // Resources reclamation: once frame sink is destroyed, the `Surface`s
+      // won't be able to notify the client code (the renderer's
+      // `cc::LayerTreeHostImpl`) to reclaim the resources. This is fine,
+      // because the destruction of the renderer and its CC (as part of a
+      // cross-RenderFrame navigation) will implicitly reclaim all the
+      // resources. The `Surface` kept alive will still have a reference to
+      // the underlying GPU resources. The GPU resources will finally be
+      // released when the `Surface` is destroyed (in this case, after the
+      // CopyOutputRequest is fulfilled).
       const SurfaceId target_id(frame_sink_id_, request->local_surface_id);
       auto* target_surface = surface_manager_->GetSurfaceForId(target_id);
       if (target_surface) {

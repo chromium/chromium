@@ -80,8 +80,7 @@ CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
 CopyOutputRequest::~CopyOutputRequest() {
   if (!result_callback_.is_null()) {
     // Send an empty result to indicate the request was never satisfied.
-    SendResult(std::make_unique<CopyOutputResult>(
-        result_format_, result_destination_, gfx::Rect(), false));
+    SendError(CopyOutputResult::Error::kUnknown);
   }
 }
 
@@ -139,12 +138,18 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   blit_request_ = std::move(blit_request);
 }
 
+void CopyOutputRequest::SendError(CopyOutputResult::Error error) {
+  SendResult(std::make_unique<CopyOutputResult>(result_format_,
+                                                result_destination_, error));
+}
+
 void CopyOutputRequest::SendResult(std::unique_ptr<CopyOutputResult> result) {
   TRACE_EVENT_END("viz",
                   /* CopyOutputRequest */ perfetto::Track::FromPointer(this),
                   "success", !result->IsEmpty(), "has_provided_task_runner",
                   !!result_task_runner_);
   CHECK(result_task_runner_);
+  CHECK(result_callback_);
   auto task = base::BindOnce(std::move(result_callback_), std::move(result));
 
   if (send_result_delay_.is_zero()) {
