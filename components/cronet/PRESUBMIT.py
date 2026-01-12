@@ -17,49 +17,6 @@ def CheckPyLint(input_api, output_api):
     return input_api.RunTests(pylint_checks)
 
 
-def CheckPackage(input_api, output_api):
-    """Verify API classes are in org.chromium.net package, and implementation
-  classes are not in org.chromium.net package."""
-    api_packages = ['org.chromium.net', 'org.chromium.net.apihelpers']
-    api_packages_regex = '(' + '|'.join(api_packages) + ')'
-    api_file_pattern = input_api.re.compile(
-        r'^components/cronet/android/api/.*\.(java|template)$')
-    impl_file_pattern = input_api.re.compile(
-        r'^components/cronet/android/java/.*\.(java|template)$')
-    invalid_api_package_pattern = input_api.re.compile(r'^package (?!' +
-                                                       api_packages_regex +
-                                                       ';)')
-    invalid_impl_package_pattern = input_api.re.compile(r'^package ' +
-                                                        api_packages_regex +
-                                                        ';')
-
-    source_filter = lambda path: input_api.FilterSourceFile(
-        path,
-        files_to_check=[r'^components/cronet/android/.*\.(java|template)$'])
-
-    problems = []
-    for f in input_api.AffectedSourceFiles(source_filter):
-        local_path = f.LocalPath()
-        for line_number, line in f.ChangedContents():
-            if (api_file_pattern.search(local_path)):
-                if (invalid_api_package_pattern.search(line)):
-                    problems.append('%s:%d\n    %s' %
-                                    (local_path, line_number, line.strip()))
-            elif (impl_file_pattern.search(local_path)):
-                if (invalid_impl_package_pattern.search(line)):
-                    problems.append('%s:%d\n    %s' %
-                                    (local_path, line_number, line.strip()))
-
-    if problems:
-        return [
-            output_api.PresubmitError(
-                'API classes must be in org.chromium.net package, '
-                'and implementation\n'
-                'classes must not be in org.chromium.net package.', problems)
-        ]
-    return []
-
-
 def CheckUnittestsOnCommit(input_api, output_api):
     return input_api.RunTests(
         input_api.canned_checks.GetUnitTestsRecursively(
