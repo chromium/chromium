@@ -26,7 +26,7 @@ found in the LICENSE file.
     screen resolution changes. -->
     <dimen name="bnpl_progress_bar_margin_top">94dp</dimen>
     <dimen name="bnpl_progress_bar_margin_bottom">104dp</dimen>
-    <dimen name="bnpl_back_button_margin_end">16dp</dimen>
+    <dimen name="bnpl_back_button_padding_end">24dp</dimen>
     <dimen name="bnpl_issuer_linked_status_pill_padding_horizontal">8dp</dimen>
     <dimen name="bnpl_issuer_linked_status_pill_padding_vertical">2dp</dimen>
     <dimen name="bnpl_header_margin_bottom">10dp</dimen>
