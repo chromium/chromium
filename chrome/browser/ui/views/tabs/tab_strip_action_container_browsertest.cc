@@ -798,8 +798,47 @@ IN_PROC_BROWSER_TEST_F(GlicActorGlobalFlagEnabledBrowserTest,
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Actor.Ui.TaskNudge.Shown",
+                "Actor.Ui.GlobalTaskIndicator.Nudge.Shown",
                 ActorTaskNudgeState::Text::kCompleteTasks),
             1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGlobalFlagEnabledBrowserTest,
+                       LogsWhenGlicActorTaskIconClicked) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
+  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(2));
+
+  actor::TaskId task_id = CreateTask();
+
+  auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
+      browser()->GetProfile());
+
+  actor_service()->GetTask(task_id)->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetTask(task_id)->Interrupt();
+  manager->UpdateTaskIconComponents(task_id);
+
+  EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
+  EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Actor.Ui.GlobalTaskIndicator.Nudge.Shown",
+               ActorTaskNudgeState::Text::kNeedsAttention) == 1;
+  }));
+
+  base::UserActionTester user_action_tester;
+  OnButtonClicked(GlicActorTaskIcon());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Actor.Ui.GlobalTaskIndicator.NeedsAttention.Click"));
+
+  // Ensure no traffic is going to the TaskNudge metrics.
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                "Actor.Ui.TaskNudge.Shown",
+                ActorTaskNudgeState::Text::kNeedsAttention),
+            0);
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Actor.Ui.TaskNudge.NeedsAttention.Click"));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

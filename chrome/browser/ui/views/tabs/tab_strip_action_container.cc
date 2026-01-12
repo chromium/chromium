@@ -616,7 +616,13 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
   ActorTaskListBubbleController* controller =
       ActorTaskListBubbleController::From(browser_window_interface_);
   controller->ShowBubble(glic_actor_task_icon_);
-  actor::ui::LogTaskNudgeClick(icon_manager->GetCurrentActorTaskNudgeState());
+
+  auto current_task_nudge_state = icon_manager->GetCurrentActorTaskNudgeState();
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    actor::ui::LogGlobalTaskIndicatorClick(current_task_nudge_state);
+  } else {
+    actor::ui::LogTaskNudgeClick(current_task_nudge_state);
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

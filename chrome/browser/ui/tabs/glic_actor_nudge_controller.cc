@@ -121,7 +121,12 @@ void GlicActorNudgeController::OnStateUpdateImpl(
   }
 
   if (tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
-    actor::ui::RecordTaskNudgeShown(actor_task_nudge_state);
+    if (base::FeatureList::IsEnabled(
+            features::kGlicActorUiGlobalTaskIndicator)) {
+      actor::ui::RecordGlobalTaskIndicatorNudgeShown(actor_task_nudge_state);
+    } else {
+      actor::ui::RecordTaskNudgeShown(actor_task_nudge_state);
+    }
   }
 }
 

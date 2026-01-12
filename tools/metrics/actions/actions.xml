@@ -3419,6 +3419,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Actor.Ui.GlobalTaskIndicator.{NudgeText}.Click">
+  <owner>mjenn@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Global Task Indicator.
+  </description>
+  <token key="NudgeText">
+    <variant name="CompleteTasks"
+        summary="Task Indicator text shown when a task is complete."/>
+    <variant name="Default"
+        summary="Task Indicator shown in default state with no text."/>
+    <variant name="NeedsAttention"
+        summary="Task Indicator text shown when one or more tasks need
+                 attention."/>
+  </token>
+</action>
+
 <action name="Actor.Ui.HandoffButton.GiveControl.Clicked">
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>
@@ -3461,6 +3480,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Actor.Ui.TaskNudge.{NudgeText}.Click">
+  <owner>mjenn@google.com</owner>
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>
   <owner>koilos@google.com</owner>
@@ -3475,8 +3495,7 @@ should be able to be added at any place in this file.
         summary="Obsolete. Task Nudge text shown when multiple tasks need
                  attention."/>
     <variant name="NeedsAttention"
-        summary="Task Nudge text shown when one or more tasks needs
-                 attention."/>
+        summary="Task Nudge text shown when one or more tasks need attention."/>
   </token>
 </action>
 
