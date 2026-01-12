@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -215,8 +216,10 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
 
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       GetProfile(0), "Test name", GURL("http://www.chromium.org/"));
-  EXPECT_EQ(GetRegistrar(GetProfile(0)).GetInstallState(app_id),
-            web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_TRUE(
+      GetRegistrar(GetProfile(0))
+          .AppMatches(app_id,
+                      WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   EXPECT_EQ(install_observer.Wait(), app_id);
   web_app::proto::InstallState expected_state;
