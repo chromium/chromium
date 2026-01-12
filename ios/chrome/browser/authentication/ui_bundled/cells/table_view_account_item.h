@@ -44,28 +44,4 @@ enum class TableViewAccountDetailImage {
 
 @end
 
-// Cell for account avatar with a leading avatar imageView, title text label,
-// and detail text label. This looks very similar to the
-// TableViewDetailCell, except that it applies a circular mask to the
-// imageView. The imageView is vertical-centered and leading aligned.
-// If item/cell is disabled the image and text alpha will be set to 0.5 and
-// user interaction will be disabled.
-@interface TableViewAccountCell : LegacyTableViewCell
-
-// Rounded image used for the account user picture. On the leading side of the
-// cell.
-@property(nonatomic, readonly, strong) UIImageView* imageView;
-// Cell title.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-// Cell subtitle.
-@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
-
-// Same as `setStatusView`, except the argument is an image.
-- (void)setStatusViewWithImage:(UIImage*)statusImage;
-
-// Shows or hides the enterprise building icon.
-- (void)showManagementIcon:(BOOL)show;
-
-@end
-
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CELLS_TABLE_VIEW_ACCOUNT_ITEM_H_
