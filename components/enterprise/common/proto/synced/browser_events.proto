@@ -362,7 +362,7 @@ message UrlInfo {
 }
 
 // A message for reporting password reuse events.
-// Next ID: 16.
+// Next ID: 18.
 message SafeBrowsingPasswordReuseEvent {
   reserved 5, 6, 7, 8, 9, 10;
 
@@ -402,6 +402,13 @@ message SafeBrowsingPasswordReuseEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 15;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 16;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 17;
 }
 
 // A message for reporting password change events.
