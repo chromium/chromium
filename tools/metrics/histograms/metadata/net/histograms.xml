@@ -2312,6 +2312,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.DeviceBoundSessions.{RefreshType}RefreshAlreadyInProgressOnDeferAttempt"
+    enum="Boolean" expires_after="2026-07-09">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether there is already a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) {RefreshType}
+    refresh attempt in progress, so there is no need to trigger a new refresh
+    for this request. This histogram is logged when the Standard is attempting
+    to defer a request for a valid session's refresh.
+  </summary>
+  <token key="RefreshType">
+    <variant name="DeferredRequest" summary="deferred request"/>
+    <variant name="Proactive" summary="proactive"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.{RequestType}.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-31">
   <owner>thefrog@chromium.org</owner>

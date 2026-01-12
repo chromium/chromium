@@ -650,10 +650,20 @@ void SessionServiceImpl::DeferRequestForRefresh(
   NotifySessionAccess(request.device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, session_key,
                       *session);
-  if (!inserted) {
+  bool deferred_request_refresh_in_progress = !inserted;
+  base::UmaHistogramBoolean(
+      "Net.DeviceBoundSessions."
+      "DeferredRequestRefreshAlreadyInProgressOnDeferAttempt",
+      deferred_request_refresh_in_progress);
+  if (deferred_request_refresh_in_progress) {
     return;
   }
-  if (proactive_requests_.find(session_key) != proactive_requests_.end()) {
+  bool proactive_refresh_in_progress =
+      proactive_requests_.find(session_key) != proactive_requests_.end();
+  base::UmaHistogramBoolean(
+      "Net.DeviceBoundSessions.ProactiveRefreshAlreadyInProgressOnDeferAttempt",
+      proactive_refresh_in_progress);
+  if (proactive_refresh_in_progress) {
     return;
   }
 
