@@ -78,6 +78,7 @@ struct ContextualTasksComposeBoxPixelTestParams {
   bool rtl = false;
   bool with_text = false;
   bool is_ai_page = false;
+  bool smart_compose = false;
 
   std::string ToString() const {
     std::string name;
@@ -93,6 +94,9 @@ struct ContextualTasksComposeBoxPixelTestParams {
     }
     if (is_ai_page) {
       name += "_AiPage";
+    }
+    if (smart_compose) {
+      name += "_SmartCompose";
     }
     return name;
   }
@@ -130,6 +134,12 @@ INSTANTIATE_TEST_SUITE_P(
         {.focused = true, .rtl = true},
         {.focused = true, .rtl = true, .with_text = true},
         {.rtl = true, .with_text = true},
+        // Testing smart compose.
+        {.focused = true, .with_text = true, .smart_compose = true},
+        {.focused = true,
+         .dark_mode = true,
+         .with_text = true,
+         .smart_compose = true},
     }),
     [](const testing::TestParamInfo<ContextualTasksComposeBoxPixelTestParams>&
            info) { return info.param.ToString(); });
@@ -183,6 +193,14 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
                            true, composed: true}));
                          })"))),
 
+      // Set the smart compose hint if specified.
+      If([]() { return GetParam().smart_compose; },
+         Then(ExecuteJsAt(kActiveTab, kComposebox,
+                          R"((el) => {
+                           el.smartComposeInlineHint_ = ' hint';
+                           el.requestUpdate();
+                         })"))),
+
       // This step is needed to prevent test from failing on platforms that
       // don't support screenshots.
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
@@ -191,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7398710"));
+                      /*baseline_cl=*/"7422371"));
 }
 
 struct AppPixelTestParams {
@@ -278,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, Screenshots) {
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshots not captured on this platform."),
       ScreenshotWebUi(kActiveTab, kApp, "ContextualTasksApp",
-                      /*baseline_cl=*/"7398710"));
+                      /*baseline_cl=*/"7422371"));
 }
 
 enum class TitleType { kNone, kShort, kLong };
@@ -393,11 +411,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, menu, "ContextualTasksToolbarMenu",
-                              /*baseline_cl=*/"7398710")),
+                              /*baseline_cl=*/"7422371")),
          Else(WaitForWebContentsPainted(kActiveTab),
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, toolbar, "ContextualTasksToolbar",
-                              /*baseline_cl=*/"7398710"))));
+                              /*baseline_cl=*/"7422371"))));
 }
