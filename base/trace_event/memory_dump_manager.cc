@@ -491,6 +491,9 @@ void MemoryDumpManager::InvokeOnMemoryDump(
       base::StrCat({"Memory.DumpProvider.MemoryDumpTime.",
                     mdpinfo->name.histogram_name()}),
       memory_dump_time);
+  // Aggregate all providers together without a suffix.
+  base::UmaHistogramMicrosecondsTimes("Memory.DumpProvider.MemoryDumpTime",
+                                      memory_dump_time);
 
   mdpinfo->consecutive_failures =
       dump_successful ? 0 : mdpinfo->consecutive_failures + 1;
