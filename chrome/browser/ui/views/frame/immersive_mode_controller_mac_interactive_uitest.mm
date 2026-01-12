@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -52,7 +54,8 @@ class ScopedAlwaysShowToolbar {
 class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
  public:
   ImmersiveModeControllerMacInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kImmersiveFullscreen);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kImmersiveFullscreen, tabs::kVerticalTabs}, {});
   }
 
   ImmersiveModeControllerMacInteractiveTest(
@@ -296,6 +299,86 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_TRUE(SecondBrowserWindowIsOnTheActiveSpace());
 
   CleanUp();
+}
+
+// Tests that the browser can be toggled into and out of immersive fullscreen
+// with vertical tabs enabled, and that proper connections are maintained.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ToggleFullscreenWithVerticalTabstrip) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+  views::Widget* overlay_widget = browser_view->overlay_widget();
+
+  NSView* overlay_widget_content_view =
+      overlay_widget->GetNativeWindow().GetNativeNSWindow().contentView;
+  NSWindow* overlay_widget_window = [overlay_widget_content_view window];
+
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget),
+            overlay_widget_content_view);
+
+  // Only on macOS 13 and higher will the contentView no longer live in the
+  // window.
+  if (base::mac::MacOSMajorVersion() >= 13) {
+    EXPECT_NE([overlay_widget_window contentView], overlay_widget_content_view);
+  }
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
+  EXPECT_EQ([overlay_widget_window contentView], overlay_widget_content_view);
+}
+
+// Tests that the browser does not crash when toggling between vertical and
+// horizontal tab layouts.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ToggleHorizontalVerticalTabLayout) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+  views::Widget* overlay_widget = browser_view->overlay_widget();
+
+  NSView* overlay_widget_content_view =
+      overlay_widget->GetNativeWindow().GetNativeNSWindow().contentView;
+  NSWindow* overlay_widget_window = [overlay_widget_content_view window];
+
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget),
+            overlay_widget_content_view);
+
+  // Only on macOS 13 and higher will the contentView no longer live in the
+  // window.
+  if (base::mac::MacOSMajorVersion() >= 13) {
+    EXPECT_NE([overlay_widget_window contentView], overlay_widget_content_view);
+  }
+
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(false);
+  RunScheduledLayouts();
+
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget),
+            overlay_widget_content_view);
 }
 
 // NSWindow category for the private `-_rebuildOrderingGroup:` method.
