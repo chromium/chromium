@@ -1662,8 +1662,17 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   EXPECT_CALL(page_, OnReadingModeHidden(true)).Times(1);
 }
 
+// TODO(crbug.com/474702670): high failure rates on Mac bots.
+// Activate_OnCloseReadingMode_ListensForPageAck/All.1
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Activate_OnCloseReadingMode_ListensForPageAck \
+  DISABLED_Activate_OnCloseReadingMode_ListensForPageAck
+#else
+#define MAYBE_Activate_OnCloseReadingMode_ListensForPageAck \
+  Activate_OnCloseReadingMode_ListensForPageAck
+#endif
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
-                       Activate_OnCloseReadingMode_ListensForPageAck) {
+                       MAYBE_Activate_OnCloseReadingMode_ListensForPageAck) {
   if (IsImmersiveEnabled()) {
     handler_ = CreateHandler();
     auto* controller =
