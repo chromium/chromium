@@ -361,6 +361,103 @@ class PartialGLES2ForObjects : public gpu::gles2::GLES2InterfaceStub {
 
 }  // anonymous namespace
 
+// We proxy all the WebGPU commands related to wgpu::Instance that ANGLE does
+// through this class. This is necessary because we wait to intercept WaitAny
+// calls with timeout > 0 and Flush the DawnControlClient in that case (to
+// support blocking WaitAnys).
+class ProxyDawnInstanceForANGLE {
+ public:
+  explicit ProxyDawnInstanceForANGLE(
+      wgpu::Instance instance,
+      scoped_refptr<DawnControlClientHolder> dawn_control_client)
+      : instance_(std::move(instance)),
+        dawn_control_client_(std::move(dawn_control_client)) {
+    // Prepare the proc table with overridden procs that use the proxy instance
+    // instead. This is the proc table that will be given to ANGLE.
+    procs_ = *GetDawnProcs();
+
+    // Proxy WaitAny with logic to Flush the WebGPU commands if needed. This is
+    // necessary for ANGLE to be able to block on WGPUFuture completion. If we
+    // didn't do a flush, the GPU process could never receive the commands that
+    // will eventually signal the future, and ANGLE would block forever.
+    procs_.instanceWaitAny =
+        [](WGPUInstance angle_instance, size_t future_count,
+           WGPUFutureWaitInfo* futures, uint64_t timeout_ns) -> WGPUWaitStatus {
+      if (timeout_ns > 0) {
+        FromWGPU(angle_instance)->dawn_control_client_->Flush();
+      }
+
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceWaitAny(actual_instance, future_count,
+                                             futures, timeout_ns);
+    };
+
+    // ANGLE should use the instance we give it and not recreate one.
+    procs_.createInstance = [](const WGPUInstanceDescriptor*) -> WGPUInstance {
+      NOTREACHED();
+    };
+
+    // ANGLE should use the device we give to it and not request its own
+    // adapter.
+    procs_.instanceRequestAdapter =
+        [](WGPUInstance, const WGPURequestAdapterOptions*,
+           WGPURequestAdapterCallbackInfo) -> WGPUFuture { NOTREACHED(); };
+
+    // Ignore refcounts since we ensure the instance outlives ANGLE.
+    procs_.instanceAddRef = [](WGPUInstance) {};
+    procs_.instanceRelease = [](WGPUInstance) {};
+
+    // The rest are passthrough
+    procs_.instanceCreateSurface =
+        [](WGPUInstance angle_instance,
+           const WGPUSurfaceDescriptor* descriptor) -> WGPUSurface {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceCreateSurface(actual_instance, descriptor);
+    };
+    procs_.instanceGetWGSLLanguageFeatures =
+        [](WGPUInstance angle_instance,
+           WGPUSupportedWGSLLanguageFeatures* features) {
+          WGPUInstance actual_instance =
+              FromWGPU(angle_instance)->instance_.Get();
+          return GetDawnProcs()->instanceGetWGSLLanguageFeatures(
+              actual_instance, features);
+        };
+    procs_.instanceHasWGSLLanguageFeature =
+        [](WGPUInstance angle_instance,
+           WGPUWGSLLanguageFeatureName feature) -> WGPUBool {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceHasWGSLLanguageFeature(actual_instance,
+                                                            feature);
+    };
+    procs_.instanceProcessEvents = [](WGPUInstance angle_instance) {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceProcessEvents(actual_instance);
+    };
+  }
+
+  ProxyDawnInstanceForANGLE(const ProxyDawnInstanceForANGLE&) = delete;
+  ProxyDawnInstanceForANGLE& operator=(const ProxyDawnInstanceForANGLE&) =
+      delete;
+
+  EGLAttrib GetProcTableForANGLE() const {
+    return reinterpret_cast<EGLAttrib>(&procs_);
+  }
+
+  EGLAttrib GetInstanceForANGLE() const {
+    return reinterpret_cast<EGLAttrib>(this);
+  }
+
+ private:
+  WGPUInstance ToWGPU() { return reinterpret_cast<WGPUInstance>(this); }
+  static ProxyDawnInstanceForANGLE* FromWGPU(WGPUInstance instance) {
+    return reinterpret_cast<ProxyDawnInstanceForANGLE*>(instance);
+  }
+
+  wgpu::Instance instance_;
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  DawnProcTable procs_;
+};
+
 #define RETURN_IF_GL_ERROR(code, ...)        \
   {                                          \
     CheckAndClearErrorCallbackState();       \
@@ -417,6 +514,8 @@ bool WebGLRenderingContextWebGPUBase::Initialize(
       std::move(context_provider),
       execution_context->GetTaskRunner(TaskType::kWebGPU));
   instance_ = dawn_control_client_->GetWGPUInstance();
+  proxy_instance_ = std::make_unique<ProxyDawnInstanceForANGLE>(
+      instance_, dawn_control_client_);
 
   // Synchronously request the wgpu::Adapter.
   auto adapter_future = instance_.RequestAdapter(
@@ -3845,21 +3944,15 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // Initialize the EGL display using the device and the dawn wire client proc
   // table.
-  // Force-enable the avoidWaitAny feature because synchronous waiting is not
-  // possible yet in dawn wire client.
-  constexpr const char* display_enabled_features[] = {
-      "avoidWaitAny",
-      nullptr,
-  };
   const EGLAttrib display_attribs[] = {
       EGL_PLATFORM_ANGLE_TYPE_ANGLE,
       EGL_PLATFORM_ANGLE_TYPE_WEBGPU_ANGLE,
+      EGL_PLATFORM_ANGLE_DAWN_PROC_TABLE_ANGLE,
+      proxy_instance_->GetProcTableForANGLE(),
+      EGL_PLATFORM_ANGLE_WEBGPU_INSTANCE_ANGLE,
+      proxy_instance_->GetInstanceForANGLE(),
       EGL_PLATFORM_ANGLE_WEBGPU_DEVICE_ANGLE,
       reinterpret_cast<EGLAttrib>(device_.Get()),
-      EGL_PLATFORM_ANGLE_DAWN_PROC_TABLE_ANGLE,
-      reinterpret_cast<EGLAttrib>(GetDawnProcs()),
-      EGL_FEATURE_OVERRIDES_ENABLED_ANGLE,
-      reinterpret_cast<EGLAttrib>(display_enabled_features),
       EGL_NONE,
   };
   display_ = driver_egl_.fn.eglGetPlatformDisplayFn(EGL_PLATFORM_ANGLE_ANGLE,
@@ -3988,6 +4081,7 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
     display_ = EGL_NO_DISPLAY;
   }
   driver_egl_.ClearBindings();
+  proxy_instance_ = nullptr;
 }
 
 bool WebGLRenderingContextWebGPUBase::ValidateFitsNonNegInt32(

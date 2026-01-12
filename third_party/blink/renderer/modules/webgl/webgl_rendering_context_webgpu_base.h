@@ -29,6 +29,7 @@ class HTMLImageElement;
 class HTMLVideoElement;
 class ImageBitmap;
 class ImageData;
+class ProxyDawnInstanceForANGLE;
 class ScriptState;
 class V8PredefinedColorSpace;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
@@ -1471,6 +1472,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   WebGLFramebuffer* GetBoundFramebuffer(GLenum target) const;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  std::unique_ptr<ProxyDawnInstanceForANGLE> proxy_instance_;
   wgpu::Instance instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
