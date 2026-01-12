@@ -3069,7 +3069,7 @@ constexpr uint8_t kMtcExperimentBaseId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
 static void LogMTCCertVerifyMetrics(
     const std::vector<std::vector<uint8_t>>& client_mtc_tais,
     const std::vector<std::vector<uint8_t>>& server_tais,
-    CertVerifyResult* verify_result,
+    const ProofVerifyDetailsChromium* verify_details,
     bool is_resumption) {
   std::optional<uint64_t> client_landmark;
   std::optional<uint64_t> server_landmark;
@@ -3104,12 +3104,16 @@ static void LogMTCCertVerifyMetrics(
     }
   }
 
+  bool cert_is_mtc =
+      verify_details->cert_verify_result.verified_cert->signature_algorithm() ==
+      bssl::SignatureAlgorithm::kMtcProofDraftDavidben08;
+
   MTCResult result;
   if (is_resumption) {
     result = MTCResult::kResumption;
-  } else if (verify_result->verified_cert->signature_algorithm() ==
-             bssl::SignatureAlgorithm::kMtcProofDraftDavidben08) {
-    if (MapCertStatusToNetError(verify_result->cert_status) == OK) {
+  } else if (cert_is_mtc) {
+    if (MapCertStatusToNetError(
+            verify_details->cert_verify_result.cert_status) == OK) {
       result = MTCResult::kValidMTC;
     } else {
       result = MTCResult::kInvalidMTC;
@@ -3125,6 +3129,15 @@ static void LogMTCCertVerifyMetrics(
     }
   }
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.MTCResult", result);
+
+  base::UmaHistogramSparse(
+      "Net.QuicSession.CertVerificationResult.MTCAdvertised",
+      -verify_details->cert_verify_net_error_for_metrics_only);
+  if (cert_is_mtc) {
+    base::UmaHistogramSparse(
+        "Net.QuicSession.CertVerificationResult.MTCReceived",
+        -verify_details->cert_verify_net_error_for_metrics_only);
+  }
 }
 
 void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
@@ -3156,7 +3169,7 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
     auto client_mtc_tais =
         ssl_config_service_->GetSSLContextConfig().mtc_trust_anchor_ids;
     LogMTCCertVerifyMetrics(client_mtc_tais, server_tais,
-                            cert_verify_result_.get(),
+                            verify_details_chromium,
                             crypto_stream_->IsResumption());
   }
 }

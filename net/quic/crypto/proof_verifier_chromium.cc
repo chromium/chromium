@@ -390,6 +390,7 @@ bool ProofVerifierChromium::Job::ShouldAllowUnknownRootForHost(
 
 int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
   base::UmaHistogramSparse("Net.QuicSession.CertVerificationResult", -result);
+  verify_details_->cert_verify_net_error_for_metrics_only = result;
   cert_verifier_request_.reset();
 
   const CertVerifyResult& cert_verify_result =

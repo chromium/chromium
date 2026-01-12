@@ -46,6 +46,10 @@ class NET_EXPORT_PRIVATE ProofVerifyDetailsChromium
   // True if there was a certificate error which should be treated as fatal,
   // and false otherwise.
   bool is_fatal_cert_error = false;
+
+  // The net error code from performing cert verification. Used only for
+  // metrics.
+  int cert_verify_net_error_for_metrics_only = 0;
 };
 
 // ProofVerifyContextChromium is the implementation-specific information that a
