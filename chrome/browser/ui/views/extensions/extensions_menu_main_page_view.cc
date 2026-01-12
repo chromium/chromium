@@ -392,10 +392,6 @@ ExtensionsMenuMainPageView::GetExtensionRequestingAccessEntryForTesting(
   return GetExtensionRequestEntry(extension_id);
 }
 
-content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
-}
-
 views::View* ExtensionsMenuMainPageView::GetExtensionRequestEntry(
     const extensions::ExtensionId& extension_id) const {
   auto iter = requests_entries_.find(extension_id);

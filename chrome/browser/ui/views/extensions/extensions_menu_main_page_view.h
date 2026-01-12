@@ -16,10 +16,6 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace views {
 class Label;
 class ToggleButton;
@@ -91,8 +87,6 @@ class ExtensionsMenuMainPageView : public views::View {
       const extensions::ExtensionId& extension_id);
 
  private:
-  content::WebContents* GetActiveWebContents() const;
-
   // Returns the request entry for `extension_id` if existent.
   views::View* GetExtensionRequestEntry(
       const extensions::ExtensionId& extension_id) const;

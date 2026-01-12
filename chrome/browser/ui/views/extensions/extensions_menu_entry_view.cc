@@ -178,7 +178,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                   .CopyAddressTo(&site_permissions_button_)))
       .BuildChildren();
 
-  SetupContextMenuButton(browser, view_model);
+  SetupContextMenuButton(view_model);
 
   // By default, the button's accessible description is set to the button's
   // tooltip text. This is the accepted workaround to ensure only accessible
@@ -249,7 +249,6 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(
 }
 
 void ExtensionsMenuEntryView::SetupContextMenuButton(
-    Browser* browser,
     ToolbarActionViewModel* view_model) {
   // Add a controller to the context menu
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(

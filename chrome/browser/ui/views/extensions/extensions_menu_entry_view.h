@@ -68,8 +68,7 @@ class ExtensionsMenuEntryView
  private:
   // Sets ups the context menu button controllers. Must be called by the
   // constructor.
-  void SetupContextMenuButton(Browser* browser,
-                              ToolbarActionViewModel* view_model);
+  void SetupContextMenuButton(ToolbarActionViewModel* view_model);
 
   // Handles the context menu button press. This is passed as a callback to
   // `context_menu_button_`.
