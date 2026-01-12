@@ -74,19 +74,22 @@ export class EventListItemElement extends CrLitElement {
   protected eventSummary: string|undefined = undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has('event') && this.event !== undefined) {
-      this.appId = getAppId(this.event);
-      this.appLabel = this.computeAppLabel();
-      this.formattedDate = this.computeFormattedDate();
-      this.formattedDuration = this.computeFormattedDuration();
-      this.errors = this.computeErrors();
-      this.status = this.computeStatus();
-      this.omahaRequest = this.computeOmahaRequest();
-      this.omahaResponse = this.computeOmahaResponse();
-      this.nextVersion = this.computeNextVersion();
-      this.commandLine = this.computeCommandLine();
-      this.eventSummaryIcon = this.computeEventSummaryIcon();
-      this.eventSummary = this.getEventSummary(this.event);
+    if (changedProperties.has('event')) {
+      this.expanded = false;
+      if (this.event !== undefined) {
+        this.appId = getAppId(this.event);
+        this.appLabel = this.computeAppLabel();
+        this.formattedDate = this.computeFormattedDate();
+        this.formattedDuration = this.computeFormattedDuration();
+        this.errors = this.computeErrors();
+        this.status = this.computeStatus();
+        this.omahaRequest = this.computeOmahaRequest();
+        this.omahaResponse = this.computeOmahaResponse();
+        this.nextVersion = this.computeNextVersion();
+        this.commandLine = this.computeCommandLine();
+        this.eventSummaryIcon = this.computeEventSummaryIcon();
+        this.eventSummary = this.getEventSummary(this.event);
+      }
     }
 
     if (changedProperties.has('event') || changedProperties.has('processMap')) {
