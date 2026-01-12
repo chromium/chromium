@@ -1181,7 +1181,7 @@
       "--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData",
       "--enable-blink-features=FencedFramesDefaultMode"
     ],
-    "expires": "Jan 9, 2026"
+    "expires": "Jan 9, 2027"
   },
   "This is the same as the 'fenced-frame-mparch' test suite, but this suite",
   "exposes debug behavior that isn't implemented in WebDriver yet.",
@@ -1210,7 +1210,7 @@
     "args": [
       "--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesDefaultMode"
     ],
-    "expires": "Jan 9, 2026"
+    "expires": "Jan 9, 2027"
   },
   {
     "prefix": "first-party-sets",
