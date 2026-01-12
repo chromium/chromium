@@ -87,6 +87,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ContextualEntrypointAndCarousel) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ThreadsRail) {
+  RunTest("new_tab_page/composebox/threads_rail_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
   RunTest("new_tab_page/action_chips/action_chips_test.js", "mocha.run()");
 }
@@ -262,6 +266,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, RealboxNext) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest ActionChips')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ThreadsRail) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest ThreadsRail')");
 }
 
 // TODO(crbug.com/428156129): Re-enable test

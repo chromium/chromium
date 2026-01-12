@@ -2338,4 +2338,31 @@ suite('NewTabPageAppTest', () => {
           assertEquals(suggestion, composebox.$.input.value);
         });
   });
+
+  suite('ThreadsRail', () => {
+    [true, false].forEach(
+        (enableThreadsRail) => suite(
+            `Threads rail visibility when enableThreadsRail is ${
+                enableThreadsRail}`,
+            () => {
+              suiteSetup(() => {
+                loadTimeData.overrideValues({
+                  enableThreadsRail,
+                });
+              });
+
+              test('Threads rail visibility', async () => {
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox);
+                searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {searchboxText: '', contextFiles: []},
+                }));
+                await microtasksFinished();
+
+                const threadsRail =
+                    app.shadowRoot.querySelector('cr-threads-rail');
+                assertEquals(!!threadsRail, enableThreadsRail);
+              });
+            }));
+  });
 });
