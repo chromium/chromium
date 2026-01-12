@@ -9775,17 +9775,29 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINE_FOCUS_WINDOW_HEADING" desc="Heading in dropdown menu for the sliding window line focus options.">
         Highlight
       </message>
-      <message name="IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_1_LINE_LABEL" desc="Dropdown option for the sliding 1-line-height window line focus option.">
-        1 line
+      <message name="IDS_READING_MODE_LINE_FOCUS_STYLE_HEADING" desc="Heading in dropdown menu for choosing the line focus visual style.">
+        Style
       </message>
-      <message name="IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_3_LINE_LABEL" desc="Dropdown option for the sliding 3-line-height window line focus option.">
-        3 lines
+      <message name="IDS_READING_MODE_LINE_FOCUS_SMALL_FOCUS_LABEL" desc="Dropdown option for the small height window line focus option.">
+        Small focus
       </message>
-      <message name="IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_5_LINE_LABEL" desc="Dropdown option for the sliding 5-line-height window line focus option.">
-        5 lines
+      <message name="IDS_READING_MODE_LINE_FOCUS_MEDIUM_FOCUS_LABEL" desc="Dropdown option for the medium height window line focus option.">
+        Medium focus
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_LARGE_FOCUS_LABEL" desc="Dropdown option for the large height window line focus option.">
+        Large focus
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_UNDERLINE_LABEL" desc="Dropdown option for the single-line underline line focus option.">
+        Underline
       </message>
       <message name="IDS_READING_MODE_LINE_FOCUS_LINE_HEADING" desc="Heading in dropdown menu for the single underline line focus options.">
         Line
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_MOVEMENT_HEADING" desc="Heading in dropdown menu for choosing the line focus movement type.">
+        Movement
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_STATIC_LABEL" desc="Dropdown option for the line focus option of staying in the middle of the panel.">
+        Static
       </message>
       <message name="IDS_READING_MODE_LINE_FOCUS_STATIC_LINE_LABEL" desc="Dropdown option for the line focus option of a single static line in the middle of the panel.">
         Static line
