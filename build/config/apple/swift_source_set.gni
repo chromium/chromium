@@ -80,6 +80,8 @@ if (enable_swift_cxx_interop) {
   #
   # Arguments
   #
+  #   apinotes
+  #       (optional) String, path of the apinotes file for this module
   #   module_name
   #       String, name of the build target's swift module.
   #   sources
@@ -119,8 +121,27 @@ if (enable_swift_cxx_interop) {
                      rebase_path(_modulemap_path, root_build_dir) ]
     }
 
+    _apinotes_target = "${target_name}_apinotes"
+    _apinotes_path = "${target_gen_dir}/${_module_name}.apinotes"
+
+    if (defined(invoker.apinotes)) {
+      copy(_apinotes_target) {
+        outputs = [ _apinotes_path ]
+        sources = [ invoker.apinotes ]
+      }
+    } else {
+      # When apinotes are not provided, we generate empty apinotes to ensure
+      # that any stale apinotes are clobbered.
+      generated_file(_apinotes_target) {
+        outputs = [ _apinotes_path ]
+        contents = [ "Name: ${_module_name}" ]
+      }
+    }
+
     generated_file(target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [ "apinotes" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       outputs = [ _modulemap_path ]
       contents = _modulemap_contents
@@ -132,6 +153,11 @@ if (enable_swift_cxx_interop) {
         ":${target_name}_config",
         "//build/config/ios:swift_cxx_interop",
       ]
+
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += [ ":$_apinotes_target" ]
     }
   }
 }  # if (enable_swift_cxx_interop)

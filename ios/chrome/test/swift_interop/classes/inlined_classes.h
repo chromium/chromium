@@ -28,4 +28,11 @@ class ComposedClass {
   }
 };
 
+// Class will be imported as "RenamedClass" in swift due to apinotes.
+class RenamedClassOriginal {
+ public:
+  RenamedClassOriginal() {}
+  bool Check() const { return true; }
+};
+
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CLASSES_INLINED_CLASSES_H_
