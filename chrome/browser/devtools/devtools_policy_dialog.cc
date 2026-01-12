@@ -35,7 +35,7 @@ namespace {
 #if BUILDFLAG(IS_LINUX)
 constexpr int kIconPadding = 4;
 #else
-constexpr int kIconPadding = 0;
+constexpr int kIconPadding = 2;
 #endif
 }
 
