@@ -361,7 +361,9 @@ void SystemMediaControlsWin::SetPosition(
   base::win::ScopedHString id = base::win::ScopedHString::Create(
       RuntimeClass_Windows_Media_SystemMediaTransportControlsTimelineProperties);
   hr = base::win::RoActivateInstance(id.get(), &timeline_properties);
-  DCHECK(SUCCEEDED(hr));
+  if (FAILED(hr)) {
+    return;
+  }
 
   ABI::Windows::Foundation::TimeSpan timeSpanZero = {0};
 
