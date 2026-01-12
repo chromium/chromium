@@ -242,7 +242,7 @@ export class Ink2Manager extends EventTarget {
     };
 
     if (existing) {
-      this.pluginController_.startTextAnnotation(existing.id);
+      this.pluginController_.editTextAnnotation(existing.id);
       this.existingAnnotationAttributes_ =
           structuredClone(existing.textAttributes);
     } else {

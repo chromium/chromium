@@ -339,6 +339,8 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
           {"annotationRedo", &PdfInkModule::HandleAnnotationRedoMessage},
           {"annotationUndo", &PdfInkModule::HandleAnnotationUndoMessage},
+          {"editTextAnnotation",
+           &PdfInkModule::HandleEditTextAnnotationMessage},
           {"finishTextAnnotation",
            &PdfInkModule::HandleFinishTextAnnotationMessage},
           {"getAllTextAnnotations",
@@ -348,8 +350,6 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
           {"setAnnotationBrush",
            &PdfInkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
-          {"startTextAnnotation",
-           &PdfInkModule::HandleStartTextAnnotationMessage},
       });
 
   auto it = kMessageHandlers.find(*message.FindString("type"));
@@ -1440,16 +1440,14 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
   MaybeSetCursor();
 }
 
-void PdfInkModule::HandleStartTextAnnotationMessage(
+void PdfInkModule::HandleEditTextAnnotationMessage(
     const base::Value::Dict& message) {
-  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
-  // so the backend doesn't CHECK when it's sent from the frontend.
+  // TODO(crbug.com/408976049): Implement.
 }
 
 void PdfInkModule::HandleFinishTextAnnotationMessage(
     const base::Value::Dict& message) {
-  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
-  // so the backend doesn't CHECK when it's sent from the frontend.
+  // TODO(crbug.com/408976049): Implement.
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(

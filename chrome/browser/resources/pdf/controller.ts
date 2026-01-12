@@ -68,8 +68,8 @@ interface AllTextAnnotationsMessage {
   annotations: TextAnnotation[];
 }
 
-interface StartTextAnnotationMessage {
-  type: 'startTextAnnotation';
+interface EditTextAnnotationMessage {
+  type: 'editTextAnnotation';
   data: number;
 }
 
@@ -249,9 +249,9 @@ export class PluginController implements ContentController {
     });
   }
 
-  startTextAnnotation(id: number) {
-    const message: StartTextAnnotationMessage = {
-      type: 'startTextAnnotation',
+  editTextAnnotation(id: number) {
+    const message: EditTextAnnotationMessage = {
+      type: 'editTextAnnotation',
       data: id,
     };
 
