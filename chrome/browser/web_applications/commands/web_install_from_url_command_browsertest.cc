@@ -935,6 +935,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
                                               background_doc_install_url);
 }
 
+// TODO(crbug.com/471021583): Evaluate supporting redirects.
 IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
                        LaunchAppWithRedirect) {
   NavigateToValidUrl();
@@ -965,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
 
   histograms.ExpectBucketCount("WebApp.LaunchSource",
                                apps::LaunchSource::kFromWebInstallApi, 0);
@@ -1448,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
                                 1);
   histograms.ExpectBucketCount(
@@ -1505,7 +1506,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
                                 1);
   histograms.ExpectBucketCount(
@@ -1674,7 +1675,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
                                 1);
   histograms.ExpectBucketCount(
@@ -1732,7 +1733,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
                                 1);
   histograms.ExpectBucketCount(
@@ -1747,6 +1748,66 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::InstallResultCode::kInstallURLLoadFailed, 1))));
+  EXPECT_THAT(histograms,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandSourceHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
+}
+
+// TODO(crbug.com/471021583): Evaluate supporting redirects.
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallUrlRedirected) {
+  NavigateToValidUrl();
+
+  // Create a redirect URL that redirects to a valid page.
+  GURL target_url = GetInstallableAppURL();
+  std::string install_url =
+      https_server()->GetURL("/server-redirect?" + target_url.spec()).spec();
+  std::string manifest_id = install_url;
+  base::HistogramTester histograms;
+  SetPermissionResponse(/*permission_granted=*/true);
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kDataError);
+  histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
+                                1);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kInstallCommandFailed,
+      1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  EXPECT_THAT(histograms,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kInstallURLRedirected, 1))));
   EXPECT_THAT(histograms,
               test::ForAllGetAllSamples(
                   test::GetInstallCommandSourceHistogramNames(

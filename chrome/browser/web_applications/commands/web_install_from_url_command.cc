@@ -124,10 +124,18 @@ void WebInstallFromUrlCommand::OnUrlLoadedFetchManifest(
   GetMutableDebugValue().Set("url_loading_result", base::ToString(result));
 
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    webapps::InstallResultCode install_result =
-        (result == webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong)
-            ? webapps::InstallResultCode::kInstallURLLoadTimeOut
-            : webapps::InstallResultCode::kInstallURLLoadFailed;
+    webapps::InstallResultCode install_result;
+    switch (result) {
+      case webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong:
+        install_result = webapps::InstallResultCode::kInstallURLLoadTimeOut;
+        break;
+      case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
+        install_result = webapps::InstallResultCode::kInstallURLRedirected;
+        break;
+      default:
+        install_result = webapps::InstallResultCode::kInstallURLLoadFailed;
+        break;
+    }
     Abort(install_result);
     return;
   }
@@ -176,7 +184,7 @@ void WebInstallFromUrlCommand::OnDidPerformInstallableCheck(
 
   opt_manifest_ = std::move(opt_manifest);
   if (opt_manifest_->icons.empty()) {
-    Abort(webapps::InstallResultCode::kNotInstallable);
+    Abort(webapps::InstallResultCode::kNoValidIconsInManifest);
     return;
   }
 

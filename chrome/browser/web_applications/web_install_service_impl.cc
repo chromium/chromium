@@ -391,7 +391,7 @@ void WebInstallServiceImpl::OnDidRetrieveManifestForCurrentDocumentInstall(
   if (!opt_manifest || !valid_manifest_for_web_app) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallApiResult::kInstallCommandFailed,
-             blink::mojom::WebInstallServiceResult::kAbortError,
+             blink::mojom::WebInstallServiceResult::kDataError,
              webapps::ManifestId());
     return;
   }
@@ -400,7 +400,7 @@ void WebInstallServiceImpl::OnDidRetrieveManifestForCurrentDocumentInstall(
   if (!origin().IsSameOriginWith(opt_manifest->id)) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallApiResult::kInstallCommandFailed,
-             blink::mojom::WebInstallServiceResult::kAbortError,
+             blink::mojom::WebInstallServiceResult::kDataError,
              webapps::ManifestId());
     return;
   }
@@ -583,7 +583,7 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
     // TODO(crbug.com/471021583): Evaluate supporting redirects.
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallApiResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
+             blink::mojom::WebInstallServiceResult::kDataError,
              webapps::ManifestId());
     return;
   }
@@ -664,16 +664,9 @@ void WebInstallServiceImpl::OnAppInstalled(
     InstallCallbackWithMetrics callback_with_metrics,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
-  // Results to report for generic failures.
-  blink::mojom::WebInstallServiceResult install_result =
-      blink::mojom::WebInstallServiceResult::kAbortError;
+  blink::mojom::WebInstallServiceResult install_result;
+  web_app::WebInstallApiResult uma_result;
   webapps::ManifestId manifest_id_result;
-  // Catch all for any other failures during the install commands. For more
-  // fine grained error codes, see the histogram emitted by the commands - See
-  // "WebApp.InstallCommand{InstallCommand}{WebAppType}.ResultCode", and
-  // `RecordInstallMetrics` in `command_metrics.h`.
-  web_app::WebInstallApiResult uma_result =
-      web_app::WebInstallApiResult::kInstallCommandFailed;
 
   if (webapps::IsSuccess(code)) {
     install_result = blink::mojom::WebInstallServiceResult::kSuccess;
@@ -692,14 +685,38 @@ void WebInstallServiceImpl::OnAppInstalled(
     manifest_id_result =
         provider->registrar_unsafe().GetComputedManifestId(app_id);
     CHECK(!manifest_id_result.is_empty());
-  } else if (code == webapps::InstallResultCode::kNoCustomManifestId) {
-    install_result = blink::mojom::WebInstallServiceResult::kDataError;
-    uma_result = web_app::WebInstallApiResult::kNoCustomManifestId;
-  } else if (code == webapps::InstallResultCode::kManifestIdMismatch) {
-    install_result = blink::mojom::WebInstallServiceResult::kDataError;
-    uma_result = web_app::WebInstallApiResult::kManifestIdMismatch;
-  } else if (code == webapps::InstallResultCode::kUserInstallDeclined) {
-    uma_result = web_app::WebInstallApiResult::kCanceledByUser;
+  } else {
+    switch (code) {
+      case webapps::InstallResultCode::kNoCustomManifestId:
+        install_result = blink::mojom::WebInstallServiceResult::kDataError;
+        uma_result = web_app::WebInstallApiResult::kNoCustomManifestId;
+        break;
+      case webapps::InstallResultCode::kManifestIdMismatch:
+        install_result = blink::mojom::WebInstallServiceResult::kDataError;
+        uma_result = web_app::WebInstallApiResult::kManifestIdMismatch;
+        break;
+      case webapps::InstallResultCode::kUserInstallDeclined:
+        install_result = blink::mojom::WebInstallServiceResult::kAbortError;
+        uma_result = web_app::WebInstallApiResult::kCanceledByUser;
+        break;
+      // Signaling developer action to fix issues with provided data.
+      case webapps::InstallResultCode::kInstallURLLoadFailed:
+      case webapps::InstallResultCode::kInstallURLRedirected:
+      case webapps::InstallResultCode::kNotValidManifestForWebApp:
+      case webapps::InstallResultCode::kNotInstallable:
+        install_result = blink::mojom::WebInstallServiceResult::kDataError;
+        uma_result = web_app::WebInstallApiResult::kInstallCommandFailed;
+        break;
+      default:
+        install_result = blink::mojom::WebInstallServiceResult::kAbortError;
+        // Catch all for any other failures during the install commands.
+        // For more fine grained error codes, see the histogram emitted by
+        // the commands - See
+        // "WebApp.InstallCommand{InstallCommand}{WebAppType}.ResultCode",
+        // and `RecordInstallMetrics` in `command_metrics.h`.
+        uma_result = web_app::WebInstallApiResult::kInstallCommandFailed;
+        break;
+    }
   }
 
   std::move(callback_with_metrics)

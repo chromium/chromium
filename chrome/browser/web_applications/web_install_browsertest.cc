@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectBucketCount(
       kInstallResultUma, web_app::WebInstallApiResult::kInstallCommandFailed,
       1);
