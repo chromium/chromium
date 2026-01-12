@@ -102,7 +102,13 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
 
 // Type so much text that a timeout occurs. Then, try again typing a single
 // character, which should succeed.
-IN_PROC_BROWSER_TEST_F(ActorPageToolTimeoutBrowserTest, Timeout) {
+
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && !defined(NDEBUG)
+#define MAYBE_Timeout DISABLED_Timeout
+#else
+#define MAYBE_Timeout Timeout
+#endif
+IN_PROC_BROWSER_TEST_F(ActorPageToolTimeoutBrowserTest, MAYBE_Timeout) {
   const GURL url = embedded_test_server()->GetURL("/actor/cancel_typing.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
