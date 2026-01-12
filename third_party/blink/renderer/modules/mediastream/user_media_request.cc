@@ -947,9 +947,6 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::ANDROID_CANT_REQUEST_PERMISSION:
     case Result::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
     case Result::DLP_PERMISSION_DENIED:
-    case Result::NO_TRANSIENT_ACTIVATION:
-      // TODO(crbug.com/453600255): Use `result_enum` kInvalidStateError for
-      // NO_TRANSIENT_ACTIVATION once all new enum values are added.
     case Result::CAPTURE_NOT_ALLOWED_BY_POLICY:
     case Result::MULTI_CAPTURE_NOT_SUPPORTED:
     case Result::KILL_SWITCH_ON:
@@ -972,9 +969,6 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::CAPTURED_TAB_DESTROYED:
     case Result::CAPTURE_NOT_ENABLED:
     case Result::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
-    case Result::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
-      // TODO(crbug.com/453600255): Use `result_enum` kInvalidStateError for
-      // CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC once all new enum values are added.
     case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::REGISTRY_REQUEST_UNVERIFIED:
     case Result::START_TIMEOUT:
@@ -999,10 +993,15 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       exception_code = DOMExceptionCode::kSecurityError;
       result_enum = UserMediaRequestResult::kSecurityError;
       break;
+    case Result::NO_TRANSIENT_ACTIVATION:
+    case Result::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
+      exception_code = DOMExceptionCode::kInvalidStateError;
+      result_enum = UserMediaRequestResult::kInvalidStateError;
+      break;
     case Result::CONSTRAINT_NOT_SATISFIED:
-      // TODO(crbug.com/416456028): Either handle these or document why
-      // they cannot be encountered by this method.
-      NOTREACHED();
+      exception_code = DOMExceptionCode::kOverconstrainedError;
+      result_enum = UserMediaRequestResult::kOverConstrainedError;
+      break;
   }
   CHECK(exception_code.has_value());
   CHECK(result_enum.has_value());

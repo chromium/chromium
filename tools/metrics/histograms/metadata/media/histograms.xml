@@ -4972,15 +4972,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetAllScreensMedia.Result2"
-    enum="UserMediaRequestResult" expires_after="2023-05-01">
+<histogram name="Media.MediaDevices.GetAllScreensMedia.Result3"
+    enum="UserMediaRequestResult" expires_after="2026-12-31">
   <owner>simonha@google.com</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
     The results of all calls to the navigator.mediaDevices.GetAllScreensMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 6 seconds. The suffix 2 was added at
-    milestone 138, after kNotAllowedByUserError was added.
+    the promise was still pending after 6 seconds. The suffix 3 was added at
+    milestone 145, after distribution of UserMediaRequestResult was changed. The
+    histogram was expired from 2023-05-01 to 2026-01-12.
   </summary>
 </histogram>
 
@@ -5011,7 +5012,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetDisplayMedia.Result2"
+<histogram name="Media.MediaDevices.GetDisplayMedia.Result3"
     enum="UserMediaRequestResult" expires_after="2026-06-07">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
@@ -5019,8 +5020,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The results of all calls to the navigator.mediaDevices.GetDisplayMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 30 seconds. The suffix 2 was added at
-    milestone 138, after kNotAllowedByUserError was added.
+    the promise was still pending after 30 seconds. The suffix 3 was added at
+    milestone 145, after distribution of UserMediaRequestResult was changed.
   </summary>
 </histogram>
 
@@ -5060,7 +5061,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetUserMedia.Result2"
+<histogram name="Media.MediaDevices.GetUserMedia.Result3"
     enum="UserMediaRequestResult" expires_after="2026-07-05">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
@@ -5068,10 +5069,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The results of all calls to the navigator.mediaDevices.GetUserMedia() API,
     including successful promise resolutions, error codes, or kTimedOut, if the
-    promise was still pending after 8 seconds.
-
-    The suffix 2 was added at milestone 138, after kNotAllowedByUserError was
-    added.
+    promise was still pending after 8 seconds. The suffix 3 was added at
+    milestone 145, after distribution of UserMediaRequestResult was changed.
   </summary>
 </histogram>
 

@@ -20900,7 +20900,7 @@ from previous Chrome versions.
   <int value="3" label="Invalid state (AbortError)"/>
   <int value="4" label="No hardware (NotFoundError)"/>
   <int value="5" label="Invalid security origin (SecurityError)"/>
-  <int value="9" label="Constraint not satisfied (?)"/>
+  <int value="9" label="Constraint not satisfied (OverconstrainedError)"/>
   <int value="10" label="Audio track start failure (NotReadableError)"/>
   <int value="11" label="Video track start failure (NotReadableError)"/>
   <int value="12" label="Not supported (NotSupportedError)"/>
@@ -20911,7 +20911,7 @@ from previous Chrome versions.
   <int value="18" label="Start timeout (AbortError)"/>
   <int value="19" label="Permission denied by user (NotAllowedError)"/>
   <int value="20" label="Audio device socket error (NotReadableError)"/>
-  <int value="21" label="No Transient activation (NotAllowedError)"/>
+  <int value="21" label="No Transient activation (InvalidStateError)"/>
   <int value="22" label="Capture not allowed by Policy (NotAllowedError)"/>
   <int value="23" label="Invalid Display capture constraints (AbortError)"/>
   <int value="24"
@@ -20930,7 +20930,8 @@ from previous Chrome versions.
   <int value="35" label="Captured tab destroyed (AbortError)"/>
   <int value="36" label="Capture not enabled (AbortError)"/>
   <int value="37" label="Safe browsing observer (NotAllowedError)"/>
-  <int value="38" label="Capture from background page (Mac) (AbortError)"/>
+  <int value="38"
+      label="Capture from background page (Mac) (InvalidStateError)"/>
   <int value="39" label="Capture not allowed for long domains (AbortError)"/>
   <int value="40" label="Permission Denied By Controller (NotAllowedError)"/>
 </enum>
