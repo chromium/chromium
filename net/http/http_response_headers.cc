@@ -39,6 +39,7 @@
 #include "net/http/structured_headers.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 using base::Time;
@@ -225,6 +226,9 @@ scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::Builder::Build() {
   return base::MakeRefCounted<HttpResponseHeaders>(BuilderPassKey(), version_,
                                                    status_, headers_);
 }
+
+class HttpResponseHeaders::HeaderSet : public absl::flat_hash_set<std::string> {
+};
 
 HttpResponseHeaders::HttpResponseHeaders(std::string_view raw_input)
     : response_code_(-1) {
