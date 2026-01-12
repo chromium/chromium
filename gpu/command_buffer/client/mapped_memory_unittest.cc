@@ -153,43 +153,43 @@ TEST_F(MappedMemoryManagerTest, Basic) {
   // Check we can alloc.
   int32_t id1 = -1;
   unsigned int offset1 = 0xFFFFFFFFU;
-  base::span<uint8_t> span1 = manager_->Alloc(kSize, &id1, &offset1);
-  ASSERT_FALSE(span1.empty());
+  void* mem1 = manager_->Alloc(kSize, &id1, &offset1);
+  ASSERT_TRUE(mem1);
   EXPECT_NE(-1, id1);
   EXPECT_EQ(0u, offset1);
   // Check if we free and realloc the same size we get the same memory
   int32_t id2 = -1;
   unsigned int offset2 = 0xFFFFFFFFU;
-  manager_->Free(span1.data());
-  base::span<uint8_t> span2 = manager_->Alloc(kSize, &id2, &offset2);
-  EXPECT_EQ(span1.data(), span2.data());
+  manager_->Free(mem1);
+  void* mem2 = manager_->Alloc(kSize, &id2, &offset2);
+  EXPECT_EQ(mem1, mem2);
   EXPECT_EQ(id1, id2);
   EXPECT_EQ(offset1, offset2);
   // Check if we allocate again we get different shared memory
   int32_t id3 = -1;
   unsigned int offset3 = 0xFFFFFFFFU;
-  base::span<uint8_t> span3 = manager_->Alloc(kSize, &id3, &offset3);
-  ASSERT_FALSE(span3.empty());
-  EXPECT_NE(span2.data(), span3.data());
+  void* mem3 = manager_->Alloc(kSize, &id3, &offset3);
+  ASSERT_TRUE(mem3 != nullptr);
+  EXPECT_NE(mem2, mem3);
   EXPECT_NE(id2, id3);
   EXPECT_EQ(0u, offset3);
   // Free 3 and allocate 2 half size blocks.
-  manager_->Free(span3.data());
+  manager_->Free(mem3);
   int32_t id4 = -1;
   int32_t id5 = -1;
   unsigned int offset4 = 0xFFFFFFFFU;
   unsigned int offset5 = 0xFFFFFFFFU;
-  base::span<uint8_t> span4 = manager_->Alloc(kSize / 2, &id4, &offset4);
-  base::span<uint8_t> span5 = manager_->Alloc(kSize / 2, &id5, &offset5);
-  ASSERT_FALSE(span4.empty());
-  ASSERT_FALSE(span5.empty());
+  void* mem4 = manager_->Alloc(kSize / 2, &id4, &offset4);
+  void* mem5 = manager_->Alloc(kSize / 2, &id5, &offset5);
+  ASSERT_TRUE(mem4 != nullptr);
+  ASSERT_TRUE(mem5 != nullptr);
   EXPECT_EQ(id3, id4);
   EXPECT_EQ(id4, id5);
   EXPECT_EQ(0u, offset4);
   EXPECT_EQ(kSize / 2u, offset5);
-  manager_->Free(span4.data());
-  manager_->Free(span2.data());
-  manager_->Free(span5.data());
+  manager_->Free(mem4);
+  manager_->Free(mem2);
+  manager_->Free(mem5);
 }
 
 TEST_F(MappedMemoryManagerTest, FreePendingToken) {
@@ -198,19 +198,19 @@ TEST_F(MappedMemoryManagerTest, FreePendingToken) {
   CHECK(kAllocCount * kSize == kBufferSize * 2);
 
   // Allocate several buffers across multiple chunks.
-  std::array<base::span<uint8_t>, kAllocCount> buffers;
+  std::array<void*, kAllocCount> pointers;
   for (unsigned int i = 0; i < kAllocCount; ++i) {
     int32_t id = -1;
     unsigned int offset = 0xFFFFFFFFu;
-    buffers[i] = manager_->Alloc(kSize, &id, &offset);
-    EXPECT_FALSE(buffers[i].empty());
+    pointers[i] = manager_->Alloc(kSize, &id, &offset);
+    EXPECT_TRUE(pointers[i]);
     EXPECT_NE(id, -1);
     EXPECT_NE(offset, 0xFFFFFFFFu);
   }
 
   // Free one successful allocation, pending fence.
   int32_t token = helper_.get()->InsertToken();
-  manager_->FreePendingToken(buffers[0].data(), token);
+  manager_->FreePendingToken(pointers[0], token);
 
   // The way we hooked up the helper and engine, it won't process commands
   // until it has to wait for something. Which means the token shouldn't have
@@ -224,16 +224,16 @@ TEST_F(MappedMemoryManagerTest, FreePendingToken) {
   // This allocation should use the spot just freed above.
   int32_t new_id = -1;
   unsigned int new_offset = 0xFFFFFFFFu;
-  base::span<uint8_t> new_span = manager_->Alloc(kSize, &new_id, &new_offset);
-  EXPECT_FALSE(new_span.empty());
-  EXPECT_EQ(new_span, buffers[0]);
+  void* new_ptr = manager_->Alloc(kSize, &new_id, &new_offset);
+  EXPECT_TRUE(new_ptr);
+  EXPECT_EQ(new_ptr, pointers[0]);
   EXPECT_NE(new_id, -1);
   EXPECT_NE(new_offset, 0xFFFFFFFFu);
 
   // Free up everything.
-  manager_->Free(new_span.data());
+  manager_->Free(new_ptr);
   for (unsigned int i = 1; i < kAllocCount; ++i) {
-    manager_->Free(buffers[i].data());
+    manager_->Free(pointers[i]);
   }
 }
 
@@ -244,15 +244,15 @@ TEST_F(MappedMemoryManagerTest, FreeUnused) {
   const unsigned int kAllocSize = 2048;
   manager_->set_chunk_size_multiple(kAllocSize * 2);
 
-  base::span<uint8_t> span1 = manager_->Alloc(kAllocSize, &id, &offset);
-  base::span<uint8_t> span2 = manager_->Alloc(kAllocSize, &id, &offset);
-  ASSERT_FALSE(span1.empty());
-  ASSERT_FALSE(span2.empty());
+  void* m1 = manager_->Alloc(kAllocSize, &id, &offset);
+  void* m2 = manager_->Alloc(kAllocSize, &id, &offset);
+  ASSERT_TRUE(m1 != nullptr);
+  ASSERT_TRUE(m2 != nullptr);
   // m1 and m2 fit in one chunk
   EXPECT_EQ(1u, manager_->num_chunks());
 
-  base::span<uint8_t> span3 = manager_->Alloc(kAllocSize, &id, &offset);
-  ASSERT_FALSE(span3.empty());
+  void* m3 = manager_->Alloc(kAllocSize, &id, &offset);
+  ASSERT_TRUE(m3 != nullptr);
   // m3 needs another chunk
   EXPECT_EQ(2u, manager_->num_chunks());
 
@@ -260,14 +260,14 @@ TEST_F(MappedMemoryManagerTest, FreeUnused) {
   manager_->FreeUnused();
   EXPECT_EQ(2u, manager_->num_chunks());
 
-  manager_->Free(span3.data());
+  manager_->Free(m3);
   EXPECT_EQ(2u, manager_->num_chunks());
   // The second chunk is no longer in use, we can remove.
   manager_->FreeUnused();
   EXPECT_EQ(1u, manager_->num_chunks());
 
   int32_t token = helper_->InsertToken();
-  manager_->FreePendingToken(span1.data(), token);
+  manager_->FreePendingToken(m1, token);
   // The way we hooked up the helper and engine, it won't process commands
   // until it has to wait for something. Which means the token shouldn't have
   // passed yet at this point.
@@ -282,7 +282,7 @@ TEST_F(MappedMemoryManagerTest, FreeUnused) {
   EXPECT_GT(token, GetToken());
   EXPECT_EQ(old_flush_count, command_buffer_->FlushCount());
 
-  manager_->Free(span2.data());
+  manager_->Free(m2);
   EXPECT_EQ(1u, manager_->num_chunks());
   // The remaining chunk is free pending token, we can release the shared
   // memory.
@@ -301,16 +301,16 @@ TEST_F(MappedMemoryManagerTest, ChunkSizeMultiple) {
   // chunks arounded up.
   int32_t id1 = -1;
   unsigned int offset1 = 0xFFFFFFFFU;
-  base::span<uint8_t> span1 = manager_->Alloc(kSize, &id1, &offset1);
+  void* mem1 = manager_->Alloc(kSize, &id1, &offset1);
   int32_t id2 = -1;
   unsigned int offset2 = 0xFFFFFFFFU;
-  base::span<uint8_t> span2 = manager_->Alloc(kSize, &id2, &offset2);
+  void* mem2 = manager_->Alloc(kSize, &id2, &offset2);
   int32_t id3 = -1;
   unsigned int offset3 = 0xFFFFFFFFU;
-  base::span<uint8_t> span3 = manager_->Alloc(kSize, &id3, &offset3);
-  ASSERT_FALSE(span1.empty());
-  ASSERT_FALSE(span2.empty());
-  ASSERT_FALSE(span3.empty());
+  void* mem3 = manager_->Alloc(kSize, &id3, &offset3);
+  ASSERT_TRUE(mem1);
+  ASSERT_TRUE(mem2);
+  ASSERT_TRUE(mem3);
   EXPECT_NE(-1, id1);
   EXPECT_EQ(id1, id2);
   EXPECT_NE(id2, id3);
@@ -318,9 +318,9 @@ TEST_F(MappedMemoryManagerTest, ChunkSizeMultiple) {
   EXPECT_EQ(kSize, offset2);
   EXPECT_EQ(0u, offset3);
 
-  manager_->Free(span1.data());
-  manager_->Free(span2.data());
-  manager_->Free(span3.data());
+  manager_->Free(mem1);
+  manager_->Free(mem2);
+  manager_->Free(mem3);
 }
 
 TEST_F(MappedMemoryManagerTest, UnusedMemoryLimit) {
@@ -332,8 +332,8 @@ TEST_F(MappedMemoryManagerTest, UnusedMemoryLimit) {
   // Allocate one chunk worth of memory.
   int32_t id1 = -1;
   unsigned int offset1 = 0xFFFFFFFFU;
-  base::span<uint8_t> span1 = manager_->Alloc(kChunkSize, &id1, &offset1);
-  ASSERT_FALSE(span1.empty());
+  void* mem1 = manager_->Alloc(kChunkSize, &id1, &offset1);
+  ASSERT_TRUE(mem1);
   EXPECT_NE(-1, id1);
   EXPECT_EQ(0u, offset1);
 
@@ -341,8 +341,8 @@ TEST_F(MappedMemoryManagerTest, UnusedMemoryLimit) {
   // The same chunk will be used.
   int32_t id2 = -1;
   unsigned int offset2 = 0xFFFFFFFFU;
-  base::span<uint8_t> span2 = manager_->Alloc(kChunkSize, &id2, &offset2);
-  ASSERT_FALSE(span2.empty());
+  void* mem2 = manager_->Alloc(kChunkSize, &id2, &offset2);
+  ASSERT_TRUE(mem2);
   EXPECT_NE(-1, id2);
   EXPECT_EQ(0u, offset2);
 
@@ -350,8 +350,8 @@ TEST_F(MappedMemoryManagerTest, UnusedMemoryLimit) {
   // since all memory is in use.
   EXPECT_EQ(2 * kChunkSize, manager_->allocated_memory());
 
-  manager_->Free(span1.data());
-  manager_->Free(span2.data());
+  manager_->Free(mem1);
+  manager_->Free(mem2);
 }
 
 TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
@@ -364,8 +364,8 @@ TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
   // Allocate half a chunk worth of memory.
   int32_t id1 = -1;
   unsigned int offset1 = 0xFFFFFFFFU;
-  base::span<uint8_t> span1 = manager_->Alloc(kSize, &id1, &offset1);
-  ASSERT_FALSE(span1.empty());
+  void* mem1 = manager_->Alloc(kSize, &id1, &offset1);
+  ASSERT_TRUE(mem1);
   EXPECT_NE(-1, id1);
   EXPECT_EQ(0u, offset1);
 
@@ -373,14 +373,14 @@ TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
   // The same chunk will be used.
   int32_t id2 = -1;
   unsigned int offset2 = 0xFFFFFFFFU;
-  base::span<uint8_t> span2 = manager_->Alloc(kSize, &id2, &offset2);
-  ASSERT_FALSE(span2.empty());
+  void* mem2 = manager_->Alloc(kSize, &id2, &offset2);
+  ASSERT_TRUE(mem2);
   EXPECT_NE(-1, id2);
   EXPECT_EQ(kSize, offset2);
 
   // Free one successful allocation, pending fence.
   int32_t token = helper_.get()->InsertToken();
-  manager_->FreePendingToken(span2.data(), token);
+  manager_->FreePendingToken(mem2, token);
 
   // The way we hooked up the helper and engine, it won't process commands
   // until it has to wait for something. Which means the token shouldn't have
@@ -393,8 +393,8 @@ TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
   // on the token.
   int32_t id3 = -1;
   unsigned int offset3 = 0xFFFFFFFFU;
-  base::span<uint8_t> span3 = manager_->Alloc(kSize, &id3, &offset3);
-  ASSERT_FALSE(span3.empty());
+  void* mem3 = manager_->Alloc(kSize, &id3, &offset3);
+  ASSERT_TRUE(mem3);
   EXPECT_NE(-1, id3);
   // It will reuse the space from the second allocation just freed.
   EXPECT_EQ(kSize, offset3);
@@ -402,8 +402,8 @@ TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
   // Expect one chunk to be allocated
   EXPECT_EQ(1 * kChunkSize, manager_->allocated_memory());
 
-  manager_->Free(span1.data());
-  manager_->Free(span3.data());
+  manager_->Free(mem1);
+  manager_->Free(mem3);
 }
 
 TEST_F(MappedMemoryManagerTest, MaxAllocationTest) {
@@ -417,15 +417,15 @@ TEST_F(MappedMemoryManagerTest, MaxAllocationTest) {
   // Allocate twice the limit worth of memory (currently unbounded).
   int32_t id1 = -1;
   unsigned int offset1 = 0xFFFFFFFFU;
-  base::span<uint8_t> span1 = manager_->Alloc(kLimit, &id1, &offset1);
-  ASSERT_FALSE(span1.empty());
+  void* mem1 = manager_->Alloc(kLimit, &id1, &offset1);
+  ASSERT_TRUE(mem1);
   EXPECT_NE(-1, id1);
   EXPECT_EQ(0u, offset1);
 
   int32_t id2 = -1;
   unsigned int offset2 = 0xFFFFFFFFU;
-  base::span<uint8_t> span2 = manager_->Alloc(kLimit, &id2, &offset2);
-  ASSERT_FALSE(span2.empty());
+  void* mem2 = manager_->Alloc(kLimit, &id2, &offset2);
+  ASSERT_TRUE(mem2);
   EXPECT_NE(-1, id2);
   EXPECT_EQ(0u, offset2);
 
@@ -434,23 +434,23 @@ TEST_F(MappedMemoryManagerTest, MaxAllocationTest) {
   // A new allocation should now fail.
   int32_t id3 = -1;
   unsigned int offset3 = 0xFFFFFFFFU;
-  base::span<uint8_t> span3 = manager_->Alloc(kLimit, &id3, &offset3);
-  ASSERT_TRUE(span3.empty());
+  void* mem3 = manager_->Alloc(kLimit, &id3, &offset3);
+  ASSERT_FALSE(mem3);
   EXPECT_EQ(-1, id3);
   EXPECT_EQ(0xFFFFFFFFU, offset3);
 
-  manager_->Free(span2.data());
+  manager_->Free(mem2);
 
   // New allocation is over the limit but should reuse allocated space
   int32_t id4 = -1;
   unsigned int offset4 = 0xFFFFFFFFU;
-  base::span<uint8_t> span4 = manager_->Alloc(kLimit, &id4, &offset4);
-  ASSERT_FALSE(span4.empty());
+  void* mem4 = manager_->Alloc(kLimit, &id4, &offset4);
+  ASSERT_TRUE(mem4);
   EXPECT_EQ(id2, id4);
   EXPECT_EQ(offset2, offset4);
 
-  manager_->Free(span1.data());
-  manager_->Free(span4.data());
+  manager_->Free(mem1);
+  manager_->Free(mem4);
 }
 
 }  // namespace gpu

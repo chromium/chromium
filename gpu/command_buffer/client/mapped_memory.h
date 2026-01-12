@@ -158,17 +158,17 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
   //   shm_id: pointer to variable to receive the shared memory id.
   //   shm_offset: pointer to variable to receive the shared memory offset.
   //   option: defaults to kLoseContextOnOOM, but may be kReturnNullOnOOM.
-  //           Passing kReturnNullOnOOM will gracefully fail and return empty
-  //           span on OOM instead of losing the context. Callers should be
-  //           careful to check error conditions.
+  //           Passing kReturnNullOnOOM will gracefully fail and return nullptr
+  //           on OOM instead of losing the context. Callers should be careful
+  //           to check error conditions.
   // Returns:
-  //   span of allocated block of memory. Empty span if failure.
-  base::span<uint8_t> Alloc(
-      uint32_t size,
-      int32_t* shm_id,
-      uint32_t* shm_offset,
-      TransferBufferAllocationOption option =
-          TransferBufferAllocationOption::kLoseContextOnOOM);
+  //   pointer to allocated block of memory. nullptr if failure.
+  // TODO(crbug.com/40285824): Return the span instead of a pointer.
+  void* Alloc(uint32_t size,
+              int32_t* shm_id,
+              uint32_t* shm_offset,
+              TransferBufferAllocationOption option =
+                  TransferBufferAllocationOption::kLoseContextOnOOM);
 
   // Frees a block of memory.
   //

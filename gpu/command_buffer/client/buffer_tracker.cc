@@ -28,12 +28,11 @@ BufferTracker::Buffer* BufferTracker::CreateBuffer(
   DCHECK_LE(0, size);
   int32_t shm_id = -1;
   uint32_t shm_offset = 0;
-  base::span<uint8_t> span;
-  if (size) {
-    span = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
-  }
+  void* address = nullptr;
+  if (size)
+    address = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
 
-  Buffer* buffer = new Buffer(id, size, shm_id, shm_offset, span.data());
+  Buffer* buffer = new Buffer(id, size, shm_id, shm_offset, address);
   std::pair<BufferMap::iterator, bool> result =
       buffers_.insert(std::make_pair(id, buffer));
   DCHECK(result.second);

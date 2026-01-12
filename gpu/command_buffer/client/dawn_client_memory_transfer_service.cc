@@ -138,10 +138,9 @@ void* DawnClientMemoryTransferService::AllocateHandle(
   size_t alloc_size = size == 0 ? 1 : size;
 
   DCHECK(mapped_memory_);
-  return mapped_memory_
-      ->Alloc(alloc_size, &handle->shm_id, &handle->shm_offset,
-              TransferBufferAllocationOption::kReturnNullOnOOM)
-      .data();
+  return mapped_memory_->Alloc(
+      alloc_size, &handle->shm_id, &handle->shm_offset,
+      TransferBufferAllocationOption::kReturnNullOnOOM);
 }
 
 void DawnClientMemoryTransferService::MarkHandleFree(void* ptr) {
