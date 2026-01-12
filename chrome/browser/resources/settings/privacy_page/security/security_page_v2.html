@@ -135,13 +135,14 @@
     align-items: flex-start;
     display: flex;
     justify-content: space-around;
-    padding: 20px;
+    padding: 0 56px 20px;
   }
 
   #safeBrowsingRadioGroup controlled-radio-button {
     align-items: flex-start;
     display: flex;
     flex-direction: row;
+    padding-top: var(--cr-section-vertical-padding);
   }
 
   #safeBrowsingRadioGroup controlled-radio-button::part(labelWrapper) {
@@ -150,9 +151,10 @@
     flex-direction: column;
     font-size: 106%;
     justify-content: space-between;
+    opacity: 1;
   }
 
-  #safeBrowsingRadioGroup .settings-columned-section {
+  #safeBrowsingRadioGroup .settings-columned-section, #learnMoreLabelContainer {
     font-size: 90%;
     font-weight: 80;
     padding-inline-start: 0;
@@ -161,6 +163,7 @@
   #safeBrowsingRadioGroup .settings-radio-button-subtitle {
     font-size: 90%;
     font-weight: 80;
+    padding-bottom: 12px;
   }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
