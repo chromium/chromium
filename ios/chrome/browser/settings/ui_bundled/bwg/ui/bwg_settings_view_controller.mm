@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_camera_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -79,6 +80,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewSwitchItem* _pageContentSharingItem;
   // Location view controller shown when precise location row is tapped.
   BWGLocationViewController* _locationViewController;
+  // Camera view controller shown when camera row is tapped.
+  GeminiCameraViewController* _cameraViewController;
   // Precise location preference value.
   BOOL _preciseLocationEnabled;
   // Camera preference value.
@@ -343,6 +346,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     _locationViewController.preciseLocationEnabled = _preciseLocationEnabled;
     _locationViewController.mutator = self.mutator;
     [self.navigationController pushViewController:_locationViewController
+                                         animated:YES];
+  }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeCamera) {
+    _cameraViewController = [[GeminiCameraViewController alloc]
+        initWithStyle:ChromeTableViewStyle()];
+    [self.navigationController pushViewController:_cameraViewController
                                          animated:YES];
   }
 

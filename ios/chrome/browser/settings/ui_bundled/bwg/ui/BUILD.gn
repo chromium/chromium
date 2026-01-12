@@ -9,6 +9,8 @@ source_set("ui") {
     "bwg_settings_consumer.h",
     "bwg_settings_view_controller.h",
     "bwg_settings_view_controller.mm",
+    "gemini_camera_view_controller.h",
+    "gemini_camera_view_controller.mm",
   ]
   deps = [
     "//base",

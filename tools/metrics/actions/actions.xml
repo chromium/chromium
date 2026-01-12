@@ -26162,6 +26162,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiCameraSettingsBack">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when user goes back from Gemini Camera Settings UI to Gemini
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraSettingsClose">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when Gemini Camera Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointAutomatic">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
