@@ -657,11 +657,11 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
 views::FlexLayoutView* TabStripActionContainer::glic_actor_button_container() {
   return glic_actor_button_container_;
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 void TabStripActionContainer::TriggerGlicActorNudge(
     const std::u16string nudge_text) {
   CHECK(glic_actor_task_icon_);

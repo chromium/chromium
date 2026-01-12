@@ -162,9 +162,11 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     return tab_strip_action_container()->glic_actor_task_icon();
   }
 
+#if BUILDFLAG(ENABLE_GLIC)
   views::FlexLayoutView* GlicActorButtonContainer() {
     return tab_strip_action_container()->glic_actor_button_container();
   }
+#endif
 
   void ShowTabStripNudgeButton(TabStripNudgeButton* button) {
     tab_strip_action_container()->ShowTabStripNudge(button);

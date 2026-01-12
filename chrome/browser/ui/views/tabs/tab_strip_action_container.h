@@ -120,8 +120,6 @@ class TabStripActionContainer : public views::View,
     return glic_actor_task_icon_;
   }
 
-  views::FlexLayoutView* glic_actor_button_container();
-
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;
   }
@@ -148,6 +146,7 @@ class TabStripActionContainer : public views::View,
   void HideGlicActorTaskIcon();
   bool GetIsShowingGlicActorTaskIconNudge();
 #if BUILDFLAG(ENABLE_GLIC)
+  views::FlexLayoutView* glic_actor_button_container();
   void TriggerGlicActorNudge(const std::u16string nudge_text);
   void ShowGlicActorNudge(const std::u16string nudge_text);
 #endif
