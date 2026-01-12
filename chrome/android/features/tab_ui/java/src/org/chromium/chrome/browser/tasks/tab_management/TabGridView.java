@@ -210,30 +210,34 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     }
 
     void setMediaIndicator(@MediaState int mediaState) {
-        // TODO(crbug.com/430072416): Add other media indicators.
         TextView tabTitle = findViewById(R.id.tab_title);
         ImageView tabMediaIndicator = findViewById(R.id.media_indicator_icon);
         tabMediaIndicator.setImageResource(TabUtils.getMediaIndicatorDrawable(mediaState));
         ConstraintLayout.LayoutParams titleParams =
                 (ConstraintLayout.LayoutParams) tabTitle.getLayoutParams();
 
+        // Default values when no indicator is shown.
         int mediaIndicatorVisibility = View.GONE;
+        int marginResId = R.dimen.tab_grid_card_title_end_margin;
+
         switch (mediaState) {
             case MediaState.AUDIBLE:
             case MediaState.MUTED:
             case MediaState.RECORDING:
             case MediaState.SHARING:
-                titleParams.endToEnd = R.id.media_indicator_icon;
+                marginResId = R.dimen.tab_grid_card_title_end_margin_media_indicator;
                 mediaIndicatorVisibility = View.VISIBLE;
                 break;
             case MediaState.NONE:
-                titleParams.endToEnd = R.id.card_view;
                 break;
             default:
                 assert false : "Invalid media state";
                 break;
         }
 
+        int endMargin = getResources().getDimensionPixelSize(marginResId);
+
+        titleParams.setMarginEnd(endMargin);
         tabTitle.setLayoutParams(titleParams);
         tabMediaIndicator.setVisibility(mediaIndicatorVisibility);
     }
