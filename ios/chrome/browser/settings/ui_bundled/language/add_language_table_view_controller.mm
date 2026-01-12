@@ -231,12 +231,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Shows the scrim overlay.
 - (void)showScrim {
+  if (self.scrimView.alpha >= 1.0f) {
+    return;
+  }
+  self.scrimView.alpha = 0.0f;
   self.tableView.accessibilityElementsHidden = YES;
   self.tableView.scrollEnabled = NO;
-  [self.tableView addSubview:self.scrimView];
+  UIView* scrimView = self.scrimView;
+  [self.tableView addSubview:scrimView];
+  UIView* superview = self.tableView.superview;
   // Attach constraints to the superview because tableView is a scrollView and
   // the scrim view will have an empty frame when attaching constraints to it.
-  AddSameConstraints(self.scrimView, self.tableView.superview);
+  if (@available(iOS 26, *)) {
+    AddSameConstraints(scrimView, superview);
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+      [scrimView.trailingAnchor
+          constraintEqualToAnchor:superview.trailingAnchor],
+      [scrimView.topAnchor
+          constraintEqualToAnchor:self.navigationController.navigationBar
+                                      .bottomAnchor],
+      [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+    ]];
+  }
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                    animations:^{
                      self.scrimView.alpha = 1.0f;
@@ -246,6 +264,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Hides the scrim overlay.
 - (void)hideScrim {
+  if (self.scrimView.alpha <= 0.0f) {
+    return;
+  }
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
       animations:^{
         self.scrimView.alpha = 0.0f;
