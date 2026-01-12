@@ -467,6 +467,7 @@ source_set("tests") {
     "devtools_durable_msg_collector_unittest.cc",
     "dns_config_change_manager_unittest.cc",
     "enterprise/encryption/chunked_encryptor_unittest.cc",
+    "enterprise/encryption/encrypted_cache_file_unittest.cc",
     "enterprise/encryption/os_crypt_cache_encryption_delegate_unittest.cc",
     "host_resolver_unittest.cc",
     "http_cache_data_counter_unittest.cc",
