@@ -186,7 +186,7 @@ bool SupervisedUserMetricsService::TryEmittingMetricsAndRecordCurrentDay() {
       TryEmittingFamilyLinkMetrics()) {
     emitted = true;
   }
-  if ((supervised_user_service_->IsSupervisedLocally() ||
+  if ((device_parental_controls_->IsEnabled() ||
        IsSubjectToParentalControls(*pref_service_.get())) &&
       TryEmittingSupervisedUserMetrics()) {
     emitted = true;
@@ -241,7 +241,7 @@ bool SupervisedUserMetricsService::TryEmittingSupervisedUserMetrics() {
   base::UmaHistogramEnumeration(
       GetWebFilterTypeHistogramName(
           IsSubjectToParentalControls(*pref_service_.get()),
-          supervised_user_service_->IsSupervisedLocally()),
+          device_parental_controls_->IsEnabled()),
       current);
   last_recorded_supervised_user_web_filter_type_ = current;
   return true;

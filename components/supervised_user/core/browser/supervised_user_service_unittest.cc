@@ -439,8 +439,11 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
     supervised_user_test_environment_->device_parental_controls()
         .SetSearchContentFiltersEnabledForTesting(enabled);
   }
-  bool IsSupervisedLocally() const {
-    return supervised_user_test_environment_->service()->IsSupervisedLocally();
+  // Tells if the device supervision is enabled and had effect on the browser
+  // features.
+  bool IsDeviceSupervisionEffective() const {
+    return AreAndroidParentalControlsEffectiveForTesting(
+        *supervised_user_test_environment_->pref_service());
   }
 };
 
@@ -449,7 +452,7 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
 TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
        AllToBrowserToNoneToSearchToAll) {
   Initialize(InitialSupervisionState::kSupervisedWithAllContentFilters);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.LocallySupervised",
@@ -457,7 +460,7 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
 
   // Leaves only browser filter enabled - no change in web filter type.
   SetSearchFilterEnabled(false);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 1);
@@ -465,7 +468,7 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
   // All filters disabled. Disabling supervision won't yield WebFilterType
   // metric.
   SetBrowserFilterEnabled(false);
-  EXPECT_FALSE(IsSupervisedLocally());
+  EXPECT_FALSE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 1);
@@ -473,7 +476,7 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
   // Supervision is back on, but the browser filter is still disabled. This time
   // WebFilterType metric is emitted to indicate disabled filter setting.
   SetSearchFilterEnabled(true);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.LocallySupervised",
@@ -481,7 +484,7 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
 
   // Back to where we started: both filters enabled.
   SetBrowserFilterEnabled(true);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.LocallySupervised",
@@ -494,27 +497,27 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
 TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
        NoneToBrowserToAllToSearchToNone) {
   Initialize(InitialSupervisionState::kUnsupervised);
-  EXPECT_FALSE(IsSupervisedLocally());
+  EXPECT_FALSE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 0);
 
   SetBrowserFilterEnabled(true);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // All filters enabled
   SetSearchFilterEnabled(true);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // Leaves only the search filter enabled - disables browser filter.
   SetBrowserFilterEnabled(false);
-  EXPECT_TRUE(IsSupervisedLocally());
+  EXPECT_TRUE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.LocallySupervised",
@@ -523,7 +526,7 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
   // Back to where we started: unsupervised. Disabling supervision won't yield
   // WebFilterType metric.
   SetSearchFilterEnabled(false);
-  EXPECT_FALSE(IsSupervisedLocally());
+  EXPECT_FALSE(IsDeviceSupervisionEffective());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 2);

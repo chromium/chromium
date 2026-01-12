@@ -9,6 +9,7 @@
 
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -30,6 +31,7 @@ class AndroidParentalControls : public DeviceParentalControls,
   // DeviceParentalControls:
   void Init() override;
   bool IsSafeSearchForced() const override;
+  bool IsEnabled() const override;
   bool IsBrowserContentFiltersEnabled() const override;
   bool IsSearchContentFiltersEnabled() const override;
   void SetBrowserContentFiltersEnabledForTesting(bool enabled) override;
@@ -53,6 +55,20 @@ class AndroidParentalControls : public DeviceParentalControls,
                           ContentFiltersObserverBridge::Observer>
       search_content_filters_observation_{this};
 };
+
+// Returns true if android parental controls are enabled on the device and have
+// effect on the browser features (understood as setting well-estabilished
+// general-purpose preferences that gate various features). Test util
+// specifically intended for v1 implementation where user might have enabled
+// device parental controls, but they're still ignored if Family Link parental
+// controls are enabled. It is clear from function signature that temporarily
+// the device parental controls have dependency on the profile (because Family
+// Link can overrule them).
+// TODO(crbug.com/474592052): Remove and migrate to IsEnabled() after parental
+// controls are unconditionally effective regardless of the Family Link
+// supervision status.
+bool AreAndroidParentalControlsEffectiveForTesting(
+    const PrefService& pref_service);
 
 }  // namespace supervised_user
 

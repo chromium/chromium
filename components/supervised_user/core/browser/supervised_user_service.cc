@@ -116,10 +116,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
   return url_filter_.get();
 }
 
-bool SupervisedUserService::IsSupervisedLocally() const {
-  return IsLocalBrowserFilteringEnabled() || IsLocalSearchFilteringEnabled();
-}
-
 bool SupervisedUserService::IsLocalBrowserFilteringEnabled() const {
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
@@ -267,25 +263,20 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
   // are mutually exclusive and device controls are just being disabled.
 
 #if BUILDFLAG(IS_ANDROID)
-  bool any_local_parental_control_enabled =
-      device_parental_controls_->IsBrowserContentFiltersEnabled() ||
-      device_parental_controls_->IsSearchContentFiltersEnabled();
   if (base::FeatureList::IsEnabled(
           kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
-      any_local_parental_control_enabled) {
+      device_parental_controls_->IsEnabled()) {
+    // Device parental controls are enabled, but they are being overridden by
+    // Family Link supervision which is now active.
     RecordSupervisionConflict();
 
-    // Trigger disabling callbacks to cancel effects of local parental controls
-    // when family link is enabled, even though the filters are not actually
-    // disabled.
+    // The following calls are idempotent: they will either disable effects of
+    // device-configured parental controls, or do nothing if device parental
+    // controls are already disabled.
     OnBrowserContentFiltersDisabled();
     OnSearchContentFiltersDisabled();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  CHECK(!IsSupervisedLocally())
-      << "Family link parental controls cannot be manipulated when locally "
-         "supervised.";
 
   // Remove the handlers of the disabled parental controls mode.
   RemoveURLFilterPrefChangeHandlers();
@@ -353,8 +344,8 @@ void SupervisedUserService::RemoveCustodianPrefChangeHandlers() {
 }
 
 void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
-  bool is_supervised =
-      IsSupervisedLocally() || IsSubjectToParentalControls(user_prefs_.get());
+  bool is_supervised = device_parental_controls_->IsEnabled() ||
+                       IsSubjectToParentalControls(user_prefs_.get());
   if (is_supervised && platform_delegate_->ShouldCloseIncognitoTabs()) {
     platform_delegate_->CloseIncognitoTabs();
   }

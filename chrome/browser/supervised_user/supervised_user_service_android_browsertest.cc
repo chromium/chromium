@@ -226,20 +226,27 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
       GetParam().initial_browser_content_filters_value ||
       GetParam().initial_search_content_filters_value;
 
-  // Local supervision is initially enabled/disabled based on the test case, but
-  // Family Link supervision is always disabled.
+  // Device supervision is initially enabled/disabled based on the test case,
+  // but Family Link supervision is always disabled.
   ASSERT_EQ(is_initially_supervised_locally,
-            GetSupervisedUserService()->IsSupervisedLocally());
+            GetDeviceParentalControls().IsEnabled());
   ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   EnableParentalControls(*GetProfile()->GetPrefs());
 
   // Finally, local supervision is always disabled, Family Link supervision is
-  // always enabled, and if there was a conflict, it's recorded.
-  histogram_tester().ExpectBucketCount(
-      "SupervisedUsers.FamilyLinkSupervisionConflict", 1,
-      is_initially_supervised_locally ? 1 : 0);
-  EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
+  // always enabled, and if there was a conflict, it's recorded (possibly
+  // multiple times, because changes to both SupervisedUserSettingsService and
+  // AndroidParentalControls trigger pref calculations)
+  if (is_initially_supervised_locally) {
+    EXPECT_LT(0, histogram_tester().GetBucketCount(
+                     "SupervisedUsers.FamilyLinkSupervisionConflict", 1));
+  } else {
+    EXPECT_EQ(0, histogram_tester().GetBucketCount(
+                     "SupervisedUsers.FamilyLinkSupervisionConflict", 1));
+  }
+  EXPECT_FALSE(
+      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 }
 
@@ -318,22 +325,24 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
-    FamilyLinkIsImmuneToLocalSupervision) {
-  // Local supervision is initially disabled and Family Link supervision is
+    FamilyLinkIsImmuneToDeviceSupervision) {
+  // Device supervision is initially disabled and Family Link supervision is
   // initially enabled.
-  ASSERT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
+  ASSERT_FALSE(GetDeviceParentalControls().IsEnabled());
   ASSERT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   // Try turning the knob on the local supervision (browser filtering).
   GetDeviceParentalControls().SetBrowserContentFiltersEnabledForTesting(true);
-  EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
+  EXPECT_FALSE(
+      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
   GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
-  EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
+  EXPECT_FALSE(
+      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 2);

@@ -9,6 +9,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -39,9 +40,12 @@ bool IsParentFamilyMemberRole(const PrefService& pref_service) {
 std::optional<SupervisedUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
-    SupervisedUserService* supervised_user_service) {
-  if (supervised_user_service &&
-      supervised_user_service->IsSupervisedLocally()) {
+    const DeviceParentalControls& device_parental_controls) {
+  // TODO(crbug.com/474592052): in case of Family Link and device supervision,
+  // prefer Family Link supervision status. Once properly handled, record
+  // metrics for both supervision types.
+  if (!IsSubjectToParentalControls(pref_service) &&
+      device_parental_controls.IsEnabled()) {
     // This type of supervision is signin-status independent (but only available
     // to non-incognito profiles).
     return SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally;
@@ -178,11 +182,11 @@ SupervisedUserLogRecord SupervisedUserLogRecord::Create(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map,
-    SupervisedUserService* supervised_user_service,
-    SupervisedUserUrlFilteringService* url_filtering_service) {
+    SupervisedUserUrlFilteringService* url_filtering_service,
+    const DeviceParentalControls& device_parental_controls) {
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       GetSupervisionStatus(identity_manager, pref_service,
-                           supervised_user_service);
+                           device_parental_controls);
   return SupervisedUserLogRecord(
       supervision_status,
       GetWebFilterType(supervision_status, url_filtering_service),

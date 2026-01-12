@@ -118,9 +118,6 @@ class SupervisedUserService : public KeyedService,
   // on the UI thread.
   SupervisedUserURLFilter* GetURLFilter() const;
 
-  // Returns true if the user is supervised locally (e.g. on the device).
-  // Currently, local supervision is only supported on Android.
-  bool IsSupervisedLocally() const;
   // Returns true if the user is supervised locally (e.g. on the device) and
   // requested browser content to be filtered.
   bool IsLocalBrowserFilteringEnabled() const;

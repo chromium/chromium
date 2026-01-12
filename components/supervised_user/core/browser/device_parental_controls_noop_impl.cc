@@ -13,6 +13,10 @@ bool DeviceParentalControlsNoOpImpl::IsSafeSearchForced() const {
   return false;
 }
 
+bool DeviceParentalControlsNoOpImpl::IsEnabled() const {
+  return false;
+}
+
 bool DeviceParentalControlsNoOpImpl::IsBrowserContentFiltersEnabled() const {
   return false;
 }

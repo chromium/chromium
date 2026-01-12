@@ -22,6 +22,7 @@ class DeviceParentalControlsNoOpImpl : public DeviceParentalControls {
 
   // DeviceParentalControls:
   bool IsSafeSearchForced() const override;
+  bool IsEnabled() const override;
   bool IsBrowserContentFiltersEnabled() const override;
   bool IsSearchContentFiltersEnabled() const override;
 };

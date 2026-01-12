@@ -45,6 +45,9 @@ class DeviceParentalControls {
   // overridden by policies).
   virtual bool IsSafeSearchForced() const = 0;
 
+  // Returns true if device-level parental controls are enabled on the device.
+  virtual bool IsEnabled() const = 0;
+
   // Temporary migration-time interface to support Android-specific parental
   // controls knobs.
   virtual bool IsBrowserContentFiltersEnabled() const = 0;
