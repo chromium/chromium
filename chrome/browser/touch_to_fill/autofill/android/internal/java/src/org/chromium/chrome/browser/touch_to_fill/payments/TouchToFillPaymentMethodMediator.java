@@ -198,6 +198,26 @@ class TouchToFillPaymentMethodMediator {
         int MAX_VALUE = DISMISS;
     }
 
+    // LINT.IfChange
+    /**
+     * The source that triggered the loyalty card Touch To Fill sheet.
+     *
+     * <p>Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * in sync with TouchToFill.LoyaltyCard.Source in enums.xml.
+     */
+    @IntDef({
+        TouchToFillLoyaltyCardSource.FIELD_WITH_AFFILIATED_LOYALTY_CARDS,
+        TouchToFillLoyaltyCardSource.KA_ALL_YOUR_LOYALTY_CARDS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TouchToFillLoyaltyCardSource {
+        int FIELD_WITH_AFFILIATED_LOYALTY_CARDS = 0;
+        int KA_ALL_YOUR_LOYALTY_CARDS = 1;
+        int MAX_VALUE = KA_ALL_YOUR_LOYALTY_CARDS;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml)
+
     /**
      * The final outcome that closes the loyalty card Touch To Fill sheet.
      *
@@ -287,6 +307,10 @@ class TouchToFillPaymentMethodMediator {
     @VisibleForTesting
     static final String TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN =
             "Autofill.TouchToFill.Iban.NumberOfIbansShown";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_LOYALTY_CARD_SOURCE_HISTOGRAM =
+            "Autofill.TouchToFill.LoyaltyCard.Source";
 
     @VisibleForTesting
     static final String TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM =
@@ -623,6 +647,8 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_loyalty_card_bottom_sheet_closed);
         mModel.set(VISIBLE, true);
 
+        recordTouchToFillLoyaltyCardSourceHistogram(
+                TouchToFillLoyaltyCardSource.FIELD_WITH_AFFILIATED_LOYALTY_CARDS);
         RecordHistogram.recordCount100Histogram(
                 TOUCH_TO_FILL_NUMBER_OF_AFFILIATED_LOYALTY_CARDS_SHOWN,
                 mAffiliatedLoyaltyCards.size());
@@ -658,6 +684,8 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_loyalty_card_bottom_sheet_closed);
         mModel.set(VISIBLE, true);
 
+        recordTouchToFillLoyaltyCardSourceHistogram(
+                TouchToFillLoyaltyCardSource.KA_ALL_YOUR_LOYALTY_CARDS);
         RecordHistogram.recordCount100Histogram(
                 TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, mAllLoyaltyCards.size());
     }
@@ -1518,6 +1546,14 @@ class TouchToFillPaymentMethodMediator {
                 TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
                 outcome,
                 TouchToFillIbanOutcome.MAX_VALUE);
+    }
+
+    private static void recordTouchToFillLoyaltyCardSourceHistogram(
+            @TouchToFillLoyaltyCardSource int source) {
+        RecordHistogram.recordEnumeratedHistogram(
+                TOUCH_TO_FILL_LOYALTY_CARD_SOURCE_HISTOGRAM,
+                source,
+                TouchToFillLoyaltyCardSource.MAX_VALUE);
     }
 
     private static void recordTouchToFillBnplIssuerUserAction(String issuerId, boolean isLinked) {

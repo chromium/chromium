@@ -54,6 +54,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_IBAN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_LOYALTY_CARD_SOURCE_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_AFFILIATED_LOYALTY_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
@@ -179,6 +180,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillCreditCardOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillIbanOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillLoyaltyCardOutcome;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillLoyaltyCardSource;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -2753,6 +2755,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_AFFILIATED_LOYALTY_CARDS_SHOWN, 1)
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2)
+                        .expectIntRecord(
+                                TOUCH_TO_FILL_LOYALTY_CARD_SOURCE_HISTOGRAM,
+                                TouchToFillLoyaltyCardSource.FIELD_WITH_AFFILIATED_LOYALTY_CARDS)
                         .build();
         mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
@@ -2871,6 +2876,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2)
+                        .expectIntRecord(
+                                TOUCH_TO_FILL_LOYALTY_CARD_SOURCE_HISTOGRAM,
+                                TouchToFillLoyaltyCardSource.KA_ALL_YOUR_LOYALTY_CARDS)
                         .expectIntRecord(
                                 TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
                                 TouchToFillLoyaltyCardOutcome.NON_AFFILIATED_LOYALTY_CARD)
