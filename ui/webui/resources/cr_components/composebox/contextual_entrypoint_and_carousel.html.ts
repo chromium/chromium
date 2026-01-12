@@ -108,7 +108,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         .files="${Array.from(this.files_.values())}"
         @delete-file="${this.onDeleteFile_}">
       </cr-composebox-file-carousel> ` : ''}
-    ${this.submitButtonShown && (this.searchboxLayoutMode === 'Compact' || this.searchboxLayoutMode === 'TallBottomContext') ?
+    ${this.submitButtonShown && this.searchboxLayoutMode === 'Compact' ?
       html`<slot name="submit-button"></slot>` :
       ''}
   </div>
@@ -161,6 +161,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   ${(this.searchboxLayoutMode === 'TallBottomContext' || !this.searchboxLayoutMode) && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
+  ${this.submitButtonShown && this.searchboxLayoutMode === 'TallBottomContext' ?
+      html`<slot name="submit-button"></slot>` :
+      ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

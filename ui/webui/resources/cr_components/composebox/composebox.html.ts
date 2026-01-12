@@ -79,6 +79,16 @@ export function getHtml(this: ComposeboxElement) {
           `: ''}
         </div>
       </div>
+      <div id="cancelContainer" class="icon-fade" part="cancel">
+        <cr-icon-button
+            class="action-icon icon-clear"
+            id="cancelIcon"
+            part="action-icon cancel-icon"
+            title="${this.computeCancelButtonTitle_()}"
+            @click="${this.onCancelClick_}"
+            ?disabled="${this.isCollapsible && !this.submitEnabled_}">
+        </cr-icon-button>
+      </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
           exportparts="context-menu-entrypoint-icon,
@@ -124,16 +134,6 @@ export function getHtml(this: ComposeboxElement) {
     <!-- A seperate container is needed for the submit button so the
     expand/collapse animation can be applied without affecting the submit
     button enabled/disabled state. -->
-    <div id="cancelContainer" class="icon-fade" part="cancel">
-      <cr-icon-button
-          class="action-icon icon-clear"
-          id="cancelIcon"
-          part="action-icon cancel-icon"
-          title="${this.computeCancelButtonTitle_()}"
-          @click="${this.onCancelClick_}"
-          ?disabled="${this.isCollapsible && !this.submitEnabled_}">
-      </cr-icon-button>
-    </div>
     ${this.showLensButton ? html`<cr-icon-button
         class="action-icon"
         id="lensIcon"
