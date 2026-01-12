@@ -980,7 +980,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 frag,
                                 PREF_BUY_NOW_PAY_LATER,
                                 R.string.autofill_bnpl_settings_label,
-                                0);
+                                0,
+                                AutofillBuyNowPayLaterFragment.class.getName());
                     }
                     if (shouldShowAddFirstCardPref(personalDataManager, profile)) {
                         indexData.addEntryForKey(

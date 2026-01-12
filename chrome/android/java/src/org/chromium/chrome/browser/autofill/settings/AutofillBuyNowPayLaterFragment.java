@@ -37,6 +37,7 @@ import org.chromium.components.autofill.payments.BnplIssuerForSettings;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Preferences fragment to allow users to manage Buy Now Pay Later application settings. */
 @NullMarked
@@ -211,8 +212,16 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
-    // entries that need to be built on the fly?
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(AutofillBuyNowPayLaterFragment.class.getName(), 0);
+            new ChromeBaseSearchIndexProvider(AutofillBuyNowPayLaterFragment.class.getName(), 0) {
+
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    indexData.addEntryForKey(
+                            AutofillBuyNowPayLaterFragment.class.getName(),
+                            PREF_KEY_ENABLE_BUY_NOW_PAY_LATER,
+                            R.string.autofill_bnpl_settings_label,
+                            R.string.autofill_bnpl_settings_toggle_sublabel);
+                }
+            };
 }
