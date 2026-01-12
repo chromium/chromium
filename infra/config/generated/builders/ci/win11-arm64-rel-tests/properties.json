@@ -80,8 +80,7 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/win11-arm64-rel-tests/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/win11-arm64-rel-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -60,8 +60,7 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/android-desktop-x64-archive-rel/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-desktop-x64-archive-rel/targets"
     }
   },
   "$build/siso": {

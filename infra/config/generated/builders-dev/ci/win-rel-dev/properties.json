@@ -40,8 +40,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders-dev/ci/win-rel-dev/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders-dev/ci/win-rel-dev/targets"
     }
   },
   "$build/siso": {

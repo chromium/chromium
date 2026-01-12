@@ -39,8 +39,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/ios26-sdk-simulator/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/ios26-sdk-simulator/targets"
     }
   },
   "$build/siso": {

@@ -119,8 +119,7 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Win arm64 Builder/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Win arm64 Builder/targets"
     }
   },
   "$build/siso": {

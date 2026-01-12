@@ -95,8 +95,7 @@
           "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Android arm DEPS Builder/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Android arm DEPS Builder/targets"
     }
   },
   "$build/siso": {

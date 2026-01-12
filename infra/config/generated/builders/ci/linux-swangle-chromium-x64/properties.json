@@ -49,8 +49,7 @@
           "group": "tryserver.chromium.swangle"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/linux-swangle-chromium-x64/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/linux-swangle-chromium-x64/targets"
     }
   },
   "$build/siso": {

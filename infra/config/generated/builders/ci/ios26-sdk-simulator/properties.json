@@ -45,8 +45,7 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/ios26-sdk-simulator/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios26-sdk-simulator/targets"
     }
   },
   "$build/siso": {

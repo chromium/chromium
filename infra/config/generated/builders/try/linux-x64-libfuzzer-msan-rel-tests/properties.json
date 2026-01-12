@@ -40,8 +40,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/linux-x64-libfuzzer-msan-rel-tests/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/linux-x64-libfuzzer-msan-rel-tests/targets"
     }
   },
   "$build/flakiness": {

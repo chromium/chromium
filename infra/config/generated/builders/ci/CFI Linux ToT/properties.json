@@ -44,8 +44,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/CFI Linux ToT/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/CFI Linux ToT/targets"
     }
   },
   "$build/siso": {

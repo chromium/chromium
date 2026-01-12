@@ -97,8 +97,7 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/chromeos-amd64-generic-rel-gtest/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/chromeos-amd64-generic-rel-gtest/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

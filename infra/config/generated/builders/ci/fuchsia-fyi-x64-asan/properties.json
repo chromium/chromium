@@ -48,8 +48,7 @@
           "group": "tryserver.chromium.fuchsia"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/fuchsia-fyi-x64-asan/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/fuchsia-fyi-x64-asan/targets"
     }
   },
   "$build/siso": {

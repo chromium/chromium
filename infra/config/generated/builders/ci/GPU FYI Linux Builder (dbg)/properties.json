@@ -80,8 +80,7 @@
           "group": "tryserver.chromium.linux"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Linux Builder (dbg)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Linux Builder (dbg)/targets"
     }
   },
   "$build/siso": {

@@ -58,8 +58,7 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/android-14-arm64-rel/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-14-arm64-rel/targets"
     }
   },
   "$build/siso": {

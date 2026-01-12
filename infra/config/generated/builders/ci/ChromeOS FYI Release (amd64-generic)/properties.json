@@ -52,8 +52,7 @@
           "group": "tryserver.chromium.chromiumos"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/ChromeOS FYI Release (amd64-generic)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/ChromeOS FYI Release (amd64-generic)/targets"
     }
   },
   "$build/siso": {

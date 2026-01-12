@@ -73,8 +73,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/win32-enterprise-companion-builder-dbg/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/win32-enterprise-companion-builder-dbg/targets"
     }
   },
   "$build/siso": {

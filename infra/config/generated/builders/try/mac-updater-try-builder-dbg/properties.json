@@ -73,8 +73,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/mac-updater-try-builder-dbg/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/mac-updater-try-builder-dbg/targets"
     }
   },
   "$build/flakiness": {

@@ -73,8 +73,7 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/Linux ASan LSan Tests (1)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Linux ASan LSan Tests (1)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -46,8 +46,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/ios-simulator/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/ios-simulator/targets"
     }
   },
   "$build/code_coverage": {
