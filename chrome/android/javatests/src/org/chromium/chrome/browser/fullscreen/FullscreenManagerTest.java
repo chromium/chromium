@@ -643,6 +643,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    @DisabledTest(message = "Flaky: crbug.com/475145490")
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(SCROLL_OFFSET_TEST_PAGE);
