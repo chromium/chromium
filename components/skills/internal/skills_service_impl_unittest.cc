@@ -8,13 +8,17 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/skills/public/skill.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace skills {
 
 class SkillsServiceImplTest : public testing::Test {
  public:
-  SkillsServiceImplTest() = default;
+  SkillsServiceImplTest()
+      : service_(
+            version_info::Channel::UNKNOWN,
+            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest()) {}
   ~SkillsServiceImplTest() override = default;
 
  protected:

@@ -4,16 +4,23 @@
 
 #include "chrome/browser/skills/skills_service_factory.h"
 
+#include <memory>
+
+#include "base/logging.h"
+#include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/skills/internal/skills_service_impl.h"
+#include "components/sync/model/data_type_store_service.h"
 
 namespace skills {
 
-SkillsService* SkillsServiceFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
+SkillsService* SkillsServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<SkillsService*>(
-      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 SkillsServiceFactory* SkillsServiceFactory::GetInstance() {
@@ -22,17 +29,27 @@ SkillsServiceFactory* SkillsServiceFactory::GetInstance() {
 }
 
 SkillsServiceFactory::SkillsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SkillsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 SkillsServiceFactory::~SkillsServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+
   // TODO(crbug.com/466802878): Return a nullptr if the feature is disabled.
-  return std::make_unique<SkillsServiceImpl>();
+  return std::make_unique<SkillsServiceImpl>(chrome::GetChannel(),
+                                             std::move(store_factory));
 }
 
 }  // namespace skills

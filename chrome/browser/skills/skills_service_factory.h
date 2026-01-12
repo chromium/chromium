@@ -6,20 +6,18 @@
 #define CHROME_BROWSER_SKILLS_SKILLS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace content {
-class BrowserContext;
-}
+class Profile;
 
 namespace skills {
 
 class SkillsService;
 
 // Factory for SkillsService.
-class SkillsServiceFactory : public BrowserContextKeyedServiceFactory {
+class SkillsServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static SkillsService* GetForBrowserContext(content::BrowserContext* context);
+  static SkillsService* GetForProfile(Profile* profile);
 
   static SkillsServiceFactory* GetInstance();
 

@@ -9,7 +9,12 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+namespace syncer {
+class DataTypeControllerDelegate;
+}  // namespace syncer
 
 namespace skills {
 
@@ -38,6 +43,10 @@ class SkillsService : public KeyedService {
   // Registers a callback to be notified when the skills change.
   virtual base::CallbackListSubscription RegisterSkillsChangedCallback(
       base::RepeatingClosure callback) = 0;
+
+  // Returns controller delegate for the sync service.
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetControllerDelegate() = 0;
 };
 
 }  // namespace skills

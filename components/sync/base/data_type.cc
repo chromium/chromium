@@ -644,11 +644,18 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 DataTypeSet AlwaysPreferredUserTypes() {
-  DataTypeSet types = {
-      ACCOUNT_SETTING, DEVICE_INFO,          USER_CONSENTS,
-      PLUS_ADDRESS,    PLUS_ADDRESS_SETTING, PRIORITY_PREFERENCES,
-      SECURITY_EVENTS, SEND_TAB_TO_SELF,     SUPERVISED_USER_SETTINGS,
-      SHARING_MESSAGE};
+  // TODO(crbug.com/471795213): add SKILL to a corresponding UserSelectableType.
+  DataTypeSet types = {ACCOUNT_SETTING,
+                       DEVICE_INFO,
+                       USER_CONSENTS,
+                       PLUS_ADDRESS,
+                       PLUS_ADDRESS_SETTING,
+                       PRIORITY_PREFERENCES,
+                       SECURITY_EVENTS,
+                       SEND_TAB_TO_SELF,
+                       SUPERVISED_USER_SETTINGS,
+                       SHARING_MESSAGE,
+                       SKILL};
   // TODO(crbug.com/412602018): Mark AlwaysPreferredUserTypes() method as
   // constexpr when removing the feature flag.
   if (!base::FeatureList::IsEnabled(

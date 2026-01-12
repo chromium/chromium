@@ -16,8 +16,12 @@ source_set("skills") {
   ]
 
   deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//chrome/common:channel_info",
     "//components/keyed_service/core",
     "//components/skills/internal",
     "//components/skills/public",
+    "//components/sync/model",
   ]
 }

@@ -6,11 +6,31 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
+#include "components/skills/internal/skills_sync_bridge.h"
 #include "components/skills/public/skill.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace skills {
 
-SkillsServiceImpl::SkillsServiceImpl() = default;
+SkillsServiceImpl::SkillsServiceImpl(
+    version_info::Channel channel,
+    syncer::OnceDataTypeStoreFactory create_store_callback) {
+  // TODO(crbug.com/471795213): consider using a common flag to control the
+  // whole service.
+  if (base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
+    // TODO(crbug.com/471795213): consider removing a dependency on the channel.
+    sync_bridge_ = std::make_unique<SkillsSyncBridge>(
+        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+            syncer::SKILL,
+            base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
+        std::move(create_store_callback));
+  }
+}
+
 SkillsServiceImpl::~SkillsServiceImpl() = default;
 
 void SkillsServiceImpl::NotifySkillsChanged() {
@@ -47,6 +67,14 @@ const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
 base::CallbackListSubscription SkillsServiceImpl::RegisterSkillsChangedCallback(
     base::RepeatingClosure callback) {
   return skills_changed_callbacks_.Add(std::move(callback));
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+SkillsServiceImpl::GetControllerDelegate() {
+  if (sync_bridge_) {
+    return sync_bridge_->change_processor()->GetControllerDelegate();
+  }
+  return nullptr;
 }
 
 }  // namespace skills

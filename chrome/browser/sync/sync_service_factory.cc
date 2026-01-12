@@ -92,9 +92,9 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/sync/extension_sync_service.h"  // nogncheck
-#include "extensions/browser/api/storage/storage_frontend.h"   // nogncheck
-#include "extensions/browser/extension_system_provider.h"      // nogncheck
-#include "extensions/browser/extensions_browser_client.h"      // nogncheck
+#include "extensions/browser/api/storage/storage_frontend.h"        // nogncheck
+#include "extensions/browser/extension_system_provider.h"           // nogncheck
+#include "extensions/browser/extensions_browser_client.h"           // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -124,6 +124,7 @@
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/sync/android/jni_headers/SyncServiceFactory_jni.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -262,6 +263,13 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetUserEventService(
       browser_sync::UserEventServiceFactory::GetForProfile(profile));
+  builder.SetSkillsService(
+#if BUILDFLAG(IS_ANDROID)
+      nullptr
+#else   // BUILDFLAG(IS_ANDROID)
+      skills::SkillsServiceFactory::GetForProfile(profile)
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 
   return builder.Build(/*disabled_types=*/{}, sync_service,
                        chrome::GetChannel());
@@ -543,6 +551,9 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(SecurityEventRecorderFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(skills::SkillsServiceFactory::GetInstance());
+#endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(SpellcheckServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());

@@ -63,6 +63,7 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/public/skills_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -297,6 +298,11 @@ void CommonControllerBuilder::SetIdentityManager(
 void CommonControllerBuilder::SetDataTypeStoreService(
     syncer::DataTypeStoreService* data_type_store_service) {
   data_type_store_service_.Set(data_type_store_service);
+}
+
+void CommonControllerBuilder::SetSkillsService(
+    skills::SkillsService* skills_service) {
+  skills_service_.Set(skills_service);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -907,21 +913,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     // In following CLs implement the bridge and keep adding unit tests.
   }
 
-  if (!disabled_types.Has(syncer::SKILL) &&
-      base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
-    // TODO(crbug.com/471795213): In CL #4, register the type, i.e. instantiate
-    // the DataTypeController. There is more than one way to go about it,
-    // but one option is:
-    // - Create a trivial implementation of DataTypeSyncBridge which lives in
-    //   your feature's directory. It should have synchronous access to your
-    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-    //   CoolKeyedService (often the model itself).
-    // - Expose CoolKeyedService::GetControllerDelegate() which calls
-    //   bridge->change_processor()->GetControllerDelegate().
-    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-    //   on it to create the DataTypeController.
-    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
-  }
   if (!disabled_types.Has(syncer::AI_THREAD) &&
       base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
     // TODO(crbug.com/445841720): In CL #4, register the type, i.e. instantiate
@@ -953,6 +944,36 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     //   on it to create the DataTypeController.
     // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (!disabled_types.Has(syncer::SKILL) &&
+      base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
+    // TODO(rushans): In CL #4, register the type, i.e. instantiate
+    // the DataTypeController. There is more than one way to go about it,
+    // but one option is:
+    // - Create a trivial implementation of DataTypeSyncBridge which lives in
+    //   your feature's directory. It should have synchronous access to your
+    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
+    //   CoolKeyedService (often the model itself).
+    // - Expose CoolKeyedService::GetControllerDelegate() which calls
+    //   bridge->change_processor()->GetControllerDelegate().
+    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
+    //   on it to create the DataTypeController.
+    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+    syncer::DataTypeControllerDelegate* delegate =
+        skills_service_.value()->GetControllerDelegate().get();
+    if (delegate) {
+      controllers.push_back(std::make_unique<syncer::DataTypeController>(
+          syncer::SKILL,
+          /*delegate_for_full_sync_mode=*/
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate),
+          /*delegate_for_transport_mode=*/
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate)));
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   if (!disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {

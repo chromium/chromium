@@ -84,6 +84,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace skills {
+class SkillsService;
+}  // namespace skills
+
 namespace supervised_user {
 class SupervisedUserSettingsService;
 }  // namespace supervised_user
@@ -168,6 +172,7 @@ class CommonControllerBuilder {
   void SetIdentityManager(signin::IdentityManager* identity_manager);
   void SetDataTypeStoreService(
       syncer::DataTypeStoreService* data_type_store_service);
+  void SetSkillsService(skills::SkillsService* skills_service);
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetPasskeyModel(webauthn::PasskeyModel* passkey_model);
@@ -317,6 +322,7 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>
       tab_group_sync_service_;
   SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
+  SafeOptional<raw_ptr<skills::SkillsService>> skills_service_;
 };
 
 }  // namespace browser_sync

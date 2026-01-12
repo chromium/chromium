@@ -5,6 +5,7 @@
 source_set("internal") {
   visibility = [
     ":*",
+    "//chrome/browser/skills",
     "//components/skills/content",
   ]
 
@@ -40,6 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/skills/public",
     "//components/sync:test_support",
+    "//components/sync/base",
     "//components/sync/model",
     "//components/sync/protocol",
     "//testing/gtest",

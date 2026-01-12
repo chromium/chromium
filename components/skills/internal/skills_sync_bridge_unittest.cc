@@ -11,6 +11,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,47 +39,64 @@ syncer::EntityData CreateSkillEntityData(
 class SkillsSyncBridgeTest : public testing::Test {
  public:
   SkillsSyncBridgeTest()
-      : bridge_(std::make_unique<testing::NiceMock<
-                    syncer::MockDataTypeLocalChangeProcessor>>()) {}
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+    ResetBridgeAndWaitForInitialization();
+  }
 
- protected:
+  void ResetBridgeAndWaitForInitialization() {
+    bridge_.reset();
+    base::RunLoop run_loop;
+    EXPECT_CALL(processor_, ModelReadyToSync)
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    bridge_ = std::make_unique<SkillsSyncBridge>(
+        processor_.CreateForwardingProcessor(),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
+    run_loop.Run();
+  }
+
+  syncer::DataTypeStore& store() { return *store_; }
+  SkillsSyncBridge& bridge() { return *bridge_; }
+
+ private:
   base::test::TaskEnvironment task_environment_;
-  SkillsSyncBridge bridge_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
+  std::unique_ptr<SkillsSyncBridge> bridge_;
 };
 
 TEST_F(SkillsSyncBridgeTest, GetClientTag) {
   const syncer::EntityData kEntityData = CreateSkillEntityData();
   ASSERT_FALSE(kEntityData.specifics.skill().guid().empty());
   EXPECT_EQ(kEntityData.specifics.skill().guid(),
-            bridge_.GetClientTag(kEntityData));
+            bridge().GetClientTag(kEntityData));
 }
 
 TEST_F(SkillsSyncBridgeTest, GetStorageKey) {
   const syncer::EntityData kEntityData = CreateSkillEntityData();
   ASSERT_FALSE(kEntityData.specifics.skill().guid().empty());
   EXPECT_EQ(kEntityData.specifics.skill().guid(),
-            bridge_.GetClientTag(kEntityData));
+            bridge().GetClientTag(kEntityData));
 }
 
 TEST_F(SkillsSyncBridgeTest, IsEntityDataValid) {
   const syncer::EntityData kValidEntityData = CreateSkillEntityData();
-  EXPECT_TRUE(bridge_.IsEntityDataValid(kValidEntityData));
+  EXPECT_TRUE(bridge().IsEntityDataValid(kValidEntityData));
 }
 
 TEST_F(SkillsSyncBridgeTest, IsEntityDataValid_EmptyGuid) {
   syncer::EntityData entity_data = CreateSkillEntityData();
-  ASSERT_TRUE(bridge_.IsEntityDataValid(entity_data));
+  ASSERT_TRUE(bridge().IsEntityDataValid(entity_data));
 
   entity_data.specifics.mutable_skill()->set_guid("");
-  EXPECT_FALSE(bridge_.IsEntityDataValid(entity_data));
+  EXPECT_FALSE(bridge().IsEntityDataValid(entity_data));
 }
 
 TEST_F(SkillsSyncBridgeTest, IsEntityDataValid_MissingSimpleSkill) {
   syncer::EntityData entity_data = CreateSkillEntityData();
-  ASSERT_TRUE(bridge_.IsEntityDataValid(entity_data));
+  ASSERT_TRUE(bridge().IsEntityDataValid(entity_data));
 
   entity_data.specifics.mutable_skill()->clear_simple_skill();
-  EXPECT_FALSE(bridge_.IsEntityDataValid(entity_data));
+  EXPECT_FALSE(bridge().IsEntityDataValid(entity_data));
 }
 
 }  // namespace

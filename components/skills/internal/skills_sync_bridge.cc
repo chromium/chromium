@@ -10,6 +10,7 @@
 #include "base/notimplemented.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/entity_data.h"
@@ -19,8 +20,13 @@
 namespace skills {
 
 SkillsSyncBridge::SkillsSyncBridge(
-    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
-    : syncer::DataTypeSyncBridge(std::move(change_processor)) {}
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory create_store_callback)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
+  std::move(create_store_callback)
+      .Run(syncer::SKILL, base::BindOnce(&SkillsSyncBridge::OnStoreCreated,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
 
 SkillsSyncBridge::~SkillsSyncBridge() = default;
 
@@ -106,6 +112,34 @@ bool SkillsSyncBridge::IsEntityDataValid(
   }
 
   return true;
+}
+
+void SkillsSyncBridge::OnStoreCreated(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore> store) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  store_ = std::move(store);
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&SkillsSyncBridge::OnReadAllDataAndMetadata,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SkillsSyncBridge::OnReadAllDataAndMetadata(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  NOTIMPLEMENTED();
+
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
 }  // namespace skills

@@ -7,12 +7,16 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
 namespace syncer {
+class MetadataBatch;
 class MetadataChangeList;
 class DataTypeLocalChangeProcessor;
+class DataTypeStore;
 }  // namespace syncer
 
 namespace skills {
@@ -20,8 +24,9 @@ namespace skills {
 // Sync bridge for the `SKILL` data type.
 class SkillsSyncBridge : public syncer::DataTypeSyncBridge {
  public:
-  explicit SkillsSyncBridge(
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
+  SkillsSyncBridge(
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory create_store_callback);
   SkillsSyncBridge(const SkillsSyncBridge&) = delete;
   SkillsSyncBridge& operator=(const SkillsSyncBridge&) = delete;
   ~SkillsSyncBridge() override;
@@ -49,7 +54,24 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge {
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
+  // Loads the data already stored in the DataTypeStore.
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+                      std::unique_ptr<syncer::DataTypeStore> store);
+
+  // Handle data loaded from the DataTypeStore.
+  void OnReadAllDataAndMetadata(
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // In charge of actually persisting changes to disk, or loading previous data.
+  std::unique_ptr<syncer::DataTypeStore> store_;
+
+  // Allows safe temporary use of the SkillsSyncBridge object if it exists at
+  // the time of use.
+  base::WeakPtrFactory<SkillsSyncBridge> weak_ptr_factory_{this};
 };
 
 }  // namespace skills
