@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
+#import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -66,6 +67,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -1003,7 +1005,9 @@ CreateInputDataFromAnnotatedPageContent(
   [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
 
   if (!item.previewImage) {
-    item.previewImage = image;
+    item.previewImage =
+        ResizeImage(image, composeboxAttachments::kImageInputItemSize,
+                    ProjectionMode::kAspectFill);
     [self updateConsumerItems];
     [self commitUIUpdates];
   }

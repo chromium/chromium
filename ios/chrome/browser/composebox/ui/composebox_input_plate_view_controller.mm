@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
+#import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"

@@ -40,6 +40,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/public:animation",
+    "//ios/chrome/browser/composebox/public:constants",
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:input_plate_controls",
     "//ios/chrome/browser/composebox/public:theme",
