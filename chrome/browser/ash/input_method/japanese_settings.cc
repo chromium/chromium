@@ -24,20 +24,16 @@ constexpr auto kHistValInputModes =
         {JapaneseSettings::InputMode::kKana, HistInputMode::kKana},
     });
 
-// TODO(b:466239577): Fix misnomers in JapaneseSettings::PunctuationStyle Mojo
-// enum (CrOS IME Service) then adapt here (CrOS Input Method Framework), so
-// they match Mozc Config protobuf, just like HistPunctuationStyle C++ enum. The
-// misnomers originate from Mozc Config protobuf but have now been fixed there.
 constexpr auto kHistValPunctuations =
     base::MakeFixedFlatMap<JapaneseSettings::PunctuationStyle,
                            HistPunctuationStyle>({
-        {JapaneseSettings::PunctuationStyle::kKutenTouten,
+        {JapaneseSettings::PunctuationStyle::kToutenKuten,
          HistPunctuationStyle::kToutenKuten},
         {JapaneseSettings::PunctuationStyle::kCommaPeriod,
          HistPunctuationStyle::kCommaPeriod},
-        {JapaneseSettings::PunctuationStyle::kKutenPeriod,
+        {JapaneseSettings::PunctuationStyle::kToutenPeriod,
          HistPunctuationStyle::kToutenPeriod},
-        {JapaneseSettings::PunctuationStyle::kCommaTouten,
+        {JapaneseSettings::PunctuationStyle::kCommaKuten,
          HistPunctuationStyle::kCommaKuten},
     });
 
@@ -102,17 +98,21 @@ constexpr auto kInputModes =
         {kJpPrefInputModeKana, JapaneseSettings::InputMode::kKana},
     });
 
+// TODO(b:466239577): Adapt kJpPrefPunctuationStyle* const names (possibly
+// without changing their CrOS-Prefs-persisted string values), so they match
+// Mozc Config protobuf, just like JapaneseSettings::PunctuationStyle Mojo enum.
+// The misnomers originate from Mozc Config protobuf but have been fixed there.
 constexpr auto kPunctuations =
     base::MakeFixedFlatMap<std::string_view,
                            JapaneseSettings::PunctuationStyle>({
         {kJpPrefPunctuationStyleKutenTouten,
-         JapaneseSettings::PunctuationStyle::kKutenTouten},
+         JapaneseSettings::PunctuationStyle::kToutenKuten},
         {kJpPrefPunctuationStyleCommaPeriod,
          JapaneseSettings::PunctuationStyle::kCommaPeriod},
         {kJpPrefPunctuationStyleKutenPeriod,
-         JapaneseSettings::PunctuationStyle::kKutenPeriod},
+         JapaneseSettings::PunctuationStyle::kToutenPeriod},
         {kJpPrefPunctuationStyleCommaTouten,
-         JapaneseSettings::PunctuationStyle::kCommaTouten},
+         JapaneseSettings::PunctuationStyle::kCommaKuten},
     });
 
 constexpr auto kSymbols =
@@ -183,7 +183,7 @@ JapaneseSettingsPtr MakeDefaultJapaneseSettings() {
   response->number_of_suggestions = 3;
   response->input_mode = JapaneseSettings::InputMode::kRomaji;
   response->punctuation_style =
-      JapaneseSettings::PunctuationStyle::kKutenTouten;
+      JapaneseSettings::PunctuationStyle::kToutenKuten;
   response->symbol_style =
       JapaneseSettings::SymbolStyle::kCornerBracketMiddleDot;
   response->space_input_style = JapaneseSettings::SpaceInputStyle::kInputMode;

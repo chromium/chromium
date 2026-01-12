@@ -69,7 +69,7 @@ TEST(JapaneseSettingsTest, OnUnsetPrefsSetsDefault) {
   expected->number_of_suggestions = 3;
   expected->input_mode = JapaneseSettings::InputMode::kRomaji;
   expected->punctuation_style =
-      JapaneseSettings::PunctuationStyle::kKutenTouten;
+      JapaneseSettings::PunctuationStyle::kToutenKuten;
   expected->symbol_style =
       JapaneseSettings::SymbolStyle::kCornerBracketMiddleDot;
   expected->space_input_style = JapaneseSettings::SpaceInputStyle::kInputMode;
@@ -90,7 +90,7 @@ TEST(JapaneseSettingsTest, RecordJapaneseSettingsMetrics) {
   settings->keymap_style = JapaneseSettings::KeymapStyle::kCustom;
   settings->number_of_suggestions = 3;
   settings->punctuation_style =
-      JapaneseSettings::PunctuationStyle::kKutenTouten;
+      JapaneseSettings::PunctuationStyle::kToutenKuten;
   settings->selection_shortcut =
       JapaneseSettings::SelectionShortcut::kDigits123456789;
   settings->shift_key_mode_style =

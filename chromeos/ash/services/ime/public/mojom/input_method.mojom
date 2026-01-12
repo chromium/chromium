@@ -424,10 +424,10 @@ struct JapaneseSettings {
   [Stable, Extensible]
   enum PunctuationStyle {
     [Default] kUnspecified = 0,
-    kKutenTouten = 1,
+    kToutenKuten = 1,
     kCommaPeriod = 2,
-    kKutenPeriod = 3,
-    kCommaTouten = 4,
+    kToutenPeriod = 3,
+    kCommaKuten = 4,
   };
 
   [Stable, Extensible]
@@ -759,4 +759,3 @@ struct VietnameseVniSettings {
   // Show an underline for the text under composition mode.
   [MinVersion=20] bool show_underline_for_composition_text@3;
 };
-
