@@ -5,9 +5,14 @@
 #include "components/skills/internal/skills_sync_bridge.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "components/skills/public/skill.h"
+#include "components/skills/public/skills_service.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
@@ -36,6 +41,24 @@ syncer::EntityData CreateSkillEntityData(
   return entity_data;
 }
 
+class MockSkillsService : public SkillsService {
+ public:
+  MOCK_METHOD(const Skill*,
+              AddSkill,
+              (const std::string&, const std::string&, const std::string&));
+  MOCK_METHOD(void, LoadInitialSkills, (std::vector<std::unique_ptr<Skill>>));
+  MOCK_METHOD(const Skill*, GetSkillById, (const std::string_view&), (const));
+  MOCK_METHOD(const std::vector<std::unique_ptr<Skill>>&,
+              GetSkills,
+              (),
+              (const));
+  MOCK_METHOD(void, AddObserver, (Observer*));
+  MOCK_METHOD(void, RemoveObserver, (Observer*));
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
+              GetControllerDelegate,
+              ());
+};
+
 class SkillsSyncBridgeTest : public testing::Test {
  public:
   SkillsSyncBridgeTest()
@@ -48,9 +71,11 @@ class SkillsSyncBridgeTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(processor_, ModelReadyToSync)
         .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
     bridge_ = std::make_unique<SkillsSyncBridge>(
         processor_.CreateForwardingProcessor(),
-        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        skills_service_);
     run_loop.Run();
   }
 
@@ -61,6 +86,7 @@ class SkillsSyncBridgeTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
+  testing::NiceMock<MockSkillsService> skills_service_;
   std::unique_ptr<SkillsSyncBridge> bridge_;
 };
 

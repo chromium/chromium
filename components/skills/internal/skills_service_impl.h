@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "components/skills/public/skill.h"
@@ -39,19 +39,23 @@ class SkillsServiceImpl : public SkillsService {
                         const std::string& prompt) override;
   void LoadInitialSkills(
       std::vector<std::unique_ptr<Skill>> initial_skills) override;
+  const Skill* GetSkillById(const std::string_view& skill_id) const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
-  base::CallbackListSubscription RegisterSkillsChangedCallback(
-      base::RepeatingClosure callback) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:
-  void NotifySkillsChanged();
+  // Notifies all registered callbacks that the given skill have changed.
+  void NotifySkillChanged(const std::string& skill_id);
 
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
-  // The list of callbacks to be notified when the skills change.
-  base::RepeatingClosureList skills_changed_callbacks_;
+
+  // The list of observers to be notified on changes.
+  base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
+      observers_;
 
   // Sync bridge for skills.
   std::unique_ptr<SkillsSyncBridge> sync_bridge_;

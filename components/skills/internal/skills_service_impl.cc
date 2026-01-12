@@ -22,19 +22,20 @@ SkillsServiceImpl::SkillsServiceImpl(
   // TODO(crbug.com/471795213): consider using a common flag to control the
   // whole service.
   if (base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
-    // TODO(crbug.com/471795213): consider removing a dependency on the channel.
     sync_bridge_ = std::make_unique<SkillsSyncBridge>(
         std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
             syncer::SKILL,
             base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
-        std::move(create_store_callback));
+        std::move(create_store_callback), *this);
   }
 }
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;
 
-void SkillsServiceImpl::NotifySkillsChanged() {
-  skills_changed_callbacks_.Notify();
+void SkillsServiceImpl::NotifySkillChanged(const std::string& skill_id) {
+  for (Observer& observer : observers_) {
+    observer.OnSkillUpdated(skill_id);
+  }
 }
 
 const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
@@ -44,19 +45,29 @@ const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, icon, prompt);
   Skill* const new_skill_ptr = skill.get();
   skills_.push_back(std::move(skill));
-  // This is added to avoid Reentrancy.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&SkillsServiceImpl::NotifySkillsChanged,
-                                weak_ptr_factory_.GetWeakPtr()));
+
+  NotifySkillChanged(new_skill_ptr->id);
+
   return new_skill_ptr;
+}
+
+const Skill* SkillsServiceImpl::GetSkillById(
+    const std::string_view& skill_id) const {
+  for (const std::unique_ptr<Skill>& skill : skills_) {
+    if (skill->id == skill_id) {
+      return skill.get();
+    }
+  }
+  return nullptr;
 }
 
 void SkillsServiceImpl::LoadInitialSkills(
     std::vector<std::unique_ptr<Skill>> initial_skills) {
   skills_ = std::move(initial_skills);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&SkillsServiceImpl::NotifySkillsChanged,
-                                weak_ptr_factory_.GetWeakPtr()));
+
+  for (Observer& observer : observers_) {
+    observer.OnInitialized();
+  }
 }
 
 const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
@@ -64,9 +75,12 @@ const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
   return skills_;
 }
 
-base::CallbackListSubscription SkillsServiceImpl::RegisterSkillsChangedCallback(
-    base::RepeatingClosure callback) {
-  return skills_changed_callbacks_.Add(std::move(callback));
+void SkillsServiceImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SkillsServiceImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>

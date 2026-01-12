@@ -4,7 +4,12 @@
 
 #include "components/skills/internal/skills_service_impl.h"
 
-#include "base/run_loop.h"
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/skills/public/skill.h"
@@ -12,6 +17,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace skills {
+namespace {
+
+class MockObserver : public SkillsService::Observer {
+ public:
+  MOCK_METHOD(void, OnSkillUpdated, (const std::string& skill_id), (override));
+  MOCK_METHOD(void, OnInitialized, (), (override));
+};
 
 class SkillsServiceImplTest : public testing::Test {
  public:
@@ -58,27 +70,28 @@ TEST_F(SkillsServiceImplTest, LoadInitialSkills) {
   EXPECT_EQ("id2", skills[1]->id);
 }
 
-TEST_F(SkillsServiceImplTest, RegisterSkillsChangedCallback) {
-  base::RunLoop run_loop;
-  base::MockCallback<base::RepeatingClosure> callback;
-  auto subscription = service_.RegisterSkillsChangedCallback(callback.Get());
+TEST_F(SkillsServiceImplTest, NotifyOnSkillChanged) {
+  testing::NiceMock<MockObserver> observer;
+  base::ScopedObservation<SkillsService, SkillsService::Observer> observation(
+      &observer);
+  observation.Observe(&service_);
 
-  EXPECT_CALL(callback, Run()).WillOnce([&run_loop]() { run_loop.Quit(); });
+  EXPECT_CALL(observer, OnSkillUpdated);
   service_.AddSkill("name", "icon", "prompt");
-  run_loop.Run();
 }
 
-TEST_F(SkillsServiceImplTest, RegisterSkillsChangedCallbackOnLoad) {
-  base::RunLoop run_loop;
-  base::MockCallback<base::RepeatingClosure> callback;
-  auto subscription = service_.RegisterSkillsChangedCallback(callback.Get());
+TEST_F(SkillsServiceImplTest, NotifyOnInitialized) {
+  testing::NiceMock<MockObserver> observer;
+  base::ScopedObservation<SkillsService, SkillsService::Observer> observation(
+      &observer);
+  observation.Observe(&service_);
 
-  EXPECT_CALL(callback, Run()).WillOnce([&run_loop]() { run_loop.Quit(); });
+  EXPECT_CALL(observer, OnInitialized);
   std::vector<std::unique_ptr<Skill>> initial_skills;
   initial_skills.push_back(
       std::make_unique<Skill>("id1", "name1", "icon1", "prompt1"));
   service_.LoadInitialSkills(std::move(initial_skills));
-  run_loop.Run();
 }
 
+}  // namespace
 }  // namespace skills

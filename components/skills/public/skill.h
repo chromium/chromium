@@ -28,7 +28,8 @@ struct Skill {
         const std::string& name,
         const std::string& icon,
         const std::string& prompt);
-
+  Skill(const Skill& other) = delete;
+  Skill& operator=(const Skill& other) = delete;
   ~Skill();
 };
 

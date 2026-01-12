@@ -7,8 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
@@ -21,12 +24,16 @@ class DataTypeStore;
 
 namespace skills {
 
+class SkillsService;
+
 // Sync bridge for the `SKILL` data type.
-class SkillsSyncBridge : public syncer::DataTypeSyncBridge {
+class SkillsSyncBridge : public syncer::DataTypeSyncBridge,
+                         public SkillsService::Observer {
  public:
   SkillsSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceDataTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback,
+      SkillsService& skills_service);
   SkillsSyncBridge(const SkillsSyncBridge&) = delete;
   SkillsSyncBridge& operator=(const SkillsSyncBridge&) = delete;
   ~SkillsSyncBridge() override;
@@ -53,6 +60,9 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge {
       const sync_pb::EntitySpecifics& entity_specifics) const override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
+  // SkillsService::Observer implementation.
+  void OnSkillUpdated(const std::string& skill_id) override;
+
  private:
   // Loads the data already stored in the DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
@@ -64,10 +74,19 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge {
       std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
+  // Called on database save completion.
+  void OnDatabaseSave(const std::optional<syncer::ModelError>& error);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;
+
+  // The SkillsService that stores the data.
+  base::raw_ref<SkillsService> skills_service_;
+
+  base::ScopedObservation<SkillsService, SkillsService::Observer>
+      skills_service_observation_{this};
 
   // Allows safe temporary use of the SkillsSyncBridge object if it exists at
   // the time of use.

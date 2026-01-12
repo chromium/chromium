@@ -22,6 +22,7 @@ source_set("internal") {
   ]
 
   deps = [
+    "//components/skills/proto",
     "//components/sync/model",
     "//components/sync/protocol",
   ]
