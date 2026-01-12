@@ -9290,6 +9290,7 @@ crbug.com/390068099 [ Mac ] fast/mediarecorder/MediaRecorder-error-on-oversize-f
 # Gardener 2025-01-15
 crbug.com/389960979 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure Timeout ]  # Randomized context ID
 crbug.com/390162925 [ Win10.20h2 ] virtual/gpu-rasterization/images/png-suite/test.html [ Failure ]
+crbug.com/383667702 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure ]
 
 # Gardener 2025-01-16
 crbug.com/40839871 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Skip Timeout ]
