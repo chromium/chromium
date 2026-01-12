@@ -64,7 +64,8 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
         List<ViewConditions.DisplayedEvaluation> displayedEvaluations = new ArrayList<>();
         for (ViewAndRoot viewAndRoot : allMatches) {
             ViewConditions.DisplayedEvaluation displayedEvaluation =
-                    ViewConditions.evaluateMatch(viewAndRoot, /* displayedPercentageRequired= */ 1);
+                    ViewConditions.evaluateMatch(
+                            viewAndRoot, /* displayedPercentageRequired= */ 1, View.VISIBLE);
             allEvaluations.add(displayedEvaluation);
             if (displayedEvaluation.didMatch) {
                 displayedEvaluations.add(displayedEvaluation);

@@ -108,6 +108,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         return DisplayedCondition.newOptions()
                 .withExpectEnabled(options.mExpectEnabled)
                 .withExpectDisabled(options.mExpectDisabled)
+                .withEffectiveVisibility(options.mExpectedEffectiveVisibility)
                 .withDisplayingAtLeast(options.mDisplayedPercentageRequired)
                 .withSettleTimeMs(options.mInitialSettleTimeMs);
     }
@@ -285,6 +286,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         protected boolean mScoped = true;
         protected boolean mExpectEnabled = true;
         protected boolean mExpectDisabled;
+        protected int mExpectedEffectiveVisibility = View.VISIBLE;
         protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
         protected int mInitialSettleTimeMs;
         protected @Nullable RootSpec mRootSpec;
@@ -329,6 +331,18 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
                 return this;
             }
 
+            /** Expect the View to be INVISIBLE rather than VISIBLE. */
+            public Builder expectInvisible() {
+                mExpectedEffectiveVisibility = View.INVISIBLE;
+                return this;
+            }
+
+            /** Expect the View to be GONE rather than VISIBLE. */
+            public Builder expectGone() {
+                mExpectedEffectiveVisibility = View.GONE;
+                return this;
+            }
+
             /**
              * Changes the minimum percentage of the View that needs be displayed to fulfill the
              * enter Condition. Default is >=90% visible, which matches the minimum requirement for
@@ -356,6 +370,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
                 mScoped = optionsToClone.mScoped;
                 mExpectDisabled = optionsToClone.mExpectDisabled;
                 mExpectEnabled = optionsToClone.mExpectEnabled;
+                mExpectedEffectiveVisibility = optionsToClone.mExpectedEffectiveVisibility;
                 mDisplayedPercentageRequired = optionsToClone.mDisplayedPercentageRequired;
                 mInitialSettleTimeMs = optionsToClone.mInitialSettleTimeMs;
                 mRootSpec = optionsToClone.mRootSpec;
@@ -387,6 +402,16 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
     /** Convenience {@link Options} setting allowDisabled(). */
     public static Options allowDisabledOption() {
         return newOptions().allowDisabled().build();
+    }
+
+    /** Convenience {@link Options} setting expectInvisible(). */
+    public static Options expectInvisibleOption() {
+        return newOptions().expectInvisible().build();
+    }
+
+    /** Convenience {@link Options} setting expectGone(). */
+    public static Options expectGoneOption() {
+        return newOptions().expectGone().build();
     }
 
     /** Convenience {@link Options} setting displayingAtLeast(). */

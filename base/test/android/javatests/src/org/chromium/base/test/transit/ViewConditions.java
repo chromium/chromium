@@ -67,7 +67,9 @@ class ViewConditions {
     }
 
     static DisplayedEvaluation evaluateMatch(
-            ViewAndRoot viewAndRoot, int displayedPercentageRequired) {
+            ViewAndRoot viewAndRoot,
+            int displayedPercentageRequired,
+            int expectedEffectiveVisibility) {
         DisplayedEvaluation matchEvaluation = new DisplayedEvaluation(viewAndRoot);
 
         View matchedView = viewAndRoot.view;
@@ -77,31 +79,56 @@ class ViewConditions {
             matchEvaluation.messages.add("Detached from window");
         }
 
-        int visibility = matchedView.getVisibility();
-        if (visibility != View.VISIBLE) {
-            matchEvaluation.didMatch = false;
-            matchEvaluation.messages.add(
-                    String.format("visibility = %s", visibilityIntToString(visibility)));
-        } else {
-            View view = matchedView;
-            while (view.getParent() instanceof View) {
-                view = (View) view.getParent();
-                visibility = view.getVisibility();
-                if (visibility != View.VISIBLE) {
-                    matchEvaluation.didMatch = false;
-                    matchEvaluation.messages.add(
-                            String.format(
-                                    "visibility of ancestor [%s] = %s",
-                                    ViewPrinter.describeView(view, PRINT_SHALLOW),
-                                    visibilityIntToString(visibility)));
-                    break;
-                }
+        // Calculate the actual effective visibility considering ancestors.
+        //
+        // Traverses the entire hierarchy to the root to find the highest ancestor determining
+        // visibility. This provides a more stable "cause" for failures than stopping at the first
+        // non-visible ancestor.
+        //
+        // Priority:
+        // 1. GONE (Takes no space. Any ancestor being GONE makes the View effectively GONE).
+        // 2. INVISIBLE (Takes space. Any ancestor being INVISIBLE makes the View effectively
+        //    INVISIBLE, unless a higher ancestor is GONE).
+        // 3. VISIBLE (Takes space and is drawn).
+        int actualEffectiveVisibility = matchedView.getVisibility();
+        View ancestorDeterminingVisibility = null;
+        View view = matchedView;
+        while (view.getParent() instanceof View) {
+            view = (View) view.getParent();
+            int visibility = view.getVisibility();
+            if (visibility == View.GONE) {
+                actualEffectiveVisibility = View.GONE;
+                ancestorDeterminingVisibility = view;
+            } else if (actualEffectiveVisibility != View.GONE && visibility == View.INVISIBLE) {
+                actualEffectiveVisibility = View.INVISIBLE;
+                ancestorDeterminingVisibility = view;
             }
         }
 
+        // Check effective visibility and report cause.
+        if (actualEffectiveVisibility != expectedEffectiveVisibility) {
+            matchEvaluation.didMatch = false;
+            matchEvaluation.messages.add(
+                    String.format(
+                            "effectively %s", visibilityIntToString(actualEffectiveVisibility)));
+            if (ancestorDeterminingVisibility != null) {
+                matchEvaluation.messages.add(
+                        String.format(
+                                "due to ancestor %s",
+                                ViewPrinter.describeView(
+                                        ancestorDeterminingVisibility, PRINT_SHALLOW)));
+            }
+        }
+
+        // Calculate, check and report displayed percentage.
         if (displayedPercentageRequired > 0) {
             DisplayedPortion portion = DisplayedPortion.ofView(matchedView);
-            if (portion.mPercentage < displayedPercentageRequired) {
+            boolean shouldOccupySpace = expectedEffectiveVisibility != View.GONE;
+
+            // GONE views take no space, so displayed percentage is irrelevant (and likely 0).
+            // INVISIBLE views still occupy layout space and have valid screen bounds (via
+            // getGlobalVisibleRect()), so we verify they are correctly positioned on-screen.
+            if (shouldOccupySpace && portion.mPercentage < displayedPercentageRequired) {
                 matchEvaluation.didMatch = false;
                 matchEvaluation.messages.add(
                         String.format(
@@ -116,7 +143,7 @@ class ViewConditions {
         return matchEvaluation;
     }
 
-    private static String visibilityIntToString(int visibility) {
+    static String visibilityIntToString(int visibility) {
         return switch (visibility) {
             case View.VISIBLE -> "VISIBLE";
             case View.INVISIBLE -> "INVISIBLE";
