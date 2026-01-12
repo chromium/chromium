@@ -481,6 +481,7 @@ benchmarks/loading_metrics_category.py
 benchmarks/media.py
 benchmarks/memory.py
 benchmarks/octane.py
+benchmarks/omnibox_aim_perf_story.py
 benchmarks/power.py
 benchmarks/press.py
 benchmarks/rasterize_and_record_micro.py
