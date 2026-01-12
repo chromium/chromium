@@ -487,8 +487,9 @@ export class SettingsInternetDetailPageElement extends
       this.afterRenderShowDeepLink_(
           settingId,
           () =>
-              this.shadowRoot!.querySelector('cellular-roaming-toggle-button')!
-                  .getCellularRoamingToggle());
+              this.shadowRoot!.querySelector('cellular-roaming-toggle-button')
+                  ?.getCellularRoamingToggle() ||
+              null);
       // Stop deep link attempt since we completed it manually.
       return false;
     }
@@ -497,8 +498,9 @@ export class SettingsInternetDetailPageElement extends
       this.networkExpanded_ = true;
       this.afterRenderShowDeepLink_(
           settingId,
-          () => this.shadowRoot!.querySelector(
-                                    'network-apnlist')!.getApnSelect());
+          () => this.shadowRoot!.querySelector('network-apnlist')
+                    ?.getApnSelect() ||
+              null);
       return false;
     }
 
@@ -508,8 +510,9 @@ export class SettingsInternetDetailPageElement extends
       this.networkExpanded_ = true;
       this.afterRenderShowDeepLink_(
           settingId,
-          () => this.shadowRoot!.querySelector('network-ip-config')!
-                    .getAutoConfigIpToggle());
+          () => this.shadowRoot!.querySelector('network-ip-config')
+                    ?.getAutoConfigIpToggle() ||
+              null);
       return false;
     }
 
@@ -518,8 +521,9 @@ export class SettingsInternetDetailPageElement extends
       this.networkExpanded_ = true;
       this.afterRenderShowDeepLink_(
           settingId,
-          () => this.shadowRoot!.querySelector('network-nameservers')!
-                    .getNameserverRadioButtons());
+          () => this.shadowRoot!.querySelector('network-nameservers')
+                    ?.getNameserverRadioButtons() ||
+              null);
       return false;
     }
 
@@ -529,8 +533,9 @@ export class SettingsInternetDetailPageElement extends
       this.proxyExpanded_ = true;
       this.afterRenderShowDeepLink_(
           settingId,
-          () => this.shadowRoot!.querySelector('network-proxy-section')!
-                    .getAllowSharedToggle());
+          () => this.shadowRoot!.querySelector('network-proxy-section')
+                    ?.getAllowSharedToggle() ||
+              null);
       return false;
     }
 
