@@ -795,6 +795,9 @@ inline constexpr char kIOSBWGPageContentSetting[] =
 inline constexpr char kIOSBWGPromoImpressionCount[] =
     "ios.bwg.promo_impressions";
 
+// A boolean specifying whether the Gemini camera permission setting is enabled.
+inline constexpr char kIOSGeminiCameraSetting[] = "ios.gemini.camera.setting";
+
 // Timestamp tracking the last interaction with the Gemini floaty.
 inline constexpr char kLastGeminiInteractionTimestamp[] =
     "ios.gemini.last_interaction_timestamp";

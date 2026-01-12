@@ -14,6 +14,12 @@
 @interface GeminiCameraViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
+// Used for sending model data updates to the mediator.
+@property(nonatomic, weak) id<BWGSettingsMutator> mutator;
+
+// Whether the camera is enabled.
+@property(nonatomic) BOOL cameraEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_GEMINI_CAMERA_VIEW_CONTROLLER_H_

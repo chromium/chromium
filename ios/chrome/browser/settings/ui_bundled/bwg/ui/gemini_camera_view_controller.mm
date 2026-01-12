@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -55,6 +56,8 @@ NSString* const kCameraCellId = @"CameraCellId";
       [[TableViewSwitchItem alloc] initWithType:kItemTypeCamera];
   _cameraSwitchItem.text =
       l10n_util::GetNSString(IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE);
+  _cameraSwitchItem.target = self;
+  _cameraSwitchItem.selector = @selector(cameraSwitchToggled:);
   _cameraSwitchItem.on = _cameraEnabled;
   _cameraSwitchItem.accessibilityIdentifier = kCameraCellId;
 
@@ -68,6 +71,22 @@ NSString* const kCameraCellId = @"CameraCellId";
       toSectionWithIdentifier:kSectionIdentifierCamera];
   [model setFooter:cameraFooterItem
       forSectionWithIdentifier:kSectionIdentifierCamera];
+}
+
+- (void)setCameraEnabled:(BOOL)enabled {
+  _cameraEnabled = enabled;
+  if ([self isViewLoaded]) {
+    _cameraSwitchItem.on = _cameraEnabled;
+    [self reconfigureCellsForItems:@[ _cameraSwitchItem ]];
+  }
+}
+
+#pragma mark - Private
+
+// Called from the Camera setting's UIControlEventValueChanged. Updates
+// underlying camera permission pref.
+- (void)cameraSwitchToggled:(UISwitch*)switchView {
+  [self.mutator setCameraPermissionPref:switchView.isOn];
 }
 
 #pragma mark - SettingsControllerProtocol

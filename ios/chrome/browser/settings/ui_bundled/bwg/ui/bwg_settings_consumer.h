@@ -15,6 +15,9 @@
 // Sets the Precise Location boolean.
 - (void)setPreciseLocationEnabled:(BOOL)enabled;
 
+// Sets the Camera Permission boolean.
+- (void)setCameraPermissionEnabled:(BOOL)enabled;
+
 // Sets the Page Content Sharing boolean.
 - (void)setPageContentSharingEnabled:(BOOL)enabled;
 

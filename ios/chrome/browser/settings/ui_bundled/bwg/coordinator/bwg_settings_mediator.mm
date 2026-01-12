@@ -31,6 +31,8 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
 @implementation BWGSettingsMediator {
   // Accessor for the location preference.
   PrefBackedBoolean* _preciseLocationPref;
+  // Accessor for the camera permission preference.
+  PrefBackedBoolean* _cameraPref;
   // Accessor for the page content preference.
   PrefBackedBoolean* _pageContentPref;
   // AuthenticationService
@@ -45,10 +47,17 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   if (self) {
     _authService = authService;
     _prefService = prefService;
+
     _preciseLocationPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kIOSBWGPreciseLocationSetting];
     _preciseLocationPref.observer = self;
+
+    _cameraPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::kIOSGeminiCameraSetting];
+    _cameraPref.observer = self;
+
     _pageContentPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kIOSBWGPageContentSetting];
@@ -63,6 +72,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _preciseLocationPref.observer = nil;
   _preciseLocationPref = nil;
 
+  [_cameraPref stop];
+  _cameraPref.observer = nil;
+  _cameraPref = nil;
+
   [_pageContentPref stop];
   _pageContentPref.observer = nil;
   _pageContentPref = nil;
@@ -75,6 +88,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
 
   _consumer = consumer;
   [_consumer setPreciseLocationEnabled:_preciseLocationPref.value];
+  [_consumer setCameraPermissionEnabled:_cameraPref.value];
   [_consumer setPageContentSharingEnabled:_pageContentPref.value];
 }
 
@@ -114,6 +128,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _prefService->SetBoolean(prefs::kIOSBWGPreciseLocationSetting, value);
 }
 
+- (void)setCameraPermissionPref:(BOOL)value {
+  _prefService->SetBoolean(prefs::kIOSGeminiCameraSetting, value);
+}
+
 - (void)setPageContentSharingPref:(BOOL)value {
   _prefService->SetBoolean(prefs::kIOSBWGPageContentSetting, value);
   ios::provider::BWGPageContextAttachmentState attachmentState =
@@ -125,8 +143,13 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self.consumer setPreciseLocationEnabled:_preciseLocationPref.value];
-  [self.consumer setPageContentSharingEnabled:_pageContentPref.value];
+  if (observableBoolean == _preciseLocationPref) {
+    [self.consumer setPreciseLocationEnabled:_preciseLocationPref.value];
+  } else if (observableBoolean == _cameraPref) {
+    [self.consumer setCameraPermissionEnabled:_cameraPref.value];
+  } else if (observableBoolean == _pageContentPref) {
+    [self.consumer setPageContentSharingEnabled:_pageContentPref.value];
+  }
 }
 
 @end

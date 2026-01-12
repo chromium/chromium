@@ -352,6 +352,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeCamera) {
     _cameraViewController = [[GeminiCameraViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
+    _cameraViewController.cameraEnabled = _cameraEnabled;
+    _cameraViewController.mutator = self.mutator;
     [self.navigationController pushViewController:_cameraViewController
                                          animated:YES];
   }
@@ -435,6 +437,19 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     _preciseLocationItem.trailingDetailText =
         [self preciseLocationTrailingDetailText];
     [self reconfigureCellsForItems:@[ _preciseLocationItem ]];
+  }
+}
+
+- (void)setCameraPermissionEnabled:(BOOL)enabled {
+  _cameraEnabled = enabled;
+
+  if (_cameraViewController) {
+    _cameraViewController.cameraEnabled = enabled;
+  }
+
+  if ([self isViewLoaded]) {
+    _cameraItem.trailingDetailText = [self cameraTrailingDetailText];
+    [self reconfigureCellsForItems:@[ _cameraItem ]];
   }
 }
 
