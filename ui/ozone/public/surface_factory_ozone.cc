@@ -126,9 +126,9 @@ void SurfaceFactoryOzone::SetDrmModifiersFilter(
   NOTIMPLEMENTED();
 }
 
-std::vector<gfx::BufferFormat>
-SurfaceFactoryOzone::GetSupportedFormatsForTexturing() const {
-  return std::vector<gfx::BufferFormat>();
+bool SurfaceFactoryOzone::IsFormatSupportedForTexturing(
+    viz::SharedImageFormat format) const {
+  return false;
 }
 
 std::vector<viz::SharedImageFormat>

@@ -51,8 +51,8 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
       viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle) override;
 
-  std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
-      const override;
+  bool IsFormatSupportedForTexturing(
+      viz::SharedImageFormat format) const override;
 
  private:
   std::unique_ptr<GLOzone> egl_implementation_;

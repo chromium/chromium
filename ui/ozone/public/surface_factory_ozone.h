@@ -200,12 +200,11 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   virtual void SetDrmModifiersFilter(
       std::unique_ptr<DrmModifiersFilter> filter);
 
-  // Enumerates the BufferFormats that the platform can allocate (and use for
-  // texturing) via CreateNativePixmap(), or returns empty if those could not be
-  // retrieved or the platform doesn't know in advance.
-  // Enumeration should not be assumed to take a trivial amount of time.
-  virtual std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
-      const;
+  // Checks if the platform can allocate (and use for texturing) via
+  // CreateNativePixmap() the provided `format`. Checks should not be assumed to
+  // take a trivial amount of time.
+  virtual bool IsFormatSupportedForTexturing(
+      viz::SharedImageFormat format) const;
 
   // Enumerates the SharedImageFormats that the platform can import via
   // CreateNativePixmapFromHandle() to use for GL, or returns empty if those
