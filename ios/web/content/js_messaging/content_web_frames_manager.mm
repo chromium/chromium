@@ -64,7 +64,8 @@ ContentWebFramesManager::ContentWebFramesManager(
   auto message_host_factory =
       std::make_unique<IOSWebMessageHostFactory>(web_message_callback);
   js_communication_host_->AddWebMessageHostFactory(
-      std::move(message_host_factory), u"webkitMessageHandler", {"*"});
+      std::move(message_host_factory), u"webkitMessageHandler", {"*"},
+      /* world_identifier= */ 0);
 
   std::vector<JavaScriptFeature*> java_script_features;
   java_script_features.push_back(GetSendWebKitMessageJavaScriptFeature());
