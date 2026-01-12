@@ -8104,11 +8104,6 @@ inline constexpr char kPulseaudioLoopbackForScreenShareName[] =
 inline constexpr char kPulseaudioLoopbackForScreenShareDescription[] =
     "Enable system audio sharing when screen sharing on Linux with pulseaudio.";
 
-inline constexpr char kWaylandLinuxDrmSyncobjName[] =
-    "Wayland linux-drm-syncobj explicit sync";
-inline constexpr char kWaylandLinuxDrmSyncobjDescription[] =
-    "Enable Wayland's explicit sync support using linux-drm-syncobj."
-    "Requires minimum kernel version v6.11.";
 
 inline constexpr char kWaylandPerWindowScalingName[] =
     "Wayland per-window scaling";

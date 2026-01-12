@@ -653,8 +653,7 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
              (UNSAFE_TODO(
                   strcmp(interface, "wp_linux_drm_syncobj_manager_v1")) == 0)) {
     if (enable_linux_drm_syncobj_for_testing_ ||
-        (base::FeatureList::IsEnabled(features::kWaylandLinuxDrmSyncobj) &&
-         MinSupportedKernelForLinuxDrmSyncobj())) {
+        MinSupportedKernelForLinuxDrmSyncobj()) {
       linux_drm_syncobj_manager_ = wl::Bind<wp_linux_drm_syncobj_manager_v1>(
           registry, name, std::min(version, kMaxLinuxDrmSyncobjVersion));
       if (!linux_drm_syncobj_manager_) {

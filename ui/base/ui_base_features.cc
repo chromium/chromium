@@ -106,8 +106,6 @@ bool AreF11AndF12ShortcutsEnabled() {
 #if BUILDFLAG(IS_OZONE)
 BASE_FEATURE(kOzoneBubblesUsePlatformWidgets, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether support for Wayland's linux-drm-syncobj is enabled.
-BASE_FEATURE(kWaylandLinuxDrmSyncobj, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether support for Wayland's per-surface scaling is enabled.
 BASE_FEATURE(kWaylandPerSurfaceScale,
