@@ -79,8 +79,6 @@ void SetUpOnNetworkThread(
 #endif
   *context = url_request_context_builder.Build();
 
-  // TODO(mattm): add command line flag to configure using
-  // CertNetFetcher
   *cert_net_fetcher = base::MakeRefCounted<net::CertNetFetcherURLRequest>();
   (*cert_net_fetcher)->SetURLRequestContext(context->get());
   initialization_complete_event->Signal();
@@ -403,6 +401,9 @@ const char kUsage[] =
     "      Dumps the verified chain to PEM files starting with\n"
     "      <file prefix>.\n"
     "\n"
+    " --no-net-fetcher\n"
+    "      If set, skips performing AIA fetches.\n"
+    "\n"
     "\n"
     "[1] A \"file containing certificates\" means a path to a file that can\n"
     "    either be:\n"
@@ -586,6 +587,10 @@ int main(int argc, char** argv) {
 
   std::vector<std::unique_ptr<CertVerifyImpl>> impls;
 
+  scoped_refptr<net::CertNetFetcher> passed_net_fetcher = cert_net_fetcher;
+  if (command_line.HasSwitch("no-net-fetcher")) {
+    passed_net_fetcher = nullptr;
+  }
   // Parse the ordered list of CertVerifyImpl passed via command line flags into
   // |impls|.
   std::string impls_str = command_line.GetSwitchValueASCII("impls");
@@ -601,8 +606,8 @@ int main(int argc, char** argv) {
       impls_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (const std::string& impl_name : impl_names) {
-    auto verify_impl = CreateCertVerifyImplFromName(impl_name, cert_net_fetcher,
-                                                    crl_set, root_store_type);
+    auto verify_impl = CreateCertVerifyImplFromName(
+        impl_name, passed_net_fetcher, crl_set, root_store_type);
     if (verify_impl)
       impls.push_back(std::move(verify_impl));
   }
