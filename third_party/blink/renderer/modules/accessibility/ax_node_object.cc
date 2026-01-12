@@ -3413,8 +3413,7 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
       CommandEventType command = command_for_element->GetCommandEventType(
           html_element->command(), html_element->GetExecutionContext());
       bool is_popover_command =
-          command_for_element->IsValidBuiltinPopoverCommand(*html_element,
-                                                            command);
+          command_for_element->IsValidBuiltinPopoverCommand(command);
       if (command_for_element && is_popover_command &&
           !element->IsDescendantOrShadowDescendantOf(command_for_element)) {
         return command_for_element->popoverOpen() ? kExpandedExpanded

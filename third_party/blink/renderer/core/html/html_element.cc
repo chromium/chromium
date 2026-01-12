@@ -2528,8 +2528,7 @@ bool HTMLElement::DispatchFocusEvent(
                                      source_capabilities);
 }
 
-bool HTMLElement::IsValidBuiltinPopoverCommand(HTMLElement& invoker,
-                                               CommandEventType command) {
+bool HTMLElement::IsValidBuiltinPopoverCommand(CommandEventType command) {
   return command == CommandEventType::kTogglePopover ||
          command == CommandEventType::kHidePopover ||
          command == CommandEventType::kShowPopover ||
@@ -2541,7 +2540,7 @@ bool HTMLElement::IsValidBuiltinPopoverCommand(HTMLElement& invoker,
 bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                         CommandEventType command) {
   return Element::IsValidBuiltinCommand(invoker, command) ||
-         IsValidBuiltinPopoverCommand(invoker, command) ||
+         IsValidBuiltinPopoverCommand(command) ||
          (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
           (command == CommandEventType::kToggleFullscreen ||
            command == CommandEventType::kRequestFullscreen ||
