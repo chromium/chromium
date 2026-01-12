@@ -704,11 +704,7 @@ void BackForwardCacheMetrics::SetRelatedActiveContentsInfo(
                                                  RenderFrameHost* rfh) {
     const SiteInfo& site_info = static_cast<RenderFrameHostImpl*>(rfh)
                                     ->last_committed_url_derived_site_info();
-    if (doc_count_in_page.contains(site_info)) {
-      doc_count_in_page[site_info]++;
-    } else {
-      doc_count_in_page[site_info] = 1;
-    }
+    ++doc_count_in_page[site_info];
   });
 
   // Determine if any document in the navigating page is potentially
