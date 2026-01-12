@@ -81,6 +81,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
       DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED,
       DownloadCheckResult::BLOCKED_SCAN_FAILED,
       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
+      DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
       DownloadCheckResult::POTENTIALLY_UNWANTED,
       DownloadCheckResult::SENSITIVE_CONTENT_WARNING,
       DownloadCheckResult::PROMPT_FOR_SCANNING,
@@ -133,6 +134,8 @@ enterprise_connectors::EventResult GetEventResult(
       return enterprise_connectors::EventResult::WARNED;
 
     case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+      return enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD;
+    case DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
       return enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD;
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
@@ -250,6 +253,8 @@ DownloadCheckResult ResponseToDownloadCheckResult(
   auto malware_action =
       enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED;
   auto dlp_action = enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED;
+  auto force_save_to_cloud_destination =
+      enterprise_connectors::TriggeredRule::UNSPECIFIED;
 
   for (const auto& result : response.results()) {
     if (result.tag() == "malware") {
@@ -272,6 +277,15 @@ DownloadCheckResult ResponseToDownloadCheckResult(
       for (const auto& rule : result.triggered_rules()) {
         dlp_action = enterprise_connectors::GetHighestPrecedenceAction(
             dlp_action, rule.action());
+
+        if (rule.has_force_save_to_cloud_destination()) {
+          DCHECK(rule.action() ==
+                 enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+          force_save_to_cloud_destination = enterprise_connectors::
+              GetHighestPrecedenceForceSaveToCloudDestination(
+                  force_save_to_cloud_destination,
+                  rule.force_save_to_cloud_destination());
+        }
       }
     }
   }
@@ -295,7 +309,14 @@ DownloadCheckResult ResponseToDownloadCheckResult(
   } else {
     switch (dlp_action) {
       case enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD:
-        return DownloadCheckResult::FORCE_SAVE_TO_GDRIVE;
+        switch (force_save_to_cloud_destination) {
+          case enterprise_connectors::TriggeredRule::CORP_G_DRIVE:
+            return DownloadCheckResult::FORCE_SAVE_TO_GDRIVE;
+          case enterprise_connectors::TriggeredRule::CORP_ONEDRIVE:
+            return DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE;
+          case enterprise_connectors::TriggeredRule::UNSPECIFIED:
+            NOTREACHED();
+        }
       case enterprise_connectors::TriggeredRule::BLOCK:
         return DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
       case enterprise_connectors::TriggeredRule::WARN:
@@ -683,9 +704,16 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
              enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     request_tokens_.push_back(response.request_token());
     download_result = ResponseToDownloadCheckResult(response);
-    if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE) {
-      if (!base::FeatureList::IsEnabled(
-              enterprise_data_protection::kEnableForceDownloadToCloud)) {
+
+    // Handle force save to cloud if the feature is enabled.
+    if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
+        download_result == DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
+      const auto& force_save_to_cloud_feature =
+          download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
+              ? enterprise_data_protection::kEnableForceDownloadToCloud
+              : enterprise_data_protection::kEnableForceDownloadToOneDrive;
+
+      if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
         download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
       } else if (web_contents()) {
         // `web_contents()` may be nullptr in several cases, if the tab owning
@@ -697,8 +725,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         // dialog callback.
         base::OnceClosure keep_closure = base::BindOnce(
             &DeepScanningRequest::ProcessEnterpriseDownloadResult,
-            weak_ptr_factory_.GetWeakPtr(),
-            DownloadCheckResult::FORCE_SAVE_TO_GDRIVE);
+            weak_ptr_factory_.GetWeakPtr(), download_result);
         base::OnceClosure discard_closure = base::BindOnce(
             &DeepScanningRequest::ProcessEnterpriseDownloadResult,
             weak_ptr_factory_.GetWeakPtr(),
@@ -785,8 +812,8 @@ void DeepScanningRequest::OnDownloadDestroyed(
 
   // We can't safely return a verdict for this download because it's already
   // been destroyed, so reset the callback here. We still need to run
-  // `FinishRequest` to notify the DownloadProtectionService that this deep scan
-  // has finished.
+  // `FinishRequest` to notify the DownloadProtectionService that this deep
+  // scan has finished.
   callback_.Reset();
 
   // `FinishRequest` always clears the `download_observation` and `metadata`,
@@ -876,17 +903,17 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
     DCHECK(IsEnterpriseTriggered());
 
     if (ReportOnlyScan()) {
-      // The event result in report-only will always match whatever danger type
-      // known before deep scanning since the UI will never be updated based on
-      // `result`.
+      // The event result in report-only will always match whatever danger
+      // type known before deep scanning since the UI will never be updated
+      // based on `result`.
       event_result = metadata_->GetPreScanEventResult(pre_scan_danger_type_);
     } else {
       Profile* profile =
           Profile::FromBrowserContext(metadata_->GetBrowserContext());
       // If FinishRequest is reached with an unknown `result` or an explicit
-      // failure, then it means no scanning request ever completed successfully,
-      // so `event_result` needs to reflect whatever danger type was known
-      // pre-deep scanning.
+      // failure, then it means no scanning request ever completed
+      // successfully, so `event_result` needs to reflect whatever danger type
+      // was known pre-deep scanning.
       event_result =
           (result == DownloadCheckResult::DEEP_SCANNED_FAILED ||
            result == DownloadCheckResult::UNKNOWN)
@@ -898,7 +925,8 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   }
 
   // If the deep-scanning result is unknown for whatever reason, `callback_`
-  // should be called with whatever SB result was known prior to deep scanning.
+  // should be called with whatever SB result was known prior to deep
+  // scanning.
   if ((result == DownloadCheckResult::UNKNOWN ||
        result == DownloadCheckResult::DEEP_SCANNED_FAILED) &&
       IsEnterpriseTriggered()) {

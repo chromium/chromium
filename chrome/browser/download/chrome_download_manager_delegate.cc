@@ -504,6 +504,8 @@ download::DownloadDangerType SavePackageDangerType(
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
     case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
       return download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE;
+    // TODO(crbug.com/458033434): Add a danger type for FORCE_SAVE_TO_ONEDRIVE.
+    case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
       return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
     case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
@@ -1769,6 +1771,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
         danger_type = download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING;
         break;
+
+      // TODO(eliashomsi): Add a new danger type for FORCE_SAVE_TO_ONEDRIVE.
+      case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
       case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
         danger_type = download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
         break;
@@ -1931,6 +1936,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
     case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+    case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
       enterprise_connectors::RunSavePackageScanningCallback(item,
                                                             /*allowed*/ false);
       break;

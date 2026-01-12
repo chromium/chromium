@@ -79,6 +79,7 @@ bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+    case DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
     case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
     case DownloadCheckResult::BLOCKED_SCAN_FAILED:
       return false;
