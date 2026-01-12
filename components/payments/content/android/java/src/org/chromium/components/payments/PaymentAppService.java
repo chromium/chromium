@@ -24,10 +24,8 @@ public class PaymentAppService {
      */
     public static final String GOOGLE_PAY_INTERNAL_APP_IDENTITY = "Google_Pay_Internal";
 
-    private static final String UNTRACKED_FACTORY_ID_PREFIX = "Untracked factory - ";
     private static @Nullable PaymentAppService sInstance;
     private final Map<String, PaymentAppFactoryInterface> mFactories = new HashMap<>();
-    private int mIdMax;
 
     /** @return The singleton instance of this class. */
     public static PaymentAppService getInstance() {
@@ -38,16 +36,6 @@ public class PaymentAppService {
     }
 
     private PaymentAppService() {}
-
-    // TODO(crbug.com/40727972): Remove this method after tests and clank switch to use
-    // addUniqueFactory.
-    /**
-     * @param factory The factory to add.
-     */
-    public void addFactory(PaymentAppFactoryInterface factory) {
-        String id = UNTRACKED_FACTORY_ID_PREFIX + mIdMax++;
-        mFactories.put(id, factory);
-    }
 
     /** Resets the instance, used by //clank tests. */
     public void resetForTest() {
@@ -129,7 +117,8 @@ public class PaymentAppService {
      */
     public void addUniqueFactory(@Nullable PaymentAppFactoryInterface factory, String factoryId) {
         if (factory == null) return;
-        assert !factoryId.startsWith(UNTRACKED_FACTORY_ID_PREFIX);
+        // TODO(crbug.com/474398434): We should be able to assert that the factory does not already
+        // exist here, but too many tests (especially under batching) reuse the same factoryId.
         if (mFactories.containsKey(factoryId)) return;
         mFactories.put(factoryId, factory);
     }

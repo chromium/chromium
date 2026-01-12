@@ -66,7 +66,7 @@ public class PaymentRequestPaymentAppsSortingTest {
         TestPay appB = new TestPay("https://bobpay.test", AppSpeed.FAST_APP);
         TestPay appC = new TestPay("https://charliepay.test", AppSpeed.FAST_APP);
         PaymentAppService.getInstance()
-                .addFactory(
+                .addUniqueFactory(
                         new PaymentAppFactoryInterface() {
                             @Override
                             public void create(PaymentAppFactoryDelegate delegate) {
@@ -76,7 +76,8 @@ public class PaymentRequestPaymentAppsSortingTest {
                                 delegate.onPaymentAppCreated(appC);
                                 delegate.onDoneCreatingPaymentApps(/* factory= */ this);
                             }
-                        });
+                        },
+                        "testFactoryId");
         String alicePayId = appA.getIdentifier();
         String bobPayId = appB.getIdentifier();
         String charliePayId = appC.getIdentifier();

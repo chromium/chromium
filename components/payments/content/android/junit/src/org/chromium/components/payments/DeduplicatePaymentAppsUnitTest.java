@@ -34,7 +34,7 @@ public class DeduplicatePaymentAppsUnitTest {
 
     @Before
     public void setUp() {
-        mService.addFactory(mFactory);
+        mService.addUniqueFactory(mFactory, "testFactoryId");
     }
 
     @After
