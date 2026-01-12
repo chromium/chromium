@@ -119,7 +119,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
             copied.is_allowed_to_access_secure_cookies);
 }
 
-TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
+TEST(CookieManagerTraitsTest, Roundtrips_CookieWithAccessResult) {
   auto original_cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
       base::Time(),
