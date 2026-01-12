@@ -4652,8 +4652,8 @@
       name: "SecurePaymentConfirmationBrowserBoundKeys",
       status: {
         "Android": "stable",
-        "Mac": "experimental",
-        "Win": "experimental",
+        "Mac": "stable",
+        "Win": "stable",
         "iOS": "",
         "default": "test",
       },
