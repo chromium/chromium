@@ -12,6 +12,7 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './signin_error_dialog.css.js';
 import {getHtml} from './signin_error_dialog.html.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import type {ManageProfilesBrowserProxy} from './manage_profiles_browser_proxy.js';
@@ -28,6 +29,10 @@ const SigninErrorDialogElementBase = WebUiListenerMixinLit(I18nMixinLit(CrLitEle
 export class SigninErrorDialogElement extends SigninErrorDialogElementBase {
   static get is() {
     return 'signin-error-dialog';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {

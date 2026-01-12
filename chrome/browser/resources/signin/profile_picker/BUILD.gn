@@ -47,6 +47,7 @@ build_webui("build") {
     "profile_picker_main_view.css",
     "profile_picker_shared.css",
     "profile_switch.css",
+    "signin_error_dialog.css",
   ]
 
   ts_composite = true

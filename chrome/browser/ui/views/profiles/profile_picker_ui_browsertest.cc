@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/thread_annotations.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -19,6 +23,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -35,6 +41,8 @@
 // Tests for the chrome://profile-picker/ WebUI page. They live here
 // and not in the webui directory because they manipulate views.
 namespace {
+constexpr char kEmail[] = "joe@gmail.com";
+
 struct ProfilePickerTestParam {
   PixelTestParam pixel_test_param;
   bool use_multiple_profiles = false;
@@ -47,6 +55,8 @@ struct ProfilePickerTestParam {
   bool is_profile_picker_first_run = true;
   bool open_all_profiles_experiment_enabled = false;
   std::string text_variation_feature_param;
+  std::optional<ForceSigninUIError::Type> signin_error_dialog_type;
+  bool error_with_signin_button = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -144,6 +154,18 @@ const ProfilePickerTestParam kTestParams[] = {
                               "OpenAllProfilesExperimentButtonShown"},
      .use_multiple_profiles = true,
      .open_all_profiles_experiment_enabled = true},
+    {.pixel_test_param = {.test_suffix = "SigninErrorDialogPattern"},
+     .signin_error_dialog_type =
+         ForceSigninUIError::Type::kSigninPatternNotMatching},
+    {.pixel_test_param = {.test_suffix = "SigninErrorDialogReauthNotAllowed",
+                          .use_dark_theme = true},
+     .signin_error_dialog_type = ForceSigninUIError::Type::kReauthNotAllowed},
+    {.pixel_test_param = {.test_suffix = "SigninErrorDialogReauthWrongAccountRTL", .use_right_to_left_language = true},
+     .signin_error_dialog_type = ForceSigninUIError::Type::kReauthWrongAccount,
+     .error_with_signin_button = true},
+    {.pixel_test_param = {.test_suffix = "SigninErrorDialogReauthWrongAccount"},
+     .signin_error_dialog_type = ForceSigninUIError::Type::kReauthWrongAccount,
+     .error_with_signin_button = true},
 };
 
 enum class ProfileStatus {
@@ -258,6 +280,23 @@ class ProfilePickerUIPixelTest
     }
   }
 
+  ForceSigninUIError GetForceSigninUIError() {
+    switch (GetParam().signin_error_dialog_type.value()) {
+      case ForceSigninUIError::Type::kNone:
+        NOTREACHED();
+      case ForceSigninUIError::Type::kReauthNotAllowed:
+        return ForceSigninUIError::ReauthNotAllowed();
+      case ForceSigninUIError::Type::kReauthWrongAccount:
+        return ForceSigninUIError::ReauthWrongAccount(kEmail);
+      case ForceSigninUIError::Type::kReauthTimeout:
+        return ForceSigninUIError::ReauthTimeout();
+      case ForceSigninUIError::Type::kSigninPatternNotMatching:
+        return ForceSigninUIError::SigninPatternNotMatching(kEmail);
+      case ForceSigninUIError::Type::kReauthNotSupportedByGlicFlow:
+        return ForceSigninUIError::ReauthNotSupportedByGlicFlow();
+    }
+  }
+
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
@@ -339,6 +378,23 @@ class ProfilePickerUIPixelTest
             }));
     profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
     observer.Wait();
+
+    if (GetParam().signin_error_dialog_type.has_value()) {
+      content::WebContents* web_contents =
+          profile_picker_view_->GetPickerContents();
+      CHECK(web_contents);
+      ProfilePickerUI* web_ui =
+          web_contents->GetWebUI()->GetController()->GetAs<ProfilePickerUI>();
+
+      const ForceSigninUIError& error = GetForceSigninUIError();
+      if (!GetParam().error_with_signin_button) {
+        web_ui->ShowForceSigninErrorDialog(error);
+      } else {
+        web_ui->GetProfilePickerHandlerForTesting()
+            ->DisplayForceSigninErrorDialog(
+                base::FilePath(FILE_PATH_LITERAL("path")), error);
+      }
+    }
   }
 
   bool VerifyUi() override {
