@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_SITE_POLICY_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -55,7 +56,7 @@ enum class EnterprisePolicyBlockReason {
 };
 
 using EnterprisePolicyCallback =
-    base::OnceCallback<EnterprisePolicyBlockReason(const GURL&)>;
+    base::FunctionRef<EnterprisePolicyBlockReason(const GURL&)>;
 
 // Checks whether the actor may perform actions on the given tab based on the
 // last committed document and URL. Invokes the callback with true if it is
@@ -66,7 +67,7 @@ using EnterprisePolicyCallback =
 // task starts. However, any future URLs the actor navigates to should undergo
 // blocklist checks in `MayActOnUrl` or
 // `ShouldBlockNavigationUrlForOriginGating`.
-// `enterprise_policy_eval_url` returns the evaluation of the URL based on
+// `enterprise_policy_eval_url` is invoked to evaluate the URL based on
 // enterprise policy allow/blocklists.
 // Please use ActorPolicyChecker instead of calling this directly.
 void MayActOnTab(const tabs::TabInterface& tab,

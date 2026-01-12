@@ -219,7 +219,7 @@ void MayActOnUrlInternal(const GURL& url,
   }
 
   const EnterprisePolicyBlockReason enterprise_reason =
-      std::move(enterprise_policy_eval_url).Run(url);
+      enterprise_policy_eval_url(url);
   switch (enterprise_reason) {
     case EnterprisePolicyBlockReason::kNotBlocked:
       break;
@@ -336,8 +336,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
   MayActOnUrlInternal(
       url, /*allow_insecure_http=*/false,
       Profile::FromBrowserContext(web_contents.GetBrowserContext()),
-      origin_checker, std::move(enterprise_policy_eval_url),
-      std::move(decision_wrapper));
+      origin_checker, enterprise_policy_eval_url, std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
@@ -351,8 +350,7 @@ void MayActOnUrl(const GURL& url,
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
   MayActOnUrlInternal(url, allow_insecure_http, profile, std::nullopt,
-                      std::move(enterprise_policy_eval_url),
-                      std::move(decision_wrapper));
+                      enterprise_policy_eval_url, std::move(decision_wrapper));
 }
 
 bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,

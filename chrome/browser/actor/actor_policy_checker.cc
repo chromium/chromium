@@ -337,11 +337,9 @@ void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
                                   MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
-  // SafeRef as enterprise policy checks are performed synchronously.
   ::actor::MayActOnTab(
       tab, journal, task_id, origin_checker,
-      base::BindOnce(&ActorPolicyChecker::EvaluateEnterprisePolicyForUrl,
-                     weak_ptr_factory_.GetSafeRef()),
+      [this](const GURL& url) { return EvaluateEnterprisePolicyForUrl(url); },
       std::move(callback));
 }
 
@@ -362,11 +360,9 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                   MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
-  // SafeRef as enterprise policy checks are performed synchronously.
   ::actor::MayActOnUrl(
       url, allow_insecure_http, profile, journal, task_id,
-      base::BindOnce(&ActorPolicyChecker::EvaluateEnterprisePolicyForUrl,
-                     weak_ptr_factory_.GetSafeRef()),
+      [this](const GURL& url) { return EvaluateEnterprisePolicyForUrl(url); },
       std::move(callback));
 }
 

@@ -90,15 +90,7 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
 
   void CheckUrl(const GURL& url,
                 bool expected_allowed,
-                absl::flat_hash_set<url::Origin> allowed_origins =
-                    absl::flat_hash_set<url::Origin>(),
-                EnterprisePolicyCallback enterprise_policy_eval_url =
-                    base::NullCallback()) {
-    if (!enterprise_policy_eval_url) {
-      enterprise_policy_eval_url = base::BindOnce(
-          [](const GURL&) { return EnterprisePolicyBlockReason::kNotBlocked; });
-    }
-
+                EnterprisePolicyCallback enterprise_policy_eval_url) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
 
@@ -108,11 +100,17 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
     auto* actor_service = ActorKeyedService::Get(profile());
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     MayActOnTab(tab, actor_service->GetJournal(), TaskId(), OriginChecker(),
-                std::move(enterprise_policy_eval_url), allowed.GetCallback());
+                enterprise_policy_eval_url, allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,
               allowed.Get() == MayActOnUrlBlockReason::kAllowed);
+  }
+
+  void CheckUrl(const GURL& url, bool expected_allowed) {
+    return CheckUrl(url, expected_allowed, [](const GURL&) {
+      return EnterprisePolicyBlockReason::kNotBlocked;
+    });
   }
 
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -168,11 +166,12 @@ TEST_F(ActorSitePolicyTest, BlockInsecureHTTP) {
 
 TEST_F(ActorSitePolicyTest, InsecureHTTPAllowedWhenSpecified) {
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-  auto enterprise_policy_eval_url = base::BindOnce(
-      [](const GURL&) { return EnterprisePolicyBlockReason::kNotBlocked; });
+  auto enterprise_policy_eval_url = [](const GURL&) {
+    return EnterprisePolicyBlockReason::kNotBlocked;
+  };
   MayActOnUrl(GURL("http://a.test/"), /*allow_insecure_http=*/true, profile(),
               ActorKeyedService::Get(profile())->GetJournal(), TaskId(),
-              std::move(enterprise_policy_eval_url), allowed.GetCallback());
+              enterprise_policy_eval_url, allowed.GetCallback());
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
@@ -215,8 +214,6 @@ TEST_F(ActorSitePolicyTest, BlockIfInBlocklistForOriginGating) {
 
 TEST_F(ActorSitePolicyTest, AllowedOriginsFromNavigationGating) {
   const GURL url("https://c.test/");
-  const absl::flat_hash_set<url::Origin> allowed_origins = {
-      url::Origin::Create(GURL("https://c.test/"))};
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
@@ -229,7 +226,7 @@ TEST_F(ActorSitePolicyTest, AllowedOriginsFromNavigationGating) {
           optimization_guide::OptimizationMetadata{}));
 
   {
-    CheckUrl(url, false, allowed_origins);
+    CheckUrl(url, false);
   }
 
   {
@@ -238,7 +235,7 @@ TEST_F(ActorSitePolicyTest, AllowedOriginsFromNavigationGating) {
         {{kGlicActionAllowlist, CreateFieldTrialParams()},
          {kGlicCrossOriginNavigationGating, base::FieldTrialParams()}},
         {});
-    CheckUrl(url, true, allowed_origins);
+    CheckUrl(url, true);
   }
 }
 
@@ -260,8 +257,7 @@ TEST_F(ActorSitePolicyTest, EnterprisePolicyBlock) {
   auto enterprise_policy_block_everything = [](const GURL&) {
     return EnterprisePolicyBlockReason::kExplicitlyBlocked;
   };
-  CheckUrl(url, false, /*allowed_origins=*/{},
-           base::BindOnce(enterprise_policy_block_everything));
+  CheckUrl(url, false, enterprise_policy_block_everything);
 }
 
 TEST_F(ActorSitePolicyTest, EnterprisePolicyOrder) {
@@ -276,12 +272,10 @@ TEST_F(ActorSitePolicyTest, EnterprisePolicyOrder) {
     return EnterprisePolicyBlockReason::kExplicitlyAllowed;
   };
   // Enterprise policy overrules the opt guide blocklist for a particular site.
-  CheckUrl(https_blocked_url, true, /*allowed_origins=*/{},
-           base::BindOnce(enterprise_policy_allow_everything));
+  CheckUrl(https_blocked_url, true, enterprise_policy_allow_everything);
   // Enterprise policy can't be used to bypass invariants like supported
   // schemes.
-  CheckUrl(GURL("file:///my_file"), false, /*allowed_origins=*/{},
-           base::BindOnce(enterprise_policy_allow_everything));
+  CheckUrl(GURL("file:///my_file"), false, enterprise_policy_allow_everything);
 }
 
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {
