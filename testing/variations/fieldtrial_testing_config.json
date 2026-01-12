@@ -7165,8 +7165,7 @@
                     },
                     "enable_features": [
                         "ContextualTasks",
-                        "HappinessTrackingSurveysForDesktopNextPanel",
-                        "TabbedBrowserUseNewLayout"
+                        "HappinessTrackingSurveysForDesktopNextPanel"
                     ]
                 }
             ]
