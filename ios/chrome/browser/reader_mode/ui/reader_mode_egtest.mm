@@ -177,9 +177,12 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   }
   if ([self isRunningTest:@selector(testOmniboxEntryPointDisabled)]) {
     config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPoint);
+    config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPointInUS);
   } else {
     config.features_enabled_and_params.push_back(
         {kEnableReaderModeOmniboxEntryPoint, {}});
+    config.features_enabled_and_params.push_back(
+        {kEnableReaderModeOmniboxEntryPointInUS, {}});
   }
   return config;
 }

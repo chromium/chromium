@@ -831,6 +831,9 @@ extern const char kReaderModeDescription[];
 extern const char kReaderModeNewCssName[];
 extern const char kReaderModeNewCssDescription[];
 
+extern const char kReaderModeOmniboxEntrypointInUSName[];
+extern const char kReaderModeOmniboxEntrypointInUSDescription[];
+
 extern const char kReaderModeOmniboxEntrypointName[];
 extern const char kReaderModeOmniboxEntrypointDescription[];
 
