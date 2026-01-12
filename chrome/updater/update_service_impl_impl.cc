@@ -41,6 +41,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/global_constants.h"
+#include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/branded_constants.h"
@@ -69,6 +70,7 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <sys/mount.h>
@@ -1571,9 +1573,29 @@ void UpdateServiceImplImpl::GetUpdaterState(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/456497861): populate `UpdaterState`.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), UpdaterState()));
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce([]() {
+            std::vector<std::string> inactive_versions;
+            for (const base::FilePath& version_executable_path :
+                 GetVersionExecutablePaths(GetUpdaterScope())) {
+              inactive_versions.push_back(update_client::StringTypeToUTF8(
+                  version_executable_path.DirName().BaseName().value()));
+            }
+            return inactive_versions;
+          }),
+          base::BindOnce(
+              [](scoped_refptr<PersistedData> persisted_data,
+                 base::OnceCallback<void(const UpdaterState&)> callback,
+                 const std::vector<std::string>& inactive_versions) {
+                std::move(callback).Run(
+                    UpdaterState(kUpdaterVersion, inactive_versions,
+                                 persisted_data->GetLastChecked(),
+                                 persisted_data->GetLastStarted()));
+              },
+              config_->GetUpdaterPersistedData(), std::move(callback)));
 }
 
 void UpdateServiceImplImpl::GetUpdaterPolicies(
@@ -1582,10 +1604,10 @@ void UpdateServiceImplImpl::GetUpdaterPolicies(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/456497861): populate the vector of `PolicyValues`.
   main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                base::flat_map<std::string, PolicyValue>()));
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     config_->GetPolicyService()->GetUpdaterPolicies()));
 }
 
 void UpdateServiceImplImpl::GetAppPolicies(
@@ -1596,13 +1618,9 @@ void UpdateServiceImplImpl::GetAppPolicies(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/456497861): populate the vector of `PolicyValues`.
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          base::flat_map<std::string,
-                         base::flat_map<std::string, PolicyValue>>()));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                config_->GetPolicyService()->GetAppPolicies()));
 }
 
 bool UpdateServiceImplImpl::IsUpdateDisabledByPolicy(const std::string& app_id,

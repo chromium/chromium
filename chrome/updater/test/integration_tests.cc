@@ -1582,6 +1582,84 @@ TEST_F(IntegrationTest, CheckForUpdateAndInstallAppViaMojo) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+TEST_F(IntegrationTest, GetUpdaterState) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  {
+    scoped_refptr<UpdateService> update_service =
+#if BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxyMojo(GetUpdaterScopeForTesting());
+#else   // BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
+#endif  // BUILDFLAG(IS_WIN)
+    base::RunLoop loop;
+    update_service->GetUpdaterState(base::BindLambdaForTesting(
+        [&](const UpdateService::UpdaterState& result) {
+          // TODO(crbug.com/456497861): add more comprehensive tests after
+          // adding older versions.
+          EXPECT_EQ(result.active_version, kUpdaterVersion);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, GetUpdaterPolicies) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  {
+    scoped_refptr<UpdateService> update_service =
+#if BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxyMojo(GetUpdaterScopeForTesting());
+#else   // BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
+#endif  // BUILDFLAG(IS_WIN)
+    base::RunLoop loop;
+    update_service->GetUpdaterPolicies(base::BindLambdaForTesting(
+        [&](const base::flat_map<std::string, UpdateService::PolicyValue>&
+                result) {
+          // TODO(crbug.com/456497861): add more comprehensive tests after
+          // integrating dict policies.
+          EXPECT_GT(result.size(), 0u);
+          EXPECT_GT(result.at("LastCheckPeriod").policy_value.length(), 0u);
+          EXPECT_EQ(result.at("LastCheckPeriod").policy_source,
+                    UpdateService::PolicyValue::PolicySource::kSourceDefault);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, GetAppPolicies) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  {
+    scoped_refptr<UpdateService> update_service =
+#if BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxyMojo(GetUpdaterScopeForTesting());
+#else   // BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
+#endif  // BUILDFLAG(IS_WIN)
+    base::RunLoop loop;
+    update_service->GetAppPolicies(base::BindLambdaForTesting(
+        [&](const base::flat_map<
+            std::string,
+            base::flat_map<std::string, UpdateService::PolicyValue>>& result) {
+          // TODO(crbug.com/456497861): add more comprehensive tests after
+          // integrating dict policies.
+          EXPECT_GE(result.size(), 0u);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, UpdateBadHash) {
   ASSERT_NO_FATAL_FAILURE(Install());
   const std::string kAppId("test");
