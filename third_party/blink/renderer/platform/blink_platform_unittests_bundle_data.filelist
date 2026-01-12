@@ -146,7 +146,6 @@
 ../../web_tests/external/wpt/jpegxl/resources/3x3_srgb_lossy.jxl
 ../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossless.jxl
 ../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossy.jxl
-../../web_tests/external/wpt/jpegxl/resources/5_frames_numbered.jxl
 ../../web_tests/images/bmp-suite/bad/badbitcount.bmp
 ../../web_tests/images/bmp-suite/bad/badbitssize.bmp
 ../../web_tests/images/bmp-suite/bad/baddens1.bmp
@@ -250,6 +249,7 @@
 ../../web_tests/images/resources/57.jpg
 ../../web_tests/images/resources/58.jpg
 ../../web_tests/images/resources/59.jpg
+../../web_tests/images/resources/5_frames_numbered.jxl
 ../../web_tests/images/resources/8bit.ico
 ../../web_tests/images/resources/animated-10color-fast.gif
 ../../web_tests/images/resources/animated-10color.gif

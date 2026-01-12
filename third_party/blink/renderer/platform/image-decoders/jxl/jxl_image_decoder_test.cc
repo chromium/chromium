@@ -334,7 +334,7 @@ TEST_F(JXLImageDecoderTest, DISABLED_JpegRecompression) {
 TEST_F(JXLImageDecoderTest, AnimationFrameCount) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
@@ -360,7 +360,7 @@ TEST_F(JXLImageDecoderTest, AnimationFrameCount) {
 TEST_F(JXLImageDecoderTest, AnimationDecodeAllFrames) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
@@ -385,7 +385,7 @@ TEST_F(JXLImageDecoderTest, AnimationDecodeAllFrames) {
 TEST_F(JXLImageDecoderTest, AnimationFrameDuration) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
@@ -423,7 +423,7 @@ TEST_F(JXLImageDecoderTest, AnimationFrameDuration) {
 TEST_F(JXLImageDecoderTest, AnimationRepetitionCount) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
@@ -442,7 +442,7 @@ TEST_F(JXLImageDecoderTest, AnimationRepetitionCount) {
 TEST_F(JXLImageDecoderTest, AnimationRandomFrameAccess) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
@@ -473,7 +473,7 @@ TEST_F(JXLImageDecoderTest, AnimationRandomFrameAccess) {
 TEST_F(JXLImageDecoderTest, AnimationRepeatedFrameDecode) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
@@ -500,7 +500,7 @@ TEST_F(JXLImageDecoderTest, AnimationRepeatedFrameDecode) {
 TEST_F(JXLImageDecoderTest, FrameDurationAvailableAfterFrameCount) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(data);
 
   // Set all data at once (simulates fully loaded file)
@@ -542,7 +542,7 @@ TEST_F(JXLImageDecoderTest, FrameDurationAvailableAfterFrameCount) {
 // arrives in chunks.
 TEST_F(JXLImageDecoderTest, FrameDurationCorrectDuringIncrementalLoad) {
   scoped_refptr<SharedBuffer> full_data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(full_data);
   Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
 
@@ -776,7 +776,7 @@ TEST_F(JXLImageDecoderTest, DecoderPreservedDuringIncrementalLoad) {
 // frame count, allowing the browser to be responsive during loading.
 TEST_F(JXLImageDecoderTest, IncrementalLoadDoesNotBlockOnAllFrames) {
   scoped_refptr<SharedBuffer> full_data =
-      ReadFileToSharedBuffer(kJxlTestDir, "5_frames_numbered.jxl");
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
   ASSERT_TRUE(full_data);
   Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
 
