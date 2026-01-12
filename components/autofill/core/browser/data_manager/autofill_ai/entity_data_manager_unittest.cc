@@ -251,7 +251,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
   EntityInstance pp =
       test::GetPassportEntityInstance({.use_date = base::Time::FromTimeT(0)});
   entity_data_manager().AddOrUpdateEntityInstance(pp);
-  EXPECT_EQ(pp.use_count(), 0u);
+  EXPECT_EQ(pp.use_count(), 0);
   EXPECT_EQ(pp.use_date(), base::Time::FromTimeT(0));
 
   base::Time use_date = base::Time::Now();
@@ -261,7 +261,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
   auto check_metadata = [&](const EntityInstance::EntityId& guid) {
     base::optional_ref<const EntityInstance> entity = GetInstance(guid);
     ASSERT_TRUE(entity);
-    EXPECT_EQ(entity->use_count(), 1u);
+    EXPECT_EQ(entity->use_count(), 1);
     EXPECT_EQ(entity->use_date(), use_date);
   };
   check_metadata(pp.guid());

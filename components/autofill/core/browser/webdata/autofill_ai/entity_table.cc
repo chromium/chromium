@@ -508,7 +508,7 @@ std::optional<EntityInstance::EntityMetadata> EntityTable::GetEntityMetadata(
   }
 
   EntityInstance::EntityId entity_guid(s.ColumnString(0));
-  size_t use_count = s.ColumnInt64(1);
+  int64_t use_count = s.ColumnInt64(1);
   base::Time use_date = s.ColumnTime(2);
   base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
 
@@ -549,7 +549,7 @@ EntityTable::LoadMetadata() const {
 
   while (s.Step()) {
     EntityInstance::EntityId entity_guid(s.ColumnString(0));
-    size_t use_count = s.ColumnInt64(1);
+    int64_t use_count = s.ColumnInt64(1);
     base::Time use_date = s.ColumnTime(2);
     base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
     metadata_records[entity_guid] =
@@ -687,7 +687,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     EntityInstance::EntityId guid,
     std::string nickname,
     base::Time date_modified,
-    int use_count,
+    int64_t use_count,
     base::Time use_date,
     std::underlying_type_t<EntityInstance::RecordType> underlying_record_type,
     std::map<std::string, std::vector<AttributeRecord>> attribute_records,

@@ -382,7 +382,7 @@ EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
       .guid = EntityInstance::EntityId(specifics.valuable_id()),
       .date_modified = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(specifics.last_modified_date_unix_epoch_micros())),
-      .use_count = static_cast<size_t>(specifics.use_count()),
+      .use_count = specifics.use_count(),
       .use_date = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(specifics.last_used_date_unix_epoch_micros()))};
 }

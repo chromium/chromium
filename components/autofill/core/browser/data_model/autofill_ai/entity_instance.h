@@ -205,7 +205,7 @@ class EntityInstance final {
   struct EntityMetadata {
     EntityInstance::EntityId guid;
     base::Time date_modified;
-    size_t use_count;
+    int64_t use_count = 0;
     base::Time use_date;
 
     friend bool operator==(const EntityMetadata&,
@@ -238,7 +238,7 @@ class EntityInstance final {
                  EntityId guid,
                  std::string nickname,
                  base::Time date_modified,
-                 size_t use_count,
+                 int64_t use_count,
                  base::Time use_date,
                  RecordType record_type,
                  AreAttributesReadOnly are_attributes_read_only,
@@ -311,7 +311,7 @@ class EntityInstance final {
   base::Time use_date() const { return entity_metadata_.use_date; }
 
   // Returns how many times an entity was used to fill a form.
-  size_t use_count() const { return entity_metadata_.use_count; }
+  int64_t use_count() const { return entity_metadata_.use_count; }
 
   // Returns the metadata for this instance.
   const EntityMetadata& metadata() const { return entity_metadata_; }

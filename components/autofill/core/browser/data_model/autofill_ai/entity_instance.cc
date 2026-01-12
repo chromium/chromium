@@ -275,7 +275,7 @@ EntityInstance::EntityInstance(
     EntityId guid,
     std::string nickname,
     base::Time date_modified,
-    size_t use_count,
+    int64_t use_count,
     base::Time use_date,
     RecordType record_type,
     AreAttributesReadOnly are_attributes_read_only,
