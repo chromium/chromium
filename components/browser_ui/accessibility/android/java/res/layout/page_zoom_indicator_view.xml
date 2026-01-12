@@ -29,11 +29,9 @@ found in the LICENSE file.
         android:id="@+id/zoom_out_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/zoom_buttons_margin_outwards"
         android:layout_marginEnd="@dimen/zoom_buttons_margin_inwards"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
-        android:padding="@dimen/symbol_padding"
         android:src="@drawable/ic_remove"
         android:gravity="center"
         app:tint="@color/default_icon_color_tint_list" />
@@ -46,7 +44,6 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/zoom_buttons_margin_outwards"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/page_zoom_increase_zoom_button_text"
-        android:padding="@dimen/symbol_padding"
         android:src="@drawable/ic_add_24dp"
         android:gravity="center"
         app:tint="@color/default_icon_color_tint_list" />
