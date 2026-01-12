@@ -268,8 +268,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             return PromoState.SIGNIN;
         }
         // Don't show the promo if account image is not available yet.
-        return identityManager.findExtendedAccountInfoByEmailAddress(visibleAccount.getEmail())
-                        == null
+        return identityManager.findExtendedAccountInfoByAccountId(visibleAccount.getId()) == null
                 ? PromoState.NONE
                 : PromoState.SIGNIN;
     }

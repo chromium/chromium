@@ -207,8 +207,7 @@ public class SigninPromoMediatorTest {
     public void testModelValuesNtp_accountAvailableOnDevice() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(
-                        TestAccounts.ACCOUNT1.getEmail()))
+        when(mIdentityManager.findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId()))
                 .thenReturn(TestAccounts.ACCOUNT1);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);

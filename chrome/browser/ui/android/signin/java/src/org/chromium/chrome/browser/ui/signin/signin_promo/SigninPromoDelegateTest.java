@@ -396,7 +396,7 @@ public class SigninPromoDelegateTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
-                .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
+                .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
 
         assertTrue(mDelegate.canShowPromo());
@@ -547,7 +547,7 @@ public class SigninPromoDelegateTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
-                .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
+                .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
         assertTrue(mDelegate.canShowPromo());
 
@@ -574,7 +574,7 @@ public class SigninPromoDelegateTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
-                .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
+                .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
         assertTrue(mDelegate.canShowPromo());
 
