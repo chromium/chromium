@@ -32,9 +32,8 @@ class MetricTest(unittest.TestCase):
     m.register(Count("c"))
     m.tag("t1", "t2")
     m.tag("t3")
-    self.assertEqual(len(m.dump().metrics), 4)
-    self.assertEqual(set([i.name for i in m.dump().metrics]),
-                     set(["c", "c@t1", "c@t2", "c@t3"]))
+    self.assertEqual(len(m.dump().metrics), 1)
+    self.assertEqual(m.dump().metrics[0].tag, "|t1|t2|t3|")
 
 
 

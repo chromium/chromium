@@ -88,6 +88,7 @@ def main():
     if runner_args.target_id:
         runner_args.device = True
 
+    monitors.tag('fuchsia')
     with ExitStack() as stack:
         if runner_args.logs_dir:
             # TODO(crbug.com/343242386): Find a way to upload metric output when
