@@ -177,6 +177,7 @@ BASE_DECLARE_FEATURE(kIncognitoThemeOverlayTesting);
 BASE_DECLARE_FEATURE(kInstanceSwitcherV2);
 BASE_DECLARE_FEATURE(kKeyboardEscBackNavigation);
 BASE_DECLARE_FEATURE(kLanguagesPreference);
+BASE_DECLARE_FEATURE(kLaunchCauseScreenOffFix);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLinkHoverStatusBar);
 BASE_DECLARE_FEATURE(kLoadAllTabsAtStartup);

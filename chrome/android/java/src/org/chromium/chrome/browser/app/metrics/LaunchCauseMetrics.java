@@ -22,6 +22,7 @@ import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.lang.annotation.Retention;
@@ -46,6 +47,7 @@ public abstract class LaunchCauseMetrics
     private BetweenLaunchState mBetweenLaunchState = new BetweenLaunchState();
     private final Activity mActivity;
     private long mActivityId;
+    private final boolean mUseStopForScreenOff;
 
     @SuppressLint("StaticFieldLeak")
     private static @Nullable Activity sLastResumedActivity;
@@ -88,7 +90,7 @@ public abstract class LaunchCauseMetrics
     // computing LaunchCause.
     private static class BetweenLaunchState {
         boolean mReceivedLeaveHint;
-        boolean mScreenOffWhenPaused;
+        boolean mScreenOffWhenStopped;
     }
 
     // These values are persisted in histograms. Please do not renumber. Append only.
@@ -154,6 +156,7 @@ public abstract class LaunchCauseMetrics
         mActivity = activity;
         ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, activity);
+        mUseStopForScreenOff = ChromeFeatureList.sLaunchCauseScreenOffFix.isEnabled();
     }
 
     @Override
@@ -163,8 +166,9 @@ public abstract class LaunchCauseMetrics
             ApplicationStatus.unregisterApplicationStateListener(this);
             ApplicationStatus.unregisterActivityStateListener(this);
         }
-        if (newState == ActivityState.PAUSED) {
-            mBetweenLaunchState.mScreenOffWhenPaused = isDisplayOff(mActivity);
+        if ((!mUseStopForScreenOff && newState == ActivityState.PAUSED)
+                || (mUseStopForScreenOff && newState == ActivityState.STOPPED)) {
+            mBetweenLaunchState.mScreenOffWhenStopped = isDisplayOff(mActivity);
         }
     }
 
@@ -258,7 +262,7 @@ public abstract class LaunchCauseMetrics
         if (mPerLaunchState.mLaunchedFromRecents) {
             return LaunchCause.RECENTS;
         }
-        if (mBetweenLaunchState.mScreenOffWhenPaused) {
+        if (mBetweenLaunchState.mScreenOffWhenStopped) {
             // It's possible we got here through Recents, if the user tapped a non-Chrome
             // notification after locking their screen with Chrome in the foreground, then
             // returned to Chrome through Recents, and there's no reliable way to detect this.

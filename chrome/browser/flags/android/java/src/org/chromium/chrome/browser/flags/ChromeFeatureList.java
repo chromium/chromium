@@ -461,6 +461,7 @@ public abstract class ChromeFeatureList {
     public static final String INCOGNITO_THEME_OVERLAY_TESTING = "IncognitoThemeOverlayTesting";
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
     public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
+    public static final String LAUNCH_CAUSE_SCREEN_OFF_FIX = "LaunchCauseScreenOffFix";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINK_HOVER_STATUS_BAR = "LinkHoverStatusBar";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
@@ -929,6 +930,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
+    public static final CachedFlag sLaunchCauseScreenOffFix =
+            newCachedFlag(
+                    LAUNCH_CAUSE_SCREEN_OFF_FIX,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sLoadAllTabsAtStartup =
             newCachedFlag(
                     LOAD_ALL_TABS_AT_STARTUP,
@@ -1194,6 +1200,7 @@ public abstract class ChromeFeatureList {
                     sHistoryPaneAndroid,
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
+                    sLaunchCauseScreenOffFix,
                     sLoadAllTabsAtStartup,
                     sLoadNativeEarly,
                     sLockBackPressHandlerAtStart,
