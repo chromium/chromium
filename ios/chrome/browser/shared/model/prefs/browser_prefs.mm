@@ -84,6 +84,7 @@
 #import "components/strings/grit/components_locale_settings.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/sync/service/device_statistics_tracker.h"
 #import "components/sync/service/glue/sync_transport_data_prefs.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
@@ -695,6 +696,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
+  syncer::DeviceStatisticsTracker::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
   syncer::SyncTransportDataPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
