@@ -52,7 +52,6 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/page_metadata_manager.h"
-#include "chrome/browser/glic/media/glic_media_link_helper.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -116,6 +115,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
+#include "chrome/browser/glic/media/glic_media_link_helper.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -945,6 +946,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                  bool open_in_background,
                  const std::optional<int32_t> window_id,
                  CreateTabCallback callback) override {
+#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(media::kMediaLinkHelpers)) {
       if (auto* tab = sharing_manager().GetFocusedTabData().focus()) {
         const bool replaced =
@@ -957,6 +959,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         }
       }
     }
+#endif
     host().instance_delegate().CreateTab(url, open_in_background, window_id,
                                          std::move(callback));
   }

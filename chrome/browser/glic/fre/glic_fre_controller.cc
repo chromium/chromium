@@ -32,8 +32,6 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/google/core/common/google_util.h"
@@ -45,6 +43,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"  // nogncheck
+#include "chrome/browser/ui/tabs/public/tab_features.h"        // nogncheck
 #endif
 namespace {
 

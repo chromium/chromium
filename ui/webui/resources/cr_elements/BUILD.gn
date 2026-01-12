@@ -25,6 +25,15 @@ build_webui("build") {
     "cr_tabs/cr_tabs.html.ts",
     "cr_tabs/cr_tabs.ts",
     "cr_tree/cr_tree_base.ts",
+    "cr_progress/cr_progress.html.ts",
+    "cr_progress/cr_progress.ts",
+    "cr_icon/cr_iconset.html.ts",
+    "cr_icon/cr_iconset.ts",
+    "cr_icon/iconset_map.ts",
+    "icons.html.ts",
+    "cr_icon/cr_icon.ts",
+    "cr_icon_button/cr_icon_button.html.ts",
+    "cr_icon_button/cr_icon_button.ts",
   ]
 
   css_files = [
@@ -34,6 +43,10 @@ build_webui("build") {
     "cr_ripple/cr_ripple.css",
     "cr_shared_vars.css",
     "cr_tabs/cr_tabs.css",
+    "cr_progress/cr_progress.css",
+    "cr_icon/cr_iconset.css",
+    "cr_icon/cr_icon.css",
+    "cr_icon_button/cr_icon_button.css",
   ]
 
   if ((!is_android && !is_ios) || is_desktop_android) {
@@ -41,12 +54,10 @@ build_webui("build") {
 
     ts_files += [
       "cr_container_shadow_mixin_lit.ts",
-      "cr_icon/iconset_map.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
       "cr_scroll_observer_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin_lit.ts",
       "i18n_mixin_lit.ts",
-      "icons.html.ts",
       "web_ui_listener_mixin_lit.ts",
 
       # Web components files that either
@@ -62,11 +73,6 @@ build_webui("build") {
       "cr_drawer/cr_drawer.ts",
       "cr_expand_button/cr_expand_button.html.ts",
       "cr_expand_button/cr_expand_button.ts",
-      "cr_icon/cr_icon.ts",
-      "cr_icon/cr_iconset.html.ts",
-      "cr_icon/cr_iconset.ts",
-      "cr_icon_button/cr_icon_button.html.ts",
-      "cr_icon_button/cr_icon_button.ts",
       "cr_infinite_list/cr_infinite_list.ts",
       "cr_input/cr_input.html.ts",
       "cr_input/cr_input.ts",
@@ -111,9 +117,6 @@ build_webui("build") {
       "cr_dialog/cr_dialog.css",
       "cr_drawer/cr_drawer.css",
       "cr_expand_button/cr_expand_button.css",
-      "cr_icon/cr_icon.css",
-      "cr_icon/cr_iconset.css",
-      "cr_icon_button/cr_icon_button.css",
       "cr_icons_lit.css",
       "cr_infinite_list/cr_infinite_list.css",
       "cr_input/cr_input.css",
@@ -175,8 +178,6 @@ build_webui("build") {
       "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.html.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
-      "cr_progress/cr_progress.html.ts",
-      "cr_progress/cr_progress.ts",
       "cr_radio_button/cr_card_radio_button.html.ts",
       "cr_radio_button/cr_card_radio_button.ts",
       "cr_slider/cr_slider.html.ts",
@@ -205,7 +206,6 @@ build_webui("build") {
       "cr_page_host_style.css",
       "cr_page_host_style_lit.css",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.css",
-      "cr_progress/cr_progress.css",
       "cr_radio_button/cr_card_radio_button.css",
       "cr_radio_button/cr_radio_button_style.css",
       "cr_scrollable.css",

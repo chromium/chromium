@@ -5452,23 +5452,27 @@ static_library("ui") {
       "webui/settings/glic_handler.h",
     ]
     deps += [
-      "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/ai",
-      "//chrome/browser/background/glic",
       "//chrome/browser/glic",
-      "//chrome/browser/glic/browser_ui",
-      "//chrome/browser/glic/browser_ui:glow",
-      "//chrome/browser/glic/browser_ui:glow_controller",
-      "//chrome/browser/glic/browser_ui:glow_controller_impl",
-      "//chrome/browser/glic/browser_ui:glow_impl",
       "//chrome/browser/glic/fre",
     ]
-    allow_circular_includes_from += [
-      "//chrome/browser/glic/fre",
-      "//chrome/browser/glic/browser_ui",
-      "//chrome/browser/glic/browser_ui:glow_impl",
-      "//chrome/browser/glic/browser_ui:glow_controller_impl",
-    ]
+    allow_circular_includes_from += [ "//chrome/browser/glic/fre" ]
+    if (!is_android) {
+      deps += [
+        "//chrome/browser/actor/ui/task_list_bubble:controller",
+        "//chrome/browser/background/glic",
+        "//chrome/browser/glic/browser_ui",
+        "//chrome/browser/glic/browser_ui:glow",
+        "//chrome/browser/glic/browser_ui:glow_controller",
+        "//chrome/browser/glic/browser_ui:glow_controller_impl",
+        "//chrome/browser/glic/browser_ui:glow_impl",
+      ]
+      allow_circular_includes_from += [
+        "//chrome/browser/glic/browser_ui",
+        "//chrome/browser/glic/browser_ui:glow_impl",
+        "//chrome/browser/glic/browser_ui:glow_controller_impl",
+      ]
+    }
   }
 
   if (enable_reporting) {
