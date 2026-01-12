@@ -57,9 +57,8 @@ class AccountConsistencyBrowserAgent
   AccountConsistencyBrowserAgent(Browser* browser,
                                  UIViewController* base_view_controller);
 
-  // Returns whether it makes sense to show the browser's account menu instead
-  // of starting an "add account" flow or showing the "manage accounts" screen.
-  bool ShouldShowAccountMenu() const;
+  // Returns whether it is is possible to show the browser's account menu.
+  bool CanShowAccountMenu() const;
 
   // Opens the account menu, offering to switch to a different account (even one
   // that's in a different profile).

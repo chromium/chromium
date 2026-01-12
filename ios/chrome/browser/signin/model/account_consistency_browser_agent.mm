@@ -14,6 +14,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -104,7 +106,13 @@ void AccountConsistencyBrowserAgent::OnManageAccounts(const GURL& url) {
       ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
 
-  if (ShouldShowAccountMenu()) {
+  size_t num_profiles = GetApplicationContext()
+                            ->GetProfileManager()
+                            ->GetProfileAttributesStorage()
+                            ->GetNumberOfProfiles();
+  // If there are any profiles beside the current one, it's likely the user
+  // wanted to switch to another profile rather than add/manage accounts.
+  if (num_profiles > 1 && CanShowAccountMenu()) {
     ShowAccountMenu(url);
   } else {
     [settings_handler_
@@ -138,7 +146,13 @@ void AccountConsistencyBrowserAgent::OnAddAccount(
     return;
   }
 
-  if (ShouldShowAccountMenu()) {
+  ProfileIOS* profile = browser_->GetProfile()->GetOriginalProfile();
+  BOOL email_in_identity_on_device =
+      signin::GetAccountInfoOnDeviceWithEmail(
+          IdentityManagerFactory::GetForProfile(profile), prefilled_email) !=
+      std::nullopt;
+  if (email_in_identity_on_device && CanShowAccountMenu()) {
+    // The user must select the correct account to follow.
     ShowAccountMenu(url);
   } else {
     id<BrowserCoordinatorCommands> browser_coordinator_handler =
@@ -174,24 +188,15 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
   [application_handler_ openURLInNewTab:command];
 }
 
-bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {
+bool AccountConsistencyBrowserAgent::CanShowAccountMenu() const {
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     return false;
   }
   ProfileIOS* profile = browser_->GetProfile()->GetOriginalProfile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // The account menu requires a primary identity.
-    return false;
-  }
-  size_t num_profiles = GetApplicationContext()
-                            ->GetProfileManager()
-                            ->GetProfileAttributesStorage()
-                            ->GetNumberOfProfiles();
-  // If there are any profiles beside the current one, it's likely the user
-  // wanted to switch to another profile rather than add/manage accounts.
-  return num_profiles > 1;
+  // The account menu requires a primary identity.
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {

@@ -22,6 +22,7 @@ specific_include_rules = {
   "^account_consistency_browser_agent.mm": [
     "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
     "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
   ],
   "^system_account_updater.mm": [
     "+ios/chrome/browser/widget_kit/model/features.h",
