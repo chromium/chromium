@@ -194,11 +194,9 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                   .action(@selector(paste:)),
               Item(IDS_PASTE_MATCH_STYLE_MAC)
                   .tag(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE)
-                  .action(@selector(pasteAndMatchStyle:))
-                  .sf_symbol(@"paintbrush.page.on.clipboard"),
+                  .action(@selector(pasteAndMatchStyle:)),
               Item(IDS_PASTE_MATCH_STYLE_MAC)
                   .action(@selector(pasteAndMatchStyle:))
-                  .sf_symbol(@"paintbrush.page.on.clipboard")
                   .is_alternate()
                   .key_equivalent(@"V", NSEventModifierFlagCommand |
                                             NSEventModifierFlagOption),
