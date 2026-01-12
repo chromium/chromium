@@ -880,18 +880,6 @@ UNSAFE_BUFFER_USAGE inline wtf_size_t LengthOfNullTerminatedString(
   return base::checked_cast<wtf_size_t>(length);
 }
 
-template <wtf_size_t inlineCapacity>
-bool EqualIgnoringNullity(const Vector<UChar, inlineCapacity>& a,
-                          StringImpl* b) {
-  if (!b)
-    return !a.size();
-  if (a.size() != b->length())
-    return false;
-  if (b->Is8Bit())
-    return Equal(a.data(), b->Characters8(), b->length());
-  return Equal(a.data(), b->Characters16(), b->length());
-}
-
 template <typename CharacterType1,
           typename CharacterType2,
           typename Projection = std::identity>

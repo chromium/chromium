@@ -597,12 +597,6 @@ inline bool EqualIgnoringNullity(const String& a, const String& b) {
   return EqualIgnoringNullity(a.Impl(), b.Impl());
 }
 
-template <wtf_size_t inlineCapacity>
-inline bool EqualIgnoringNullity(const Vector<UChar, inlineCapacity>& a,
-                                 const String& b) {
-  return EqualIgnoringNullity(a, b.Impl());
-}
-
 inline void swap(String& a, String& b) {
   a.swap(b);
 }
