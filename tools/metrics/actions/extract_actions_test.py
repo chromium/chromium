@@ -227,8 +227,10 @@ class ActionXmlTest(unittest.TestCase):
     """
     actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
         actions_xml)
-    action_utils.CreateActionsFromVariants(actions_dict, variants_dict)
-    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict)
+    expanded_actions = action_utils.CreateActionsFromVariants(actions_dict)
+
+    return extract_actions.PrettyPrint(actions_dict | expanded_actions,
+                                       comments, variants_dict)
 
 
   def _PrettyPrintActionsXML(self, actions_xml):
@@ -454,10 +456,8 @@ class ActionXmlTest(unittest.TestCase):
     variant = action_utils.Variant('Variant', 'Variant summary.')
     token = action_utils.Token('Token')
 
-    action_utils._CreateActionFromVariant(actions_dict, action, variant, token)
+    new_action = action_utils._CreateActionFromVariant(action, variant, token)
 
-    self.assertIn('TestActionVariantName', actions_dict)
-    new_action = actions_dict['TestActionVariantName']
     self.assertEqual('TestActionVariantName', new_action.name)
     self.assertEqual('Test description. Variant summary.',
                      new_action.description)

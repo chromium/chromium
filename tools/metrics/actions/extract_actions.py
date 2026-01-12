@@ -659,11 +659,12 @@ def ExtractTokens(
     if token_node.hasAttribute('variants'):
       variants_name = token_node.getAttribute('variants')
       if variants_name not in variants_dict:
-        logging.error(
+        logging.fatal(
             f'The variants attribute {variants_name} of token key {token_key} '
             f'of action {action_name} does not have a corresponding '
             f'<variants> tag.')
       token.variants_name = variants_name
+      token.variants = variants_dict[variants_name]
 
     # Extract any inline variants.
     else:
@@ -912,11 +913,7 @@ def _GeneratedActions() -> set[str]:
 def UpdateXml(original_xml):
   actions_dict, comment_nodes, variants_dict = ParseActionFile(original_xml)
 
-  # Created a deep copy of the actions dictionary to expand variants into. This
-  # is to avoid modifying the original Action objects in case of variants
-  # present in the xml file, which would remove their token definitions.
-  expanded_actions_dict = copy.deepcopy(actions_dict)
-  action_utils.CreateActionsFromVariants(expanded_actions_dict, variants_dict)
+  expanded_actions_dict = action_utils.CreateActionsFromVariants(actions_dict)
 
   generated_actions_names = _GeneratedActions()
 

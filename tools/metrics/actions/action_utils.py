@@ -107,15 +107,24 @@ class Token(object):
     self.implicit = False
 
 
-def _CreateActionFromVariant(actions_dict: Dict[str, Action], action: Action,
-                             variant: Variant, token: Token) -> None:
-  """Creates a new action with action and variant and adds it to actions_dict.
+def _CreateActionFromVariant(action: Action, variant: Variant,
+                             token: Token) -> Action:
+  """Creates a new action by substituting token with variant in template action.
+
+  The properties of returned action are derived from provided template action
+  with token being substituted in its name and description.
+
+  For example:
+    `_CreateActionFromVariant("ClickOn.{Location}", "MainFrame", "Location")`
+    will return action `ClickOn.MainFrame`.
 
   Args:
-    actions_dict: dict of existing action name to Action object.
     action: an Action object to combine with suffix.
     variant: a Variant object to combine with action.
     token: a Token object to get the key from.
+
+  Returns:
+    An action with the template token replaced with specified variant.
   """
   new_name = action.name.replace('{' + token.key + '}', variant.name)
 
@@ -125,39 +134,66 @@ def _CreateActionFromVariant(actions_dict: Dict[str, Action], action: Action,
     new_action_description = (
         'Please enter the description of this user action. ' + variant.summary)
 
-  actions_dict[new_name] = Action(new_name, new_action_description,
-                                  list(action.owners) if action.owners else [],
-                                  action.not_user_triggered, action.obsolete)
+  return Action(new_name, new_action_description,
+                list(action.owners) if action.owners else [],
+                action.not_user_triggered, action.obsolete)
 
 
-def CreateActionsFromVariants(actions_dict: Dict[str, Action],
-                              variants_dict: Dict[str, List[Variant]]) -> bool:
-  """Creates new actions from variants and adds them to actions_dict.
+def CreateActionsFromVariants(
+    actions_dict: Dict[str, Action]) -> Dict[str, Action]:
+  """Converts template actions dictionary into a dictionary of expanded actions
 
-  If an action contains a token that refers to a variants block that is not
-  defined, this is silently ignored.
+  We allow the actions.xml to contain tokens within the name that are linked
+  with a specific type. Those template actions represent multiple actions that
+  will be physically present in UMA.
+
+  For example:
+
+  ```
+  <action name="ClickOn.{Location}">
+    <token key="Location">
+      <variant name="MainFrame" summary="Double click action."/>
+      <variant name="IFrame" summary="Click and drag action."/>
+    </token>
+  </action>
+  ```
+
+  will actually generate actions:
+   * ClickOn.MainFrame
+   * ClickOn.IFrame
+
+  If an input action doesn't have tokens it is returned without any changes.
+
+  The input dictionary is keyed by template action name (including tokens),
+  while the output dictionary keys are generated actions with no tokens
+  in them anymore.
+
+  Note: This currently does support only a single token per action and the
+  usage with multiple tokens leads to undefined behavior.
 
   Args:
-    actions_dict: A dict of existing action name to Action object.
-    variants_dict: A dict of variants name to list of Variant objects.
+    actions_dict: A dict of existing action name to Action object with names
+        potentially containing tokens.
+
+  Returns:
+    A dictionary of actions with tokens expanded to all possible variants and
+        no longer contain any unresolved tokens.
+
+  Raises:
+    ValueError if the information about tokens possible values is missing
+    from Action objects in actions_dict.
   """
-  # Create a dict of action name to Action object for actions with tokens.
-  action_to_variants_dict = {
-      name: action.tokens
-      for name, action in actions_dict.items() if action.tokens
-  }
+  expanded_actions: Dict[str, Action] = {}
 
-  expanded_actions = set()
-
-  for action_name, tokens in action_to_variants_dict.items():
-    if not action_name in actions_dict:
+  for _, action in actions_dict.items():
+    # If there are no tokens to fill, the action goes to the list as-is.
+    if not action.tokens:
+      expanded_actions[action.name] = action
       continue
-    existing_action = actions_dict[action_name]
-    for token in tokens:
-      variants = token.variants
-      if token.variants_name:
-        variants = variants_dict.get(token.variants_name, [])
-      for variant in variants:
-        _CreateActionFromVariant(actions_dict, existing_action, variant, token)
 
-      expanded_actions.add(action_name)
+    for token in action.tokens:
+      for variant in token.variants:
+        new_action = _CreateActionFromVariant(action, variant, token)
+        expanded_actions[new_action.name] = new_action
+
+  return expanded_actions
