@@ -826,8 +826,6 @@ void RTCPeerConnectionHandler::CloseAndUnregister() {
   Close();
 
   GetPeerConnectionHandlers()->erase(this);
-  if (peer_connection_tracker_)
-    peer_connection_tracker_->UnregisterPeerConnection(this);
 
   // Clear the pointer to client_ so that it does not interfere with
   // garbage collection.
@@ -1800,8 +1798,10 @@ void RTCPeerConnectionHandler::Close() {
   if (is_closed_ || !native_peer_connection_.get())
     return;  // Already stopped.
 
-  if (peer_connection_tracker_)
+  if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackClose(this);
+    peer_connection_tracker_->UnregisterPeerConnection(this);
+  }
 
   native_peer_connection_->Close();
 
