@@ -239,7 +239,8 @@ TEST_F(AutofillAgentTests,
 
   [autofill_agent_ fillData:fill_data
                     section:Section()
-                    inFrame:fake_web_frames_manager_->GetMainWebFrame()];
+                    inFrame:fake_web_frames_manager_->GetMainWebFrame()
+             withActionType:autofill::mojom::FormActionType::kFill];
   fake_web_state_.WasShown();
 
   EXPECT_EQ(u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillForm', "
@@ -956,7 +957,10 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   fake_web_state_.WasShown();
 
   // Fill form data.
-  [autofill_agent_ fillData:fields section:Section() inFrame:fake_main_frame_];
+  [autofill_agent_ fillData:fields
+                    section:Section()
+                    inFrame:fake_main_frame_
+             withActionType:autofill::mojom::FormActionType::kFill];
 
   // Run queues to yield the filling results.
   web::test::WaitForBackgroundTasks();
@@ -997,7 +1001,10 @@ TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
   fake_web_state_.WasShown();
 
   // Fill form data.
-  [autofill_agent_ fillData:fields section:Section() inFrame:fake_main_frame_];
+  [autofill_agent_ fillData:fields
+                    section:Section()
+                    inFrame:fake_main_frame_
+             withActionType:autofill::mojom::FormActionType::kFill];
 
   // Run queues to yield the filling results.
   web::test::WaitForBackgroundTasks();

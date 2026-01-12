@@ -270,7 +270,8 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
         if (frame) {
           [cast(&driver)->bridge_ fillData:fields
                                    section:section_for_clear_form_on_ios
-                                   inFrame:frame];
+                                   inFrame:frame
+                            withActionType:action_type];
         }
       };
 
