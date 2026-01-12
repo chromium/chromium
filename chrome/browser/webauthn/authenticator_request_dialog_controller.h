@@ -440,9 +440,6 @@ class AuthenticatorRequestDialogController
   std::optional<size_t> IndexOfImmediateGetPriorityMechanism();
   std::optional<size_t> IndexOfMakeCredentialPriorityMechanism();
 
-  // Sets correct step for entering GPM pin based on `gpm_pin_is_arbitrary_`.
-  void PromptForGPMPin();
-
   // Returns true if this request could pick the enclave authenticator by
   // default. This only makes sense for a create() call.
   bool CanDefaultToEnclave(Profile* profile);
