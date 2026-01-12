@@ -55,7 +55,8 @@ public class SigninPromoMediatorTest {
     // sign-out events.
     private @Mock IdentityManager mIdentityManager;
     private @Mock SyncService mSyncService;
-    private @Mock SigninPromoDelegate mDelegate;
+    private @Mock SigninPromoDelegate mPromoDelegate;
+    private @Mock SigninPromoMediator.Delegate mMediatorDelegate;
     private @Mock Profile mProfile;
     private @Mock SigninManager mSigninManager;
     private @Mock IdentityServicesProvider mIdentityServicesProvider;
@@ -67,17 +68,17 @@ public class SigninPromoMediatorTest {
 
     @Before
     public void setUp() {
-        lenient().doReturn(true).when(mDelegate).canShowPromo();
+        lenient().doReturn(true).when(mPromoDelegate).canShowPromo();
     }
 
     @Test
     public void testSecondaryButtonHiddenByDelegate() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mDelegate).shouldHideSecondaryButton();
+        doReturn(true).when(mPromoDelegate).shouldHideSecondaryButton();
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
                 .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        createSigninPromoMediator(mDelegate);
+        createSigninPromoMediator(mPromoDelegate);
 
         boolean isSecondaryButtonHidden =
                 mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
@@ -86,7 +87,7 @@ public class SigninPromoMediatorTest {
 
     @Test
     public void testSecondaryButtonHiddenByNullProfileData() {
-        createSigninPromoMediator(mDelegate);
+        createSigninPromoMediator(mPromoDelegate);
 
         boolean isSecondaryButtonHidden =
                 mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
@@ -96,11 +97,11 @@ public class SigninPromoMediatorTest {
     @Test
     public void testSecondaryButtonShown_visibleAccountFromIdentityManager() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(false).when(mDelegate).shouldHideSecondaryButton();
+        doReturn(false).when(mPromoDelegate).shouldHideSecondaryButton();
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
                 .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        createSigninPromoMediator(mDelegate);
+        createSigninPromoMediator(mPromoDelegate);
 
         boolean isSecondaryButtonHidden =
                 mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
@@ -109,9 +110,9 @@ public class SigninPromoMediatorTest {
 
     @Test
     public void testSecondaryButtonShown_visibleAccountFromAccountManager() {
-        doReturn(false).when(mDelegate).shouldHideSecondaryButton();
+        doReturn(false).when(mPromoDelegate).shouldHideSecondaryButton();
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        createSigninPromoMediator(mDelegate);
+        createSigninPromoMediator(mPromoDelegate);
 
         boolean isSecondaryButtonHidden =
                 mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
@@ -122,7 +123,7 @@ public class SigninPromoMediatorTest {
     public void testDefaultAccountRemoved() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        createSigninPromoMediator(mDelegate);
+        createSigninPromoMediator(mPromoDelegate);
         verify(mProfileDataCache, atLeastOnce())
                 .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail());
 
@@ -134,19 +135,19 @@ public class SigninPromoMediatorTest {
     @Test
     public void testDelegateUpdated_defaultAccountRemoved() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        createSigninPromoMediator(mDelegate);
+        createSigninPromoMediator(mPromoDelegate);
 
         // Set the mock delegate to return non-default values.
         String newTitle = "newTitle";
         String newDescription = "newDescription";
         String newPrimaryButtonText = "newPrimaryButtonText";
         String newSecondaryButtonText = "newSecondaryButtonText";
-        doReturn(true).when(mDelegate).refreshPromoState(any());
-        doReturn(true).when(mDelegate).shouldHideDismissButton();
-        doReturn(newTitle).when(mDelegate).getTitle();
-        doReturn(newDescription).when(mDelegate).getDescription(any());
-        doReturn(newPrimaryButtonText).when(mDelegate).getTextForPrimaryButton(any());
-        doReturn(newSecondaryButtonText).when(mDelegate).getTextForSecondaryButton();
+        doReturn(true).when(mPromoDelegate).refreshPromoState(any());
+        doReturn(true).when(mPromoDelegate).shouldHideDismissButton();
+        doReturn(newTitle).when(mPromoDelegate).getTitle();
+        doReturn(newDescription).when(mPromoDelegate).getDescription(any());
+        doReturn(newPrimaryButtonText).when(mPromoDelegate).getTextForPrimaryButton(any());
+        doReturn(newSecondaryButtonText).when(mPromoDelegate).getTextForSecondaryButton();
         // Remove the default account to trigger a promo content refresh.
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
@@ -246,6 +247,7 @@ public class SigninPromoMediatorTest {
                         mSyncService,
                         AccountManagerFacadeProvider.getInstance(),
                         mProfileDataCache,
-                        delegate);
+                        delegate,
+                        mMediatorDelegate);
     }
 }

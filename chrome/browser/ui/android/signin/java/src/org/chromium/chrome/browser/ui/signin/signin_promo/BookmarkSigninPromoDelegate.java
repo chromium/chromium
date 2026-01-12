@@ -75,6 +75,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
         mPromoShowCountPreferenceName =
                 ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                         SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
+        // TODO(https://crbug.com/474294917): This navigation should be handled by the coordinator.
         mOnOpenSettingsClicked = onOpenSettingsClicked;
     }
 

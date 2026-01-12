@@ -169,13 +169,12 @@ public abstract class SigninPromoDelegate {
      *     {@code null} if no account is currently available on the device.
      */
     void onPrimaryButtonClicked(@Nullable CoreAccountInfo visibleAccount) {
-        BottomSheetSigninAndHistorySyncConfig config =
-                isSeamlessSigninAllowed() && visibleAccount != null
-                        ? getConfigForSeamlessSignin(visibleAccount)
-                        : getConfigForCollapsedBottomSheet();
         @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext, mProfile, config, getAccessPoint());
+                        mContext,
+                        mProfile,
+                        getConfigForPrimaryButtonClick(visibleAccount),
+                        getAccessPoint());
         if (intent != null) {
             mContext.startActivity(intent);
         }
@@ -189,11 +188,9 @@ public abstract class SigninPromoDelegate {
     void onSecondaryButtonClicked() {
         assert !shouldHideSecondaryButton();
 
-        BottomSheetSigninAndHistorySyncConfig config =
-                getConfigForExpandedBottomSheet(isSeamlessSigninAllowed());
         @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext, mProfile, config, getAccessPoint());
+                        mContext, mProfile, getConfigForSecondaryButtonClick(), getAccessPoint());
         if (intent != null) {
             mContext.startActivity(intent);
         }
@@ -208,6 +205,31 @@ public abstract class SigninPromoDelegate {
     @SigninSurveyController.SigninSurveyType
     Integer getSurveyTriggerType() {
         return null;
+    }
+
+    // TODO(https://crbug.com/474294917): Remove this.
+    /** Returns true if the delegate should handle the primary button click. */
+    boolean shouldOverridePrimaryButtonClick() {
+        return true;
+    }
+
+    // TODO(https://crbug.com/474294917): Remove this.
+    /** Returns true if the delegate should handle the secondary button click. */
+    boolean shouldOverrideSecondaryButtonClick() {
+        return true;
+    }
+
+    /** Returns the configuration for the flow started by the secondary button. */
+    BottomSheetSigninAndHistorySyncConfig getConfigForPrimaryButtonClick(
+            @Nullable CoreAccountInfo visibleAccount) {
+        return isSeamlessSigninAllowed() && visibleAccount != null
+                ? getConfigForSeamlessSignin(visibleAccount)
+                : getConfigForCollapsedBottomSheet();
+    }
+
+    /** Returns the configuration for the flow started by the secondary button. */
+    BottomSheetSigninAndHistorySyncConfig getConfigForSecondaryButtonClick() {
+        return getConfigForExpandedBottomSheet(isSeamlessSigninAllowed());
     }
 
     private BottomSheetSigninAndHistorySyncConfig getConfigForCollapsedBottomSheet() {

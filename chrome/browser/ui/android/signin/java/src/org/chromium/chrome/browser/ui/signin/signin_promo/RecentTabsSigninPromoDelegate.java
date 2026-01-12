@@ -223,6 +223,16 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
         return mPromoState == PromoState.HISTORY_SYNC;
     }
 
+    @Override
+    boolean shouldOverridePrimaryButtonClick() {
+        return !isSeamlessSigninAllowed();
+    }
+
+    @Override
+    boolean shouldOverrideSecondaryButtonClick() {
+        return !isSeamlessSigninAllowed();
+    }
+
     private @PromoState int computePromoState() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);

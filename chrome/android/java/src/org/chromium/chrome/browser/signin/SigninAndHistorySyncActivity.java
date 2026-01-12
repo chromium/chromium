@@ -174,7 +174,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                         DeviceLockActivityLauncherImpl.get(),
                         getProfileProviderSupplier(),
                         getBottomSheetController(containerView),
-                        (Supplier<@Nullable ModalDialogManager>) getModalDialogManagerSupplier(),
+                        (Supplier<ModalDialogManager>) getModalDialogManagerSupplier(),
                         config,
                         signinAccessPoint);
 

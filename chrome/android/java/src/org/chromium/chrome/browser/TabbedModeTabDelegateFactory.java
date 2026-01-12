@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -76,6 +77,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final ActivityResultTracker mActivityResultTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
@@ -109,6 +111,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier,
+            ActivityResultTracker activityResultTracker,
             BrowserControlsManager browserControlsManager,
             Supplier<@Nullable Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -138,6 +141,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mActivityResultTracker = activityResultTracker;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBrowserControlsManager = browserControlsManager;
         mCurrentTabSupplier = currentTabSupplier;
@@ -213,6 +217,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mBottomSheetController,
                             mBrowserControlsManager,
                             mCurrentTabSupplier,
+                            mModalDialogManagerSupplier,
                             mSnackbarManagerSupplier,
                             mLifecycleDispatcher,
                             mTabModelSelectorSupplier.get(),
@@ -220,6 +225,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mWindowAndroid,
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
+                            mActivityResultTracker,
                             mTabContentManagerSupplier,
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -48,11 +49,25 @@ final class SigninPromoMediator
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/histograms.xml:SigninPromoAction)
 
+    /**
+     * The delegate interface for {@link SigninPromoMediator}. Provides methods for navigation
+     * actions started by the promo.
+     */
+    interface Delegate {
+        /**
+         * Starts the sign-in flow with the given configuration.
+         *
+         * @param config The configuration for the sign-in and history sync opt-in flow.
+         */
+        void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config);
+    }
+
     private final IdentityManager mIdentityManager;
     private final SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
     private final ProfileDataCache mProfileDataCache;
-    private final SigninPromoDelegate mDelegate;
+    private final SigninPromoDelegate mPromoDelegate;
+    private final Delegate mMediatorDelegate;
     private final PropertyModel mModel;
     private final boolean mMaxImpressionReached;
 
@@ -64,12 +79,14 @@ final class SigninPromoMediator
             SyncService syncService,
             AccountManagerFacade accountManagerFacade,
             ProfileDataCache profileDataCache,
-            SigninPromoDelegate delegate) {
+            SigninPromoDelegate promoDelegate,
+            Delegate mediatorDelegate) {
         mIdentityManager = identityManager;
         mSyncService = syncService;
         mAccountManagerFacade = accountManagerFacade;
         mProfileDataCache = profileDataCache;
-        mDelegate = delegate;
+        mPromoDelegate = promoDelegate;
+        mMediatorDelegate = mediatorDelegate;
 
         CoreAccountInfo visibleAccount = getVisibleAccount();
         DisplayableProfileData profileData =
@@ -92,8 +109,8 @@ final class SigninPromoMediator
                         /* shouldShowAccountPicker= */ true,
                         /* shouldShowHeaderWithAvatar= */ false,
                         /* shouldShowLoadingState= */ false);
-        mMaxImpressionReached = mDelegate.isMaxImpressionsReached();
-        mDelegate.refreshPromoState(visibleAccount);
+        mMaxImpressionReached = mPromoDelegate.isMaxImpressionsReached();
+        mPromoDelegate.refreshPromoState(visibleAccount);
         mShouldShowPromo = canShowPromo();
         if (mShouldShowPromo) {
             updateModel(visibleAccount);
@@ -122,12 +139,12 @@ final class SigninPromoMediator
                 getVisibleAccount() == null
                         ? SigninPromoAction.NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         : SigninPromoAction.WITH_DEFAULT;
-        SigninMetricsUtils.logSigninOffered(promoAction, mDelegate.getAccessPoint());
+        SigninMetricsUtils.logSigninOffered(promoAction, mPromoDelegate.getAccessPoint());
 
         ChromeSharedPreferences.getInstance()
                 .incrementInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         recordEventHistogram(Event.SHOWN);
-        mDelegate.recordImpression();
+        mPromoDelegate.recordImpression();
         mWasImpressionRecorded = true;
     }
 
@@ -139,7 +156,7 @@ final class SigninPromoMediator
             return false;
         }
 
-        return !mMaxImpressionReached && mDelegate.canShowPromo();
+        return !mMaxImpressionReached && mPromoDelegate.canShowPromo();
     }
 
     /** Implements {@link IdentityManager.Observer} */
@@ -179,22 +196,31 @@ final class SigninPromoMediator
 
     private void onPrimaryButtonClicked(@Nullable CoreAccountInfo visibleAccount) {
         recordEventHistogram(Event.CONTINUED);
-        mDelegate.onPrimaryButtonClicked(visibleAccount);
+        if (mPromoDelegate.shouldOverridePrimaryButtonClick()) {
+            mPromoDelegate.onPrimaryButtonClicked(visibleAccount);
+        } else {
+            mMediatorDelegate.startSigninFlow(
+                    mPromoDelegate.getConfigForPrimaryButtonClick(visibleAccount));
+        }
     }
 
     private void onSecondaryButtonClicked() {
         recordEventHistogram(Event.CONTINUED);
-        mDelegate.onSecondaryButtonClicked();
+        if (mPromoDelegate.shouldOverrideSecondaryButtonClick()) {
+            mPromoDelegate.onSecondaryButtonClicked();
+        } else {
+            mMediatorDelegate.startSigninFlow(mPromoDelegate.getConfigForSecondaryButtonClick());
+        }
     }
 
     private void onDismissButtonClicked() {
         recordEventHistogram(Event.DISMISSED);
-        mDelegate.onDismissButtonClicked();
+        mPromoDelegate.onDismissButtonClicked();
         refreshPromoContent(/* wasVisibleAccountUpdated= */ false);
     }
 
     private void refreshPromoContent(boolean wasVisibleAccountUpdated) {
-        boolean wasPromoContentChanged = mDelegate.refreshPromoState(getVisibleAccount());
+        boolean wasPromoContentChanged = mPromoDelegate.refreshPromoState(getVisibleAccount());
         if (wasPromoContentChanged) {
             updateVisibility();
         }
@@ -212,7 +238,7 @@ final class SigninPromoMediator
         mModel.set(SigninPromoProperties.PROFILE_DATA, profileData);
         mModel.set(
                 SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON,
-                profileData == null || mDelegate.shouldHideSecondaryButton());
+                profileData == null || mPromoDelegate.shouldHideSecondaryButton());
         mModel.set(
                 SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED,
                 (unusedView) -> onPrimaryButtonClicked(visibleAccount));
@@ -222,25 +248,26 @@ final class SigninPromoMediator
         mModel.set(
                 SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED,
                 (unusedView) -> onDismissButtonClicked());
-        mModel.set(SigninPromoProperties.TITLE_TEXT, mDelegate.getTitle());
+        mModel.set(SigninPromoProperties.TITLE_TEXT, mPromoDelegate.getTitle());
         mModel.set(
                 SigninPromoProperties.DESCRIPTION_TEXT,
-                mDelegate.getDescription(
+                mPromoDelegate.getDescription(
                         profileData == null ? null : profileData.getAccountEmail()));
         mModel.set(
                 SigninPromoProperties.PRIMARY_BUTTON_TEXT,
-                mDelegate.getTextForPrimaryButton(profileData));
+                mPromoDelegate.getTextForPrimaryButton(profileData));
         mModel.set(
-                SigninPromoProperties.SECONDARY_BUTTON_TEXT, mDelegate.getTextForSecondaryButton());
+                SigninPromoProperties.SECONDARY_BUTTON_TEXT,
+                mPromoDelegate.getTextForSecondaryButton());
         mModel.set(
                 SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
-                mDelegate.shouldHideDismissButton());
+                mPromoDelegate.shouldHideDismissButton());
         mModel.set(
                 SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER,
-                profileData != null && !mDelegate.shouldDisplaySignedInLayout());
+                profileData != null && !mPromoDelegate.shouldDisplaySignedInLayout());
         mModel.set(
                 SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR,
-                mDelegate.shouldDisplaySignedInLayout());
+                mPromoDelegate.shouldDisplaySignedInLayout());
     }
 
     private void updateVisibility() {
@@ -249,7 +276,7 @@ final class SigninPromoMediator
             return;
         }
         mShouldShowPromo = shouldShowPromo;
-        mDelegate.onPromoVisibilityChange();
+        mPromoDelegate.onPromoVisibilityChange();
     }
 
     /**
@@ -270,7 +297,7 @@ final class SigninPromoMediator
 
     private void recordEventHistogram(@Event String actionType) {
         RecordHistogram.recordExactLinearHistogram(
-                "Signin.SyncPromo." + actionType + ".Count." + mDelegate.getAccessPointName(),
+                "Signin.SyncPromo." + actionType + ".Count." + mPromoDelegate.getAccessPointName(),
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT),
                 MAX_TOTAL_PROMO_SHOW_COUNT);
@@ -280,8 +307,8 @@ final class SigninPromoMediator
                     "Signin.Promo.ImpressionsUntil."
                             + actionType
                             + "."
-                            + mDelegate.getAccessPointName(),
-                    mDelegate.getPromoShownCount(),
+                            + mPromoDelegate.getAccessPointName(),
+                    mPromoDelegate.getPromoShownCount(),
                     MAX_TOTAL_PROMO_SHOW_COUNT);
         }
     }

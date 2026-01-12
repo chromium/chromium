@@ -68,9 +68,11 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -85,6 +87,7 @@ public class NativePageFactory {
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
@@ -92,6 +95,7 @@ public class NativePageFactory {
     private final WindowAndroid mWindowAndroid;
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
+    private final ActivityResultTracker mActivityResultTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -111,6 +115,7 @@ public class NativePageFactory {
             BottomSheetController sheetController,
             BrowserControlsManager browserControlsManager,
             Supplier<@Nullable Tab> currentTabSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
@@ -118,6 +123,7 @@ public class NativePageFactory {
             WindowAndroid windowAndroid,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
+            ActivityResultTracker activityResultTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
@@ -131,6 +137,7 @@ public class NativePageFactory {
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
         mCurrentTabSupplier = currentTabSupplier;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabModelSelector = tabModelSelector;
@@ -138,6 +145,7 @@ public class NativePageFactory {
         mWindowAndroid = windowAndroid;
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
+        mActivityResultTracker = activityResultTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
@@ -158,6 +166,7 @@ public class NativePageFactory {
                             mBottomSheetController,
                             mBrowserControlsManager,
                             mCurrentTabSupplier,
+                            mModalDialogManagerSupplier,
                             mSnackbarManagerSupplier,
                             mLifecycleDispatcher,
                             mTabModelSelector,
@@ -165,6 +174,7 @@ public class NativePageFactory {
                             mWindowAndroid,
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
+                            mActivityResultTracker,
                             mTabContentManagerSupplier,
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
@@ -193,6 +203,7 @@ public class NativePageFactory {
         private final Supplier<NewTabPageCreationTracker> mNewTabPageCreationTracker;
         private final BrowserControlsManager mBrowserControlsManager;
         private final Supplier<@Nullable Tab> mCurrentTabSupplier;
+        private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
         private final ActivityLifecycleDispatcher mLifecycleDispatcher;
         private final TabModelSelector mTabModelSelector;
@@ -200,6 +211,7 @@ public class NativePageFactory {
         private final WindowAndroid mWindowAndroid;
         private final Supplier<Toolbar> mToolbarSupplier;
         private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
+        private final ActivityResultTracker mActivityResultTracker;
         private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
         private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -216,6 +228,7 @@ public class NativePageFactory {
                 BottomSheetController sheetController,
                 BrowserControlsManager browserControlsManager,
                 Supplier<@Nullable Tab> currentTabSupplier,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<SnackbarManager> snackbarManagerSupplier,
                 ActivityLifecycleDispatcher lifecycleDispatcher,
                 TabModelSelector tabModelSelector,
@@ -223,6 +236,7 @@ public class NativePageFactory {
                 WindowAndroid windowAndroid,
                 Supplier<Toolbar> toolbarSupplier,
                 @Nullable HomeSurfaceTracker homeSurfaceTracker,
+                ActivityResultTracker activityResultTracker,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
                 NonNullObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
@@ -237,6 +251,7 @@ public class NativePageFactory {
             mBottomSheetController = sheetController;
             mBrowserControlsManager = browserControlsManager;
             mCurrentTabSupplier = currentTabSupplier;
+            mModalDialogManagerSupplier = modalDialogManagerSupplier;
             mSnackbarManagerSupplier = snackbarManagerSupplier;
             mLifecycleDispatcher = lifecycleDispatcher;
             mTabModelSelector = tabModelSelector;
@@ -244,6 +259,7 @@ public class NativePageFactory {
             mWindowAndroid = windowAndroid;
             mToolbarSupplier = toolbarSupplier;
             mHomeSurfaceTracker = homeSurfaceTracker;
+            mActivityResultTracker = activityResultTracker;
             mTabContentManagerSupplier = tabContentManagerSupplier;
             mTabStripHeightSupplier = tabStripHeightSupplier;
             mModuleRegistrySupplier = moduleRegistrySupplier;
@@ -346,8 +362,13 @@ public class NativePageFactory {
             RecentTabsManager recentTabsManager =
                     new RecentTabsManager(
                             tab,
-                            tab.getProfile(),
+                            mWindowAndroid,
                             mActivity,
+                            tab.getProfile(),
+                            mActivityResultTracker,
+                            mBottomSheetController,
+                            mModalDialogManagerSupplier,
+                            mSnackbarManagerSupplier.get(),
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
                                             mActivity, tab, tab.getProfile()),

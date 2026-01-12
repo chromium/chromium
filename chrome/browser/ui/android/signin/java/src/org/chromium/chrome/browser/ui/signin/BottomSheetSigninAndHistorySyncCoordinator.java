@@ -79,7 +79,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
     private final BottomSheetController mBottomSheetController;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable SnackbarManager mSnackbarManager;
     private BottomSheetSigninAndHistorySyncConfig mConfig;
     private final @SigninAccessPoint int mSigninAccessPoint;
@@ -90,6 +90,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private @Nullable PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
     private boolean mFlowInitialized;
+    // Each access point use a different key as a same activity can host different instances of this
+    // coordinator.
+    private @Nullable String mRegisteredActivityKey;
     private @ColorInt int mScrimStatusBarColor = ScrimProperties.INVALID_COLOR;
 
     /**
@@ -152,7 +155,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<ProfileProvider> profileSupplier,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             @SigninAccessPoint int signinAccessPoint) {
         assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
@@ -177,7 +180,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<ProfileProvider> profileSupplier,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
@@ -192,8 +195,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mSigninAccessPoint = signinAccessPoint;
         mActivityDelegate = null;
 
+        mRegisteredActivityKey = ADD_ACCOUNT_ACTIVITY_KEY + signinAccessPoint;
         activityResultTracker.register(
-                ADD_ACCOUNT_ACTIVITY_KEY,
+                assumeNonNull(mRegisteredActivityKey),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
@@ -236,7 +240,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<ProfileProvider> profileSupplier,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             BottomSheetSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
@@ -358,7 +362,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                 // TODO(https://crbug.com/437039516): Save the config in instance
                                 // state via ActivityResultTracker.
                                 mActivityResultTracker.startActivity(
-                                        ADD_ACCOUNT_ACTIVITY_KEY, intent);
+                                        assumeNonNull(mRegisteredActivityKey), intent);
                             });
         } else {
             mActivityDelegate.addAccount();

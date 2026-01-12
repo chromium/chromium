@@ -3442,6 +3442,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getCompositorViewHolderSupplier(),
                             getModalDialogManagerSupplier(),
                             this::getSnackbarManager,
+                            getActivityResultTracker(),
                             getBrowserControlsManager(),
                             getActivityTabProvider(),
                             getLifecycleDispatcher(),

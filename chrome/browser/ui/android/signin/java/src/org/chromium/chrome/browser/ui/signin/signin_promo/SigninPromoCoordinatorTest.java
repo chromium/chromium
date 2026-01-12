@@ -15,11 +15,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,9 +62,11 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
@@ -71,12 +75,18 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -84,6 +94,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -146,8 +157,15 @@ public class SigninPromoCoordinatorTest {
 
     @Rule public final MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
 
+    private @Mock WindowAndroid mWindow;
     private @Mock Profile mProfile;
+    private @Mock ActivityResultTracker mActivityResultTracker;
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
+    private @Mock BottomSheetSigninAndHistorySyncCoordinator mCoordinator;
+    private @Mock BottomSheetController mBottomSheetController;
+    private @Mock Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Mock SnackbarManager mSnackbarManager;
+    private @Mock DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private @Mock Runnable mOnPromoStateChange;
     private @Mock Runnable mOnOpenSettings;
 
@@ -159,6 +177,12 @@ public class SigninPromoCoordinatorTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
+        lenient()
+                .when(
+                        mLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                                anyInt()))
+                .thenReturn(mCoordinator);
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(RenderTestParams.class)
@@ -259,12 +283,18 @@ public class SigninPromoCoordinatorTest {
                         : HistorySyncConfig.OptInMode.NONE;
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        eq(mActivityTestRule.getActivity()),
-                        eq(mProfile),
-                        configCaptor.capture(),
-                        eq(accessPoint));
+        // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                && accessPoint == SigninAccessPoint.RECENT_TABS) {
+            verify(mCoordinator).startSigninFlow(configCaptor.capture());
+        } else {
+            verify(mLauncher)
+                    .createBottomSheetSigninIntentOrShowError(
+                            eq(mActivityTestRule.getActivity()),
+                            eq(mProfile),
+                            configCaptor.capture(),
+                            eq(accessPoint));
+        }
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
@@ -304,12 +334,19 @@ public class SigninPromoCoordinatorTest {
         // Extract the config passed to the sign-in flow launcher.
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        eq(mActivityTestRule.getActivity()),
-                        eq(mProfile),
-                        configCaptor.capture(),
-                        eq(accessPoint));
+        // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                && accessPoint == SigninAccessPoint.RECENT_TABS) {
+            verify(mCoordinator).startSigninFlow(configCaptor.capture());
+        } else {
+            verify(mLauncher)
+                    .createBottomSheetSigninIntentOrShowError(
+                            eq(mActivityTestRule.getActivity()),
+                            eq(mProfile),
+                            configCaptor.capture(),
+                            eq(accessPoint));
+        }
+
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
 
         // Verify bottom sheet strings.
@@ -416,12 +453,17 @@ public class SigninPromoCoordinatorTest {
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        eq(mActivityTestRule.getActivity()),
-                        eq(mProfile),
-                        configCaptor.capture(),
-                        eq(accessPoint));
+        // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
+        if (accessPoint == SigninAccessPoint.RECENT_TABS) {
+            verify(mCoordinator).startSigninFlow(configCaptor.capture());
+        } else {
+            verify(mLauncher)
+                    .createBottomSheetSigninIntentOrShowError(
+                            eq(mActivityTestRule.getActivity()),
+                            eq(mProfile),
+                            configCaptor.capture(),
+                            eq(accessPoint));
+        }
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
@@ -1076,35 +1118,41 @@ public class SigninPromoCoordinatorTest {
                     activity.setContentView(content);
 
                     mPromoView = promoView.findViewById(R.id.signin_promo_view_container);
-                    mDelegate =
-                            getSigninPromoDelegate(
-                                    accessPoint,
+                    mDelegate = getSigninPromoDelegate(accessPoint, activity);
+                    mPromoCoordinator =
+                            new SigninPromoCoordinator(
+                                    mWindow,
                                     activity,
                                     mProfile,
+                                    mActivityResultTracker,
                                     mLauncher,
-                                    mOnPromoStateChange,
-                                    mOnOpenSettings);
-                    mPromoCoordinator = new SigninPromoCoordinator(activity, mProfile, mDelegate);
+                                    mBottomSheetController,
+                                    mModalDialogManagerSupplier,
+                                    mSnackbarManager,
+                                    mDeviceLockActivityLauncher,
+                                    mDelegate);
                     mPromoCoordinator.setView(mPromoView);
                 });
     }
 
-    private static SigninPromoDelegate getSigninPromoDelegate(
-            @SigninAccessPoint int accessPoint,
-            Context context,
-            Profile profile,
-            SigninAndHistorySyncActivityLauncher launcher,
-            Runnable onPromoStateChange,
-            Runnable onOpenSettings) {
+    private SigninPromoDelegate getSigninPromoDelegate(
+            @SigninAccessPoint int accessPoint, Activity activity) {
         return switch (accessPoint) {
-            case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
-                    context, profile, launcher, onPromoStateChange, onOpenSettings);
-            case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
-                    context, profile, launcher, onPromoStateChange, /* isCreatedInCct= */ false);
-            case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
-                    context, profile, launcher, onPromoStateChange);
-            case SigninAccessPoint.RECENT_TABS -> new RecentTabsSigninPromoDelegate(
-                    context, profile, launcher, onPromoStateChange);
+            case SigninAccessPoint.BOOKMARK_MANAGER ->
+                    new BookmarkSigninPromoDelegate(
+                            activity, mProfile, mLauncher, mOnPromoStateChange, mOnOpenSettings);
+            case SigninAccessPoint.HISTORY_PAGE ->
+                    new HistoryPageSigninPromoDelegate(
+                            activity,
+                            mProfile,
+                            mLauncher,
+                            mOnPromoStateChange,
+                            /* isCreatedInCct= */ false);
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
+                    new NtpSigninPromoDelegate(activity, mProfile, mLauncher, mOnPromoStateChange);
+            case SigninAccessPoint.RECENT_TABS ->
+                    new RecentTabsSigninPromoDelegate(
+                            activity, mProfile, mLauncher, mOnPromoStateChange);
             default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
         };
     }
