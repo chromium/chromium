@@ -253,7 +253,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 - (void)presentHomeCustomizationTipBubble {
   NSString* text =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_HOME_CUSTOMIZATION_IPH);
+      IsNTPBackgroundCustomizationEnabled()
+          ? l10n_util::GetNSStringWithFixup(
+                IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH)
+          : l10n_util::GetNSStringWithFixup(IDS_IOS_HOME_CUSTOMIZATION_IPH);
 
   UIView* menuButton =
       [_layoutGuideCenter referencedViewUnderName:kFeedIPHNamedGuide];
