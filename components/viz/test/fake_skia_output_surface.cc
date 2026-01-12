@@ -360,8 +360,7 @@ void FakeSkiaOutputSurface::DestroyCopyOutputTexture(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  GetSharedImageInterface()->DestroySharedImage(sync_token,
-                                                std::move(shared_image));
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(

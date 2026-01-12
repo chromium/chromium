@@ -135,14 +135,10 @@ SharedQuadState* CreateTestSharedQuadState(
 }
 
 void DeleteSharedImage(
-    scoped_refptr<RasterContextProvider> context_provider,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  DCHECK(context_provider);
-  gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(sync_token, std::move(client_shared_image));
+  client_shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 TransferableResource CreateTestTexture(
@@ -169,8 +165,7 @@ TransferableResource CreateTestTexture(
       client_shared_image, TransferableResource::ResourceSource::kTest,
       sync_token);
   auto release_callback =
-      base::BindOnce(&DeleteSharedImage, std::move(child_context_provider),
-                     std::move(client_shared_image));
+      base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   gl_resource.id = child_resource_provider->ImportResource(
       gl_resource, std::move(release_callback));
   return gl_resource;
