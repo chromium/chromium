@@ -16338,27 +16338,6 @@
             ]
         }
     ],
-    "MojoInlineMessagePayloads2": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoInlineMessagePayloads"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoUseEventFd": [
         {
             "platforms": [
