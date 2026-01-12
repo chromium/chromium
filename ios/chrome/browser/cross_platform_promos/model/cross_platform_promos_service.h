@@ -35,13 +35,13 @@ class CrossPlatformPromosService : public KeyedService {
   void OnApplicationWillEnterForeground();
 
   // Shows the Lens promo.
-  void ShowLensPromo(Browser* browser);
+  virtual void ShowLensPromo(Browser* browser);
 
   // Shows the Enhanced Safe Browsing promo.
-  void ShowESBPromo(Browser* browser);
+  virtual void ShowESBPromo(Browser* browser);
 
   // Shows the CPE promo.
-  void ShowCPEPromo(Browser* browser);
+  virtual void ShowCPEPromo(Browser* browser);
 
   // Evaluates synced prefs to see whether a promo should be shown.
   void MaybeShowPromo();

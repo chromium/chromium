@@ -1697,6 +1697,9 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Reminder"/>
   <int value="18" label="Commerce"/>
   <int value="19" label="Content"/>
+  <int value="20" label="Passwords [Cross Platform Promos]"/>
+  <int value="21" label="Safe Browsing [Cross Platform Promos]"/>
+  <int value="22" label="Lens [Cross Platform Promos]"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->
