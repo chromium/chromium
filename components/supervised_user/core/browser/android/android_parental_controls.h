@@ -40,9 +40,7 @@ class AndroidParentalControls : public DeviceParentalControls,
 
  private:
   // ContentFiltersObserverBridge::Observer:
-  void OnContentFiltersObserverEnabled(std::string_view setting_name) override;
-  void OnContentFiltersObserverDisabled(std::string_view setting_name) override;
-  void OnContentFiltersObserverChanged(std::string_view setting_name);
+  void OnContentFiltersObserverChanged(std::string_view setting_name) override;
 
   ContentFiltersObserverBridge browser_content_filters_observer_{
       kBrowserContentFiltersSettingName};

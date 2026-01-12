@@ -18,11 +18,7 @@ class ContentFiltersObserverBridgeTest : public testing::Test {};
 class MockObserver : public ContentFiltersObserverBridge::Observer {
  public:
   MOCK_METHOD(void,
-              OnContentFiltersObserverEnabled,
-              (std::string_view),
-              (override));
-  MOCK_METHOD(void,
-              OnContentFiltersObserverDisabled,
+              OnContentFiltersObserverChanged,
               (std::string_view),
               (override));
 };
@@ -34,10 +30,7 @@ TEST_F(ContentFiltersObserverBridgeTest,
       kPropagateDeviceContentFiltersToSupervisedUser);
 
   MockObserver observer;
-  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(
-                            kBrowserContentFiltersSettingName))
-      .Times(0);
-  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(
+  EXPECT_CALL(observer, OnContentFiltersObserverChanged(
                             kBrowserContentFiltersSettingName))
       .Times(0);
 
@@ -50,12 +43,9 @@ TEST_F(ContentFiltersObserverBridgeTest,
 
 TEST_F(ContentFiltersObserverBridgeTest, NotificationsAreSent) {
   MockObserver observer;
-  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(
+  EXPECT_CALL(observer, OnContentFiltersObserverChanged(
                             kBrowserContentFiltersSettingName))
-      .Times(1);
-  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(
-                            kBrowserContentFiltersSettingName))
-      .Times(1);
+      .Times(2);
 
   ContentFiltersObserverBridge bridge(kBrowserContentFiltersSettingName);
 

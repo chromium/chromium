@@ -72,13 +72,8 @@ void ContentFiltersObserverBridge::SetEnabled(bool enabled) {
 }
 
 void ContentFiltersObserverBridge::NotifyObservers() {
-  if (enabled_) {
-    observer_list_.Notify(&Observer::OnContentFiltersObserverEnabled,
-                          setting_name_);
-  } else {
-    observer_list_.Notify(&Observer::OnContentFiltersObserverDisabled,
-                          setting_name_);
-  }
+  observer_list_.Notify(&Observer::OnContentFiltersObserverChanged,
+                        setting_name_);
 }
 
 void ContentFiltersObserverBridge::Init() {

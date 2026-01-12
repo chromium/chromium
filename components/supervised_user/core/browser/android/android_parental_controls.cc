@@ -43,16 +43,6 @@ bool AndroidParentalControls::IsEnabled() const {
   return IsBrowserContentFiltersEnabled() || IsSearchContentFiltersEnabled();
 }
 
-void AndroidParentalControls::OnContentFiltersObserverEnabled(
-    std::string_view setting_name) {
-  OnContentFiltersObserverChanged(setting_name);
-}
-
-void AndroidParentalControls::OnContentFiltersObserverDisabled(
-    std::string_view setting_name) {
-  OnContentFiltersObserverChanged(setting_name);
-}
-
 void AndroidParentalControls::OnContentFiltersObserverChanged(
     std::string_view setting_name) {
   if (setting_name == browser_content_filters_observer_.GetSettingName()) {
