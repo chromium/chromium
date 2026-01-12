@@ -29,7 +29,7 @@ bool GlicInactiveFloatingUi::IsShowing() const {
   return false;
 }
 
-void GlicInactiveFloatingUi::Close() {}
+void GlicInactiveFloatingUi::Close(const CloseOptions& options) {}
 
 void GlicInactiveFloatingUi::Focus() {}
 

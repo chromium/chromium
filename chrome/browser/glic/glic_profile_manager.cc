@@ -146,7 +146,7 @@ void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
       last_active_glic_->IsWindowShowing()) {
     // This is only relevant to single-instance glic, as IsWindowShowing remains
     // unimplemented in multi-instance.
-    last_active_glic_->window_controller().Close();
+    last_active_glic_->window_controller().Close({});
   }
   Profile* last_active_glic_profile = nullptr;
   if (glic) {
@@ -165,7 +165,7 @@ void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
     return;
   }
   if (current_detached_glic_ && current_detached_glic_->profile() != profile) {
-    current_detached_glic_->window_controller().Close();
+    current_detached_glic_->window_controller().Close({});
   }
   current_detached_glic_ = GlicKeyedService::Get(profile)->GetWeakPtr();
 }
@@ -279,7 +279,7 @@ void GlicProfileManager::ShowProfilePicker() {
       &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   // If the panel is not closed it will be on top of the profile picker.
   if (last_active_glic_) {
-    last_active_glic_->window_controller().Close();
+    last_active_glic_->window_controller().Close({});
   }
 
   // TODO(crbug.com/450679848): Profile Picker doesn't make sense on ChromeOS.

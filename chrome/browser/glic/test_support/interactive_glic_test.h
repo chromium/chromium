@@ -541,7 +541,7 @@ class InteractiveGlicTestMixin : public T {
         }
         instance->CloseAllEmbedders();
       } else {
-        window_controller().Close();
+        window_controller().Close(CloseOptions());
       }
     });
   }

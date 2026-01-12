@@ -21,7 +21,7 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   // GlicSidePanelCoordinator:
   using GlicSidePanelCoordinator::Show;
   void Show(bool suppress_animations) override;
-  void Close() override;
+  void Close(const CloseOptions& options) override;
   bool IsShowing() const override;
   State state() override;
   base::CallbackListSubscription AddStateCallback(

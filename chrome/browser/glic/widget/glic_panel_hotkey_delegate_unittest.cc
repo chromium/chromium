@@ -80,7 +80,7 @@ TEST_F(GlicPanelHotkeyDelegateTest, GetSupportedHotkeys) {
 }
 
 TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedClose) {
-  EXPECT_CALL(*mock_panel_, Close()).Times(1);
+  EXPECT_CALL(*mock_panel_, Close(testing::_)).Times(1);
   EXPECT_TRUE(
       delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kClose));
 }

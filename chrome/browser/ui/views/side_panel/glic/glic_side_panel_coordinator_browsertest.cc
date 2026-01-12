@@ -264,6 +264,21 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, ShowAndClose) {
   EXPECT_FALSE(coordinator().IsShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, CloseSuppressed) {
+  // Initial state should be kClosed.
+  EXPECT_EQ(coordinator().state(), GlicSidePanelCoordinator::State::kClosed);
+
+  // Show the panel.
+  coordinator().Show();
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
+  EXPECT_TRUE(coordinator().IsShowing());
+
+  // Close the panel with animation suppression.
+  coordinator().Close({.suppress_animations = true});
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kClosed);
+  EXPECT_FALSE(coordinator().IsShowing());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, Backgrounded) {
   GlicSidePanelCoordinator& initial_tab_coordinator = coordinator();
   // Show the panel.

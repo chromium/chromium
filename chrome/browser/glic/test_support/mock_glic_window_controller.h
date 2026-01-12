@@ -45,7 +45,7 @@ class MockGlicWindowController
   MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
   MOCK_METHOD(void, SetDraggableAreas, (const std::vector<gfx::Rect>&), ());
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
-  MOCK_METHOD(void, Close, (), (override));
+  MOCK_METHOD(void, Close, (const CloseOptions&), (override));
   MOCK_METHOD(void,
               CloseInstanceWithFrame,
               (content::RenderFrameHost * render_frame_host),

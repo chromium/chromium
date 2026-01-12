@@ -421,7 +421,7 @@ void TabUnderlineViewControllerImpl::AnimateUnderline() {
     // There is be a chance that the underline view has already stopped showing.
     // In that case, gracefully handle the crash case in crbug.com/398319435 by
     // closing(minimizing) the glic window.
-    glic_service_->window_controller().Close();
+    glic_service_->window_controller().Close({});
   }
 
   underline_view_->ResetAnimationCycle();

@@ -336,7 +336,7 @@ void GlicKeyedService::CloseAndShutdown(
 }
 
 void GlicKeyedService::CloseFloatingPanel() {
-  window_controller().Close();
+  window_controller().Close({});
 }
 
 void GlicKeyedService::PrepareForOpen() {

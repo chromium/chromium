@@ -232,7 +232,7 @@ void GlicSidePanelUi::Show(const ShowOptions& options) {
   glic_side_panel_coordinator->Show(suppress_animations);
 }
 
-void GlicSidePanelUi::Close() {
+void GlicSidePanelUi::Close(const CloseOptions& options) {
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
@@ -241,11 +241,11 @@ void GlicSidePanelUi::Close() {
     return;
   }
   // NOTE: `this` will be destroyed after this call.
-  glic_side_panel_coordinator->Close();
+  glic_side_panel_coordinator->Close(options);
 }
 
 void GlicSidePanelUi::ClosePanel() {
-  Close();
+  Close(CloseOptions());
 }
 
 void GlicSidePanelUi::OnReload() {

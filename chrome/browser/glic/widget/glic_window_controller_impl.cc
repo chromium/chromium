@@ -211,8 +211,9 @@ void GlicWindowControllerImpl::OnWidgetDestroyed(views::Widget* widget) {
   // implementation currently does not support this.
   if (IsDetached() && GetGlicWidget() == widget) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&GlicWindowControllerImpl::Close,
-                                  weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&GlicWindowControllerImpl::Close,
+                       weak_ptr_factory_.GetWeakPtr(), CloseOptions{}));
   }
 }
 
@@ -292,7 +293,7 @@ void GlicWindowControllerImpl::Toggle(
 
   auto maybe_close = [this, prevent_close] {
     if (!prevent_close) {
-      Close();
+      Close({});
     }
   };
 
@@ -305,7 +306,7 @@ void GlicWindowControllerImpl::Toggle(
 #if BUILDFLAG(IS_WIN)
   // Clicking status tray on Windows makes floaty not active so always close.
   if (source == mojom::InvocationSource::kOsButton) {
-    Close();
+    Close({});
     return;
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -330,7 +331,7 @@ void GlicWindowControllerImpl::ToggleWhenNotAlwaysDetached(
     std::optional<std::string> prompt_suggestion) {
   auto maybe_close = [this, prevent_close] {
     if (!prevent_close) {
-      Close();
+      Close({});
     }
   };
 
@@ -762,7 +763,7 @@ GlicWidget* GlicWindowControllerImpl::GetGlicWidget() const {
 
 void GlicWindowControllerImpl::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
-  Close();
+  Close({});
 }
 
 void GlicWindowControllerImpl::Attach() {
@@ -935,7 +936,7 @@ void GlicWindowControllerImpl::SetMinimumWidgetSize(const gfx::Size& size) {
 
 void GlicWindowControllerImpl::CloseWithReason(
     views::Widget::ClosedReason reason) {
-  Close();
+  Close({});
 }
 
 bool GlicWindowControllerImpl::ActivateBrowser() {
@@ -963,7 +964,7 @@ void GlicWindowControllerImpl::ArchiveInstanceWithFrame(
   NOTREACHED();
 }
 
-void GlicWindowControllerImpl::Close() {
+void GlicWindowControllerImpl::Close(const CloseOptions& options) {
   if (state_ == State::kClosed || state_ == State::kDetaching) {
     return;
   }
@@ -1004,7 +1005,7 @@ void GlicWindowControllerImpl::CloseAndShutdownInstanceWithFrame(
 }
 
 void GlicWindowControllerImpl::ClosePanel() {
-  Close();
+  Close({});
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
@@ -1313,7 +1314,7 @@ GlicWindowControllerImpl::GetWeakPtr() {
 
 void GlicWindowControllerImpl::Shutdown() {
   // Hide first, then clean up (but do not animate).
-  Close();
+  Close({});
   window_activation_callback_list_.Notify(false);
 }
 

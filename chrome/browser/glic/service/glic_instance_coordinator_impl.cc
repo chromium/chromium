@@ -279,10 +279,10 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
   host_manager().Shutdown();
 }
 
-void GlicInstanceCoordinatorImpl::Close() {
+void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
   // TODO(crbug.com/450286204): Determine whether there are cases where this
   // should be able to close a side panel UI instead.
-  CloseFloaty();
+  CloseFloaty(options);
 }
 
 void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
@@ -316,9 +316,9 @@ void GlicInstanceCoordinatorImpl::ArchiveInstanceWithFrame(
   }
 }
 
-void GlicInstanceCoordinatorImpl::CloseFloaty() {
+void GlicInstanceCoordinatorImpl::CloseFloaty(const CloseOptions& options) {
   if (auto* floaty_instance = GetInstanceWithFloaty()) {
-    floaty_instance->Close(FloatingEmbedderKey{});
+    floaty_instance->Close(FloatingEmbedderKey{}, options);
   }
 }
 

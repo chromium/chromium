@@ -7,7 +7,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/glic/public/glic_close_options.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -49,7 +51,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual void FocusIfOpen() = 0;
     virtual bool HasFocus() = 0;
     virtual bool IsShowing() const = 0;
-    virtual void Close() = 0;
+    virtual void Close(const CloseOptions& options) = 0;
     virtual bool ActivateBrowser() = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
     virtual base::WeakPtr<views::View> GetView() = 0;

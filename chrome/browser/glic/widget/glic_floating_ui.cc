@@ -299,7 +299,7 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
   ConfigureWebContentsModalDialogs();
 }
 
-void GlicFloatingUi::Close() {
+void GlicFloatingUi::Close(const CloseOptions& options) {
   instance_metrics_->OnFloatyClosed();
   if (IsShowing()) {
     modal_dialog_host_observers_.Notify(
@@ -328,10 +328,6 @@ void GlicFloatingUi::ClearWebContentsDelegate() {
       dialog_manager->SetDelegate(nullptr);
     }
   }
-}
-
-void GlicFloatingUi::ClosePanel() {
-  Close();
 }
 
 void GlicFloatingUi::OnReload() {
@@ -364,7 +360,8 @@ void GlicFloatingUi::OnWidgetDestroyed(views::Widget* widget) {
   if (GetGlicWidget() == widget) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&GlicFloatingUi::Close, weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&GlicFloatingUi::Close, weak_ptr_factory_.GetWeakPtr(),
+                       CloseOptions{}));
   }
 }
 
@@ -462,6 +459,10 @@ void GlicFloatingUi::CaptureScreenshot(
   }
   screenshot_capturer_->CaptureScreenshot(GetGlicWidget()->GetNativeWindow(),
                                           std::move(callback));
+}
+
+void GlicFloatingUi::ClosePanel() {
+  Close({});
 }
 
 std::string GlicFloatingUi::DescribeForTesting() {

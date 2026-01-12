@@ -39,7 +39,7 @@ bool GlicInactiveSidePanelUi::IsShowing() const {
   return false;
 }
 
-void GlicInactiveSidePanelUi::Close() {}
+void GlicInactiveSidePanelUi::Close(const CloseOptions& options) {}
 
 void GlicInactiveSidePanelUi::Focus() {}
 

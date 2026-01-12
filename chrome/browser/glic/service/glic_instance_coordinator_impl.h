@@ -117,7 +117,7 @@ class GlicInstanceCoordinatorImpl
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
   void Shutdown() override;
-  void Close() override;
+  void Close(const CloseOptions& options) override;
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(
@@ -183,7 +183,7 @@ class GlicInstanceCoordinatorImpl
                        glic::mojom::InvocationSource source,
                        std::optional<std::string> prompt_suggestion);
 
-  void CloseFloaty();
+  void CloseFloaty(const CloseOptions& options = {});
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
   void CheckMemoryUsage();

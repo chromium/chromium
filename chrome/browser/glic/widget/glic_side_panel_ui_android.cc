@@ -28,7 +28,7 @@ bool GlicSidePanelUi::IsShowing() const {
   return false;
 }
 
-void GlicSidePanelUi::Close() {}
+void GlicSidePanelUi::Close(const CloseOptions& options) {}
 
 void GlicSidePanelUi::Focus() {}
 

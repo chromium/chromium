@@ -87,7 +87,7 @@ class GlicWindowControllerImpl
   void Shutdown() override;
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetPanelSize() override;
-  void Close() override;
+  void Close(const CloseOptions& options) override;
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(

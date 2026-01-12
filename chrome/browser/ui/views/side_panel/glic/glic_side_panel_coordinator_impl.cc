@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
 
+#include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -101,13 +102,15 @@ void GlicSidePanelCoordinatorImpl::Show(bool suppress_animations) {
                                       suppress_animations);
 }
 
-void GlicSidePanelCoordinatorImpl::Close() {
+void GlicSidePanelCoordinatorImpl::Close(const CloseOptions& options) {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
   if (!window_side_panel_coordinator || !entry_) {
     return;
   }
   if (IsShowing()) {
-    window_side_panel_coordinator->Close(entry_->type());
+    window_side_panel_coordinator->Close(
+        entry_->type(), SidePanelEntryHideReason::kSidePanelClosed,
+        options.suppress_animations);
     return;
   }
   if (state_ == State::kBackgrounded) {

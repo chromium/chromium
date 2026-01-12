@@ -135,7 +135,7 @@ class GlicInstanceImpl : public GlicInstance,
   // This method will either show an embedder or create an inactive embedder and
   // bind a tab to conversation.
   void Show(const ShowOptions& options) override;
-  void Close(EmbedderKey key);
+  void Close(EmbedderKey key, const CloseOptions& options = {});
   // Returns true when toggle shows the instance and false when it is closed.
   bool Toggle(ShowOptions&& options,
               bool prevent_close,

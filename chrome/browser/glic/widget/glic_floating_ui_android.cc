@@ -44,7 +44,7 @@ bool GlicFloatingUi::IsShowing() const {
   return false;
 }
 
-void GlicFloatingUi::Close() {}
+void GlicFloatingUi::Close(const CloseOptions& options) {}
 
 void GlicFloatingUi::Focus() {}
 

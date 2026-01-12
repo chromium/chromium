@@ -88,6 +88,7 @@ constexpr size_t kMaxRecentConversationsForPanel = 3;
 
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
+BASE_FEATURE(kGlicSuppressAnimationsOnDetach, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
@@ -344,7 +345,9 @@ void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
       ShowOptions::ForFloating(tab.GetHandle(), interaction_mode_);
   show_options.focus_on_show = true;
   Show(show_options);
-  Close(CreateSidePanelEmbedderKey(&tab));
+  Close(CreateSidePanelEmbedderKey(&tab),
+        {.suppress_animations =
+             base::FeatureList::IsEnabled(kGlicSuppressAnimationsOnDetach)});
 }
 
 void GlicInstanceImpl::Attach(tabs::TabInterface& tab) {
@@ -356,13 +359,13 @@ void GlicInstanceImpl::Attach(tabs::TabInterface& tab) {
   Show(ShowOptions::ForSidePanel(tab));
 }
 
-void GlicInstanceImpl::Close(EmbedderKey key) {
+void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
   auto* embedder = GetEmbedderForKey(key);
   if (!embedder) {
     return;
   }
   instance_metrics_.OnClose();
-  embedder->Close();
+  embedder->Close(options);
 }
 
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,

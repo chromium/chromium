@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_close_options.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,7 +97,7 @@ class GlicWindowController {
   virtual void Shutdown() = 0;
 
   // Close the panel but keep the glic WebContents alive in the background.
-  virtual void Close() = 0;
+  virtual void Close(const CloseOptions& options) = 0;
   // Closes the active embedder of an instance with matching render_frame_host
   // without resetting webcontents.
   virtual void CloseInstanceWithFrame(

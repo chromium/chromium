@@ -21,7 +21,7 @@ class MockLocalHotkeyPanel
   MOCK_METHOD(void, FocusIfOpen, (), (override));
   MOCK_METHOD(bool, HasFocus, (), (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
-  MOCK_METHOD(void, Close, (), (override));
+  MOCK_METHOD(void, Close, (const CloseOptions& options), (override));
   MOCK_METHOD(bool, ActivateBrowser, (), (override));
   MOCK_METHOD(void, ShowTitleBarContextMenuAt, (gfx::Point), (override));
   MOCK_METHOD(base::WeakPtr<views::View>, GetView, (), (override));

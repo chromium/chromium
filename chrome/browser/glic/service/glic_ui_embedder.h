@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_close_options.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -62,7 +63,7 @@ class GlicUiEmbedder {
   virtual bool IsShowing() const = 0;
 
   // Close the glic UI (keeps webclient alive for now)
-  virtual void Close() = 0;
+  virtual void Close(const CloseOptions& options) = 0;
 
   // Focus embedder's webcontents.
   virtual void Focus() = 0;
