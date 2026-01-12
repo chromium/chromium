@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
@@ -62,8 +63,8 @@ class SubAppsPermissionsPolicyBrowserTest
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(parent_app_id_);
 
-    EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              provider().registrar_unsafe().GetInstallState(parent_app_id_));
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
     EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
         parent_app_id_, WebAppFilter::IsIsolatedApp()));

@@ -1090,9 +1090,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       parent_app_id_, WebAppFilter::InstalledInOperatingSystemForTesting()));
-  EXPECT_EQ(
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      provider().registrar_unsafe().GetInstallState(parent_app_2.app_id()));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      parent_app_2.app_id(),
+      WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_NE(parent_app_id_, parent_app_2.app_id());
 
   // Call Add for both IWAs.
