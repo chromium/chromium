@@ -2714,6 +2714,7 @@ class WebViewChromium
                             autofill(values);
                         }
                     });
+            return;
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.AUTOFILL")) {
             recordWebViewApiCall(ApiCall.AUTOFILL);
