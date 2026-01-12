@@ -13,7 +13,8 @@ found in the LICENSE file.
     android:layout_width="@dimen/tile_view_width"
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/tile_view_padding"
-    android:paddingEnd="@dimen/tile_view_padding" >
+    android:paddingEnd="@dimen/tile_view_padding"
+    android:background="@drawable/tile_view_background_selector" >
       <include
         android:layout_width="match_parent"
         android:layout_height="match_parent"
