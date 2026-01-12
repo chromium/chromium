@@ -498,6 +498,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Support);
 // Further optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kFurtherOptimizeParsingDataUrls);
 
+// Preserve MIME type parameters in data: URLs for WPT compliance.
+// When enabled, non-charset parameters (e.g., "boundary=xxx") are preserved
+// in the Content-Type header, and quoted parameter values are properly
+// normalized. See https://fetch.spec.whatwg.org/#data-url-processor
+NET_EXPORT BASE_DECLARE_FEATURE(kDataUrlMimeTypeParameterPreservation);
+
 // If enabled, unrecognized keys in a No-Vary-Search header will be ignored.
 // Otherwise, unrecognized keys are treated as if the header was invalid.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
