@@ -38,6 +38,7 @@ source_set("themes") {
     "//chrome/browser/search/background:constants",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/frame",
+    "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/webui/cr_components/theme_color_picker",
     "//chrome/common",
