@@ -226,8 +226,7 @@ class CrOSDriverFactory(DriverFactory):
       # on the VM. On LUCI workers it takes more time than in the local
       # environment, which can cause tests flakiness.
       time.sleep(INITIAL_WAIT_TIME_SECONDS)
-      driver = webdriver.Chrome(service=self.get_driver_service(),
-                                options=options)
+      driver = self.get_driver(options)
       # VM may not be fully ready before it returns, wait for window handle
       # to double confirm.
       self.wait_for_window(driver)
