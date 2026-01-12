@@ -798,13 +798,97 @@ void RequestService::FetchEndpointsForIdps(
   fetch_data_ = FetchData();
   fetch_data_.pending_idps = std::move(pending_idps);
 
+  std::vector<ConfigFetcher::FetchRequest> idps;
+  for (const auto& idp : idp_config_urls) {
+    auto idp_get = token_request_get_infos_.find(idp);
+    CHECK(idp_get != token_request_get_infos_.end());
+    idps.emplace_back(
+        idp, idp_get->second.provider->config->from_idp_registration_api);
+  }
+
   fedcm_accounts_fetcher_ = std::make_unique<AccountsFetcher>(
       render_frame_host(), network_manager_.get(), api_permission_delegate_,
       permission_delegate_,
       AccountsFetcher::FedCmFetchingParams(
           rp_mode_, icon_ideal_size, icon_minimum_size, mediation_requirement_),
-      this);
-  fedcm_accounts_fetcher_->FetchEndpointsForIdps(idp_config_urls);
+      base::BindOnce(&RequestService::OnAccountsResultsReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+  fedcm_accounts_fetcher_->FetchEndpointsForIdps(
+      idps, token_request_get_infos_, fedcm_metrics_.get(),
+      GetEmbeddingOrigin(),
+      base::BindRepeating(&RequestService::FilterAccounts,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RequestService::FilterAccounts(
+    const GURL& idp_config_url,
+    const GURL& idp_login_url,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  auto filter = [](const IdentityRequestAccountPtr& account) {
+    return account->is_filtered_out;
+  };
+  if (idps_user_tried_to_signin_to_.find(idp_config_url) ==
+          idps_user_tried_to_signin_to_.end() ||
+      login_url_ != idp_login_url) {
+    std::erase_if(accounts, filter);
+  } else {
+    // If the user is logging in to new accounts, only show filtered
+    // accounts if there are no new unfiltered accounts. This includes in
+    // particular the case where all accounts are filtered out.
+    size_t new_unfiltered =
+        std::count_if(accounts.begin(), accounts.end(),
+                      [&](const IdentityRequestAccountPtr& account) {
+                        return !account->is_filtered_out &&
+                               account_ids_before_login_.find(account->id) ==
+                                   account_ids_before_login_.end();
+                      });
+    if (new_unfiltered > 0u) {
+      std::erase_if(accounts, filter);
+    }
+  }
+}
+
+void RequestService::OnAccountsResultsReceived(
+    base::TimeTicks well_known_and_config_fetched_time,
+    std::vector<AccountsFetcher::Result> results) {
+  SetWellKnownAndConfigFetchedTime(well_known_and_config_fetched_time);
+
+  for (auto& result : results) {
+    if (result.idp_info) {
+      SetIdpLoginInfo(result.idp_info->metadata.idp_login_url,
+                      result.idp_info->provider->login_hint,
+                      result.idp_info->provider->domain_hint);
+    }
+    if (result.accounts_fetched_time != base::TimeTicks()) {
+      SetAccountsFetchedTime(result.accounts_fetched_time);
+    }
+    if (result.client_metadata_fetched_time != base::TimeTicks()) {
+      SetClientMetadataFetchedTime(result.client_metadata_fetched_time);
+    }
+
+    if (result.show_active_mode_modal_dialog) {
+      MaybeShowActiveModeModalDialog(result.idp_config_url,
+                                     result.idp_info->metadata.idp_login_url);
+      continue;
+    }
+
+    if (result.error) {
+      OnFetchDataForIdpFailed(std::move(result.idp_info), *result.error,
+                              result.token_status,
+                              result.should_delay_callback);
+      continue;
+    }
+
+    if (result.is_mismatch) {
+      OnIdpMismatch(std::move(result.idp_info));
+      continue;
+    }
+
+    // Success
+    CHECK(result.accounts.has_value());
+    OnFetchDataForIdpSucceeded(std::move(*result.accounts),
+                               std::move(result.idp_info));
+  }
 }
 
 void RequestService::CompleteDisconnectRequest(

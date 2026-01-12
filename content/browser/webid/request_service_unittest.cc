@@ -5884,7 +5884,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountMatch) {
 TEST_F(RequestServiceTest, DomainHintSingleAccountStarMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
-      RequestService::kWildcardDomainHint;
+      AccountsFetcher::kWildcardDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
@@ -5906,7 +5906,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountStarMatch) {
 TEST_F(RequestServiceTest, DomainHintSingleAccountStarNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
-      RequestService::kWildcardDomainHint;
+      AccountsFetcher::kWildcardDomainHint;
 
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -6031,7 +6031,7 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsMultipleMatches) {
 TEST_F(RequestServiceTest, DomainHintMultipleAccountsStar) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
-      RequestService::kWildcardDomainHint;
+      AccountsFetcher::kWildcardDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =

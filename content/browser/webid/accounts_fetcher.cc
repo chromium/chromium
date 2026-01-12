@@ -11,9 +11,10 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/mappers.h"
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/metrics.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 using ::blink::mojom::FederatedAuthRequestResult;
@@ -74,6 +75,11 @@ AccountsFetcher::IdentityProviderGetInfo::operator=(
   return *this;
 }
 
+AccountsFetcher::Result::Result() = default;
+AccountsFetcher::Result::~Result() = default;
+AccountsFetcher::Result::Result(Result&&) = default;
+AccountsFetcher::Result& AccountsFetcher::Result::operator=(Result&&) = default;
+
 AccountsFetcher::FedCmFetchingParams::FedCmFetchingParams(
     blink::mojom::RpMode rp_mode,
     int icon_ideal_size,
@@ -92,27 +98,27 @@ AccountsFetcher::AccountsFetcher(
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     FedCmFetchingParams params,
-    RequestService* federated_auth_request_impl)
+    AccountsFetcherCallback callback)
     : render_frame_host_(render_frame_host),
       network_manager_(network_manager),
       api_permission_delegate_(api_permission_delegate),
       permission_delegate_(permission_delegate),
       params_(params),
-      federated_auth_request_impl_(federated_auth_request_impl) {}
+      callback_(std::move(callback)) {}
 
 AccountsFetcher::~AccountsFetcher() = default;
 
 void AccountsFetcher::FetchEndpointsForIdps(
-    const std::set<GURL>& idp_config_urls) {
-  std::vector<ConfigFetcher::FetchRequest> idps;
-  base::flat_map<GURL, IdentityProviderGetInfo>& token_request_get_infos =
-      federated_auth_request_impl_->GetTokenRequestGetInfos();
-  for (const auto& idp : idp_config_urls) {
-    auto idp_get = token_request_get_infos.find(idp);
-    CHECK(idp_get != token_request_get_infos.end());
-    idps.emplace_back(
-        idp, idp_get->second.provider->config->from_idp_registration_api);
-  }
+    const std::vector<ConfigFetcher::FetchRequest>& idps,
+    const base::flat_map<GURL, IdentityProviderGetInfo>&
+        token_request_get_infos,
+    Metrics* fedcm_metrics,
+    const url::Origin& embedding_origin,
+    FilterAccountsCallback filter_accounts_callback) {
+  request_get_infos_ = token_request_get_infos;
+  fedcm_metrics_ = fedcm_metrics;
+  embedding_origin_ = embedding_origin;
+  filter_accounts_callback_ = std::move(filter_accounts_callback);
 
   config_fetcher_ =
       std::make_unique<ConfigFetcher>(*render_frame_host_, network_manager_);
@@ -168,18 +174,16 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
     std::vector<ConfigFetcher::FetchResult> fetch_results) {
   config_fetcher_.reset();
 
-  base::TimeTicks well_known_and_config_fetched_time = base::TimeTicks::Now();
-  federated_auth_request_impl_->SetWellKnownAndConfigFetchedTime(
-      well_known_and_config_fetched_time);
+  // Set pending requests
+  num_pending_requests_ = fetch_results.size();
 
-  base::flat_map<GURL, IdentityProviderGetInfo>& token_request_get_infos =
-      federated_auth_request_impl_->GetTokenRequestGetInfos();
+  well_known_and_config_fetched_time_ = base::TimeTicks::Now();
+
   for (const ConfigFetcher::FetchResult& fetch_result : fetch_results) {
     const GURL& identity_provider_config_url =
         fetch_result.identity_provider_config_url;
-    auto get_info_it =
-        token_request_get_infos.find(identity_provider_config_url);
-    CHECK(get_info_it != token_request_get_infos.end());
+    auto get_info_it = request_get_infos_.find(identity_provider_config_url);
+    CHECK(get_info_it != request_get_infos_.end());
 
     metrics_endpoints_[identity_provider_config_url] =
         fetch_result.endpoints.metrics;
@@ -192,6 +196,9 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
             get_info_it->second.rp_context, get_info_it->second.rp_mode,
             get_info_it->second.format);
 
+    Result result;
+    result.idp_config_url = identity_provider_config_url;
+
     if (fetch_result.error) {
       const ConfigFetcher::FetchError& fetch_error = *fetch_result.error;
       if (fetch_error.additional_console_error_message) {
@@ -199,9 +206,11 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
             blink::mojom::ConsoleMessageLevel::kError,
             *fetch_error.additional_console_error_message);
       }
-      federated_auth_request_impl_->OnFetchDataForIdpFailed(
-          std::move(idp_info), fetch_error.result, fetch_error.token_status,
-          /*should_delay_callback=*/params_.rp_mode == RpMode::kPassive);
+      result.idp_info = std::move(idp_info);
+      result.error = fetch_error.result;
+      result.token_status = fetch_error.token_status;
+      result.should_delay_callback = params_.rp_mode == RpMode::kPassive;
+      AddResult(std::move(result));
       continue;
     }
 
@@ -222,11 +231,11 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
           "these endpoints.");
 
       if (IsWellKnownEndpointValidationEnabled()) {
-        federated_auth_request_impl_->OnFetchDataForIdpFailed(
-            std::move(idp_info),
-            FederatedAuthRequestResult::kWellKnownInvalidResponse,
-            TokenStatus::kWellKnownInvalidResponse,
-            /*should_delay_callback=*/false);
+        result.idp_info = std::move(idp_info);
+        result.error = FederatedAuthRequestResult::kWellKnownInvalidResponse;
+        result.token_status = TokenStatus::kWellKnownInvalidResponse;
+        result.should_delay_callback = false;
+        AddResult(std::move(result));
         continue;
       }
     }
@@ -235,10 +244,11 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       if (get_info_it->second.provider->config->type) {
         if (!base::Contains(fetch_result.metadata->types,
                             get_info_it->second.provider->config->type)) {
-          federated_auth_request_impl_->OnFetchDataForIdpFailed(
-              std::move(idp_info), FederatedAuthRequestResult::kTypeNotMatching,
-              TokenStatus::kConfigNotMatchingType,
-              /*should_delay_callback=*/false);
+          result.idp_info = std::move(idp_info);
+          result.error = FederatedAuthRequestResult::kTypeNotMatching;
+          result.token_status = TokenStatus::kConfigNotMatchingType;
+          result.should_delay_callback = false;
+          AddResult(std::move(result));
           continue;
         }
       }
@@ -249,18 +259,14 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       // supports it as well as the feature is enabled.
       if (!IsDelegationEnabled() ||
           !base::Contains(fetch_result.metadata->formats, kVcSdJwt)) {
-        federated_auth_request_impl_->OnFetchDataForIdpFailed(
-            std::move(idp_info),
-            FederatedAuthRequestResult::kConfigInvalidResponse,
-            TokenStatus::kConfigInvalidResponse,
-            /*should_delay_callback=*/false);
+        result.idp_info = std::move(idp_info);
+        result.error = FederatedAuthRequestResult::kConfigInvalidResponse;
+        result.token_status = TokenStatus::kConfigInvalidResponse;
+        result.should_delay_callback = false;
+        AddResult(std::move(result));
         continue;
       }
     }
-
-    federated_auth_request_impl_->SetIdpLoginInfo(
-        idp_info->metadata.idp_login_url, idp_info->provider->login_hint,
-        idp_info->provider->domain_hint);
 
     // Make sure that we don't fetch accounts if the IDP sign-in bit is
     // reset to false during the API call. e.g. by the login/logout HEADER.
@@ -275,19 +281,21 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       // If the user is logged out and we are in a active-mode, allow the
       // user to sign-in to the IdP and return early.
       if (params_.rp_mode == blink::mojom::RpMode::kActive) {
-        federated_auth_request_impl_->MaybeShowActiveModeModalDialog(
-            identity_provider_config_url, idp_info->metadata.idp_login_url);
-        return;
+        result.show_active_mode_modal_dialog = true;
+        result.idp_info = std::move(idp_info);
+        AddResult(std::move(result));
+        continue;
       }
       // Do not send metrics for IDP where the user is not signed-in in
       // order to prevent IDP from using the user IP to make a probabilistic
       // model of which websites a user visits.
       idp_info->endpoints.metrics = GURL();
 
-      federated_auth_request_impl_->OnFetchDataForIdpFailed(
-          std::move(idp_info), FederatedAuthRequestResult::kNotSignedInWithIdp,
-          TokenStatus::kNotSignedInWithIdp,
-          /*should_delay_callback=*/true);
+      result.idp_info = std::move(idp_info);
+      result.error = FederatedAuthRequestResult::kNotSignedInWithIdp;
+      result.token_status = TokenStatus::kNotSignedInWithIdp;
+      result.should_delay_callback = true;
+      AddResult(std::move(result));
       continue;
     }
 
@@ -304,8 +312,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
             base::BindOnce(&AccountsFetcher::OnAccountsResponseReceived,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(idp_info)))) {
-      federated_auth_request_impl_->fedcm_metrics()->RecordAccountsRequestSent(
-          config_url);
+      fedcm_metrics_->RecordAccountsRequestSent(config_url);
     }
   }
 }
@@ -314,7 +321,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     FetchStatus status,
     IdpNetworkRequestManager::AccountsResponse accounts) {
-  federated_auth_request_impl_->SetAccountsFetchedTime(base::TimeTicks::Now());
+  base::TimeTicks accounts_fetched_time = base::TimeTicks::Now();
 
   GURL idp_config_url = idp_info->provider->config->config_url;
   const std::optional<bool> old_idp_signin_status =
@@ -327,9 +334,9 @@ void AccountsFetcher::OnAccountsResponseReceived(
   if (status.parse_status != ParseStatus::kSuccess) {
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
-    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
-                               resultAndTokenStatus.first,
-                               resultAndTokenStatus.second, status);
+    HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status, resultAndTokenStatus.first,
+        resultAndTokenStatus.second, status, accounts_fetched_time);
     return;
   }
   RecordRawAccountsSize(accounts.accounts.size());
@@ -340,29 +347,9 @@ void AccountsFetcher::OnAccountsResponseReceived(
                               accounts.accounts);
   FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
                                accounts.accounts);
-  auto filter = [](const IdentityRequestAccountPtr& account) {
-    return account->is_filtered_out;
-  };
-  if (!federated_auth_request_impl_->HasUserTriedToSignInToIdp(
-          idp_config_url) ||
-      federated_auth_request_impl_->login_url() !=
-          idp_info->metadata.idp_login_url) {
-    std::erase_if(accounts.accounts, filter);
-  } else {
-    // If the user is logging in to new accounts, only show filtered
-    // accounts if there are no new unfiltered accounts. This includes in
-    // particular the case where all accounts are filtered out.
-    size_t new_unfiltered = std::count_if(
-        accounts.accounts.begin(), accounts.accounts.end(),
-        [&](const IdentityRequestAccountPtr& account) {
-          return !account->is_filtered_out &&
-                 !federated_auth_request_impl_->HadAccountIdBeforeLogin(
-                     account->id);
-        });
-    if (new_unfiltered > 0u) {
-      std::erase_if(accounts.accounts, filter);
-    }
-  }
+  filter_accounts_callback_.Run(
+      idp_config_url, idp_info->metadata.idp_login_url, accounts.accounts);
+
   if (accounts.accounts.size() == 0u) {
     // No accounts remain, so treat as account fetch failure.
     render_frame_host_->AddMessageToConsole(
@@ -374,7 +361,8 @@ void AccountsFetcher::OnAccountsResponseReceived(
     // ParseStatus::kEmptyListError.
     HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
                                FederatedAuthRequestResult::kAccountsListEmpty,
-                               TokenStatus::kAccountsListEmpty, status);
+                               TokenStatus::kAccountsListEmpty, status,
+                               accounts_fetched_time);
     return;
   }
   RecordReadyToShowAccountsSize(accounts.accounts.size());
@@ -382,13 +370,15 @@ void AccountsFetcher::OnAccountsResponseReceived(
   ComputeAccountFields(GetDisclosureFields(idp_info->provider->fields),
                        accounts.accounts);
 
-  OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts));
+  OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts),
+                           accounts_fetched_time);
 }
 
 void AccountsFetcher::OnAccountsFetchSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     FetchStatus status,
-    IdpNetworkRequestManager::AccountsResponse accounts) {
+    IdpNetworkRequestManager::AccountsResponse accounts,
+    base::TimeTicks accounts_fetched_time) {
   // For cross-site iframes, we need to fetch client metadata in case the
   // IDP sends `client_is_third_party_to_top_frame_origin: true`.
   url::Origin embedding_origin =
@@ -421,7 +411,7 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
         params_.icon_minimum_size,
         base::BindOnce(&AccountsFetcher::OnClientMetadataResponseReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-                       std::move(accounts)));
+                       std::move(accounts), accounts_fetched_time));
   } else {
     GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
     network_manager_->FetchAccountPicturesAndBrandIcons(
@@ -429,17 +419,18 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
         /*rp_brand_icon_url=*/GURL(),
         base::BindOnce(&AccountsFetcher::OnFetchDataForIdpSucceeded,
                        weak_ptr_factory_.GetWeakPtr(),
-                       IdpNetworkRequestManager::ClientMetadata()));
+                       IdpNetworkRequestManager::ClientMetadata(),
+                       accounts_fetched_time, base::TimeTicks()));
   }
 }
 
 void AccountsFetcher::OnClientMetadataResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     IdpNetworkRequestManager::AccountsResponse&& accounts,
+    base::TimeTicks accounts_fetched_time,
     FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
-  federated_auth_request_impl_->SetClientMetadataFetchedTime(
-      base::TimeTicks::Now());
+  base::TimeTicks client_metadata_fetched_time = base::TimeTicks::Now();
 
   // TODO(yigu): Clean up the client metadata related errors for metrics and
   // console logs.
@@ -448,12 +439,14 @@ void AccountsFetcher::OnClientMetadataResponseReceived(
   network_manager_->FetchAccountPicturesAndBrandIcons(
       std::move(accounts), std::move(idp_info), rp_brand_icon_url,
       base::BindOnce(&AccountsFetcher::OnFetchDataForIdpSucceeded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(client_metadata)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_metadata),
+                     accounts_fetched_time, client_metadata_fetched_time));
 }
 
 void AccountsFetcher::OnFetchDataForIdpSucceeded(
     const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+    base::TimeTicks accounts_fetched_time,
+    base::TimeTicks client_metadata_fetched_time,
     IdpNetworkRequestManager::AccountsResponse accounts,
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const gfx::Image& rp_brand_icon) {
@@ -477,8 +470,13 @@ void AccountsFetcher::OnFetchDataForIdpSucceeded(
     account->identity_provider = idp_info->data;
   }
 
-  federated_auth_request_impl_->OnFetchDataForIdpSucceeded(std::move(accounts),
-                                                           std::move(idp_info));
+  Result result;
+  result.idp_config_url = idp_config_url;
+  result.idp_info = std::move(idp_info);
+  result.accounts = std::move(accounts);
+  result.accounts_fetched_time = accounts_fetched_time;
+  result.client_metadata_fetched_time = client_metadata_fetched_time;
+  AddResult(std::move(result));
 }
 
 void AccountsFetcher::FilterAccountsWithLabel(
@@ -500,8 +498,7 @@ void AccountsFetcher::FilterAccountsWithLabel(
       ++accounts_remaining;
     }
   }
-  federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
-      accounts_remaining, "AccountLabel");
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "AccountLabel");
 }
 
 void AccountsFetcher::FilterAccountsWithLoginHint(
@@ -526,8 +523,7 @@ void AccountsFetcher::FilterAccountsWithLoginHint(
       ++accounts_remaining;
     }
   }
-  federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
-      accounts_remaining, "LoginHint");
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "LoginHint");
 }
 
 void AccountsFetcher::FilterAccountsWithDomainHint(
@@ -542,7 +538,7 @@ void AccountsFetcher::FilterAccountsWithDomainHint(
     if (account->is_filtered_out) {
       continue;
     }
-    if (domain_hint == RequestService::kWildcardDomainHint) {
+    if (domain_hint == kWildcardDomainHint) {
       if (account->domain_hints.empty()) {
         account->is_filtered_out = true;
         continue;
@@ -553,8 +549,7 @@ void AccountsFetcher::FilterAccountsWithDomainHint(
     }
     ++accounts_remaining;
   }
-  federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
-      accounts_remaining, "DomainHint");
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "DomainHint");
 }
 
 void AccountsFetcher::ComputeLoginStates(
@@ -567,29 +562,24 @@ void AccountsFetcher::ComputeLoginStates(
     bool idp_claimed_sign_in =
         account->idp_claimed_login_state == LoginState::kSignIn;
     account->last_used_timestamp = permission_delegate_->GetLastUsedTimestamp(
-        render_frame_host_->GetLastCommittedOrigin(),
-        federated_auth_request_impl_->GetEmbeddingOrigin(), idp_origin,
-        account->id);
+        render_frame_host_->GetLastCommittedOrigin(), embedding_origin_,
+        idp_origin, account->id);
 
     if (idp_claimed_sign_in == account->last_used_timestamp.has_value()) {
-      federated_auth_request_impl_->fedcm_metrics()
-          ->RecordSignInStateMatchStatus(idp_config_url,
-                                         SignInStateMatchStatus::kMatch);
+      fedcm_metrics_->RecordSignInStateMatchStatus(
+          idp_config_url, SignInStateMatchStatus::kMatch);
     } else if (idp_claimed_sign_in) {
-      federated_auth_request_impl_->fedcm_metrics()
-          ->RecordSignInStateMatchStatus(
-              idp_config_url, SignInStateMatchStatus::kIdpClaimedSignIn);
+      fedcm_metrics_->RecordSignInStateMatchStatus(
+          idp_config_url, SignInStateMatchStatus::kIdpClaimedSignIn);
     } else {
-      federated_auth_request_impl_->fedcm_metrics()
-          ->RecordSignInStateMatchStatus(
-              idp_config_url, SignInStateMatchStatus::kBrowserObservedSignIn);
+      fedcm_metrics_->RecordSignInStateMatchStatus(
+          idp_config_url, SignInStateMatchStatus::kBrowserObservedSignIn);
     }
 
     if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
             *render_frame_host_, /*provider_url=*/idp_config_url,
-            federated_auth_request_impl_->GetEmbeddingOrigin(),
-            render_frame_host_->GetLastCommittedOrigin(), account->id,
-            permission_delegate_, api_permission_delegate_)) {
+            embedding_origin_, render_frame_host_->GetLastCommittedOrigin(),
+            account->id, permission_delegate_, api_permission_delegate_)) {
       LoginState browser_observed_login_state =
           account->last_used_timestamp.has_value() ? LoginState::kSignIn
                                                    : LoginState::kSignUp;
@@ -608,29 +598,42 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     std::optional<bool> old_idp_signin_status,
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<TokenStatus> token_status,
-    const FetchStatus& status) {
+    const FetchStatus& status,
+    base::TimeTicks accounts_fetched_time) {
   if (status.parse_status != ParseStatus::kSuccess) {
     webid::MaybeAddResponseCodeToConsole(
         *render_frame_host_, "accounts endpoint", status.response_code);
   }
   if (!old_idp_signin_status.has_value()) {
     if (params_.rp_mode == blink::mojom::RpMode::kActive) {
-      federated_auth_request_impl_->MaybeShowActiveModeModalDialog(
-          idp_info->provider->config->config_url,
-          idp_info->metadata.idp_login_url);
+      Result res;
+      res.idp_config_url = idp_info->provider->config->config_url;
+      res.show_active_mode_modal_dialog = true;
+      res.idp_info = std::move(idp_info);
+      AddResult(std::move(res));
       return;
     }
-    federated_auth_request_impl_->OnFetchDataForIdpFailed(
-        std::move(idp_info), result, token_status,
-        /*should_delay_callback=*/true);
+
+    Result res;
+    res.idp_config_url = idp_info->provider->config->config_url;
+    res.idp_info = std::move(idp_info);
+    res.error = result;
+    res.token_status = token_status;
+    res.should_delay_callback = true;
+    res.accounts_fetched_time = accounts_fetched_time;
+    AddResult(std::move(res));
     return;
   }
 
   if (!IsFrameActive(render_frame_host_->GetMainFrame())) {
-    federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedAuthRequestResult::kRpPageNotVisible,
-        TokenStatus::kRpPageNotVisible,
-        /*should_delay_callback=*/true);
+    Result res;
+    res.idp_config_url = idp_info->provider->config->config_url;
+    res.idp_info = std::move(idp_info);
+    res.error = FederatedAuthRequestResult::kRpPageNotVisible;
+    res.token_status = TokenStatus::kRpPageNotVisible;
+    res.should_delay_callback = true;
+    res.accounts_fetched_time = accounts_fetched_time;
+    AddResult(std::move(res));
     return;
   }
 
@@ -639,11 +642,14 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     // past for the RP/IdP. Because otherwise we have returned already in
     // `ShouldFailBeforeFetchingAccounts`. It means that we don't need to show
     // any UI to respect `mediation: silent`.
-    federated_auth_request_impl_->OnFetchDataForIdpFailed(
-        std::move(idp_info),
-        FederatedAuthRequestResult::kSilentMediationFailure,
-        TokenStatus::kSilentMediationFailure,
-        /*should_delay_callback=*/true);
+    Result res;
+    res.idp_config_url = idp_info->provider->config->config_url;
+    res.idp_info = std::move(idp_info);
+    res.error = FederatedAuthRequestResult::kSilentMediationFailure;
+    res.token_status = TokenStatus::kSilentMediationFailure;
+    res.should_delay_callback = true;
+    res.accounts_fetched_time = accounts_fetched_time;
+    AddResult(std::move(res));
     return;
   }
 
@@ -651,11 +657,13 @@ void AccountsFetcher::HandleAccountsFetchFailure(
   // at least for passive mode). We currently never need the RP icon for
   // mismatch UI.
   network_manager_->FetchIdpBrandIcon(
-      std::move(idp_info), base::BindOnce(&AccountsFetcher::OnIdpMismatch,
-                                          weak_ptr_factory_.GetWeakPtr()));
+      std::move(idp_info),
+      base::BindOnce(&AccountsFetcher::OnIdpMismatch,
+                     weak_ptr_factory_.GetWeakPtr(), accounts_fetched_time));
 }
 
 void AccountsFetcher::OnIdpMismatch(
+    base::TimeTicks accounts_fetched_time,
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_info->provider->config->config_url);
@@ -665,7 +673,13 @@ void AccountsFetcher::OnIdpMismatch(
       idp_info->rp_context, idp_info->format,
       GetDisclosureFields(idp_info->provider->fields),
       /*has_login_status_mismatch=*/true);
-  federated_auth_request_impl_->OnIdpMismatch(std::move(idp_info));
+
+  Result res;
+  res.idp_config_url = idp_info->provider->config->config_url;
+  res.idp_info = std::move(idp_info);
+  res.is_mismatch = true;
+  res.accounts_fetched_time = accounts_fetched_time;
+  AddResult(std::move(res));
 }
 
 void AccountsFetcher::SendFailedTokenRequestMetrics(
@@ -680,6 +694,15 @@ void AccountsFetcher::SendFailedTokenRequestMetrics(
   network_manager_->SendFailedTokenRequestMetrics(
       metrics_endpoint, did_show_ui,
       FederatedAuthRequestResultToMetricsEndpointErrorCode(result));
+}
+
+void AccountsFetcher::AddResult(Result&& result) {
+  results_.push_back(std::move(result));
+  --num_pending_requests_;
+  if (num_pending_requests_ == 0) {
+    std::move(callback_).Run(well_known_and_config_fetched_time_,
+                             std::move(results_));
+  }
 }
 
 }  // namespace content::webid
