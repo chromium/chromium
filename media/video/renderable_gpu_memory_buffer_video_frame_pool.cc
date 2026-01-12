@@ -279,10 +279,10 @@ scoped_refptr<VideoFrame> FrameResources::CreateVideoFrame() {
   video_frame->metadata().allow_overlay =
       shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
-  // Only native (non shared memory) GMBs require waiting on GPU fences.
-  const bool has_native_gmb = video_frame->HasNativeMappableSharedImage();
-  video_frame->metadata().read_lock_fences_enabled = has_native_gmb;
-
+  // Waiting on GPU fences is necessary for native mappable SIs, but is not
+  // necessary for mappable SIs backed by shared memory.
+  video_frame->metadata().read_lock_fences_enabled =
+      video_frame->HasNativeMappableSharedImage();
   return video_frame;
 }
 
