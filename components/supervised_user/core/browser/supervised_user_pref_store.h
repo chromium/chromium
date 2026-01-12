@@ -62,17 +62,22 @@ class SupervisedUserPrefStore : public PrefStore {
 
   void OnNewSettingsAvailable(const base::Value::Dict& settings);
 
+ private:
+  ~SupervisedUserPrefStore() override;
+
+  void OnSettingsServiceShutdown();
+
+  // Merges the supervised user settings and android parental controls state
+  // into a single pref value map. Non-empty `family_link_settings_` will
+  // ignore android_parental_controls_state (for now).
+  void RecreatePreferences();
+
   void OnNewContentFiltersStateAvailable(
       supervised_user::SupervisedUserContentFiltersService::State state);
 
   // Notifies observers about changes in the prefs_ compared to the diff_base,
   // which must own a valid pointer.
   void NotifyObserversAboutChanges(std::unique_ptr<PrefValueMap> diff_base);
-
- private:
-  ~SupervisedUserPrefStore() override;
-
-  void OnSettingsServiceShutdown();
 
   base::CallbackListSubscription user_settings_subscription_;
 
@@ -86,6 +91,14 @@ class SupervisedUserPrefStore : public PrefStore {
       settings_service_;
 
   base::ObserverList<PrefStore::Observer, true> observers_;
+
+  // Last received family link settings.
+  std::optional<base::Value::Dict> family_link_settings_;
+
+  // Last received (Android) device parental controls settings. Default value is
+  // semantically equivalent to no value.
+  supervised_user::SupervisedUserContentFiltersService::State
+      device_parental_controls_state_;
 
   base::WeakPtrFactory<SupervisedUserPrefStore> weak_factory_{this};
 };
