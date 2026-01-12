@@ -90,7 +90,7 @@ TEST_F(ThemeColorsSourceManagerTest,
 
   blink::mojom::LocalResourceLoaderConfig config;
   url::Origin requesting_origin =
-      url::Origin::Create(GURL("chrome://reload-button/"));
+      url::Origin::Create(GURL("chrome://webui-toolbar/"));
 
   ui::ColorProvider color_provider;
   manager->SetColorProviderForTesting(&color_provider);
@@ -103,8 +103,8 @@ TEST_F(ThemeColorsSourceManagerTest,
       ContainsThemeSource(Pointee(AllOf(
           HasResource("colors.css", Not(IsEmpty())),
           // Implementation adds headers if requesting origin != theme origin,
-          // and chrome://reload-button != chrome://theme.
-          HasHeader("Access-Control-Allow-Origin: chrome://reload-button")))));
+          // and chrome://webui-toolbar != chrome://theme.
+          HasHeader("Access-Control-Allow-Origin: chrome://webui-toolbar")))));
 }
 
 // Verifies cross-origin resource access. Checks that the

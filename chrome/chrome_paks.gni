@@ -227,7 +227,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/password_manager_resources.pak",
         "$root_gen_dir/chrome/privacy_sandbox_resources.pak",
         "$root_gen_dir/chrome/profile_internals_resources.pak",
-        "$root_gen_dir/chrome/reload_button_resources.pak",
         "$root_gen_dir/chrome/search_engine_choice_resources.pak",
         "$root_gen_dir/chrome/settings_resources.pak",
         "$root_gen_dir/chrome/side_panel_bookmarks_resources.pak",
@@ -248,6 +247,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/web_app_internals_resources.pak",
         "$root_gen_dir/chrome/webui_browser_resources.pak",
         "$root_gen_dir/chrome/webui_gallery_resources.pak",
+        "$root_gen_dir/chrome/webui_toolbar_resources.pak",
         "$root_gen_dir/chrome/whats_new_resources.pak",
         "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
         "$root_gen_dir/content/traces_internals_resources.pak",
@@ -262,10 +262,10 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/data_sharing:resources",
         "//chrome/browser/resources/lens/overlay:resources",
         "//chrome/browser/resources/lens/shared:resources",
-        "//chrome/browser/resources/reload_button:resources",
         "//chrome/browser/resources/search_engine_choice:resources",
         "//chrome/browser/resources/side_panel/comments:resources",
         "//chrome/browser/resources/tab_group_home:resources",
+        "//chrome/browser/resources/webui_toolbar:resources",
         "//content/browser/tracing:resources",
       ]
       if (is_chrome_branded) {

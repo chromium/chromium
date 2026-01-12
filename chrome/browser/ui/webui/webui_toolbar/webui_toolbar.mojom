@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module reload_button.mojom;
+module webui_toolbar.mojom;
 
 // Factory ensures that the Page and PageHandler interfaces are always created
 // together without requiring an initialization call from the WebUI to the
@@ -13,15 +13,15 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
-// The event flags for the click that might affect disposition of the reload
-// button's behavior.
+// The event flags for the click that might affect disposition of a button's
+// behavior.
 enum ClickDispositionFlag {
   kMiddleMouseButton = 0,
   kAltKeyDown = 1,
   kMetaKeyDown = 2,
 };
 
-// Called from TS side of chrome://reload-button.top-chrome
+// Called from TS side of chrome://webui-toolbar.top-chrome
 // (Renderer -> Browser)
 // The browser side will just invoke the corresponding browser command to
 // perform the actual loading/stopping. There is no state checks from the
@@ -38,12 +38,14 @@ interface PageHandler {
   // Stops the current page from reloading. If the page is not in a loading
   // state, it is a no-op.
   StopReload();
-  // Displays the context menu for the reload button with the x and y offset
-  // in pixel relative to the ReloadButtonWebView's origin.
+  // Displays the context menu for the associated button with the x and y offset
+  // in pixel relative to the WebUIToolbarWebView's origin.
+  // TODO(crbug.com/470955454): Adjust this API to indicate which control's
+  // context menu we need to show.
   ShowContextMenu(int32 offset_x, int32 offset_y);
 };
 
-// Called from C++ side of chrome://reload-button.top-chrome
+// Called from C++ side of chrome://webui-toolbar.top-chrome
 // (Browser -> Renderer)
 interface Page {
   // Sets the reload button state in the renderer, the renderer is expected to

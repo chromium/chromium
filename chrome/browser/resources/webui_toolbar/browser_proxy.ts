@@ -4,8 +4,8 @@
 
 import '//resources/js/cr.js';
 
-import {ClickDispositionFlag, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './reload_button.mojom-webui.js';
-import type {PageHandlerInterface} from './reload_button.mojom-webui.js';
+import {ClickDispositionFlag, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './webui_toolbar.mojom-webui.js';
+import type {PageHandlerInterface} from './webui_toolbar.mojom-webui.js';
 
 export {ClickDispositionFlag};
 

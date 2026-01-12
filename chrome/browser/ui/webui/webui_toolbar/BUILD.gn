@@ -9,15 +9,15 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "reload_button.mojom" ]
+  sources = [ "webui_toolbar.mojom" ]
   webui_module_path = "/"
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
-source_set("reload_button") {
+source_set("webui_toolbar") {
   sources = [
-    "reload_button_page_handler.h",
-    "reload_button_ui.h",
+    "webui_toolbar_page_handler.h",
+    "webui_toolbar_ui.h",
   ]
   public_deps = [
     ":mojo_bindings",
@@ -31,16 +31,16 @@ source_set("reload_button") {
 
 source_set("impl") {
   sources = [
-    "reload_button_page_handler.cc",
-    "reload_button_ui.cc",
+    "webui_toolbar_page_handler.cc",
+    "webui_toolbar_ui.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":mojo_bindings",
-    ":reload_button",
+    ":webui_toolbar",
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
-    "//chrome/browser/resources/reload_button:resources_grit",
+    "//chrome/browser/resources/webui_toolbar:resources_grit",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
@@ -54,14 +54,14 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "reload_button_page_handler_unittest.cc",
-    "reload_button_test_utils.cc",
-    "reload_button_test_utils.h",
-    "reload_button_ui_unittest.cc",
+    "webui_toolbar_page_handler_unittest.cc",
+    "webui_toolbar_test_utils.cc",
+    "webui_toolbar_test_utils.h",
+    "webui_toolbar_ui_unittest.cc",
   ]
 
   deps = [
-    ":reload_button",
+    ":webui_toolbar",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",

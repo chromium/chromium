@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/command_line.h"
 #include "base/test/run_until.h"
@@ -27,9 +27,9 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
-class ReloadButtonWebViewPixelBrowserTest : public InProcessBrowserTest {
+class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
  public:
-  ReloadButtonWebViewPixelBrowserTest() {
+  WebUIToolbarWebViewPixelBrowserTest() {
     // All features for Webium Production should be included here.
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
@@ -50,7 +50,7 @@ class ReloadButtonWebViewPixelBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Basic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
   ui::TrackedElement* element = nullptr;
   ASSERT_TRUE(base::test::RunUntil([&]() {
     element =
@@ -58,15 +58,17 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Basic) {
     return element != nullptr;
   }));
   ASSERT_TRUE(element);
-  views::TrackedElementViews* reload_view_element =
+  views::TrackedElementViews* webui_toolbar_view_element =
       element->AsA<views::TrackedElementViews>();
-  ASSERT_TRUE(reload_view_element);
-  ReloadButtonWebView* reload_view =
-      views::AsViewClass<ReloadButtonWebView>(reload_view_element->view());
-  ASSERT_TRUE(reload_view);
-  ASSERT_EQ(reload_view->children().size(), 1u);
-  views::WebView* web_view =
-      views::AsViewClass<views::WebView>(reload_view->children()[0].get());
+
+  ASSERT_TRUE(webui_toolbar_view_element);
+  WebUIToolbarWebView* webui_toolbar_view =
+      views::AsViewClass<WebUIToolbarWebView>(
+          webui_toolbar_view_element->view());
+  ASSERT_TRUE(webui_toolbar_view);
+  ASSERT_EQ(webui_toolbar_view->children().size(), 1u);
+  views::WebView* web_view = views::AsViewClass<views::WebView>(
+      webui_toolbar_view->children()[0].get());
   ASSERT_TRUE(web_view);
 
   // Wait for the WebView to finish composition.
@@ -82,12 +84,12 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Basic) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVerifyPixels)) {
     views::ViewSkiaGoldPixelDiff pixel_diff(
-        "ReloadButtonWebViewPixelBrowserTest");
-    EXPECT_TRUE(pixel_diff.CompareViewScreenshot("Basic", reload_view));
+        "WebUIToolbarWebViewPixelBrowserTest");
+    EXPECT_TRUE(pixel_diff.CompareViewScreenshot("Basic", webui_toolbar_view));
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Accessibility) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ui::TrackedElement* element = nullptr;
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -96,16 +98,18 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Accessibility) {
     return element != nullptr;
   }));
   ASSERT_TRUE(element);
-  views::TrackedElementViews* reload_view_element =
+  views::TrackedElementViews* webui_toolbar_view_element =
       element->AsA<views::TrackedElementViews>();
-  ASSERT_TRUE(reload_view_element);
-  ReloadButtonWebView* reload_view =
-      views::AsViewClass<ReloadButtonWebView>(reload_view_element->view());
-  ASSERT_TRUE(reload_view);
-  ASSERT_EQ(reload_view->children().size(), 1u);
-  views::WebView* web_view =
-      views::AsViewClass<views::WebView>(reload_view->children()[0].get());
+  ASSERT_TRUE(webui_toolbar_view_element);
+  WebUIToolbarWebView* webui_toolbar_view =
+      views::AsViewClass<WebUIToolbarWebView>(
+          webui_toolbar_view_element->view());
+  ASSERT_TRUE(webui_toolbar_view);
+  ASSERT_EQ(webui_toolbar_view->children().size(), 1u);
+  views::WebView* web_view = views::AsViewClass<views::WebView>(
+      webui_toolbar_view->children()[0].get());
   ASSERT_TRUE(web_view);
+
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 
   // Find accessibility node for reload button.
@@ -128,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Accessibility) {
   EXPECT_EQ(0, reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 
   // Verify enabling menu is reflected in HasPopup attribute.
-  reload_view->GetReloadControl()->SetMenuEnabled(true);
+  webui_toolbar_view->GetReloadControl()->SetMenuEnabled(true);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");

@@ -31,7 +31,7 @@ bool InitialWebUIManager::ShouldDeferShow() {
   return false;
 }
 
-void InitialWebUIManager::OnReloadButtonLoaded() {
+void InitialWebUIManager::OnWebUIToolbarLoaded() {
   is_initial_web_ui_pending_ = false;
   MaybeShowBrowserWindow();
 }

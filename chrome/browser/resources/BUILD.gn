@@ -63,7 +63,6 @@ group("resources") {
       "privacy_sandbox:resources",
       "privacy_sandbox/internals:resources",
       "profile_internals:resources",
-      "reload_button:resources",
       "search_engine_choice:resources",
       "settings:resources",
       "settings_shared:resources",
@@ -84,6 +83,7 @@ group("resources") {
       "web_app_internals:resources",
       "webui_browser:resources",
       "webui_gallery:resources",
+      "webui_toolbar:resources",
       "whats_new:resources",
       "//components/browser_apis/tab_strip/resources",
     ]

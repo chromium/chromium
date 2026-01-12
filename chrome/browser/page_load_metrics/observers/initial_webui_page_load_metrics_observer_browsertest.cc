@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   // doesn't support waiting for the webcontents embededed in topchrome UI.
 
   // 1. Navigate to an initial WebUI page.
-  NavigateAndWaitForMetrics(GURL(chrome::kChromeUIReloadButtonURL));
+  NavigateAndWaitForMetrics(GURL(chrome::kChromeUIWebUIToolbarURL));
 
   // The metrics should be only be recorded once from the browser UI itself.
   // Subsequent navigation will not be FirstPaint.

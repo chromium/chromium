@@ -122,7 +122,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIProfileInternalsHost,
       content::kChromeUIQuotaInternalsHost,
 #if !BUILDFLAG(IS_ANDROID)
-      kChromeUIReloadButtonHost,
+      kChromeUIWebUIToolbarHost,
 #endif
       kChromeUISignInInternalsHost,
       kChromeUISiteEngagementHost,

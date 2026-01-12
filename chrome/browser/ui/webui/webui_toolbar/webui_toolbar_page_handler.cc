@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
 
 #include <string>
 #include <utility>
@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -43,8 +43,8 @@ constexpr char kInputToStopMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
 int ToUIEventFlags(
-    const std::vector<reload_button::mojom::ClickDispositionFlag>& flags) {
-  using reload_button::mojom::ClickDispositionFlag;
+    const std::vector<webui_toolbar::mojom::ClickDispositionFlag>& flags) {
+  using webui_toolbar::mojom::ClickDispositionFlag;
   int event_flags = 0;
   for (auto& flag : flags) {
     switch (flag) {
@@ -68,9 +68,9 @@ int ToUIEventFlags(
 
 }  // namespace
 
-ReloadButtonPageHandler::ReloadButtonPageHandler(
-    mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver,
-    mojo::PendingRemote<reload_button::mojom::Page> page,
+WebUIToolbarPageHandler::WebUIToolbarPageHandler(
+    mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver,
+    mojo::PendingRemote<webui_toolbar::mojom::Page> page,
     content::WebContents* web_contents,
     CommandUpdater* command_updater)
     : receiver_(this, std::move(receiver)),
@@ -81,17 +81,17 @@ ReloadButtonPageHandler::ReloadButtonPageHandler(
   CHECK(command_updater_);
 }
 
-ReloadButtonPageHandler::~ReloadButtonPageHandler() = default;
+WebUIToolbarPageHandler::~WebUIToolbarPageHandler() = default;
 
-MetricsReporter* ReloadButtonPageHandler::GetMetricsReporter() {
+MetricsReporter* WebUIToolbarPageHandler::GetMetricsReporter() {
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_contents_);
   return service ? service->metrics_reporter() : nullptr;
 }
 
-void ReloadButtonPageHandler::Reload(
+void WebUIToolbarPageHandler::Reload(
     bool ignore_cache,
-    const std::vector<reload_button::mojom::ClickDispositionFlag>& flags) {
+    const std::vector<webui_toolbar::mojom::ClickDispositionFlag>& flags) {
   command_updater_->ExecuteCommandWithDisposition(
       ignore_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
       ui::DispositionFromEventFlags(ToUIEventFlags(flags)));
@@ -107,14 +107,14 @@ void ReloadButtonPageHandler::Reload(
   // MouseRelease
   metrics_reporter->Measure(
       kInputMouseReleaseStartMark, now,
-      base::BindOnce(&ReloadButtonPageHandler::OnMeasureResultAndClearMark,
+      base::BindOnce(&WebUIToolbarPageHandler::OnMeasureResultAndClearMark,
                      weak_ptr_factory_.GetWeakPtr(),
                      kInputToReloadMouseReleaseHistogram,
                      kInputMouseReleaseStartMark));
   // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
-void ReloadButtonPageHandler::StopReload() {
+void WebUIToolbarPageHandler::StopReload() {
   command_updater_->ExecuteCommandWithDisposition(
       IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
   // Gets the current time immediately after executing the command.
@@ -128,14 +128,14 @@ void ReloadButtonPageHandler::StopReload() {
   // MouseRelease
   metrics_reporter->Measure(
       kInputMouseReleaseStartMark, now,
-      base::BindOnce(&ReloadButtonPageHandler::OnMeasureResultAndClearMark,
+      base::BindOnce(&WebUIToolbarPageHandler::OnMeasureResultAndClearMark,
                      weak_ptr_factory_.GetWeakPtr(),
                      kInputToStopMouseReleaseHistogram,
                      kInputMouseReleaseStartMark));
   // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
-void ReloadButtonPageHandler::ShowContextMenu(int32_t offset_x,
+void WebUIToolbarPageHandler::ShowContextMenu(int32_t offset_x,
                                               int32_t offset_y) {
   content::ContextMenuParams params;
   params.x = offset_x;
@@ -144,7 +144,7 @@ void ReloadButtonPageHandler::ShowContextMenu(int32_t offset_x,
       *web_contents_->GetPrimaryMainFrame(), params);
 }
 
-void ReloadButtonPageHandler::SetReloadButtonState(bool is_loading,
+void WebUIToolbarPageHandler::SetReloadButtonState(bool is_loading,
                                                    bool is_menu_enabled) {
   if (auto* metrics_reporter = GetMetricsReporter()) {
     auto* mark = is_loading ? kChangeVisibleModeToStopStartMark
@@ -157,7 +157,7 @@ void ReloadButtonPageHandler::SetReloadButtonState(bool is_loading,
   }
 }
 
-void ReloadButtonPageHandler::OnMeasureResultAndClearMark(
+void WebUIToolbarPageHandler::OnMeasureResultAndClearMark(
     const std::string& histogram_name,
     const std::string& start_mark,
     base::TimeDelta duration) {

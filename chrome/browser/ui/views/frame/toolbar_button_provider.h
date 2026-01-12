@@ -22,6 +22,7 @@ class ReloadButton;
 class ReloadButtonWebView;
 class ReloadControl;
 class ToolbarButton;
+class WebUIToolbarWebView;
 
 namespace gfx {
 class Rect;
@@ -108,8 +109,8 @@ class ToolbarButtonProvider {
   // Returns the download button.
   virtual ToolbarButton* GetDownloadButton() = 0;
 
-  // Returns the ReloadButtonWebView (if any) for testing.
-  virtual ReloadButtonWebView* GetReloadButtonWebViewForTesting() = 0;
+  // Returns the WebUIToolbarWebView (if any) for testing.
+  virtual WebUIToolbarWebView* GetWebUIToolbarViewForTesting() = 0;
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:

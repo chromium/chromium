@@ -81,10 +81,10 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
-#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
@@ -361,9 +361,10 @@ void ToolbarView::Init() {
   back_ = container_view_->AddChildView(std::move(back));
   forward_ = container_view_->AddChildView(std::move(forward));
   if (features::IsWebUIReloadButtonEnabled()) {
-    auto reload_webview = std::make_unique<ReloadButtonWebView>(
+    auto toolbar_webview = std::make_unique<WebUIToolbarWebView>(
         browser_, browser_->command_controller());
-    reload_webview_ = container_view_->AddChildView(std::move(reload_webview));
+    toolbar_webview_ =
+        container_view_->AddChildView(std::move(toolbar_webview));
   } else {
     std::unique_ptr<ReloadButton> reload = std::make_unique<ReloadButton>(
         browser_->GetProfile(), browser_->command_controller());
@@ -1192,8 +1193,8 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadControl* ToolbarView::GetReloadButton() {
   if (features::IsWebUIReloadButtonEnabled()) {
-    if (reload_webview_) {
-      return reload_webview_->GetReloadControl();
+    if (toolbar_webview_) {
+      return toolbar_webview_->GetReloadControl();
     } else {
       return nullptr;
     }
@@ -1212,8 +1213,8 @@ ToolbarButton* ToolbarView::GetDownloadButton() {
                : nullptr;
 }
 
-ReloadButtonWebView* ToolbarView::GetReloadButtonWebViewForTesting() {
-  return reload_webview_;
+WebUIToolbarWebView* ToolbarView::GetWebUIToolbarViewForTesting() {
+  return toolbar_webview_;
 }
 
 std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(

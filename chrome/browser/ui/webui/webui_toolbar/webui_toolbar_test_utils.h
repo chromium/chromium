@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_TEST_UTILS_H_
-#define CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_
+#define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_
 
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 
-// Mock implementation of the reload_button::mojom::Page interface.
-class MockReloadButtonPage : public reload_button::mojom::Page {
+// Mock implementation of the webui_toolbar::mojom::Page interface.
+class MockReloadButtonPage : public webui_toolbar::mojom::Page {
  public:
   MockReloadButtonPage();
   ~MockReloadButtonPage() override;
@@ -22,18 +22,18 @@ class MockReloadButtonPage : public reload_button::mojom::Page {
   MockReloadButtonPage& operator=(const MockReloadButtonPage&) = delete;
 
   // Returns a PendingRemote to this mock implementation.
-  mojo::PendingRemote<reload_button::mojom::Page> BindAndGetRemote();
+  mojo::PendingRemote<webui_toolbar::mojom::Page> BindAndGetRemote();
 
   void FlushForTesting();
 
-  // reload_button::mojom::Page:
+  // webui_toolbar::mojom::Page:
   MOCK_METHOD(void,
               SetReloadButtonState,
               (bool is_loading, bool is_menu_enabled),
               (override));
 
  private:
-  mojo::Receiver<reload_button::mojom::Page> receiver_{this};
+  mojo::Receiver<webui_toolbar::mojom::Page> receiver_{this};
 };
 
 // Mock implementation of CommandUpdater for testing.
@@ -69,4 +69,4 @@ class MockCommandUpdater : public CommandUpdater {
   MOCK_METHOD(bool, UpdateCommandEnabled, (int id, bool state), (override));
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_

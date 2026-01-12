@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
 
 #include <memory>
 #include <utility>
@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_test_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -66,8 +66,8 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 
 }  // namespace
 
-// Test fixture for the ReloadButtonPageHandler class.
-class ReloadButtonPageHandlerTest : public testing::Test {
+// Test fixture for the WebUIToolbarPageHandler class.
+class WebUIToolbarPageHandlerTest : public testing::Test {
  public:
   void SetUp() override {
     web_contents_ =
@@ -81,8 +81,8 @@ class ReloadButtonPageHandlerTest : public testing::Test {
 
     mock_command_updater_ =
         std::make_unique<testing::NiceMock<MockCommandUpdater>>();
-    handler_ = std::make_unique<ReloadButtonPageHandler>(
-        mojo::PendingReceiver<reload_button::mojom::PageHandler>(),
+    handler_ = std::make_unique<WebUIToolbarPageHandler>(
+        mojo::PendingReceiver<webui_toolbar::mojom::PageHandler>(),
         page().BindAndGetRemote(), web_contents_.get(),
         mock_command_updater_.get());
 
@@ -129,7 +129,7 @@ class ReloadButtonPageHandlerTest : public testing::Test {
     return *mock_metrics_reporter_;
   }
 
-  ReloadButtonPageHandler& handler() { return *handler_; }
+  WebUIToolbarPageHandler& handler() { return *handler_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -141,16 +141,16 @@ class ReloadButtonPageHandlerTest : public testing::Test {
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
   std::unique_ptr<testing::NiceMock<MockCommandUpdater>> mock_command_updater_;
   raw_ptr<testing::NiceMock<MockMetricsReporter>> mock_metrics_reporter_;
-  std::unique_ptr<ReloadButtonPageHandler> handler_;
+  std::unique_ptr<WebUIToolbarPageHandler> handler_;
   base::HistogramTester histogram_tester_;
 };
 
 // Test suite for Reload-related tests.
-using ReloadButtonPageHandlerReloadTest = ReloadButtonPageHandlerTest;
+using WebUIToolbarPageHandlerReloadTest = WebUIToolbarPageHandlerTest;
 
 // Tests that calling Reload(false, {}) executes the IDC_RELOAD command and
 // records metrics.
-TEST_F(ReloadButtonPageHandlerReloadTest, ReloadByMouseRelease) {
+TEST_F(WebUIToolbarPageHandlerReloadTest, ReloadByMouseRelease) {
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(
                   IDC_RELOAD, WindowOpenDisposition::CURRENT_TAB, testing::_));
@@ -166,7 +166,7 @@ TEST_F(ReloadButtonPageHandlerReloadTest, ReloadByMouseRelease) {
 
 // Tests that calling Reload(false, {}) doesn't record metrics if the start mark
 // is not present.
-TEST_F(ReloadButtonPageHandlerReloadTest, ReloadByMouseReleaseNoStartMark) {
+TEST_F(WebUIToolbarPageHandlerReloadTest, ReloadByMouseReleaseNoStartMark) {
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(
                   IDC_RELOAD, WindowOpenDisposition::CURRENT_TAB, testing::_));
@@ -179,7 +179,7 @@ TEST_F(ReloadButtonPageHandlerReloadTest, ReloadByMouseReleaseNoStartMark) {
 
 // Tests that calling Reload(false, {middle_button}) executes the
 // IDC_RELOAD with new background tab.
-TEST_F(ReloadButtonPageHandlerReloadTest, ReloadWithMiddleMouseButton) {
+TEST_F(WebUIToolbarPageHandlerReloadTest, ReloadWithMiddleMouseButton) {
   EXPECT_CALL(
       mock_command_updater(),
       ExecuteCommandWithDisposition(
@@ -190,7 +190,7 @@ TEST_F(ReloadButtonPageHandlerReloadTest, ReloadWithMiddleMouseButton) {
 
   handler().Reload(
       /*ignore_cache=*/false, /*flags=*/{
-          reload_button::mojom::ClickDispositionFlag::kMiddleMouseButton});
+          webui_toolbar::mojom::ClickDispositionFlag::kMiddleMouseButton});
 
   histogram_tester().ExpectUniqueTimeSample(kInputToReloadMouseReleaseHistogram,
                                             duration, 1);
@@ -198,7 +198,7 @@ TEST_F(ReloadButtonPageHandlerReloadTest, ReloadWithMiddleMouseButton) {
 
 // Tests that calling Reload(false, {}) does not crash if the metrics reporter
 // is null.
-TEST_F(ReloadButtonPageHandlerReloadTest, ReloadNoMetricsReporter) {
+TEST_F(WebUIToolbarPageHandlerReloadTest, ReloadNoMetricsReporter) {
   // Reset the metrics reporter to null.
   ClearMetricsReporter();
 
@@ -212,7 +212,7 @@ TEST_F(ReloadButtonPageHandlerReloadTest, ReloadNoMetricsReporter) {
 }
 
 // Tests that calling Reload(true) executes the IDC_RELOAD_BYPASSING_CACHE
-TEST_F(ReloadButtonPageHandlerReloadTest, ReloadBypassingCache) {
+TEST_F(WebUIToolbarPageHandlerReloadTest, ReloadBypassingCache) {
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(IDC_RELOAD_BYPASSING_CACHE,
                                             WindowOpenDisposition::CURRENT_TAB,
@@ -223,11 +223,11 @@ TEST_F(ReloadButtonPageHandlerReloadTest, ReloadBypassingCache) {
 }
 
 // Test suite for StopReload-related tests.
-using ReloadButtonPageHandlerStopReloadTest = ReloadButtonPageHandlerTest;
+using WebUIToolbarPageHandlerStopReloadTest = WebUIToolbarPageHandlerTest;
 
 // Tests that calling StopReload() executes the IDC_STOP command and records
 // metrics.
-TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReload) {
+TEST_F(WebUIToolbarPageHandlerStopReloadTest, StopReload) {
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(
                   IDC_STOP, WindowOpenDisposition::CURRENT_TAB, testing::_));
@@ -242,7 +242,7 @@ TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReload) {
 
 // Tests that calling StopReload() doesn't record metrics if the start mark
 // is not present.
-TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoStartMark) {
+TEST_F(WebUIToolbarPageHandlerStopReloadTest, StopReloadNoStartMark) {
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(
                   IDC_STOP, WindowOpenDisposition::CURRENT_TAB, testing::_));
@@ -255,7 +255,7 @@ TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoStartMark) {
 
 // Tests that calling StopReload() does not crash if the metrics reporter is
 // null.
-TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoMetricsReporter) {
+TEST_F(WebUIToolbarPageHandlerStopReloadTest, StopReloadNoMetricsReporter) {
   ClearMetricsReporter();
   EXPECT_CALL(mock_command_updater(),
               ExecuteCommandWithDisposition(
@@ -267,7 +267,7 @@ TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoMetricsReporter) {
 }
 
 // Tests that calling ShowContextMenu() opens the context menu.
-TEST_F(ReloadButtonPageHandlerTest, TestShowContextMenu) {
+TEST_F(WebUIToolbarPageHandlerTest, TestShowContextMenu) {
   MockWebContentsDelegate delegate;
   web_contents().SetDelegate(&delegate);
   EXPECT_CALL(delegate, HandleContextMenu(testing::_, testing::_))
@@ -279,7 +279,7 @@ TEST_F(ReloadButtonPageHandlerTest, TestShowContextMenu) {
 
 // Tests that calling SetReloadButtonState() calls the page with the correct
 // state and records metrics when loading.
-TEST_F(ReloadButtonPageHandlerTest, TestSetReloadButtonStateLoading) {
+TEST_F(WebUIToolbarPageHandlerTest, TestSetReloadButtonStateLoading) {
   EXPECT_CALL(page(), SetReloadButtonState(true, true)).Times(1);
   EXPECT_CALL(mock_metrics_reporter(), Mark(kChangeVisibleModeToStopStartMark))
       .Times(1);
@@ -291,7 +291,7 @@ TEST_F(ReloadButtonPageHandlerTest, TestSetReloadButtonStateLoading) {
 
 // Tests that calling SetReloadButtonState() calls the page with the correct
 // state and records metrics when not loading.
-TEST_F(ReloadButtonPageHandlerTest, TestSetReloadButtonStateNotLoading) {
+TEST_F(WebUIToolbarPageHandlerTest, TestSetReloadButtonStateNotLoading) {
   EXPECT_CALL(page(), SetReloadButtonState(false, false)).Times(1);
   EXPECT_CALL(mock_metrics_reporter(),
               Mark(kChangeVisibleModeToReloadStartMark))
@@ -303,7 +303,7 @@ TEST_F(ReloadButtonPageHandlerTest, TestSetReloadButtonStateNotLoading) {
 
 // Tests that calling SetReloadButtonState() does not crash if the metrics
 // reporter is null.
-TEST_F(ReloadButtonPageHandlerTest, TestSetReloadButtonStateNoMetricsReporter) {
+TEST_F(WebUIToolbarPageHandlerTest, TestSetReloadButtonStateNoMetricsReporter) {
   ClearMetricsReporter();
   EXPECT_CALL(page(), SetReloadButtonState(true, true)).Times(1);
   // No EXPECT_CALLs for `mock_metrics_reporter()` as it is null.

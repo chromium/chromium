@@ -430,7 +430,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".read-later.top-chrome"/>
   <variant name=".recorder-app"/>
   <variant name=".regional-capabilities-internals"/>
-  <variant name=".reload-button.top-chrome"/>
   <variant name=".reset-password"/>
   <variant name=".sample-system-web-app"/>
   <variant name=".sandbox"/>
@@ -486,6 +485,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".web-app-internals"/>
   <variant name=".webrtc-internals"/>
   <variant name=".webui-browser"/>
+  <variant name=".webui-toolbar.top-chrome"/>
   <variant name=".whats-new"/>
 </variants>
 

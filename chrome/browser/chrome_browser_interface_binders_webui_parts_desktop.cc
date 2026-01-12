@@ -63,8 +63,6 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -88,6 +86,8 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -640,8 +640,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
   }
 
   if (features::IsWebUIReloadButtonEnabled()) {
-    registry.ForWebUI<ReloadButtonUI>()
-        .Add<reload_button::mojom::PageHandlerFactory>();
+    registry.ForWebUI<WebUIToolbarUI>()
+        .Add<webui_toolbar::mojom::PageHandlerFactory>();
   }
 
   // TODO(crbug.com/452983498): Migrate all remaining

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 
 #include <memory>
 #include <utility>
@@ -11,11 +11,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_test_utils.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -34,18 +34,18 @@
 
 namespace {
 
-// Helper class to manage mojo remote to the ReloadButtonUI.
-class MockReloadButtonPageHandlerFactory {
+// Helper class to manage mojo remote to the WebUIToolbarUI.
+class MockWebUIToolbarPageHandlerFactory {
  public:
-  explicit MockReloadButtonPageHandlerFactory(ReloadButtonUI* ui) {
+  explicit MockWebUIToolbarPageHandlerFactory(WebUIToolbarUI* ui) {
     ui->BindInterface(factory_remote_.BindNewPipeAndPassReceiver());
   }
 
   // Not movable or copyable.
-  MockReloadButtonPageHandlerFactory(
-      const MockReloadButtonPageHandlerFactory&) = delete;
-  MockReloadButtonPageHandlerFactory& operator=(
-      const MockReloadButtonPageHandlerFactory&) = delete;
+  MockWebUIToolbarPageHandlerFactory(
+      const MockWebUIToolbarPageHandlerFactory&) = delete;
+  MockWebUIToolbarPageHandlerFactory& operator=(
+      const MockWebUIToolbarPageHandlerFactory&) = delete;
 
   void CreatePageHandler() {
     factory_remote_->CreatePageHandler(
@@ -61,26 +61,26 @@ class MockReloadButtonPageHandlerFactory {
 
  private:
   testing::StrictMock<MockReloadButtonPage> mock_page_;
-  mojo::Remote<reload_button::mojom::PageHandlerFactory> factory_remote_;
-  mojo::Remote<reload_button::mojom::PageHandler> handler_remote_;
+  mojo::Remote<webui_toolbar::mojom::PageHandlerFactory> factory_remote_;
+  mojo::Remote<webui_toolbar::mojom::PageHandler> handler_remote_;
 };
 
 }  // namespace
 
-// Test fixture for ReloadButtonUI.
-class ReloadButtonUITest : public ChromeViewsTestBase {
+// Test fixture for WebUIToolbarUI.
+class WebUIToolbarUITest : public ChromeViewsTestBase {
  public:
-  ReloadButtonUITest() {
+  WebUIToolbarUITest() {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUIInProcessResourceLoadingV2},
         {});
   }
-  ~ReloadButtonUITest() override = default;
+  ~WebUIToolbarUITest() override = default;
 
   // Not movable or copyable.
-  ReloadButtonUITest(const ReloadButtonUITest&) = delete;
-  ReloadButtonUITest& operator=(const ReloadButtonUITest&) = delete;
+  WebUIToolbarUITest(const WebUIToolbarUITest&) = delete;
+  WebUIToolbarUITest& operator=(const WebUIToolbarUITest&) = delete;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -93,7 +93,7 @@ class ReloadButtonUITest : public ChromeViewsTestBase {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
 
-    ui_ = std::make_unique<ReloadButtonUI>(web_ui_.get());
+    ui_ = std::make_unique<WebUIToolbarUI>(web_ui_.get());
 
     mock_command_updater_ =
         std::make_unique<testing::NiceMock<MockCommandUpdater>>();
@@ -108,7 +108,7 @@ class ReloadButtonUITest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  ReloadButtonUI* ui() { return ui_.get(); }
+  WebUIToolbarUI* ui() { return ui_.get(); }
   content::WebContents* web_contents() { return web_contents_.get(); }
   Profile* profile() { return profile_.get(); }
 
@@ -118,14 +118,14 @@ class ReloadButtonUITest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
-  std::unique_ptr<ReloadButtonUI> ui_;
+  std::unique_ptr<WebUIToolbarUI> ui_;
   std::unique_ptr<testing::NiceMock<MockCommandUpdater>> mock_command_updater_;
 };
 
 // Tests that SetReloadButtonState calls the page handler with the correct
 // parameters.
-TEST_F(ReloadButtonUITest, SetReloadButtonState) {
-  MockReloadButtonPageHandlerFactory factory(ui());
+TEST_F(WebUIToolbarUITest, SetReloadButtonState) {
+  MockWebUIToolbarPageHandlerFactory factory(ui());
   factory.CreatePageHandler();
 
   EXPECT_CALL(factory.mock_page(), SetReloadButtonState(true, false)).Times(1);
@@ -138,35 +138,37 @@ TEST_F(ReloadButtonUITest, SetReloadButtonState) {
 }
 
 // Tests that the BindInterface method for PageHandlerFactory works correctly.
-TEST_F(ReloadButtonUITest, BindPageHandlerFactory) {
-  MockReloadButtonPageHandlerFactory factory(ui());
+TEST_F(WebUIToolbarUITest, BindPageHandlerFactory) {
+  MockWebUIToolbarPageHandlerFactory factory(ui());
 
   EXPECT_TRUE(factory.is_bound());
   EXPECT_TRUE(factory.is_connected());
 }
 
 // Tests that the CreatePageHandler method instantiates the page handler.
-TEST_F(ReloadButtonUITest, CreatePageHandler) {
-  MockReloadButtonPageHandlerFactory factory(ui());
+TEST_F(WebUIToolbarUITest, CreatePageHandler) {
+  MockWebUIToolbarPageHandlerFactory factory(ui());
 
   factory.CreatePageHandler();
-  EXPECT_THAT(ui()->page_handler_for_testing(), testing::NotNull());
+  EXPECT_THAT(ui()->webui_toolbar_page_handler_for_testing(),
+              testing::NotNull());
 }
 
 // Tests that CreatePageHandler handles a null CommandUpdater gracefully.
-TEST_F(ReloadButtonUITest, CreatePageHandler_NullCommandUpdater) {
+TEST_F(WebUIToolbarUITest, CreatePageHandler_NullCommandUpdater) {
   // Set command updater to null to simulate the crash scenario.
   ui()->SetCommandUpdaterForTesting(nullptr);
 
-  MockReloadButtonPageHandlerFactory factory(ui());
+  MockWebUIToolbarPageHandlerFactory factory(ui());
 
   factory.CreatePageHandler();
   // Expect page handler is NOT created.
-  EXPECT_THAT(ui()->page_handler_for_testing(), testing::IsNull());
+  EXPECT_THAT(ui()->webui_toolbar_page_handler_for_testing(),
+              testing::IsNull());
 }
 
 // Tests that PopulateLocalResourceLoaderConfig provides the theme source.
-TEST_F(ReloadButtonUITest, PopulateLocalResourceLoaderConfig) {
+TEST_F(WebUIToolbarUITest, PopulateLocalResourceLoaderConfig) {
   // Create a mock ColorProvider.
   ui::ColorProvider color_provider;
 
@@ -178,7 +180,7 @@ TEST_F(ReloadButtonUITest, PopulateLocalResourceLoaderConfig) {
 
   blink::mojom::LocalResourceLoaderConfig config;
   ui()->PopulateLocalResourceLoaderConfig(
-      &config, url::Origin::Create(GURL("chrome://reload-button/")));
+      &config, url::Origin::Create(GURL("chrome://webui-toolbar/")));
 
   // Verify that the color CSS is added.
   url::Origin theme_origin = url::Origin::Create(GURL("chrome://theme/"));
@@ -190,15 +192,15 @@ TEST_F(ReloadButtonUITest, PopulateLocalResourceLoaderConfig) {
   EXPECT_TRUE(resource_it->second->is_response_body());
 }
 
-// Test fixture for ReloadButtonUIConfig.
-class ReloadButtonUIConfigTest : public testing::Test {
+// Test fixture for WebUIToolbarUIConfig.
+class WebUIToolbarUIConfigTest : public testing::Test {
  public:
-  ReloadButtonUIConfigTest() = default;
-  ~ReloadButtonUIConfigTest() override = default;
+  WebUIToolbarUIConfigTest() = default;
+  ~WebUIToolbarUIConfigTest() override = default;
 
   // Not movable or copyable.
-  ReloadButtonUIConfigTest(const ReloadButtonUIConfigTest&) = delete;
-  ReloadButtonUIConfigTest& operator=(const ReloadButtonUIConfigTest&) = delete;
+  WebUIToolbarUIConfigTest(const WebUIToolbarUIConfigTest&) = delete;
+  WebUIToolbarUIConfigTest& operator=(const WebUIToolbarUIConfigTest&) = delete;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -206,9 +208,9 @@ class ReloadButtonUIConfigTest : public testing::Test {
 
 // Tests that the IsWebUIEnabled method returns the correct value based on the
 // feature flag.
-TEST_F(ReloadButtonUIConfigTest, IsWebUIEnabled) {
+TEST_F(WebUIToolbarUIConfigTest, IsWebUIEnabled) {
   TestingProfile profile;
-  ReloadButtonUIConfig config;
+  WebUIToolbarConfig config;
 
   {
     base::test::ScopedFeatureList feature_list;

@@ -7,30 +7,28 @@ import("//ui/webui/resources/tools/build_webui.gni")
 assert(!is_android)
 
 build_webui("build") {
-  grd_prefix = "reload_button"
+  grd_prefix = "webui_toolbar"
 
-  static_files = [
-    "reload_button.html",
-    "reload_button.css",
-  ]
+  static_files = [ "webui_toolbar.html" ]
 
   ts_files = [
-    "app.ts",
-    "app.html.ts",
+    "reload_button.ts",
+    "reload_button.html.ts",
     "browser_proxy.ts",
     "metrics_recorder.ts",
+    "webui_toolbar.ts",
   ]
-  css_files = [ "app.css" ]
+  css_files = [ "reload_button.css" ]
 
   webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
-    optimize_webui_host = "reload-button.top-chrome"
-    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_host = "webui-toolbar.top-chrome"
+    optimize_webui_in_files = [ "webui_toolbar.js" ]
     optimize_webui_external_paths =
-        [ "chrome://reload-button.top-chrome|" +
+        [ "chrome://webui-toolbar.top-chrome|" +
           rebase_path(
-              "$root_gen_dir/chrome/browser/resources/reload_button/tsc",
+              "$root_gen_dir/chrome/browser/resources/webui_toolbar/tsc",
               root_build_dir) ]
   }
 
@@ -50,7 +48,7 @@ build_webui("build") {
   ]
 
   mojo_files_deps =
-      [ "//chrome/browser/ui/webui/reload_button:mojo_bindings_ts__generator" ]
+      [ "//chrome/browser/ui/webui/webui_toolbar:mojo_bindings_ts__generator" ]
 
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/reload_button/reload_button.mojom-webui.ts" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom-webui.ts" ]
 }

@@ -17,13 +17,13 @@ class Widget;
 class MenuRunner;
 }  // namespace views
 
-class ReloadButtonWebView;
+class WebUIToolbarWebView;
 
 // WebUIReloadControl implements C++-side functionality for the WebUI-based
 // implementation of the reload button in the toolbar.
 class WebUIReloadControl : public ReloadControl {
  public:
-  explicit WebUIReloadControl(ReloadButtonWebView* reload_button_web_view);
+  explicit WebUIReloadControl(WebUIToolbarWebView* webui_toolbar_web_view);
   WebUIReloadControl(const WebUIReloadControl&) = delete;
   WebUIReloadControl& operator=(const WebUIReloadControl&) = delete;
   ~WebUIReloadControl() override;
@@ -50,7 +50,7 @@ class WebUIReloadControl : public ReloadControl {
  private:
   void SetReloadButtonUIState();
 
-  const raw_ptr<ReloadButtonWebView> reload_button_web_view_;
+  const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   bool is_menu_enabled_ = false;

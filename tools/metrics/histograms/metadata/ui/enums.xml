@@ -679,7 +679,6 @@ chromium-metrics-reviews@google.com.
   <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
   <int value="-1941995226" label="chrome://attribution-internals/"/>
   <int value="-1911971715" label="chrome://history/"/>
-  <int value="-1905481895" label="chrome://reload-button.top-chrome/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
   <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
@@ -902,6 +901,7 @@ chromium-metrics-reviews@google.com.
   <int value="646837226" label="chrome://crashes/"/>
   <int value="654460550" label="chrome://contextual-tasks/"/>
   <int value="659389881" label="chrome://gpu/"/>
+  <int value="660800062" label="chrome://webui-toolbar.top-chrome/"/>
   <int value="662045902" label="chrome://smb-share-dialog/"/>
   <int value="689991895" label="chrome://supervised-user-internals/"/>
   <int value="701883986" label="chrome://privacy-sandbox-dialog/"/>

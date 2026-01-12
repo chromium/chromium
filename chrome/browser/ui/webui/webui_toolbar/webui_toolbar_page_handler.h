@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_PAGE_HANDLER_H_
 
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,24 +21,24 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
+class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
  public:
-  ReloadButtonPageHandler(
-      mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver,
-      mojo::PendingRemote<reload_button::mojom::Page> page,
+  WebUIToolbarPageHandler(
+      mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver,
+      mojo::PendingRemote<webui_toolbar::mojom::Page> page,
       content::WebContents* web_contents,
       CommandUpdater* command_updater);
 
-  ReloadButtonPageHandler(const ReloadButtonPageHandler&) = delete;
-  ReloadButtonPageHandler& operator=(const ReloadButtonPageHandler&) = delete;
+  WebUIToolbarPageHandler(const WebUIToolbarPageHandler&) = delete;
+  WebUIToolbarPageHandler& operator=(const WebUIToolbarPageHandler&) = delete;
 
-  ~ReloadButtonPageHandler() override;
+  ~WebUIToolbarPageHandler() override;
 
   void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 
-  // reload_button::mojom::PageHandler:
+  // webui_toolbar::mojom::PageHandler:
   void Reload(bool ignore_cache,
-              const std::vector<reload_button::mojom::ClickDispositionFlag>&
+              const std::vector<webui_toolbar::mojom::ClickDispositionFlag>&
                   flags) override;
   void StopReload() override;
   void ShowContextMenu(int32_t offset_x, int32_t offset_y) override;
@@ -49,7 +49,7 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   // This method fetches the reporter from the MetricsReporterService associated
   // with `web_contents_` each time it is called. This is necessary because the
   // MetricsReporterService lifetime is tied to `web_contents_`, which can be
-  // destroyed earlier than this ReloadButtonPageHandler.
+  // destroyed earlier than this WebUIToolbarPageHandler.
   MetricsReporter* GetMetricsReporter();
 
   // Callback for `MetricsReporter::Measure()`. Records the resulting
@@ -58,8 +58,8 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
                                    const std::string& start_mark,
                                    base::TimeDelta duration);
 
-  mojo::Receiver<reload_button::mojom::PageHandler> receiver_;
-  mojo::Remote<reload_button::mojom::Page> page_;
+  mojo::Receiver<webui_toolbar::mojom::PageHandler> receiver_;
+  mojo::Remote<webui_toolbar::mojom::Page> page_;
 
   // Not owned.
   const raw_ptr<content::WebContents> web_contents_;
@@ -67,7 +67,7 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   const raw_ptr<CommandUpdater> command_updater_;
 
   // Must be the last member.
-  base::WeakPtrFactory<ReloadButtonPageHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebUIToolbarPageHandler> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_PAGE_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -29,14 +29,14 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-ReloadButtonWebView::ReloadButtonWebView(
+WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
     chrome::BrowserCommandController* controller)
     : browser_(browser), controller_(controller), reload_control_(this) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>(browser->GetProfile());
-  const GURL kUrl(chrome::kChromeUIReloadButtonURL);
+  const GURL kUrl(chrome::kChromeUIWebUIToolbarURL);
   auto* web_contents = web_view->GetWebContents(kUrl);
   // PLM has to be initialized before loading the URL.
   InitializePageLoadMetricsForWebContents(web_contents);
@@ -56,25 +56,25 @@ ReloadButtonWebView::ReloadButtonWebView(
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
 }
 
-ReloadButtonWebView::~ReloadButtonWebView() = default;
+WebUIToolbarWebView::~WebUIToolbarWebView() = default;
 
-void ReloadButtonWebView::AddedToWidget() {
+void WebUIToolbarWebView::AddedToWidget() {
   CHECK(web_view_);
-  if (reload_button_ui_) {
+  if (webui_toolbar_ui_) {
     return;
   }
   // Ensure the browser window interface is associated with the WebContents
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUIReloadButtonURL));
-  reload_button_ui_ = web_view_->GetWebContents()
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
+  webui_toolbar_ui_ = web_view_->GetWebContents()
                           ->GetWebUI()
                           ->GetController()
-                          ->GetAs<ReloadButtonUI>();
+                          ->GetAs<WebUIToolbarUI>();
   reload_control_.Init();
 }
 
-bool ReloadButtonWebView::HandleContextMenu(
+bool WebUIToolbarWebView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   gfx::Point screen_location = GetBoundsInScreen().origin();
@@ -86,15 +86,15 @@ bool ReloadButtonWebView::HandleContextMenu(
                                            params);
 }
 
-void ReloadButtonWebView::DidFinishLoad(
+void WebUIToolbarWebView::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  InitialWebUIManager::From(browser_)->OnReloadButtonLoaded();
+  InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
 }
 
-ReloadControl* ReloadButtonWebView::GetReloadControl() {
+ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
 }
 
-BEGIN_METADATA(ReloadButtonWebView)
+BEGIN_METADATA(WebUIToolbarWebView)
 END_METADATA

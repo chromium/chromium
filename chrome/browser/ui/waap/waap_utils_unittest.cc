@@ -22,7 +22,7 @@ TEST(IsForInitialWebUITest, FeaturesDisabled) {
 
   EXPECT_FALSE(
       IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIReloadButtonHost)));
+                             chrome::kChromeUIWebUIToolbarHost)));
 }
 
 TEST(IsForInitialWebUITest, FeaturesEnabled) {
@@ -34,7 +34,7 @@ TEST(IsForInitialWebUITest, FeaturesEnabled) {
 
   EXPECT_TRUE(
       IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIReloadButtonHost)));
+                             chrome::kChromeUIWebUIToolbarHost)));
 }
 
 TEST(IsForInitialWebUITest, NonChromeScheme) {
@@ -45,7 +45,7 @@ TEST(IsForInitialWebUITest, NonChromeScheme) {
       {});
 
   EXPECT_FALSE(IsForInitialWebUI(
-      GURL(std::string("https") + "://" + chrome::kChromeUIReloadButtonHost)));
+      GURL(std::string("https") + "://" + chrome::kChromeUIWebUIToolbarHost)));
 }
 
 TEST(IsForInitialWebUITest, NonInitialWebUIHost) {

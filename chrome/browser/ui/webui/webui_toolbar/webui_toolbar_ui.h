@@ -2,41 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_UI_H_
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom-forward.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace ui {
-class ColorProvider;
-}  // namespace ui
-
-class ReloadButtonUI : public TopChromeWebUIController,
-                       public reload_button::mojom::PageHandlerFactory {
+class WebUIToolbarUI : public TopChromeWebUIController,
+                       public webui_toolbar::mojom::PageHandlerFactory {
  public:
-  explicit ReloadButtonUI(content::WebUI* web_ui);
-  ReloadButtonUI(const ReloadButtonUI&) = delete;
-  ReloadButtonUI& operator=(const ReloadButtonUI&) = delete;
-  ~ReloadButtonUI() override;
+  explicit WebUIToolbarUI(content::WebUI* web_ui);
+  WebUIToolbarUI(const WebUIToolbarUI&) = delete;
+  WebUIToolbarUI& operator=(const WebUIToolbarUI&) = delete;
+  ~WebUIToolbarUI() override;
 
-  static constexpr std::string_view GetWebUIName() { return "ReloadButtonUI"; }
+  static constexpr std::string_view GetWebUIName() { return "WebUIToolbar"; }
 
   void BindInterface(
-      mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver);
+      mojo::PendingReceiver<webui_toolbar::mojom::PageHandlerFactory> receiver);
 
   void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 
-  ReloadButtonPageHandler* page_handler_for_testing();
+  WebUIToolbarPageHandler* webui_toolbar_page_handler_for_testing();
 
   // TopChromeWebUIController:
   // The controller uses `requesting_origin` to:
@@ -54,16 +50,16 @@ class ReloadButtonUI : public TopChromeWebUIController,
   void SetCommandUpdaterForTesting(CommandUpdater* command_updater);
 
  private:
-  // reload_button::mojom::PageHandlerFactory:
+  // webui_toolbar::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<reload_button::mojom::Page> page,
-      mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver)
+      mojo::PendingRemote<webui_toolbar::mojom::Page> page,
+      mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver)
       override;
 
   CommandUpdater* GetCommandUpdater() const;
 
-  std::unique_ptr<ReloadButtonPageHandler> page_handler_;
-  mojo::Receiver<reload_button::mojom::PageHandlerFactory>
+  std::unique_ptr<WebUIToolbarPageHandler> webui_toolbar_page_handler_;
+  mojo::Receiver<webui_toolbar::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
   // Initialized only in tests by SetCommandUpdaterForTesting().
@@ -72,12 +68,11 @@ class ReloadButtonUI : public TopChromeWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-class ReloadButtonUIConfig
-    : public DefaultTopChromeWebUIConfig<ReloadButtonUI> {
+class WebUIToolbarConfig : public DefaultTopChromeWebUIConfig<WebUIToolbarUI> {
  public:
-  ReloadButtonUIConfig();
+  WebUIToolbarConfig();
   // DefaultTopChromeWebUIConfig overrides:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_UI_H_

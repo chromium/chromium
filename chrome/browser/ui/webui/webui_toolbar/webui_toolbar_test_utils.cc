@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/reload_button/reload_button_test_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 
 MockReloadButtonPage::MockReloadButtonPage() = default;
 MockReloadButtonPage::~MockReloadButtonPage() = default;
 
-mojo::PendingRemote<reload_button::mojom::Page>
+mojo::PendingRemote<webui_toolbar::mojom::Page>
 MockReloadButtonPage::BindAndGetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }

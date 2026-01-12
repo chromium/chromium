@@ -33,12 +33,12 @@ class InitialWebUIManager {
   // This is called when the `ui::BaseWindow` intends to invoke `Show()`, if the
   // show needs to be deferred, `is_show_pending_` will be set to true and
   // `Show()` will be called immediately when `is_initial_web_ui_pending_` is
-  // changed to true from `OnReloadButtonLoaded()`.
+  // changed to true from `OnWebUIToolbarLoaded()`.
   bool ShouldDeferShow();
 
-  // Notifies that the reload button has finished loading. It will also call
+  // Notifies that the web UI toolbar has finished loading. It will also call
   // `Show()` from the `window_` if `is_show_pending_` is true.
-  void OnReloadButtonLoaded();
+  void OnWebUIToolbarLoaded();
 
  private:
   // Shows the browser window if it was deferred.

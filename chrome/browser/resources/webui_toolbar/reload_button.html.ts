@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ReloadButtonAppElement} from './app.js';
+import type {ReloadButtonAppElement} from './reload_button.js';
 
 export function getHtml(this: ReloadButtonAppElement) {
   return html`<!--_html_template_start_-->

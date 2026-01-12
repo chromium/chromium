@@ -11,11 +11,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {getCss} from './app.css.js';
-import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, ClickDispositionFlag} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
+import {getCss} from './reload_button.css.js';
+import {getHtml} from './reload_button.html.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';

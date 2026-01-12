@@ -62,7 +62,7 @@ class CONTENT_EXPORT WebUIController {
   // content, e.g. theme colors, without creating a full WebUIDataSource.
   //
   // `requesting_origin` is the origin of the WebUI page that is requesting the
-  // resources, e.g. "chrome://reload-button.top-chrome". It matches the origin
+  // resources, e.g. "chrome://webui-toolbar.top-chrome". It matches the origin
   // that the `config` will be sent to.
   virtual void PopulateLocalResourceLoaderConfig(
       blink::mojom::LocalResourceLoaderConfig* config,

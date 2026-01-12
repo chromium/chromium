@@ -5,16 +5,16 @@
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
 WebUIReloadControl::WebUIReloadControl(
-    ReloadButtonWebView* reload_button_web_view)
-    : reload_button_web_view_(reload_button_web_view) {
+    WebUIToolbarWebView* webui_toolbar_web_view)
+    : webui_toolbar_web_view_(webui_toolbar_web_view) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model_->AddItemWithStringId(IDC_RELOAD,
                                    IDS_RELOAD_MENU_NORMAL_RELOAD_ITEM);
@@ -58,7 +58,7 @@ bool WebUIReloadControl::HandleContextMenu(
     gfx::Point screen_location,
     const content::ContextMenuParams& params) {
   if (is_menu_enabled_) {
-    menu_runner_->RunMenuAt(reload_button_web_view_->GetWidget(), nullptr,
+    menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
                             gfx::Rect(screen_location, gfx::Size()),
                             views::MenuAnchorPosition::kBubbleBottomRight,
                             params.source_type);
@@ -81,18 +81,18 @@ bool WebUIReloadControl::IsCommandIdVisible(int command_id) const {
 bool WebUIReloadControl::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
-  return reload_button_web_view_->GetWidget()->GetAccelerator(command_id,
+  return webui_toolbar_web_view_->GetWidget()->GetAccelerator(command_id,
                                                               accelerator);
 }
 
 void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
-  CHECK(reload_button_web_view_->controller());
-  reload_button_web_view_->controller()->ExecuteCommandWithDisposition(
+  CHECK(webui_toolbar_web_view_->controller());
+  webui_toolbar_web_view_->controller()->ExecuteCommandWithDisposition(
       command_id, ui::DispositionFromEventFlags(event_flags));
 }
 
 void WebUIReloadControl::SetReloadButtonUIState() {
-  CHECK(reload_button_web_view_->reload_button_ui());
-  reload_button_web_view_->reload_button_ui()->SetReloadButtonState(
+  CHECK(webui_toolbar_web_view_->webui_toolbar_ui());
+  webui_toolbar_web_view_->webui_toolbar_ui()->SetReloadButtonState(
       /*is_loading=*/mode_ == ReloadControl::Mode::kStop, is_menu_enabled_);
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_WEB_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_WEB_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -13,25 +13,25 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class ReloadButtonUI;
+class WebUIToolbarUI;
 class BrowserWindowInterface;
 
 namespace views {
 class WebView;
 }  // namespace views
 
-// A view that displays the reload button as a WebView.
-class ReloadButtonWebView : public views::View,
+// A view that displays the toolbar as a WebView.
+class WebUIToolbarWebView : public views::View,
                             public content::WebContentsDelegate,
                             public content::WebContentsObserver {
-  METADATA_HEADER(ReloadButtonWebView, views::View)
+  METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
-  ReloadButtonWebView(BrowserWindowInterface* browser,
+  WebUIToolbarWebView(BrowserWindowInterface* browser,
                       chrome::BrowserCommandController* controller);
-  ReloadButtonWebView(const ReloadButtonWebView&) = delete;
-  ReloadButtonWebView& operator=(const ReloadButtonWebView&) = delete;
-  ~ReloadButtonWebView() override;
+  WebUIToolbarWebView(const WebUIToolbarWebView&) = delete;
+  WebUIToolbarWebView& operator=(const WebUIToolbarWebView&) = delete;
+  ~WebUIToolbarWebView() override;
 
   ReloadControl* GetReloadControl();
 
@@ -50,13 +50,13 @@ class ReloadButtonWebView : public views::View,
   friend WebUIReloadControl;
 
   chrome::BrowserCommandController* controller() { return controller_; }
-  ReloadButtonUI* reload_button_ui() { return reload_button_ui_; }
+  WebUIToolbarUI* webui_toolbar_ui() { return webui_toolbar_ui_; }
 
-  raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;
+  raw_ptr<WebUIToolbarUI> webui_toolbar_ui_ = nullptr;
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
   WebUIReloadControl reload_control_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_WEB_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_

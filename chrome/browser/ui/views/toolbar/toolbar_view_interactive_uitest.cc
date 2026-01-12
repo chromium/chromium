@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
-#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -234,10 +234,10 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
   // done by the test wouldn't be seen as a mouse enter.
   // The choice of using the reload button as the starting position is
   // arbitrary.
-  if (toolbar_button_provider->GetReloadButtonWebViewForTesting()) {
+  if (toolbar_button_provider->GetWebUIToolbarViewForTesting()) {
     views::ElementTrackerViews::GetInstance()->RegisterView(
         kReloadButtonWebView,
-        toolbar_button_provider->GetReloadButtonWebViewForTesting());
+        toolbar_button_provider->GetWebUIToolbarViewForTesting());
     EXPECT_TRUE(
         RunTestSequence(MoveMouseTo(kReloadButtonWebView, {"#reload"})));
   } else {
