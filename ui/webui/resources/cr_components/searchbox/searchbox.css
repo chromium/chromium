@@ -94,9 +94,22 @@
   flex-direction: column;
   height: auto;
   min-height: var(--cr-searchbox-height);
-  overflow: hidden;
   position: relative;
   width: 100%;
+}
+
+:host([ntp-realbox-next-enabled]) #inputWrapper {
+  /* Elements like the IPH must overflow. */
+  overflow: visible;
+}
+
+:host([ntp-realbox-next-enabled]) .dropdownContainer {
+  border-radius: 0 0 var(--cr-searchbox-border-radius) var(--cr-searchbox-border-radius);
+  overflow: hidden;
+}
+
+:host([ntp-realbox-next-enabled]) .contextualEntrypointContainer {
+  overflow: visible;
 }
 
 :host([is-lens-searchbox_]) #inputWrapper {
@@ -406,11 +419,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
   margin-top: 16px;
-}
-
-:host([ntp-realbox-next-enabled]) .dropdownContainer,
-:host([ntp-realbox-next-enabled]) .contextualEntrypointContainer {
-  overflow: visible;
 }
 
 #inputContainer {
