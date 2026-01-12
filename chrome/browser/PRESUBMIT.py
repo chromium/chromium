@@ -351,6 +351,61 @@ def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
 
     return result
 
+def _CheckNewDirectoryHasBuildGn(input_api, output_api):
+    """Checks that any new directory under chrome/browser has a BUILD.gn.
+    See docs/chrome_browser_design_principles.md for details.
+    """
+    affected_files = list(input_api.AffectedFiles(include_deletes=False))
+    added_files = set(f.LocalPath() for f in affected_files
+                      if f.Action() == 'A')
+    files_in_cl = set(f.LocalPath() for f in affected_files)
+
+    missing_build_gn_dirs = []
+    repo_root = input_api.change.RepositoryRoot()
+
+    # Directories where files are being added.
+    dirs_of_added_files = set(
+        input_api.os_path.dirname(f) for f in added_files)
+
+    for d in dirs_of_added_files:
+        # Normalize path separators.
+        d_norm = d.replace('\\', '/')
+
+        # Only verify directories under chrome/browser (excluding root).
+        if not d_norm.startswith(
+                'chrome/browser') or d_norm == 'chrome/browser':
+            continue
+
+        # If BUILD.gn is in the CL or already on disk, we're good.
+        build_gn_path = input_api.os_path.join(d, 'BUILD.gn')
+        if build_gn_path in files_in_cl or input_api.os_path.exists(
+                input_api.os_path.join(repo_root, build_gn_path)):
+            continue
+
+        # Check if the directory is new. It's new if all files in it
+        # (according to glob) are being added in this CL.
+        files_in_dir = input_api.glob(input_api.os_path.join(
+            repo_root, d, '*'))
+        is_new_dir = True
+        for f_abs in files_in_dir:
+            if input_api.os_path.isfile(f_abs):
+                f_rel = input_api.os_path.relpath(f_abs, repo_root)
+                if f_rel not in added_files:
+                    is_new_dir = False
+                    break
+
+        if is_new_dir:
+            missing_build_gn_dirs.append(d)
+
+    if missing_build_gn_dirs:
+        return [
+            output_api.PresubmitError(
+                'New directories under chrome/browser must have a BUILD.gn file.',
+                items=sorted(missing_build_gn_dirs))
+        ]
+
+    return []
+
 ###############################################################################
 # Presubmit aggregator
 ###############################################################################
@@ -358,6 +413,7 @@ def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
+    results.extend(_CheckNewDirectoryHasBuildGn(input_api, output_api))
     results.extend(
         _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
             input_api, output_api))

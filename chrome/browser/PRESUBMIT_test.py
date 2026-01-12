@@ -322,5 +322,87 @@ class CheckAshSourcesForBadIncludes(unittest.TestCase):
         self.assertEqual(results, [])
 
 
+class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
+    def testNewDirectoryWithBuildGn(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/new_dir/foo.cc', [''],
+                             action='A'),
+            MockAffectedFile('chrome/browser/new_dir/BUILD.gn', [''],
+                             action='A'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual([], errors)
+
+    def testNewDirectoryMissingBuildGn(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/new_dir/foo.cc', [''],
+                             action='A'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual(1, len(errors))
+        self.assertEqual(
+            'New directories under chrome/browser must have a BUILD.gn file.',
+            errors[0].message)
+        error_items_norm = [s.replace('\\','/') for s in errors[0].items]
+        self.assertEqual(['chrome/browser/new_dir'], error_items_norm)
+
+    def testExistingDirectoryWithMissingBuildGn(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/existing_dir/foo.cc', [''],
+                             action='A'),
+            MockAffectedFile('chrome/browser/existing_dir/bar.cc', [''],
+                             action='M'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual([], errors)
+
+    def testExistingDirectoryWithBuildGnOnDisk(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/existing_dir/foo.cc', [''],
+                             action='A'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        # Simulate BUILD.gn existing on disk.
+        original_exists = mock_input_api.os_path.exists
+
+        def side_effect(path):
+            if path.replace(
+                    '\\',
+                    '/').endswith('chrome/browser/existing_dir/BUILD.gn'):
+                return True
+            return original_exists(path)
+
+        mock_input_api.os_path.exists = side_effect
+
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual([], errors)
+
+    def testChromeBrowserRoot(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/foo.cc', [''], action='A'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual([], errors)
+
+
 if __name__ == '__main__':
     unittest.main()
