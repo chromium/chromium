@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -60,6 +61,9 @@ const CGFloat kFeatureRowIconSize = 20;
   // Observer for the WebState.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
 
+  // The authentication service to check sign-in status.
+  raw_ptr<AuthenticationService> _authenticationService;
+
   // The `PrefService` used to store reminder data.
   raw_ptr<PrefService> _profilePrefs;
 
@@ -77,6 +81,7 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
+           authenticationService:(AuthenticationService*)authenticationService
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
                       BWGService:(BwgService*)BWGService
@@ -86,6 +91,7 @@ const CGFloat kFeatureRowIconSize = 20;
   self = [super init];
   if (self) {
     _webState = webState;
+    _authenticationService = authenticationService;
     _profilePrefs = profilePrefs;
     _templateURLService = templateURLService;
     _BWGService = BWGService;
@@ -116,6 +122,14 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 #pragma mark - PageActionMenuMutator
+
+- (BOOL)shouldShowFeatureEntryPoints {
+  if (!_authenticationService) {
+    return NO;
+  }
+  return _authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+}
 
 - (BOOL)isLensAvailableForTraitCollection:(UITraitCollection*)traitCollection {
   BOOL isLandscape = IsCompactHeight(traitCollection);

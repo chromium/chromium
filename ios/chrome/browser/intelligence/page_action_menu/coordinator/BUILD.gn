@@ -52,6 +52,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/web/model",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
