@@ -332,7 +332,7 @@
     },
     {
       name: "AIPageContentIncludeSVGSubtree",
-      status: "test"
+      status: "stable"
     },
     // Use MapToVisualRectInAncestorSpace for outer bounding boxes, for
     // math consistent with visual bounding boxes.
