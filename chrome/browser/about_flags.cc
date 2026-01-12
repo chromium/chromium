@@ -873,26 +873,17 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
-        {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
-        {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
-        {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
-    kWebUIOmniboxAimPopupAddContextButtonDragAndDrop[] = {
-        {"AddContextButtonVariant", "below_results"},
-        {"EnableContextDragAndDrop", "true"},
-        {"ShowRecentTabChip", "true"},
-};
-const FeatureEntry::FeatureParam
-    kWebUIOmniboxAimPopupAddContextButtonNoContextualChips[] = {
+    kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowRecentTabChip", "false"},
         {"ShowLensSearchChip", "false"},
@@ -908,12 +899,10 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- \"Add Context\" Button inline (Variant 3)",
      kWebUIOmniboxAimPopupAddContextButtonInline,
      std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
-    {"- \"Add Context\" Button enable drag and drop",
-     kWebUIOmniboxAimPopupAddContextButtonDragAndDrop,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonDragAndDrop), nullptr},
-    {"- \"Add Context\" No contextual chips (Entrypoint below results)",
-     kWebUIOmniboxAimPopupAddContextButtonNoContextualChips,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonNoContextualChips),
+    {"- \"Add Context\" Button below results (Variant 1) [No contextual chips]",
+     kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips,
+     std::size(
+         kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips),
      nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
