@@ -261,6 +261,10 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // This method is called when the user opens the Cookies & Site Data subpage.
   void OnCookiesPageOpened();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  bool ShouldSyncCookiesForCurrentUrl();
+#endif
+
   // Return a pointer to the ObjectPermissionContextBase corresponding to the
   // content settings type, |type|. Returns nullptr for content settings
   // for which there's no ObjectPermissionContextBase.
@@ -272,8 +276,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
     return site_connection_status_;
   }
 
-  const GURL& site_url() const { return site_url_; }
-
   const SiteIdentityStatus& site_identity_status() const {
     return site_identity_status_;
   }
@@ -281,8 +283,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   const SafeBrowsingStatus& safe_browsing_status() const {
     return safe_browsing_status_;
   }
-
-  content::WebContents* web_contents() const { return web_contents_.get(); }
 
   // For most sites, this returns a human-friendly string based on site origin,
   // without scheme, the username and password, the path or trivial subdomains.

@@ -136,6 +136,9 @@ class PageInfoDelegate {
 #endif
   virtual bool IsHttpsFirstModeEnabled() = 0;
   virtual bool IsIncognitoProfile() = 0;
+#if BUILDFLAG(IS_CHROMEOS)
+  virtual bool ShouldSyncCookiesForUrl(const GURL& url) = 0;
+#endif
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_

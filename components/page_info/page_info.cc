@@ -854,7 +854,7 @@ void PageInfo::OnRevokeSSLErrorBypassButtonPressed() {
       delegate_->GetStatefulSSLHostStateDelegate();
   DCHECK(stateful_ssl_host_state_delegate);
   stateful_ssl_host_state_delegate->RevokeUserAllowExceptionsHard(
-      site_url().GetHost());
+      site_url_.GetHost());
   did_revoke_user_ssl_decisions_ = true;
   RecordPageInfoAction(page_info::PAGE_INFO_RESET_DECISIONS_CLICKED);
 }
@@ -868,7 +868,7 @@ void PageInfo::OpenSiteSettingsView() {
   NOTREACHED();
 #else
   RecordPageInfoAction(page_info::PAGE_INFO_SITE_SETTINGS_OPENED);
-  delegate_->ShowSiteSettings(site_url());
+  delegate_->ShowSiteSettings(site_url_);
 #endif
 }
 
@@ -1865,3 +1865,9 @@ bool PageInfo::IsIsolatedWebApp() const {
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool PageInfo::ShouldSyncCookiesForCurrentUrl() {
+  return delegate_->ShouldSyncCookiesForUrl(site_url_);
+}
+#endif
