@@ -315,6 +315,8 @@ void HandoffButtonController::CreateAndShowButton(
   button_view_ = button_view.get();
   button_view_->SetAccessibleDescription(a11y_text);
   button_view_->SetEnabledTextColors(::ui::kColorLabelForeground);
+  button_view_->SetTextColor(views::Button::STATE_DISABLED,
+                             ::ui::kColorLabelForeground);
   button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
   button_view_->SetProperty(views::kElementIdentifierKey,
                             kHandoffButtonElementId);
