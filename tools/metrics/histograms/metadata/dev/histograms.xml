@@ -186,6 +186,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Insights.LongTeaserGenerationTime" units="ms"
+    expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate a console insight teaser which is at
+    least 301 characters long.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.ShortTeaserGenerationTime" units="ms"
+    expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate a console insight teaser which is
+    shorter than 301 characters.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.TeaserAfterFirstCharacterAbortionTime"
+    units="ms" expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time after which console insight teaser generation is aborted.
+    Abortion is triggered after the first character of the teaser has already
+    been generated.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.TeaserBeforeFirstCharacterAbortionTime"
+    units="ms" expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time after which console insight teaser generation is aborted.
+    Abortion is triggered before the first character of the teaser has been
+    generated.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.Insights.TeaserFirstChunkGenerationTime" units="ms"
     expires_after="2026-11-10">
   <owner>wolfi@google.com</owner>
