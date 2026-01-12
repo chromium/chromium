@@ -283,12 +283,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Reload) {
 // TODO(https://crbug.com/371432155): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-class ExtensionApiCaptureTest
-    : public ExtensionApiTabTest,
-      public testing::WithParamInterface<ContextType> {
+class ExtensionApiCaptureTest : public ExtensionApiTabTest {
  public:
-  ExtensionApiCaptureTest() : ExtensionApiTabTest(GetParam()) {}
-  ~ExtensionApiCaptureTest() override = default;
+  ExtensionApiCaptureTest() = default;
   ExtensionApiCaptureTest(const ExtensionApiCaptureTest&) = delete;
   ExtensionApiCaptureTest& operator=(const ExtensionApiCaptureTest&) = delete;
 
@@ -300,21 +297,13 @@ class ExtensionApiCaptureTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionApiCaptureTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionApiCaptureTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 // https://crbug.com/1450747 Flaky on Mac.
-// TODO(crbug.com/381214152): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
   ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
                                                     ReplyBehavior::kWillReply);
   auto get_device_pixel_ratio = [this, &device_pixel_handler](
@@ -334,15 +323,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 }
 
 // https://crbug.com/1450933 Flaky on Mac.
-// TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
 // TODO(crbug.com/451698327): Disabled on Linux dbg due to flakiness.
-#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
   ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
                                                     ReplyBehavior::kWillReply);
   auto get_device_pixel_ratio = [this, &device_pixel_handler](
@@ -362,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
 }
 
 // TODO(crbug.com/40168659) Re-enable test
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
                        DISABLED_CaptureVisibleTabRace) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_race"))
       << message_;
@@ -374,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
 #else
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_file", {},
                                {.allow_file_access = true}))
       << message_;
@@ -386,13 +373,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
 #else
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureNullWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureNullWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab_null_window"))
       << message_;
 }
