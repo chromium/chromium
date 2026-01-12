@@ -1,24 +1,24 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
-
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
@@ -28,25 +28,32 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/range/range.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace web_app {
 
 namespace {
-
-std::optional<SubAppsInstallDialogController::DialogActionForTesting>
-    g_dialog_override_for_testing;
 
 constexpr int kSubAppIconSize = 32;
 
@@ -205,110 +212,60 @@ class SubAppsListView : public views::ScrollView {
 
 }  // namespace
 
-// static
-[[nodiscard]] base::AutoReset<
-    std::optional<SubAppsInstallDialogController::DialogActionForTesting>>
-SubAppsInstallDialogController::SetAutomaticActionForTesting(
-    DialogActionForTesting auto_accept) {
-  return base::AutoReset<std::optional<DialogActionForTesting>>(
-      &g_dialog_override_for_testing, auto_accept);
-}
-
-SubAppsInstallDialogController::SubAppsInstallDialogController() = default;
-
-SubAppsInstallDialogController::~SubAppsInstallDialogController() {
-  if (widget_) {
-    widget_observation_.Reset();
-    widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-  }
-}
-
-void SubAppsInstallDialogController::Init(
-    base::OnceCallback<void(bool)> callback,
+void ShowSubAppsInstallDialog(
+    content::WebContents* web_contents,
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     const std::string& parent_app_name,
     const webapps::AppId& parent_app_id,
     Profile* profile,
-    gfx::NativeWindow window) {
-  if (g_dialog_override_for_testing) {
-    switch (g_dialog_override_for_testing.value()) {
-      case DialogActionForTesting::kAccept:
-        std::move(callback).Run(true);
-        break;
-      case DialogActionForTesting::kCancel:
-        std::move(callback).Run(false);
-        break;
-    }
+    base::OnceCallback<void(bool)> callback) {
+  if (SubAppsInstallDialogController::
+          HandleAutomaticActionForTesting(  // IN-TEST
+              callback)) {
     return;
   }
 
-  callback_ = std::move(callback);
+  auto controller =
+      std::make_unique<SubAppsInstallDialogController>(std::move(callback));
+  auto weak_ptr = controller->GetWeakPtr();
 
-  widget_ = CreateWidget(
-      base::UTF8ToUTF16(parent_app_name), sub_apps,
-      base::BindRepeating(OpenAppSettingsForParentApp, parent_app_id, profile),
-      window);
-  widget_observation_.Observe(widget_);
-  widget_->Show();
-}
-
-views::Widget* SubAppsInstallDialogController::CreateWidget(
-    const std::u16string parent_app_name,
-    const std::vector<std::unique_ptr<web_app::WebAppInstallInfo>>& sub_apps,
-    base::RepeatingClosure settings_page_callback,
-    gfx::NativeWindow window) {
   int num_sub_apps = sub_apps.size();
+  std::u16string parent_app_name_u16 = base::UTF8ToUTF16(parent_app_name);
+
   std::unique_ptr<ui::DialogModel> dialog_model =
-      ui::DialogModel::Builder()
-          .SetInternalName("SubAppsInstallDialogController")
+      ui::DialogModel::Builder(std::move(controller))
+          .SetInternalName("SubAppsInstallDialog")
           .SetIcon(GetInstallAppIcon())
           .SetTitle(DialogTitle(num_sub_apps))
-          .AddParagraph(DialogDescription(num_sub_apps, parent_app_name))
+          .AddParagraph(DialogDescription(num_sub_apps, parent_app_name_u16))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   SubAppsListView::Create(sub_apps),
                   views::BubbleDialogModelHost::FieldType::kMenuItem))
-          .AddCustomField(
-              PermissionsExplanation(sub_apps.size(), parent_app_name,
-                                     std::move(settings_page_callback)))
+          .AddCustomField(PermissionsExplanation(
+              num_sub_apps, parent_app_name_u16,
+              base::BindRepeating(OpenAppSettingsForParentApp, parent_app_id,
+                                  profile->GetWeakPtr())))
           .AddOkButton(
-              base::DoNothing(),
+              base::BindOnce(&SubAppsInstallDialogController::OnAccept,
+                             weak_ptr),
               ui::DialogModel::Button::Params().SetLabel(AcceptButtonLabel()))
           .AddCancelButton(
-              base::DoNothing(),
+              base::BindOnce(&SubAppsInstallDialogController::OnClose,
+                             weak_ptr),
               ui::DialogModel::Button::Params().SetLabel(CancelButtonLabel()))
+          .SetDialogDestroyingCallback(base::BindOnce(
+              &SubAppsInstallDialogController::OnClose, weak_ptr))
+          .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
           .OverrideShowCloseButton(false)
           .Build();
 
-  auto dialog = views::BubbleDialogModelHost::CreateModal(
+  auto model_host = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kWindow);
-  dialog->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
-  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
-      std::move(dialog), window);
-
-  return widget;
-}
-
-views::Widget* SubAppsInstallDialogController::GetWidgetForTesting() {
-  return widget_;
-}
-
-void SubAppsInstallDialogController::OnWidgetDestroying(views::Widget* widget) {
-  widget_observation_.Reset();
-  widget_ = nullptr;
-  switch (widget->closed_reason()) {
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
-      std::move(callback_).Run(true);
-      break;
-    case views::Widget::ClosedReason::kUnspecified:
-    case views::Widget::ClosedReason::kEscKeyPressed:
-    case views::Widget::ClosedReason::kCloseButtonClicked:
-    case views::Widget::ClosedReason::kLostFocus:
-    case views::Widget::ClosedReason::kCancelButtonClicked:
-      std::move(callback_).Run(false);
-      break;
-  }
+  constrained_window::CreateBrowserModalDialogViews(
+      std::move(model_host), web_contents->GetTopLevelNativeWindow())
+      ->Show();
 }
 
 }  // namespace web_app

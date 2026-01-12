@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_ui_types.h"
@@ -190,6 +191,18 @@ void ShowWebAppDetailedInstallDialog(
     AppInstallationAcceptanceCallback callback,
     base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
+
+// Creates and shows a dialog that requests the consent from the user to
+// install the requested apps as sub apps to the named parent app. This is
+// triggered by an app calling the Multi App API add() function. The dialog is
+// modal to the browser window containing the app calling the API.
+void ShowSubAppsInstallDialog(
+    content::WebContents* web_contents,
+    const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+    const std::string& parent_app_name,
+    const webapps::AppId& parent_app_id,
+    Profile* profile,
+    base::OnceCallback<void(bool)> callback);
 
 // Sets whether |ShowSimpleInstallDialogForWebApps| should accept immediately
 // without any user interaction.

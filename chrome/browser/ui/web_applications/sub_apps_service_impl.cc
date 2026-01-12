@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,7 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
@@ -388,17 +390,13 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
       GetWebAppProvider(render_frame_host())->registrar_unsafe();
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
 
-  add_call_info.install_dialog =
-      std::make_unique<SubAppsInstallDialogController>();
-  add_call_info.install_dialog->Init(
-      base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
-                     weak_ptr_factory_.GetWeakPtr(), add_call_id),
+  ShowSubAppsInstallDialog(
+      content::WebContents::FromRenderFrameHost(&render_frame_host()),
       add_call_info.install_infos,
       /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
       *parent_app_id, GetProfile(render_frame_host()),
-      /*window=*/
-      content::WebContents::FromRenderFrameHost(&render_frame_host())
-          ->GetTopLevelNativeWindow());
+      base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
+                     weak_ptr_factory_.GetWeakPtr(), add_call_id));
 }
 
 void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,

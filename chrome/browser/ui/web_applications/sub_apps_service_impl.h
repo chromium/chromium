@@ -38,8 +38,6 @@ struct SubAppInstallResult {
 
 }  // namespace
 
-class SubAppsInstallDialogController;
-
 class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
  public:
@@ -71,10 +69,14 @@ class SubAppsServiceImpl
     AddCallInfo();
     ~AddCallInfo();
 
+    // The callback to run when the API call is complete.
     AddCallback mojo_callback;
+
+    // The list of results for each requested install.
+    std::vector<blink::mojom::SubAppsServiceAddResultPtr> results;
+
+    // The list of install infos collected from the install URLs.
     std::vector<std::unique_ptr<WebAppInstallInfo>> install_infos;
-    std::unique_ptr<SubAppsInstallDialogController> install_dialog;
-    AddResultsMojo results;
   };
 
   void CollectInstallData(int add_call_id,

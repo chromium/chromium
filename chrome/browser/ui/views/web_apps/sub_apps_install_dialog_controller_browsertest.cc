@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
 
 #include <utility>
 
@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -21,9 +22,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace web_app {
@@ -40,9 +43,9 @@ constexpr const char kSubAppStartURL[] = "https://www.parent-app.com/sub-app";
 constexpr const char kSubAppIconURL[] =
     "https://www.parent-app.com/sub-app/icon";
 
-const std::u16string kSubAppName1 = u"Sub App 1";
-const std::u16string kSubAppName2 = u"Sub App 2";
-const std::u16string kSubAppName3 = u"Sub App 3";
+const char16_t kSubAppName1[] = u"Sub App 1";
+const char16_t kSubAppName2[] = u"Sub App 2";
+const char16_t kSubAppName3[] = u"Sub App 3";
 
 class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -54,16 +57,17 @@ class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
   ~SubAppsInstallDialogControllerBrowserTest() override = default;
 
  protected:
-  std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
-      base::OnceCallback<void(bool)> callback) {
+  views::Widget* CreateAndShowDialog(base::OnceCallback<void(bool)> callback) {
     const webapps::AppId parent_app_id =
         web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
 
-    auto controller = std::make_unique<SubAppsInstallDialogController>();
-    controller->Init(std::move(callback), /*sub_apps=*/{}, kParentAppName,
-                     parent_app_id, browser()->profile(),
-                     browser()->window()->GetNativeWindow());
-    return controller;
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "SubAppsInstallDialog");
+    ShowSubAppsInstallDialog(
+        browser()->tab_strip_model()->GetActiveWebContents(), /*sub_apps=*/{},
+        kParentAppName, parent_app_id, browser()->profile(),
+        std::move(callback));
+    return waiter.WaitIfNeededAndGet();
   }
 
   std::unique_ptr<WebAppInstallInfo> CreateInstallInfoWithIconForSubApp(
@@ -91,9 +95,14 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName2));
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
-  views::Widget* widget = SubAppsInstallDialogController::CreateWidget(
-      base::ASCIIToUTF16(std::string(kParentAppName)), sub_apps,
-      base::DoNothing(), browser()->window()->GetNativeWindow());
+  const webapps::AppId parent_app_id =
+      web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "SubAppsInstallDialog");
+  ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
+                           sub_apps, kParentAppName, parent_app_id,
+                           browser()->profile(), base::DoNothing());
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 
   EXPECT_FALSE(dialog->ShouldShowCloseButton());
@@ -129,11 +138,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
 
   webapps::AppId parent_app_id =
       web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
-  auto controller = std::make_unique<SubAppsInstallDialogController>();
-  controller->Init(base::DoNothing(), sub_apps, kParentAppName, parent_app_id,
-                   browser()->profile(),
-                   browser()->window()->GetNativeWindow());
-  views::Widget* widget = controller->GetWidgetForTesting();
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "SubAppsInstallDialog");
+  ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
+                           sub_apps, kParentAppName, parent_app_id,
+                           browser()->profile(), base::DoNothing());
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
 
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
@@ -156,9 +166,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
                        DialogAccepted) {
   base::test::TestFuture<bool> future;
-  auto controller = CreateDefaultController(future.GetCallback());
-  auto* dialog =
-      controller->GetWidgetForTesting()->widget_delegate()->AsDialogDelegate();
+  views::Widget* widget = CreateAndShowDialog(future.GetCallback());
+  auto* dialog = widget->widget_delegate()->AsDialogDelegate();
 
   dialog->AcceptDialog();
 
@@ -168,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
                        DialogCancelled) {
   base::test::TestFuture<bool> future;
-  auto controller = CreateDefaultController(future.GetCallback());
-  auto* dialog =
-      controller->GetWidgetForTesting()->widget_delegate()->AsDialogDelegate();
+  views::Widget* widget = CreateAndShowDialog(future.GetCallback());
+  auto* dialog = widget->widget_delegate()->AsDialogDelegate();
 
   dialog->CancelDialog();
 
@@ -179,28 +187,13 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest, EscPressed) {
   base::test::TestFuture<bool> future;
-  auto controller = CreateDefaultController(future.GetCallback());
-  views::Widget* widget = controller->GetWidgetForTesting();
+  views::Widget* widget = CreateAndShowDialog(future.GetCallback());
 
   // Simulate esc key press.
   ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, ui::EF_NONE);
   widget->OnKeyEvent(&event);
 
   EXPECT_FALSE(future.Get());
-}
-
-IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
-                       WidgetLifetimeIsTiedToControllerLifetime) {
-  views::Widget* widget;
-
-  {
-    auto controller = CreateDefaultController(base::DoNothing());
-    widget = controller->GetWidgetForTesting();
-    EXPECT_TRUE(widget->IsVisible());
-  }
-
-  views::test::WidgetDestroyedWaiter widget_observer(widget);
-  widget_observer.Wait();
 }
 
 }  // namespace

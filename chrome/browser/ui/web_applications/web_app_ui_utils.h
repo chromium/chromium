@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_UI_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_UI_UTILS_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace content {
@@ -32,7 +33,7 @@ bool HandleAppManagementLinkClickedInPageInfo(
 // Handles a click on the 'manage [permissions]' link in the sub apps install
 // dialog by opening the app management page for the parent app.
 void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
-                                 Profile* profile);
+                                 base::WeakPtr<Profile> profile);
 
 // Handles a click on the 'Go to app settings' button in the Related installed
 // applications section of the page specific site data dialog.
