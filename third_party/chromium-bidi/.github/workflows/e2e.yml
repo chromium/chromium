@@ -8,6 +8,8 @@ permissions: read-all
 env:
   DEBUG: 'bidi:server:*,bidi:mapper:*'
   DEBUG_DEPTH: 10
+  # Run verbose on manual trigger or on merge to main.
+  VERBOSE: ${{ github.event_name == 'push' || inputs.verbose == true }}
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
@@ -102,7 +104,6 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           # TODO: Fix tests and don't rerun them.
           # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
@@ -116,7 +117,6 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           # TODO: Fix tests and don't rerun them.
           # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
