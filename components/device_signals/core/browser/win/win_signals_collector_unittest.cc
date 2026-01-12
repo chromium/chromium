@@ -44,6 +44,7 @@ class WinSignalsCollectorTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   StrictMock<MockSystemSignalsServiceHost> service_host_;
   StrictMock<MockSystemSignalsService> service_;
   std::unique_ptr<WinSignalsCollector> win_collector_;
@@ -59,12 +60,11 @@ class WinSignalsCollectorTest : public WinSignalsCollectorTestBase,
 
     if (is_system_signals_collection_improvement_enabled()) {
       EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
+      EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
     }
   }
 
   bool is_system_signals_collection_improvement_enabled() { return GetParam(); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that runs a sanity check on the set of signals supported by this
@@ -197,7 +197,16 @@ struct AntivirusTestCase {
 
 class AntivirusWinSignalsCollectorTest
     : public WinSignalsCollectorTestBase,
-      public testing::WithParamInterface<AntivirusTestCase> {};
+      public testing::WithParamInterface<AntivirusTestCase> {
+ protected:
+  AntivirusWinSignalsCollectorTest() {
+    if (enterprise_signals::features::
+            IsSystemSignalCollectionImprovementEnabled()) {
+      EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
+      EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
+    }
+  }
+};
 
 // Tests a successful AV signal retrieval.
 TEST_P(AntivirusWinSignalsCollectorTest, GetSignal_AV) {

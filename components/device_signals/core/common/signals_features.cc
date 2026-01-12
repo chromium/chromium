@@ -24,7 +24,7 @@ BASE_FEATURE(kBrowserSignalsReportingEnabled,
 
 // Enables the improvements made during system signals collection in Chrome.
 BASE_FEATURE(kSystemSignalCollectionImprovementEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the collection of policies in a Chrome Profile signals report.
 BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
