@@ -186,6 +186,8 @@ IOSPromoBubbleView::IOSPromoBubbleView(Profile* profile,
   SetCloseCallback(
       base::BindOnce(&IOSPromoBubbleView::OnDismissal, base::Unretained(this)));
 
+  set_highlight_button_when_shown(ShouldHighlightAnchorButton());
+
   LogDesktopPromoBubbleCreated(promo_type_, promo_bubble_type_);
 }
 
@@ -351,6 +353,18 @@ std::u16string IOSPromoBubbleView::GetDeviceName() const {
       return l10n_util::GetStringUTF16(IDS_IOS_DEVICE_TYPE_IPHONE);
     default:
       NOTREACHED();
+  }
+}
+
+bool IOSPromoBubbleView::ShouldHighlightAnchorButton() const {
+  switch (promo_type_) {
+    case PromoType::kPassword:
+      return true;
+    case PromoType::kLens:
+    case PromoType::kEnhancedBrowsing:
+    case PromoType::kAddress:
+    case PromoType::kPayment:
+      return false;
   }
 }
 

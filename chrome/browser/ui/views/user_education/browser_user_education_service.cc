@@ -1625,12 +1625,11 @@ void MaybeRegisterChromeFeaturePromos(
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSLensPromoDesktopFeature,
-                      kSidePanelElementId,
+                      kToolbarAppMenuButtonElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
                           base::BindRepeating(
                               &IOSPromoBubbleView::Create,
                               desktop_to_mobile_promos::PromoType::kLens)))
-                      .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
                       .SetMetadata(144, "scottyoder@google.com",
                                    "Triggered when Lens Overlay is used.")));
   }
