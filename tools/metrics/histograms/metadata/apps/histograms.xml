@@ -2192,6 +2192,23 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShim.MacSecurityFrameworkOSStatus.{Operation}"
+    enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-01">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    The OSStatus result of the {Operation} call during app shim signature
+    validation. Recorded when the browser validates the code signature of a
+    connected app shim process.
+  </summary>
+  <token key="Operation">
+    <variant name="SecCodeCheckValidityAdHoc"/>
+    <variant name="SecCodeCheckValidityLegacy"/>
+    <variant name="SecCodeCopyGuestWithAttributes"/>
+    <variant name="SecCodeCopySigningInformation"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppShimRegistry.HmacKeyStore.LoadResult"
     enum="AppShimRegistryGetHmacKeyResult" expires_after="2026-08-26">
   <owner>mek@chromium.org</owner>
