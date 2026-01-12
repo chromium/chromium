@@ -145,6 +145,10 @@ bool FakeSyncEngine::IsNextPollTimeInThePast() const {
   return is_next_poll_time_in_the_past_;
 }
 
+std::vector<std::string> FakeSyncEngine::GetCacheGuidsForAllGaiaIds() const {
+  return {GetCacheGuid()};
+}
+
 void FakeSyncEngine::ClearNigoriDataForMigration() {}
 
 void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}

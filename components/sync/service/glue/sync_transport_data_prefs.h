@@ -56,6 +56,8 @@ class SyncTransportDataPrefs {
   static bool HasCurrentSyncingGaiaId(const PrefService* pref_service);
   static void ClearCurrentSyncingGaiaId(PrefService* pref_service);
 
+  std::vector<std::string> GetCacheGuidsForAllGaiaIds() const;
+
   // All of the following prefs are Gaia-keyed (to the `gaia_id_hash`) passed
   // to the constructor):
 

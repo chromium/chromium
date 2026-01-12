@@ -442,16 +442,13 @@ void SyncServiceImpl::StartSyncingWithServer() {
   // metrics recording is enabled per IsMetricsAndCrashReportingEnabled().
   if (engine_ &&
       base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
-    // TODO(crbug.com/465716865): Also provide any cache GUIDs of the current
-    // device for non-primary accounts, based on
-    // `prefs::internal::kSyncTransportDataPerAccount`.
     device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
         sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
         sync_service_url_,
         base::BindRepeating(
             &CreateDeviceStatisticsRequest, sync_client_->GetIdentityManager(),
             url_loader_factory_, MakeUserAgentForSync(channel_)),
-        std::vector<std::string>{engine_->GetCacheGuid()});
+        engine_->GetCacheGuidsForAllGaiaIds());
     device_statistics_tracker_->Start(base::BindOnce(
         &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
   }
