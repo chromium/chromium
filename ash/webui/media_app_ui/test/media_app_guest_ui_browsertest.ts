@@ -22,7 +22,7 @@ export function eventToPromise(eventType: string, target: EventTarget) {
 // Test web workers can be spawned from chrome-untrusted://media-app. Errors
 // will be logged in console from web_ui_browser_test.cc.
 GUEST_TEST('GuestCanSpawnWorkers', async () => {
-  const worker = new Worker('test_worker.js');
+  const worker = new Worker('test_worker.js', {type: 'module'});
   const workerResponse = new Promise<MessageEvent>((resolve, reject) => {
     /**
      * Registers onmessage event handler.

@@ -21,6 +21,7 @@ template("ts_library") {
                            ])
 
     inputs = [
+      "//package.json",
       "//tools/typescript/path_utils.py",
       "//tools/typescript/tsconfig_base.json",
       "//tools/typescript/validate_tsconfig.py",

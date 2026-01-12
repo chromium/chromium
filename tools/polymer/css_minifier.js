@@ -9,14 +9,12 @@
  * HTML or CSS input files, by minifying their CSS contents (removing any blank
  * space and comments, no other transformations made).
  */
-const postcss =
-    require('../../third_party/node/node_modules/postcss/lib/postcss.js');
-const postcssMinify =
-    require('../../third_party/node/node_modules/postcss-minify/index.js');
+import assert from 'node:assert/strict';
+import * as fs from 'node:fs/promises';
+import path from 'node:path';
 
-const assert = require('assert');
-const fs = require('fs/promises');
-const path = require('path');
+import postcssMinify from '../../third_party/node/node_modules/postcss-minify/index.js';
+import postcss from '../../third_party/node/node_modules/postcss/lib/postcss.js';
 
 // Regular expression to extract CSS content from within <style>...</style> or
 // <style include="...">...</style> tags. The 'd' flag is needed to obtain the
