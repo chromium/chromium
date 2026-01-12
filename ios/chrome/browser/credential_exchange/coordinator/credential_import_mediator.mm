@@ -8,6 +8,7 @@
 #import "base/task/bind_post_task.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
@@ -18,8 +19,10 @@
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
@@ -43,6 +46,9 @@
 
   // Fetches favicons for credentials items.
   raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Used to check whether the user is syncing passwords.
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 - (instancetype)initWithUUID:(NSUUID*)UUID
@@ -52,7 +58,8 @@
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
              savedPasswordsPresenter
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
-               faviconLoader:(FaviconLoader*)faviconLoader {
+               faviconLoader:(FaviconLoader*)faviconLoader
+                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
@@ -65,6 +72,7 @@
     _delegate = delegate;
     _userEmail = std::move(userEmail);
     _faviconLoader = faviconLoader;
+    _syncService = syncService;
   }
   return self;
 }
@@ -187,8 +195,14 @@
     faviconLoadCompletion();
   };
   if (item.url) {
-    _faviconLoader->FaviconForPageUrlOrHost(item.url.URL, gfx::kFaviconSize,
-                                            faviconLoadedBlock);
+    // Only fallback to Google server if the user is syncing passwords, ensuring
+    // privacy for non-syncing users.
+    bool fallbackToGoogleServer =
+        password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
+            _syncService);
+    _faviconLoader->FaviconForPageUrl(item.url.URL, kDesiredSmallFaviconSizePt,
+                                      kMinFaviconSizePt, fallbackToGoogleServer,
+                                      faviconLoadedBlock);
   } else {
     // If the URL does not exist, return the monogram for the username.
     CHECK_GT(item.username.length, 0u);

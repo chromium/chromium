@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
@@ -123,7 +124,8 @@
                  passkeyModel:IOSPasskeyModelFactory::GetForProfile(
                                   self.profile)
                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
-                                  profile)];
+                                  profile)
+                  syncService:SyncServiceFactory::GetForProfile(profile)];
   _mediator.consumer = _viewController;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];

@@ -16,6 +16,10 @@ namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
@@ -72,6 +76,7 @@ class FaviconLoader;
              savedPasswordsPresenter
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                faviconLoader:(FaviconLoader*)faviconLoader
+                 syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
