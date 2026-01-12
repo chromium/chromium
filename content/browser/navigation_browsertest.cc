@@ -10185,4 +10185,33 @@ IN_PROC_BROWSER_TEST_F(HstsUpgradeBrowserTest, UpgradeTopLevelOnly) {
   EXPECT_EQ(url_of_hsts_frame_http, fenced_frame->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       ProgressIsResetWhenInterceptedNavigationIsAborted) {
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(),
+                            embedded_test_server()->GetURL("/title1.html")));
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     R"({
+      (()=>{
+        const done = Promise.withResolvers();
+        window.navigation.addEventListener("navigate", e => {
+          e.intercept({
+            handler: () => new Promise(resolve => setTimeout(() => {
+              history.pushState({}, "", "?push");
+              resolve();
+              setTimeout(done.resolve, 100);
+            }))
+          })
+        }, { once: true });
+
+        window.navigation.navigate("?nav");
+
+        return done.promise;
+      })();
+    })"));
+  ASSERT_FALSE(shell()->web_contents()->IsLoading());
+  ASSERT_EQ(shell()->web_contents()->GetURL(),
+            embedded_test_server()->GetURL("/title1.html?push"));
+}
+
 }  // namespace content
