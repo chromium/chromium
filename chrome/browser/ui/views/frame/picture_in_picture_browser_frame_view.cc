@@ -267,7 +267,13 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   }
 
   invisible_child_dialogs_.erase(widget);
-  child_dialog_observations_.RemoveObservation(widget);
+  // During widget destruction, it is possible for `OnWidgetDestroying` to be
+  // called multiple times (e.g., once by parent notification and once by
+  // self-notification). This check ensures RemoveObservation is only called
+  // once.
+  if (child_dialog_observations_.IsObservingSource(widget)) {
+    child_dialog_observations_.RemoveObservation(widget);
+  }
   child_dialogs_waiting_for_resize_.erase(widget);
   child_dialog_sizes_.erase(widget);
 
