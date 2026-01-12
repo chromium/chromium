@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/mcp_server/accessibility_snapshot/accessibility_snapshot.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -24,8 +25,8 @@ constexpr base::TimeDelta kPollInterval = base::Milliseconds(100);
 // JavaScript helper: Escape string for use in JS code
 std::string EscapeJsString(const std::string& str) {
   std::string escaped;
-  base::EscapeJSONString(str, true, &escaped);  // Adds quotes
-  return escaped;
+  base::EscapeJSONString(str, false, &escaped);  // Don't add quotes
+  return "\"" + escaped + "\"";  // Add quotes manually for better control
 }
 
 }  // namespace
@@ -554,6 +555,151 @@ void ActionRunner::CaptureScreenshotCDP(content::WebContents* web_contents,
       false,
       "Screenshot not yet implemented - requires CDP integration",
       base::Value::Dict());
+}
+
+// ===== Reference ID-based action implementations =====
+
+void ActionRunner::ClickByRef(content::WebContents* web_contents,
+                               const std::string& ref_id,
+                               ActionCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Convert ref ID to CSS selector
+  std::string selector = AccessibilitySnapshot::GetSelectorForRef(web_contents, ref_id);
+
+  if (selector.empty()) {
+    std::move(callback).Run(
+        false,
+        "Reference ID not found: " + ref_id + ". Take a fresh accessibility snapshot first.",
+        base::Value::Dict());
+    return;
+  }
+
+  // Call the selector-based method
+  Click(web_contents, selector, std::move(callback));
+}
+
+void ActionRunner::TypeByRef(content::WebContents* web_contents,
+                              const std::string& ref_id,
+                              const std::string& text,
+                              ActionCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Convert ref ID to CSS selector
+  std::string selector = AccessibilitySnapshot::GetSelectorForRef(web_contents, ref_id);
+
+  if (selector.empty()) {
+    std::move(callback).Run(
+        false,
+        "Reference ID not found: " + ref_id + ". Take a fresh accessibility snapshot first.",
+        base::Value::Dict());
+    return;
+  }
+
+  // Call the selector-based method
+  Type(web_contents, selector, text, std::move(callback));
+}
+
+void ActionRunner::HoverByRef(content::WebContents* web_contents,
+                               const std::string& ref_id,
+                               ActionCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Convert ref ID to CSS selector
+  std::string selector = AccessibilitySnapshot::GetSelectorForRef(web_contents, ref_id);
+
+  if (selector.empty()) {
+    std::move(callback).Run(
+        false,
+        "Reference ID not found: " + ref_id + ". Take a fresh accessibility snapshot first.",
+        base::Value::Dict());
+    return;
+  }
+
+  // Call the selector-based method
+  Hover(web_contents, selector, std::move(callback));
+}
+
+void ActionRunner::SelectOptionByRef(content::WebContents* web_contents,
+                                      const std::string& ref_id,
+                                      const std::string& value,
+                                      ActionCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Convert ref ID to CSS selector
+  std::string selector = AccessibilitySnapshot::GetSelectorForRef(web_contents, ref_id);
+
+  if (selector.empty()) {
+    std::move(callback).Run(
+        false,
+        "Reference ID not found: " + ref_id + ". Take a fresh accessibility snapshot first.",
+        base::Value::Dict());
+    return;
+  }
+
+  // Call the selector-based method
+  SelectOption(web_contents, selector, value, std::move(callback));
+}
+
+// ===== Scroll action implementation =====
+
+void ActionRunner::Scroll(content::WebContents* web_contents,
+                          const std::string& mode,
+                          int x,
+                          int y,
+                          const std::string& selector,
+                          const std::string& behavior,
+                          ActionCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string script;
+
+  if (mode == "scrollBy") {
+    // Scroll by relative amount
+    script = base::StringPrintf(
+        "(function() {"
+        "  window.scrollBy({left: %d, top: %d, behavior: '%s'});"
+        "  return {x: window.scrollX, y: window.scrollY};"
+        "})()",
+        x, y, behavior.c_str());
+  } else if (mode == "scrollTo") {
+    // Scroll to absolute position
+    script = base::StringPrintf(
+        "(function() {"
+        "  window.scrollTo({left: %d, top: %d, behavior: '%s'});"
+        "  return {x: window.scrollX, y: window.scrollY};"
+        "})()",
+        x, y, behavior.c_str());
+  } else if (mode == "scrollIntoView") {
+    // Scroll element into view
+    if (selector.empty()) {
+      std::move(callback).Run(
+          false,
+          "scrollIntoView mode requires a selector",
+          base::Value::Dict());
+      return;
+    }
+
+    std::string escaped_selector = EscapeJsString(selector);
+    script = base::StringPrintf(
+        "(function() {"
+        "  const element = document.querySelector(%s);"
+        "  if (!element) {"
+        "    throw new Error('Element not found: %s');"
+        "  }"
+        "  element.scrollIntoView({behavior: '%s', block: 'center', inline: 'nearest'});"
+        "  return {x: window.scrollX, y: window.scrollY};"
+        "})()",
+        escaped_selector.c_str(), selector.c_str(), behavior.c_str());
+  } else {
+    std::move(callback).Run(
+        false,
+        "Invalid scroll mode. Must be: scrollBy, scrollTo, or scrollIntoView",
+        base::Value::Dict());
+    return;
+  }
+
+  ExecuteScript(web_contents, script, std::move(callback));
 }
 
 }  // namespace mcp_server
