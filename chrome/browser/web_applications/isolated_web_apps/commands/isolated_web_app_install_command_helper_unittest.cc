@@ -30,7 +30,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
@@ -290,8 +290,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
       [&](const GURL& unused_url, content::WebContents* web_contents,
           webapps::WebAppUrlLoader::UrlComparison unused_url_comparison) {
         source =
-            IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-                .source();
+            NonInstalledBundleInspectionContext::FromWebContents(web_contents)
+                ->source();
       }));
 
   base::test::TestFuture<base::expected<void, std::string>> future;
@@ -321,8 +321,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
       [&](const GURL& unused_url, content::WebContents* web_contents,
           webapps::WebAppUrlLoader::UrlComparison unused_url_comparison) {
         source =
-            IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-                .source();
+            NonInstalledBundleInspectionContext::FromWebContents(web_contents)
+                ->source();
       }));
 
   base::test::TestFuture<base::expected<void, std::string>> future;

@@ -7,8 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -83,23 +82,23 @@ void GetIwaSourceForRequestImpl(
       // `web_contents` can be `nullptr` in certain edge cases, such as when
       // the browser window closes concurrently with an ongoing request (see
       // crbug.com/1477761). Return an error if that is the case, instead of
-      // silently not querying `IsolatedWebAppPendingInstallInfo`. Should we
+      // silently not querying `NonInstalledBundleInspectionContext`. Should we
       // ever find a case where we _do_ want to continue request processing
       // even though the `WebContents` no longer exists, we can change the
-      // below code to skip checking `IsolatedWebAppPendingInstallInfo`
+      // below code to skip checking `NonInstalledBundleInspectionContext`
       // instead of returning an error.
       std::move(callback).Run(base::unexpected(
           "Unable to find WebContents based on frame tree node id."));
       return;
     }
-    if (const auto& source =
-            IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-                .source()) {
+    if (const auto* inspection_context =
+            NonInstalledBundleInspectionContext::FromWebContents(
+                web_contents)) {
       if (request.url.GetPath() == kInstallPagePath) {
         std::move(callback).Run(
             GeneratedResponse{.response_body = kInstallPageContent});
       } else {
-        std::move(callback).Run(*source);
+        std::move(callback).Run(inspection_context->source());
       }
       return;
     }
@@ -113,10 +112,10 @@ void GetIwaSourceForRequestImpl(
     // TODO(crbug.com/432676258): How likely is this case?
     provider->iwa_update_manager().PrioritizeUpdateAndWait(
         iwa_id,
-        // We ignore whether or not the update was applied successfully - if it
-        // succeeds, we send the request to the updated version. If it fails, we
-        // send the request to the previous version and rely on the update
-        // system to retry the update at a later point.
+        // We ignore whether or not the update was applied successfully - if
+        // it succeeds, we send the request to the updated version. If it
+        // fails, we send the request to the previous version and rely on the
+        // update system to retry the update at a later point.
         base::IgnoreArgs<IsolatedWebAppApplyUpdateCommandResult>(
             base::BindOnce(&GetIwaSource, profile, iwa_id)
                 .Then(std::move(callback))));

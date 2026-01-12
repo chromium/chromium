@@ -16,7 +16,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
@@ -402,9 +402,9 @@ TEST_F(
                              *IwaVersion::Create("1.0.0"))
           .Build()));
 
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_source(IwaSourceProxy{
-          url::Origin::Create(GURL("http://pending-install-proxy-url.com"))});
+  NonInstalledBundleInspectionContext::CreateForWebContents(
+      web_contents(), IwaSourceProxy{url::Origin::Create(
+                          GURL("http://pending-install-proxy-url.com"))});
 
   CreateFactoryForFrame();
 
@@ -664,9 +664,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        ReturnGeneratedPageWhenInstallingApplication) {
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_source(IwaSourceProxy{
-          url::Origin::Create(GURL("http://some-proxy-url.com"))});
+  NonInstalledBundleInspectionContext::CreateForWebContents(
+      web_contents(),
+      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))});
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,
       IsolationData::Builder(
@@ -691,9 +691,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestsRedirectedToPendingInstallIsolationDataWhenAppIsInstalled) {
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_source(IwaSourceProxy{
-          url::Origin::Create(GURL("http://some-proxy-url.com"))});
+  NonInstalledBundleInspectionContext::CreateForWebContents(
+      web_contents(),
+      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))});
 
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,
@@ -720,9 +720,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestsRedirectedToPendingInstallIsolationDataWhenAppIsNotInstalled) {
   CreateStoragePartitionForUrl(GURL("isolated-app://" + kDevWebBundleId));
 
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_source(IwaSourceProxy{
-          url::Origin::Create(GURL("http://some-proxy-url.com"))});
+  NonInstalledBundleInspectionContext::CreateForWebContents(
+      web_contents(),
+      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))});
 
   CreateFactoryForFrame();
 

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
@@ -97,15 +97,13 @@ bool IsolatedWebAppThrottle::NeedsManifestFetch() {
   cache_ = IwaPermissionsPolicyCacheFactory::GetForProfile(profile());
   CHECK(cache_);
   const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
-  // There are navigations involved in installation of an IWA, caching the
-  // manifest then would not be a good idea. In particular, this is not a good
-  // place for catching manifest-related issues during the installation.
-  // TODO(crbug.com/470943369): get this in an immutable way.
+  // There are navigations involved in processing the bundle data for
+  // installations/updates/metadata reading, and caching the manifest then
+  // would not be a good idea. In particular, this is not a good place for
+  // catching manifest-related issues during the installation.
   return iwa_origin.has_value() &&
-         !IsolatedWebAppPendingInstallInfo::FromWebContents(
-              *navigation_handle()->GetWebContents())
-              .source()
-              .has_value() &&
+         !NonInstalledBundleInspectionContext::FromWebContents(
+             navigation_handle()->GetWebContents()) &&
          !cache_->GetPolicy(*iwa_origin);
 }
 
