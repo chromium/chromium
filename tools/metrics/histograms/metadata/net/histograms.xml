@@ -6715,6 +6715,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.TLSHandshakeBytes.MTC" units="bytes"
+    expires_after="2026-06-21">
+  <owner>nharper@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of bytes sent and received in the TLS handshake. This metric is
+    only recorded for servers that sent a Trust Anchor ID corresponding to a
+    Merkle Tree Certificate
+    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.TooManyOpenStreams" enum="BooleanTooMany"
     expires_after="2026-06-21">
   <owner>dschinazi@chromium.org</owner>

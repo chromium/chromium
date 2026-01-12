@@ -3974,6 +3974,15 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   if (server_advertised_mtc_tai_) {
     UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.MTC",
                         handshake_confirmed_time);
+    size_t handshake_bytes = 0;
+    for (size_t l = quic::ENCRYPTION_INITIAL; l < quic::NUM_ENCRYPTION_LEVELS;
+         l++) {
+      quic::EncryptionLevel level = static_cast<quic::EncryptionLevel>(l);
+      handshake_bytes += crypto_stream_->BytesReadOnLevel(level);
+      handshake_bytes += crypto_stream_->BytesSentOnLevel(level);
+    }
+    UMA_HISTOGRAM_COUNTS_100000("Net.QuicSession.TLSHandshakeBytes.MTC",
+                                handshake_bytes);
   }
 
   // Indicate that the handshake is complete so that we can safely send pings
