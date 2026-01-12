@@ -1,0 +1,81 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_
+#define COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_
+
+#include <vector>
+
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
+#include "third_party/omnibox_proto/aim_input_type.pb.h"
+#include "third_party/omnibox_proto/aim_models.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
+
+namespace contextual_search {
+
+using ToolMode = omnibox::ChromeAimToolsAndModels;
+using omnibox::InputType;
+using omnibox::ModelMode;
+
+// Represents a valid searchbox inputs state.
+struct InputState {
+  InputState();
+  ~InputState();
+  // The set of allowed tools, models, and input types.
+  std::vector<ToolMode> allowed_tools;
+  std::vector<ModelMode> allowed_models;
+  std::vector<InputType> allowed_input_types;
+  // The currently active tool and model.
+  ToolMode active_tool;
+  ModelMode active_model;
+  // The set of currently disabled tools, models, and input types.
+  std::vector<ToolMode> disabled_tools;
+  std::vector<ModelMode> disabled_models;
+  std::vector<InputType> disabled_input_types;
+};
+
+// Manages the state of composebox inputs including tools, models, and
+// multimodal inputs.
+class InputStateModel {
+ public:
+  using Subscriber = base::RepeatingCallback<void(const InputState&)>;
+
+  // Constructor takes in a `ContextualSearchSessionHandle` to get uploaded file
+  // info.
+  explicit InputStateModel(
+      contextual_search::ContextualSearchSessionHandle& session_handle);
+  virtual ~InputStateModel();
+
+  // Add a subscriber to this model.
+  base::CallbackListSubscription subscribe(Subscriber callback);
+
+  // Set a new tool.
+  void setActiveTool(ToolMode tool);
+
+  // Set a new model.
+  void setActiveModel(ModelMode model);
+
+ private:
+  // Notify all subscribers of the current `state_`.
+  void notifySubscribers();
+
+  // Update the current value of `state_` based on new tool or model.
+  void updateSelectedState(ToolMode tool, ModelMode model);
+
+  // Update the currently disabled tools, models, and inputs.
+  void updateDisabledState();
+
+  InputState state_;
+  const base::raw_ref<contextual_search::ContextualSearchSessionHandle>
+      session_handle_;
+  base::RepeatingCallbackList<void(const InputState&)> subscribers_;
+};
+
+}  // namespace contextual_search
+
+#endif  // COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_

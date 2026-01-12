@@ -32,6 +32,10 @@ source_set("public") {
     "contextual_search_types.h",
   ]
 
+  if (!is_android) {
+    sources += [ "input_state_model.h" ]
+  }
+
   deps = [
     "//components/keyed_service/core",
     "//components/lens/proto/server:proto",
@@ -43,6 +47,7 @@ source_set("public") {
     "//components/version_info:channel",
     "//mojo/public/mojom/base",
     "//services/network/public/cpp",
+    "//third_party/omnibox_proto",
     "//url",
   ]
 
@@ -62,6 +67,10 @@ source_set("impl") {
     "contextual_search_session_entry.h",
     "contextual_search_session_handle.cc",
   ]
+
+  if (!is_android) {
+    sources += [ "input_state_model.cc" ]
+  }
 
   deps = [
     ":prefs",
@@ -104,6 +113,11 @@ source_set("unit_tests") {
     "contextual_search_service_unittest.cc",
     "contextual_search_session_entry_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [ "input_state_model_unittest.cc" ]
+  }
+
   deps = [
     ":impl",
     ":prefs",

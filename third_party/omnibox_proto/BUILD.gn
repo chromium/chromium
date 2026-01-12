@@ -27,6 +27,13 @@ _proto_files = [
   "types.proto",
 ]
 
+if (!is_android) {
+  _proto_files += [
+    "aim_input_type.proto",
+    "aim_models.proto",
+  ]
+}
+
 proto_library("omnibox_proto") {
   sources = _proto_files
   proto_in_dir = "."
