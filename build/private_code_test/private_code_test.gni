@@ -11,6 +11,7 @@ _default_allowed_violations = [
   # Defines public counterpart with same entries.
   "../../components/metrics/internal/server_urls.grd",
   "../../components/autofill/core/browser/geo/chrome_alternative_state_name_maps/alternative_state_name_map_resources.grd",
+  "../../chrome/browser/glic/resources/internal/browser_resources.grd",
 
   # TODO(b/452971335): Audit entries below.
   "../../chrome/browser/internal/resources/additional_modules_list.input",
@@ -26,7 +27,6 @@ _default_allowed_violations = [
 if (!is_android) {
   _default_allowed_violations += [
     "../../chrome/browser/actor/resources/internal/browser_resources.grd",
-    "../../chrome/browser/glic/resources/internal/browser_resources.grd",
     "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd",
     "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd",
     "../../chrome/browser/resources/downloads/internal/icons.html",
