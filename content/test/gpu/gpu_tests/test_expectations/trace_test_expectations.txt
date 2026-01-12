@@ -289,6 +289,9 @@ crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectCom
 # TreesInViz damage calculation issues
 crbug.com/454680865 [ android-pixel-2 android-q angle-opengles graphite-disabled mobile no-clang-coverage qualcomm renderer-skia-gl target-cpu-64 ] TraceTest_Video_MP4_TreesInViz [ RetryOnFailure ]
 
+# Readback assertion on macOS
+crbug.com/474873836 [ mac intel-0x3e9b angle-metal ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
