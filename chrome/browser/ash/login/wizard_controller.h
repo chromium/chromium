@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
@@ -585,6 +586,11 @@ class WizardController : public OobeUI::Observer {
 
   // Tries to enable pre-consent metrics.
   void MaybeEnablePreConsentMetrics();
+
+  // Notifies the FjordOobeStateManager of an OOBE state change. This is a no-op
+  // for devices that do not implement the Fjord variant of OOBE.
+  void MaybeNotifyFjordOobeStateManager(
+      fjord_oobe_state::proto::FjordOobeStateInfo::FjordOobeState state);
 
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
