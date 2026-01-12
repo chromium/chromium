@@ -30,7 +30,7 @@ class PasskeyKeychainProvider {
   PasskeyKeychainProvider(const PasskeyKeychainProvider&) = delete;
   PasskeyKeychainProvider& operator=(const PasskeyKeychainProvider&) = delete;
 
-  ~PasskeyKeychainProvider();
+  virtual ~PasskeyKeychainProvider();
 
   // Checks if the identity identified by `gaia` is enrolled and invokes
   // `callback` with the result.
@@ -61,9 +61,9 @@ class PasskeyKeychainProvider {
   //   fetched keys.
   // - "callback" is called once the keys are fetched and receives the fetched
   //   keys as input (the array will be empty on failure).
-  void FetchKeys(NSString* gaia,
-                 webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysFetchedCallback callback);
+  virtual void FetchKeys(NSString* gaia,
+                         webauthn::ReauthenticatePurpose purpose,
+                         webauthn::KeysFetchedCallback callback);
 
   // Asynchronously marks the keys as stale for the identity identified by
   // `gaia` and invokes `callback` after completion. This should be invoked

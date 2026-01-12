@@ -33,6 +33,8 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
       IOSPasswordManagerDriver* driver) override;
 
  private:
+  PasskeyKeychainProvider* GetPasskeyKeychainProvider();
+
   // Pointer to the associated ProfileIOS. Must outlive
   // IOSChromePasskeyClient.
   raw_ptr<ProfileIOS> profile_;
