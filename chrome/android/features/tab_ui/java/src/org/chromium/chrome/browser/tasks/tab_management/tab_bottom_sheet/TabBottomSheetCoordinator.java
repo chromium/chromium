@@ -50,19 +50,15 @@ public class TabBottomSheetCoordinator {
         if (mIsSheetCurrentlyManagedByController) {
             return;
         }
+
         // Build the bottom sheet.
         View contentView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, contentView, TabBottomSheetViewBinder::bind);
         mSheetContent = new TabBottomSheetContent(contentView);
-        mSheetObserver =
-                new EmptyBottomSheetObserver() {
-                    @Override
-                    public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                        destroy();
-                    }
-                };
+        mSheetObserver = buildBottomSheetObserver();
 
         if (mBottomSheetController.requestShowContent(mSheetContent, true)) {
             mBottomSheetController.addObserver(mSheetObserver);
@@ -103,6 +99,20 @@ public class TabBottomSheetCoordinator {
             mViewBinder = null;
         }
         mIsSheetCurrentlyManagedByController = false;
+    }
+
+    private BottomSheetObserver buildBottomSheetObserver() {
+        return new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetClosed(@StateChangeReason int reason) {
+                destroy();
+            }
+
+            @Override
+            public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                mModel.set(TabBottomSheetProperties.FUSEBOX_OFFSET, offsetPx);
+            }
+        };
     }
 
     // Testing methods.
