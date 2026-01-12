@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} kata laluan}other{{count} kata laluan}}</translation>
 <translation id="1275718070701477396">Dipilih</translation>
+<translation id="1279024913354609713">Jangan Benarkan</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1287229685519872919">Data Google Workspace</translation>
 <translation id="1291506870746876680">Kebenaran <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
@@ -252,6 +253,7 @@
 <translation id="1901366738768303267">Bagaimanakah cara menggunakan ciri ini?</translation>
 <translation id="1901600657316773839">Simpan pilihan</translation>
 <translation id="1902277226107477495">Pengesanan alamat dimatikan. Hidupkan semula ciri ini dalam Tetapan.</translation>
+<translation id="1909201414196501151">Laman ditambahkan dan disematkan</translation>
 <translation id="1911619930368729126">Muat naik ke Google Drive</translation>
 <translation id="1925706052394657380">Buka tetapan <ph name="BEGIN_BOLD" />Apl Lalai<ph name="END_BOLD" /> dalam iOS</translation>
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
@@ -614,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaharu</translation>
 <translation id="3349031117032695619">Sekat tetingkap timbul</translation>
+<translation id="3350976670663926380">Pengeditan disimpan</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akaun ini terurus.</translation>
 <translation id="3365529507898144230">Simpan dalam Photos</translation>
 <translation id="3371831930909698441">Translate tersedia. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
@@ -658,7 +661,6 @@
 <translation id="3530024057633834563">Anda tiada sebarang kata laluan atau kunci laluan yang disimpan tetapi anda boleh memadamkan senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan maklumat log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="3530206579861815432">Cari tab terbuka dan baru ditutup dengan pantas di seluruh peranti anda yang disegerakkan.</translation>
 <translation id="3530767473765895035">Urus akaun pada peranti ini…</translation>
-<translation id="353340646084395154">Pilihan halaman tab baharu dialih keluar</translation>
 <translation id="3533436815740441613">Tab Baharu</translation>
 <translation id="3540141921715814660">Tambahkan pada Penanda Halaman</translation>
 <translation id="3546122170015471515">Pratonton Peta pada Google.com</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Pilih "Perlindungan Dipertingkat"</translation>
 <translation id="3610041351087301930">Sembunyikan Pembaca</translation>
 <translation id="3610866916973186448">Ya, padamkan</translation>
+<translation id="3616161326314492065">Ambil foto dan kongsi dengan Gemini untuk membuat dan adun semula imej.</translation>
 <translation id="3622175633937495219">Sejarah Carian (<ph name="COUNT" /> ditemukan)</translation>
 <translation id="3625008969091706597">Anda boleh meleret bahagian tepi untuk kembali.</translation>
 <translation id="362709345066740529">Sesuaikan kad dan suapan anda serta pelbagai lagi di sini</translation>
@@ -1154,7 +1157,6 @@
 <translation id="537853552771686272">Urus topik dan laman yang anda minati</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kad ulasan produk untuk anda</translation>
-<translation id="5407806496954700135">Adakah anda mahu menggunakan penyesuaian halaman tab baharu anda daripada peranti lain?</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>
 <translation id="5415289094036440596">Kunci laluan tidak boleh dikongsi</translation>
 <translation id="5416455648658732408">Beralih kepada Kumpulan Tab</translation>
@@ -1206,7 +1208,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5579012242779565775">Sembunyikan Senarai bacaan</translation>
 <translation id="5581786858144165447">Tanya Mod AI</translation>
 <translation id="5585019845078534178">Kad</translation>
-<translation id="5589976607021609750">Imej yang dilampirkan</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="559567008082979829">Tetapkan muat turun anda untuk dipadamkan selepas sebulan.</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
@@ -1799,7 +1800,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7696316012653762532">Pilihan untuk menterjemahkan halaman</translation>
 <translation id="7700527812567437847">Cari pada skrin dengan Google Lens</translation>
 <translation id="7701040980221191251">Tiada</translation>
-<translation id="7708668404222666001">Pilihan halaman tab baharu anda telah digunakan</translation>
 <translation id="7708994397325774423">Dapatkan akses kepada semua kata laluan anda</translation>
 <translation id="7711440461521638739">Anda tidak menggunakan semula apa-apa kata laluan</translation>
 <translation id="7712361583414030698">Melihat versi luar talian</translation>
@@ -1844,6 +1844,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7854006015462979438">Buka Umum</translation>
 <translation id="7855678267851972597">Audio</translation>
+<translation id="7857520352710212030">Laman disematkan</translation>
 <translation id="7859988229622350291">Jangan terjemah</translation>
 <translation id="7863211248337747225">Dapatkan apl</translation>
 <translation id="7865127013871431856">Pilihan Translate</translation>

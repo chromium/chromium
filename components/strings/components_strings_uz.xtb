@@ -1059,7 +1059,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2690699652723742414">Oxirgi 30 kun</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Ogohlantirish</translation>
-<translation id="2694088736180584846">loopback tarmoq</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core brauzer qoidalarini, ilova va kengaytmalarni bulut orqali boshqarish imkonini beradi</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />dan soʻrash</translation>
 <translation id="2699273987028089219">Quyi menyusi mavjud. Qoʻshimcha parametrlarni ochish uchun <ph name="SHORTCUT" />ni bosing.</translation>
@@ -1391,7 +1390,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3238395604961564389">Havolani inkognito oynasida ochish</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Brauzeringiz koʻrinishini moslash uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3240791268468473923">Xavfsiz toʻlov maʼlumotlari ochilgan jadvaldagi maʼlumotlarga mos kelmadi</translation>
-<translation id="3241320538788585298">Loopback tarmoq</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” havolalari bloklangan</translation>
 <translation id="3243650379537999343">Chizish</translation>
 <translation id="3248329428895535435">Bu sahifada chiqmasin</translation>
@@ -1910,6 +1908,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4073376909608563327">Qurilma kaliti ishlamadi</translation>
 <translation id="4073797364926776829">Kartani ochish</translation>
 <translation id="4075732493274867456">Mijoz va server turli xil SSL protokoli versiyasi yoki shifrlar to‘plamidan foydalanmoqda.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proksi-serverlar o‘zgarmas manzil orqali emas, PAC-fayli manzil orqali sozlangan.</translation>
 <translation id="4080668349181235831">Takliflar berish va ushbu funksiyani yaxshilash uchun siz tashrif buyurgan saytning URL manzili va butun sahifa kontenti Googlega ulashiladi. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> haqida batafsil.</translation>
 <translation id="4080855220442581440">umumiy varaqlarni zumlash va varaqlash</translation>
@@ -2299,6 +2298,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4708268264240856090">Aloqa uzilib qoldi</translation>
 <translation id="4708276642004148190">Suv taʼminoti va u bilan davolash</translation>
 <translation id="4711628883879888561">Varaqlar guruhida birga ishlash</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Bu sahifani ochishga ruxsatingiz yo‘q</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows tarmoq diagnostikasini ishga tushiring<ph name="END_LINK" /></translation>

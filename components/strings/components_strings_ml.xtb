@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">കഴിഞ്ഞ 30 ദിവസം</translation>
 <translation id="2691385045260836588">മോഡല്‍</translation>
 <translation id="2691924980723297736">സുരക്ഷാ മുന്നറിയിപ്പ്</translation>
-<translation id="2694088736180584846">ലൂപ്പ്ബാക്ക് നെറ്റ്‌വർക്ക്</translation>
 <translation id="2696385693639654606">ക്ലൗഡിൽ നിന്ന് ബ്രൗസർ നയങ്ങൾ, ആപ്പുകൾ, വിപുലീകരണങ്ങൾ എന്നിവ മാനേജ് ചെയ്യാൻ Chrome Enterprise Core നിങ്ങളെ അനുവദിക്കുന്നു</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> എന്നതിനോട് ചോദിക്കുക</translation>
 <translation id="2699273987028089219">ഉപമെനു ലഭ്യമാണ്, അധിക ഓപ്‌ഷനുകളിലേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ <ph name="SHORTCUT" /> ഉപയോഗിക്കുക.</translation>
@@ -1392,7 +1391,6 @@
 <translation id="3238395604961564389">അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="3240791268468473923">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യലുമായി പൊരുത്തമില്ലാത്ത ക്രെഡൻഷ്യൽ ഷീറ്റ് തുറന്നു</translation>
-<translation id="3241320538788585298">ലൂപ്പ്ബാക്ക് നെറ്റ്‌വർക്ക്</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ലിങ്കുകൾ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3243650379537999343">വരയ്‌ക്കുക</translation>
 <translation id="3248329428895535435">ഈ സൈറ്റിൽ കാണിക്കരുത്</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">ഉപകരണ അൺലോക്ക് ഉപയോഗിക്കാനായില്ല</translation>
 <translation id="4073797364926776829">കാർഡ് കാണുക</translation>
 <translation id="4075732493274867456">ഒരു സാധാരണ SSL പ്രോട്ടോക്കോൾ പതിപ്പിനെയോ സൈഫർ സ്യൂട്ടിനെയോ ക്ലയന്റും സെർവറും പിന്തുണയ്‌ക്കില്ല.</translation>
+<translation id="4075941231477579656">ടച്ച് ഐഡി</translation>
 <translation id="4079302484614802869">പ്രോക്‌സി കോൺഫിഗറേഷൻ .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനായി സജ്ജീകരിച്ചിരിക്കുന്നു, സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായല്ല.</translation>
 <translation id="4080668349181235831">നിർദ്ദേശങ്ങൾ നൽകുന്നതിനും ഈ ഫീച്ചർ മെച്ചപ്പെടുത്തുന്നതിനുമായി, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന്റെ URL-ഉം മുഴുവൻ പേജ് ഉള്ളടക്കവും Google-മായി പങ്കിടുന്നു. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> എന്നതിനെക്കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="4080855220442581440">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യുന്നു, സൂം ചെയ്യുന്നു</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">നിങ്ങളുടെ കണക്ഷൻ തടസ്സപ്പെട്ടു</translation>
 <translation id="4708276642004148190">ജലവിതരണവും സംസ്‌കരണവും</translation>
 <translation id="4711628883879888561">ടാബ് ഗ്രൂപ്പിൽ കൊളാബറേറ്റ് ചെയ്യുക</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് അനുമതി ആവശ്യമില്ല</translation>
 <translation id="4718897478554657123">600 x 900 മി.മീ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>

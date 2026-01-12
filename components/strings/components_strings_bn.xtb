@@ -1061,7 +1061,6 @@
 <translation id="2690699652723742414">গত ৩০ দিন</translation>
 <translation id="2691385045260836588">মডেল</translation>
 <translation id="2691924980723297736">নিরাপত্তা সম্পর্কিত সতর্কতা</translation>
-<translation id="2694088736180584846">লুপব্যাক নেটওয়ার্ক</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core-এর সাহায্যে, আপনাকে ব্রাউজার সম্পর্কিত নীতি, অ্যাপ এবং ক্লাউড থেকে এক্সটেনশন ম্যানেজ করার সুবিধা দেয়</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />-কে জিজ্ঞাসা করুন</translation>
 <translation id="2699273987028089219">সাবমেনু উপলভ্য, অতিরিক্ত বিকল্পে নেভিগেট করতে <ph name="SHORTCUT" /> শর্টকাট ব্যবহার করুন।</translation>
@@ -1394,7 +1393,6 @@
 <translation id="3238395604961564389">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="3240791268468473923">সুরক্ষিত পেমেন্ট ক্রেডেনশিয়ালের সাথে মিল নেই এমন পেমেন্ট ক্রেডেনশিয়ালের শিট খোলা আছে</translation>
-<translation id="3241320538788585298">লুপব্যাক নেটওয়ার্ক</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” লিঙ্ক ব্লক করা হয়েছে</translation>
 <translation id="3243650379537999343">ড্র করুন</translation>
 <translation id="3248329428895535435">এই সাইটে দেখতে চাই না</translation>
@@ -1914,6 +1912,7 @@
 <translation id="4073376909608563327">ডিভাইস আনলক ব্যবহার করা যাচ্ছে না</translation>
 <translation id="4073797364926776829">কার্ড দেখুন</translation>
 <translation id="4075732493274867456">ক্লায়েন্ট ও সার্ভারটি কোনো অভিন্ন SSL প্রোটোকল সংস্করণ বা সাইফার স্যুট সমর্থন করে না।</translation>
+<translation id="4075941231477579656">টাচ আইডি</translation>
 <translation id="4079302484614802869">প্রক্সি কনফিগারেশনটি .pac স্ক্রিপ্ট URL-এ ব্যবহার করাতে সেট থাকে স্থির প্রক্সি সার্ভারগুলিতে নয়৷</translation>
 <translation id="4080668349181235831">সাজেশন দিতে ও এই ফিচার উন্নত করতে, আপনার দেখা সাইটের URL ও সম্পূর্ণ পৃষ্ঠার কন্টেন্ট Google-এর সাথে শেয়ার করা হয়। <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="4080855220442581440">শেয়ার করা ট্যাব স্ক্রল ও জুম করা</translation>
@@ -2303,6 +2302,7 @@
 <translation id="4708268264240856090">আপনার সংযোগ বাধাপ্রাপ্ত হয়েছে</translation>
 <translation id="4708276642004148190">জল সরবরাহ ও চিকিৎসা</translation>
 <translation id="4711628883879888561">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">এই সাইট দেখার অনুমতি আপনার নেই</translation>
 <translation id="4718897478554657123">৬০০ x ৯০০ মিমি</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows নেটওয়ার্ক ডায়গনিস্টিক্স চালান<ph name="END_LINK" /></translation>

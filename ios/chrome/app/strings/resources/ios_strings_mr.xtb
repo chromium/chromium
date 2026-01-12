@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">थांबा</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} पासवर्ड}other{{count} पासवर्ड}}</translation>
 <translation id="1275718070701477396">निवडले</translation>
+<translation id="1279024913354609713">अनुमती देऊ नका</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
 <translation id="1287229685519872919">Google Workspace डेटा</translation>
 <translation id="1291506870746876680">तुम्ही या साइटमधून बाहेर पडाल, तेव्हा <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> संबंधित परवानग्या बंदवर रीसेट केल्या जातील.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">तुमच्याकडे कोणतेही सेव्ह केलेले पासवर्ड किंवा पासकी नाहीत, पण तुम्ही साइन-इन माहिती कधीही सेव्ह न करण्याचे निवडलेल्या साइट आणि ॲप्सची सूची हटवू शकता. एखाद्या साइट आणि ॲप्ससाठी तुम्ही तयार केलेले कोणतेही खाते हटवले जाणार नाही.</translation>
 <translation id="3530206579861815432">तुमच्या सिंक केलेल्या सर्व डिव्हाइसवर उघडे आणि अलीकडे बंद केलेले टॅब झटपट शोधा.</translation>
 <translation id="3530767473765895035">या डिव्हाइसवरील खाती व्यवस्थापित करा…</translation>
-<translation id="353340646084395154">नवीन टॅब पेजसंबंधित प्राधान्ये काढून टाकली आहेत</translation>
 <translation id="3533436815740441613">नवीन टॅब</translation>
 <translation id="3540141921715814660">बुकमार्क मध्ये जोडा</translation>
 <translation id="3546122170015471515">Google.com वर Maps पूर्वावलोकने</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">तुम्हाला स्वारस्य असलेले विषय आणि साइट व्यवस्थापित करा</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} बंद केला आहे}other{{count} बंद केले आहेत}}</translation>
 <translation id="5394975111793637642">तुमच्या कार्डसाठीची उत्पादनांची परीक्षणे लपवा</translation>
-<translation id="5407806496954700135">तुम्हाला दुसऱ्या डिव्हाइसवरील तुमची नवीन टॅब पेजसंबंधित कस्टमायझेशन लागू करायची आहेत का?</translation>
 <translation id="5414763847370083940">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला सूचना मिळेल.</translation>
 <translation id="5415289094036440596">पासकी शेअर केल्या जाऊ शकत नाहीत</translation>
 <translation id="5416455648658732408">टॅब गट यामध्ये हलवा</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">वाचन सूची लपवा</translation>
 <translation id="5581786858144165447">AI मोड ला विचारा</translation>
 <translation id="5585019845078534178">कार्डे</translation>
-<translation id="5589976607021609750">अटॅच केलेली इमेज</translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="559567008082979829">तुमचे डाउनलोड एका महिन्यानंतर हटवले जाण्यासाठी सेट करा.</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
@@ -1800,7 +1798,6 @@
 <translation id="7696316012653762532">पेजचे भाषांतर करण्यासाठी पर्याय</translation>
 <translation id="7700527812567437847">Google Lens सह शोध स्क्रीन</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
-<translation id="7708668404222666001">तुमची नवीन टॅब पेजसंबंधित प्राधान्ये लागू केली आहेत</translation>
 <translation id="7708994397325774423">तुमचे सर्व पासवर्ड मिळवा</translation>
 <translation id="7711440461521638739">तुम्ही कोणतेही पासवर्ड पुन्हा वापरत नाही आहात</translation>
 <translation id="7712361583414030698">ऑफलाइन आवृत्ती पाहत आहात</translation>

@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Τελευταίες 30 ημέρες</translation>
 <translation id="2691385045260836588">Μοντέλο</translation>
 <translation id="2691924980723297736">Προειδοποίηση ασφαλείας</translation>
-<translation id="2694088736180584846">δίκτυο βρόγχου επιστροφής</translation>
 <translation id="2696385693639654606">Το Chrome Enterprise Core σας επιτρέπει να διαχειρίζεστε πολιτικές, εφαρμογές και επεκτάσεις του προγράμματος περιήγησης από το cloud</translation>
 <translation id="2697248912349197812">Ερώτηση στο <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Διαθέσιμο υπομενού. Χρησιμοποιήστε τη συντόμευση <ph name="SHORTCUT" /> για πλοήγηση σε πρόσθετες επιλογές.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Άνοιγμα συνδέσμου σε παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
 <translation id="3240791268468473923">Έχει ανοίξει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
-<translation id="3241320538788585298">Δίκτυο βρόγχου επιστροφής</translation>
 <translation id="324180406144491771">Οι σύνδεσμοι <ph name="HOST_NAME" /> έχουν αποκλειστεί</translation>
 <translation id="3243650379537999343">Σχέδιο</translation>
 <translation id="3248329428895535435">Να μην εμφανίζεται σε αυτόν τον ιστότοπο</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">Δεν ήταν δυνατή η χρήση της λειτουργίας ξεκλειδώματος συσκευής</translation>
 <translation id="4073797364926776829">Προβολή κάρτας</translation>
 <translation id="4075732493274867456">Η εφαρμογή πελάτης και ο διακομιστής δεν υποστηρίζουν κάποια κοινή έκδοση πρωτοκόλλου SSL ή σουίτα κρυπτογράφησης.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Η διαμόρφωση του διακομιστή μεσολάβησης είναι ορισμένη να χρησιμοποιεί μια διεύθυνση URL σεναρίου .pac και όχι σταθερούς διακομιστές μεσολάβησης.</translation>
 <translation id="4080668349181235831">Για την παροχή προτάσεων και τη βελτίωση αυτής της λειτουργίας, το URL και το πλήρες περιεχόμενο της σελίδας του ιστοτόπου που επισκέπτεστε κοινοποιούνται στην Google. Μάθετε περισσότερα σχετικά με την <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">κύλιση και εστίαση σε κοινόχρηστες καρτέλες</translation>
@@ -2303,6 +2302,7 @@
 <translation id="4708268264240856090">Η σύνδεσή σας διακόπηκε</translation>
 <translation id="4708276642004148190">Παροχή και επεξεργασία νερού</translation>
 <translation id="4711628883879888561">Συνεργασία σε ομάδα καρτελών</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Δεν έχετε άδεια να επισκεφτείτε αυτόν τον ιστότοπο</translation>
 <translation id="4718897478554657123">600 x 900 χιλ.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Να εκτελέσετε τον Διαγνωστικό έλεγχο δικτύου των Windows<ph name="END_LINK" /></translation>

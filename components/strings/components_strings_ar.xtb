@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">آخر 30 يومًا</translation>
 <translation id="2691385045260836588">الطراز</translation>
 <translation id="2691924980723297736">تحذير متعلق بالأمان</translation>
-<translation id="2694088736180584846">شبكة الاسترجاع</translation>
 <translation id="2696385693639654606">‏يتيح لك إصدار Chrome Enterprise Core إدارة سياسات المتصفّح والتطبيقات والإضافات من السحابة الإلكترونية</translation>
 <translation id="2697248912349197812">طرح سؤال على <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">هناك قائمة فرعية متاحة، يمكنك استخدام <ph name="SHORTCUT" /> للانتقال إلى خيارات إضافية.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">فتح الرابط في نافذة التصفح المتخفي</translation>
 <translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص مظهر المتصفِّح</translation>
 <translation id="3240791268468473923">تم فتح صفحة عدم تطابق بيانات اعتماد الدفع الآمن.</translation>
-<translation id="3241320538788585298">شبكة الاسترجاع</translation>
 <translation id="324180406144491771">تم حظر روابط "<ph name="HOST_NAME" />"</translation>
 <translation id="3243650379537999343">رسم</translation>
 <translation id="3248329428895535435">عدم العرض على هذا الموقع الإلكتروني</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">تعذّر استخدام فتح قفل الجهاز</translation>
 <translation id="4073797364926776829">الاطّلاع على البطاقة</translation>
 <translation id="4075732493274867456">لا يدعم كل من العميل والخادم مجموعة ترميز أو إصدار بروتوكول طبقة المقابس الآمنة الشائع.</translation>
+<translation id="4075941231477579656">‏ميزة Touch ID</translation>
 <translation id="4079302484614802869">‏تم ضبط إعداد الخادم الوكيل لاستخدام عنوان URL نص برمجي ‎.pac وليس الخوادم الوكيلة الثابتة.</translation>
 <translation id="4080668349181235831">‏لتقديم اقتراحات وتحسين هذه الميزة، يشارَك عنوان URL وكل محتوى صفحة الموقع الإلكتروني التي تتم زيارتها مع Google. يمكنك معرفة المزيد حول <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">الانتقال للأعلى أو للأسفل في محتوى علامات التبويب المشترَكة وتكبيره أو تصغيره</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">تم قطع اتصالك</translation>
 <translation id="4708276642004148190">إمدادات مياه ومعالجتها</translation>
 <translation id="4711628883879888561">التعاون في مجموعة علامات التبويب</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ليس لديك إذن لزيارة هذا الموقع</translation>
 <translation id="4718897478554657123">600 × 900 ملم</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />تشغيل بيانات تشخيص شبكة Windows<ph name="END_LINK" /></translation>

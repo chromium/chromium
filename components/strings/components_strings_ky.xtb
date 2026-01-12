@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Акыркы 30 күн</translation>
 <translation id="2691385045260836588">Үлгү</translation>
 <translation id="2691924980723297736">Коопсуздук эскертүүсү</translation>
-<translation id="2694088736180584846">loopback тармагы</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core'дун жардамы менен булут аркылуу серепчинин саясаттарын, колдонмолорду жана кеңейтүүлөрдү тескей аласыз</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />'дан сураңыз</translation>
 <translation id="2699273987028089219">Көмөкчү меню жеткиликтүү, кошумча параметрлерге өтүү үчүн <ph name="SHORTCUT" /> басыңыз.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Шилтемени жашыруун терезеде ачуу</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, серепчинин көрүнүшүн ыңгайлаштыруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3240791268468473923">Коопсуз төлөө үчүн дал келбеген эсептик дайындар барагы ачылды</translation>
-<translation id="3241320538788585298">Loopback тармагы</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" шилтемелери бөгөттөлдү</translation>
 <translation id="3243650379537999343">Тартуу</translation>
 <translation id="3248329428895535435">Бул сайтта көрүнбөсүн</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">Түзмөктүн кулпусу менен ачуу колдонулган жок</translation>
 <translation id="4073797364926776829">Картаны көрүү</translation>
 <translation id="4075732493274867456">Кардар менен серверде ар кандай SSL протоколунун версиялары же шифрлер топтому колдоого алынат.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Прокси конфигурациясы боюнча бекитилген прокси серверлери эмес, .pac скрипт URL'и колдонулат.</translation>
 <translation id="4080668349181235831">Сунуштарды көрсөтүү жана бул функцияны жакшыртуу үчүн сиз баш баккан сайттын URL дареги жана барактын контенти Google менен бөлүшүлөт. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> тууралуу толук маалымат алыңыз.</translation>
 <translation id="4080855220442581440">жалпы өтмөктөрдү сыдыруу жана чоңойтуп/кичирейтүү</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">Туташууңуз үзгүлтүккө учурады</translation>
 <translation id="4708276642004148190">Суу менен камсыздоо жана тазалоо</translation>
 <translation id="4711628883879888561">Өтмөктөр тобунда кызматташуу</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Бул сайтка кирүүгө уруксатыңыз жок</translation>
 <translation id="4718897478554657123">600 x 900 мм.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Тармак мүчүлүштүгүн аныктоону иштетиңиз<ph name="END_LINK" /></translation>

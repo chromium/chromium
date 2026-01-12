@@ -1060,7 +1060,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2690699652723742414">Pastarosios 30 dienų</translation>
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691924980723297736">Saugos įspėjimas</translation>
-<translation id="2694088736180584846">atgalinio ciklo tinklas</translation>
 <translation id="2696385693639654606">„Chrome Enterprise Core“ leidžia valdyti naršyklės politiką, programas ir plėtinius iš debesies</translation>
 <translation id="2697248912349197812">Paklauskite „<ph name="KEYWORD_SHORT_NAME" />“</translation>
 <translation id="2699273987028089219">Pasiekiamas submeniu: norėdami naršyti papildomas parinktis, naudokite <ph name="SHORTCUT" />.</translation>
@@ -1394,7 +1393,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3238395604961564389">Atidaryti nuorodą inkognito lange</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tinkinti naršyklės išvaizdą</translation>
 <translation id="3240791268468473923">Saugaus mokėjimo prisijungimo duomenų lapas, informuojantis, kad atitinkančių prisijungimo duomenų nerasta, atidarytas</translation>
-<translation id="3241320538788585298">Atgalinio ciklo tinklas</translation>
 <translation id="324180406144491771">„<ph name="HOST_NAME" />“ nuorodos užblokuotos</translation>
 <translation id="3243650379537999343">Piešti</translation>
 <translation id="3248329428895535435">Nerodyti šioje svetainėje</translation>
@@ -1914,6 +1912,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4073376909608563327">Nepavyko naudoti įrenginio atrakinimo funkcijos</translation>
 <translation id="4073797364926776829">Peržiūrėti kortelę</translation>
 <translation id="4075732493274867456">Kliento programa ir serveris nepalaiko įprasto SSL protokolo versijos ar šifruotojo programų komplekto.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Įgaliotojo serverio konfigūracijoje nustatyta naudoti .pac scenarijaus URL, o ne fiksuotus įgaliotuosius serverius.</translation>
 <translation id="4080668349181235831">Kad būtų galima pateikti pasiūlymų ir patobulinti šią funkciją, svetainės, kurioje lankotės, URL ir visas puslapio turinys bendrinami su „Google“. Sužinokite daugiau apie <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">slinkimas bendrinamais skirtukais ir jų mastelio keitimas</translation>
@@ -2303,6 +2302,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4708268264240856090">Ryšys nutrauktas</translation>
 <translation id="4708276642004148190">Vandens tiekimas ir apdorojimas</translation>
 <translation id="4711628883879888561">Bendradarbiavimas naudojant skirtukų grupę</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Neturite leidimo, kad galėtumėte apsilankykite šioje svetainėje</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Paleistas įrankis „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>

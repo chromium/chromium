@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">30 derniers jours</translation>
 <translation id="2691385045260836588">Modèle</translation>
 <translation id="2691924980723297736">Avertissement de sécurité</translation>
-<translation id="2694088736180584846">réseau de bouclage</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core vous permet de gérer les politiques, les applis et les extensions du navigateur à partir du nuage</translation>
 <translation id="2697248912349197812">Demander à <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sous-menu accessible, utilisez <ph name="SHORTCUT" /> pour accéder à des options supplémentaires.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Ouvrir le lien dans une fenêtre de navigation privée</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser le style de votre navigateur</translation>
 <translation id="3240791268468473923">La zone de contenu dans le bas de l'écran indiquant qu'aucun authentifiant ne correspond au paiement sécurisé est ouverte</translation>
-<translation id="3241320538788585298">Réseau de bouclage</translation>
 <translation id="324180406144491771">Les liens de « <ph name="HOST_NAME" /> » sont bloqués</translation>
 <translation id="3243650379537999343">Dessiner</translation>
 <translation id="3248329428895535435">Ne plus afficher sur ce site</translation>
@@ -1913,6 +1911,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4073376909608563327">Impossible d'utiliser le déverrouillage de l'appareil</translation>
 <translation id="4073797364926776829">Affichez la carte</translation>
 <translation id="4075732493274867456">Le client et le serveur ne prennent pas en charge une version habituelle du protocole SSL et de la suite de chiffrement.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">La configuration du mandataire est réglée à l'utilisation d'une adresse URL de script .pac, et non des serveurs mandataires fixes.</translation>
 <translation id="4080668349181235831">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu complet de la page du site que vous visitez sont partagés avec Google. Apprenez-en plus sur <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">zoomer et faire défiler les onglets partagés</translation>
@@ -2302,6 +2301,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
 <translation id="4708276642004148190">Approvisionnement en eau et traitement de l'eau</translation>
 <translation id="4711628883879888561">Collaborer sur un groupe d'onglets</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Vous n'avez pas l'autorisation pour consulter ce site</translation>
 <translation id="4718897478554657123">600 mm x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />d'exécuter Windows Network Diagnostics<ph name="END_LINK" /></translation>

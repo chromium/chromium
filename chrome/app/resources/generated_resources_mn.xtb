@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">Үндсэн зангилааны тэмдэглэгээний файлуудыг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1104098698795583187">Та энэ табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
+<translation id="1106270460549661906">Gemini-тай хуваалцахыг болих</translation>
 <translation id="1106350001632362876">Босгыг нэмэх</translation>
 <translation id="1107482171728500359">Микрофон хуваалцах</translation>
 <translation id="110850812463801904">OneDrive-т гар аргаар холбогдох</translation>
@@ -3960,6 +3961,7 @@
 <translation id="3666196264870170605">Intel WiFi NICs Debug Dump</translation>
 <translation id="3666971425390608309">Татахыг түр зогсоосон: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Дурын борлуулагчийн төхөөрөмжүүд</translation>
+<translation id="3670159164851218963">ХОУ-ы горимын түүх</translation>
 <translation id="3670229581627177274">Bluetooth асаах</translation>
 <translation id="3671982238795754537">Нэвтрэх түлхүүрийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="3672681487849735243">Үйлдвэрлэлийн алдаа илэрлээ</translation>
@@ -4279,6 +4281,7 @@
 <translation id="3854976556788175030">Гарах цаасны тэвш дүүрсэн байна</translation>
 <translation id="3855441664322950881">Өргөтгөлийг багцлах</translation>
 <translation id="3855676282923585394">Хавчуургууд ба тохиргоонуудыг импортло...</translation>
+<translation id="3856023744577163821">Чат, хуваалцсан табаас нээсэн табыг мөн Gemini-тай хуваалцдаг.</translation>
 <translation id="3856096718352044181">Энэ нь хүчинтэй нийлүүлэгч болохыг бататгах эсвэл дараа дахин оролдоно уу</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" />-д Google Бүртгэлээ ашиглах</translation>
 <translation id="3856800405688283469">Цагийн бүс сонгох</translation>
@@ -5473,6 +5476,7 @@
 <translation id="4683629100208651599">Жижиг үсэг болгох</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (өгөгдмөл)</translation>
 <translation id="4684427112815847243">Бүгдийг sync хийх</translation>
+<translation id="4685044513206555960">Веб апп суулгахыг администраторын бодлогоор блоклосон.</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" />-г унтраах</translation>
 <translation id="4687238339694011189">Таны хэвлэгч асаалттай бөгөөд Chromebook-тэй тань ижил сүлжээнд холбогдсон эсэхийг шалгах эсвэл USB кабель ашиглана уу</translation>
 <translation id="4687613760714619596">Үл мэдэгдэх төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
@@ -7586,6 +7590,7 @@
 <translation id="6164393601566177235">Сайтууд нэмэх</translation>
 <translation id="6164832038898943453">Автоматаар орчуулах хэл нэмнэ үү</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" />-р Chrome дахь Gemini-г хялбархан нээгээрэй</translation>
 <translation id="6169040057125497443">Микрофоноо шалгана уу.</translation>
 <translation id="6169967265765719844">Steam-р суулгасан тоглоомууд болон аппуудын зөвшөөрлийг <ph name="LINK_BEGIN" />Steam аппын тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="6170313103929479668">Хуваасан харагдах байдлыг цэгцлэх</translation>
@@ -8405,6 +8410,7 @@
 <translation id="6749473226660745022">Зураг</translation>
 <translation id="6750757184909117990">Үүрэн холбоог идэвхгүй болгох</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Нууцлал)</translation>
+<translation id="6754359471209693699">Шинээр хайж эхлэх</translation>
 <translation id="6754918760968695779">Шуурхай оруулга</translation>
 <translation id="6755702685749429945">Толь бичиг нэмэх</translation>
 <translation id="6756157672127672536">Файлс апп нь таны Google Драйв, гадаад хадгалах сан эсвэл ChromeOS төхөөрөмж дээр хадгалсан файлуудад шуурхай хандалт олгоно.</translation>
@@ -9803,6 +9809,7 @@
 <translation id="7697109152153663933">“Нууц үгнүүд болон автоматаар бөглөх хэсэг”-ийг товшино уу</translation>
 <translation id="769824636077131955">Энэ документ аюулгүй байдлын шалгалт хийхэд хэт том байна. Та 50 МБ хүртэлх документыг хэвлэх боломжтой.</translation>
 <translation id="7698507637739331665">Зарим зүйлийг блоклосон байна</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" />-р хялбархан нээгээрэй</translation>
 <translation id="7700516433658473670">Хэвлэгч болон сканнерууд</translation>
 <translation id="7700873336634517379">Үгүй, энэ профайлд сургуульд зориулж үргэлжлүүлэн ашиглана</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>

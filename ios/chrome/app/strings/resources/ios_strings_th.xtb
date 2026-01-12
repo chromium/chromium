@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">หยุด</translation>
 <translation id="1273416271143914096">{count,plural, =1{รหัสผ่าน {count} รายการ}other{รหัสผ่าน {count} รายการ}}</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
+<translation id="1279024913354609713">ไม่อนุญาต</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1287229685519872919">ข้อมูล Google Workspace</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">คุณไม่มีรหัสผ่านหรือพาสคีย์ที่บันทึกไว้ แต่สามารถลบรายการเว็บไซต์และแอปที่คุณเลือกที่จะไม่บันทึกข้อมูลการลงชื่อเข้าใช้ได้ ระบบจะไม่ลบบัญชีใดๆ ที่คุณสร้างไว้สำหรับเว็บไซต์และแอป</translation>
 <translation id="3530206579861815432">ค้นหาแท็บที่เปิดอยู่และแท็บที่เพิ่งปิดได้อย่างรวดเร็วในอุปกรณ์ที่ซิงค์</translation>
 <translation id="3530767473765895035">จัดการบัญชีในอุปกรณ์นี้…</translation>
-<translation id="353340646084395154">นำค่ากำหนดหน้าแท็บใหม่ออกแล้ว</translation>
 <translation id="3533436815740441613">แท็บใหม่</translation>
 <translation id="3540141921715814660">เพิ่มไปยังบุ๊กมาร์ก</translation>
 <translation id="3546122170015471515">การแสดงตัวอย่างแผนที่ใน Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">จัดการหัวข้อและเว็บไซต์ที่คุณสนใจ</translation>
 <translation id="5390458669633674385">{count,plural, =1{ปิดไปแล้ว {count} แท็บ}other{ปิดไปแล้ว {count} แท็บ}}</translation>
 <translation id="5394975111793637642">ซ่อนการ์ดรีวิวสินค้าสำหรับคุณ</translation>
-<translation id="5407806496954700135">คุณต้องการใช้การปรับแต่งหน้าแท็บใหม่จากอุปกรณ์อื่นไหม</translation>
 <translation id="5414763847370083940">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="5415289094036440596">แชร์พาสคีย์ไม่ได้</translation>
 <translation id="5416455648658732408">ย้ายไปที่กลุ่มแท็บ</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">ซ่อน "เรื่องรออ่าน"</translation>
 <translation id="5581786858144165447">ถามโหมด AI</translation>
 <translation id="5585019845078534178">การ์ด</translation>
-<translation id="5589976607021609750">รูปภาพที่แนบ</translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="559567008082979829">ตั้งค่าให้ระบบลบการดาวน์โหลดของคุณหลังจากผ่านไป 1 เดือน</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">ตัวเลือกในการแปลหน้าเว็บ</translation>
 <translation id="7700527812567437847">ค้นหาบนหน้าจอด้วย Google Lens</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
-<translation id="7708668404222666001">ใช้ค่ากำหนดหน้าแท็บใหม่แล้ว</translation>
 <translation id="7708994397325774423">รับรหัสผ่านทั้งหมด</translation>
 <translation id="7711440461521638739">คุณไม่ได้ใช้รหัสผ่านซ้ำ</translation>
 <translation id="7712361583414030698">กำลังดูเวอร์ชันออฟไลน์</translation>

@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} паролі}many{{count} паролів}other{{count} пароля}}</translation>
 <translation id="1275718070701477396">Вибрано</translation>
+<translation id="1279024913354609713">Не дозволяти</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1287229685519872919">дані Google Workspace</translation>
 <translation id="1291506870746876680">Коли ви закриєте сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, усі дозволи для нього буде скинуто.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">У вас немає збережених паролів і ключів доступу, але ви можете видалити список сайтів і додатків, для яких вирішили не зберігати дані для входу. Облікові записи, створені для сайтів і додатків, не видалятимуться.</translation>
 <translation id="3530206579861815432">Швидко знаходьте відкриті та нещодавно закриті вкладки на всіх синхронізованих пристроях.</translation>
 <translation id="3530767473765895035">Керувати обліковими записами на цьому пристрої…</translation>
-<translation id="353340646084395154">Налаштування сторінки нової вкладки вилучено</translation>
 <translation id="3533436815740441613">Нова вкладка</translation>
 <translation id="3540141921715814660">Додати в закладки</translation>
 <translation id="3546122170015471515">Карти Бета на сайті google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Керуйте темами й сайтами, які вас цікавлять</translation>
 <translation id="5390458669633674385">{count,plural, =1{Закрито {count} вкладку}one{Закрито {count} вкладку}few{Закрито {count} вкладки}many{Закрито {count} вкладок}other{Закрито {count} вкладки}}</translation>
 <translation id="5394975111793637642">Сховати картку "Вибрані відгуки про товари"</translation>
-<translation id="5407806496954700135">Застосувати налаштування сторінки нової вкладки з іншого пристрою?</translation>
 <translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="5415289094036440596">Ключами доступу не можна ділитися</translation>
 <translation id="5416455648658732408">Перемістити в групу вкладок</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">Сховати опцію "Список читання"</translation>
 <translation id="5581786858144165447">Запитати в режимі ШІ</translation>
 <translation id="5585019845078534178">Картки</translation>
-<translation id="5589976607021609750">Вкладене зображення</translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="559567008082979829">Налаштуйте автоматичне видалення завантажених файлів через місяць.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">Опції перекладу сторінки</translation>
 <translation id="7700527812567437847">Шукати на екрані за допомогою Google Об’єктива</translation>
 <translation id="7701040980221191251">Немає</translation>
-<translation id="7708668404222666001">Налаштування сторінки нової вкладки застосовано</translation>
 <translation id="7708994397325774423">Отримайте доступ до всіх своїх паролів</translation>
 <translation id="7711440461521638739">Ви не використовуєте паролі повторно</translation>
 <translation id="7712361583414030698">Перегляд офлайн-версії</translation>

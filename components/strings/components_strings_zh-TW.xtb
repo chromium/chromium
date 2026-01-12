@@ -1059,7 +1059,6 @@
 <translation id="2690699652723742414">過去 30 天</translation>
 <translation id="2691385045260836588">型號</translation>
 <translation id="2691924980723297736">安全警告</translation>
-<translation id="2694088736180584846">回送網路</translation>
 <translation id="2696385693639654606">Chrome Enterprise 基本版可讓你從雲端管理瀏覽器政策、應用程式和擴充功能</translation>
 <translation id="2697248912349197812">問問 <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">有可用的子選單，請使用<ph name="SHORTCUT" />前往其他選項。</translation>
@@ -1391,7 +1390,6 @@
 <translation id="3238395604961564389">在無痕視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂瀏覽器外觀</translation>
 <translation id="3240791268468473923">無相符安全付款憑證表已開啟</translation>
-<translation id="3241320538788585298">回送網路</translation>
 <translation id="324180406144491771">「<ph name="HOST_NAME" />」連結已遭到封鎖</translation>
 <translation id="3243650379537999343">繪圖</translation>
 <translation id="3248329428895535435">不要在這個網站顯示</translation>
@@ -1911,6 +1909,7 @@
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
 <translation id="4073797364926776829">查看卡片</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援一般 SSL 通訊協定版本或加密套件。</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy 設定已設為使用 .pac 指令碼網址，而非固定的 Proxy 伺服器。</translation>
 <translation id="4080668349181235831">為提供建議及改善這項功能，系統會將你造訪的網站網址和完整網頁內容提供給 Google。進一步瞭解<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />。</translation>
 <translation id="4080855220442581440">捲動及縮放已分享的分頁</translation>
@@ -2300,6 +2299,7 @@
 <translation id="4708268264240856090">您的連線已中斷</translation>
 <translation id="4708276642004148190">供水與處理</translation>
 <translation id="4711628883879888561">在分頁群組中協作</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">你沒有這個網站的瀏覽權限</translation>
 <translation id="4718897478554657123">600 x 900 公釐</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />執行 Windows 網路診斷<ph name="END_LINK" /></translation>

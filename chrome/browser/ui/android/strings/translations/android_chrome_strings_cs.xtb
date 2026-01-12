@@ -132,6 +132,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1513352483775369820">Záložky a webová historie</translation>
 <translation id="1515901671075971249">Zkratky k přecházení mezi kartami</translation>
+<translation id="1516966594427080024">Otevřít nové okno v anonymním režimu</translation>
 <translation id="1521774566618522728">Aktivní dnes</translation>
 <translation id="153446405401665083">K dispozici je nová verze Chromu</translation>
 <translation id="1540012742443808215">Adresní řádek je aktuálně nahoře</translation>
@@ -724,6 +725,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4180726336228139707">Pouze na tomto zařízení</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4188221736490993796">Seřadit od Z do A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome tomuto webu kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}few{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}many{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}other{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}}</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta na tomto zařízení}few{# karty na tomto zařízení}many{# karty na tomto zařízení}other{# karet na tomto zařízení}}</translation>
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
@@ -1116,6 +1118,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5833984609253377421">Sdílet odkaz</translation>
 <translation id="5839058148541733625">Dinosauří hra pro Chrome</translation>
 <translation id="5841444063256914865">Chcete si i tak stáhnout soubor „<ph name="FILE_NAME" />“?</translation>
+<translation id="5847265694842662173">Chrome odhlásil odběr oznámení z obtěžujících a nepoužívaných webů</translation>
 <translation id="5848257610304005265">Otevřít PDF pomocí aplikace <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Ukončit sdílení?</translation>
 <translation id="5853623416121554550">pozastaveno</translation>
@@ -1144,6 +1147,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5956665950594638604">Otevřít centrum nápovědy Chrome na nové kartě</translation>
 <translation id="59577092665511740">Vyberte účet.</translation>
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome odhlásil odběr oznámení z webu, který v poslední době nenavštěvujete}few{Chrome odhlásil odběr oznámení z webů, které v poslední době nenavštěvujete}many{Chrome odhlásil odběr oznámení z webů, které v poslední době nenavštěvujete}other{Chrome odhlásil odběr oznámení z webů, které v poslední době nenavštěvujete}}</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5972844218283131174">Zrušit výběr všech</translation>
@@ -1804,6 +1808,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="847433688444405067">Synchronizujte své procházení</translation>
 <translation id="8477178913400731244">Vymazat data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Žádná neaktivní okna</translation>
 <translation id="8493948351860045254">Uvolnit místo</translation>
 <translation id="8497242791509864205">Otevřít možnosti řazení</translation>
 <translation id="8497480609928300907">Vysvětlení průvodce ochranou soukromí</translation>

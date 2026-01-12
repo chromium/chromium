@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Son 30 gün</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Təhlükəsizlik xəbərdarlığı</translation>
-<translation id="2694088736180584846">geri dönmə şəbəkəsi</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core buluddan brauzer siyasətlərini, tətbiqləri və artırmaları idarə etməyə imkan verir</translation>
 <translation id="2697248912349197812">Soruşun: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Altmenyu əlçatandır, <ph name="SHORTCUT" /> ilə əlavə seçimlərə keçin.</translation>
@@ -1391,7 +1390,6 @@
 <translation id="3238395604961564389">Keçidi Anonim Pəncərədə açın</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq brauzerinizin görünüşünü fərdiləşdirin</translation>
 <translation id="3240791268468473923">"Təhlükəsiz ödəniş giriş məlumatları uyğun gəlmir" giriş məlumatları səhifəsi açılıb</translation>
-<translation id="3241320538788585298">Geri dönmə şəbəkəsi</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” keçidləri bloklanıb</translation>
 <translation id="3243650379537999343">Çəkin</translation>
 <translation id="3248329428895535435">Bu saytda göstərməyin</translation>
@@ -1909,6 +1907,7 @@
 <translation id="4073376909608563327">Cihazın kiliddən çıxarılmasından istifadə etmək mümkün olmadı</translation>
 <translation id="4073797364926776829">Karta baxın</translation>
 <translation id="4075732493274867456">Klient və server ümumi SSL protokol versiyasını və ya şifrə dəstini dəstəkləmir.</translation>
+<translation id="4075941231477579656">Toxunuş ID-si</translation>
 <translation id="4079302484614802869">Proksi konfiqurasiyası sabit proksi serverlər deyil, .pac skript URL istifadə etmək üçün ayarlanıb.</translation>
 <translation id="4080668349181235831">Təkliflər vermək və bu funksiyanı təkmilləşdirmək üçün daxil olduğunuz saytın URL-i və səhifənin bütün kontenti Google ilə paylaşılır. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="4080855220442581440">paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
@@ -2298,6 +2297,7 @@
 <translation id="4708268264240856090">Bağlantınız kəsildi</translation>
 <translation id="4708276642004148190">Su Təchizatı və Xidmət</translation>
 <translation id="4711628883879888561">Tab qrupunda əməkdaşlıq edin</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Bu sayta daxil olmaq üçün icazəniz yoxdur</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>

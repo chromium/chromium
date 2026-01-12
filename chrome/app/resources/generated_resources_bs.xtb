@@ -3962,6 +3962,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3666196264870170605">Izbacivanje podataka o greškama za Intel WiFi NIC</translation>
 <translation id="3666971425390608309">Pauzirano je preuzimanje fajla <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Uređaji bilo kojeg dobavljača</translation>
+<translation id="3670159164851218963">Historija AI načina rada</translation>
 <translation id="3670229581627177274">Uključite Bluetooth</translation>
 <translation id="3671982238795754537">Saznajte više o pristupnim ključevima</translation>
 <translation id="3672681487849735243">Otkrivena je tvornička greška</translation>
@@ -5118,6 +5119,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4426857487270413362">Nije moguće preuzeti datoteke za instalaciju. Provjerite internetsku vezu i imate li dovoljno slobodnog prostora na disku, a zatim pokušajte ponovo. Kȏd greške je <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Otkriveno je <ph name="COUNT" /> put(a)</translation>
 <translation id="4427365070557649936">Potvrđivanje koda za potvrdu...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Zadatak je dovršen}one{Zadaci su dovršeni}few{Zadaci su dovršeni}other{Zadaci su dovršeni}}</translation>
 <translation id="4429163740524851942">Raspored fizičke tastature</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="443031431654216610">Koristite samo cifre</translation>
@@ -8411,6 +8413,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6749473226660745022">Fotografije</translation>
 <translation id="6750757184909117990">Onemogući mobilnu mrežu</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (anonimno)</translation>
+<translation id="6754359471209693699">Pokretanje novog pretraživanja</translation>
 <translation id="6754918760968695779">Brzo umetanje</translation>
 <translation id="6755702685749429945">Dodajte rječnik</translation>
 <translation id="6756157672127672536">Aplikacija Files pruža brzi pristup fajlovima sačuvanim na Google Disku, vanjskoj pohrani ili ChromeOS uređaju.</translation>

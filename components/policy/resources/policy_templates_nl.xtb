@@ -4461,6 +4461,19 @@ Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de markering van het caret-teken in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
+<translation id="4182348537826882258">Als je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen. Beheerders kunnen de lijst met URL-patronen opgeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de browser. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest. Dit beleid voorkomt ook niet dat webpagina's de URL die in de omnibox wordt getoond, updaten naar een geblokkeerde site via de JavaScript History API.
+
+Vanaf versie 73 van <ph name="PRODUCT_NAME" /> kun je javascript://*-URL's blokkeren. Dit heeft alleen gevolgen voor JavaScript dat in de adresbalk wordt opgegeven of voor bijvoorbeeld bookmarklets.
+
+Vanaf versie 92 van <ph name="PRODUCT_NAME" /> wordt dit beleid ook ondersteund in de stand zonder interface.
+
+Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert, kan dit leiden tot onverwachte fouten of kan de blokkering worden omzeild in speciale gevallen. In plaats van bepaalde interne URL's te blokkeren, kun je beter checken of er specifiekere beleidsregels beschikbaar zijn. Bijvoorbeeld:
+
+- Gebruik <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> in plaats van chrome://settings/certificates te blokkeren.
+
+- Gebruik <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> in plaats van chrome-untrusted://crosh te blokkeren.</translation>
 <translation id="4183229833636799228">Standaardinstelling voor <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Beheerde extensies toestaan de Enterprise Hardware Platform API te gebruiken</translation>
 <translation id="4186244263855283575">Hiermee kun je een aangepast schema instellen om apparaten opnieuw op te starten. Als dit beleid is ingesteld op True, wordt het apparaat opnieuw opgestart volgens het schema. Het beleid moet worden verwijderd om meer instanties van gepland opnieuw opstarten te annuleren.
@@ -6291,6 +6304,13 @@ Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een m
       Als het beleid niet is ingesteld, is <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> niet beschikbaar voor web-apps.
 Omdat we de privacy willen verbeteren, ondersteunt dit beleid vanaf <ph name="PRODUCT_NAME" /> versie 116 geen dynamische vernieuwing meer. Daarom kan de gebruiker er zeker van zijn dat er geen extra pagina's zijn die de schermen kunnen vastleggen na het inloggen (als dit nog niet was toegestaan tijdens de start van de sessie).</translation>
 <translation id="5361167871898066799">De functie voor autocorrectie op het fysieke toetsenbord beheren</translation>
+<translation id="5361708558735884308">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
+
+Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden aangezet die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals tel: of ssh:.
+
+Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.</translation>
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
 <translation id="5365946944967967336">Homepage-knop in de werkbalk tonen</translation>
@@ -6393,25 +6413,6 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="5433139124622290129">Hiermee geef je een lijst met SaaS-domeinen aan waarover wordt gerapporteerd voor de beheerde browser</translation>
 <translation id="5433865420958136693">Grafische versnelling gebruiken indien beschikbaar</translation>
 <translation id="5435888298115339571">Delen van bureaublad aanzetten in de omnibox en het menu met 3 stippen</translation>
-<translation id="5435967860403961472">Hiermee bepaal je of extensies die zijn verwijderd wegens schendingen van het beleid tegen malware nog steeds kunnen worden afgedwongen in omgevingen met een laag vertrouwen.
-
-Hier vind je meer informatie over schendingen die geen malware zijn en over verwijderingen: https://developer.chrome.com/docs/webstore/review-process#warning
-
-Nadat de schending die geen malware is, is opgelost, blijft de extensie aanstaan en kan deze niet worden uitgezet of verwijderd.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid niet beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, zijn gekoppeld aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid niet beschikbaar voor instanties die worden beheerd via MDM, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Afgedwongen geïnstalleerde extensies met schendingen die geen malware zijn, blijven in deze gevallen aanstaan.
-
-Op dit moment blijft een afgedwongen geïnstalleerde extensie met schendingen die geen malware zijn, geïnstalleerd en aangezet in Chrome.
-
-Als je het beleid toepast, blijven geforceerd geïnstalleerde extensies hetzelfde gedrag vertonen (dat wil zeggen: aanblijven) ongeacht schendingen die geen malware zijn.
-
-Als je het beleid niet toepast of niet instelt, worden geforceerd geïnstalleerde extensies met schendingen die geen malware zijn, uitgezet.
-
-Dit beleid is beschikbaar voor 3 mijlpalen.</translation>
 <translation id="5441508088704391614">Geen speciale beperkingen. Standaard.</translation>
 <translation id="5442026853063570579">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'DeveloperToolsDisallowed' (waarde 2), hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op een andere waarde of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
 <translation id="5443582909255996887">Als je dit beleid toepast, worden alle sites op Android geïsoleerd, zodat elke site zijn eigen proces uitvoert, en kunnen gebruikers kunnen deze functie niet uitzetten. Een site is een schema plus eTLD+1 (bijvoorbeeld https://example.com). Android isoleert bepaalde gevoelige sites standaard vanaf versie 77 van <ph name="PRODUCT_NAME" />. Dit beleid breidt die standaard site-isolatiemodus uit naar alle sites.

@@ -132,6 +132,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="1506061864768559482">Tražilica</translation>
 <translation id="1513352483775369820">Oznake i Google povijest</translation>
 <translation id="1515901671075971249">Prečaci za kretanje karticama</translation>
+<translation id="1516966594427080024">Otvaranje novog prozora u anonimnom načinu</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="153446405401665083">Dostupna je nova verzija preglednika Chrome</translation>
 <translation id="1540012742443808215">Adresna traka trenutačno je pri vrhu</translation>
@@ -724,6 +725,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4180726336228139707">Samo na ovom uređaju</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4188221736490993796">Poredaj od Ž do A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavijesti s te web-lokacije zbog neželjenog ili obmanjujućeg sadržaja}one{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}few{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}other{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}}</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na ovom uređaju}one{# kartica na ovom uređaju}few{# kartice na ovom uređaju}other{# kartica na ovom uređaju}}</translation>
 <translation id="4198423547019359126">Lokacije preuzimanja nisu dostupne</translation>
@@ -1116,6 +1118,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5833984609253377421">Dijeli vezu</translation>
 <translation id="5839058148541733625">Dinosaur na Chromeu</translation>
 <translation id="5841444063256914865">Želite li svejedno preuzeti datoteku <ph name="FILE_NAME" />?</translation>
+<translation id="5847265694842662173">Chrome je zaustavio slanje obavijesti sa zlonamjernih i nekorištenih web-lokacija</translation>
 <translation id="5848257610304005265">Želite li PDF otvoriti u aplikaciji <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite li zaustaviti dijeljenje?</translation>
 <translation id="5853623416121554550">pauzirano</translation>
@@ -1144,6 +1147,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5956665950594638604">Otvaranje Chromeovog centra za pomoć na novoj kartici</translation>
 <translation id="59577092665511740">Odaberite račun.</translation>
 <translation id="5958275228015807058">Pronađite svoje datoteke i stranice u Preuzimanjima</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavijesti s web-lokacije koju niste posjetili u posljednje vrijeme}one{Chrome je zaustavio slanje obavijesti s web-lokacija koje niste posjetili u posljednje vrijeme}few{Chrome je zaustavio slanje obavijesti s web-lokacija koje niste posjetili u posljednje vrijeme}other{Chrome je zaustavio slanje obavijesti s web-lokacija koje niste posjetili u posljednje vrijeme}}</translation>
 <translation id="5962718611393537961">Dodirnite da biste saželi</translation>
 <translation id="5964869237734432770">Zaustavite opise slike</translation>
 <translation id="5972844218283131174">Poništi odabir za sve</translation>
@@ -1804,6 +1808,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="847433688444405067">Pregledajte na različitim uređajima</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nema neaktivnih prozora</translation>
 <translation id="8493948351860045254">Oslobodi prostor</translation>
 <translation id="8497242791509864205">Otvori opcije razvrstavanja</translation>
 <translation id="8497480609928300907">Objašnjenje vodiča za privatnost</translation>

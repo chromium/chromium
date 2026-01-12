@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Atura</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} contrasenya}other{{count} contrasenyes}}</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
+<translation id="1279024913354609713">No permetis</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
 <translation id="1287229685519872919">dades de Google Workspace</translation>
 <translation id="1291506870746876680">Els permisos per a <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> es restabliran a l'estat desactivat quan surtis d'aquest lloc web.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">No tens cap contrasenya ni clau d'accés desada, però pots suprimir la llista de llocs web i aplicacions per als quals has triat no desar mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="3530206579861815432">Troba ràpidament les pestanyes obertes i les tancades recentment en tots els teus dispositius sincronitzats.</translation>
 <translation id="3530767473765895035">Gestiona els comptes en aquest dispositiu…</translation>
-<translation id="353340646084395154">S'han suprimit les preferències de la pàgina Pestanya nova</translation>
 <translation id="3533436815740441613">Pestanya nova</translation>
 <translation id="3540141921715814660">Afegeix a Adreces d'interès</translation>
 <translation id="3546122170015471515">Previsualització de Maps a Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} de tancada}other{{count} de tancades}}</translation>
 <translation id="5394975111793637642">Amaga la targeta de Ressenyes de productes per a tu</translation>
-<translation id="5407806496954700135">Vols aplicar les personalitzacions de la pàgina Pestanya nova d'un altre dispositiu?</translation>
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
 <translation id="5415289094036440596">Les claus d'accés no es poden compartir</translation>
 <translation id="5416455648658732408">Mou a un grup de pestanyes</translation>
@@ -1206,7 +1205,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5579012242779565775">Amaga l'opció Llista de lectura</translation>
 <translation id="5581786858144165447">Pregunta al mode IA</translation>
 <translation id="5585019845078534178">Targetes</translation>
-<translation id="5589976607021609750">Imatge adjunta</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="559567008082979829">Configura les baixades perquè se suprimeixin al cap d'un mes.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -1799,7 +1797,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7696316012653762532">Opcions per traduir la pàgina</translation>
 <translation id="7700527812567437847">Cerca a la pantalla amb Google Lens</translation>
 <translation id="7701040980221191251">Cap</translation>
-<translation id="7708668404222666001">S'han aplicat les teves preferències de la pàgina Pestanya nova</translation>
 <translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
 <translation id="7711440461521638739">No estàs reutilitzant cap contrasenya</translation>
 <translation id="7712361583414030698">S'està mostrant la versió sense connexió</translation>

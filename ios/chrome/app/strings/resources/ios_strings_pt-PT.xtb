@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} palavra-passe}other{{count} palavras-passe}}</translation>
 <translation id="1275718070701477396">Opção selecionada</translation>
+<translation id="1279024913354609713">Não permitir</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1287229685519872919">Dados do Google Workspace</translation>
 <translation id="1291506870746876680">As autorizações de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> serão repostas para desativadas quando sair deste site.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Não tem palavras-passe nem chaves de acesso guardadas, mas pode eliminar a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="3530206579861815432">Encontre rapidamente separadores abertos e fechados recentemente nos seus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Gerir contas neste dispositivo…</translation>
-<translation id="353340646084395154">Preferências da página Novo separador removidas</translation>
 <translation id="3533436815740441613">Novo separador</translation>
 <translation id="3540141921715814660">Adicionar aos marcadores</translation>
 <translation id="3546122170015471515">Pré-visualizações do Maps em Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Faça a gestão dos tópicos e sites que lhe interessam</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fechado}other{{count} fechados}}</translation>
 <translation id="5394975111793637642">Ocultar críticas sobre produtos no seu cartão</translation>
-<translation id="5407806496954700135">Quer aplicar as personalizações da página Novo separador de outro dispositivo?</translation>
 <translation id="5414763847370083940">Vai receber um alerta se o preço descer nalgum site.</translation>
 <translation id="5415289094036440596">Não é possível partilhar as chaves de acesso</translation>
 <translation id="5416455648658732408">Mover para grupo de separadores</translation>
@@ -1206,7 +1205,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5579012242779565775">Ocultar Lista de leitura</translation>
 <translation id="5581786858144165447">Perguntar ao Modo de IA</translation>
 <translation id="5585019845078534178">Cartões</translation>
-<translation id="5589976607021609750">Imagem anexada</translation>
 <translation id="5595485650161345191">Editar morada</translation>
 <translation id="559567008082979829">Defina as suas transferências para serem eliminadas após 1 mês.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -1799,7 +1797,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7696316012653762532">Opções de tradução da página</translation>
 <translation id="7700527812567437847">Pesquisar no ecrã com o Google Lens</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
-<translation id="7708668404222666001">Preferências da página Novo separador aplicadas</translation>
 <translation id="7708994397325774423">Tenha acesso a todas as suas palavras-passe</translation>
 <translation id="7711440461521638739">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="7712361583414030698">Ver a versão offline</translation>

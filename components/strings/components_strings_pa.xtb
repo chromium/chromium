@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">ਪਿਛਲੇ 30 ਦਿਨ</translation>
 <translation id="2691385045260836588">ਮਾਡਲ</translation>
 <translation id="2691924980723297736">ਸੁਰੱਖਿਆ ਚਿਤਾਵਨੀ</translation>
-<translation id="2694088736180584846">ਲੂਪਬੈਕ ਨੈੱਟਵਰਕ</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core ਤੁਹਾਨੂੰ ਕਲਾਊਡ ਤੋਂ ਬ੍ਰਾਊਜ਼ਰ ਨੀਤੀਆਂ, ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2699273987028089219">ਸਬਮੀਨੂ ਉਪਲਬਧ ਹੈ, ਵਧੀਕ ਵਿਕਲਪਾਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ <ph name="SHORTCUT" /> ਵਰਤੋ।</translation>
@@ -1391,7 +1390,6 @@
 <translation id="3238395604961564389">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾ ਕੇ, ਫਿਰ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="3240791268468473923">ਭਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਬਣਾਓ ਕੋਈ ਮੇਲ ਖਾਂਦੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਸੰਬੰਧੀ ਸ਼ੀਟ ਖੁੱਲ੍ਹੀ ਨਹੀਂ ਹੈ</translation>
-<translation id="3241320538788585298">ਲੂਪਬੈਕ ਨੈੱਟਵਰਕ</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ਲਿੰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3243650379537999343">ਡਰਾਅ</translation>
 <translation id="3248329428895535435">ਇਸ ਸਾਈਟ 'ਤੇ ਨਾ ਦਿਖਾਓ</translation>
@@ -1910,6 +1908,7 @@
 <translation id="4073376909608563327">ਡੀਵਾਈਸ ਅਣਲਾਕ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="4073797364926776829">ਕਾਰਡ ਦੇਖੋ</translation>
 <translation id="4075732493274867456">ਗਾਹਕ ਅਤੇ ਸਰਵਰ ਇੱਕ ਆਮ SSL ਪ੍ਰੋਟੋਕੋਲ ਵਰਜਨ ਜਾਂ ਸਿਫ਼ਰ ਸੁਈਟ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੇ ਹਨ।</translation>
+<translation id="4075941231477579656">ਸਪਰਸ਼ ਆਈਡੀ</translation>
 <translation id="4079302484614802869">ਪ੍ਰੌਕਸੀ ਸੰਰੂਪਿਤ ਇੱਕ .pac ਸਕ੍ਰਿਪਟ URL ਵਰਤਣ ਲਈ ਸੈੱਟ ਹੈ, ਸਥਿਰ ਪ੍ਰੌਕਸੀ ਸਰਵਰਾਂ ਨੂੰ ਨਹੀਂ।</translation>
 <translation id="4080668349181235831">ਸੁਝਾਵਾਂ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰਨ ਅਤੇ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀ ਗਈ ਸਾਈਟ ਦੇ URL ਅਤੇ ਪੂਰੇ ਪੰਨੇ ਦੀ ਸਮੱਗਰੀ ਨੂੰ Google ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="4080855220442581440">ਸਾਂਝੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਕ੍ਰੋਲ ਕਰਨਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨਾ</translation>
@@ -2299,6 +2298,7 @@
 <translation id="4708268264240856090">ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਰੁਕਾਵਟ ਆਈ ਸੀ</translation>
 <translation id="4708276642004148190">ਜਲ ਸਪਲਾਈ ਅਤੇ ਉਪਚਾਰ</translation>
 <translation id="4711628883879888561">ਟੈਬ ਗਰੁੱਪ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4718897478554657123">600 x 900 ਮਿ.ਮੀ.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸ ਚਲਾਇਆ ਜਾ ਰਿਹਾ ਹੈ<ph name="END_LINK" /></translation>

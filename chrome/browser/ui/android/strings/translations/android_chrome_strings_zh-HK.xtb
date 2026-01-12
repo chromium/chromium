@@ -132,6 +132,7 @@
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
 <translation id="1515901671075971249">分頁導覽快速鍵</translation>
+<translation id="1516966594427080024">在無痕模式中開啟新視窗</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
 <translation id="1540012742443808215">網址列目前在頂部</translation>
@@ -724,6 +725,7 @@
 <translation id="4180726336228139707">只儲存在此裝置上</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4188221736490993796">由 Z 到 A 排序</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{由於此網站傳送垃圾或欺詐內容，Chrome 已禁止其傳送通知}other{由於這些網站傳送垃圾或欺詐內容，Chrome 已禁止其傳送通知}}</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此裝置上的 1 個分頁}other{此裝置上的 # 個分頁}}</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
@@ -1116,6 +1118,7 @@
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
 <translation id="5841444063256914865">確定要下載「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="5847265694842662173">Chrome 已禁止濫用和未使用的網站傳送通知</translation>
 <translation id="5848257610304005265">要使用「<ph name="APP_NAME" />」開啟 PDF 嗎？</translation>
 <translation id="5849288995120328556">要停止分享嗎？</translation>
 <translation id="5853623416121554550">已暫停</translation>
@@ -1144,6 +1147,7 @@
 <translation id="5956665950594638604">在新分頁中開啟 Chrome 說明中心</translation>
 <translation id="59577092665511740">請選擇帳戶。</translation>
 <translation id="5958275228015807058">在「下載」主畫面尋找您的檔案和網頁</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已禁止你最近沒有瀏覽的網站傳送通知}other{Chrome 已禁止你最近沒有瀏覽的網站傳送通知}}</translation>
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
@@ -1804,6 +1808,7 @@
 <translation id="847433688444405067">在不同裝置上瀏覽</translation>
 <translation id="8477178913400731244">刪除資料</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">沒有閒置視窗</translation>
 <translation id="8493948351860045254">釋出儲存空間</translation>
 <translation id="8497242791509864205">開啟排序選項</translation>
 <translation id="8497480609928300907">私隱權指南說明</translation>

@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">ຢຸດ</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} ລະຫັດຜ່ານ}other{{count} ລະ​ຫັດ​ຜ່ານ}}</translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
+<translation id="1279024913354609713">ບໍ່ອະນຸຍາດ</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
 <translation id="1287229685519872919">ຂໍ້ມູນ Google Workspace</translation>
 <translation id="1291506870746876680">ການອະນຸຍາດ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ຈະຖືກຣີເຊັດໄປເປັນປິດເມື່ອທ່ານອອກຈາກເວັບໄຊນີ້.</translation>
@@ -252,6 +253,7 @@
 <translation id="1901366738768303267">ຂ້ອຍຈະໃຊ້ຄຸນສົມບັດນີ້ໄດ້ແນວໃດ?</translation>
 <translation id="1901600657316773839">ເກັບລາຍການທີ່ເລືອກໄວ້</translation>
 <translation id="1902277226107477495">ການກວດຫາທີ່ຢູ່ປິດຢູ່. ກະລຸນາເປີດອີກຄັ້ງໃນການຕັ້ງຄ່າ.</translation>
+<translation id="1909201414196501151">ເພີ່ມ ແລະ ປັກໝຸດເວັບໄຊແລ້ວ</translation>
 <translation id="1911619930368729126">ອັບ​ໂຫຼດ​ໃສ່ Google Drive</translation>
 <translation id="1925706052394657380">ເປີດການຕັ້ງຄ່າ <ph name="BEGIN_BOLD" />ແອັບເລີ່ມຕົ້ນ<ph name="END_BOLD" /> ໃນ iOS</translation>
 <translation id="1941314575388338491">ແຕະສອງຄັ້ງເພື່ອສຳເນົາ</translation>
@@ -614,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="334690320928261823">ແຖບຫຼ້າສຸດ</translation>
 <translation id="3349031117032695619">ບລັອກປັອບອັບ</translation>
+<translation id="3350976670663926380">ບັນທຶກການແກ້ໄຂແລ້ວ</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. ບັນຊີນີ້ມີການຈັດການ.</translation>
 <translation id="3365529507898144230">ບັນທຶກໃນຮູບພາບ</translation>
 <translation id="3371831930909698441">ມີບໍລິການແປພາສາ. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
@@ -658,7 +661,6 @@
 <translation id="3530024057633834563">ທ່ານບໍ່ມີລະຫັດຜ່ານ ຫຼື ກະແຈຜ່ານທີ່ບັນທຶກໄວ້, ແຕ່ທ່ານສາມາດລຶບລາຍຊື່ເວັບໄຊ ແລະ ແອັບທີ່ທ່ານເລືອກທີ່ຈະບໍ່ບັນທຶກຂໍ້ມູນການເຂົ້າສູ່ລະບົບໄດ້. ລະບົບຈະບໍ່ລຶບບັນຊີໃດກໍຕາມທີ່ທ່ານສ້າງໄວ້ສຳລັບເວັບໄຊ ແລະ ແອັບ.</translation>
 <translation id="3530206579861815432">ຊອກຫາແຖບທີ່ເປີດ ແລະ ປິດຫຼ້າສຸດໃນອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນໄວ້ຂອງທ່ານ.</translation>
 <translation id="3530767473765895035">ຈັດການບັນຊີຢູ່ອຸປະກອນນີ້…</translation>
-<translation id="353340646084395154">ລຶບການຕັ້ງຄ່າໜ້າແຖບໃໝ່ອອກແລ້ວ</translation>
 <translation id="3533436815740441613">ແຖບໃໝ່</translation>
 <translation id="3540141921715814660">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="3546122170015471515">ແຜນທີ່ເວີຊັນຕົວຢ່າງຢູ່ Google.com</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">ເລືອກ "ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ"</translation>
 <translation id="3610041351087301930">ເຊື່ອງໂໝດຜູ້ອື່ນ</translation>
 <translation id="3610866916973186448">ແມ່ນແລ້ວ, ລຶບ</translation>
+<translation id="3616161326314492065">ຖ່າຍຮູບ ແລະ ແບ່ງປັນກັບ Gemini ເພື່ອສ້າງ ແລະ ຣີມິກຮູບ.</translation>
 <translation id="3622175633937495219">ປະຫວັດການຊອກຫາ (ພົບ <ph name="COUNT" /> ລາຍການ)</translation>
 <translation id="3625008969091706597">ທ່ານສາມາດປັດຂອບເພື່ອກັບຄືນໄດ້.</translation>
 <translation id="362709345066740529">ປັບແຕ່ງບັດ, ຟີດ ແລະ ອື່ນໆຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
@@ -1154,7 +1157,6 @@
 <translation id="537853552771686272">ຈັດການຫົວຂໍ້ ແລະ ເວັບໄຊທີ່ທ່ານສົນໃຈ</translation>
 <translation id="5390458669633674385">{count,plural, =1{ປິດ {count} ແລ້ວ}other{ປິດ {count} ແລ້ວ}}</translation>
 <translation id="5394975111793637642">ເຊື່ອງຄຳຕິຊົມສິນຄ້າສໍາລັບບັດຂອງທ່ານ</translation>
-<translation id="5407806496954700135">ທ່ານຕ້ອງການນຳໃຊ້ການປັບແຕ່ງໜ້າແຖບໃໝ່ຂອງທ່ານຈາກອຸປະກອນອື່ນບໍ?</translation>
 <translation id="5414763847370083940">ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="5415289094036440596">ບໍ່ສາມາດແບ່ງປັນກະແຈຜ່ານໄດ້</translation>
 <translation id="5416455648658732408">ຍ້າຍໄປໃສ່ກຸ່ມແຖບ</translation>
@@ -1206,7 +1208,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5579012242779565775">ເຊື່ອງ ລາຍຊື່ການອ່ານ</translation>
 <translation id="5581786858144165447">ຖາມໂໝດ AI</translation>
 <translation id="5585019845078534178">ບັດ</translation>
-<translation id="5589976607021609750">ຮູບພາບທີ່ແນບ</translation>
 <translation id="5595485650161345191">ແກ້ໄຂທີ່ຢູ່</translation>
 <translation id="559567008082979829">ຕັ້ງຄ່າໃຫ້ລະບົບລຶບການດາວໂຫຼດຂອງທ່ານຫຼັງຈາກຜ່ານໄປ 1 ເດືອນ.</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
@@ -1799,7 +1800,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7696316012653762532">ຕົວເລືອກໃນການແປໜ້າ</translation>
 <translation id="7700527812567437847">ຊອກຫາໃນໜ້າຈໍດ້ວຍ Google Lens</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
-<translation id="7708668404222666001">ນຳໃຊ້ຄ່າກຳນົດໜ້າແຖບໃໝ່ຂອງທ່ານແລ້ວ</translation>
 <translation id="7708994397325774423">ຮັບລະຫັດຜ່ານທັງໝົດຂອງທ່ານ</translation>
 <translation id="7711440461521638739">ທ່ານບໍ່ໄດ້ໃຊ້ລະຫັດຜ່ານໃດໆຊ້ຳກັນ</translation>
 <translation id="7712361583414030698">ການເບິ່ງເວີຊັນອອບລາຍ</translation>
@@ -1844,6 +1844,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7854006015462979438">ເປີດທົ່ວໄປ</translation>
 <translation id="7855678267851972597">ສຽງ</translation>
+<translation id="7857520352710212030">ປັກໝຸດເວັບໄຊແລ້ວ</translation>
 <translation id="7859988229622350291">ຢ່າແປ</translation>
 <translation id="7863211248337747225">ດາວໂຫຼດແອັບ</translation>
 <translation id="7865127013871431856">ຕົວເລືອກແປພາສາ</translation>

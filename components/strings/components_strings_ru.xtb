@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Последние 30 дней</translation>
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691924980723297736">Предупреждение</translation>
-<translation id="2694088736180584846">loopback-интерфейс</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core позволяет управлять из облака правилами браузера, приложениями и расширениями.</translation>
 <translation id="2697248912349197812">Запрос к <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступно подменю. Чтобы открыть дополнительные варианты, нажмите <ph name="SHORTCUT" />.</translation>
@@ -1392,7 +1391,6 @@
 <translation id="3238395604961564389">Открыть ссылку в режиме инкогнито</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить внешний вид браузера.</translation>
 <translation id="3240791268468473923">Экран несоответствия учетных данных для защищенных платежей открыт</translation>
-<translation id="3241320538788585298">Loopback-интерфейс</translation>
 <translation id="324180406144491771">Ссылки "<ph name="HOST_NAME" />" заблокированы</translation>
 <translation id="3243650379537999343">Нарисовать</translation>
 <translation id="3248329428895535435">Не показывать на этом сайте</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">Не удалось разблокировать устройство</translation>
 <translation id="4073797364926776829">Посмотреть карту</translation>
 <translation id="4075732493274867456">Клиент и сервер поддерживают разные версии протокола SSL или набора шифров.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфигурация прокси-сервера предусматривает использование URL PAC-скриптов вместо фиксированных прокси-серверов.</translation>
 <translation id="4080668349181235831">Для формирования предложений и улучшения этой функции контент страниц и их URL передаются в Google. Узнайте больше <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />…</translation>
 <translation id="4080855220442581440">изменение масштаба общих вкладок и их пролистывание</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">Соединение прервано</translation>
 <translation id="4708276642004148190">Водоснабжение и водное хозяйство</translation>
 <translation id="4711628883879888561">Общий доступ к группе вкладок</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Доступ запрещен</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Выполните диагностику сети в Windows<ph name="END_LINK" /></translation>

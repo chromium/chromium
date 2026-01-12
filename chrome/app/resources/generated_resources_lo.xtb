@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ການອະທິບາຍຄວາມເຫັນຂອງໂໜດຫຼັກໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="1103523840287552314">ແປ <ph name="LANGUAGE" /> ຢູ່ສະເໝີ</translation>
 <translation id="1104098698795583187">ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບກຸ່ມທັນທີ ແລະ ມັນຈະຖືກລຶບຈາກອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
+<translation id="1106270460549661906">ຍົກເລີກການແບ່ງປັນກັບ Gemini</translation>
 <translation id="1106350001632362876">ເພີ່ມເກນຂຶ້ນ</translation>
 <translation id="1107482171728500359">ແບ່ງປັນໄມໂຄຣໂຟນ</translation>
 <translation id="110850812463801904">ເຊື່ອມຕໍ່ກັບ OneDrive ດ້ວຍຕົນເອງ</translation>
@@ -3962,6 +3963,7 @@
 <translation id="3666196264870170605">ໄຟລ໌ Dump ການດີບັກສຳລັບ Intel Wi-Fi NIC</translation>
 <translation id="3666971425390608309">ຢຸດດາວໂຫຼດຊົ່ວຄາວແລ້ວ: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ອຸປະກອນຈາກຜູ້ຂາຍໃດໆກໍຕາມ</translation>
+<translation id="3670159164851218963">ປະຫວັດການໃຊ້ໂໝດ AI</translation>
 <translation id="3670229581627177274">ເປີດໃຊ້ Bluetooth</translation>
 <translation id="3671982238795754537">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບກະແຈຜ່ານ</translation>
 <translation id="3672681487849735243">ກວດພົບຄວາມ​ຜິດ​ພາດ​ຂອງ​ໂຮງ​ງານແລ້ວ</translation>
@@ -4281,6 +4283,7 @@
 <translation id="3854976556788175030">ຖາດຮັບເຈ້ຍອອກເຕັມແລ້ວ</translation>
 <translation id="3855441664322950881">ບັນຈຸກ່ອງສ່ວນຂະຫຍາຍ</translation>
 <translation id="3855676282923585394">ນໍາເອົາບຸກມາກສ໌ ແລະການຕັ້ງຄ່າເຂົ້າມາ...</translation>
+<translation id="3856023744577163821">ລະບົບຍັງຈະແບ່ງປັນແຖບທີ່ເປີດຈາກການສົນທະນາ ຫຼື ແຖບທີ່ແບ່ງປັນກັບ Gemini ນຳ.</translation>
 <translation id="3856096718352044181">ກະລຸນາຢັ້ງຢືນວ່ານີ້ແມ່ນຜູ້ໃຫ້ບໍລິການທີ່ຖືກຕ້ອງ ຫຼື ລອງໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="3856470183388031602">ໃຊ້ບັນຊີ Google ຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="3856800405688283469">ເລືອກເຂດເວລາ</translation>
@@ -5476,6 +5479,7 @@
 <translation id="4683629100208651599">ເຮັດໃຫ້ເປັນຕົວພິມນ້ອຍ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4684427112815847243">ຊິງຄ໌​ທຸກ​ຢ່າງ</translation>
+<translation id="4685044513206555960">ການຕິດຕັ້ງເວັບແອັບຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ.</translation>
 <translation id="4685096503970466594">ປິດ <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">ກວດສອບວ່າເຄື່ອງພິມຂອງທ່ານເປີດຢູ່ ແລະ ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍດຽວກັນກັບ Chromebook ຂອງທ່ານ ຫຼື ໃຊ້ສາຍ USB</translation>
 <translation id="4687613760714619596">ອຸ​ປະ​ກອນ​ທີ່​ບໍ່​ຮູ້ຈັກ (<ph name="DEVICE_ID" />)</translation>
@@ -7588,6 +7592,7 @@
 <translation id="6164393601566177235">ເພີ່ມເວັບໄຊ</translation>
 <translation id="6164832038898943453">ເພີ່ມພາສາເພື່ອແປພາສາໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
+<translation id="61667940770438207">ເປີດ Gemini ໃນ Chrome ໄດ້ຢ່າງງ່າຍດາຍດ້ວຍ <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">ກະລຸນາກວດເບິ່ງໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="6169967265765719844">ການອະນຸຍາດສຳລັບເກມ ແລະ ແອັບທີ່ຕິດຕັ້ງຜ່ານ Steam ແມ່ນສາມາດຈັດການໄດ້ໃນ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າແອັບ Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">ຈັດຮຽງມຸມມອງແຍກ</translation>
@@ -8407,6 +8412,7 @@
 <translation id="6749473226660745022">ຮູບພາບ</translation>
 <translation id="6750757184909117990">ປິດການນຳໃຊ້ເຄືອຂ່າຍມືຖື</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ບໍ່ເປີດເຜີຍຕົນຕົວ)</translation>
+<translation id="6754359471209693699">ເລີ່ມການຊອກຫາໃໝ່</translation>
 <translation id="6754918760968695779">ແຊກດ່ວນ</translation>
 <translation id="6755702685749429945">ເພີ່ມວັດຈະນານຸກົມ</translation>
 <translation id="6756157672127672536">ແອັບໄຟລ໌ຈະມອບການເຂົ້າເຖິງດ່ວນໄປຫາໄຟລ໌ທີ່ທ່ານບັນທຶກໄວ້ຢູ່ Google Drive, ບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ ຫຼື ອຸປະກອນ ChromeOS ຂອງທ່ານ.</translation>
@@ -9804,6 +9810,7 @@
 <translation id="7697109152153663933">ຄລິກ “ລະຫັດຜ່ານ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ”</translation>
 <translation id="769824636077131955">ເອກະສານນີ້ໃຫຍ່ເກີນໄປສຳລັບການກວດສອບຄວາມປອດໄພ. ທ່ານສາມາດພິມເອກະສານທີ່ມີຂະໜາດສູງສຸດໄດ້ 50 MB.</translation>
 <translation id="7698507637739331665">ບາງລາຍການຖືກບລັອກໄວ້</translation>
+<translation id="7700176975240938448">ເປີດໄດ້ຢ່າງງ່າຍດາຍດ້ວຍ <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">ເຄື່ອງພິມ ແລະ ເຄື່ອງສະແກນ</translation>
 <translation id="7700873336634517379">ບໍ່, ໃຊ້ສຳລັບໂຮງຮຽນໃນໂປຣໄຟລ໌ນີ້ຕໍ່ໄປ</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
@@ -10639,6 +10646,7 @@
 <translation id="8263228331881858381">ບັນທຶກກະແຈຜ່ານແລ້ວ</translation>
 <translation id="8263336784344783289">ຕັ້ງຊື່ໃຫ້ກຸ່ມນີ້</translation>
 <translation id="8264024885325823677">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
+<translation id="826410575944953302">ຂະຫຍາຍແຖບລວງຕັ້ງ</translation>
 <translation id="8264195025773092348">ສະແດງສະເພາະອຸປະກອນທີ່ຮອງຮັບເທົ່ານັ້ນ. ອຸປະກອນ USB ຈະບໍ່ສາມາດໃຊ້ກັບແອັບເດີມໄດ້ອີກຕໍ່ໄປຈົນກວ່າຈະຕັດການເຊື່ອມຕໍ່.</translation>
 <translation id="8265018477030547118">ສະເພາະໃນອຸປະກອນນີ້</translation>
 <translation id="826511437356419340">ເຂົ້າສູ່ໂໝດພາບຮວມໜ້າຈໍແລ້ວ. ປັດເພື່ອໄປຍັງສ່ວນຕ່າງໆ ຫຼື ກົດ Tab ຖ້າກຳລັງໃຊ້ແປ້ນພິມຢູ່.</translation>
@@ -10737,6 +10745,7 @@
 <translation id="8323518750352551353">ແຍກການເລືອກເບິ່ງບໍ?</translation>
 <translation id="8323744572398547859">ເພື່ອຮັບແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນໆ, ໃຫ້ເຂົ້າສູ່ລະບົບ ແລະ ຊິ້ງປະຫວັດ. ນອກຈາກນີ້, ທ່ານຍັງຈະຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານໄດ້ນຳ. ທ່ານສາມາດຢຸດການຊິ້ງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອີງຕາມປະຫວັດຂອງທ່ານ.</translation>
 <translation id="8324158725704657629">ຢ່າຖາມອີກ</translation>
+<translation id="8324264291265547520">ຂະຫຍາຍແຖບລວງຕັ້ງ</translation>
 <translation id="8325413836429495820">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຫັນຄລິບບອດຂອງທ່ານ</translation>
 <translation id="8326478304147373412">PKCS #7, ຕ່ອງ​ໂສ້​ໃບຢັ້ງ​ຢືນ</translation>
 <translation id="8327386430364625757">ຟອນກ່ຽວກັບຄະນິດສາດ</translation>

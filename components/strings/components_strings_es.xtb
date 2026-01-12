@@ -1060,7 +1060,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2690699652723742414">Últimos 30 días</translation>
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691924980723297736">Advertencia de seguridad</translation>
-<translation id="2694088736180584846">red de bucle invertido</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core te permite gestionar políticas, apps y extensiones del navegador desde la nube</translation>
 <translation id="2697248912349197812">Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú disponible. Usa <ph name="SHORTCUT" /> para desplazarte hasta otras opciones.</translation>
@@ -1393,7 +1392,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3238395604961564389">Abrir enlace en una ventana de Incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para personalizar el diseño de tu navegador</translation>
 <translation id="3240791268468473923">Se ha abierto la hoja de credenciales de pago seguro con una credencial que no coincide</translation>
-<translation id="3241320538788585298">Red de bucle invertido</translation>
 <translation id="324180406144491771">Los enlaces de <ph name="HOST_NAME" /> se han bloqueado</translation>
 <translation id="3243650379537999343">Dibujar</translation>
 <translation id="3248329428895535435">No mostrar en este sitio</translation>
@@ -1913,6 +1911,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4073376909608563327">No se ha podido usar el desbloqueo del dispositivo</translation>
 <translation id="4073797364926776829">Ver tarjeta</translation>
 <translation id="4075732493274867456">El cliente y el servidor no son compatibles con la misma versión de protocolo SSL o de cifrado.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Se ha configurado el proxy para que use una URL de secuencia de comandos .pac, en lugar de servidores proxy fijos.</translation>
 <translation id="4080668349181235831">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido completo de la página que visitas se comparten con Google. Consulta más información sobre <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">desplazarse por pestañas compartidas y ampliarlas</translation>
@@ -2302,6 +2301,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4708268264240856090">Se ha interrumpido la conexión</translation>
 <translation id="4708276642004148190">Tratamiento y suministro de aguas</translation>
 <translation id="4711628883879888561">Colaborar en el grupo de pestañas</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">No tienes permiso para acceder a este sitio web</translation>
 <translation id="4718897478554657123">600x900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Ejecutar Diagnósticos de red de Windows<ph name="END_LINK" /></translation>

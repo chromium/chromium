@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} գաղտնաբառ}one{{count} գաղտնաբառ}other{{count} գաղտնաբառ}}</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
+<translation id="1279024913354609713">Չթույլատրել</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1287229685519872919">Google Workspace-ի տվյալները</translation>
 <translation id="1291506870746876680">Երբ դուրս գաք <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> կայքից, դրա բոլոր թույլտվությունները կանջատվեն։</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Դուք չունեք պահված գաղտնաբառեր կամ մուտքի բանալիներ, սակայն կարող եք ջնջել կայքերի և հավելվածների ցանկը, որոնց մուտքի տվյալները որոշել եք չպահել։ Հաշիվները, որոնք ստեղծել եք կայքերի կամ հավելվածների համար, չեն ջնջվի։</translation>
 <translation id="3530206579861815432">Արագ գտեք բաց և վերջերս փակված ներդիրները ձեր համաժամացված սարքերում։</translation>
 <translation id="3530767473765895035">Կառավարել հաշիվներն այս սարքում…</translation>
-<translation id="353340646084395154">Նոր ներդիրի էջի կարգավորումները հեռացվեցին</translation>
 <translation id="3533436815740441613">Նոր ներդիր</translation>
 <translation id="3540141921715814660">Ավելացնել էջանիշներում</translation>
 <translation id="3546122170015471515">Քարտեզների բետա տարբերակը Google.com-ում</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Կառավարեք ձեզ հետաքրքրող թեմաներն ու կայքերը</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}-ը փակված է}one{{count}-ը փակված է}other{{count}-ը փակված է}}</translation>
 <translation id="5394975111793637642">Թաքցնել ապրանքի կարծիքները ձեր քարտի համար</translation>
-<translation id="5407806496954700135">Ուզո՞ւմ եք կիրառել նոր ներդիրի էջի ձեր կարգավորումները մեկ այլ սարքից</translation>
 <translation id="5414763847370083940">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
 <translation id="5415289094036440596">Մուտքի բանալիներով հնարավոր չէ կիսվել</translation>
 <translation id="5416455648658732408">Տեղափոխել ներդիրների խումբ</translation>
@@ -1206,7 +1205,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5579012242779565775">Թաքցնել «Ընթերցանության ցանկ» կետը</translation>
 <translation id="5581786858144165447">«Հարցնել ԱԲ-ին» ռեժիմ</translation>
 <translation id="5585019845078534178">Քարտեր</translation>
-<translation id="5589976607021609750">Կցված պատկեր</translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="559567008082979829">Ջնջել ավելի քան մեկ ամիս առաջ ներբեռնված ֆայլերը։</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
@@ -1799,7 +1797,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7696316012653762532">Էջը թարգմանելու տարբերակներ</translation>
 <translation id="7700527812567437847">Որոնել էկրանի բովանդակությունը Google Տեսապակու միջոցով</translation>
 <translation id="7701040980221191251">Չկա</translation>
-<translation id="7708668404222666001">Նոր ներդիրի էջի կարգավորումները կիրառվեցին</translation>
 <translation id="7708994397325774423">Ստացեք ձեր բոլոր գաղտնաբառերը</translation>
 <translation id="7711440461521638739">Դուք կրկնվող գաղտնաբառեր չունեք</translation>
 <translation id="7712361583414030698">Անցանց տարբերակի դիտում</translation>

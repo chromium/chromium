@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">To‘xtatish</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} ta parol}other{{count} ta parol}}</translation>
 <translation id="1275718070701477396">Tanlandi</translation>
+<translation id="1279024913354609713">Ruxsat berilmasin</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1287229685519872919">Google Workspace maʼlumotlaringiz</translation>
 <translation id="1291506870746876680">Bu sayt yopilganda <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> ruxsatlari asliga qaytariladi.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Saqlangan parollar yoki kalitlar mavjud emas, ammo kirish axboroti hech qachon saqlanmasligi tanlangan sayt va ilovalar roʻyxatini oʻchirishingiz mumkin. Sayt va ilovalarda yaratilgan hisoblar oʻchirilmaydi.</translation>
 <translation id="3530206579861815432">Sinxronlangan qurilmalararo yaqinda yopilgan varaqlarni tez ochish</translation>
 <translation id="3530767473765895035">Bu qurilmadagi hisoblarni boshqarish…</translation>
-<translation id="353340646084395154">Yangi varaq sahifasi sozlamalari olib tashlandi</translation>
 <translation id="3533436815740441613">Yangi varaq</translation>
 <translation id="3540141921715814660">Bukmarklash</translation>
 <translation id="3546122170015471515">Google.com orqali Xarita lavhalarini yoqish</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Qiziq boʻlgan mavzu va saytlarni boshqarish</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ta varaq yopildi}other{{count} ta varaq yopildi}}</translation>
 <translation id="5394975111793637642">“Siz uchun mahsulot sharhlari” bildirgisi chiqmasin</translation>
-<translation id="5407806496954700135">Yangi varaq sahifasi sozlamalari boshqa qurilmadan tatbiq etilsinmi?</translation>
 <translation id="5414763847370083940">Istalgan saytda narx tushganda ogohlantirish olasiz.</translation>
 <translation id="5415289094036440596">Kirish kalitlari ulashilmaydi</translation>
 <translation id="5416455648658732408">Varaqlar guruhiga koʻchirish</translation>
@@ -1206,7 +1205,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5579012242779565775">Saqlangan sahifalarni yashirish</translation>
 <translation id="5581786858144165447">AI rejimida soʻrash</translation>
 <translation id="5585019845078534178">Bildirgilar</translation>
-<translation id="5589976607021609750">Rasm biriktirildi</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="559567008082979829">Yuklanmalar bir oydan keyin oʻchirilsin.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
@@ -1799,7 +1797,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7696316012653762532">Sahifalar tarjimasi parametrlari</translation>
 <translation id="7700527812567437847">Google Lens bilan ekrandan qidiring</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
-<translation id="7708668404222666001">Yangi varaq sahifasi sozlamalari tatbiq qilindi</translation>
 <translation id="7708994397325774423">Barcha parollaringizni oling</translation>
 <translation id="7711440461521638739">Hech qaysi parolingiz takrorlanmagan</translation>
 <translation id="7712361583414030698">Oflayn versiyasi ochilgan</translation>

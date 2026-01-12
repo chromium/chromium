@@ -1060,7 +1060,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2690699652723742414">De siste 30 dagene</translation>
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691924980723297736">Sikkerhetsadvarsel</translation>
-<translation id="2694088736180584846">Tilbakekoblingsnettverk</translation>
 <translation id="2696385693639654606">Med Chrome Enterprise Core kan du administrere nettleserregler, apper og utvidelser fra nettskyen</translation>
 <translation id="2697248912349197812">Spør <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">En undermeny er tilgjengelig. Bruk <ph name="SHORTCUT" /> for å navigere til flere alternativer.</translation>
@@ -1393,7 +1392,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3238395604961564389">Åpne linken i et inkognitovindu</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse nettleserens utseende</translation>
 <translation id="3240791268468473923">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon er åpnet</translation>
-<translation id="3241320538788585298">Tilbakekoblingsnettverk</translation>
 <translation id="324180406144491771">«<ph name="HOST_NAME" />»-linker er blokkert</translation>
 <translation id="3243650379537999343">Tegn</translation>
 <translation id="3248329428895535435">Ikke vis på dette nettstedet</translation>
@@ -1913,6 +1911,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4073376909608563327">Kunne ikke bruke enhetsopplåsing</translation>
 <translation id="4073797364926776829">Se kortet</translation>
 <translation id="4075732493274867456">Klienten og tjeneren støtter ingen felles SSL-protokollversjon eller -chifferserie.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Konfigurasjonen av proxytjeneren er angitt til å bruke en nettadresse med .pac-skript, ikke statiske proxytjenere.</translation>
 <translation id="4080668349181235831">For å kunne gi deg forslag og forbedre denne funksjonen deler nettleseren nettadressen og hele sideinnholdet på nettstedet du besøker, med Google. Finn ut mer om <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">rulling og zooming på delte faner</translation>
@@ -2302,6 +2301,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4708268264240856090">Tilkoblingen ble avbrutt</translation>
 <translation id="4708276642004148190">Vannforsyning og -behandling</translation>
 <translation id="4711628883879888561">Samarbeid om fanegruppe</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Du har ikke tillatelse til å besøke dette nettstedet</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Kjør Windows Nettverksdiagnose<ph name="END_LINK" /></translation>

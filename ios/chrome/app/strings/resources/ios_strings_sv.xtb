@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} lösenord}other{{count} lösenord}}</translation>
 <translation id="1275718070701477396">Markerad</translation>
+<translation id="1279024913354609713">Tillåt inte</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1287229685519872919">Google Workspace-data</translation>
 <translation id="1291506870746876680">Behörigheterna för <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> inaktiveras igen när du lämnar webbplatsen.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Du har inga sparade lösenord eller nycklar, men du kan radera listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="3530206579861815432">Du hittar snabbt öppna och nyligen stängda flikar på alla dina synkroniserade enheter.</translation>
 <translation id="3530767473765895035">Hantera konton på den här enheten …</translation>
-<translation id="353340646084395154">Inställningar för sidan Ny flik har tagits bort</translation>
 <translation id="3533436815740441613">Ny flik</translation>
 <translation id="3540141921715814660">Lägg till i bokmärken</translation>
 <translation id="3546122170015471515">Förhandsgranskningar av Maps på Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} har stängts}other{{count} har stängts}}</translation>
 <translation id="5394975111793637642">Dölj kortet Produktrecensioner för dig</translation>
-<translation id="5407806496954700135">Vill du tillämpa dina anpassningar av sidan Ny flik från en annan enhet?</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
 <translation id="5415289094036440596">Det går inte att dela nycklar</translation>
 <translation id="5416455648658732408">Flytta till flikgrupp</translation>
@@ -1206,7 +1205,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5579012242779565775">Dölj Läslista</translation>
 <translation id="5581786858144165447">Fråga AI-läget</translation>
 <translation id="5585019845078534178">Kort</translation>
-<translation id="5589976607021609750">Bifogad bild</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="559567008082979829">Ställ in att dina nedladdningar ska raderas efter en månad.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
@@ -1799,7 +1797,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7696316012653762532">Alternativ för att översätta sidan</translation>
 <translation id="7700527812567437847">Sök på skärmen med Google Lens</translation>
 <translation id="7701040980221191251">Inga</translation>
-<translation id="7708668404222666001">Dina inställningar för sidan Ny flik har tillämpats</translation>
 <translation id="7708994397325774423">Få alla dina lösenord</translation>
 <translation id="7711440461521638739">Du återanvänder inga lösenord</translation>
 <translation id="7712361583414030698">Offlineversionen visas</translation>

@@ -1060,7 +1060,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2690699652723742414">Pēdējās 30 dienas</translation>
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691924980723297736">Drošības brīdinājums</translation>
-<translation id="2694088736180584846">Atgriezeniskās cilpas tīkls</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core ļauj pārvaldīt pārlūka politikas, lietotnes un paplašinājumus mākonī.</translation>
 <translation id="2697248912349197812">Jautāt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Apakšizvēlne ir pieejama. Izmantojiet īsinājumtaustiņu (<ph name="SHORTCUT" />), lai pārietu uz papildu opcijām.</translation>
@@ -1393,7 +1392,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3238395604961564389">Atvērt saiti inkognito režīma logā</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pielāgotu pārlūka izskatu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
-<translation id="3241320538788585298">Atgriezeniskās cilpas tīkls</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” saites ir bloķētas</translation>
 <translation id="3243650379537999343">Zīmēt</translation>
 <translation id="3248329428895535435">Nerādīt šajā vietnē</translation>
@@ -1911,6 +1909,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4073376909608563327">Nevarēja izmantot ierīces atbloķēšanu</translation>
 <translation id="4073797364926776829">Skatīt karti</translation>
 <translation id="4075732493274867456">Klients un serveris neatbalsta bieži lietoto SSL protokola versiju vai šifra komplektu.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Starpniekserveris ir iestatīts, lai tas lietotu .pac skripta URL, nevis fiksētus starpniekserverus.</translation>
 <translation id="4080668349181235831">Lai sniegtu ieteikumus un uzlabotu šo funkciju, ar uzņēmumu Google tiek kopīgots jūsu apmeklētās vietnes URL un viss lapas saturs. Uzziniet vairāk par <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">ritināšana un tālummaiņa kopīgotajās cilnēs</translation>
@@ -2300,6 +2299,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4708268264240856090">Savienojums tika pārtraukts</translation>
 <translation id="4708276642004148190">Ūdensapgāde un ūdens apstrāde</translation>
 <translation id="4711628883879888561">Sadarbība ciļņu grupā</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Jums nav atļaujas apmeklēt šo vietni</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Palaist Windows tīkla diagnostiku<ph name="END_LINK" /></translation>

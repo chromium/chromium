@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">停止</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} 個のパスワード}other{{count} 個のパスワード}}</translation>
 <translation id="1275718070701477396">選択中</translation>
+<translation id="1279024913354609713">許可しない</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1287229685519872919">Google Workspace データ</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />権限は、このサイトから離れるとオフにリセットされます。</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">保存されているパスワードやパスキーはありませんが、ログイン情報を保存しない設定にしたサイトとアプリの一覧は削除できます。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="3530206579861815432">同期したデバイスで開いているタブや最近閉じたタブが簡単に見つかります。</translation>
 <translation id="3530767473765895035">このデバイスのアカウントを管理…</translation>
-<translation id="353340646084395154">新しいタブページの設定を削除しました</translation>
 <translation id="3533436815740441613">新しいタブ</translation>
 <translation id="3540141921715814660">ブックマークに追加する</translation>
 <translation id="3546122170015471515">Google.com のマップ プレビュー</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">関心のあるトピックとサイトを管理する</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 個のタブを閉じました}other{{count} 個のタブを閉じました}}</translation>
 <translation id="5394975111793637642">おすすめの商品レビュー カードを非表示にする</translation>
-<translation id="5407806496954700135">別のデバイスでカスタマイズした新しいタブページの設定を適用しますか？</translation>
 <translation id="5414763847370083940">値下げしたサイトがある場合は、アラートが表示されます。</translation>
 <translation id="5415289094036440596">パスキーは共有できません</translation>
 <translation id="5416455648658732408">タブグループに移動</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">リーディング リストを非表示</translation>
 <translation id="5581786858144165447">AI モードに質問</translation>
 <translation id="5585019845078534178">カード</translation>
-<translation id="5589976607021609750">添付された画像</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="559567008082979829">ダウンロードを 1 か月後に削除するよう設定します。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">ページ翻訳のオプション</translation>
 <translation id="7700527812567437847">Google レンズで画面を検索</translation>
 <translation id="7701040980221191251">なし</translation>
-<translation id="7708668404222666001">新しいタブページの設定を適用しました</translation>
 <translation id="7708994397325774423">すべてのパスワードにアクセス</translation>
 <translation id="7711440461521638739">使い回されているパスワードはありません</translation>
 <translation id="7712361583414030698">オフライン版を表示しています</translation>

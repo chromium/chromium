@@ -4479,6 +4479,19 @@ Si no se define esta política, su comportamiento lo determinará la política <
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el resaltado del símbolo de intercalación se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="4182348537826882258">Si se define la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se impedirá que se carguen las páginas web con URLs prohibidas. Los administradores pueden especificar una lista con patrones de URL que quieran bloquear. Si no se asigna ningún valor, no se bloqueará ninguna URL en el navegador. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Nota: Esta política no se aplica a las URLs de JavaScript dentro de la página con datos cargados dinámicamente. Si has bloqueado example.com/abc, la página example.com podría cargarlo igualmente con XMLHTTPRequest. Además, esta política no evita que las páginas web actualicen la URL mostrada en el omnibox con una URL bloqueada usando la API History de JavaScript.
+
+Puedes bloquear las URLs javascript://* a partir de la versión 73 de <ph name="PRODUCT_NAME" />. Sin embargo, esto solo afecta al código JavaScript que se introduce en la barra de direcciones o, por ejemplo, a bookmarklets.
+
+A partir la versión 92 de <ph name="PRODUCT_NAME" />, esta política también está admitida en el modo sin interfaz gráfica.
+
+Nota: Bloquear las URLs internas chrome://* y chrome-untrusted://* podría provocar errores inesperados o dichos bloqueos pueden eludirse en algunos casos. En lugar de bloquear determinadas URLs internas, comprueba si hay políticas más específicas disponibles. Por ejemplo:
+
+- En lugar de bloquear chrome://settings/certificates, usa <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+- En lugar de bloquear chrome-untrusted://crosh, usa <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Permitir que las extensiones gestionadas utilicen la API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permite definir un horario personalizado para reiniciar dispositivos. Cuando se le asigne el valor True, el dispositivo se reiniciará según el horario. Se debe quitar esta política para cancelar el resto de reinicios programados.
@@ -6348,6 +6361,13 @@ Las cuentas gestionadas no pueden unirse ni crear grupos familiares, por lo que 
       Si la política no se establece, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> no estará disponible para ninguna aplicación web.
 Para mejorar la privacidad, a partir de la versión 116 de <ph name="PRODUCT_NAME" />, esta política dejará de admitir la actualización dinámica. Así, el usuario puede tener la seguridad de que ninguna otra página podrá capturar las pantallas después de iniciar sesión si no se ha permitido ya al principio de la sesión.</translation>
 <translation id="5361167871898066799">Controlar la función de autocorrección en el teclado físico</translation>
+<translation id="5361708558735884308">Si se define esta política, se permite acceder a las URLs incluidas en la lista, las cuales se consideran excepciones de <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de la política para conocer el formato de las entradas de esta lista. Por ejemplo, si se le asigna el valor comodín (*) a <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes, y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede usar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
+
+Esta política también permite habilitar la invocación automática que realiza el navegador de aplicaciones externas registradas como controladores de los protocolos incluidos en la lista, como "tel:" o "ssh:".
+
+Si no se define esta política, no se permitirán excepciones de <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite esta política en el modo sin interfaz gráfica.</translation>
 <translation id="5362531528507578966">Anula el modo de impresión de gráficos de fondo predeterminado.</translation>
 <translation id="5365476955714838841">Parámetros de línea de comandos correspondientes al navegador alternativo.</translation>
 <translation id="5365946944967967336">Mostrar botón de página principal en la barra de herramientas</translation>
@@ -6451,25 +6471,6 @@ Si se le asigna el valor false, no podrán acceder a la función.</translation>
 <translation id="5433139124622290129">Especifica una lista de dominios de SaaS que se incluirán en el informe del perfil gestionado</translation>
 <translation id="5433865420958136693">Usar la aceleración de gráficos cuando esté disponible</translation>
 <translation id="5435888298115339571">Habilitar la opción de compartir escritorio en el omnibox y el menú de 3 puntos</translation>
-<translation id="5435967860403961472">Controla si las extensiones que se han retirado debido a infracciones no relacionadas con malware se pueden seguir instalando de forma forzosa en entornos de baja confianza.
-
-Puedes consultar más información sobre las infracciones no relacionadas con malware y las retiradas aquí: https://developer.chrome.com/docs/webstore/review-process#warning
-
-Una vez que se haya resuelto la infracción no relacionada con malware, la extensión permanecerá habilitada y no se podrá inhabilitar ni retirar.
-
-En <ph name="MS_WIN_NAME" />, esta política no está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política no está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Las extensiones de instalación forzada con infracciones no relacionadas con malware seguirán habilitadas en estos casos.
-
-Actualmente, una extensión de instalación forzada con infracciones no relacionadas con malware permanece instalada y habilitada en Chrome.
-
-Si se habilita esta política, las extensiones de instalación forzada se comportarán de la misma manera (es decir, permanecerán habilitadas) independientemente de las infracciones no relacionadas con malware.
-
-Si se inhabilita esta política o no se define, las extensiones de instalación forzada que tengan infracciones no relacionadas con malware se inhabilitarán.
-
-Esta política estará disponible durante 3 hitos.</translation>
 <translation id="5441508088704391614">Sin restricciones especiales. Predeterminado.</translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las opciones para desarrolladores de Android. Si se asigna a esta política el valor DeveloperToolsDisallowed (el valor 2), los usuarios no podrán acceder a las opciones para desarrolladores. Si se le asigna otro valor o no se le asigna ninguno, los usuarios podrán acceder a las opciones para desarrolladores tocando siete veces el número de compilación en la aplicación Ajustes de Android.</translation>
 <translation id="5443582909255996887">Si se habilita esta política, se aíslan todos los sitios en Android (de manera que cada sitio se ejecuta en su propio proceso) y se evita que los usuarios inhabiliten esta opción. Un sitio consiste en un esquema más el eTLD+1 (por ejemplo, https://example.com). Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía el modo de aislamiento de sitio web predeterminado para que se aplique a todos los sitios.

@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Ustavi</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} geslo}one{{count} geslo}two{{count} gesli}few{{count} gesla}other{{count} gesel}}</translation>
 <translation id="1275718070701477396">Izbrano</translation>
+<translation id="1279024913354609713">Ne dovoli</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1287229685519872919">Podatki iz storitve Google Workspace</translation>
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Nimate shranjenih gesel ali ključev za dostop, lahko pa izbrišete seznam spletnih mest in aplikacij, za katere ste izbrali, naj se podatki za prijavo nikoli ne shranjujejo. Računi, ki ste jih ustvarili za spletna mesta in aplikacije, ne bodo izbrisani.</translation>
 <translation id="3530206579861815432">Hitro poiščite odprte in nedavno zaprte zavihke v sinhroniziranih napravah.</translation>
 <translation id="3530767473765895035">Upravljanje računov v tej napravi …</translation>
-<translation id="353340646084395154">Nastavitve novega zavihka so odstranjene</translation>
 <translation id="3533436815740441613">Nov zavihek</translation>
 <translation id="3540141921715814660">Dodajanje med zaznamke</translation>
 <translation id="3546122170015471515">Predogledi Zemljevidov na Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Upravljanje tem in spletnih mest, ki vas zanimajo</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zaprt}one{{count} zaprt}two{{count} zaprta}few{{count} zaprti}other{{count} zaprtih}}</translation>
 <translation id="5394975111793637642">Skrivanje kartice z mnenji o izdelkih za vas</translation>
-<translation id="5407806496954700135">Ali želite uporabiti prilagoditve strani novega zavihka iz druge naprave?</translation>
 <translation id="5414763847370083940">Če se cena zniža na katerem koli spletnem mestu, boste prejeli opozorilo.</translation>
 <translation id="5415289094036440596">Ključev za dostop ni mogoče deliti</translation>
 <translation id="5416455648658732408">Premakni v skupino zavihkov</translation>
@@ -1206,7 +1205,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5579012242779565775">Skrij bralni seznam</translation>
 <translation id="5581786858144165447">Vprašaj način UI</translation>
 <translation id="5585019845078534178">Kartice</translation>
-<translation id="5589976607021609750">Priložena slika</translation>
 <translation id="5595485650161345191">Uredi naslov</translation>
 <translation id="559567008082979829">Nastavite, če želite, da se prenosi izbrišejo po enem mesecu.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
@@ -1799,7 +1797,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7696316012653762532">Možnosti za prevod strani</translation>
 <translation id="7700527812567437847">Išči po zaslonu z Googlom Lens</translation>
 <translation id="7701040980221191251">Nič</translation>
-<translation id="7708668404222666001">Nastavitve strani »Nov zavihek« so bile uporabljene</translation>
 <translation id="7708994397325774423">Zagotovitev dostopa do vseh gesel</translation>
 <translation id="7711440461521638739">Nimate nobenih znova uporabljenih gesel.</translation>
 <translation id="7712361583414030698">Ogled različice brez povezave</translation>

@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Последњих 30 дана</translation>
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691924980723297736">Безбедносно упозорење</translation>
-<translation id="2694088736180584846">мрежа повратне петље</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core вам омогућава да управљате смерницама прегледача, апликацијама и додацима из клауда</translation>
 <translation id="2697248912349197812">Питајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Подмени је доступан. Користите <ph name="SHORTCUT" /> да бисте дошли до додатних опција.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Отвори линк у прозору без архивирања</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прилагодили изглед прегледача</translation>
 <translation id="3240791268468473923">Отворено је обавештење да нема акредитива који се подударају за безбедно плаћање</translation>
-<translation id="3241320538788585298">Мрежа повратне петље</translation>
 <translation id="324180406144491771">Линкови хоста <ph name="HOST_NAME" /> су блокирани</translation>
 <translation id="3243650379537999343">Цртај</translation>
 <translation id="3248329428895535435">Не приказуј на овом сајту</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">Откључавање уређаја није успело</translation>
 <translation id="4073797364926776829">Прикажи картицу</translation>
 <translation id="4075732493274867456">Клијент и сервер не подржавају исту верзију SSL протокола или пакет за шифровање.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфигурација проксија је подешена да користи URL адресу .pac скрипте, а не фиксне прокси сервере.</translation>
 <translation id="4080668349181235831">Да би вам се нудили предлози и побољшала ова функција, URL и садржај целе странице сајта који посећујете деле се са Google-ом. Сазнајте више о: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">скроловање и зумирање дељених картица</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">Веза је прекинута</translation>
 <translation id="4708276642004148190">Снабдевање водом и прерада</translation>
 <translation id="4711628883879888561">Сарађујте на групи картица</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Немате дозволу да посетите овај сајт</translation>
 <translation id="4718897478554657123">600×900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />да покренете Windows дијагностику мреже<ph name="END_LINK" /></translation>

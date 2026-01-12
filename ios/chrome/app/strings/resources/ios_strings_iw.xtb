@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1273416271143914096">{count,plural, =1{סיסמה אחת ({count})}one{{count} סיסמאות}two{{count} סיסמאות}other{{count} סיסמאות}}</translation>
 <translation id="1275718070701477396">נבחר</translation>
+<translation id="1279024913354609713">אין אישור</translation>
 <translation id="1285320974508926690">אל תתרגמו את האתר הזה</translation>
 <translation id="1287229685519872919">‏נתוני Google Workspace</translation>
 <translation id="1291506870746876680">ההרשאות לאתר <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> יאופסו לאחר היציאה ממנו.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">אין לך סיסמאות או מפתחות גישה שמורים, אבל אפשר למחוק את רשימת האתרים והאפליקציות שבחרת לא לשמור בהם אף פעם פרטי כניסה. חשבונות שיצרת לאתרים ולאפליקציות לא יימחקו.</translation>
 <translation id="3530206579861815432">איתור מהיר של כרטיסיות פתוחות וכאלה שנסגרו לאחרונה בכל המכשירים המסונכרנים.</translation>
 <translation id="3530767473765895035">ניהול החשבונות במכשיר הזה…</translation>
-<translation id="353340646084395154">ההעדפות של דף הכרטיסייה החדשה הוסרו</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
 <translation id="3540141921715814660">הוספה לסימניות</translation>
 <translation id="3546122170015471515">‏הפצה מקדימה של "מפות" ב-Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">ניהול הנושאים והאתרים שמעניינים אותך</translation>
 <translation id="5390458669633674385">{count,plural, =1{מספר הכרטיסיות שנסגרו: {count}}one{{count} closed}two{מספר הכרטיסיות שנסגרו: {count}}other{מספר הכרטיסיות שנסגרו: {count}}}</translation>
 <translation id="5394975111793637642">הסתרת הכרטיס "ביקורות על מוצרים"</translation>
-<translation id="5407806496954700135">רוצה שההתאמות האישיות שהגדרת לדף הכרטיסייה החדשה במכשיר אחר יופעלו גם כאן?</translation>
 <translation id="5414763847370083940">תתקבל התראה על הנחות באתר כלשהו.</translation>
 <translation id="5415289094036440596">אי אפשר לשתף מפתחות גישה</translation>
 <translation id="5416455648658732408">העברה לקבוצת כרטיסיות</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">הסתרה של רשימת הקריאה</translation>
 <translation id="5581786858144165447">‏מצב AI: רוצה לשאול משהו?</translation>
 <translation id="5585019845078534178">כרטיסיות</translation>
-<translation id="5589976607021609750">תמונה מצורפת</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="559567008082979829">אפשר להגדיר שההורדות יימחקו אחרי חודש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">אפשרויות לתרגום הדף</translation>
 <translation id="7700527812567437847">‏חיפוש במסך באמצעות Google Lens</translation>
 <translation id="7701040980221191251">אין</translation>
-<translation id="7708668404222666001">ההעדפות של דף הכרטיסייה החדשה הופעלו</translation>
 <translation id="7708994397325774423">קבלת כל הסיסמאות</translation>
 <translation id="7711440461521638739">אין שימוש חוזר בסיסמאות כלשהן</translation>
 <translation id="7712361583414030698">מוצגת גרסת אופליין</translation>

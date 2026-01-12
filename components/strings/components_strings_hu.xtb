@@ -1060,7 +1060,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2690699652723742414">Legutóbbi 30 nap</translation>
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691924980723297736">Biztonsági figyelmeztetés</translation>
-<translation id="2694088736180584846">visszacsatolási hálózat</translation>
 <translation id="2696385693639654606">A Chrome Enterprise Core segítségével a felhőből kezelheti a böngésző házirendjeit, alkalmazásait és bővítményeit</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> megkérdezése</translation>
 <translation id="2699273987028089219">Az almenü rendelkezésre áll. A további lehetőségekhez használja a(z) <ph name="SHORTCUT" /> billentyűt.</translation>
@@ -1391,7 +1390,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3238395604961564389">Link megnyitása inkognitó ablakban</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a böngésző megjelenésének személyre szabásához.</translation>
 <translation id="3240791268468473923">A biztonságos fizetés hitelesítési adataihoz tartozó nem egyező hitelesítési adatok űrlapja megnyitva</translation>
-<translation id="3241320538788585298">Visszacsatolási hálózat</translation>
 <translation id="324180406144491771">A(z) „<ph name="HOST_NAME" />” linkjei le vannak tiltva</translation>
 <translation id="3243650379537999343">Rajzolás</translation>
 <translation id="3248329428895535435">Ne jelenjen meg ezen a webhelyen</translation>
@@ -1910,6 +1908,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4073376909608563327">Nem sikerült az eszköz feloldási módszerének használata</translation>
 <translation id="4073797364926776829">Kártya megtekintése</translation>
 <translation id="4075732493274867456">Az ügyfél és a szerver nem támogat ugyanolyan SSL-protokollverziót vagy rejtjelezési csomagot.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A proxykonfiguráció a .pac típusú szkript URL-cím, nem pedig a fix proxyszerverek használatára van beállítva.</translation>
 <translation id="4080668349181235831">Javaslatok biztosítása és a funkció továbbfejlesztése érdekében az Ön által felkeresett webhely URL-je és teljes oldaltartalma meg lesz osztva a Google-lal. További információ a következőről: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">megosztott lapok görgetése és nagyítása</translation>
@@ -2299,6 +2298,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4708268264240856090">Kapcsolata megszakadt</translation>
 <translation id="4708276642004148190">Vízellátás és -kezelés</translation>
 <translation id="4711628883879888561">Együttműködés lapcsoporton</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nincs jogosultsága a webhely felkereséséhez</translation>
 <translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />A Windows Hálózati diagnosztika futtatása<ph name="END_LINK" /></translation>

@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Pysäytä</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} salasana}other{{count} salasanaa}}</translation>
 <translation id="1275718070701477396">Valittu</translation>
+<translation id="1279024913354609713">Älä salli</translation>
 <translation id="1285320974508926690">Älä käännä tätä sivustoa</translation>
 <translation id="1287229685519872919">Google Workspace ‐data</translation>
 <translation id="1291506870746876680">Luvat (<ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />) nollataan, kun poistut sivustolta.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Sinulla ei ole tallennettuja salasanoja tai avainkoodeja, mutta voit poistaa listan sivustoista ja sovelluksista, joiden sisäänkirjautumistietoja et halua tallentaa. Sivustoille ja sovelluksille luomiasi tilejä ei poisteta.</translation>
 <translation id="3530206579861815432">Löydä kaikilla synkronoiduilla laitteilla auki olevia tai äskettäin suljettuja välilehtiä nopeasti.</translation>
 <translation id="3530767473765895035">Hallinnoi tämän laitteen tilejä…</translation>
-<translation id="353340646084395154">Uusi välilehti ‐sivun asetukset poistettu</translation>
 <translation id="3533436815740441613">Uusi välilehti</translation>
 <translation id="3540141921715814660">Lisää kirjanmerkkeihin</translation>
 <translation id="3546122170015471515">Maps-ennakkojulkaisut Google.comissa</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Valitse sinua kiinnostavia aiheita ja sivustoja</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} suljettu}other{{count} suljettu}}</translation>
 <translation id="5394975111793637642">Piilota tuotearvostelut ‑kortti</translation>
-<translation id="5407806496954700135">Haluatko ottaa uuden välilehti ‑sivun personoinnit käyttöön toiselta laitteelta?</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="5415289094036440596">Avainkoodeja ei voi jakaa</translation>
 <translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
@@ -1206,7 +1205,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5579012242779565775">Piilota "Lukulista"</translation>
 <translation id="5581786858144165447">Kysy tekoälyltä ‑tila</translation>
 <translation id="5585019845078534178">Kortit</translation>
-<translation id="5589976607021609750">Liitetty kuva</translation>
 <translation id="5595485650161345191">Osoitteen muokkaus</translation>
 <translation id="559567008082979829">Valitse, että lataukset poistetaan kuukauden kuluttua.</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
@@ -1799,7 +1797,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7696316012653762532">Sivun käännösvalinnat</translation>
 <translation id="7700527812567437847">Hae näytöltä Google Lensilla</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
-<translation id="7708668404222666001">Uusi välilehti ‑sivun asetukset otettu käyttöön</translation>
 <translation id="7708994397325774423">Hae kaikki salasanasi</translation>
 <translation id="7711440461521638739">Et uudelleenkäytä salasanoja</translation>
 <translation id="7712361583414030698">Näytetään offline-versio</translation>

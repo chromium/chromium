@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">शेवटचे ३० दिवस</translation>
 <translation id="2691385045260836588">मॉडेल</translation>
 <translation id="2691924980723297736">सुरक्षा चेतावणी</translation>
-<translation id="2694088736180584846">लूपबॅक नेटवर्क</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core तुम्हाला ब्राउझर धोरणे, अ‍ॅप्स आणि क्लाउडवरील एक्स्टेंशन व्यवस्थापित करू देते</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ला विचारा</translation>
 <translation id="2699273987028089219">सबमेनू उपलब्ध आहे, अतिरिक्त पर्यायांवर नेव्हिगेट करण्यासाठी <ph name="SHORTCUT" /> वापरा.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">गुप्त विंडो मध्ये लिंक उघडा</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या ब्राउझरचे रूप कस्टमाइझ करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3240791268468473923">सुरक्षित पेमेंट क्रेडेंशियल याची जुळणारे कोणतेही क्रेडेंशियल नाही ही शीट उघडली आहे</translation>
-<translation id="3241320538788585298">लूपबॅक नेटवर्क</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” लिंक ब्लॉक केल्या आहेत</translation>
 <translation id="3243650379537999343">ड्रॉ करा</translation>
 <translation id="3248329428895535435">या साइटवर दाखवू नका</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">डिव्हाइस अनलॉक वापरता आले नाही</translation>
 <translation id="4073797364926776829">कार्ड पहा</translation>
 <translation id="4075732493274867456">क्लायंट आणि सर्व्हर एक सामान्य SSL प्रोटोकॉल आवृत्ती किंवा सायफर संचाला सपोर्ट करीत नाही.</translation>
+<translation id="4075941231477579656">टच आयडी</translation>
 <translation id="4079302484614802869">प्रॉक्सी कॉन्फिगरेशन .pac स्क्रिप्ट URL वापरण्‍यास सेट करण्‍यात आले आहे, निश्चित प्रॉक्सी सर्व्हर नव्हे.</translation>
 <translation id="4080668349181235831">सूचना पुरवण्यासाठी आणि या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी, तुम्ही भेट देत असलेल्या साइटची URL व संपूर्ण पेजचा आशय Google सोबत शेअर केला जातो. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> याविषयी अधिक जाणून घ्या.</translation>
 <translation id="4080855220442581440">शेअर केलेले टॅब स्क्रोल करा आणि झूम करा</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">आपल्या कनेक्शनमध्ये व्यत्यय आला</translation>
 <translation id="4708276642004148190">पाणी पुरवठा आणि जलसंस्करण</translation>
 <translation id="4711628883879888561">टॅब गटावर सहयोग करा</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">या साइटला भेट देण्याची तुम्हाला परवानगी नाही</translation>
 <translation id="4718897478554657123">६०० x ९०० मिमी</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चालविणे<ph name="END_LINK" /></translation>

@@ -1060,7 +1060,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2690699652723742414">30 ngày qua</translation>
 <translation id="2691385045260836588">Kiểu</translation>
 <translation id="2691924980723297736">Cảnh báo an toàn</translation>
-<translation id="2694088736180584846">mạng vòng lặp</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core giúp bạn quản lý các chính sách trình duyệt, ứng dụng và tiện ích trên đám mây</translation>
 <translation id="2697248912349197812">Hỏi <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Có trình đơn phụ, sử dụng <ph name="SHORTCUT" /> để chuyển đến các lựa chọn khác.</translation>
@@ -1393,7 +1392,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3238395604961564389">Mở đường liên kết trong cửa sổ ẩn danh</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để tuỳ chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="3240791268468473923">Đã mở thông tin xác thực thanh toán an toàn không khớp với bảng thông tin xác thực</translation>
-<translation id="3241320538788585298">Mạng vòng lặp</translation>
 <translation id="324180406144491771">Đã chặn các đường liên kết đến “<ph name="HOST_NAME" />”</translation>
 <translation id="3243650379537999343">Vẽ</translation>
 <translation id="3248329428895535435">Không hiển thị trên trang này</translation>
@@ -1913,6 +1911,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4073376909608563327">Không thể sử dụng tính năng mở khoá thiết bị</translation>
 <translation id="4073797364926776829">Xem thẻ</translation>
 <translation id="4075732493274867456">Ứng dụng và máy chủ không hỗ trợ bộ mã hóa hoặc phiên bản giao thức SSL thông thường.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Cấu hình proxy được đặt để sử dụng URL tập lệnh .pac chứ không phải máy chủ proxy cố định.</translation>
 <translation id="4080668349181235831">Để Google đưa đề xuất và cải thiện tính năng này, URL và toàn bộ nội dung trang của trang web bạn truy cập sẽ được chia sẻ với Google. Tìm hiểu thêm về <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">cuộn và thu phóng thẻ được chia sẻ</translation>
@@ -2302,6 +2301,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4708268264240856090">Kết nối của bạn bị gián đoạn</translation>
 <translation id="4708276642004148190">Xử lý và cung cấp nước</translation>
 <translation id="4711628883879888561">Cộng tác trên nhóm thẻ</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Bạn không có quyền để truy cập trang web này</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Chạy Chẩn đoán mạng của Windows<ph name="END_LINK" /></translation>

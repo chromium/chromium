@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} heslo}few{{count} heslá}many{{count} passwords}other{{count} hesiel}}</translation>
 <translation id="1275718070701477396">Riadok bol vybratý</translation>
+<translation id="1279024913354609713">Nepovoliť</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
 <translation id="1287229685519872919">údaje v službe Google Workspace</translation>
 <translation id="1291506870746876680">Keď web <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> opustíte, povolenia preň sa resetujú na možnosť Vypnuté.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Nemáte žiadne uložené heslá ani prístupové kľúče, ale môžete odstrániť zoznam webov a aplikácií, pre ktoré ste sa rozhodli nikdy neukladať prihlasovacie údaje. Žiadne účty, ktoré ste vytvorili pre weby a aplikácie, odstránené nebudú.</translation>
 <translation id="3530206579861815432">Rýchlo nájdite otvorené a nedávno zavreté karty vo svojich synchronizovaných zariadeniach.</translation>
 <translation id="3530767473765895035">Spravovať účty v tomto zariadení…</translation>
-<translation id="353340646084395154">Predvoľby stránky na novej karte boli odstránené</translation>
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3540141921715814660">Pridať medzi záložky</translation>
 <translation id="3546122170015471515">Predbežné verzie Máp na Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Spravujte témy a weby, ktoré vás zaujímajú</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zatvorená}few{{count} zatvorené}many{{count} closed}other{{count} zatvorených}}</translation>
 <translation id="5394975111793637642">Skryť kartu Recenzie výrobkov pre vás</translation>
-<translation id="5407806496954700135">Chcete použiť prispôsobenia stránky na novej karte z iného zariadenia?</translation>
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
 <translation id="5415289094036440596">Prístupové kľúče sa nedajú zdieľať</translation>
 <translation id="5416455648658732408">Presunúť do skupiny kariet</translation>
@@ -1206,7 +1205,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5579012242779565775">Skryť čitateľský zoznam</translation>
 <translation id="5581786858144165447">Spýtať sa režimu umelej inteligencie</translation>
 <translation id="5585019845078534178">Karty</translation>
-<translation id="5589976607021609750">Priložený obrázok</translation>
 <translation id="5595485650161345191">Upraviť adresu</translation>
 <translation id="559567008082979829">Nastavte, aby sa vaše stiahnuté súbory po mesiaci odstraňovali.</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
@@ -1799,7 +1797,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7696316012653762532">Možnosti prekladu stránky</translation>
 <translation id="7700527812567437847">Vyhľadávať na obrazovke pomocou funkcie Google Lens</translation>
 <translation id="7701040980221191251">Žiadne</translation>
-<translation id="7708668404222666001">Predvoľby stránky na novej karte boli použité</translation>
 <translation id="7708994397325774423">Získajte všetky svoje heslá</translation>
 <translation id="7711440461521638739">Nepoužívate žiadne recyklované heslá</translation>
 <translation id="7712361583414030698">Zobrazuje sa offline verzia</translation>

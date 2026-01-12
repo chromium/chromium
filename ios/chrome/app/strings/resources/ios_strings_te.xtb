@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">ఆపు</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} పాస్‌వర్డ్}other{{count} పాస్‌వర్డ్‌లు}}</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
+<translation id="1279024913354609713">అనుమతించవద్దు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1287229685519872919">Google Workspace డేటా</translation>
 <translation id="1291506870746876680">మీరు ఈ సైట్‌ను వదిలి వెళ్లినప్పుడు <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> అనుమతులు ఆఫ్‌కు రీసెట్ చేయబడతాయి.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">మీ వద్ద సేవ్ చేసిన పాస్‌వర్డ్‌లు లేదా పాస్‌కీలు ఏవీ లేవు, కానీ సైన్-ఇన్ సమాచారాన్ని ఎప్పటికీ సేవ్ చేయకుండా మీరు ఎంచుకున్న సైట్‌లు, యాప్‌ల లిస్ట్‌ను మీరు తొలగించవచ్చు. మీరు సైట్‌లు లేదా యాప్‌ల కోసం క్రియేట్ చేసిన ఏ ఖాతా కూడా తొలగించబడదు.</translation>
 <translation id="3530206579861815432">మీ సింక్ చేసిన పరికరాలలో తెరిచిన, ఇటీవల మూసివేసిన ట్యాబ్‌లను క్విక్‌గా కనుగొనండి.</translation>
 <translation id="3530767473765895035">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి…</translation>
-<translation id="353340646084395154">కొత్త ట్యాబ్ పేజీ ప్రాధాన్యతలు తీసివేయబడ్డాయి</translation>
 <translation id="3533436815740441613">కొత్త ట్యాబ్</translation>
 <translation id="3540141921715814660">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="3546122170015471515">Google.com సైట్‌లో Maps ప్రివ్యూలు</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">మీకు ఆసక్తి ఉన్న టాపిక్‌లను, సైట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}‌ను మూసివేయడం జరిగింది}other{{count}‌ను మూసివేయడం జరిగింది}}</translation>
 <translation id="5394975111793637642">మీ కార్డ్ కోసం ప్రోడక్ట్ రివ్యూలను దాచండి</translation>
-<translation id="5407806496954700135">మీరు మరొక డివైజ్‌లోని మీ కొత్త ట్యాబ్ పేజీ అనుకూల మార్పులను వర్తింపజేయాలనుకుంటున్నారా?</translation>
 <translation id="5414763847370083940">ఏదైనా సైట్‌లో ధర తగ్గితే మీకు అలర్ట్ వస్తుంది.</translation>
 <translation id="5415289094036440596">పాస్-కీలను షేర్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5416455648658732408">ట్యాబ్ గ్రూప్‌నకు తరలించండి</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">చదవాల్సిన లిస్ట్‌ను దాచండి</translation>
 <translation id="5581786858144165447">AI మోడ్‌ను అడగండి</translation>
 <translation id="5585019845078534178">కార్డ్‌లు</translation>
-<translation id="5589976607021609750">జోడించిన ఇమేజ్</translation>
 <translation id="5595485650161345191">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
 <translation id="559567008082979829">మీ డౌన్‌లోడ్‌లను ఒక నెల తర్వాత తొలగించేలా సెట్ చేసుకోండి.</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">పేజీని అనువాదం చేయడానికి ఆప్షన్‌లు</translation>
 <translation id="7700527812567437847">Google Lensతో స్క్రీన్‌ను సెర్చ్ చేయండి</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
-<translation id="7708668404222666001">మీ కొత్త ట్యాబ్ పేజీ ప్రాధాన్యతలు వర్తింపజేయబడ్డాయి</translation>
 <translation id="7708994397325774423">మీ పాస్‌వర్డ్‌లన్నింటినీ పొందండి</translation>
 <translation id="7711440461521638739">మీరు ఏ పాస్‌వర్డ్‌లను మళ్లీ ఉపయోగించడం లేదు</translation>
 <translation id="7712361583414030698">ఆఫ్‌లైన్ వెర్షన్‌ను చూస్తున్నారు</translation>

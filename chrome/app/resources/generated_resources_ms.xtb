@@ -165,6 +165,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1102759278139578486">Tidak dapat memuat turun fail anotasi nod utama. Cuba lagi nanti.</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Anda akan kehilangan akses kepada kumpulan tab ini dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
+<translation id="1106270460549661906">Nyahkongsi dengan Gemini</translation>
 <translation id="1106350001632362876">Tingkatkan ambang</translation>
 <translation id="1107482171728500359">Kongsi mikrofon</translation>
 <translation id="110850812463801904">Sambungkan kepada OneDrive secara manual</translation>
@@ -3963,6 +3964,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3666196264870170605">Pembuangan Nyahpepijat NIC Wi-Fi Intel</translation>
 <translation id="3666971425390608309">Muat turun dijeda: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Peranti daripada mana-mana vendor</translation>
+<translation id="3670159164851218963">Sejarah AI Mode</translation>
 <translation id="3670229581627177274">Hidupkan Bluetooth</translation>
 <translation id="3671982238795754537">Ketahui kunci laluan dengan lebih lanjut</translation>
 <translation id="3672681487849735243">Ralat kilang telah dikesan</translation>
@@ -4282,6 +4284,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3854976556788175030">Dulang output penuh</translation>
 <translation id="3855441664322950881">Sambungan pek</translation>
 <translation id="3855676282923585394">Import Penanda Halaman dan Tetapan...</translation>
+<translation id="3856023744577163821">Tab yang dibuka daripada sembang atau tab perkongsian turut dikongsi dengan Gemini.</translation>
 <translation id="3856096718352044181">Sila sahkan bahawa penyedia ini sah atau cuba lagi nanti</translation>
 <translation id="3856470183388031602">Gunakan Google Account anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="3856800405688283469">Pilih zon waktu</translation>
@@ -5477,6 +5480,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4683629100208651599">Jadikan Huruf Kecil</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (lalai)</translation>
 <translation id="4684427112815847243">Segerakkan semua</translation>
+<translation id="4685044513206555960">Pemasangan apl web disekat oleh dasar pentadbir.</translation>
 <translation id="4685096503970466594">Matikan <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Pastikan pencetak anda dihidupkan dan disambungkan kepada rangkaian yang sama seperti Chromebook anda atau gunakan kabel USB</translation>
 <translation id="4687613760714619596">Peranti Tidak Diketahui (<ph name="DEVICE_ID" />)</translation>
@@ -7590,6 +7594,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6164393601566177235">Tambahkan laman</translation>
 <translation id="6164832038898943453">Tambahkan bahasa untuk diterjemahkan secara automatik</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
+<translation id="61667940770438207">Buka Gemini dalam Chrome dengan mudah menggunakan <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Sila periksa mikrofon anda.</translation>
 <translation id="6169967265765719844">Kebenaran untuk permainan dan apl yang dipasang melalui Steam boleh diurus dalam <ph name="LINK_BEGIN" />Tetapan apl Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Susun paparan terpisah</translation>
@@ -8409,6 +8414,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750757184909117990">Lumpuhkan Selular</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754359471209693699">Mulakan carian baharu</translation>
 <translation id="6754918760968695779">Sisipan Pantas</translation>
 <translation id="6755702685749429945">Tambahkan kamus</translation>
 <translation id="6756157672127672536">Apl Fail memberikan akses pantas kepada fail yang telah anda simpan di Google Drive, storan luaran atau peranti Chrome OS anda.</translation>
@@ -9808,6 +9814,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="7697109152153663933">Klik “Kata laluan dan Autolengkap”</translation>
 <translation id="769824636077131955">Dokumen ini terlalu besar untuk semakan keselamatan. Anda boleh mencetak dokumen hingga 50 MB.</translation>
 <translation id="7698507637739331665">Sesetengah item disekat</translation>
+<translation id="7700176975240938448">Buka dengan mudah menggunakan <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Pencetak dan pengimbas</translation>
 <translation id="7700873336634517379">Tidak, terus gunakan untuk sekolah dalam profil ini</translation>
 <translation id="7701040980221191251">Tiada</translation>
@@ -10644,6 +10651,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8263228331881858381">Kunci laluan disimpan</translation>
 <translation id="8263336784344783289">Namakan Kumpulan Ini</translation>
 <translation id="8264024885325823677">Tetapan ini diurus oleh pentadbir anda.</translation>
+<translation id="826410575944953302">Kembangkan tab menegak</translation>
 <translation id="8264195025773092348">Hanya peranti yang disokong ditunjukkan. Peranti USB tidak akan tersedia kepada apl asli lagi sehingga diputuskan sambungan.</translation>
 <translation id="8265018477030547118">Hanya pada peranti ini</translation>
 <translation id="826511437356419340">Telah memasuki mod ikhtisar tetingkap. Leret untuk menavigasi atau tekan tab jika menggunakan papan kekunci.</translation>
@@ -10742,6 +10750,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8323518750352551353">Asingkan Penyemakan Imbas?</translation>
 <translation id="8323744572398547859">Untuk mendapatkan tab anda daripada peranti anda yang lain, log masuk dan segerakkan sejarah. Anda juga akan mendapat kata laluan anda dan pelbagai lagi pada semua peranti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="8324158725704657629">Jangan tanya lagi</translation>
+<translation id="8324264291265547520">Kembangkan Tab Menegak</translation>
 <translation id="8325413836429495820">Tidak dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantaian sijil</translation>
 <translation id="8327386430364625757">Fon matematik</translation>

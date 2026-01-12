@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">‫۳۰ روز گذشته</translation>
 <translation id="2691385045260836588">مدل</translation>
 <translation id="2691924980723297736">هشدار ایمنی</translation>
-<translation id="2694088736180584846">شبکه حلقه بازگشتی</translation>
 <translation id="2696385693639654606">‏با Chrome Enterprise Core می‌توانید خط‌مشی‌های مرورگر، برنامه‌ها، و افزونه‌های فضای ابری را مدیریت کنید</translation>
 <translation id="2697248912349197812">از <ph name="KEYWORD_SHORT_NAME" /> بپرسید</translation>
 <translation id="2699273987028089219">منوِ فرعی دردسترس است، برای پیمایش به گزینه‌های دیگر از <ph name="SHORTCUT" /> استفاده کنید.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">باز کردن پیوند در پنجره ناشناس</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای سفارشی کردن ظاهر مرورگر، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3240791268468473923">برگ «اطلاعات کاربری مطابقت ندارد» در روند وارد کردن اطلاعات کاربری پرداخت امن باز شد</translation>
-<translation id="3241320538788585298">شبکه حلقه بازگشتی</translation>
 <translation id="324180406144491771">پیوندهای «<ph name="HOST_NAME" />» مسدود شده است</translation>
 <translation id="3243650379537999343">طراحی</translation>
 <translation id="3248329428895535435">در این سایت نمایش داده نشود</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">نمی‌توان از باز کردن قفل دستگاه استفاده کرد</translation>
 <translation id="4073797364926776829">مشاهده کارت</translation>
 <translation id="4075732493274867456">‏کلاینت و سرور از مجموعه رمزگذاری یا نسخه پروتکل SSL مشترکی استفاده نمی‌کنند.</translation>
+<translation id="4075941231477579656">شناسه لمسی</translation>
 <translation id="4079302484614802869">‏تنظیمات پروکسی، برای استفاده از آدرس اسکریپت pac. تنظیم شده است و از سرورهای ثابت نمی‌تواند استفاده کند.</translation>
 <translation id="4080668349181235831">‏برای ارائه پیشنهادها و بهبود این ویژگی، نشانی وب و محتوای کامل صفحه سایتی که بازدید می‌کنید با Google هم‌رسانی می‌شود. درباره <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> بیشتر بدانید.</translation>
 <translation id="4080855220442581440">پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">اتصال شما قطع شد</translation>
 <translation id="4708276642004148190">تأمین و تصفیه آب</translation>
 <translation id="4711628883879888561">مشارکت کردن در گروه زبانه</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">برای بازدید کردن از این سایت، مجوز لازم ندارید</translation>
 <translation id="4718897478554657123">۹۰۰ × ۶۰۰ میلی‌متر</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />اجرای Windows Network Diagnostics<ph name="END_LINK" /></translation>

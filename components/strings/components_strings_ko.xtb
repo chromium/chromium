@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">지난 30일</translation>
 <translation id="2691385045260836588">모델</translation>
 <translation id="2691924980723297736">안전 경고</translation>
-<translation id="2694088736180584846">루프백 네트워크</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core를 사용하면 클라우드에서 브라우저 정책, 앱, 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> 질문하기</translation>
 <translation id="2699273987028089219">하위 메뉴를 사용할 수 있습니다. 추가 옵션으로 이동하려면 <ph name="SHORTCUT" />를 사용하세요.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">시크릿 창에서 링크 열기</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
-<translation id="3241320538788585298">루프백 네트워크</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” 링크가 차단되었습니다</translation>
 <translation id="3243650379537999343">그리기</translation>
 <translation id="3248329428895535435">이 사이트에서 표시하지 않음</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">기기 잠금 해제를 사용할 수 없음</translation>
 <translation id="4073797364926776829">카드 보기</translation>
 <translation id="4075732493274867456">클라이언트와 서버가 일반적인 SSL 프로토콜 버전 또는 암호화 제품군을 지원하지 않습니다.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">프록시 설정이 고정 프록시 서버가 아닌 .pac 스크립트 URL을 사용하도록 설정됩니다.</translation>
 <translation id="4080668349181235831">추천을 제공하고 이 기능을 개선하기 위해 방문한 사이트의 URL 및 전체 페이지 콘텐츠가 Google과 공유됩니다. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />에 관해 자세히 알아보세요.</translation>
 <translation id="4080855220442581440">공유 탭 스크롤 및 확대/축소</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">연결이 끊김</translation>
 <translation id="4708276642004148190">상수도 및 수처리</translation>
 <translation id="4711628883879888561">탭 그룹에서 공동작업하기</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">이 사이트에 방문할 수 있는 권한이 없습니다.</translation>
 <translation id="4718897478554657123">600x900mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>

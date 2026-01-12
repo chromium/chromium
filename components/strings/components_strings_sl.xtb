@@ -1060,7 +1060,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2690699652723742414">Zadnjih 30 dni</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Varnostno opozorilo</translation>
-<translation id="2694088736180584846">omrežje s povratno zanko</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core vam omogoča upravljanje pravilnikov, aplikacij in razširitev brskalnika v oblaku</translation>
 <translation id="2697248912349197812">Vprašajte: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Na voljo je podmeni, uporabite <ph name="SHORTCUT" /> za pomik do dodatnih možnosti.</translation>
@@ -1393,7 +1392,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3238395604961564389">Odpri povezavo v anonimnem oknu</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prilagoditi videz brskalnika.</translation>
 <translation id="3240791268468473923">Preglednica za neujemanje poverilnic poverilnice za varno plačilo je odprta</translation>
-<translation id="3241320538788585298">Omrežje s povratno zanko</translation>
 <translation id="324180406144491771">Povezave gostitelja »<ph name="HOST_NAME" />« so blokirane</translation>
 <translation id="3243650379537999343">Risanje</translation>
 <translation id="3248329428895535435">Ne pokaži na tem spletnem mestu</translation>
@@ -1913,6 +1911,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4073376909608563327">Odklepanja naprave ni bilo mogoče uporabiti</translation>
 <translation id="4073797364926776829">Ogled kartice</translation>
 <translation id="4075732493274867456">Odjemalec in strežnik ne podpirata skupne različice protokola SSL ali šifrirne zbirke.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Konfiguracija strežnika proxy je nastavljena na uporabo URL-ja skripta .pac, ne na stalne strežnike proxy.</translation>
 <translation id="4080668349181235831">Zaradi zagotavljanja predlogov in izboljšanja te funkcije se URL in celotna vsebina strani spletnega mesta, ki ga obiščete, delita z Googlom. Preberite več o tem: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">pomikanje in povečava/pomanjšava deljenih zavihkov</translation>
@@ -2302,6 +2301,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4708268264240856090">Povezava je bila prekinjena</translation>
 <translation id="4708276642004148190">Oskrba z vodo in čistilne naprave</translation>
 <translation id="4711628883879888561">Sodelovanje pri skupini zavihkov</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nimate dovoljenja za obisk tega spletnega mesta</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Izvajanje orodja Omrežna diagnostika Windows<ph name="END_LINK" /></translation>

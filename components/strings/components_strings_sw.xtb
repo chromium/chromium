@@ -1060,7 +1060,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2690699652723742414">Siku 30 zilizopita</translation>
 <translation id="2691385045260836588">Muundo</translation>
 <translation id="2691924980723297736">Onyo la usalama</translation>
-<translation id="2694088736180584846">mtandao wa kujirejelea</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core hukuwezesha kudhibiti sera za kivinjari, programu na viendelezi kupitia wingu</translation>
 <translation id="2697248912349197812">Uliza <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Menyu ndogo inapatikana, tumia <ph name="SHORTCUT" /> ili uende kwenye chaguo za ziada.</translation>
@@ -1393,7 +1392,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3238395604961564389">Fungua Kiungo katika Dirisha Fiche</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'tab' kisha 'Enter' ili uweke mapendeleo ya mwonekano wa kivinjari chako</translation>
 <translation id="3240791268468473923">Laha ya 'hakuna kitambulisho kinacholingana' imefunguliwa</translation>
-<translation id="3241320538788585298">Mtandao wa Kujirejelea</translation>
 <translation id="324180406144491771">Viungo vya “<ph name="HOST_NAME" />” vimezuiwa</translation>
 <translation id="3243650379537999343">Chora</translation>
 <translation id="3248329428895535435">Usionyeshe kwenye tovuti hii</translation>
@@ -1913,6 +1911,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4073376909608563327">Imeshindwa kutumia njia ya kufungua wa kifaa</translation>
 <translation id="4073797364926776829">Angalia kadi</translation>
 <translation id="4075732493274867456">Mteja na seva hazitumii toleo la kawaida la itifaki ya SSL au mipangilio ya kriptografia.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Usanidi wa proksi umewekwa kutumia URL hati ya .pac, siyo seva proksi za kudumu.</translation>
 <translation id="4080668349181235831">Ili kukupa mapendekezo na kuboresha kipengele hiki, URL na maudhui yote ya ukurasa wa tovuti unayotembelea hutumwa kwa Google. Pata maelezo zaidi kuhusu <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">kusogeza na kukuza vichupo vya pamoja</translation>
@@ -2302,6 +2301,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4708268264240856090">Muunganisho wako umekatizwa</translation>
 <translation id="4708276642004148190">Usambazaji na Usafishaji wa Maji</translation>
 <translation id="4711628883879888561">Shirikiana kwenye kikundi cha vichupo</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Huna ruhusa ya kutembelea tovuti hii</translation>
 <translation id="4718897478554657123">Milimita 600 x 900</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Kuendesha Zana ya Windows ya Kuchunguza Mtandao<ph name="END_LINK" /></translation>

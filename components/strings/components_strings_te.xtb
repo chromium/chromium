@@ -1055,7 +1055,6 @@
 <translation id="2690699652723742414">గత 30 రోజులు</translation>
 <translation id="2691385045260836588">మోడల్</translation>
 <translation id="2691924980723297736">భద్రతా హెచ్చరిక</translation>
-<translation id="2694088736180584846">లూప్‌బ్యాక్ నెట్‌వర్క్</translation>
 <translation id="2696385693639654606">క్లౌడ్ నుండి బ్రౌజర్ పాలసీలను, యాప్‌లను, ఎక్స్‌టెన్షన్‌లను మేనేజ్ చేసే వీలును Chrome Enterprise Core మీకు కల్పిస్తుంది</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />‌ని అడగండి</translation>
 <translation id="2699273987028089219">సబ్‌మెనూ అందుబాటులో ఉంది, అదనపు ఆప్షన్‌లకు నావిగేట్ చేయడానికి <ph name="SHORTCUT" />‌ని ఉపయోగించండి.</translation>
@@ -1388,7 +1387,6 @@
 <translation id="3238395604961564389">లింక్‌ను అజ్ఞాత విండోలో తెరవండి</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3240791268468473923">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ తెరవబడలేదు</translation>
-<translation id="3241320538788585298">లూప్‌బ్యాక్ నెట్‌వర్క్</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” లింక్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="3243650379537999343">డ్రా</translation>
 <translation id="3248329428895535435">ఈ సైట్‌లో చూపవద్దు</translation>
@@ -1908,6 +1906,7 @@
 <translation id="4073376909608563327">పరికర లాక్‌ను ఉపయోగించడం సాధ్యపడలేదు</translation>
 <translation id="4073797364926776829">కార్డ్‌ను చూడండి</translation>
 <translation id="4075732493274867456">క్లయింట్, సర్వర్- ఒకే SSL ప్రోటోకాల్ వెర్షన్‌ లేదా సైఫర్ సూట్‌కు మద్దతు ఇవ్వవు.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">స్థిరమైన ప్రాక్సీ సర్వర్‌లను కాకుండా, ఒక .pac స్క్రిప్ట్ URLను ఉపయోగించేలా ప్రాక్సీ కాన్ఫిగరేషన్ సెట్ చేయబడింది.</translation>
 <translation id="4080668349181235831">సూచనలను అందించడానికి, ఈ ఫీచర్‌ను మెరుగుపరచడానికి, మీరు చూసే సైట్ URLను, పూర్తి పేజీ కంటెంట్‌ను Googleతో షేర్ చేయడం జరుగుతుంది. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="4080855220442581440">షేర్ చేసిన ట్యాబ్‌లను స్క్రోల్ చేయడం, జూమ్ చేయడం</translation>
@@ -2297,6 +2296,7 @@
 <translation id="4708268264240856090">మీ కనెక్షన్‌కు అంతరాయం ఏర్పడింది</translation>
 <translation id="4708276642004148190">నీటి సరఫరా &amp; చికిత్స</translation>
 <translation id="4711628883879888561">ట్యాబ్ గ్రూప్‌లో సహకరించండి</translation>
+<translation id="4712404868219726379">Windows Hell</translation>
 <translation id="471880041731876836">ఈ సైట్‌ను సందర్శించడానికి మీకు అనుమతి లేదు</translation>
 <translation id="4718897478554657123">600 x 900 మి.మీ.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows నెట్‌వర్క్ సమస్య విశ్లేషణలను అమలు చేయడం<ph name="END_LINK" /></translation>

@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} contraseña}other{{count} contraseñas}}</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
+<translation id="1279024913354609713">No permitir</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1287229685519872919">datos de Google Workspace</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> se desactivarán cuando abandones este sitio.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">No tienes contraseñas ni llaves de acceso guardadas, pero puedes borrar la lista de sitios y apps para las que elegiste no guardar información de acceso. No se borrarán las cuentas que hayas creado para sitios y apps.</translation>
 <translation id="3530206579861815432">Encuentra rápidamente las pestañas que abriste y cerraste recientemente en tus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Administrar cuentas en este dispositivo…</translation>
-<translation id="353340646084395154">Se quitaron las preferencias de la página Nueva pestaña</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
 <translation id="3540141921715814660">Agregar a Favoritos</translation>
 <translation id="3546122170015471515">Versiones preliminares de Maps en Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Administra los temas y los sitios que te interesan</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} cerrada}other{{count} cerradas}}</translation>
 <translation id="5394975111793637642">Ocultar la tarjeta Opiniones sobre productos para ti</translation>
-<translation id="5407806496954700135">¿Quieres aplicar las personalizaciones de la página Nueva pestaña de otro dispositivo?</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio disminuye en algún sitio.</translation>
 <translation id="5415289094036440596">No se pueden compartir las llaves de acceso</translation>
 <translation id="5416455648658732408">Mover al grupo de pestañas</translation>
@@ -1206,7 +1205,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5579012242779565775">Ocultar la opción Lista de lectura</translation>
 <translation id="5581786858144165447">Preguntar al Modo IA</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
-<translation id="5589976607021609750">Imagen adjunta</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="559567008082979829">Configura tus descargas para que se borren después de un mes.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
@@ -1799,7 +1797,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7696316012653762532">Opciones para traducir la página</translation>
 <translation id="7700527812567437847">Buscar en pantalla con Google Lens</translation>
 <translation id="7701040980221191251">No hay</translation>
-<translation id="7708668404222666001">Se aplicaron tus preferencias de la página Nueva pestaña</translation>
 <translation id="7708994397325774423">Accede a todas tus contraseñas</translation>
 <translation id="7711440461521638739">No reutilizas ninguna contraseña</translation>
 <translation id="7712361583414030698">Vista de la versión sin conexión</translation>

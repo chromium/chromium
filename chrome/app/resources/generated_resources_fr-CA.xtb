@@ -3953,6 +3953,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3666196264870170605">Vidage de débogage des CIR Wi-Fi Intel</translation>
 <translation id="3666971425390608309">Téléchargement de <ph name="FILE_NAME" /> interrompu</translation>
 <translation id="3670113805793654926">Appareils de n'importe quel fournisseur</translation>
+<translation id="3670159164851218963">Historique du mode IA</translation>
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
 <translation id="3671982238795754537">En savoir plus sur les clés d'accès</translation>
 <translation id="3672681487849735243">Une erreur a été détectée dans les paramètres par défaut.</translation>
@@ -8398,6 +8399,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">Désactiver la connexion cellulaire</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>
+<translation id="6754359471209693699">Lancer une nouvelle recherche</translation>
 <translation id="6754918760968695779">Insertion rapide</translation>
 <translation id="6755702685749429945">Ajouter un dictionnaire</translation>
 <translation id="6756157672127672536">L'application Fichiers permet d'accéder rapidement aux fichiers que vous avez enregistrés sur Google Disque, sur vos appareils de stockage externe ou sur votre appareil Chrome OS.</translation>

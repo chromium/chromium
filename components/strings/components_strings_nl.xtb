@@ -1060,7 +1060,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2690699652723742414">Afgelopen 30 dagen</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Veiligheidswaarschuwing</translation>
-<translation id="2694088736180584846">loopback-netwerk</translation>
 <translation id="2696385693639654606">Met Chrome Enterprise Core kun je browserbeleid, apps en extensies vanuit de cloud beheren</translation>
 <translation id="2697248912349197812">Vragen aan <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenu beschikbaar, gebruik <ph name="SHORTCUT" /> om naar meer opties te gaan.</translation>
@@ -1390,7 +1389,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3238395604961564389">Link openen in incognitovenster</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om het uiterlijk van je browser aan te passen</translation>
 <translation id="3240791268468473923">Pagina geopend waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
-<translation id="3241320538788585298">Loopback-netwerk</translation>
 <translation id="324180406144491771">Links van <ph name="HOST_NAME" /> zijn geblokkeerd</translation>
 <translation id="3243650379537999343">Tekenen</translation>
 <translation id="3248329428895535435">Niet tonen op deze site</translation>
@@ -1907,6 +1905,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4073376909608563327">Kan apparaatontgrendeling niet gebruiken</translation>
 <translation id="4073797364926776829">Kaart bekijken</translation>
 <translation id="4075732493274867456">De client en server ondersteunen geen algemene SSL-protocolversie of coderingssuite.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxyconfiguratie is ingesteld op het gebruik van een pac-script-URL, niet op het gebruik van vaste proxyservers.</translation>
 <translation id="4080668349181235831">De URL en volledige paginacontent van de site die je bezoekt, worden gedeeld met Google om suggesties te bieden en deze functie te verbeteren. Meer informatie over <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">scrollen en zoomen op gedeelde tabbladen</translation>
@@ -2296,6 +2295,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4708268264240856090">Je verbinding is onderbroken</translation>
 <translation id="4708276642004148190">Watervoorziening en -behandeling</translation>
 <translation id="4711628883879888561">Samenwerken aan tabbladgroep</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Je hebt geen rechten om deze site te bezoeken</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Netwerkcontrole uitvoeren<ph name="END_LINK" /></translation>

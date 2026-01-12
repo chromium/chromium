@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Dayandırın</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} parol}other{{count} parol}}</translation>
 <translation id="1275718070701477396">Seçilib</translation>
+<translation id="1279024913354609713">İcazə verməyin</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
 <translation id="1287229685519872919">Google Workspace datası</translation>
 <translation id="1291506870746876680">Bu saytdan çıxdığınız zaman <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> icazələri sıfırlanaraq deaktiv olacaq.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Yadda saxlanmış hər hansı parol və ya giriş açarınız yoxdur, lakin giriş məlumatlarını yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silə bilərsiniz. Sayt və ya tətbiqlər üçün yaratdığınız heç bir hesab silinməyəcək.</translation>
 <translation id="3530206579861815432">Sinxronlaşdırılmış cihazlarda açıq və son bağlanmış tabları tez tapın.</translation>
 <translation id="3530767473765895035">Bu cihazdakı hesabları idarə edin…</translation>
-<translation id="353340646084395154">Yeni tab səhifəsi tərcihləri silindi</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3540141921715814660">Əlfəcinlərə əlavə edin</translation>
 <translation id="3546122170015471515">Google.com-da Xəritə Önizləmələri</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Maraqlandığınız mövzu və saytları idarə edin</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} tab bağlanıb}other{{count} tab bağlanıb}}</translation>
 <translation id="5394975111793637642">Sizin üçün məhsul rəyləri kartını gizlədin</translation>
-<translation id="5407806496954700135">Yeni tab səhifəsi fərdiləşdirmələrini başqa cihazdan tətbiq etmək istəyirsiniz?</translation>
 <translation id="5414763847370083940">Hər hansı saytda qiymət düşərsə, bildiriş alacaqsınız.</translation>
 <translation id="5415289094036440596">Giriş açarlarını paylaşmaq olmaz</translation>
 <translation id="5416455648658732408">Tab qrupuna köçürün</translation>
@@ -1206,7 +1205,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5579012242779565775">Oxu siyahısını gizlədin</translation>
 <translation id="5581786858144165447">Sİ-dən soruşun rejimi</translation>
 <translation id="5585019845078534178">Kartlar</translation>
-<translation id="5589976607021609750">Əlavə edilmiş təsvir</translation>
 <translation id="5595485650161345191">Ünvana düzəliş edin</translation>
 <translation id="559567008082979829">Endirmələri bir ay sonra silinəcək şəkildə ayarlayın.</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
@@ -1799,7 +1797,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7696316012653762532">Səhifəni tərcümə etmək üçün seçimlər</translation>
 <translation id="7700527812567437847">Google Linza ilə ekranda axtarın</translation>
 <translation id="7701040980221191251">Heç biri</translation>
-<translation id="7708668404222666001">Yeni tab səhifəsi tərcihləriniz tətbiq edildi</translation>
 <translation id="7708994397325774423">Bütün parollarınızı əldə edin</translation>
 <translation id="7711440461521638739">Heç bir parolu təkrar istifadə etmirsiniz</translation>
 <translation id="7712361583414030698">Oflayn versiyaya baxırsınız</translation>

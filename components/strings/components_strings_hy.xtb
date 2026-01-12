@@ -1064,7 +1064,6 @@
 <translation id="2690699652723742414">Վերջին 30 օրը</translation>
 <translation id="2691385045260836588">Մոդել</translation>
 <translation id="2691924980723297736">Զգուշացում</translation>
-<translation id="2694088736180584846">loopback ցանց</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core-ը թույլ է տալիս ձեզ ամպից կառավարել դիտարկիչի կանոնները, հավելվածները և ընդլայնումները</translation>
 <translation id="2697248912349197812">Հարցրեք <ph name="KEYWORD_SHORT_NAME" />-ին</translation>
 <translation id="2699273987028089219">Ենթացանկը հասանելի է, օգտագործեք <ph name="SHORTCUT" /> դյուրանցումը՝ լրացուցիչ ընտրանքներին անցնելու համար։</translation>
@@ -1399,7 +1398,6 @@
 <translation id="3238395604961564389">Բացել հղումը ինկոգնիտո պատուհանում</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Դիտարկիչի տեսքը կարգավորելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3240791268468473923">Բացվել է պատուհան, որը ցուցադրում է անվտանգ վճարման տվյալների անհամապատասխանությունը տվյալների աղյուսակի հետ</translation>
-<translation id="3241320538788585298">Loopback ցանց</translation>
 <translation id="324180406144491771">«<ph name="HOST_NAME" />» հղումներն արգելափակված են</translation>
 <translation id="3243650379537999343">Նկարել</translation>
 <translation id="3248329428895535435">Չցուցադրել տվյալներ այս կայքի համար</translation>
@@ -1919,6 +1917,7 @@
 <translation id="4073376909608563327">Չհաջողվեց օգտագործել սարքի ապակողպումը</translation>
 <translation id="4073797364926776829">Դիտել քարտը</translation>
 <translation id="4075732493274867456">Սպասառուն և սերվերը չեն աջակցում SSL հաղորդակարգի միևնույն տարբերակը կամ ծածկագրման լրակազմը:</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Պրոքսի-սերվերի կազմաձևումը նախատեսում է PAC սկրիպտների URL-ների օգտագործում՝ ֆիքսված պրոքսի-սերվերների փոխարեն:</translation>
 <translation id="4080668349181235831">Առաջարկներ տրամադրելու և այս գործառույթը բարելավելու նպատակով ձեր այցելած կայքի URL-ն ու ամբողջ բովանդակությունը տրամադրվում են Google-ին։ Իմացեք ավելին <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />։</translation>
 <translation id="4080855220442581440">ոլորելով և խոշորացնելով ընդհանուր ներդիրները</translation>
@@ -2308,6 +2307,7 @@
 <translation id="4708268264240856090">Ձեր կապն ընդհատվել է</translation>
 <translation id="4708276642004148190">Ջրամատակարարում և ջրի մաքրում</translation>
 <translation id="4711628883879888561">Համատեղ աշխատեք ներդիրների խմբի վրա</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Դուք այս կայք այցելելու թույլտվություն չունեք</translation>
 <translation id="4718897478554657123">600 x 900 մմ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Գործարկել Windows-ի ցանցի ախտորոշումը<ph name="END_LINK" /></translation>

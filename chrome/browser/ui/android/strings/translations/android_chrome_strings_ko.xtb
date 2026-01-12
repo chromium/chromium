@@ -132,6 +132,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
 <translation id="1515901671075971249">탭 탐색 바로가기</translation>
+<translation id="1516966594427080024">시크릿 모드로 새 창 열기</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="153446405401665083">Chrome의 새 버전을 사용할 수 있습니다.</translation>
 <translation id="1540012742443808215">현재 주소 표시줄이 상단에 있음</translation>
@@ -724,6 +725,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4180726336228139707">이 기기에서만</translation>
 <translation id="4181841719683918333">언어</translation>
 <translation id="4188221736490993796">내림차순으로 정렬</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이 사이트의 알림 전송을 중지했습니다.}other{스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이 사이트의 알림 전송을 중지했습니다.}}</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{이 기기의 탭 1개}other{이 기기의 탭 #개}}</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
@@ -1116,6 +1118,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5833984609253377421">링크 공유</translation>
 <translation id="5839058148541733625">Chrome 공룡 게임</translation>
 <translation id="5841444063256914865">그래도 "<ph name="FILE_NAME" />" 파일을 다운로드하시겠습니까?</translation>
+<translation id="5847265694842662173">Chrome에서 악성 및 사용하지 않는 사이트가 알림을 전송하는 것을 차단했습니다.</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> 앱으로 PDF를 여시겠습니까?</translation>
 <translation id="5849288995120328556">공유를 중지하시겠습니까?</translation>
 <translation id="5853623416121554550">일시중지</translation>
@@ -1144,6 +1147,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5956665950594638604">새 탭에서 Chrome 고객센터 열기</translation>
 <translation id="59577092665511740">계정을 선택합니다.</translation>
 <translation id="5958275228015807058">다운로드에서 파일 및 페이지를 찾아보세요.</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome에서 최근에 방문하지 않은 사이트가 알림을 전송하는 것을 차단했습니다.}other{Chrome에서 최근에 방문하지 않은 사이트가 알림을 전송하는 것을 차단했습니다.}}</translation>
 <translation id="5962718611393537961">탭하여 접기</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
@@ -1804,6 +1808,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="847433688444405067">여러 기기에서 탐색하기</translation>
 <translation id="8477178913400731244">데이터 삭제</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">비활성 창 없음</translation>
 <translation id="8493948351860045254">저장 공간 확보하기</translation>
 <translation id="8497242791509864205">정렬 옵션 열기</translation>
 <translation id="8497480609928300907">개인 정보 보호 가이드 설명</translation>

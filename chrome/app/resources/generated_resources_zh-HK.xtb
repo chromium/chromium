@@ -3960,6 +3960,7 @@
 <translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯傾印</translation>
 <translation id="3666971425390608309">暫停咗下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3670113805793654926">來自任何供應商的裝置</translation>
+<translation id="3670159164851218963">「AI 模式」記錄</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
 <translation id="3671982238795754537">進一步瞭解密鑰</translation>
 <translation id="3672681487849735243">系統偵測到原廠錯誤</translation>
@@ -5113,6 +5114,7 @@
 <translation id="4426857487270413362">無法下載安裝程式檔案。請檢查互聯網連線，並確保磁碟空間足夠，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="4427111270137140798">偵測到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{已完成任務}other{已完成任務}}</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">只使用數字</translation>
@@ -8397,6 +8399,7 @@
 <translation id="6749473226660745022">相片</translation>
 <translation id="6750757184909117990">停用流動網絡</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
+<translation id="6754359471209693699">開始新搜尋</translation>
 <translation id="6754918760968695779">快速插入</translation>
 <translation id="6755702685749429945">新增字典</translation>
 <translation id="6756157672127672536">「檔案」應用程式可讓您快速存取存放在 Google 雲端硬碟、外部儲存空間或 Chrome OS 裝置中的檔案。</translation>

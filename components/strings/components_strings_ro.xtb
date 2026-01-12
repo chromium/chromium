@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Ultimele 30 de zile</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Avertisment de siguranță</translation>
-<translation id="2694088736180584846">rețea loopback</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core îți dă posibilitatea să gestionezi politicile, aplicațiile și extensiile browserului din cloud</translation>
 <translation id="2697248912349197812">Întreabă <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submeniu disponibil, folosește <ph name="SHORTCUT" /> pentru a naviga la opțiuni suplimentare.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Deschide linkul într-o fereastră incognito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza aspectul browserului</translation>
 <translation id="3240791268468473923">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este deschisă</translation>
-<translation id="3241320538788585298">Rețea loopback</translation>
 <translation id="324180406144491771">Linkurile <ph name="HOST_NAME" /> sunt blocate</translation>
 <translation id="3243650379537999343">Desenează</translation>
 <translation id="3248329428895535435">Nu afișa pe acest site</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">Nu s-a putut folosi deblocarea dispozitivului</translation>
 <translation id="4073797364926776829">Afișează cardul</translation>
 <translation id="4075732493274867456">Clientul și serverul nu acceptă o versiune a protocolului SSL sau o suită de codificare obișnuită.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Configurația pentru proxy este setată să utilizeze o adresă URL pentru scripturi .pac, și nu servere proxy fixe.</translation>
 <translation id="4080668349181235831">Pentru a oferi sugestii și a îmbunătăți această funcție, adresa URL și conținutul complet al paginii site-ului pe care îl accesezi sunt trimise la Google. Află mai multe despre <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">derularea și zoomul în filele comune</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">Conexiunea a fost întreruptă</translation>
 <translation id="4708276642004148190">Resurse de apă și tratarea apei</translation>
 <translation id="4711628883879888561">Colaborează la grupul de file</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nu ai permisiunea să accesezi acest site</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />să rulezi Diagnostice rețea Windows<ph name="END_LINK" />;</translation>

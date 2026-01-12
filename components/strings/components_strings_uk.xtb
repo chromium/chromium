@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Останні 30 днів</translation>
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691924980723297736">Попередження щодо безпеки</translation>
-<translation id="2694088736180584846">петльова мережа</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core дає змогу керувати правилами, додатками й розширеннями вебпереглядача з хмари</translation>
 <translation id="2697248912349197812">Запитати <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступне підменю. Щоб переглянути додаткові опції, натисніть <ph name="SHORTCUT" />.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Відкрити анонімне вікно</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
-<translation id="3241320538788585298">Петльова мережа</translation>
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
 <translation id="3243650379537999343">Малювати</translation>
 <translation id="3248329428895535435">Не показувати на цьому сайті</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">Не вдалося використати функцію розблокування пристрою</translation>
 <translation id="4073797364926776829">Переглянути картку</translation>
 <translation id="4075732493274867456">Клієнт і сервер підтримують різні версії протоколу SSL або набору шифрів.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфігурацію проксі-сервера налаштовано на використання URL-адреси сценарію .pac, а не фіксованих проксі-серверів.</translation>
 <translation id="4080668349181235831">Щоб пропонувати рекомендації і покращувати цю функцію, у Google надсилається URL-адреса й увесь контент сайту, який ви відвідуєте. Докладніше про <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">Зміна масштабу й прокручування спільних вкладок</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">З’єднання розірвано</translation>
 <translation id="4708276642004148190">Водопостачання й очищення води</translation>
 <translation id="4711628883879888561">Спільна робота з групою вкладок</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">У вас немає дозволу відвідувати цей сайт</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />провести діагностику мережі Windows<ph name="END_LINK" /></translation>

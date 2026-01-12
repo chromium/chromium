@@ -1060,7 +1060,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2690699652723742414">Viimased 30 päeva</translation>
 <translation id="2691385045260836588">Mudel</translation>
 <translation id="2691924980723297736">Ohutusalane hoiatus</translation>
-<translation id="2694088736180584846">silmustuse võrk</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core võimaldab teil hallata brauseri reegleid, rakendusi ja laiendusi pilves</translation>
 <translation id="2697248912349197812">Küsige mudelilt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Alammenüü on saadaval, kasutage lisavalikute juurde navigeerimiseks otseteed <ph name="SHORTCUT" />.</translation>
@@ -1393,7 +1392,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3238395604961564389">Ava link inkognito aknas</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma brauseri ilme kohandamiseks vajutage tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="3240791268468473923">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati, on avatud</translation>
-<translation id="3241320538788585298">Silmustuse võrk</translation>
 <translation id="324180406144491771">Hosti „<ph name="HOST_NAME" />“ lingid on blokeeritud</translation>
 <translation id="3243650379537999343">Joonista</translation>
 <translation id="3248329428895535435">Ära kuva sellel saidil</translation>
@@ -1913,6 +1911,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4073376909608563327">Seadmega avamist ei saanud kasutada</translation>
 <translation id="4073797364926776829">Kuva kaart</translation>
 <translation id="4075732493274867456">Klient ja server ei toeta tavapärast SSL-protokolli versiooni ega šifreerimiskomplekti.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Puhverserveri konfigureerimine on määratud kasutama pac-skripti URL-i, mitte fikseeritud puhverservereid.</translation>
 <translation id="4080668349181235831">Soovituste pakkumiseks ja selle funktsiooni täiustamiseks jagatakse Google'iga teie külastatud saidi URL-i ja kogu lehe sisu. Vaadake lisateavet: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">jagatud vahelehtede kerimine ja suumimine</translation>
@@ -2302,6 +2301,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4708268264240856090">Teie ühendus katkes</translation>
 <translation id="4708276642004148190">Veevarustus ja -puhastus</translation>
 <translation id="4711628883879888561">Tehke vahelehegrupis koostööd</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Teil ei ole selle saidi külastamiseks luba</translation>
 <translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windowsi võrgudiagnostika käitamine<ph name="END_LINK" /></translation>

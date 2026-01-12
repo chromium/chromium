@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} Passwort}other{{count} Passwörter}}</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
+<translation id="1279024913354609713">Nicht zulassen</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
 <translation id="1287229685519872919">Daten in Google Workspace</translation>
 <translation id="1291506870746876680">Die Berechtigungen für <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> werden zurückgesetzt und damit deaktiviert, wenn du diese Website verlässt.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Du hast keine Passwörter oder Passkeys gespeichert, aber du kannst die Liste der Websites und Apps löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="3530206579861815432">Auf deinen synchronisierten Geräten siehst du schnell deine geöffneten und kürzlich geschlossenen Tabs.</translation>
 <translation id="3530767473765895035">Konten auf diesem Gerät verwalten…</translation>
-<translation id="353340646084395154">Einstellungen für die „Neuer Tab“-Seite entfernt</translation>
 <translation id="3533436815740441613">Neuer Tab</translation>
 <translation id="3540141921715814660">Zu Lesezeichen hinzufügen</translation>
 <translation id="3546122170015471515">Maps-Vorabversion auf Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Hier kannst du Themen und Websites verwalten, die dich interessieren</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} geschlossen}other{{count} geschlossen}}</translation>
 <translation id="5394975111793637642">Karte „Rezensionen für dich“ ausblenden</translation>
-<translation id="5407806496954700135">Möchtest du die Anpassungen für die Seite „Neuer Tab“ von einem anderen Gerät übernehmen?</translation>
 <translation id="5414763847370083940">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="5415289094036440596">Passkeys können nicht geteilt werden</translation>
 <translation id="5416455648658732408">In Tabgruppe verschieben</translation>
@@ -1206,7 +1205,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5579012242779565775">Leseliste ausblenden</translation>
 <translation id="5581786858144165447">Mit dem KI-Modus fragen</translation>
 <translation id="5585019845078534178">Karten</translation>
-<translation id="5589976607021609750">Bild angehängt</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="559567008082979829">Du kannst festlegen, dass deine Downloads nach einem Monat gelöscht werden.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
@@ -1799,7 +1797,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7696316012653762532">Optionen zum Übersetzen der Seite</translation>
 <translation id="7700527812567437847">Mit Google Lens anhand von Bildschirminhalt suchen</translation>
 <translation id="7701040980221191251">Keine</translation>
-<translation id="7708668404222666001">Einstellungen für die Seite „Neuer Tab“ wurden übernommen</translation>
 <translation id="7708994397325774423">Auf alle deine Passwörter zugreifen</translation>
 <translation id="7711440461521638739">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="7712361583414030698">Offlineversion wird angezeigt</translation>

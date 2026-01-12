@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">過去 30 天</translation>
 <translation id="2691385045260836588">型號</translation>
 <translation id="2691924980723297736">安全警告</translation>
-<translation id="2694088736180584846">Loopback 網絡</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core 讓你透過雲端管理瀏覽器政策、應用程式和擴充程式</translation>
 <translation id="2697248912349197812">詢問 <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">有可用的子選單，請使用<ph name="SHORTCUT" />前往其他選項。</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">在無痕式視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂瀏覽器外觀</translation>
 <translation id="3240791268468473923">開咗冇相符安全付款憑證工作表</translation>
-<translation id="3241320538788585298">Loopback 網絡</translation>
 <translation id="324180406144491771">已封鎖「<ph name="HOST_NAME" />」連結</translation>
 <translation id="3243650379537999343">繪畫</translation>
 <translation id="3248329428895535435">不要在此網站上顯示</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
 <translation id="4073797364926776829">查看虛擬卡</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援共通 SSL 通訊協定版本或加密套件。</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy 設定已設為使用 .pac 指令碼網址，而非固定的 Proxy 伺服器。</translation>
 <translation id="4080668349181235831">為提供建議及改善此功能，你瀏覽的網站網址和完整頁面內容會與 Google 分享。進一步瞭解<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />。</translation>
 <translation id="4080855220442581440">捲動及縮放已分享的分頁</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">您的連線已中斷</translation>
 <translation id="4708276642004148190">食水供應和處理</translation>
 <translation id="4711628883879888561">協作建立分頁群組</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">您沒有此網站的瀏覽權限</translation>
 <translation id="4718897478554657123">600 x 900 毫米</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />執行 Windows 網絡診斷<ph name="END_LINK" /></translation>

@@ -4564,6 +4564,19 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında metin vurgulama kutusu başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
+<translation id="4182348537826882258"><ph name="URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa yasaklı URL'leri olan web sayfalarının yüklenmesi durdurulur. Yöneticiler engellenecek URL kalıplarının listesini belirtebilir. Politika ayarlanmadan bırakılırsa tarayıcıda hiçbir URL engellenmez. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikasında en çok 1.000 istisna tanımlanabilir. URL kalıbının nasıl biçimlendirileceğine göz atın (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Not: Bu politika, dinamik olarak yüklenmiş verilere sahip sayfa içi JavaScript URL'leri için geçerli değildir. example.com/abc URL'sini engellediyseniz example.com bunu XMLHTTPRequest kullanarak yine yükleyebilir. Ayrıca bu politika, web sayfalarının, çok amaçlı adres çubuğunda gösterilen URL'yi JavaScript History API'yi kullanarak engellenen bir URL'ye güncellemesini de engellemez.
+
+<ph name="PRODUCT_NAME" /> sürüm 73'ten itibaren javascript://* URL'lerini engelleyebilirsiniz. Ancak bu engelleme yalnızca adres çubuğuna girilen JavaScript'i veya örneğin yer işareti uygulamalarını etkiler.
+
+Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.
+
+Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenmeyen hatalara yol açabilir ve bazı durumlarda bunu yapmanız engellenebilir. Belirli dahili URL'leri engellemek yerine kullanabileceğiniz daha spesifik politikalar olup olmadığını kontrol edin. Örneğin:
+
+- chrome://settings/certificates URL'sini engellemek yerine <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> politikasını kullanın.
+
+- chrome-untrusted://crosh URL'sini engellemek yerine <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="4183229833636799228">Varsayılan <ph name="FLASH_PLUGIN_NAME" /> ayarı</translation>
 <translation id="4185868802416355029">Yönetilen uzantıların Enterprise Hardware Platform API'yi kullanmasına izin ver</translation>
 <translation id="4186244263855283575">Cihazların yeniden başlatılması için özel bir program belirlenmesini sağlar. Politika, Doğru değerine ayarlandığında cihaz programa uygun olarak yeniden başlatılır. Programlanan yeniden başlatmaların artık iptal olması için politikanın kaldırılması gerekir.
@@ -6424,6 +6437,13 @@ Yönetilen hesaplar, aile gruplarına katılamadığı veya aile grubu oluştura
       Politika ayarlanmazsa <ph name="AUTO_SELECT_ALL_SCREENS_NAME" />, hiçbir web uygulaması tarafından kullanılamaz.
 Bu politika, gizliliği iyileştirmek için <ph name="PRODUCT_NAME" /> 116 sürümünden itibaren dinamik yenilemeyi desteklemeyecektir. Dolayısıyla kullanıcılar, oturum başlangıcında izin verilmediyse giriş yaptıktan sonra başka hiçbir sayfanın, ekran görüntüsü almayacağından emin olabilir.</translation>
 <translation id="5361167871898066799">Fiziksel klavyede otomatik düzeltme özelliğini kontrol et</translation>
+<translation id="5361708558735884308">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasını * olarak ayarlamak tüm istekleri engeller. Bu durumda bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Bu ayarı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini, en spesifik filtre belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
+
+Bu politika ayrıca "tel:" veya "ssh:" gibi listelenmiş protokoller için protokol işleyici olarak kayıtlı harici uygulamanın tarayıcısı üzerinden otomatik çağrının etkinleştirilmesine izin verir.
+
+Politika ayarlanmadan bırakılırsa <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.
+
+Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.</translation>
 <translation id="5362531528507578966">Varsayılan arka plan grafikleri yazdırma modunu geçersiz kılar.</translation>
 <translation id="5365476955714838841">Alternatif tarayıcı için komut satırı parametreleri.</translation>
 <translation id="5365946944967967336">Araç çubuğunda Ana Sayfa düğmesini göster</translation>
@@ -6530,25 +6550,6 @@ arama tabanlı kısayollar varsayılan davranışı gerçekleştirir.</translati
 <translation id="5433139124622290129">Yönetilen tarayıcı için raporlanacak SaaS alanlarının listesini belirtir</translation>
 <translation id="5433865420958136693">Kullanılabilir olduğunda grafik hızlandırmayı kullan</translation>
 <translation id="5435888298115339571">Çok amaçlı adres çubuğu ve 3 noktalı menüde masaüstü paylaşımını etkinleştir</translation>
-<translation id="5435967860403961472">Kötü amaçlı yazılım dışı ihlaller nedeniyle kaldırılan uzantıların, düşük güven düzeyine sahip ortamlarda zorunlu olarak yüklenip yüklenemeyeceğini kontrol eder.
-
-Kötü amaçlı yazılım dışı ihlaller ve kaldırma işlemleri hakkında daha fazla bilgiyi https://developer.chrome.com/docs/webstore/review-process#warning adresinde bulabilirsiniz.
-
-Kötü amaçlı yazılım dışı ihlal çözüldükten sonra uzantı etkin kalır ve devre dışı bırakılamaz veya kaldırılamaz.
-
-<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılamaz.
-
-<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika MDM üzerinden yönetilen, MCX aracılığıyla bir alan adına katılmış veya "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />" öğesine kaydolmuş örneklerde kullanılamaz.
-
-Kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş uzantılar bu durumlarda etkin kalır.
-
-Şu anda kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş bir uzantı Chrome'da yüklü ve etkin durumda.
-
-Politika, Etkin değerine ayarlanırsa zorunlu yüklenmiş uzantılar, kötü amaçlı yazılım dışı ihlallerden bağımsız olarak aynı davranır (etkin kalır).
-
-Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş uzantılar devre dışı bırakılır.
-
-Bu politika 3 aşama boyunca kullanılabilir.</translation>
 <translation id="5441508088704391614">Özel kısıtlama yok. Varsayılan.</translation>
 <translation id="5442026853063570579">Bu politika Android Geliştirici Seçenekleri'ne erişimi de kontrol eder. Bu politikayı "DeveloperToolsDisallowed" (2 değeri) olarak ayarlarsanız kullanıcılar Geliştirici Seçenekleri'ne erişemez. Bu politikayı başka bir seçeneğe ayarlar veya ayarlamadan bırakırsanız kullanıcılar, Android ayarları uygulamasında derleme numarasına yedi kez dokunarak Geliştirici Seçenekleri'ne erişebilir.</translation>
 <translation id="5443582909255996887">Politika Etkin değerine ayarlanırsa Android üzerinde tüm siteler, kendi işlemini çalıştıracak şekilde izole edilir ve kullanıcıların bunu devre dışı bırakması engellenir. Site, şema artı eTLD+1 olarak tanımlanır (ör. https://example.com). 77. <ph name="PRODUCT_NAME" /> sürümünden itibaren Android'in varsayılan olarak bazı hassas siteleri izole ettiğini, bu politikanın da söz konusu varsayılan site izolasyonu modunun kapsamını tüm siteleri içine alacak şekilde genişlettiğini unutmayın.

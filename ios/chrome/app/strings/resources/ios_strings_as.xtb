@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} টা পাছৱৰ্ড}one{{count} টা পাছৱৰ্ড}other{{count} টা পাছৱৰ্ড}}</translation>
 <translation id="1275718070701477396">বাছনি কৰা আছে</translation>
+<translation id="1279024913354609713">অনুমতি নিদিব</translation>
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1287229685519872919">Google Workspaceৰ ডেটা</translation>
 <translation id="1291506870746876680">আপুনি এই ছাইটটোৰ পৰা বাহিৰ ওলালে <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />ৰ অনুমতিসমূহ অফ হিচাপে ৰিছেট কৰা হ’ব।</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">আপোনাৰ ছেভ কৰি থোৱা কোনো পাছৱৰ্ড বা পাছকী নাই, কিন্তু আপুনি কেতিয়াও ছাইন-ইনৰ তথ্য ছেভ কৰিবলৈ বাছনি নকৰা ছাইট আৰু এপ্‌সমূহৰ সূচীখন মচি পেলাব পাৰে। আপুনি ছাইট বা এপ্‌সমূহৰ বাবে সৃষ্টি কৰা কোনো একাউণ্ট মচি পেলোৱা নহ’ব।</translation>
 <translation id="3530206579861815432">আপোনাৰ ছিংক কৰি থোৱা ডিভাইচসমূহত খুলি থোৱা আৰু শেহতীয়াকৈ বন্ধ কৰা টেবসমূহ ক্ষিপ্ৰভাৱে বিচাৰক।</translation>
 <translation id="3530767473765895035">এই ডিভাইচটোত থকা একাউণ্টসমূহ পৰিচালনা কৰক…</translation>
-<translation id="353340646084395154">নতুন টেবৰ পৃষ্ঠাৰ অগ্ৰাধিকাৰ আঁতৰোৱা হৈছে</translation>
 <translation id="3533436815740441613">নতুন টেব</translation>
 <translation id="3540141921715814660">বুকমাৰ্কত যোগ দিয়ক</translation>
 <translation id="3546122170015471515">Google.comত Mapৰ পূৰ্বদৰ্শন</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">আপোনাৰ আগ্ৰহ থকা বিষয় আৰু ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} টা বন্ধ কৰা হৈছে}one{{count} টা বন্ধ কৰা হৈছে}other{{count} টা বন্ধ কৰা হৈছে}}</translation>
 <translation id="5394975111793637642">আপোনাৰ বাবে প্ৰ’ডাক্টৰ পৰ্যালোচনা লুকুৱাওক সম্পৰ্কীয় কাৰ্ড</translation>
-<translation id="5407806496954700135">আপুনি অন্য এটা ডিভাইচৰ পৰা আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ কাষ্টমাইজেশ্বন প্ৰয়োগ কৰিব বিচাৰে নেকি?</translation>
 <translation id="5414763847370083940">কোনো ছাইটত মূল্য কমিলে আপুনি এটা সতৰ্কবাৰ্তা পাব।</translation>
 <translation id="5415289094036440596">পাছকীসমূহ শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="5416455648658732408">টেবৰ গোটলৈ স্থানান্তৰ কৰক</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">পঢ়াৰ সূচী লুকুৱাওক</translation>
 <translation id="5581786858144165447">AI ম’ডত প্ৰশ্ন সোধক</translation>
 <translation id="5585019845078534178">কাৰ্ড</translation>
-<translation id="5589976607021609750">সংলগ্ন কৰা প্ৰতিচ্ছবি</translation>
 <translation id="5595485650161345191">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="559567008082979829">আপোনাৰ ডাউনল’ডসমূহ এমাহৰ পাছত মচি পেলোৱা হোৱাকৈ ছেট কৰক।</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">পৃষ্ঠাখন অনুবাদ কৰাৰ বিকল্পসমূহ</translation>
 <translation id="7700527812567437847">Google Lensৰ জৰিয়তে স্ক্ৰীন সন্ধান কৰক</translation>
 <translation id="7701040980221191251">নাই</translation>
-<translation id="7708668404222666001">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ অগ্ৰাধিকাৰ প্ৰয়োগ কৰা হৈছে</translation>
 <translation id="7708994397325774423">আপোনাৰ আটাইবোৰ পাছৱৰ্ড পাওক</translation>
 <translation id="7711440461521638739">আপুনি কোনো পাছৱৰ্ড পুনৰ ব্যৱহাৰ কৰি থকা নাই</translation>
 <translation id="7712361583414030698">অফলাইন সংস্কৰণ চোৱাৰ সুবিধা</translation>

@@ -1065,7 +1065,6 @@
 <translation id="2690699652723742414">ပြီးခဲ့သော ရက် ၃၀</translation>
 <translation id="2691385045260836588">အမျိုးအစား</translation>
 <translation id="2691924980723297736">ဘေးကင်းလုံခြုံမှုဆိုင်ရာ သတိပေးချက်</translation>
-<translation id="2694088736180584846">နောက်ပြန်ကျော့ ကွန်ရက်</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core သည် သင့်အား ဘရောင်ဇာမူဝါဒ၊ အက်ပ်များ၊ cloud မှ နောက်ဆက်တွဲများကို စီမံခွင့်ပြုသည်</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ကို မေးပါ</translation>
 <translation id="2699273987028089219">မီနူးခွဲရနိုင်သည်။ ထပ်ဆောင်းရွေးစရာများသို့ သွားရန် <ph name="SHORTCUT" /> သုံးပါ။</translation>
@@ -1395,7 +1394,6 @@
 <translation id="3238395604961564389">လင့်ကို ရုပ်ဖျက် ဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="3240791268468473923">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မဖွင့်ထားပါ</translation>
-<translation id="3241320538788585298">နောက်ပြန်ကျော့ ကွန်ရက်</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” လင့်ခ်များကို ပိတ်ထားသည်</translation>
 <translation id="3243650379537999343">ပုံဆွဲရန်</translation>
 <translation id="3248329428895535435">ဤဝဘ်ဆိုက်တွင် မပြပါနှင့်</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">စက်လော့ခ်ဖွင့်ခြင်းကို သုံး၍မရပါ</translation>
 <translation id="4073797364926776829">ကတ်ကိုကြည့်ရန်</translation>
 <translation id="4075732493274867456">အသုံးပြုသူနှင့် ဆာဗာသည် ယေဘုယျ SSL ပရိုတိုကောဗားရှင်း သို့မဟုတ် စာဝှက်ဖော်နည်းများကို မထောက်ပံ့ပါ။</translation>
+<translation id="4075941231477579656">ထိတွေ့မှု ID</translation>
 <translation id="4079302484614802869">ပရောက်စီ စီစဉ်ထားမှုမှာ .pac စာတန်း URL ကို သုံးရန် ဖြစ်ပြီး၊ သတ်မှတ် ပရောက်စီ ဆာဗာများ မဟုတ်ပါ။</translation>
 <translation id="4080668349181235831">အကြံပြုချက်များ ကမ်းလှမ်းရန်နှင့် ဤတူးလ် ပိုကောင်းအောင်လုပ်ရန်အတွက် သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်၏ URL နှင့် စာမျက်နှာအကြောင်းအရာအပြည့်အစုံကို Google နှင့် မျှဝေသည်။ <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> အကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="4080855220442581440">မျှဝေထားသော တဘ်များကို လှိမ့်ခြင်းနှင့် ဇူးမ်ဆွဲခြင်း</translation>
@@ -2303,6 +2302,7 @@
 <translation id="4708268264240856090">သင့်ချိတ်ဆက်မှု ကြားဝင်စွတ်ဖက်ခြင်း ခံခဲ့ရပါသည်</translation>
 <translation id="4708276642004148190">ရေပေးခြင်း၊ သန့်စင်ခြင်း</translation>
 <translation id="4711628883879888561">တဘ်အုပ်စုတွင် ပူးတွဲလုပ်ကိုင်ခြင်း</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင့်တွင် ခွင့်ပြုချက်မရှိပါ</translation>
 <translation id="4718897478554657123">၆၀၀ x ၉၀၀ မီလီမီတာ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />ဝင်းဒိုးကွန်ရက်ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>

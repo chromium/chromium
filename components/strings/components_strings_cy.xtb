@@ -1060,7 +1060,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2690699652723742414">Y 30 diwrnod diwethaf</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Rhybudd Diogelwch</translation>
-<translation id="2694088736180584846">rhwydwaith cyfeirio yn ôl</translation>
 <translation id="2696385693639654606">Mae Chrome Enterprise Core yn gadael i chi reoli polisïau porwr, apiau ac estyniadau o'r cwmwl</translation>
 <translation id="2697248912349197812">Gofyn i <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Isddewislen ar gael, defnyddiwch <ph name="SHORTCUT" /> i lywio i'r dewisiadau ychwanegol.</translation>
@@ -1393,7 +1392,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3238395604961564389">Agor Dolen mewn Ffenestr Anhysbys</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i bersonoleiddio gwedd eich porwr</translation>
 <translation id="3240791268468473923">Mae dalen dim manylion sy'n cyfateb y prosiect manylion talu diogel ar agor</translation>
-<translation id="3241320538788585298">Rhwydwaith cyfeirio yn ôl</translation>
 <translation id="324180406144491771">Mae dolenni “<ph name="HOST_NAME" />” wedi'u rhwystro</translation>
 <translation id="3243650379537999343">Llunio</translation>
 <translation id="3248329428895535435">Peidiwch â dangos ar y wefan hon</translation>
@@ -1913,6 +1911,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4073376909608563327">Methu â defnyddio datgloi dyfais</translation>
 <translation id="4073797364926776829">Gweld y cerdyn</translation>
 <translation id="4075732493274867456">Nid yw'r cleient na'r gweinydd yn cefnogi fersiwn protocol SSL cyffredin na chyfres seiffr.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Mae'r ffurfweddiad dirprwy weinyddion wedi'i osod i ddefnyddio URL sgript .pac, nid dirprwy weinyddion sefydlog.</translation>
 <translation id="4080668349181235831">Er mwyn cynnig awgrymiadau a gwella'r nodwedd hon, mae URL a chynnwys tudalen lawn y wefan rydych yn ymweld â hi yn cael eu rhannu â Google. Dysgu rhagor am <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">sgrolio a chwyddo tabiau a rennir</translation>
@@ -2302,6 +2301,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4708268264240856090">Cafodd eich cysylltiad ei dorri</translation>
 <translation id="4708276642004148190">Cyflenwi a Thrin Dŵr</translation>
 <translation id="4711628883879888561">Cydweithio ar grŵp tabiau</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nid oes gennych ganiatâd i ymweld â'r wefan hon</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Wrthi'n Rhedeg Diagnosteg Rhwydwaith Windows<ph name="END_LINK" /></translation>

@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} mot de passe}one{{count} mot de passe}other{{count} mots de passe}}</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
+<translation id="1279024913354609713">Ne pas autoriser</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1287229685519872919">données Google Workspace</translation>
 <translation id="1291506870746876680">Les autorisations du site <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> seront désactivées quand vous le quitterez.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Vous n'avez pas enregistré de mot de passe ni de clé d'accès, mais vous pouvez supprimer la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="3530206579861815432">Retrouvez rapidement les onglets ouverts et fermés récemment sur vos appareils synchronisés.</translation>
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
-<translation id="353340646084395154">Préférences de la page "Nouvel onglet" supprimées</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3540141921715814660">Ajouter aux favoris</translation>
 <translation id="3546122170015471515">Maps Preview sur Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fermé}one{{count} fermé}other{{count} fermés}}</translation>
 <translation id="5394975111793637642">Masquer la carte "Avis sur les produits pour vous"</translation>
-<translation id="5407806496954700135">Appliquer les personnalisations de votre page "Nouvel onglet" depuis un autre appareil ?</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>
 <translation id="5415289094036440596">Impossible de partager les clés d'accès</translation>
 <translation id="5416455648658732408">Déplacer vers un groupe d'onglets</translation>
@@ -1206,7 +1205,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5579012242779565775">Masquer "Liste de lecture"</translation>
 <translation id="5581786858144165447">Demander au Mode IA</translation>
 <translation id="5585019845078534178">Cartes</translation>
-<translation id="5589976607021609750">Image jointe</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="559567008082979829">Activer la suppression de vos téléchargements au bout d'un mois.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
@@ -1799,7 +1797,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7696316012653762532">Options de traduction de la page</translation>
 <translation id="7700527812567437847">Rechercher sur l'écran avec Google Lens</translation>
 <translation id="7701040980221191251">Désactivé</translation>
-<translation id="7708668404222666001">Vos préférences de la page "Nouvel onglet" ont été appliquées</translation>
 <translation id="7708994397325774423">Obtenez tous vos mots de passe</translation>
 <translation id="7711440461521638739">Tous vos mots de passe sont uniques</translation>
 <translation id="7712361583414030698">Afficher la version hors connexion</translation>

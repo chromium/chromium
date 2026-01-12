@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Leállítás</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} jelszó}other{{count} jelszó}}</translation>
 <translation id="1275718070701477396">Kijelölve</translation>
+<translation id="1279024913354609713">Tiltás</translation>
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
 <translation id="1287229685519872919">Google Workspace-adatait</translation>
 <translation id="1291506870746876680">A(z) <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> webhelyre vonatkozó engedélyeket a rendszer letiltott beállításra állítja vissza, amikor Ön elhagyja ezt a webhelyet.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Nincsenek mentett jelszavai vagy azonosítókulcsai, de törölheti azon webhelyek és alkalmazások listáját, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="3530206579861815432">Gyorsan megtalálhatja a megnyitott és a nemrégiben bezárt lapokat a szinkronizált eszközökön.</translation>
 <translation id="3530767473765895035">Fiókok kezelése ezen az eszközön…</translation>
-<translation id="353340646084395154">Az Új lap oldal beállításai eltávolítva</translation>
 <translation id="3533436815740441613">Új lap</translation>
 <translation id="3540141921715814660">Hozzáadás a könyvjelzőkhöz</translation>
 <translation id="3546122170015471515">Térkép-előzetesek a Google.com-on</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Az Önt érdeklő témák és webhelyek kezelése</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} bezárva}other{{count} bezárva}}</translation>
 <translation id="5394975111793637642">A „Termékvélemények Önnek” kártya elrejtése</translation>
-<translation id="5407806496954700135">Szeretné alkalmazni az Új lap oldal saját testreszabásait egy másik eszközről?</translation>
 <translation id="5414763847370083940">Ha bármelyik webhelyen csökken az ár, Ön értesítést kap róla.</translation>
 <translation id="5415289094036440596">Az azonosítókulcsok nem oszthatók meg</translation>
 <translation id="5416455648658732408">Áthelyezés lapcsoportba</translation>
@@ -1206,7 +1205,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5579012242779565775">Az Olvasólista elrejtése</translation>
 <translation id="5581786858144165447">Kérdezés az AI módtól</translation>
 <translation id="5585019845078534178">Kártyák</translation>
-<translation id="5589976607021609750">Csatolt kép</translation>
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="559567008082979829">Beállíthatja, hogy a letöltések egy hónap után törlődjenek.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
@@ -1799,7 +1797,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7696316012653762532">Az oldal lefordításával kapcsolatos beállítások</translation>
 <translation id="7700527812567437847">Keresés a képernyőn a Google Lens segítségével</translation>
 <translation id="7701040980221191251">Nincs</translation>
-<translation id="7708668404222666001">Az új lap oldal beállításai alkalmazva</translation>
 <translation id="7708994397325774423">Az összes jelszó lekérése</translation>
 <translation id="7711440461521638739">Ön egyetlen jelszót sem használ fel újra</translation>
 <translation id="7712361583414030698">Offline verzió megjelenítve</translation>

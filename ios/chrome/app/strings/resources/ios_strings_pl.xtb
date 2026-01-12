@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} hasło}few{{count} hasła}many{{count} haseł}other{{count} hasła}}</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
+<translation id="1279024913354609713">Nie zezwalaj</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1287229685519872919">dane Google Workspace</translation>
 <translation id="1291506870746876680">Gdy opuścisz tę stronę, uprawnienia witryny <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> zostaną wyłączone.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Nie masz zapisanych haseł ani kluczy dostępu, ale możesz usunąć listę witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Żadne konto utworzone przez Ciebie w witrynach i aplikacjach nie zostanie usunięte.</translation>
 <translation id="3530206579861815432">Szybko znajduj otwarte i ostatnio zamknięte karty na zsynchronizowanych urządzeniach.</translation>
 <translation id="3530767473765895035">Zarządzaj kontami na tym urządzeniu…</translation>
-<translation id="353340646084395154">Ustawienia strony nowej karty zostały usunięte</translation>
 <translation id="3533436815740441613">Nowa karta</translation>
 <translation id="3540141921715814660">Dodaj do zakładek</translation>
 <translation id="3546122170015471515">Podgląd Map na Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Zarządzaj tematami i witrynami, które Cię interesują</translation>
 <translation id="5390458669633674385">{count,plural, =1{Zamknięto {count}}few{Zamknięto {count}}many{Zamknięto {count}}other{Zamknięto {count}}}</translation>
 <translation id="5394975111793637642">Ukryj opinie o produktach na swojej karcie</translation>
-<translation id="5407806496954700135">Czy chcesz użyć dostosowań strony nowej karty z innego urządzenia?</translation>
 <translation id="5414763847370083940">Otrzymasz alert, jeśli cena w którejkolwiek witrynie spadnie.</translation>
 <translation id="5415289094036440596">Nie można udostępniać kluczy dostępu</translation>
 <translation id="5416455648658732408">Przenieś do grupy kart</translation>
@@ -1206,7 +1205,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5579012242779565775">Ukryj opcję Do przeczytania</translation>
 <translation id="5581786858144165447">Zapytaj w Trybie AI</translation>
 <translation id="5585019845078534178">Karty</translation>
-<translation id="5589976607021609750">Załączony obraz</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="559567008082979829">Ustaw pobierane pliki tak, aby były usuwane po miesiącu.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
@@ -1799,7 +1797,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7696316012653762532">Opcje tłumaczenia strony</translation>
 <translation id="7700527812567437847">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="7701040980221191251">Brak</translation>
-<translation id="7708668404222666001">Zastosowano ustawienia strony nowej karty</translation>
 <translation id="7708994397325774423">Pobierz wszystkie swoje hasła</translation>
 <translation id="7711440461521638739">Nie używasz ponownie żadnych haseł</translation>
 <translation id="7712361583414030698">Wyświetlam wersję offline</translation>

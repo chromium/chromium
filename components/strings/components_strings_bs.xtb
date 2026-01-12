@@ -1060,7 +1060,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2690699652723742414">Posljednjih 30 dana</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Sigurnosno upozorenje</translation>
-<translation id="2694088736180584846">mreža s povratnom petljom</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core vam omogućava da upravljate pravilima preglednika, aplikacijama i ekstenzijama iz oblaka</translation>
 <translation id="2697248912349197812">Pitajte funkciju <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Dostupan je podmeni; pritisnite <ph name="SHORTCUT" /> da odete u dodatne opcije.</translation>
@@ -1393,7 +1392,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3238395604961564389">Otvori link u anonimnom prozoru</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite izgled preglednika</translation>
 <translation id="3240791268468473923">Otvorena je tabela obavještenja da nema akreditiva za sigurno plaćanje koji se podudaraju</translation>
-<translation id="3241320538788585298">Mreža s povratnom petljom</translation>
 <translation id="324180406144491771">Linkovi hosta "<ph name="HOST_NAME" />" su blokirani</translation>
 <translation id="3243650379537999343">Crtaj</translation>
 <translation id="3248329428895535435">Ne prikazuj na ovoj web lokaciji</translation>
@@ -1913,6 +1911,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4073376909608563327">Korištenje otključavanja uređaja nije uspjelo</translation>
 <translation id="4073797364926776829">Prikaži karticu</translation>
 <translation id="4075732493274867456">Klijent i server ne podržavaju verziju zajedničkog SSL protokola ili paket za šifriranje.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Konfiguracija proksi servera je postavljena za korištenje URL-a .pac skripte, a ne fiksnih proksi servera.</translation>
 <translation id="4080668349181235831">Da vam nudimo prijedloge i poboljšamo ovu funkciju, URL i cijeli sadržaj stranice web lokacije koju posjećujete se dijele s Googleom. Saznajte više o <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">klizanje na dijeljenim karticama i njihovo zumiranje</translation>
@@ -2302,6 +2301,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4708268264240856090">Vaša veza je prekinuta</translation>
 <translation id="4708276642004148190">Vodosnabdijevanje i prečišćavanje</translation>
 <translation id="4711628883879888561">Sarađujte u grupi kartica</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nemate dozvolu da posjetite ovu web lokaciju</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Pokrenuti Mrežnu dijagnostiku za Windows<ph name="END_LINK" /></translation>

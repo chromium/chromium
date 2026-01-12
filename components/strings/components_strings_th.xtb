@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">30 วันที่ผ่านมา</translation>
 <translation id="2691385045260836588">รุ่น</translation>
 <translation id="2691924980723297736">คำเตือนด้านความปลอดภัย</translation>
-<translation id="2694088736180584846">เครือข่าย Loopback</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core ช่วยให้คุณจัดการนโยบายเบราว์เซอร์ แอป และส่วนขยายจากระบบคลาวด์ได้</translation>
 <translation id="2697248912349197812">ถาม <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">มีเมนูย่อยให้ใช้งาน ใช้<ph name="SHORTCUT" />เพื่อไปยังตัวเลือกเพิ่มเติม</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3240791268468473923">ระบบได้เปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
-<translation id="3241320538788585298">เครือข่าย Loopback</translation>
 <translation id="324180406144491771">ลิงก์ “<ph name="HOST_NAME" />” ถูกบล็อก</translation>
 <translation id="3243650379537999343">วาด</translation>
 <translation id="3248329428895535435">ไม่ต้องแสดงในเว็บไซต์นี้</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">ใช้การปลดล็อกอุปกรณ์ไม่ได้</translation>
 <translation id="4073797364926776829">ดูบัตร</translation>
 <translation id="4075732493274867456">ไคลเอ็นต์และเซิร์ฟเวอร์ไม่รองรับโปรโตคอล SSL เวอร์ชันทั่วไปหรือชุดการเข้ารหัส</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">การกำหนดค่าพร็อกซีมีการตั้งค่าให้ใช้ URL สคริปต์ .pac ไม่ใช่พร็อกซีเซิร์ฟเวอร์แบบคงที่</translation>
 <translation id="4080668349181235831">ระบบจะแชร์ URL และเนื้อหาทั้งหน้าของเว็บไซต์ที่คุณเข้าชมกับ Google เพื่อแสดงคำแนะนำและปรับปรุงฟีเจอร์นี้ ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /></translation>
 <translation id="4080855220442581440">เลื่อนและซูมแท็บที่แชร์</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">การเชื่อมต่อของคุณขัดข้อง</translation>
 <translation id="4708276642004148190">การประปาและการบำบัดน้ำเสีย</translation>
 <translation id="4711628883879888561">ทำงานร่วมกันในกลุ่มแท็บ</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">คุณไม่มีสิทธิ์เข้าชมเว็บไซต์นี้</translation>
 <translation id="4718897478554657123">600 x 900 มม.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />เรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>

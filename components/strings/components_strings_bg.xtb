@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Последните 30 дни</translation>
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691924980723297736">Предупреждение за безопасност</translation>
-<translation id="2694088736180584846">мрежа за обратна връзка</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core ви дава възможност да управлявате правилата, приложенията и разширенията за браузъра от облака</translation>
 <translation id="2697248912349197812">Попитайте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Налично е подменю. Използвайте <ph name="SHORTCUT" />, за да навигирате до допълнителните опции.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
-<translation id="3241320538788585298">Мрежа за обратна връзка</translation>
 <translation id="324180406144491771">Връзките от тип <ph name="HOST_NAME" /> са блокирани</translation>
 <translation id="3243650379537999343">Рисуване</translation>
 <translation id="3248329428895535435">Да не се показва на този сайт</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">Отключването на устройството не може да се използва</translation>
 <translation id="4073797364926776829">Преглед на картата</translation>
 <translation id="4075732493274867456">Клиентът и сървърът не поддържат обща версия или пакет за шифроване за протокола SSL.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">За конфигурацията на прокси сървъра е зададено да използва URL адрес на скрипт във формат .pac, а не фиксирани прокси сървъри.</translation>
 <translation id="4080668349181235831">За да ви показваме предложения и да подобрим тази функция, URL адресът и пълното съдържание на страницата на посещавания от вас сайт се споделят с Google. Научете повече за <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">превъртане и промяна на мащаба на споделените раздели</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">Връзката ви бе прекъсната</translation>
 <translation id="4708276642004148190">Водоснабдяване и почистване на отпадни води</translation>
 <translation id="4711628883879888561">Съвместна работа по група раздели</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Нямате разрешение да посетите този сайт</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Стартирайте мрежова диагностика в Windows<ph name="END_LINK" /></translation>

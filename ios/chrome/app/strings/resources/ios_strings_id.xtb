@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} sandi}other{{count} sandi}}</translation>
 <translation id="1275718070701477396">Dipilih</translation>
+<translation id="1279024913354609713">Jangan Izinkan</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
 <translation id="1287229685519872919">data Google Workspace</translation>
 <translation id="1291506870746876680">Izin <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan direset ke nonaktif saat Anda menutup situs ini.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Anda tidak memiliki sandi atau kunci sandi tersimpan, tetapi Anda dapat menghapus daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="3530206579861815432">Temukan dengan cepat tab yang terbuka atau yang baru saja ditutup di semua perangkat yang disinkronkan.</translation>
 <translation id="3530767473765895035">Kelola akun di perangkat ini…</translation>
-<translation id="353340646084395154">Preferensi halaman tab baru dihapus</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
 <translation id="3540141921715814660">Tambahkan ke Bookmark</translation>
 <translation id="3546122170015471515">Pratinjau Maps di Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Kelola topik dan situs yang Anda minati</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kartu ulasan produk untuk Anda</translation>
-<translation id="5407806496954700135">Apakah Anda ingin menerapkan penyesuaian halaman tab baru dari perangkat lain?</translation>
 <translation id="5414763847370083940">Anda akan mendapatkan notifikasi jika ada diskon di situs mana pun.</translation>
 <translation id="5415289094036440596">Kunci sandi tidak dapat dibagikan</translation>
 <translation id="5416455648658732408">Pindahkan ke Grup Tab</translation>
@@ -1206,7 +1205,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5579012242779565775">Sembunyikan Daftar bacaan</translation>
 <translation id="5581786858144165447">Mode Tanya AI</translation>
 <translation id="5585019845078534178">Kartu</translation>
-<translation id="5589976607021609750">Gambar terlampir</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="559567008082979829">Setel download Anda untuk dihapus setelah satu bulan.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
@@ -1799,7 +1797,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7696316012653762532">Opsi untuk menerjemahkan halaman</translation>
 <translation id="7700527812567437847">Telusuri layar dengan Google Lens</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
-<translation id="7708668404222666001">Preferensi halaman tab baru diterapkan</translation>
 <translation id="7708994397325774423">Dapatkan semua sandi Anda</translation>
 <translation id="7711440461521638739">Anda tidak menggunakan kembali sandi apa pun</translation>
 <translation id="7712361583414030698">Melihat versi offline</translation>

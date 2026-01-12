@@ -1060,7 +1060,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2690699652723742414">30 viime päivää</translation>
 <translation id="2691385045260836588">Malli</translation>
 <translation id="2691924980723297736">Turvallisuusvaroitus</translation>
-<translation id="2694088736180584846">silmukkaverkko</translation>
 <translation id="2696385693639654606">Chrome Enterprise Corella voit hallinnoida selainkäytäntöjä, sovelluksia ja laajennuksia pilvestä</translation>
 <translation id="2697248912349197812">Kysy <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Alavalikko käytettävissä, siirry lisävaihtoehtoihin painamalla <ph name="SHORTCUT" />.</translation>
@@ -1394,7 +1393,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3238395604961564389">Avaa linkki incognito-ikkunassa</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, muokkaa selaimen ulkoasua painamalla sarkainta ja sitten Enter</translation>
 <translation id="3240791268468473923">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko on avattu</translation>
-<translation id="3241320538788585298">Silmukkaverkko</translation>
 <translation id="324180406144491771"><ph name="HOST_NAME" />‑linkit on estetty</translation>
 <translation id="3243650379537999343">Piirrä</translation>
 <translation id="3248329428895535435">Älä näytä tällä sivustolla</translation>
@@ -1914,6 +1912,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4073376909608563327">Laitteen lukituksen avaustapaa ei voitu käyttää</translation>
 <translation id="4073797364926776829">Katso kortti</translation>
 <translation id="4075732493274867456">Asiakassovellus ja palvelin eivät tue samaa SSL-protokollaversiota tai salaustekniikkaa.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Välityspalvelinmääritykset on asetettu käyttämään .pac-URL-osoitteita, ei kiinteitä välityspalvelimia.</translation>
 <translation id="4080668349181235831">Sivuston URL-osoite ja koko sivun sisältö jaetaan Googlelle ehdotusten tarjoamiseksi ja ominaisuuden parantamiseksi. Lue lisää: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">jaettujen välilehtien vierittäminen ja zoomaus</translation>
@@ -2303,6 +2302,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4708268264240856090">Yhteys keskeytyi</translation>
 <translation id="4708276642004148190">Vesivarannot ja vedenkäsittely</translation>
 <translation id="4711628883879888561">Tee yhteistyötä välilehtiryhmässä</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Sinulla ei ole lupaa siirtyä tälle sivustolle.</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windowsin verkon diagnostiikkaa<ph name="END_LINK" /></translation>

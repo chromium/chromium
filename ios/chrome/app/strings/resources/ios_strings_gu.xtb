@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">રોકો</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} પાસવર્ડ}one{{count} પાસવર્ડ}other{{count} પાસવર્ડ}}</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
+<translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="1287229685519872919">Google Workspaceનો ડેટા</translation>
 <translation id="1291506870746876680">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">તમારી પાસે સાચવેલો કોઈ પાસવર્ડ કે પાસકી ન હોય, તો પણ તમે તે સાઇટ અને ઍપની સૂચિ ડિલીટ કરી શકો છો જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે. કોઈ સાઇટ કે ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="3530206579861815432">તમારા સિંક કરેલા બધા ડિવાઇસ પર ખુલ્લા અને તાજેતરમાં બંધ કરેલા બધા ટૅબને ઝડપથી શોધો.</translation>
 <translation id="3530767473765895035">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો…</translation>
-<translation id="353340646084395154">નવા ટૅબ પેજની પસંદગીઓ કાઢી નાખી</translation>
 <translation id="3533436815740441613">નવું ટૅબ</translation>
 <translation id="3540141921715814660">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="3546122170015471515">Google.com પર Mapsના પ્રીવ્યૂ</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">તમને જેમાં રુચિ હોય તેવા વિષયો અને સાઇટ મેનેજ કરો</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} બંધ કર્યું}one{{count} બંધ કર્યું}other{{count} બંધ કર્યા}}</translation>
 <translation id="5394975111793637642">તમારા કાર્ડ માટે પ્રોડક્ટ રિવ્યૂ છુપાવો</translation>
-<translation id="5407806496954700135">શું તમે અન્ય ડિવાઇસમાંથી તમારા નવા ટૅબ પેજના કસ્ટમાઇઝેશન લાગુ કરવા માગો છો?</translation>
 <translation id="5414763847370083940">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમે કોઈ અલર્ટ મેળવશો.</translation>
 <translation id="5415289094036440596">પાસકી શેર કરી શકાતી નથી</translation>
 <translation id="5416455648658732408">ટૅબના ગ્રૂપમાં ખસેડો</translation>
@@ -1206,7 +1205,6 @@
 <translation id="5579012242779565775">વાંચન સૂચિ છુપાવો</translation>
 <translation id="5581786858144165447">'AIને પૂછો' મોડ</translation>
 <translation id="5585019845078534178">કાર્ડ્સ</translation>
-<translation id="5589976607021609750">જોડેલી છબી</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="559567008082979829">તમારા ડાઉનલોડ એક મહિના પછી ડિલીટ કરવામાં આવે તે રીતે સેટ કરો.</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
@@ -1799,7 +1797,6 @@
 <translation id="7696316012653762532">પેજનો અનુવાદ કરવા માટેના વિકલ્પો</translation>
 <translation id="7700527812567437847">Google Lens વડે સ્ક્રીન પર શોધો</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
-<translation id="7708668404222666001">તમારા નવા ટૅબ પેજની પસંદગીઓ લાગુ કરી</translation>
 <translation id="7708994397325774423">તમારા બધા પાસવર્ડ મેળવો</translation>
 <translation id="7711440461521638739">તમે કોઈપણ પાસવર્ડ ફરીથી ઉપયોગમાં લઈ રહ્યાં નથી</translation>
 <translation id="7712361583414030698">ઑફલાઇન વર્ઝન જોઈ રહ્યા છો</translation>

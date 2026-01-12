@@ -1060,7 +1060,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2690699652723742414">Afgelope 30 dae</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Veiligheidswaarskuwing</translation>
-<translation id="2694088736180584846">teruglusnetwerk</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core laat jou toe om blaaierbeleide, apps en uitbreidings vanuit die wolk te bestuur</translation>
 <translation id="2697248912349197812">Vra <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Subkieslys beskikbaar, gebruik <ph name="SHORTCUT" /> om na bykomende opsies te navigeer.</translation>
@@ -1393,7 +1392,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3238395604961564389">Maak skakel in Incognito-venster oop</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om die voorkoms van jou blaaier te pasmaak</translation>
 <translation id="3240791268468473923">Blad vir geen passende eiebewys vir veilige betalingeiebewys is oopgemaak</translation>
-<translation id="3241320538788585298">Teruglusnetwerk</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”-skakels word geblokkeer</translation>
 <translation id="3243650379537999343">Teken</translation>
 <translation id="3248329428895535435">Moenie op hierdie werf wys nie</translation>
@@ -1913,6 +1911,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4073376909608563327">Kon nie toestelontsluiting gebruik nie</translation>
 <translation id="4073797364926776829">Bekyk kaart</translation>
 <translation id="4075732493274867456">Die kliënt en bediener steun nie 'n gemeenskaplike SSL-protokolweergawe of kodesuite nie.</translation>
+<translation id="4075941231477579656">Aanraak-ID</translation>
 <translation id="4079302484614802869">Instaanbedieneropstelling is gestel om 'n .pac-skrip-URL te gebruik, nie vaste instaanbedieners nie.</translation>
 <translation id="4080668349181235831">Die URL en volledige bladsyinhoud van die werf wat jy besoek, word met Google gedeel om voorstelle te maak en hierdie kenmerk beter te maak. Kry meer inligting oor <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">gedeelde oortjies vir rollees en zoem</translation>
@@ -2302,6 +2301,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4708268264240856090">Jou verbinding is onderbreek</translation>
 <translation id="4708276642004148190">Watervoorsiening en -behandeling</translation>
 <translation id="4711628883879888561">Werk saam aan oortjiegroep</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Jy het nie toestemming om hierdie werf te besoek nie</translation>
 <translation id="4718897478554657123">600x900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Voer tans Windows Network Diagnostics uit<ph name="END_LINK" /></translation>

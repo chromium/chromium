@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">Соңғы 30 күн</translation>
 <translation id="2691385045260836588">Моделі</translation>
 <translation id="2691924980723297736">Қауіпсіздік туралы ескерту</translation>
-<translation id="2694088736180584846">кері байланыс желісі</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core браузер саясаттарын, қолданбалар мен кеңейтімдерді бұлттан басқаруға мүмкіндік береді.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="2699273987028089219">Ішкі мәзір бар. Қосымша опцияларға өту үшін <ph name="SHORTCUT" /> пайдаланыңыз.</translation>
@@ -1392,7 +1391,6 @@
 <translation id="3238395604961564389">Сілтемені инкогнито терезесінде ашу</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3240791268468473923">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ ашылды.</translation>
-<translation id="3241320538788585298">Кері байланыс желісі</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" сілтемелері блокталған</translation>
 <translation id="3243650379537999343">Сурет салу</translation>
 <translation id="3248329428895535435">Бұл сайтта көрсетпеу</translation>
@@ -1912,6 +1910,7 @@
 <translation id="4073376909608563327">Құрылғының құлпын ашу функциясын пайдалану мүмкін болмады</translation>
 <translation id="4073797364926776829">Картаны көру</translation>
 <translation id="4075732493274867456">Клиент пен сервер ортақ SSL протоколының нұсқасын немесе шифрлар жиынтығын қолдамайды.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Прокси конфигурациясы бекітілген прокси серверлерді емес, .pac сценарий URL мекенжайын пайдалануға орнатылған.</translation>
 <translation id="4080668349181235831">Ұсыныстарды қалыптастыру және бұл функцияны жақсарту үшін сіз кірген сайттың URL мекенжайы мен толық бет контенті Google-ға жіберіледі. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="4080855220442581440">ортақ қойындыларды айналдыру және масштабтау</translation>
@@ -2301,6 +2300,7 @@
 <translation id="4708268264240856090">Байланыс үзілді</translation>
 <translation id="4708276642004148190">Су жеткізу және тазарту</translation>
 <translation id="4711628883879888561">Қойындылар тобында бірлесіп жұмыс істеу</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Бұл сайтқа кіруге рұқсатыңыз жоқ</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Network Diagnostics құралын қосу<ph name="END_LINK" /></translation>

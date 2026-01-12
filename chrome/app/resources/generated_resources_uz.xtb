@@ -3949,6 +3949,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3666196264870170605">Intel WiFi NICs Debug Dump</translation>
 <translation id="3666971425390608309">Yuklab olish pauza qilindi: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Har qanday taʼminotchi qurilmalari</translation>
+<translation id="3670159164851218963">AI rejimi tarixi</translation>
 <translation id="3670229581627177274">Bluetooth aloqasini yoqish</translation>
 <translation id="3671982238795754537">Kirish kalitlari haqida batafsil</translation>
 <translation id="3672681487849735243">Ishlab chiqarish nuqsoni aniqlandi</translation>
@@ -5105,6 +5106,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4426857487270413362">Oʻrnatish fayllari yuklab olinmadi. Internet aloqasi va diskdagi joy yetarli ekanini tekshirib, qayta urining. Xatolik kodi: <ph name="ERROR" /></translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> marta aniqlandi</translation>
 <translation id="4427365070557649936">Tasdiqlash kodi tekshirilmoqda...</translation>
+<translation id="4428518847683570286">{NUM_TASKS,plural, =1{Vazifa bajarildi}other{Vazifalar bajarildi}}</translation>
 <translation id="4429163740524851942">Tashqi klaviatura tugmalari tartibi</translation>
 <translation id="4430019312045809116">Hajmi</translation>
 <translation id="443031431654216610">Faqat raqamlardan foydalaning</translation>
@@ -8393,6 +8395,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6749473226660745022">Suratlar</translation>
 <translation id="6750757184909117990">Mobil tarmoqni faolsizlantirish</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754359471209693699">Yangi qidiruvni boshlash</translation>
 <translation id="6754918760968695779">Tezkor joylash</translation>
 <translation id="6755702685749429945">Lugʻat kiritish</translation>
 <translation id="6756157672127672536">Fayllar ilovasi yordamida Google Drive, ChromeOS qurilmalari yoki tashqi xotira qurilmasidagi hujjatlarni tezkor ochish mumkin.</translation>

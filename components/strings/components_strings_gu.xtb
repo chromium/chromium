@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">છેલ્લા 30 દિવસ</translation>
 <translation id="2691385045260836588">મોડલ</translation>
 <translation id="2691924980723297736">સલામતીની ચેતવણી</translation>
-<translation id="2694088736180584846">લૂપબૅક નેટવર્ક</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core તમને ક્લાઉડમાંથી બ્રાઉઝરની પૉલિસીઓ, ઍપ અને એક્સ્ટેન્શન મેનેજ કરવાની સુવિધા આપે છે</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />ને પૂછો</translation>
 <translation id="2699273987028089219">સબમેનૂ ઉપલબ્ધ છે, વધારાનાં વિકલ્પો પર નૅવિગેટ કરવા માટે <ph name="SHORTCUT" />નો ઉપયોગ કરો.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">છૂપી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3240791268468473923">ચુકવણીની સુરક્ષિત લૉગ ઇન વિગત, મેળ ખાતી લૉગ ઇન વિગતની કોઈપણ શીટ ખોલવામાં આવી નથી</translation>
-<translation id="3241320538788585298">લૂપબૅક નેટવર્ક</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”ની લિંક બ્લૉક કરેલી છે</translation>
 <translation id="3243650379537999343">ડ્રો</translation>
 <translation id="3248329428895535435">આ સાઇટ પર બતાવશો નહીં</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરી શકાયો નથી</translation>
 <translation id="4073797364926776829">કાર્ડ જુઓ</translation>
 <translation id="4075732493274867456">ક્લાઇન્ટ અને સર્વર સામાન્ય SSL પ્રોટોકોલ વર્ઝન અથવા સાઇફર સ્યૂટની સહાય કરતા નથી.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">પ્રૉક્સી ગોઠવણી .pac સ્ક્રિપ્ટ URLનો ઉપયોગ કરવા માટે સેટ છે, ફિક્સ્ડ પ્રૉક્સી સર્વર માટે નહીંં.</translation>
 <translation id="4080668349181235831">સૂચનો ઑફર કરવા અને આ સુવિધાને બહેતર બનાવવા માટે, તમે મુલાકાત લો તે સાઇટનું URL અને સંપૂર્ણ પેજનું કન્ટેન્ટ Google સાથે શેર કરવામાં આવે છે. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> વિશે વધુ જાણો.</translation>
 <translation id="4080855220442581440">શેર કરેલા ટૅબમાં સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">તમારું કનેક્શન અવરોધાયું હતું</translation>
 <translation id="4708276642004148190">પાણી પુરવઠો અને તેનું શુદ્ધિકરણ</translation>
 <translation id="4711628883879888561">ટૅબના ગ્રૂપ પર સહયોગ કરો</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">તમારી પાસે આ સાઇટની મુલાકાત લેવાની પરવાનગી નથી</translation>
 <translation id="4718897478554657123">600 x 900 મિમી</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવી રહ્યાં છે<ph name="END_LINK" /></translation>

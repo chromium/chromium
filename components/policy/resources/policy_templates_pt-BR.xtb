@@ -4622,6 +4622,19 @@ Se não for definida, o comportamento será determinado pela política <ph name=
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o destaque de circunflexos ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="4182348537826882258">Se a política <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da Web que têm URLs proibidos não vão ser carregadas. Os administradores podem especificar a lista de padrões de URL a serem bloqueados. Se a política for deixada sem definição, nenhum URL será bloqueado no navegador. Até 1.000 exceções podem ser definidas na <ph name="URL_ALLOWLIST_POLICY_NAME" />. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Observação: esta política não se aplica a URLs JavaScript na página com dados carregados dinamicamente. Se você bloqueou example.com/abc, ainda é possível carregar example.com usando XMLHTTPRequest. Além disso, essa política não impede que as páginas da Web atualizem o URL mostrado na omnibox para um bloqueado usando a API JavaScript History.
+
+Na versão 73 e mais recentes do <ph name="PRODUCT_NAME" />, é possível bloquear URLs "javascript://*". No entanto, isso só afeta JavaScript inserido na barra de endereço ou, por exemplo, os favoritos.
+
+Da versão 92 em diante do <ph name="PRODUCT_NAME" />, esta política também vai ter suporte no modo headless.
+
+Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser ignorado em alguns casos. Em vez de bloquear determinados URLs internos, confira se há políticas mais específicas disponíveis. Por exemplo:
+
+- Em vez de bloquear chrome://settings/certificates, use a <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+- Em vez de bloquear chrome-untrusted://crosh, use a <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Configuração padrão de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Permitir que extensões gerenciadas usem a API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permite configurar uma programação personalizada para reiniciar dispositivos. Se ela for definida como verdadeira, o dispositivo será reiniciado de acordo com a programação. A política precisa ser removida para cancelar outras reinicializações programadas.
@@ -6543,6 +6556,13 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
       Se a política não for definida, a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> não ficará disponível para nenhum aplicativo da Web.
 Para melhorar a privacidade, a partir da versão 116 do <ph name="PRODUCT_NAME" />, esta política não vai mais oferecer suporte para atualização dinâmica. O usuário poderá ter certeza de que nenhuma outra página será capaz de capturar as telas após o login, caso isso não possa ser feito no início da sessão.</translation>
 <translation id="5361167871898066799">Controlar o recurso de correção automática no teclado físico</translation>
+<translation id="5361708558735884308">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se a <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida como "*", todas as solicitações serão bloqueadas, e você poderá usar a política para permitir o acesso a uma lista de URLs limitada. Ela pode servir para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://support.google.com/chrome/a?p=url_blocklist_filter_format. O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
+
+Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
+
+Se a política não for definida, nenhuma exceção a <ph name="URL_BLOCKLIST_POLICY_NAME" /> vai ser permitida.
+
+Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política também vai oferecer suporte ao modo headless.</translation>
 <translation id="5362531528507578966">Modifica o modo de impressão de gráficos de segundo plano padrão.</translation>
 <translation id="5365476955714838841">Parâmetros de linha de comando para o navegador alternativo.</translation>
 <translation id="5365946944967967336">Exibir o botão da Página inicial na barra de ferramentas</translation>
@@ -6650,25 +6670,6 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 <translation id="5433139124622290129">Especifica uma lista de domínios SaaS que serão incluídos nos relatórios sobre navegadores gerenciados</translation>
 <translation id="5433865420958136693">Usar aceleração gráfica quando disponível</translation>
 <translation id="5435888298115339571">Ativar o compartilhamento da área de trabalho na omnibox e no menu de três pontos</translation>
-<translation id="5435967860403961472">Controla se as extensões removidas por violações que não são de malware ainda podem ser instaladas à força em ambientes de baixa confiança.
-
-Mais informações sobre violações que não são malware e remoções estão disponíveis aqui. https://developer.chrome.com/docs/webstore/review-process#warning
-
-Depois que essas violações forem resolvidas, a extensão vai continuar ativada e não poderá ser desabilitada ou removida.
-
-No <ph name="MS_WIN_NAME" />, essa política não está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" /> ou do <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política não está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-As extensões de instalação forçada com violações que não são de malware vão continuar ativadas nessas instâncias.
-
-No momento, uma extensão de instalação forçada com violações que não são de malware permanece instalada e ativada no Chrome.
-
-Se a política for ativada, as extensões de instalação forçada vão se comportar da mesma forma (ou seja, vão continuar habilitadas), independentemente de violações que não sejam de malware.
-
-Se a política for desativada ou deixada sem definição, essas extensões serão desabilitadas.
-
-A política vai ficar disponível por 3 marcos.</translation>
 <translation id="5441508088704391614">Nenhuma restrição especial (padrão).</translation>
 <translation id="5442026853063570579">Esta política também controla o acesso às Opções do desenvolvedor Android. Se esta política for definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar as Opções do desenvolvedor. Se for definida como falsa ou se não for definida, os usuários poderão acessar as Opções do desenvolvedor tocando sete vezes no número da versão no app de configurações do Android.</translation>
 <translation id="5443582909255996887">Se a política for ativada, todos os sites serão isolados no Android e cada um executará um processo próprio. Os usuários não poderão escolher outra opção. Um site é um esquema + eTLD+1 (por exemplo, https://example.com). Desde a versão 77 do <ph name="PRODUCT_NAME" />, determinados sites confidenciais são isolados por padrão no Android. Esta política amplia esse modo de isolamento para todos os sites.

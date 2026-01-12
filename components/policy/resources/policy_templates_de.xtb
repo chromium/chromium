@@ -4455,6 +4455,19 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="4182348537826882258">Wenn die Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> konfiguriert ist, wird verhindert, dass Webseiten mit unzulässigen URLs geladen werden. Administratoren können eine Liste mit URL-Mustern angeben, die blockiert werden sollen. Ist die Richtlinie nicht konfiguriert, werden keine URLs im Browser blockiert. In <ph name="URL_ALLOWLIST_POLICY_NAME" /> können bis zu 1.000 Ausnahmen definiert werden. Wie ein URL-Muster formatiert wird, siehst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Hinweis: Diese Richtlinie gilt nicht für In-Page-JavaScript-URLs mit dynamisch geladenen Daten. Wenn du etwa „beispiel.de/abc“ blockierst, kann „beispiel.de“ diese URL trotzdem über „XMLHTTPRequest“ laden. Außerdem hindert diese Richtlinie Webseiten nicht daran, die in der Omnibox angezeigte URL über die JavaScript History API in eine blockierte URL zu ändern.
+
+Ab Version 73 von <ph name="PRODUCT_NAME" /> kannst du „javascript://*“-URLs blockieren. Das betrifft jedoch nur JavaScript, das in die Adressleiste eingegeben wird, oder beispielsweise Bookmarklets.
+
+Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im monitorlosen Modus unterstützt.
+
+Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ blockiert werden, kann dies zu unerwarteten Fehlern führen oder in einigen Fällen umgangen werden. Statt bestimmte interne URLs zu blockieren, solltest du nachsehen, ob es spezifischere Richtlinien gibt. Beispiel:
+
+– Anstatt „chrome://settings/certificates“ zu blockieren, verwende <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+– Anstatt „chrome-untrusted://crosh“ zu blockieren, verwende <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">"<ph name="FLASH_PLUGIN_NAME" />" als Standardeinstellung</translation>
 <translation id="4185868802416355029">Verwaltete Erweiterungen dürfen die Enterprise Hardware Platform API verwenden</translation>
 <translation id="4186244263855283575">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Wenn sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.
@@ -6308,6 +6321,13 @@ Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen un
       Ist die Richtlinie nicht konfiguriert, steht <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> keinen Web-Apps zur Verfügung.
 Zur Verbesserung des Datenschutzes kann diese Richtlinie ab <ph name="PRODUCT_NAME" />-Version 116 nicht mehr dynamisch aktualisiert werden. Der Nutzer kann sich somit darauf verlassen, dass nach der Anmeldung keine Seiten den Bildschirm erfassen können, denen das nicht schon zu Beginn der Sitzung erlaubt war.</translation>
 <translation id="5361167871898066799">Autokorrektur bei Nutzung der physischen Tastatur steuern</translation>
+<translation id="5361708558735884308">Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="URL_BLOCKLIST_POLICY_NAME" />“). Informationen zum Format der Einträge in der Liste findest du in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn du „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ auf * setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor „<ph name="URL_BLOCKLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+Mit ihr lässt sich außerdem das automatische Aufrufen durch Browser externer Anwendungen aktivieren, die als Handler für die aufgeführten Protokolle registriert sind, z. B. „tel:“ oder „ssh:“.
+
+Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ möglich.
+
+Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im monitorlosen Modus unterstützt.</translation>
 <translation id="5362531528507578966">Überschreibt den Standarddruckmodus mit Hintergrundgrafiken.</translation>
 <translation id="5365476955714838841">Befehlszeilenparameter für den alternativen Browser.</translation>
 <translation id="5365946944967967336">Startseiten-Schaltfläche auf Symbolleiste anzeigen</translation>
@@ -6411,25 +6431,6 @@ wird die Funktion "<ph name="PRODUCT_NAME" />" aktiviert.
 <translation id="5433139124622290129">Gibt eine Liste von SaaS-Domains an, die für den verwalteten Browser gemeldet werden</translation>
 <translation id="5433865420958136693">Grafikbeschleunigung verwenden, falls verfügbar</translation>
 <translation id="5435888298115339571">Desktop-Freigabe in der Omnibox und im Dreipunkt-Menü aktivieren</translation>
-<translation id="5435967860403961472">Mit dieser Richtlinie kann festgelegt werden, ob die Installation von Erweiterungen, die aufgrund von Verstößen, bei denen es nicht um Malware geht, entfernt wurden, in Umgebungen mit geringem Vertrauensgrad weiterhin erzwungen werden kann.
-
-Weitere Informationen zu Verstößen, bei denen es nicht um Malware geht, und zur Entfernung findest du hier: https://developer.chrome.com/docs/webstore/review-process#warning
-
-Sobald ein Verstoß, bei dem es nicht um Malware geht, behoben wurde, bleibt die Erweiterung aktiviert und kann nicht deaktiviert oder entfernt werden.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
-
-Erweiterungen mit erzwungener Installation und Verstößen, bei denen es nicht um Malware geht, bleiben in diesen Fällen aktiviert.
-
-Momentan bleibt eine Erweiterung mit erzwungener Installation und Verstößen, bei denen es nicht um Malware geht, in Chrome installiert und aktiviert.
-
-Wenn die Richtlinie aktiviert ist, verhalten sich Erweiterungen mit erzwungener Installation unabhängig von Verstößen, bei denen es nicht um Malware geht, gleich (d. h. sie bleiben aktiviert).
-
-Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden Erweiterungen mit erzwungener Installation und Verstößen, bei denen es nicht um Malware geht, deaktiviert.
-
-Diese Richtlinie ist für 3 Meilensteine verfügbar.</translation>
 <translation id="5441508088704391614">Keine besonderen Einschränkungen. Standard.</translation>
 <translation id="5442026853063570579">Mit dieser Richtlinie wird außerdem der Zugriff auf Android-Entwickleroptionen festgelegt. Wenn du diese Richtlinie auf "DeveloperToolsDisallowed" (Wert 2) setzt, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht festlegst, können Nutzer auf die Entwickleroptionen zugreifen, indem sie in der Android-App "Einstellungen" siebenmal auf die Build-Nummer tippen.</translation>
 <translation id="5443582909255996887">Wenn die Richtlinie aktiviert ist, werden unter Android alle Websites isoliert. Jede Website wird dann in einem eigenen Prozess ausgeführt. Nutzer können diese Einstellung nicht ändern. Eine Website ist ein Protokoll plus eTLD+1 (z. B. https://beispiel.de). Ab <ph name="PRODUCT_NAME" />-Version 77 werden unter Android bestimmte sensible Websites standardmäßig isoliert. Diese Richtlinie weitet diesen Modus für die standardmäßige Website-Isolierung auf alle Websites aus.

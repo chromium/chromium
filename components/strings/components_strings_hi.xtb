@@ -1061,7 +1061,6 @@
 <translation id="2690699652723742414">पिछले 30 दिन</translation>
 <translation id="2691385045260836588">मॉडल</translation>
 <translation id="2691924980723297736">सुरक्षा की चेतावनी</translation>
-<translation id="2694088736180584846">लूपबैक नेटवर्क</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core की मदद से, ब्राउज़र की नीतियों, ऐप्लिकेशन, और एक्सटेंशन को क्लाउड से मैनेज किया जा सकता है</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> से पूछें</translation>
 <translation id="2699273987028089219">सबमेन्यू उपलब्ध है. ज़्यादा विकल्पों पर जाने के लिए <ph name="SHORTCUT" /> का इस्तेमाल करें.</translation>
@@ -1393,7 +1392,6 @@
 <translation id="3238395604961564389">लिंक को गुप्त विंडो में खोलें</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
-<translation id="3241320538788585298">लूपबैक नेटवर्क</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
 <translation id="3243650379537999343">ड्रॉ</translation>
 <translation id="3248329428895535435">इस साइट पर न दिखाएं</translation>
@@ -1913,6 +1911,7 @@
 <translation id="4073376909608563327">डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल नहीं किया जा सका</translation>
 <translation id="4073797364926776829">कार्ड देखें</translation>
 <translation id="4075732493274867456">क्लाइंट और सर्वर, सामान्य SSL प्रोटोकॉल वर्शन या सिफ़र सुइट का समर्थन नहीं करते हैं.</translation>
+<translation id="4075941231477579656">टच आईडी</translation>
 <translation id="4079302484614802869">प्रॉक्‍सी कॉन्‍फ़िगरेशन को .pac स्‍क्रिप्‍ट यूआरएल का उपयोग करने के लिए सेट किया जाता है, फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर के लिए नहीं.</translation>
 <translation id="4080668349181235831">सुझाव देने और इस सुविधा को बेहतर बनाने के लिए, आपकी विज़िट की गई साइट का यूआरएल और उसके पूरे पेज का कॉन्टेंट Google के साथ शेयर किया जाता है. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="4080855220442581440">शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति दें</translation>
@@ -2302,6 +2301,7 @@
 <translation id="4708268264240856090">आपका कनेक्शन बाधित था</translation>
 <translation id="4708276642004148190">पानी की सप्लाई और ट्रीटमेंट</translation>
 <translation id="4711628883879888561">टैब ग्रुप पर मिलकर काम करें</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">आपको इस साइट पर जाने की अनुमति नहीं है</translation>
 <translation id="4718897478554657123">600 x 900 मि॰मी॰</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चलाकर देखें<ph name="END_LINK" /></translation>

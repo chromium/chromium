@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">যোৱা ৩০ দিন</translation>
 <translation id="2691385045260836588">মডেল</translation>
 <translation id="2691924980723297736">সুৰক্ষা সম্পর্কীয় সতর্কবার্তা</translation>
-<translation id="2694088736180584846">লুপবেক নেটৱৰ্ক</translation>
 <translation id="2696385693639654606">Chrome Enterprise Coreএ আপোনাক ব্ৰাউজাৰৰ নীতি, এপ্ আৰু ক্লাউডৰ পৰা এক্সটেনশ্বনসমূহ পৰিচালনা কৰিবলৈ দিয়ে</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> সোধক</translation>
 <translation id="2699273987028089219">উপ-মেনু উপলব্ধ, অতিৰিক্ত বিকল্পলৈ নেভিগে’ট কৰাৰ বাবে <ph name="SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
@@ -1391,7 +1390,6 @@
 <translation id="3238395604961564389">লিংকটো ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3240791268468473923">কোনো মিল নথকা সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েল থকা শ্বীটখন খোলা হৈছে</translation>
-<translation id="3241320538788585298">লুপবেক নেটৱৰ্ক</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”ৰ লিংকসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="3243650379537999343">অংকন কৰক</translation>
 <translation id="3248329428895535435">এই ছাইটটোত নেদেখুৱাব</translation>
@@ -1910,6 +1908,7 @@
 <translation id="4073376909608563327">ডিভাইচ আনলক কৰাৰ সুবিধাটো ব্যৱহাৰ কৰিব পৰা নগ’ল</translation>
 <translation id="4073797364926776829">কাৰ্ড চাওক</translation>
 <translation id="4075732493274867456">ক্লায়েণ্ট আৰু ছাৰ্ভাৰত এটা উমৈহতীয়া SSL প্ৰ্ৰ'টকল সংস্কৰণ বা চাইফাৰ ছুট সমৰ্থন নকৰে।</translation>
+<translation id="4075941231477579656">স্পৰ্শ আইডি</translation>
 <translation id="4079302484614802869">প্ৰক্সি কনফিগাৰেশ্বন এটা .pac স্ক্রিপ্ট URL ব্যৱহাৰ কৰিবলৈহে ছেট কৰা হয়, স্থিৰ প্ৰক্সি ছাৰ্ভাৰ ব্যৱহাৰ কৰিবলৈ নহয়।</translation>
 <translation id="4080668349181235831">পৰামৰ্শ আগবঢ়োৱাৰ বাবে আৰু এই সুবিধাটো উন্নত কৰাৰ বাবে, আপুনি চোৱা ছাইটটোৰ URL আৰু সম্পূৰ্ণ পৃষ্ঠাৰ সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হয়। <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />ৰ বিষয়ে অধিক জানক।</translation>
 <translation id="4080855220442581440">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰ’ল কৰা আৰু জুম কৰা</translation>
@@ -2298,6 +2297,7 @@
 <translation id="4708268264240856090">আপোনাৰ সংযোগটো বাধাপ্ৰাপ্ত হৈছিল</translation>
 <translation id="4708276642004148190">পানী যোগান আৰু ব্যৱস্থাপনা</translation>
 <translation id="4711628883879888561">টেবৰ গোটত সহযোগিতা কৰক</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">এই ছাইটটো চাবলৈ আপোনাৰ অনুমতি নাই</translation>
 <translation id="4718897478554657123">৬০০ x ৯০০ মি.মি.</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Network Diagnostics চলি আছে<ph name="END_LINK" /></translation>

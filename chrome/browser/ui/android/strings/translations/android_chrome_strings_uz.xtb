@@ -132,6 +132,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1513352483775369820">Xatcho‘plar va qidiruv tarixi</translation>
 <translation id="1515901671075971249">Varaqlarni kezish tezkor tugmalari</translation>
+<translation id="1516966594427080024">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="1521774566618522728">Bugun onlayn edi</translation>
 <translation id="153446405401665083">Chromening yangi versiyasi chiqdi</translation>
 <translation id="1540012742443808215">Manzillar qatorida tepada joylangan</translation>
@@ -724,6 +725,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4180726336228139707">Faqat shu qurilmada</translation>
 <translation id="4181841719683918333">Tillar</translation>
 <translation id="4188221736490993796">Teskari alifbo tartibida saralash</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Spam yoki aldovchi kontent sababli Chrome bu saytga bildirishnoma yuborishni taqiqladi}other{Spam yoki aldovchi kontent sababli Chrome bu saytlarga bildirishnoma yuborishni taqiqladi}}</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu qurilmada 1 ta varaq}other{Bu qurilmada # ta varaq}}</translation>
 <translation id="4198423547019359126">Yuklab olish uchun bo‘sh joy mavjud emas</translation>
@@ -1116,6 +1118,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5833984609253377421">Havolani ulashish</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865"><ph name="FILE_NAME" /> fayli baribir yuklab olinsinmi?</translation>
+<translation id="5847265694842662173">Chrome qoidabuzar va ishlatilmagan saytlar bildirishnoma yuborishini taqiqladi</translation>
 <translation id="5848257610304005265">PDF fayl <ph name="APP_NAME" /> ilovasida ochilsinmi?</translation>
 <translation id="5849288995120328556">Ulashuv tugatilsinmi?</translation>
 <translation id="5853623416121554550">pauza qilindi</translation>
@@ -1144,6 +1147,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5956665950594638604">Chrome yordam markazini yangi varaqda ochish</translation>
 <translation id="59577092665511740">Hisobni tanlang.</translation>
 <translation id="5958275228015807058">Fayl va sahiflarni “Yuklanmalar” jildidan topish mumkin</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome yaqin orada borilmagan saytning bildirishnoma yuborishini taqiqladi}other{Chrome yaqin orada borilmagan saytlarning bildirishnoma yuborishini taqiqladi}}</translation>
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>
@@ -1804,6 +1808,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="847433688444405067">Barcha qurilmalarda varaqlash</translation>
 <translation id="8477178913400731244">Maʼlumotlarni oʻchirish</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nofaol oyna yoʻq</translation>
 <translation id="8493948351860045254">Joy ochish</translation>
 <translation id="8497242791509864205">Saralash shaklini ochish</translation>
 <translation id="8497480609928300907">Maxfiylik qoʻllanmasi bildirgisi</translation>

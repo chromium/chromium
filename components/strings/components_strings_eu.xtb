@@ -1060,7 +1060,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2690699652723742414">Azken 30 egunak</translation>
 <translation id="2691385045260836588">Modeloa</translation>
 <translation id="2691924980723297736">Segurtasun-abisua</translation>
-<translation id="2694088736180584846">loopback sarea</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core-rekin, arakatzailearen gidalerroak, aplikazioak eta luzapenak hodeitik kudea ditzakezu</translation>
 <translation id="2697248912349197812">Galdetu <ph name="KEYWORD_SHORT_NAME" /> zerbitzuari</translation>
 <translation id="2699273987028089219">Azpimenu bat dago erabilgarri, erabili <ph name="SHORTCUT" /> beste aukera batzuetara nabigatzeko.</translation>
@@ -1390,7 +1389,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3238395604961564389">Ireki esteka ezkutuko moduko leiho batean</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla arakatzailearen itxura pertsonalizatzeko</translation>
 <translation id="3240791268468473923">Ordainketak egiteko kredentzial segurua bat ez datorrela dioen kredentzial-orria irekita dago</translation>
-<translation id="3241320538788585298">Loopback sarea</translation>
 <translation id="324180406144491771"><ph name="HOST_NAME" /> motako estekak blokeatuta daude</translation>
 <translation id="3243650379537999343">Atera</translation>
 <translation id="3248329428895535435">Ez erakutsi webgune honetan</translation>
@@ -1909,6 +1907,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4073376909608563327">Ezin izan da erabili gailuaren desblokeoa</translation>
 <translation id="4073797364926776829">Ikusi txartela</translation>
 <translation id="4075732493274867456">Bezeroak eta zerbitzariak ez dute onartzen SSL protokoloaren bertsio edo enkriptatze multzo arrunta.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy-konfigurazioa .pac scripteko URLa erabiltzeko dago ezarrita, ez proxy-zerbitzari finkoak.</translation>
 <translation id="4080668349181235831">Iradokizunak eskaintzeko eta eginbidea hobetzeko, bisitatzen duzun webgunearen URLa eta orriaren eduki osoa Google-rekin partekatzen dira. Lortu <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> buruzko informazio gehiago.</translation>
 <translation id="4080855220442581440">fitxa partekatuetan gora/behera egiteko eta zooma</translation>
@@ -2298,6 +2297,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4708268264240856090">Eten egin da konexioa</translation>
 <translation id="4708276642004148190">Ur-hornidura eta -tratamendua</translation>
 <translation id="4711628883879888561">Jardun elkarlanean fitxa taldean</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Ez daukazu webgunean sartzeko baimenik</translation>
 <translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-en sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>

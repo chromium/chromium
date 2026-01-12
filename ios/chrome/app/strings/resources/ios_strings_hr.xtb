@@ -75,6 +75,7 @@
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} zaporka}one{{count} zaporka}few{{count} zaporke}other{{count} zaporki}}</translation>
 <translation id="1275718070701477396">Odabrano</translation>
+<translation id="1279024913354609713">Ne dopusti</translation>
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
 <translation id="1287229685519872919">podatke s Google Workspacea</translation>
 <translation id="1291506870746876680">Dopuštenja <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vratit će se na isključeno kad napustite ovu web-lokaciju.</translation>
@@ -658,7 +659,6 @@
 <translation id="3530024057633834563">Nemate spremljenih zaporki ni pristupnih ključeva, ali možete izbrisati popis web-lokacija i aplikacija za koje ste odabrali da se podaci za prijavu nikad ne spremaju. Računi koje ste izradili za web-lokacije i aplikacije neće se izbrisati.</translation>
 <translation id="3530206579861815432">Brzo pronađite otvorene i nedavno zatvorene kartice na svim sinkroniziranim uređajima.</translation>
 <translation id="3530767473765895035">Upravljajte računima na ovom uređaju…</translation>
-<translation id="353340646084395154">Uklonjene su postavke stranice Nova kartica</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
 <translation id="3540141921715814660">Dodaj u Oznake</translation>
 <translation id="3546122170015471515">Pregledi karata na Google.com</translation>
@@ -1154,7 +1154,6 @@
 <translation id="537853552771686272">Upravljajte temama i web-lokacijama koje vas zanimaju</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zatvorena}one{{count} zatvorena}few{{count} zatvorene}other{{count} zatvorenih}}</translation>
 <translation id="5394975111793637642">Sakrijte karticu recenzija proizvoda za vas</translation>
-<translation id="5407806496954700135">Želite li primijeniti prilagodbe stranice Nova kartica s drugog uređaja?</translation>
 <translation id="5414763847370083940">Dobit ćete upozorenje ako se cijena snizi na bilo kojoj web-lokaciji.</translation>
 <translation id="5415289094036440596">Pristupni ključevi ne mogu se dijeliti</translation>
 <translation id="5416455648658732408">Premjesti u grupu kartica</translation>
@@ -1206,7 +1205,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5579012242779565775">Sakrij stavku Popis za čitanje</translation>
 <translation id="5581786858144165447">Pitajte pomoću AI načina</translation>
 <translation id="5585019845078534178">Kartice</translation>
-<translation id="5589976607021609750">Priložena je slika</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
 <translation id="559567008082979829">Postavite da se preuzimanja brišu nakon mjesec dana.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -1799,7 +1797,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7696316012653762532">Opcije prevođenja stranice</translation>
 <translation id="7700527812567437847">Pretraži zaslon pomoću Google objektiva</translation>
 <translation id="7701040980221191251">Nema ih</translation>
-<translation id="7708668404222666001">Primijenjene su vaše postavke stranice Nova kartica</translation>
 <translation id="7708994397325774423">Pristupite svim svojim zaporkama</translation>
 <translation id="7711440461521638739">Ne upotrebljavate stare zaporke</translation>
 <translation id="7712361583414030698">Prikaz offline verzije</translation>

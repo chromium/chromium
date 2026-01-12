@@ -1060,7 +1060,6 @@
 <translation id="2690699652723742414">ಕಳೆದ 30 ದಿನಗಳು</translation>
 <translation id="2691385045260836588">ಮಾದರಿ</translation>
 <translation id="2691924980723297736">ಸುರಕ್ಷತೆಯ ಎಚ್ಚರಿಕೆ</translation>
-<translation id="2694088736180584846">ಲೂಪ್‌ಬ್ಯಾಕ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core ನಿಮಗೆ ಬ್ರೌಸರ್ ನೀತಿಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳನ್ನು ಕ್ಲೌಡ್‌ನಿಂದ ನಿರ್ವಹಿಸಲು ಅನುಮತಿಸುತ್ತದೆ</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="2699273987028089219">ಸಬ್‌ಮೆನು ಲಭ್ಯವಿದೆ, ಹೆಚ್ಚುವರಿ ಆಯ್ಕೆಗಳಿಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು <ph name="SHORTCUT" /> ಅನ್ನು ಬಳಸಿ.</translation>
@@ -1391,7 +1390,6 @@
 <translation id="3238395604961564389">ಲಿಂಕ್‌ ಅನ್ನು ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="3240791268468473923">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ</translation>
-<translation id="3241320538788585298">ಲೂಪ್‌ಬ್ಯಾಕ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ಲಿಂಕ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3243650379537999343">ಚಿತ್ರ ಬಿಡಿಸಿ</translation>
 <translation id="3248329428895535435">ಈ ಸೈಟ್‌ನಲ್ಲಿ ತೋರಿಸಬೇಡಿ</translation>
@@ -1910,6 +1908,7 @@
 <translation id="4073376909608563327">ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="4073797364926776829">ಕಾರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4075732493274867456">ಸಾಮಾನ್ಯ SSL ಪ್ರೊಟೋಕಾಲ್ ಆವೃತ್ತಿ ಅಥವಾ ಸೈಫರ್ ಸ್ಯೂಟ್ ಅನ್ನು ಕ್ಲೈಂಟ್ ಮತ್ತು ಸರ್ವರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="4075941231477579656">ಸ್ಪರ್ಶ ID</translation>
 <translation id="4079302484614802869">ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಬಳಸುವಂತೆ ಹೊಂದಿಸಲಾಗಿದೆ, ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳಲ್ಲ.</translation>
 <translation id="4080668349181235831">ಸಲಹೆಗಳನ್ನು ನೀಡಲು ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ನ URL ಮತ್ತು ಪೂರ್ಣ ಪುಟದ ಕಂಟೆಂಟ್ ಅನ್ನು Google ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="4080855220442581440">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್‌ ಮಾಡುವುದು</translation>
@@ -2299,6 +2298,7 @@
 <translation id="4708268264240856090">ನಿಮ್ಮ ಸಂಪರ್ಕಕ್ಕೆ ಅಡ್ಡಿಯಾಗಿದೆ</translation>
 <translation id="4708276642004148190">ನೀರು ಪೂರೈಕೆ ಮತ್ತು ಚಿಕಿತ್ಸೆ</translation>
 <translation id="4711628883879888561">ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಿ</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ಈ ಸೈಟ್‌ ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿ ಹೊಂದಿಲ್ಲ</translation>
 <translation id="4718897478554657123">600 x 900 ಮಿಮೀ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ರನ್ ಮಾಡಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>

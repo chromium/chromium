@@ -568,6 +568,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7347827960336370838">只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，你需要<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" /></translation>
 <translation id="7349591376906416160">系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7352651011704765696">發生問題</translation>
+<translation id="7368826207863345663">如要取得日後的 Chromium 更新，你需要 macOS 13 或以上版本。此電腦正在使用 macOS 12。</translation>
 <translation id="7376384068949534168">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="7384121030444253939">此擴充程式不再受支援，Chromium 建議你將其移除。</translation>
 <translation id="7413153308467572558">開啟上次瀏覽的內容：Chromium 會在每次重新啟動後還原分頁。如要關閉此功能，請前往</translation>
