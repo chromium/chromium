@@ -78,6 +78,8 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
   widget_observation_.Observe(bubble_widget_);
 
   actor::ui::RecordTaskListBubbleRows(task_id_to_state.size());
+
+  on_bubble_shown_callback_list.Notify();
 }
 
 void ActorTaskListBubbleController::OnStateUpdate() {
@@ -103,6 +105,20 @@ void ActorTaskListBubbleController::OnStateUpdateImpl() {
 void ActorTaskListBubbleController::OnWidgetDestroyed(views::Widget* widget) {
   bubble_widget_ = nullptr;
   widget_observation_.Reset();
+
+  on_bubble_destroyed_callback_list.Notify();
+}
+
+base::CallbackListSubscription
+ActorTaskListBubbleController::RegisterBubbleShownCallback(
+    base::RepeatingClosure callback) {
+  return on_bubble_shown_callback_list.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+ActorTaskListBubbleController::RegisterBubbleDestroyedCallback(
+    base::RepeatingClosure callback) {
+  return on_bubble_destroyed_callback_list.Add(std::move(callback));
 }
 
 void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {

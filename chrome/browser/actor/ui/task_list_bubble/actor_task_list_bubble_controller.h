@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -43,11 +45,21 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
 
   raw_ptr<views::Widget> GetBubbleWidget() { return bubble_widget_; }
 
+  // Registers a `callback` to be run when the ActorTaskListBubble is shown.
+  base::CallbackListSubscription RegisterBubbleShownCallback(
+      base::RepeatingClosure callback);
+
+  // Registers a `callback` to be run when the ActorTaskListBubble is destroyed.
+  base::CallbackListSubscription RegisterBubbleDestroyedCallback(
+      base::RepeatingClosure callback);
+
  private:
   void OnTaskRowClicked(actor::TaskId task_id);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  base::RepeatingClosureList on_bubble_shown_callback_list;
+  base::RepeatingClosureList on_bubble_destroyed_callback_list;
 
 #if BUILDFLAG(ENABLE_GLIC)
   void OnStateUpdateImpl();

@@ -41,6 +41,19 @@ GlicActorNudgeController::GlicActorNudgeController(
     RegisterActorNudgeStateCallback();
     UpdateCurrentActorNudgeState();
   }
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    ActorTaskListBubbleController* bubble_controller =
+        ActorTaskListBubbleController::From(browser_);
+    bubble_visibility_change_subscription_.push_back(
+        bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
+            &GlicActorNudgeController::OnBubbleVisibilityChange,
+            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
+    bubble_visibility_change_subscription_.push_back(
+        bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
+            &GlicActorNudgeController::OnBubbleVisibilityChange,
+            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
+  }
 }
 
 GlicActorNudgeController::~GlicActorNudgeController() = default;
@@ -148,6 +161,11 @@ void GlicActorNudgeController::CloseBubble() {
   if (bubble_controller->GetBubbleWidget()) {
     bubble_controller->GetBubbleWidget()->Close();
   }
+}
+
+void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
+  tab_strip_action_container_->glic_actor_task_icon()->SetPressedColor(
+      is_bubble_open);
 }
 
 }  // namespace tabs

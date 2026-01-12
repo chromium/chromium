@@ -34,6 +34,10 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   // Sets the task icon to its highlighted state.
   void HighlightTaskIcon();
 
+  // Sets the task icon's color to its pressed state color if `is_pressed` is
+  // true, or to its default color otherwise.
+  void SetPressedColor(bool is_pressed);
+
   // Show the task nudge with the given text.
   void ShowNudgeLabel(const std::u16string nudge_label);
 
@@ -44,6 +48,9 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   void RefreshBackground();
 
  private:
+  // views::LabelButton:
+  void NotifyClick(const ui::Event& event) override;
+
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
 };

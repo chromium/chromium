@@ -681,7 +681,6 @@ void TabStripActionContainer::ShowGlicActorNudge(
   glic_button_->Collapse();
   ShowGlicActorTaskIcon();
   glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
-  glic_actor_task_icon_->HighlightTaskIcon();
   ShowTabStripNudge(glic_actor_task_icon_);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

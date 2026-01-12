@@ -116,6 +116,28 @@ void GlicActorTaskIcon::HighlightTaskIcon() {
       kColorTabBackgroundInactiveHoverFrameInactive);
 }
 
+void GlicActorTaskIcon::SetPressedColor(bool is_pressed) {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorUiGlobalTaskIndicator)) {
+    return;
+  }
+
+  SetHighlighted(is_pressed);
+  UpdateColors();
+}
+
+void GlicActorTaskIcon::NotifyClick(const ui::Event& event) {
+  // TabStripControlButton manipulates the ink drop in its NotifyClick(), so
+  // if we're using the ink drop to show the button's pressed state, skip
+  // TabStripControlButton::NotifyClick() and just call the base
+  // NotifyClick().
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    LabelButton::NotifyClick(event);
+  } else {
+    TabStripNudgeButton::NotifyClick(event);
+  }
+}
+
 void GlicActorTaskIcon::SetTaskIconToDefault() {
   SetText(std::u16string());
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
@@ -123,7 +145,10 @@ void GlicActorTaskIcon::SetTaskIconToDefault() {
 }
 
 void GlicActorTaskIcon::ShowNudgeLabel(const std::u16string nudge_label) {
-  HighlightTaskIcon();
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorUiGlobalTaskIndicator)) {
+    HighlightTaskIcon();
+  }
   SetText(nudge_label);
   SetTooltipText(nudge_label);
 }
