@@ -1031,6 +1031,10 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
 
   if (needs_commit) {
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
+    base::ScopedUmaHistogramTimer scoped_timer(
+        "GPU.DirectComposition.DCompCommitDuration",
+        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
+            kMicrosecondTimes);
     HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
     if (FAILED(hr)) {
       DLOG(ERROR) << "Commit failed with error 0x" << std::hex << hr;

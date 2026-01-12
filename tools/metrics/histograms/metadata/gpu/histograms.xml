@@ -688,6 +688,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.DirectComposition.DCompCommitDuration"
+    units="microseconds" expires_after="2026-06-01">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>tangm@microsoft.com</owner>
+  <summary>
+    Records the duration of IDCompositionDevice2::Commit, which is the subset of
+    GPU.DirectComposition.CommitAndClearPendingOverlaysDuration that only
+    contains the DComp commit portion. This allows us to estimate how much of
+    the former can be attributed to DComp internals vs DCLayerTree.
+
+    Only reported on systems which have high resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
     enum="BooleanOverlaySupported" expires_after="2026-02-22">
   <owner>magchen@chromium.org</owner>
