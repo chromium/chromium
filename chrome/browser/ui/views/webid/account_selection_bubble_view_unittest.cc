@@ -166,6 +166,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       std::string account_id = kAccountId1) {
     IdentityRequestAccountPtr account = base::MakeRefCounted<Account>(
         account_id, "", "", "", "", "", GURL(), "", "",
+        /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),

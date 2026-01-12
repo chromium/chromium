@@ -141,6 +141,20 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     std::optional<IdentityCredentialTokenError> error;
   };
 
+  struct CONTENT_EXPORT AccountsResponse {
+    AccountsResponse();
+    ~AccountsResponse();
+    AccountsResponse(const AccountsResponse&);
+    AccountsResponse(AccountsResponse&&);
+    AccountsResponse& operator=(const AccountsResponse&);
+
+    std::vector<IdentityRequestAccountPtr> PotentialAccountsForOrigin(
+        const url::Origin& origin);
+
+    std::vector<IdentityRequestAccountPtr> accounts;
+    std::string origin_salt;
+  };
+
   enum class DisconnectResponse {
     kSuccess,
     kError,
@@ -203,16 +217,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   };
 
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmErrorUrlType)
-
-  struct CONTENT_EXPORT AccountsResponse {
-    AccountsResponse();
-    ~AccountsResponse();
-    AccountsResponse(const AccountsResponse&);
-    AccountsResponse(AccountsResponse&&);
-    AccountsResponse& operator=(const AccountsResponse&);
-
-    std::vector<IdentityRequestAccountPtr> accounts;
-  };
 
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus, AccountsResponse)>;

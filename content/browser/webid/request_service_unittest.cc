@@ -970,6 +970,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
         GURL(),                      // picture
         "(650) 312-3223",            // phone number
         "kenr",                      // username
+        std::vector<std::string>(),  // potentially_approved_origin_hashes
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -1000,6 +1001,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
         GURL(),                      // picture
         "(650) 312-3223",            // phone number
         "kenr",                      // username
+        std::vector<std::string>(),  // potentially_approved_origin_hashes
         kLoginHints,                 // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -1015,85 +1017,93 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "kenr",                      // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             std::vector<std::string>(),  // login_hints
             kDomainHintVector,           // domain_hints
             std::vector<std::string>()   // labels
             )};
-    kTwoAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
-                        kAccountIdNicolas,           // id
-                        kAccountEmailNicolas,        // display_identifier
-                        "Nicolas P",                 // display_name
-                        kAccountEmailNicolas,        // email
-                        "Nicolas P",                 // name
-                        "Nicolas",                   // given_name
-                        GURL(),                      // picture
-                        "(650) 312-3223",            // phone number
-                        "npm",                       // username
-                        std::vector<std::string>(),  // login_hints
-                        std::vector<std::string>(),  // domain_hints
-                        std::vector<std::string>(),  // labels
-                        LoginState::kSignUp          // login_state
-                        ),
-                    base::MakeRefCounted<IdentityRequestAccount>(
-                        kAccountIdZach,              // id
-                        "zach@email.com",            // display_identifier
-                        "Zachary T",                 // display_name
-                        "zach@email.com",            // email
-                        "Zachary T",                 // name
-                        "Zach",                      // given_name
-                        GURL(),                      // picture
-                        "(650) 312-3223",            // phone number
-                        "tanz",                      // username
-                        std::vector<std::string>(),  // login_hints
-                        std::vector<std::string>(),  // domain_hints
-                        std::vector<std::string>(),  // labels
-                        LoginState::kSignUp          // login_state
-                        )};
-    kMultipleAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
-                             kAccountIdNicolas,           // id
-                             kAccountEmailNicolas,        // display_identifier
-                             "Nicolas P",                 // display_name
-                             kAccountEmailNicolas,        // email
-                             "Nicolas P",                 // name
-                             "Nicolas",                   // given_name
-                             GURL(),                      // picture
-                             "(650) 312-3223",            // phone number
-                             "npm",                       // username
-                             std::vector<std::string>(),  // login_hints
-                             std::vector<std::string>(),  // domain_hints
-                             std::vector<std::string>(),  // labels
-                             LoginState::kSignUp          // login_state
-                             ),
-                         base::MakeRefCounted<IdentityRequestAccount>(
-                             kAccountIdPeter,             // id
-                             kAccountEmailPeter,          // display_identifier
-                             "Peter K",                   // display_name
-                             kAccountEmailPeter,          // email
-                             "Peter K",                   // name
-                             "Peter",                     // given_name
-                             GURL(),                      // picture
-                             "(650) 312-3223",            // phone number
-                             "peter",                     // username
-                             std::vector<std::string>(),  // login_hints
-                             std::vector<std::string>(),  // domain_hints
-                             std::vector<std::string>(),  // labels
-                             LoginState::kSignIn          // login_state
-                             ),
-                         base::MakeRefCounted<IdentityRequestAccount>(
-                             kAccountIdZach,              // id
-                             "zach@email.com",            // display_identifier
-                             "Zachary T",                 // display_name
-                             "zach@email.com",            // email
-                             "Zachary T",                 // name
-                             "Zach",                      // given_name
-                             GURL(),                      // picture
-                             "(650) 312-3223",            // phone number
-                             "zacht",                     // username
-                             std::vector<std::string>(),  // login_hints
-                             std::vector<std::string>(),  // domain_hints
-                             std::vector<std::string>(),  // labels
-                             LoginState::kSignUp          // login_state
-                             )};
+    kTwoAccounts = {
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdNicolas,           // id
+            kAccountEmailNicolas,        // display_identifier
+            "Nicolas P",                 // display_name
+            kAccountEmailNicolas,        // email
+            "Nicolas P",                 // name
+            "Nicolas",                   // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "npm",                       // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            ),
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdZach,              // id
+            "zach@email.com",            // display_identifier
+            "Zachary T",                 // display_name
+            "zach@email.com",            // email
+            "Zachary T",                 // name
+            "Zach",                      // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "tanz",                      // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            )};
+    kMultipleAccounts = {
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdNicolas,           // id
+            kAccountEmailNicolas,        // display_identifier
+            "Nicolas P",                 // display_name
+            kAccountEmailNicolas,        // email
+            "Nicolas P",                 // name
+            "Nicolas",                   // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "npm",                       // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            ),
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdPeter,             // id
+            kAccountEmailPeter,          // display_identifier
+            "Peter K",                   // display_name
+            kAccountEmailPeter,          // email
+            "Peter K",                   // name
+            "Peter",                     // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "peter",                     // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignIn          // login_state
+            ),
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdZach,              // id
+            "zach@email.com",            // display_identifier
+            "Zachary T",                 // display_name
+            "zach@email.com",            // email
+            "Zachary T",                 // name
+            "Zach",                      // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "zacht",                     // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            )};
     kMultipleAccountsWithHintsAndDomains = {
         base::MakeRefCounted<IdentityRequestAccount>(
             kAccountIdNicolas,           // id
@@ -1105,6 +1115,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "npm",                       // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             kNicolasHints,               // login_hints
             kDomainHintVector,           // domain_hints
             std::vector<std::string>(),  // labels
@@ -1120,6 +1131,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "peterk",                    // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             kPeterHints,                 // login_hints
             std::vector<std::string>(),  // domain_hints
             kLabelVector,                // labels
@@ -1135,6 +1147,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "zacht",                     // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             kZachHints,                  // login_hints
             kTwoDomainHints,             // domain_hints
             std::vector<std::string>(),  // labels

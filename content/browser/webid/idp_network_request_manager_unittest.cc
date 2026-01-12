@@ -51,6 +51,7 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -703,6 +704,42 @@ TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
   EXPECT_EQ("", accounts.accounts[0]->email);
   EXPECT_EQ("", accounts.accounts[0]->display_identifier);
   EXPECT_EQ("111-111-1111", accounts.accounts[0]->display_name);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedOrigins) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNavigationCancellation);
+  // given_name and picture fields are optional
+  const auto* test_accounts_json = R"({
+  "accounts": [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "potentially_approved_origin_hashes": [
+        "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"
+      ]
+    }
+  ],
+  "origin_salt": "fc432178f9155c4e24762de5b9505f2e"
+  })";
+
+  FetchStatus accounts_response;
+  IdpNetworkRequestManager::AccountsResponse accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("fc432178f9155c4e24762de5b9505f2e", accounts.origin_salt);
+  ASSERT_THAT(
+      accounts.accounts[0]->potentially_approved_origin_hashes,
+      ElementsAre(
+          "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"));
+
+  const auto& filtered_accounts = accounts.PotentialAccountsForOrigin(
+      url::Origin::Create(GURL("https://www.example.com/")));
+  EXPECT_EQ(1ul, filtered_accounts.size());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingleLightweightFedcm) {

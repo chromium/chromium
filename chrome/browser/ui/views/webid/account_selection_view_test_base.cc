@@ -69,6 +69,7 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
           std::string(kIdBase) + account_suffix, display_identifier,
           display_name, email, name,
           std::string(kGivenNameBase) + account_suffix, GURL(), "", "",
+          /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(), login_state,

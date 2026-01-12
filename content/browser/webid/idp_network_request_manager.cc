@@ -34,6 +34,7 @@
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/color_parser.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -75,16 +76,6 @@ using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
 using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 using TokenResult = IdpNetworkRequestManager::TokenResult;
-
-IdpNetworkRequestManager::AccountsResponse::AccountsResponse() = default;
-IdpNetworkRequestManager::AccountsResponse::AccountsResponse(
-    AccountsResponse&&) = default;
-IdpNetworkRequestManager::AccountsResponse::AccountsResponse(
-    const AccountsResponse&) = default;
-IdpNetworkRequestManager::AccountsResponse::~AccountsResponse() = default;
-IdpNetworkRequestManager::AccountsResponse&
-IdpNetworkRequestManager::AccountsResponse::operator=(
-    const IdpNetworkRequestManager::AccountsResponse&) = default;
 
 namespace {
 
@@ -205,6 +196,8 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   auto* given_name = account.FindString(webid::kAccountGivenNameKey);
   auto* picture = account.FindString(webid::kAccountPictureKey);
   auto* approved_clients = account.FindList(webid::kAccountApprovedClientsKey);
+  auto* potentially_approved_origin_hashes =
+      account.FindList(webid::kPotentiallyApprovedOriginHashes);
   std::vector<std::string> account_hints;
   auto* hints = account.FindList(webid::kHintsKey);
   if (hints) {
@@ -288,11 +281,22 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     webid::RecordApprovedClientsSize(approved_clients->size());
   }
 
+  std::vector<std::string> potentially_approved_origin_hashes_vector;
+  if (IsNavigationCancellationEnabled() && potentially_approved_origin_hashes) {
+    for (const base::Value& entry : *potentially_approved_origin_hashes) {
+      if (entry.is_string()) {
+        potentially_approved_origin_hashes_vector.push_back(entry.GetString());
+      }
+    }
+  }
+
   return base::MakeRefCounted<IdentityRequestAccount>(
       *id, display_identifier, display_name, *email, *name,
       given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
-      phone ? *phone : "", username ? *username : "", std::move(account_hints),
-      std::move(domain_hints), std::move(labels), approved_value,
+      phone ? *phone : "", username ? *username : "",
+      std::move(potentially_approved_origin_hashes_vector),
+      std::move(account_hints), std::move(domain_hints), std::move(labels),
+      approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
 }
 
@@ -642,6 +646,11 @@ void OnAccountsRequestParsed(
     return;
   }
 
+  const std::string* origin_salt = response_dict.FindString(kOriginSaltKey);
+  if (IsNavigationCancellationEnabled() && origin_salt) {
+    response.origin_salt = *origin_salt;
+  }
+
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           std::move(response));
 }
@@ -943,6 +952,38 @@ IdpNetworkRequestManager::TokenResult::TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::~TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::TokenResult(TokenResult&& other) =
     default;
+
+IdpNetworkRequestManager::AccountsResponse::AccountsResponse() = default;
+IdpNetworkRequestManager::AccountsResponse::AccountsResponse(
+    AccountsResponse&&) = default;
+IdpNetworkRequestManager::AccountsResponse::AccountsResponse(
+    const AccountsResponse&) = default;
+IdpNetworkRequestManager::AccountsResponse::~AccountsResponse() = default;
+IdpNetworkRequestManager::AccountsResponse&
+IdpNetworkRequestManager::AccountsResponse::operator=(
+    const IdpNetworkRequestManager::AccountsResponse&) = default;
+
+std::vector<IdentityRequestAccountPtr>
+IdpNetworkRequestManager::AccountsResponse::PotentialAccountsForOrigin(
+    const url::Origin& origin) {
+  std::string salted_origin(origin_salt + origin.Serialize());
+  auto hash = crypto::hash::Sha256(salted_origin);
+  std::string hashed_origin = base::HexEncode(hash);
+
+  std::vector<IdentityRequestAccountPtr> result;
+  for (const auto& account : accounts) {
+    auto it = std::find_if(account->potentially_approved_origin_hashes.begin(),
+                           account->potentially_approved_origin_hashes.end(),
+                           [&hashed_origin](const auto& a) -> bool {
+                             return base::ToUpperASCII(hashed_origin) ==
+                                    base::ToUpperASCII(a);
+                           });
+    if (it != account->potentially_approved_origin_hashes.end()) {
+      result.push_back(account);
+    }
+  }
+  return result;
+}
 
 // static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(

@@ -447,6 +447,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       std::string account_id = kAccountId1) {
     IdentityRequestAccountPtr account = base::MakeRefCounted<Account>(
         account_id, "", "", "", "", "", GURL(), "", "",
+        /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),
@@ -466,6 +467,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(base::MakeRefCounted<Account>(
           account_info.first, "", "", "", "", "", GURL(), "", "",
+          /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(),
