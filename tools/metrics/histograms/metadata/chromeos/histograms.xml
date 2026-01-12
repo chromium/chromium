@@ -3912,7 +3912,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Changed"
-    enum="SimulateRightClickModifier" expires_after="2026-01-26">
+    enum="SimulateRightClickModifier" expires_after="2027-01-05">
   <owner>michaelcheco@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -3928,7 +3928,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Initial"
-    enum="SimulateRightClickModifier" expires_after="2026-01-26">
+    enum="SimulateRightClickModifier" expires_after="2027-01-05">
   <owner>michaelcheco@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
