@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.OsCompositor.NumLayersModified" units="layers"
-    expires_after="2025-12-02">
+    expires_after="2026-06-01">
   <owner>vasilyt@chromium.org</owner>
   <owner>tangm@microsoft.com</owner>
   <summary>
