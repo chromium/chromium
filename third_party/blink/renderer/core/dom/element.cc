@@ -10442,6 +10442,12 @@ bool Element::PseudoElementStylesDependOnFunc(Functor& func) const {
   }
 
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
+    if (!pseudo_element->GetComputedStyle()) {
+      SCOPED_CRASH_KEY_NUMBER("Bug470512590", "pseudo_id",
+                              static_cast<int>(pseudo_element->GetPseudoId()));
+      NOTREACHED();
+    }
+
     if (func(*pseudo_element->GetComputedStyle())) {
       return true;
     }
