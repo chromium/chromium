@@ -42,6 +42,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -85,6 +87,15 @@ using content::NavigationController;
 using content::WebContents;
 
 namespace {
+
+BrowserWindowInterface* FindBrowserWindowInterface(SessionID window_id) {
+  for (BrowserWindowInterface* window : GetAllBrowserWindowInterfaces()) {
+    if (window->GetSessionID() == window_id) {
+      return window;
+    }
+  }
+  return nullptr;
+}
 
 class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
  public:
@@ -748,6 +759,14 @@ base::CallbackListSubscription TabAndroid::RegisterModalUIChanged(
 
 bool TabAndroid::IsInNormalWindow() const {
   return true;
+}
+
+BrowserWindowInterface* TabAndroid::GetBrowserWindowInterface() {
+  return FindBrowserWindowInterface(session_window_id_);
+}
+
+const BrowserWindowInterface* TabAndroid::GetBrowserWindowInterface() const {
+  return FindBrowserWindowInterface(session_window_id_);
 }
 
 tabs::TabFeatures* TabAndroid::GetTabFeatures() {

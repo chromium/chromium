@@ -156,6 +156,21 @@ bool TabInterfaceAndroid::IsInNormalWindow() const {
   return weak_tab_android_->IsInNormalWindow();
 }
 
+BrowserWindowInterface* TabInterfaceAndroid::GetBrowserWindowInterface() {
+  if (!weak_tab_android_) {
+    return nullptr;
+  }
+  return weak_tab_android_->GetBrowserWindowInterface();
+}
+
+const BrowserWindowInterface* TabInterfaceAndroid::GetBrowserWindowInterface()
+    const {
+  if (!weak_tab_android_) {
+    return nullptr;
+  }
+  return weak_tab_android_->GetBrowserWindowInterface();
+}
+
 tabs::TabFeatures* TabInterfaceAndroid::GetTabFeatures() {
   if (!weak_tab_android_) {
     return nullptr;

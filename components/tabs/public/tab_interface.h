@@ -10,8 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_handle_factory.h"
 
@@ -27,9 +25,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-#if !BUILDFLAG(IS_ANDROID)
 class BrowserWindowInterface;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace split_tabs {
 class SplitTabId;
@@ -212,7 +208,6 @@ class TabInterface : public SupportsTabHandles {
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Always valid in production code. Exceptions are:
   //  (1) Tabs briefly do not have a BrowserWindowInterface when they are
   //  detached from one window and moved to another. That is an implementation
@@ -228,9 +223,12 @@ class TabInterface : public SupportsTabHandles {
   // This is a long winded way of saying: if you are using this code from
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
+  //
+  // NOTE: On Desktop Android this works correctly. However, on Mobile Android
+  // BrowserWindowInterface is not yet supported and will return nullptr.
+  // TODO(crbug.com/475200706): Support BrowserWindowInterface on all Android.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
   virtual const BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns the feature controllers scoped to this tab.
   // TabFeatures that depend on other TabFeatures should not use this method.

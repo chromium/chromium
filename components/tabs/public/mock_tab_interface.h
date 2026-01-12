@@ -16,9 +16,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if !BUILDFLAG(IS_ANDROID)
 class BrowserWindowInterface;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -85,7 +83,6 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (TabInterfaceCallback),
               (override));
   MOCK_METHOD(bool, IsInNormalWindow, (), (const override));
-#if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(BrowserWindowInterface*,
               GetBrowserWindowInterface,
               (),
@@ -94,7 +91,6 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               GetBrowserWindowInterface,
               (),
               (const override));
-#endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
   MOCK_METHOD(const TabFeatures*, GetTabFeatures, (), (const override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
