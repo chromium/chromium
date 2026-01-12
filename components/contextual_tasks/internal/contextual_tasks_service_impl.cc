@@ -481,25 +481,6 @@ std::vector<SessionID> ContextualTasksServiceImpl::GetTabsAssociatedWithTask(
   return associated_tabs;
 }
 
-void ContextualTasksServiceImpl::ClearAllTabAssociationsForTask(
-    const base::Uuid& task_id) {
-  auto task_it = tasks_.find(task_id);
-  if (task_it == tasks_.end()) {
-    return;
-  }
-
-  // Get a copy of the tab IDs before clearing them from the task.
-  const std::vector<SessionID> tab_ids_to_remove = task_it->second.GetTabIds();
-
-  // Clear the tab IDs from the task object itself.
-  task_it->second.ClearTabIds();
-
-  // Remove each of the tab IDs from the main lookup map.
-  for (const auto& tab_id : tab_ids_to_remove) {
-    tab_to_task_.erase(tab_id);
-  }
-}
-
 void ContextualTasksServiceImpl::GetContextForTask(
     const base::Uuid& task_id,
     const std::set<ContextualTaskContextSource>& sources,

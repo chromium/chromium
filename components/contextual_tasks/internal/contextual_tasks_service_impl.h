@@ -95,7 +95,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       SessionID tab_id) const override;
   std::vector<SessionID> GetTabsAssociatedWithTask(
       const base::Uuid& tab_id) const override;
-  void ClearAllTabAssociationsForTask(const base::Uuid& task_id) override;
   void GetContextForTask(
       const base::Uuid& task_id,
       const std::set<ContextualTaskContextSource>& sources,

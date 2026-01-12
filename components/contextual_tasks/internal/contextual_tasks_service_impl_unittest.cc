@@ -1287,7 +1287,8 @@ TEST_F(ContextualTasksServiceImplTest, GetContextualTaskForTab_NotFound) {
   EXPECT_FALSE(recent_task.has_value());
 }
 
-TEST_F(ContextualTasksServiceImplTest, ClearAllTabAssociationsForTask) {
+TEST_F(ContextualTasksServiceImplTest, DisassociateAllTabsFromTask) {
+  service_->AddObserver(&observer_);
   ContextualTask task = service_->CreateTask();
   SessionID tab_id1 = SessionID::FromSerializedValue(1);
   SessionID tab_id2 = SessionID::FromSerializedValue(2);
@@ -1297,14 +1298,33 @@ TEST_F(ContextualTasksServiceImplTest, ClearAllTabAssociationsForTask) {
 
   EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id1).has_value());
   EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id2).has_value());
-  EXPECT_EQ(2u, GetTaskById(task.GetTaskId())->GetTabIds().size());
+  std::optional<ContextualTask> result_task_before =
+      GetTaskById(task.GetTaskId());
+  ASSERT_TRUE(result_task_before.has_value());
+  EXPECT_EQ(2u, result_task_before->GetTabIds().size());
 
-  service_->ClearAllTabAssociationsForTask(task.GetTaskId());
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnTaskDisassociatedFromTab(task.GetTaskId(), tab_id1));
+  EXPECT_CALL(observer_, OnTaskDisassociatedFromTab(task.GetTaskId(), tab_id2));
+  EXPECT_CALL(observer_,
+              OnTaskRemoved(task.GetTaskId(),
+                            ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  service_->DisassociateAllTabsFromTask(task.GetTaskId());
+  run_loop.Run();
 
   EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id1).has_value());
   EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id2).has_value());
-  EXPECT_EQ(0u, GetTaskById(task.GetTaskId())->GetTabIds().size());
+  std::optional<ContextualTask> result_task_after =
+      GetTaskById(task.GetTaskId());
+  EXPECT_FALSE(result_task_after.has_value());
   EXPECT_EQ(0u, service_->GetTabIdMapSizeForTesting());
+  std::vector<SessionID> tabs_for_task =
+      service_->GetTabsAssociatedWithTask(task.GetTaskId());
+  EXPECT_TRUE(tabs_for_task.empty());
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id1));
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id2));
+  service_->RemoveObserver(&observer_);
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
