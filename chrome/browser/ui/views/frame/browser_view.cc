@@ -3913,7 +3913,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   const TabRendererData& tab_data = tab_strip_view()->GetTabRendererData(index);
 
   // Tab has crashed.
-  if (tab_data.IsCrashed()) {
+  if (tab_data.is_crashed) {
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_CRASHED_FORMAT, title);
   }
 

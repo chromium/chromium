@@ -123,7 +123,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   is_monochrome_favicon_ = data.is_monochrome_favicon;
   SetIcon(data.favicon, data.should_themify_favicon);
   SetNetworkState(data.network_state);
-  SetCrashed(data.IsCrashed());
+  SetCrashed(data.is_crashed);
   SetDiscarded(data.should_show_discard_status);
   has_tab_renderer_data_ = true;
 

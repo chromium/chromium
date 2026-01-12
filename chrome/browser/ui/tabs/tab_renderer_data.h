@@ -40,11 +40,6 @@ struct TabRendererData {
 
   bool operator==(const TabRendererData& other) const;
 
-  // This interprets the crashed status to decide whether or not this
-  // render data represents a tab that is "crashed" (i.e. the render
-  // process died unexpectedly).
-  bool IsCrashed() const;
-
   ui::ImageModel favicon;
   scoped_refptr<ThumbnailImage> thumbnail;
   TabNetworkState network_state = TabNetworkState::kNone;
@@ -56,8 +51,7 @@ struct TabRendererData {
   // False if the omnibox doesn't display the URL (i.e. when a lookalike URL
   // interstitial is being displayed).
   bool should_display_url = true;
-  base::TerminationStatus crashed_status =
-      base::TERMINATION_STATUS_STILL_RUNNING;
+  bool is_crashed = false;
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;

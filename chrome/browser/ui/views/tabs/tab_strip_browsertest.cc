@@ -998,8 +998,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
 
   // AccessibleName should update with crashedstatus
   TabRendererData tab_renderer_data = tab_strip()->tab_at(1)->data();
-  tab_renderer_data.crashed_status =
-      base::TERMINATION_STATUS_PROCESS_WAS_KILLED;
+  tab_renderer_data.is_crashed = true;
   tab_strip()->tab_at(1)->SetData(tab_renderer_data);
   data = ui::AXNodeData();
   tab_strip()->tab_at(1)->GetViewAccessibility().GetAccessibleNodeData(&data);

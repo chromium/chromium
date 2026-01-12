@@ -16,6 +16,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -31,13 +32,19 @@ class MockTabUiHelperSubscriber {
     title_change_subscription_ = tab_ui_helper->AddTitleUpdatedCallback(
         base::BindRepeating(&::MockTabUiHelperSubscriber::OnTitleChange,
                             base::Unretained(this)));
+    crash_status_change_subscription_ =
+        tab_ui_helper->AddCrashedStatusChangedCallback(base::BindRepeating(
+            &::MockTabUiHelperSubscriber::OnCrashStatusChange,
+            base::Unretained(this)));
   }
   ~MockTabUiHelperSubscriber() = default;
 
   MOCK_METHOD(void, OnTitleChange, (std::u16string updated_title));
+  MOCK_METHOD(void, OnCrashStatusChange, (bool is_crashed));
 
  private:
   base::CallbackListSubscription title_change_subscription_;
+  base::CallbackListSubscription crash_status_change_subscription_;
 };
 }  // namespace
 
@@ -68,6 +75,20 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TitleChangeIsNotified) {
   ASSERT_NE(ui_test_utils::NavigateToURL(
                 browser(), embedded_test_server()->GetURL("/title3.html")),
             nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, CrashStatusIsNotified) {
+  ASSERT_NE(ui_test_utils::NavigateToURL(
+                browser(), embedded_test_server()->GetURL("/title2.html")),
+            nullptr);
+  tabs::TabInterface* const tab_interface =
+      browser()->tab_strip_model()->GetActiveTab();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
+  EXPECT_FALSE(tab_ui_helper->IsCrashed());
+  auto crash_status_change_waiter =
+      std::make_unique<MockTabUiHelperSubscriber>(tab_ui_helper);
+  EXPECT_CALL(*crash_status_change_waiter, OnCrashStatusChange(true));
+  content::CrashTab(tab_interface->GetContents());
 }
 
 class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {

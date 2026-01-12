@@ -536,7 +536,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // can be blank for some web pages.
   if (!tab_data.last_committed_url.is_valid()) {
     domain_url = tab_data.visible_url;
-    title = tab_data.IsCrashed()
+    title = tab_data.is_crashed
                 ? l10n_util::GetStringUTF16(IDS_HOVER_CARD_CRASHED_TITLE)
                 : l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE);
     alert_state_ = std::nullopt;

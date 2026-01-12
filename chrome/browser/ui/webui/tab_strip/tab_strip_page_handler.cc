@@ -545,7 +545,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->network_state = tab_renderer_data.network_state;
   tab_data->should_hide_throbber = tab_renderer_data.should_hide_throbber;
   tab_data->blocked = tab_renderer_data.blocked;
-  tab_data->crashed = tab_renderer_data.IsCrashed();
+  tab_data->crashed = tab_renderer_data.is_crashed;
   // TODO(johntlee): Add the rest of TabRendererData
 
   tab_data->alert_states =

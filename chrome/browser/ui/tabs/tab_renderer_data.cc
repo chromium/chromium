@@ -140,7 +140,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
   data.last_committed_url = contents->GetLastCommittedURL();
   data.should_display_url = should_display_url;
-  data.crashed_status = contents->GetCrashedStatus();
+  data.is_crashed = tab_ui_helper->IsCrashed();
   data.pinned = tab->IsPinned();
   data.show_icon =
       data.pinned || (browser && browser->ShouldDisplayFavicon(contents));
@@ -193,24 +193,13 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          visible_url == other.visible_url &&
          last_committed_url == other.last_committed_url &&
          should_display_url == other.should_display_url &&
-         crashed_status == other.crashed_status &&
-         show_icon == other.show_icon && pinned == other.pinned &&
-         blocked == other.blocked && alert_state == other.alert_state &&
+         is_crashed == other.is_crashed && show_icon == other.show_icon &&
+         pinned == other.pinned && blocked == other.blocked &&
+         alert_state == other.alert_state &&
          should_hide_throbber == other.should_hide_throbber &&
          is_tab_discarded == other.is_tab_discarded &&
          should_show_discard_status == other.should_show_discard_status &&
          discarded_memory_savings == other.discarded_memory_savings &&
          tab_resource_usage == other.tab_resource_usage &&
          is_monochrome_favicon == other.is_monochrome_favicon;
-}
-
-bool TabRendererData::IsCrashed() const {
-  return (crashed_status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED ||
-#if BUILDFLAG(IS_CHROMEOS)
-          crashed_status ==
-              base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM ||
-#endif
-          crashed_status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
-          crashed_status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
-          crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);
 }

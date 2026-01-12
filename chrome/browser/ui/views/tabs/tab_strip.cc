@@ -1180,7 +1180,7 @@ bool TabStrip::IsTabStripEditable() const {
 }
 
 bool TabStrip::IsTabCrashed(int tab_index) const {
-  return tab_at(tab_index)->data().IsCrashed();
+  return tab_at(tab_index)->data().is_crashed;
 }
 
 bool TabStrip::TabHasNetworkError(int tab_index) const {

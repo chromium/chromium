@@ -969,7 +969,7 @@ bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
   }
 
   return ((old_data.network_state != new_data.network_state) ||
-          old_data.crashed_status != new_data.crashed_status ||
+          old_data.is_crashed != new_data.is_crashed ||
           old_data.alert_state != new_data.alert_state ||
           old_data.should_show_discard_status !=
               new_data.should_show_discard_status ||

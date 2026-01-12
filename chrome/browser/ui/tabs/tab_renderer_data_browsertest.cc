@@ -286,15 +286,11 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, CrashedStatus) {
   content::WebContents* wc = tab_strip_model->GetWebContentsAt(0);
   TabRendererData data_initial =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
-  EXPECT_EQ(data_initial.crashed_status,
-            base::TERMINATION_STATUS_STILL_RUNNING);
-  EXPECT_FALSE(data_initial.IsCrashed());
+  EXPECT_FALSE(data_initial.is_crashed);
   content::CrashTab(wc);
   TabRendererData data_crashed =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
-  EXPECT_EQ(data_crashed.crashed_status,
-            base::TERMINATION_STATUS_PROCESS_WAS_KILLED);
-  EXPECT_TRUE(data_crashed.IsCrashed());
+  EXPECT_TRUE(data_crashed.is_crashed);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, NetworkState) {
