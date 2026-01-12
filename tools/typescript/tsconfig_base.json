@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": false,
+    "module": "ESNext",
     "target": "ESNext",
     "libReplacement": false,
 

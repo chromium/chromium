@@ -26,7 +26,6 @@ copy("stage_for_mock_tsc") {
 
 ts_library("build_ts") {
   root_dir = mock_ts_root_dir
-  tsconfig_base = "tsconfig_base.json"
   in_files = [ "app_main.ts" ] + media_app_mojom_files
 
   definitions = [ "$mock_ts_root_dir/media_app.d.ts" ]

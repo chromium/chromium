@@ -19,10 +19,7 @@ template("ts_definitions") {
                              "visibility",
                            ])
 
-    inputs = [
-      "//package.json",
-      "//tools/typescript/tsconfig_definitions_base.json",
-    ]
+    inputs = [ "//tools/typescript/tsconfig_definitions_base.json" ]
     outputs = [ "$target_gen_dir/tsconfig_definitions.json" ]
 
     root_dir = "."
