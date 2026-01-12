@@ -3412,6 +3412,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-iframe-for-pix",
+    "owners": [ "longsheng@google.com", "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 135
@@ -3997,7 +4002,7 @@
     "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 150
   },
-    {
+  {
     "name": "enable-static-qr-code-for-pix",
     "owners": [ "longsheng@google.com", "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 150

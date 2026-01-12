@@ -10815,6 +10815,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStaticQrCodeForPixName,
      flag_descriptions::kEnableStaticQrCodeForPixDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnableStaticQrCodeForPix)},
+
+    {"enable-iframe-for-pix", flag_descriptions::kEnableIframeForPixName,
+     flag_descriptions::kEnableIframeForPixDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(payments::facilitated::kEnableIframeForPix)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-card-benefits-for-american-express",

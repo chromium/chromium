@@ -17065,6 +17065,7 @@ from previous Chrome versions.
   <int value="970506827" label="TilingWindowResize:disabled"/>
   <int value="970901442" label="EnableAndroidGamepadVibration:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
+  <int value="973161931" label="EnableIframeForPix:enabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
   <int value="974840558" label="TabGroupsFocusing:disabled"/>
   <int value="975104092" label="show-taps"/>
@@ -18289,6 +18290,7 @@ from previous Chrome versions.
       label="AuthenticateUsingUserConsentVerifierInteropApi:enabled"/>
   <int value="1387925207" label="MlRelevanceScoring:enabled"/>
   <int value="1388323853" label="ModifierSplit:enabled"/>
+  <int value="1388550916" label="EnableIframeForPix:disabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1388776696" label="ReadAloudLanguagePackDownloading:enabled"/>
   <int value="1388800959" label="AutofillRemovePaymentsButterDropdown:enabled"/>

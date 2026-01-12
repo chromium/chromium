@@ -1527,6 +1527,11 @@ inline constexpr char kEnableStaticQrCodeForPixDescription[] =
     "When enabled, pix pay flow will be triggered when users click the copy "
     "button of static qr code.";
 
+inline constexpr char kEnableIframeForPixName[] = "Enable Iframe For Pix";
+inline constexpr char kEnableIframeForPixDescription[] =
+    "When enabled, pix pay flow will be triggered when users click the copy "
+    "button within iframe.";
+
 inline constexpr char kDesktopPWAsAdditionalWindowingControlsName[] =
     "Desktop PWA Additional Windowing Controls";
 inline constexpr char kDesktopPWAsAdditionalWindowingControlsDescription[] =
