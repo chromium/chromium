@@ -793,6 +793,18 @@ crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/v
 # WebGL: INVALID_ENUM: getShaderParameter
 crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
+# Angel Metal on Intel Sequoia
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance2/rendering/framebuffer-to-texture.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance2/textures/canvas_sub_rectangle/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/fboinvalidate/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/fborender/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/framebufferblit/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/texturespecification/* [ Failure ]
+
 ## Mac / Apple Silicon ##
 
 
