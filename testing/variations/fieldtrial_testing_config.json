@@ -12736,7 +12736,7 @@
                         "EnableReaderModeInUS"
                     ],
                     "disable_features": [
-                        "EnableReaderModeOmniboxEntryPoint"
+                        "EnableReaderModeOmniboxEntryPointInUS"
                     ]
                 }
             ]
