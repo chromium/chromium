@@ -143,20 +143,20 @@ base::Value AssemblePrinterCapabilities(const std::string& device_name,
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
-std::string GetUserFriendlyName(const std::string& printer_name) {
+std::string GetUserFriendlyName(std::string_view printer_name) {
   // `printer_name` may be a UNC path like \\printserver\printername.
   if (!base::StartsWith(printer_name, "\\\\",
                         base::CompareCase::INSENSITIVE_ASCII)) {
-    return printer_name;
+    return std::string(printer_name);
   }
 
   // If it is a UNC path, split the "printserver\printername" portion and
   // generate a friendly name, like Windows does.
-  std::string printer_name_trimmed = printer_name.substr(2);
-  std::vector<std::string> tokens = base::SplitString(
+  std::string_view printer_name_trimmed = printer_name.substr(2);
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
       printer_name_trimmed, "\\", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (tokens.size() != 2 || tokens[0].empty() || tokens[1].empty())
-    return printer_name;
+    return std::string(printer_name);
   return l10n_util::GetStringFUTF8(
       IDS_PRINT_PREVIEW_FRIENDLY_WIN_NETWORK_PRINTER_NAME,
       base::UTF8ToUTF16(tokens[1]), base::UTF8ToUTF16(tokens[0]));

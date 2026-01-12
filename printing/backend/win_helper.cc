@@ -98,7 +98,7 @@ PTReleaseMemoryProc g_release_memory_proc = nullptr;
 PTCloseProviderProc g_close_provider_proc = nullptr;
 StartXpsPrintJobProc g_start_xps_print_job_proc = nullptr;
 
-typedef std::string (*GetDisplayNameFunc)(const std::string& printer_name);
+typedef std::string (*GetDisplayNameFunc)(std::string_view printer_name);
 GetDisplayNameFunc g_get_display_name_func = nullptr;
 
 PrinterBasicInfo InitializePrinterInfo(LPTSTR name, LPTSTR comment) {
