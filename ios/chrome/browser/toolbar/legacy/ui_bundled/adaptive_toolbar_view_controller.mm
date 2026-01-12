@@ -206,6 +206,19 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   // TODO(crbug.com/41413004): Remove this call once iPad trait collection
   // override issue is fixed.
   [self updateAllButtonsVisibility];
+  if (@available(iOS 26, *)) {
+    // There is a bug on iOS 26 when transitioning from windowed to
+    // fullscreen where the layout is incorrectly considered as (isCompactWidth
+    // && isCompactHeight).
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      __weak __typeof(self) weakSelf = self;
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
+          dispatch_get_main_queue(), ^{
+            [weakSelf updateAllButtonsVisibility];
+          });
+    }
+  }
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
