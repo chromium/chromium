@@ -3421,13 +3421,13 @@ TEST_P(WallpaperControllerTest,
   controller_->SetPolicyWallpaper(
       kAccountId1, user_manager::UserType::kPublicAccount,
       CreateEncodedImageForTesting(gfx::Size(10, 10)));
+  ClearWallpaperCount();
   SimulateUserLogin({.user_type = user_manager::UserType::kPublicAccount},
                     kAccountId1);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(kAccountId1));
 
   // Verify the wallpaper policy is applied after logging in.
-  ClearWallpaperCount();
   controller_->ShowUserWallpaper(kAccountId1);
   EXPECT_EQ(1, GetWallpaperCount());
   ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kPolicy);

@@ -922,11 +922,8 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
   DCHECK(user_type == user_manager::UserType::kRegular ||
          user_type == user_manager::UserType::kPublicAccount);
 
-  // Updates the screen only when the user with this account_id has logged in.
-  const bool show_wallpaper = IsActiveUser(account_id);
-
   if (bypass_decode_for_testing_) {
-    OnPolicyWallpaperDecoded(account_id, user_type, show_wallpaper,
+    OnPolicyWallpaperDecoded(account_id, user_type,
                              CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
@@ -935,15 +932,13 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   image_util::DecodeImageData(
       base::BindOnce(&WallpaperControllerImpl::OnPolicyWallpaperDecoded,
-                     weak_factory_.GetWeakPtr(), account_id, user_type,
-                     show_wallpaper),
+                     weak_factory_.GetWeakPtr(), account_id, user_type),
       data_decoder::mojom::ImageCodec::kDefault, data);
 }
 
 void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
     const AccountId& account_id,
     user_manager::UserType user_type,
-    bool show_wallpaper,
     const gfx::ImageSkia& image) {
   if (image.isNull()) {
     wallpaper_metrics_manager_->LogWallpaperResult(
@@ -957,6 +952,8 @@ void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
   const bool is_managed_guest =
       (user_type == user_manager::UserType::kPublicAccount) ||
       IsEphemeralUser(account_id);
+  // Updates the screen only when the user with this account_id has logged in.
+  const bool show_wallpaper = IsActiveUser(account_id);
   SaveAndSetWallpaper(account_id, is_managed_guest, kPolicyWallpaperFile,
                       /*file_path=*/"", WallpaperType::kPolicy,
                       WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper, image);
