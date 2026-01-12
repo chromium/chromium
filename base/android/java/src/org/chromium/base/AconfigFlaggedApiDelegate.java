@@ -363,4 +363,9 @@ public interface AconfigFlaggedApiDelegate {
         installFailedCallback.run();
         return false;
     }
+
+    /** Whether the feature to split the Android setting 'Show passwords' is enabled. */
+    default boolean isShowPasswordsSplitEnabled() {
+        return false;
+    }
 }

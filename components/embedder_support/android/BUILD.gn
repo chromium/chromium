@@ -66,6 +66,7 @@ android_library("util_java") {
 
   deps = [
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",

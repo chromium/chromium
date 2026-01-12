@@ -12,6 +12,7 @@ import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -48,7 +49,8 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class PasswordEchoSettingState {
-    // TODO(b/463981764): Add link to developer documentation for the settings.
+    // TODO(crbug.com/475136430): Implement password echo split settings sync using the secure
+    // settings constants and proper APIs.
     private static final String KEY_TEXT_SHOW_PASSWORD_LEGACY = "show_password";
     private static final String KEY_TEXT_SHOW_PASSWORD_PHYSICAL = "show_password_physical";
     private static final String KEY_TEXT_SHOW_PASSWORD_TOUCH = "show_password_touch";
@@ -73,8 +75,10 @@ public class PasswordEchoSettingState {
             return sSplitEnabledForTesting;
         }
 
-        // TODO(crbug.com/466343369): Implement the logic to check if the split setting feature is
-        // enabled on the platform side.
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            return delegate.isShowPasswordsSplitEnabled();
+        }
         return false;
     }
 
