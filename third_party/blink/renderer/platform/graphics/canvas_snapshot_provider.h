@@ -39,9 +39,17 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
 
     bool Matches(const CanvasSnapshotProvider& provider) const {
       return provider.IsValid() && provider.Size() == size &&
-             provider.GetSharedImageFormat() == format &&
              provider.GetAlphaType() == alpha_type &&
-             provider.GetColorSpace() == color_space;
+             provider.GetColorSpace() == color_space &&
+             // TODO(crbug.com/40767377): Restore strict format checks once the
+             // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
+             (provider.GetSharedImageFormat() == format ||
+              (provider.GetSharedImageFormat() ==
+                   viz::SinglePlaneFormat::kRGBA_8888 &&
+               format == viz::SinglePlaneFormat::kBGRA_8888) ||
+              (provider.GetSharedImageFormat() ==
+                   viz::SinglePlaneFormat::kBGRA_8888 &&
+               format == viz::SinglePlaneFormat::kRGBA_8888));
     }
   };
 };
