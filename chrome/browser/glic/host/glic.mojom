@@ -51,6 +51,9 @@ struct ProfileEnablement {
 
   // Whether the user has passed the FRE.
   bool not_consented;
+
+  // Whether live (audio) functionality is disallowed for this account type.
+  bool live_disallowed;
 };
 
 // The ready state of the profile.

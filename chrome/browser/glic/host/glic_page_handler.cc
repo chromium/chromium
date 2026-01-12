@@ -2270,6 +2270,7 @@ void GlicPageHandler::GetProfileEnablement(
   result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
   result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
   result->not_consented = enablement.not_consented;
+  result->live_disallowed = enablement.live_disallowed;
 
   std::move(callback).Run(std::move(result));
 }

@@ -34,6 +34,10 @@ export function getHtml(this: GlicInternalsAppElement) {
           <td>${!this.enablement_.primaryAccountNotCapable}</td>
         </tr>
         <tr>
+          <td>Account is eligible for Live</td>
+          <td>${!this.enablement_.liveDisallowed}</td>
+        </tr>
+        <tr>
           <td>
             Chrome Enterprise policy allows this feature (or doesn't apply)
           </td>
