@@ -168,7 +168,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
 
     // The sync token used to recycle or destroy the resource. It is set when
-    // resource is returned from the VideoFrame (via MailboxHolderReleased).
+    // resource is returned from the VideoFrame (via SharedImageReleased).
     gpu::SyncToken sync_token;
 
    private:
@@ -255,8 +255,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
 
   // Callback called when a VideoFrame generated with GetOrCreateFrameResource
   // is no longer referenced.
-  void MailboxHolderReleased(FrameResource* frame_resource,
-                             const gpu::SyncToken& sync_token);
+  void SharedImageReleased(FrameResource* frame_resource,
+                           const gpu::SyncToken& sync_token);
 
   // Delete resource. This has to be called on the thread where |task_runner|
   // is current.
@@ -1106,11 +1106,11 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
   if (!frame) {
     frame_resource->MarkUnused(tick_clock_->NowTicks());
-    MailboxHolderReleased(frame_resource, sync_token);
+    SharedImageReleased(frame_resource, sync_token);
     return nullptr;
   }
   frame->SetReleaseMailboxCB(
-      base::BindOnce(&PoolImpl::MailboxHolderReleased, this, frame_resource));
+      base::BindOnce(&PoolImpl::SharedImageReleased, this, frame_resource));
 
   frame->set_color_space(frame_resource->shared_image->color_space());
 
@@ -1300,12 +1300,12 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::DeleteFrameResource(
 
 // Called when a VideoFrame is no longer referenced. Put back the resource in
 // the pool.
-void GpuMemoryBufferVideoFramePool::PoolImpl::MailboxHolderReleased(
+void GpuMemoryBufferVideoFramePool::PoolImpl::SharedImageReleased(
     FrameResource* frame_resource,
     const gpu::SyncToken& release_sync_token) {
   if (!media_task_runner_->RunsTasksInCurrentSequence()) {
     media_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PoolImpl::MailboxHolderReleased, this,
+        FROM_HERE, base::BindOnce(&PoolImpl::SharedImageReleased, this,
                                   frame_resource, release_sync_token));
     return;
   }
