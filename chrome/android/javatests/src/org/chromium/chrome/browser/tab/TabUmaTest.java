@@ -33,7 +33,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.ActivityResultTrackerImpl;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -84,9 +83,7 @@ public class TabUmaTest {
                 cta.getCompositorViewHolderSupplier(),
                 cta.getModalDialogManagerSupplier(),
                 cta::getSnackbarManager,
-                new ActivityResultTrackerImpl(
-                        new ActivityResultTrackerImpl.RegistryImpl(
-                                cta.getActivityResultRegistry())),
+                cta.getActivityResultTracker(),
                 cta.getBrowserControlsManager(),
                 cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(),

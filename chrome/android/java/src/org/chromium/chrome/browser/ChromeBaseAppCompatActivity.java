@@ -772,7 +772,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Returns the {@link ActivityResultTracker} for launching new activities and watching for their
      * result.
      */
-    protected ActivityResultTracker getActivityResultTracker() {
+    @VisibleForTesting
+    public ActivityResultTracker getActivityResultTracker() {
         return mActivityResultTracker;
     }
 
