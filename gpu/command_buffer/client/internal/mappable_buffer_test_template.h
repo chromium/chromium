@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"
 #include "ui/gl/gl_display.h"

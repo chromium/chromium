@@ -54,7 +54,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/gpu_info_util.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gl/gpu_switching_manager.h"

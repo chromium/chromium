@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"

@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"

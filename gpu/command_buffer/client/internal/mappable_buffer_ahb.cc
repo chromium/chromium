@@ -17,7 +17,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace gpu {
 

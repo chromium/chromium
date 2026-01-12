@@ -578,8 +578,6 @@ source_set("memory_buffer_sources") {
   # TODO(brettw) refactor this so these sources are in a coherent directory
   # structure rather than random samplings of ui/gfx and ui/gfx/mac.
   sources = [
-    "buffer_format_util.cc",
-    "buffer_format_util.h",
     "buffer_usage_util.cc",
     "buffer_usage_util.h",
     "client_native_pixmap.h",
