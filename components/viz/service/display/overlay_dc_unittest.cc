@@ -46,7 +46,11 @@
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_switches.h"
 
@@ -3626,6 +3630,81 @@ TEST_F(OverlayProcessorWinFullScreenTest,
                          test::OverlayTargetRectIs(gfx::RectF(2400, 1600))),
       }));
 }
+
+MATCHER(TransformHasRotationOrFlip, "") {
+  return !arg.IsPositiveScaleOrTranslation();
+}
+
+// Test full screen optimization behavior in the presence of a rotated/flipped
+// video, e.g. added by the video metadata.
+TEST_F(OverlayProcessorWinFullScreenTest, LetterboxVideoHasRotation) {
+  const gfx::Rect video_rect = gfx::Rect(0, 96, 256, 64);
+
+  const auto ProcessFrameWithVideoRotation =
+      [&](gfx::OverlayTransform video_rotation) {
+        AggregatedRenderPassList pass_list;
+        auto pass = CreateRenderPass();
+        pass->output_rect = gfx::Rect(256, 256);
+
+        // We want the result of the transform to be `video_rect`, so we need to
+        // pre-rotate the size of our imagined video. We also imagine the video
+        // to be smaller than the target so we ensure the full screen code
+        // handles scaled videos as well.
+        const float video_to_target_scale = 2;
+        const gfx::Size pre_rotated_video_size = gfx::ScaleToRoundedSize(
+            gfx::OverlayTransformToTransform(video_rotation, gfx::SizeF())
+                .MapRect(video_rect)
+                .size(),
+            1 / video_to_target_scale);
+
+        auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+        // Offset added by e.g. the embedder of a video.
+        sqs->quad_to_target_transform.Translate(video_rect.OffsetFromOrigin());
+        sqs->quad_to_target_transform.Scale(video_to_target_scale);
+        // Rotation added by e.g. the encoding in a video.
+        sqs->quad_to_target_transform.PreConcat(
+            gfx::OverlayTransformToTransform(
+                video_rotation, gfx::SizeF(pre_rotated_video_size)));
+
+        CreateYUVTextureQuadAt(resource_provider_.get(),
+                               child_resource_provider_.get(),
+                               child_provider_.get(), sqs, pass.get(),
+                               gfx::Rect(pre_rotated_video_size));
+        CreateSolidColorQuadAt(
+            CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+            SkColors::kBlack, pass.get(), pass->output_rect);
+        pass_list.push_back(std::move(pass));
+
+        auto result = TryProcessForDelegatedOverlays(pass_list);
+        result.ExpectDelegationSuccess();
+
+        return result;
+      };
+
+  {
+    // Test that this setup succeeds when there is no buffer rotation.
+    auto result = ProcessFrameWithVideoRotation(gfx::OVERLAY_TRANSFORM_NONE);
+    EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre(
+                                         {test::OverlayIsFullScreen()}));
+  }
+
+  {
+    auto result = ProcessFrameWithVideoRotation(
+        gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
+    EXPECT_THAT(
+        result.candidates(),
+        CandidatesAreSortedAndElementsAre({
+            test::IsSolidColorOverlay(SkColors::kBlack),
+            testing::AllOf(
+                testing::Not(test::OverlayIsFullScreen()),
+                test::OverlayTargetRectIs(gfx::RectF(video_rect)),
+                testing::Field("transform", &OverlayCandidate::transform,
+                               testing::VariantWith<gfx::Transform>(
+                                   TransformHasRotationOrFlip()))),
+        }));
+  }
+}
+
 class OverlayProcessorWinFullScreenWithAdjustmentTest
     : public OverlayProcessorWinDelegatedCompositingTest {
  public:

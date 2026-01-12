@@ -684,6 +684,18 @@ void OverlayProcessorWin::TryPromoteFullScreenVideo(
     return;
   }
 
+  CHECK(std::holds_alternative<gfx::Transform>(
+      frontmost_candidate_it->transform));
+  if (!std::get<gfx::Transform>(frontmost_candidate_it->transform)
+           .IsPositiveScaleOrTranslation()) {
+    // If the candidate has a buffer rotation or flip, skip the full screen
+    // optimization since `SwapChainPresenter` doesn't handle buffer transforms
+    // with the video processor.
+    // TODO(crbug.com/474398418): When `SwapChainPresenter` handles buffer
+    // rotations and flips, we can remove this early exit.
+    return;
+  }
+
   const gfx::RectF target_rect =
       OverlayCandidate::DisplayRectInTargetSpace(*frontmost_candidate_it);
   const gfx::Rect& root_pass_output_rect = root_render_pass.output_rect;

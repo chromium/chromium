@@ -1198,7 +1198,8 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // extra BLT to avoid HW downscaling. This prevents the use of hardware
   // overlays especially for protected video. Use the onscreen size (scale==1)
   // for overlay can avoid this problem.
-  // TODO(sunnyps): Support 90/180/270 deg rotations using video context.
+  // TODO(crbug.com/474398418): Support 90/180/270 deg rotations using video
+  // context.
 
   // On battery_power mode, set swap_chain_size to the source content size when
   // the swap chain presents upscaled overlay, multi-plane overlay hardware will
