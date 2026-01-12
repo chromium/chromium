@@ -23246,6 +23246,22 @@
             ]
         }
     ],
+    "SecurePaymentConfirmationUxRefresh": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SecurePaymentConfirmationUxRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "SecurityPageHats": [
         {
             "platforms": [

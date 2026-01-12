@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Successful SPC authentication - optional fields
+  assert_equals: expected (string) "***1234" but got (undefined) undefined
+Harness: the test ran to completion.
+
