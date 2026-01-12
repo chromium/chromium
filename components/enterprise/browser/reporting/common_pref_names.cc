@@ -67,4 +67,7 @@ const char kSaaSReportDomainUrlsForBrowser[] =
 const char kSaaSReportDomainUrlsForProfile[] =
     "enterprise_reporting.saas_report_domain_urls_for_profile";
 
+// Dictionary which stores the aggregated metrics per SaaS domain.
+const char kSaaSDomainReport[] = "enterprise_reporting.saas_domain.report";
+
 }  // namespace enterprise_reporting
