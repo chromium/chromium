@@ -1242,7 +1242,8 @@
       // Enables setting the `maxAge` option when creating a cookie in the
       // Cookie Store API.
       name: "CookieStoreAPIMaxAge",
-      status: "experimental",
+      public: true,
+      status: "stable",
     },
     {
       name: "CoopRestrictProperties",
