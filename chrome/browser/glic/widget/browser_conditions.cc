@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -112,7 +113,7 @@ BrowserWindowInterface* FindBrowserForAttachment(Profile* profile) {
 }
 
 bool IsBrowserInForeground(BrowserWindowInterface* bwi) {
-  if (bwi->IsActive()) {
+  if (IsActive(bwi)) {
     return true;
   }
 #if BUILDFLAG(IS_WIN)

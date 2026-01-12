@@ -4,6 +4,7 @@
 
 source_set("common") {
   sources = [
+    "future_browser_features.h",
     "glic_tab_observer.cc",
     "glic_tab_observer.h",
   ]
@@ -18,12 +19,15 @@ source_set("common") {
       "glic_tab_observer_android.cc",
       "glic_tab_observer_android.h",
     ]
+    deps +=
+        [ "//chrome/browser/ui/browser_window/public/android:java_enum_srcjar" ]
   } else {
     sources += [
       "glic_tab_observer_impl.cc",
       "glic_tab_observer_impl.h",
     ]
     deps += [
+      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",

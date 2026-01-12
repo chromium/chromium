@@ -36,6 +36,7 @@
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -115,7 +116,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -242,20 +242,21 @@ class ActiveStateCalculator : public PanelStateObserver {
     attached_browser_subscriptions_.clear();
     attached_browser_ = attached_browser;
 
-    if (attached_browser_ && !attached_browser_->GetBrowserForMigrationOnly()
-                                  ->is_delete_scheduled()) {
-      attached_browser_subscriptions_.push_back(
-          attached_browser_->RegisterDidBecomeActive(base::BindRepeating(
+    if (attached_browser_ && !IsDeleteScheduled(attached_browser_)) {
+      attached_browser_subscriptions_.push_back(RegisterDidBecomeActive(
+          attached_browser_,
+          base::BindRepeating(
               &ActiveStateCalculator::AttachedBrowserActiveChanged,
               base::Unretained(this))));
-      attached_browser_subscriptions_.push_back(
-          attached_browser_->RegisterDidBecomeInactive(base::BindRepeating(
+      attached_browser_subscriptions_.push_back(RegisterDidBecomeInactive(
+          attached_browser_,
+          base::BindRepeating(
               &ActiveStateCalculator::AttachedBrowserActiveChanged,
               base::Unretained(this))));
-      attached_browser_subscriptions_.push_back(
-          attached_browser_->RegisterBrowserDidClose(base::BindRepeating(
-              &ActiveStateCalculator::AttachedBrowserDidClose,
-              base::Unretained(this))));
+      attached_browser_subscriptions_.push_back(RegisterBrowserDidClose(
+          attached_browser_,
+          base::BindRepeating(&ActiveStateCalculator::AttachedBrowserDidClose,
+                              base::Unretained(this))));
     }
     return true;
   }
@@ -271,12 +272,11 @@ class ActiveStateCalculator : public PanelStateObserver {
     if (!attached_browser_) {
       return true;
     }
-    if (attached_browser_->GetBrowserForMigrationOnly()
-            ->is_delete_scheduled()) {
+    if (IsDeleteScheduled(attached_browser_)) {
       return false;
     }
 
-    return attached_browser_->IsActive();
+    return glic::IsActive(attached_browser_);
   }
 
   base::OneShotTimer calc_timer_;

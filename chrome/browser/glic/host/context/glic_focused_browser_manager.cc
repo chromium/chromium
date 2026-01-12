@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -71,7 +72,7 @@ void GlicFocusedBrowserManager::Initialize() {
   GlobalBrowserCollection::GetInstance()->ForEach(
       [this](BrowserWindowInterface* browser) {
         OnBrowserCreated(browser);
-        if (browser->IsActive()) {
+        if (IsActive(browser)) {
           OnBrowserBecameActive(browser);
         }
         return true;
@@ -114,10 +115,12 @@ void GlicFocusedBrowserManager::OnBrowserCreated(
     BrowserWindowInterface* browser) {
   if (IsBrowserValidForSharingInProfile(browser, profile_)) {
     std::vector<base::CallbackListSubscription> subscriptions;
-    subscriptions.push_back(browser->RegisterDidBecomeActive(
+    subscriptions.push_back(RegisterDidBecomeActive(
+        browser,
         base::BindRepeating(&GlicFocusedBrowserManager::OnBrowserBecameActive,
                             base::Unretained(this))));
-    subscriptions.push_back(browser->RegisterDidBecomeInactive(
+    subscriptions.push_back(RegisterDidBecomeInactive(
+        browser,
         base::BindRepeating(&GlicFocusedBrowserManager::OnBrowserBecameInactive,
                             base::Unretained(this))));
     browser_subscriptions_[browser] = std::move(subscriptions);

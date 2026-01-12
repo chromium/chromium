@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -248,7 +249,7 @@ void GlicInstanceCoordinatorImpl::CreateNewConversationForTabs(
     side_panel_options.pin_trigger = GlicPinTrigger::kContextMenu;
     ShowOptions show_opts(side_panel_options);
     show_opts.focus_on_show =
-        tab->GetBrowserWindowInterface()->IsActive() && tab->IsActivated();
+        IsActive(GetBrowserWindowInterface(tab)) && tab->IsActivated();
     instance->Show(show_opts);
   }
 }

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -61,13 +62,18 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
   }
 
   void UpdateWindowObservations() {
-    BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
-    window_did_become_active_subscription_ =
-        browser_window->RegisterDidBecomeActive(base::BindRepeating(
-            &TabObserver::HandleWindowActivatedChange, base::Unretained(this)));
-    window_did_become_inactive_subscription_ =
-        browser_window->RegisterDidBecomeInactive(base::BindRepeating(
-            &TabObserver::HandleWindowActivatedChange, base::Unretained(this)));
+    BrowserWindowInterface* browser_window = GetBrowserWindowInterface(tab_);
+    if (!browser_window) {
+      return;
+    }
+    window_did_become_active_subscription_ = RegisterDidBecomeActive(
+        browser_window,
+        base::BindRepeating(&TabObserver::HandleWindowActivatedChange,
+                            base::Unretained(this)));
+    window_did_become_inactive_subscription_ = RegisterDidBecomeInactive(
+        browser_window,
+        base::BindRepeating(&TabObserver::HandleWindowActivatedChange,
+                            base::Unretained(this)));
   }
 
   // Callback for TabInterface activated changes.

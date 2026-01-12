@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -83,7 +84,7 @@ GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() = default;
 
 bool GlicActiveTabForProfileTracker::IsBrowserActiveForProfile(
     BrowserWindowInterface* browser) {
-  return browser && browser->GetProfile() == profile_ && browser->IsActive();
+  return browser && browser->GetProfile() == profile_ && IsActive(browser);
 }
 
 void GlicActiveTabForProfileTracker::UpdateActiveTabSubscription(
