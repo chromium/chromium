@@ -276,10 +276,10 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
     hotplug_event_handler_->OnHotplugEvent();
   }
 
-  auto* crossing = x11_event.As<x11::CrossingEvent>();
-  if (crossing && crossing->opcode == x11::CrossingEvent::EnterNotify &&
-      crossing->detail != x11::NotifyDetail::Inferior &&
-      crossing->mode != x11::NotifyMode::Ungrab) {
+  auto* crossing = x11_event.As<x11::Input::CrossingEvent>();
+  if (crossing && crossing->opcode == x11::Input::CrossingEvent::Enter &&
+      crossing->detail != x11::Input::NotifyDetail::Inferior &&
+      crossing->mode != x11::Input::NotifyMode::PassiveUngrab) {
     // Clear stored scroll data
     ui::DeviceDataManagerX11::GetInstance()->InvalidateScrollClasses(
         DeviceDataManagerX11::kAllDevices);
