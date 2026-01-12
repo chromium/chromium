@@ -25,16 +25,14 @@ ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
       trigger_(trigger) {
   SetWebContents(contents_wrapper_->web_contents());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  // Calling ReadAnythingImmersiveWebView::ShowUI is not necessary here- the
-  // WebUI will call ShowUI when it is ready.
-
-  // If the UI has been shown once, the reused WebUI will be available but
-  // won't send a new "showUI" message. Manually call ShowUI() to make the
-  // view visible.
+  // Calling ReadAnythingImmersiveWebView::ShowUI is not necessary if it's not
+  // been shown yet- the WebUI will call ShowUI when it is ready. If the UI has
+  // been shown once, the reused WebUI will be available but won't send a new
+  // "showUI" message. Manually call ShowUI() to make the view visible.
   auto* controller =
       ReadAnythingControllerGlue::FromWebContents(web_contents())->controller();
-  if (controller && controller->has_shown_ui() && on_show_ui_callback_) {
-    std::move(on_show_ui_callback_).Run();
+  if (controller && controller->has_shown_ui()) {
+    ShowUI();
   }
 }
 
@@ -85,7 +83,7 @@ void ReadAnythingImmersiveWebView::ShowUI() {
 // be closed.
 void ReadAnythingImmersiveWebView::CloseUI() {
   // This currently does not do anything and is never called because the
-  // ReadAnythingController is currentlythe one that owns the WebUI by the time
+  // ReadAnythingController is currently the one that owns the WebUI by the time
   // it is closed.
 }
 

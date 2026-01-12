@@ -163,6 +163,43 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnEntryShown_CalledWhenWebUIIsReused) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  MockReadAnythingLifecycleObserver observer;
+  controller->AddObserver(&observer);
+
+  // 1. Show Immersive UI (first time)
+  base::RunLoop run_loop_1;
+  EXPECT_CALL(observer, Activate(true, testing::_)).WillOnce([&run_loop_1]() {
+    run_loop_1.Quit();
+  });
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  run_loop_1.Run();
+
+  // 2. Close Immersive UI
+  base::RunLoop run_loop_2;
+  EXPECT_CALL(observer, Activate(false, testing::_)).WillOnce([&run_loop_2]() {
+    run_loop_2.Quit();
+  });
+  controller->CloseImmersiveUI();
+  run_loop_2.Run();
+
+  // 3. Show Immersive UI (second time - reuse WebUI)
+  base::RunLoop run_loop_3;
+  EXPECT_CALL(observer, Activate(true, testing::_)).WillOnce([&run_loop_3]() {
+    run_loop_3.Quit();
+  });
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  run_loop_3.Run();
+
+  // Cleanup
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        CloseImmersiveUI_NotifiesObservers) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
