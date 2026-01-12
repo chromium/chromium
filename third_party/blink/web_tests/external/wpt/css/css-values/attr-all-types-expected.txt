@@ -1,6 +1,12 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] CSS Values and Units Test: attr 43
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Values and Units Test: attr 45
   assert_equals: Value 'attr(data-foo type(<url>))', where 'data-foo=url("https://does-not-exist.test/404.png")' should be valid for the property '--x'. expected "url(\\"https://does-not-exist.test/404.png\\")" but got ""
+[FAIL] CSS Values and Units Test: attr 60
+  assert_equals: Value 'attr(data-foo type("<color>")', where 'data-foo=#ff0099aa' should be valid for the property 'background-color'. expected "rgba(255, 0, 153, 0.667)" but got "rgba(0, 0, 0, 0)"
+[FAIL] CSS Values and Units Test: attr 61
+  assert_equals: Value 'attr(data-foo type("invalid | blue")', where 'data-foo=blue' should be valid for the property 'background-color'. expected "rgb(0, 0, 255)" but got "rgba(0, 0, 0, 0)"
+[FAIL] CSS Values and Units Test: attr 62
+  assert_equals: Value 'attr(data-foo type("<length> | <percentage>")', where 'data-foo=10%' should be valid for the property 'width'. expected "78.3906px" but got "784px"
 Harness: the test ran to completion.
 

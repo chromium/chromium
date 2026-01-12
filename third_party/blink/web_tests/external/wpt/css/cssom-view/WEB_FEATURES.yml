@@ -12,7 +12,26 @@ features:
   - Screen-pixelDepth-Screen-colorDepth001.html
   - cssom-view-window-screen-interface.html
   - window-screen*
+- name: scroll-elements
+  files:
+  - dom-element-scroll*
+  - elementScroll*
+  - scroll-no-layout-box.html
+  - scroll-offsets-fractional-zoom.html
+  - scroll-zoom.html
+  - scrollLeftTop.html
+  - scrollLeft-of-scroller-with-wider-scrollbar.html
+  - scrollTop-display-change.html
+  - scrollWidthHeight*
+  - scrolling-no-browsing-context.html
+  - scrolling-quirks-vs-nonquirks.html
+  - table-scroll-props.html
+  - window-scrollBy-display-change.html
 - name: scroll-into-view
   files:
   - scrollIntoView-*
   - scrollintoview.html
+- name: mouse-events
+  files:
+  - mouseEvent-offsetXY-svg.html
+  - mouseEvent.html
