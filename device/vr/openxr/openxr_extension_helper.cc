@@ -154,6 +154,7 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
   OPENXR_LOAD_FN(xrEnumerateSpatialCapabilitiesEXT);
   OPENXR_LOAD_FN(xrEnumerateSpatialCapabilityComponentTypesEXT);
   OPENXR_LOAD_FN(xrQuerySpatialComponentDataEXT);
+  OPENXR_LOAD_FN(xrGetSpatialBufferVector2fEXT);
 
   // Spatial Anchors
   OPENXR_LOAD_FN(xrCreateSpatialAnchorEXT);

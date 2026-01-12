@@ -68,6 +68,13 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
   bool can_parent_anchors() const { return can_parent_anchors_; }
 
  private:
+  bool GetPolygonFromBuffer(XrSpatialSnapshotEXT snapshot,
+                            const XrSpatialPolygon2DDataEXT& polygon_data,
+                            mojom::XRPlaneDataPtr& plane_data) const;
+
+  void GetPolygonFromExtent(const XrSpatialBounded2DDataEXT& bounded_2d_data,
+                            mojom::XRPlaneDataPtr& plane_data) const;
+
   XrSpace mojo_space_;
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   const raw_ref<const OpenXrSpatialFrameworkManager> framework_manager_;
@@ -80,6 +87,7 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
 
   // Both of these components are guaranteed to be supported for the
   absl::flat_hash_set<XrSpatialComponentTypeEXT> enabled_components_;
+  bool polygon_enabled_ = false;
   bool semantic_label_enabled_ = false;
 
   base::WeakPtrFactory<OpenXrSpatialPlaneManager> weak_ptr_factory_{this};

@@ -107,6 +107,12 @@ OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
               .xrEnumerateSpatialCapabilityComponentTypesEXT,
           instance, system, XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
 
+  polygon_enabled_ = base::Contains(plane_tracking_components,
+                                    XR_SPATIAL_COMPONENT_TYPE_POLYGON_2D_EXT);
+  if (polygon_enabled_) {
+    enabled_components_.insert(XR_SPATIAL_COMPONENT_TYPE_POLYGON_2D_EXT);
+  }
+
   semantic_label_enabled_ =
       base::Contains(plane_tracking_components,
                      XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
@@ -174,6 +180,10 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
       XR_SPATIAL_COMPONENT_TYPE_BOUNDED_2D_EXT,
       XR_SPATIAL_COMPONENT_TYPE_PLANE_ALIGNMENT_EXT};
 
+  if (polygon_enabled_) {
+    component_types.push_back(XR_SPATIAL_COMPONENT_TYPE_POLYGON_2D_EXT);
+  }
+
   if (semantic_label_enabled_) {
     component_types.push_back(
         XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
@@ -217,6 +227,17 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
       .boundCount = static_cast<uint32_t>(bounded_2d_data.size()),
       .bounds = bounded_2d_data.data()};
   query_result.next = &bounded_2d_list;
+
+  std::vector<XrSpatialPolygon2DDataEXT> polygons;
+  XrSpatialComponentPolygon2DListEXT polygon_list{
+      XR_TYPE_SPATIAL_COMPONENT_POLYGON_2D_LIST_EXT};
+  if (polygon_enabled_) {
+    polygons.resize(query_result.entityIdCountOutput);
+    polygon_list.polygonCount = static_cast<uint32_t>(polygons.size());
+    polygon_list.polygons = polygons.data();
+    polygon_list.next = query_result.next;
+    query_result.next = &polygon_list;
+  }
 
   std::vector<XrSpatialPlaneSemanticLabelEXT> semantic_labels;
   XrSpatialComponentPlaneSemanticLabelListEXT semantic_label_list{
@@ -273,23 +294,15 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
       plane_data->semantic_label = ToMojomSemanticLabel(semantic_labels[i]);
     }
 
-    // The incoming pose has the Z axis as the normal, but WebXR expects the Y
-    // axis to be the normal.
-    plane_data->mojo_from_plane =
-        ZNormalXrPoseToYNormalDevicePose(bounded_2d_data[i].center);
-
-    // For now we don't support polygons, so we just create a rectangle from the
-    // extents.
-    const auto& extents = bounded_2d_data[i].extents;
     plane_data->polygon.clear();
-    plane_data->polygon.push_back(
-        mojom::XRPlanePointData::New(-extents.width / 2, -extents.height / 2));
-    plane_data->polygon.push_back(
-        mojom::XRPlanePointData::New(extents.width / 2, -extents.height / 2));
-    plane_data->polygon.push_back(
-        mojom::XRPlanePointData::New(extents.width / 2, extents.height / 2));
-    plane_data->polygon.push_back(
-        mojom::XRPlanePointData::New(-extents.width / 2, extents.height / 2));
+    bool has_polygon = false;
+    if (polygon_enabled_ && i < polygons.size()) {
+      has_polygon = GetPolygonFromBuffer(snapshot, polygons[i], plane_data);
+    }
+
+    if (!has_polygon) {
+      GetPolygonFromExtent(bounded_2d_data[i], plane_data);
+    }
   }
 
   // Remove any planes that are no longer being tracked.
@@ -304,6 +317,72 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
       entity_id_to_data_.erase(it++);
     }
   }
+}
+
+bool OpenXrSpatialPlaneManager::GetPolygonFromBuffer(
+    XrSpatialSnapshotEXT snapshot,
+    const XrSpatialPolygon2DDataEXT& polygon_data,
+    mojom::XRPlaneDataPtr& plane_data) const {
+  XrSpatialBufferGetInfoEXT buffer_info{XR_TYPE_SPATIAL_BUFFER_GET_INFO_EXT};
+  buffer_info.bufferId = polygon_data.vertexBuffer.bufferId;
+  uint32_t buffer_count_output = 0;
+  if (XR_FAILED(
+          extension_helper_->ExtensionMethods().xrGetSpatialBufferVector2fEXT(
+              snapshot, &buffer_info, 0, &buffer_count_output, nullptr))) {
+    return false;
+  }
+
+  std::vector<XrVector2f> vertices(buffer_count_output);
+  if (XR_FAILED(
+          extension_helper_->ExtensionMethods().xrGetSpatialBufferVector2fEXT(
+              snapshot, &buffer_info, buffer_count_output, &buffer_count_output,
+              vertices.data()))) {
+    return false;
+  }
+
+  // The incoming pose has the Z axis as the normal, but WebXR expects the Y
+  // axis to be the normal.
+  plane_data->mojo_from_plane =
+      ZNormalXrPoseToYNormalDevicePose(polygon_data.origin);
+
+  // OpenXR provides a counterclockwise polygon that is guaranteed to not self
+  // intersect; however, we do need to transform from XY space to XZ space as
+  // expected by the spec.
+  for (const auto& vertex : vertices) {
+    // Vertices are 2D (X, Y) in the polygon's space (Z=0).
+    // We need to transform them to WebXR's plane space (Y-up).
+    // Construct a point for the vertex.
+    gfx::Point3F vertex_point = {vertex.x, vertex.y, 0};
+    // Transform from Z-normal to Y-normal.
+    auto webxr_vertex_pose = ZNormalPositionToYNormalPosition(vertex_point);
+    // Now that it's Y-Normal, Y should be 0, and we send up the expected XZ
+    // coordinates.
+    plane_data->polygon.push_back(mojom::XRPlanePointData::New(
+        webxr_vertex_pose.x(), webxr_vertex_pose.z()));
+  }
+
+  return true;
+}
+
+void OpenXrSpatialPlaneManager::GetPolygonFromExtent(
+    const XrSpatialBounded2DDataEXT& bounded_2d_data,
+    mojom::XRPlaneDataPtr& plane_data) const {
+  // The incoming pose has the Z axis as the normal, but WebXR expects the Y
+  // axis to be the normal.
+  plane_data->mojo_from_plane =
+      ZNormalXrPoseToYNormalDevicePose(bounded_2d_data.center);
+  plane_data->polygon.clear();
+
+  // Create a rectangle from the extents with a counter-clockwise winding.
+  const auto& extents = bounded_2d_data.extents;
+  plane_data->polygon.push_back(
+      mojom::XRPlanePointData::New(-extents.width / 2, -extents.height / 2));
+  plane_data->polygon.push_back(
+      mojom::XRPlanePointData::New(extents.width / 2, -extents.height / 2));
+  plane_data->polygon.push_back(
+      mojom::XRPlanePointData::New(extents.width / 2, extents.height / 2));
+  plane_data->polygon.push_back(
+      mojom::XRPlanePointData::New(-extents.width / 2, extents.height / 2));
 }
 
 mojom::XRPlaneDetectionDataPtr

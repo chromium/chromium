@@ -71,6 +71,7 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrEnumerateSpatialCapabilitiesEXT);
   OPENXR_DECLARE_FN(xrEnumerateSpatialCapabilityComponentTypesEXT);
   OPENXR_DECLARE_FN(xrQuerySpatialComponentDataEXT);
+  OPENXR_DECLARE_FN(xrGetSpatialBufferVector2fEXT);
 
   // Spatial Anchors
   OPENXR_DECLARE_FN(xrCreateSpatialAnchorEXT);
