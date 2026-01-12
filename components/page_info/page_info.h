@@ -390,7 +390,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   // Get the count of blocked and allowed sites.
   int GetSitesWithAllowedCookiesAccessCount();
-  int GetThirdPartySitesWithBlockedCookiesAccessCount(const GURL& site_url);
 
   bool IsIsolatedWebApp() const;
 
@@ -490,16 +489,14 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   std::u16string site_name_for_testing_;
 
-  std::unique_ptr<content_settings::CookieControlsController> controller_;
+  std::unique_ptr<content_settings::CookieControlsController>
+      cookie_controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
-      observation_{this};
-
-  CookieControlsEnforcement enforcement_ =
+      cookie_observation_{this};
+  CookieControlsEnforcement cookie_enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
-
-  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
-
+  CookieControlsState cookie_controls_state_ = CookieControlsState::kBlocked3pc;
   base::Time cookie_exception_expiration_;
 
   bool is_subscribed_to_permission_change_for_testing = false;
