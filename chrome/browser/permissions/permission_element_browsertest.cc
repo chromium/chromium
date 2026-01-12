@@ -705,3 +705,21 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
         ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
   }
 }
+
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       CrashWhenInDocumentWithoutWindow) {
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    const doc = document.cloneNode();
+    doc.write("<geolocation id=geolocation>")
+  )"));
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(permissions::PermissionRequestManager::
+                                         AutoResponseType::ACCEPT_ALL);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), "geolocation");
+    observer.Wait();
+    WaitForPromptActionEvent("geolocation");
+  }
+}

@@ -103,7 +103,6 @@ class WindowPerformance;
 class AppBannerController;
 class AudioRendererSinkCacheWindowObserver;
 class CSSAnimationWorklet;
-class CachedPermissionStatus;
 class ContainerTiming;
 class CredentialManagerProxy;
 class DOMWindowDigitalGoods;
@@ -656,14 +655,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     global_performance_impl_ = global_performance_impl;
   }
 
-  CachedPermissionStatus* GetCachedPermissionStatus() const {
-    return cached_permission_status_;
-  }
-  void SetCachedPermissionStatus(
-      CachedPermissionStatus* cached_permission_status) {
-    cached_permission_status_ = cached_permission_status;
-  }
-
   ContainerTiming* GetContainerTiming() const { return container_timing_; }
   void SetContainerTiming(ContainerTiming* container_timing) {
     container_timing_ = container_timing;
@@ -1137,7 +1128,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
       global_performance_impl_;
 
-  Member<CachedPermissionStatus> cached_permission_status_;
   Member<ContainerTiming> container_timing_;
   Member<Fullscreen> fullscreen_;
   Member<HighlightRegistry> highlight_registry_;
