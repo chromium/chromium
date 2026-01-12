@@ -47,6 +47,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
+#include "chrome/browser/web_applications/commands/resolve_web_app_pending_migration_info_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
@@ -862,6 +863,15 @@ void WebAppCommandScheduler::MarkAppPendingUpdateAsIgnored(
       base::BindOnce(::web_app::SetWebAppPendingUpdateAsIgnored,
                      base::PassKey<WebAppCommandScheduler>(), app_id),
       std::move(done), location);
+}
+
+void WebAppCommandScheduler::ScheduleResolveWebAppPendingMigrationInfo(
+    base::OnceClosure callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<ResolveWebAppPendingMigrationInfoCommand>(
+          std::move(callback)),
+      location);
 }
 
 void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,

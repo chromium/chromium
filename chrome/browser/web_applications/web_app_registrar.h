@@ -73,6 +73,7 @@ class WebAppScope;
 class ManifestSilentUpdateCommand;
 class FetchManifestAndUpdateCommand;
 class ApplyPendingManifestUpdateCommand;
+class ResolveWebAppPendingMigrationInfoCommand;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
 
@@ -603,6 +604,14 @@ class WebAppRegistrar {
   void NotifyPendingUpdateInfoChanged(const webapps::AppId& app_id,
                                       bool pending_update_available,
                                       PendingUpdateInfoChangePassKey);
+
+  using PendingMigrationInfoChangePassKey =
+      base::PassKey<ResolveWebAppPendingMigrationInfoCommand>;
+
+  void NotifyWebAppPendingMigrationInfoChanged(
+      const webapps::AppId& app_id,
+      bool has_pending_migration,
+      PendingMigrationInfoChangePassKey);
 
   // A filter must return false to skip the |web_app|.
   using Filter = base::RepeatingCallback<bool(const WebApp&)>;

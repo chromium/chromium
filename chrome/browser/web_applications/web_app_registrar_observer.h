@@ -75,6 +75,11 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
   // Called when a pending update is available.
   virtual void OnWebAppPendingUpdateChanged(const webapps::AppId& app_id,
                                             bool has_pending_update) {}
+
+  // Called when the pending migration info for an app has changed.
+  virtual void OnWebAppPendingMigrationInfoChanged(const webapps::AppId& app_id,
+                                                   bool has_pending_migration) {
+  }
 };
 
 }  // namespace web_app

@@ -66,6 +66,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -521,6 +522,10 @@ void WebAppProvider::OnSyncBridgeReady() {
           },
           AsWeakPtr()));
 
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    scheduler().ScheduleResolveWebAppPendingMigrationInfo(base::DoNothing());
+  }
+
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
 
@@ -566,6 +571,7 @@ void WebAppProvider::DoDelayedPostStartupWork() {
                          weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
     }
   }
+
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
     const WebAppRegistrar& registrar = registrar_unsafe();

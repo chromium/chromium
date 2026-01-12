@@ -458,6 +458,17 @@ void WebAppRegistrar::NotifyPendingUpdateInfoChanged(
   }
 }
 
+void WebAppRegistrar::NotifyWebAppPendingMigrationInfoChanged(
+    const webapps::AppId& app_id,
+    bool has_pending_migration,
+    PendingMigrationInfoChangePassKey) {
+  DVLOG(1) << "NotifyWebAppPendingMigrationInfoChanged " << app_id << ", "
+           << has_pending_migration;
+  for (WebAppRegistrarObserver& observer : observers_) {
+    observer.OnWebAppPendingMigrationInfoChanged(app_id, has_pending_migration);
+  }
+}
+
 base::flat_map<webapps::AppId, base::flat_set<GURL>>
 WebAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {

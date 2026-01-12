@@ -716,6 +716,12 @@ class WebAppCommandScheduler {
       base::OnceClosure done,
       const base::Location& location = FROM_HERE);
 
+  // Schedules the ResolveWebAppPendingMigrationInfoCommand to resolve pending
+  // migration info for all apps.
+  void ScheduleResolveWebAppPendingMigrationInfo(
+      base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
+
   // TODO(crbug.com/40215411): expose all commands for web app
   // operations.
 
