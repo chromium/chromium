@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
@@ -42,7 +43,9 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/session_usage.h"
 #include "net/base/url_util.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/transport_security_state.h"
@@ -72,6 +75,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_quic_spdy_stream.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 
@@ -3043,6 +3047,86 @@ static std::vector<std::vector<uint8_t>> ServerTrustAnchorIDs(SSL* ssl) {
       UNSAFE_BUFFERS(base::span(peer_trust_anchors, peer_trust_anchors_len)));
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MTCResult)
+enum class MTCResult {
+  kValidMTC = 0,
+  kInvalidMTC = 1,
+  kClassicalCertExpectedMTC = 2,
+  kClassicalCertOldClient = 3,
+  kClassicalCertUnknownLandmarkDelta = 4,
+  kResumption = 5,
+  kMaxValue = kResumption,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:MTCResult)
+
+constexpr uint8_t kMtcExperimentBaseId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
+
+// Logs the Net.QuicSession.MTCResult and Net.QuicSession.MTCLandmarkDelta
+// histograms.
+static void LogMTCCertVerifyMetrics(
+    const std::vector<std::vector<uint8_t>>& client_mtc_tais,
+    const std::vector<std::vector<uint8_t>>& server_tais,
+    CertVerifyResult* verify_result,
+    bool is_resumption) {
+  std::optional<uint64_t> client_landmark;
+  std::optional<uint64_t> server_landmark;
+  for (const auto& id : client_mtc_tais) {
+    auto landmark =
+        x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId);
+    if (landmark.has_value()) {
+      client_landmark = landmark;
+      break;
+    }
+  }
+  for (const auto& id : server_tais) {
+    auto landmark =
+        x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId);
+    if (landmark.has_value()) {
+      server_landmark = landmark;
+      break;
+    }
+  }
+  bool have_landmark_delta = false;
+  bool old_client = false;
+  if (client_landmark.has_value() && server_landmark.has_value()) {
+    have_landmark_delta = true;
+    if (*server_landmark > *client_landmark) {
+      old_client = true;
+      UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.MTCLandmarkDelta.OldClient",
+                                *server_landmark - *client_landmark);
+    } else {
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Net.QuicSession.MTCLandmarkDelta.CurrentClient",
+          *client_landmark - *server_landmark);
+    }
+  }
+
+  MTCResult result;
+  if (is_resumption) {
+    result = MTCResult::kResumption;
+  } else if (verify_result->verified_cert->signature_algorithm() ==
+             bssl::SignatureAlgorithm::kMtcProofDraftDavidben08) {
+    if (MapCertStatusToNetError(verify_result->cert_status) == OK) {
+      result = MTCResult::kValidMTC;
+    } else {
+      result = MTCResult::kInvalidMTC;
+    }
+  } else {
+    // Classical cert
+    if (!have_landmark_delta) {
+      result = MTCResult::kClassicalCertUnknownLandmarkDelta;
+    } else if (old_client) {
+      result = MTCResult::kClassicalCertOldClient;
+    } else {
+      result = MTCResult::kClassicalCertExpectedMTC;
+    }
+  }
+  UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.MTCResult", result);
+}
+
 void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
     const quic::ProofVerifyDetails& verify_details) {
   const ProofVerifyDetailsChromium* verify_details_chromium =
@@ -3057,11 +3141,23 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
       ServerTrustAnchorIDs(crypto_stream_->GetSsl());
   for (const auto& id : server_tais) {
     // 44363.48.7 encoded as a relative OID
-    const uint8_t mtc_experiment_base_id[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
-    if (x509_util::LastOidComponentFromBase(id, mtc_experiment_base_id) !=
+    if (x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId) !=
         std::nullopt) {
       server_advertised_mtc_tai_ = true;
     }
+  }
+
+  bool verify_mtcs_enabled = false;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  verify_mtcs_enabled =
+      base::FeatureList::IsEnabled(net::features::kVerifyMTCs);
+#endif
+  if (server_advertised_mtc_tai_ && verify_mtcs_enabled) {
+    auto client_mtc_tais =
+        ssl_config_service_->GetSSLContextConfig().mtc_trust_anchor_ids;
+    LogMTCCertVerifyMetrics(client_mtc_tais, server_tais,
+                            cert_verify_result_.get(),
+                            crypto_stream_->IsResumption());
   }
 }
 

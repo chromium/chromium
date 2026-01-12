@@ -766,6 +766,9 @@ bool X509Certificate::ParsedFields::Initialize(
   // okay to save it into a span even though `tbs` gets destroyed at the end of
   // this method.
   serial_number_ = tbs.serial_number;
+
+  signature_algorithm_ =
+      bssl::ParseSignatureAlgorithm(tbs.signature_algorithm_tlv);
   return true;
 }
 

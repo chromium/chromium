@@ -169,6 +169,9 @@ TEST(X509CertificateTest, WebkitCertParsing) {
       1300491319,
       valid_expiry.InSecondsFSinceUnixEpoch());  // Mar 18 23:35:19 2011 GMT
 
+  EXPECT_EQ(bssl::SignatureAlgorithm::kRsaPkcs1Sha1,
+            webkit_cert->signature_algorithm());
+
   std::vector<std::string> dns_names;
   EXPECT_TRUE(webkit_cert->GetSubjectAltName(&dns_names, nullptr));
   ASSERT_EQ(2U, dns_names.size());
@@ -219,6 +222,8 @@ TEST(X509CertificateTest, ThawteCertParsing) {
   EXPECT_EQ(
       1263772799,
       valid_expiry.InSecondsFSinceUnixEpoch());  // Jan 17 23:59:59 2010 GMT
+  EXPECT_EQ(bssl::SignatureAlgorithm::kRsaPkcs1Sha1,
+            thawte_cert->signature_algorithm());
 }
 
 // Test that all desired AttributeAndValue pairs can be extracted when only

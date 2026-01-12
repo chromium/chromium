@@ -5789,6 +5789,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.MTCLandmarkDelta.CurrentClient"
+    units="MTC landmarks" expires_after="2026-06-21">
+  <owner>nharper@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The delta between the server's MTC landmark number and the latest landmark
+    trusted by the client, when the client's landmark number is at least as big
+    as the server's (indicating that the client should be able to verify the
+    server's MTC). Only recorded for QUIC connections where the client supports
+    verifying MTCs and the server supports sending MTCs.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.MTCLandmarkDelta.OldClient"
+    units="MTC landmarks" expires_after="2026-06-21">
+  <owner>nharper@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The delta between the server's MTC landmark number and the latest landmark
+    trusted by the client, when the server's landmark is greater than the
+    client's (which indicates that the client has out of date information and is
+    unable to verify the server's MTC). Only recorded for QUIC connections where
+    the client supports verifying MTCs and the server supports sending MTCs.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.MTCResult" enum="MTCResult"
+    expires_after="2026-06-21">
+  <owner>nharper@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    For clients that support verifying MTCs, records what kind of certificate we
+    received from a server that supports sending MTCs.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.MtuProbesSent" units="units"
     expires_after="2026-06-21">
   <owner>dschinazi@chromium.org</owner>

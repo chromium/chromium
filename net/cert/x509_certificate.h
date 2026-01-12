@@ -27,6 +27,10 @@ class Pickle;
 class PickleIterator;
 }
 
+namespace bssl {
+enum class SignatureAlgorithm;
+}
+
 namespace net {
 
 class X509Certificate;
@@ -178,6 +182,12 @@ class NET_EXPORT X509Certificate
   base::Time valid_start() const { return parsed_.valid_start_; }
   base::Time valid_expiry() const { return parsed_.valid_expiry_; }
 
+  // The signature algorithm (listed in the TBSCertificate) used to sign the
+  // certificate.
+  std::optional<bssl::SignatureAlgorithm> signature_algorithm() const {
+    return parsed_.signature_algorithm_;
+  }
+
   void set_valid_start_for_testing(base::Time time) {
     const_cast<ParsedFields&>(parsed_).valid_start_ = time;
   }
@@ -322,6 +332,9 @@ class NET_EXPORT X509Certificate
     // The serial number of this certificate, DER encoded. References data
     // owned by `cert_buffer`.
     base::raw_span<const uint8_t> serial_number_;
+
+    // The signature algorithm in the certificate.
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm_;
   };
 
   // Construct an X509Certificate from a CRYPTO_BUFFER containing the
