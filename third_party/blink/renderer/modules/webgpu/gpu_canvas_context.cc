@@ -431,7 +431,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
 
   const wgpu::TextureUsage usage =
       AsDawnFlags<wgpu::TextureUsage>(descriptor->usage());
-  if (RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled() &&
+  if (RuntimeEnabledFeatures::WebGPUTransientAttachmentEnabled() &&
       usage & wgpu::TextureUsage::TransientAttachment) {
     exception_state.ThrowTypeError(
         String::Format("Unsupported TransientAttachment texture usage"));

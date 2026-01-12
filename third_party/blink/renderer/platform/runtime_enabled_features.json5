@@ -5987,6 +5987,11 @@
       implied_by: ["WebGPUMapSyncOnWorkers"],
     },
     {
+      name: "WebGPUTransientAttachment",
+      status: "experimental",
+      implied_by: ["WebGPUExperimentalFeatures"],
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },
