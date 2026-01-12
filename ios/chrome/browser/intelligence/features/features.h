@@ -280,6 +280,10 @@ bool IsWebPageReportedImagesSheetEnabled();
 BASE_DECLARE_FEATURE(kGeminiImageRemixTool);
 bool IsGeminiImageRemixToolEnabled();
 
+// Returns true if the Gemini FRE should show the image remix row.
+bool IsGeminiImageRemixToolShowFRERowEnabled();
+extern const char kGeminiImageRemixToolShowFRERow[];
+
 // Feature flag for enabling the Gemini eligibility ablation experiment.
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();

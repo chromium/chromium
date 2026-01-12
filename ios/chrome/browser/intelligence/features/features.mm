@@ -381,6 +381,16 @@ bool IsGeminiImageRemixToolEnabled() {
   return base::FeatureList::IsEnabled(kGeminiImageRemixTool);
 }
 
+const char kGeminiImageRemixToolShowFRERow[] = "ShowFRERow";
+
+bool IsGeminiImageRemixToolShowFRERowEnabled() {
+  if (!IsGeminiImageRemixToolEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiImageRemixTool, kGeminiImageRemixToolShowFRERow, false);
+}
+
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiEligibilityAblationEnabled() {

@@ -293,6 +293,7 @@ NSString* const kPhotoOnRectangleSymbol = @"photo.on.rectangle";
 NSString* const kSystemCameraSymbol = @"camera";
 NSString* const kRightArrowCircleFillSymbol = @"arrow.right.circle.fill";
 NSString* const kArrowDownToLineSymbol = @"arrow.down.to.line";
+NSString* const kPhotoOnRectangleAngled = @"photo.on.rectangle.angled";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

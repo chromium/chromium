@@ -3030,6 +3030,12 @@
       <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_PROMPT_TITLE" desc="Title of the Gemini-specific camera permission prompt.">
         Allow “Gemini” to use your camera
       </message>
+      <message name="IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_BODY" desc="'Remix an image' body text for the Gemini Promo page.">
+        Long press an image on the web to edit with Gemini
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE" desc="'Remix an image' title text for the Gemini Promo page.">
+        Remix an image
+      </message>
       <message name="IDS_IOS_GEMINI_SETTINGS_CAMERA_FOOTER_TEXT" desc="The footer text of a camera permission row in the Gemini settings pages.">
         Take photos and share with Gemini to create and remix images.
       </message>

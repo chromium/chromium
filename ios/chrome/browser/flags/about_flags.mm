@@ -1363,6 +1363,12 @@ const FeatureEntry::FeatureParam
     kZeroStateSuggestionsPlacementAskGeminiParam[] = {
         {kZeroStateSuggestionsPlacementAskGemini, "true"}};
 
+const FeatureEntry::FeatureParam kGeminiImageRemixToolShowFRERowParam[] = {
+    {kGeminiImageRemixToolShowFRERow, "true"}};
+const FeatureEntry::FeatureVariation kGeminiImageRemixToolVariations[] = {
+    {"(Show FRE Row)", kGeminiImageRemixToolShowFRERowParam,
+     std::size(kGeminiImageRemixToolShowFRERowParam), nullptr}};
+
 const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
     {"AI Hub", kZeroStateSuggestionsPlacementAIHubParam,
      std::size(kZeroStateSuggestionsPlacementAIHubParam), nullptr},
@@ -2752,7 +2758,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kChromeNextIa)},
     {"gemini-image-remix-tool", flag_descriptions::kGeminiImageRemixToolName,
      flag_descriptions::kGeminiImageRemixToolDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiImageRemixTool)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiImageRemixTool,
+                                    kGeminiImageRemixToolVariations,
+                                    "GeminiImageRemixTool")},
     {"composebox-aim-disabled", flag_descriptions::kComposeboxAIMDisabledName,
      flag_descriptions::kComposeboxAIMDisabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxAIMDisabled)},

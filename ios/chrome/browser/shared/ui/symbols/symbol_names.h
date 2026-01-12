@@ -293,6 +293,7 @@ extern NSString* const kVideoSymbol;
 extern NSString* const kWaveformSymbol;
 extern NSString* const kRightArrowCircleFillSymbol;
 extern NSString* const kArrowDownToLineSymbol;
+extern NSString* const kPhotoOnRectangleAngled;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
