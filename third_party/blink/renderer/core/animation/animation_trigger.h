@@ -45,6 +45,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   virtual bool IsTimelineTrigger() const;
   virtual bool IsEventTrigger() const;
 
+  AnimationBehaviorMap& BehaviorMap() { return animation_behavior_map_; }
   void UpdateBehaviorMap(Animation& animation,
                          Behavior activate_behavior,
                          Behavior deactivate_behavior);
@@ -63,7 +64,6 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   Element* OwningElement() { return owning_element_.Get(); }
 
  protected:
-  AnimationBehaviorMap& BehaviorMap() { return animation_behavior_map_; }
   void PerformActivate();
   void PerformDeactivate();
   static void PerformBehavior(Animation& animation,

@@ -272,9 +272,13 @@ class CORE_EXPORT Animation : public EventTarget,
 
   // Called during validation of a scroll timeline to determine if a second
   // style and layout pass is required. During this validation step, we have an
-  // up to date snapshot of the timeline and can initialize the start time if
-  // required. If the start time or intrinsic iteration duration changes, we
-  // need a second style+layout pass even if the timeline snapshot is valid.
+  // up to date snapshot of the timeline and can do either of the following:
+  // - initialize the start time if required. If the start time or intrinsic
+  //   iteration duration changes, we need a second style+layout pass even if
+  //   the timeline snapshot is valid.
+  // - trigger the animation based on the state of a TimelineTrigger associated
+  //   with the scroll timeline being validated. If triggered, we require a
+  //   second style+layout pass.
   bool OnValidateSnapshot(bool snapshot_changed);
 
   void OnRangeUpdate();

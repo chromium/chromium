@@ -2867,7 +2867,15 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
     InvalidateNormalizedTiming();
   }
 
-  if (needs_new_start_time) {
+  if (timeline_->IsMonotonicallyIncreasing()) {
+    // We only call OnValidateSnapshot for an animation with a monotonically
+    // increasing timeline when it is associated with a TimelineTrigger which,
+    // on being validated, triggered the animation. So, we need another
+    // style+layout pass and we need to invalidate the animating element's
+    // style.
+    needs_update = true;
+    ApplyPendingPlaybackRate();
+  } else if (needs_new_start_time) {
     // Previous current time is used in update finished state to maintain
     // the current time if seeking out of bounds. A range update can place
     // current time temporarily out of bounds, but this should not be

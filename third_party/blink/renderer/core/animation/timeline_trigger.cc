@@ -34,7 +34,7 @@ TimelineTrigger::TimelineTrigger(TimelineTriggerRangeList* ranges,
   }
 
   // A default trigger will need to trip immediately.
-  UpdateState();
+  Update();
 }
 
 /* static */
@@ -56,28 +56,20 @@ std::optional<TimelineTriggerState> TimelineTrigger::ComputeState() {
   return GetRange() ? GetRange()->UpdateState() : std::nullopt;
 }
 
-bool TimelineTrigger::UpdateState() {
+bool TimelineTrigger::Update() {
   std::optional<State> new_state = ComputeState();
   if (!new_state) {
     return false;
   }
 
-  State old_state = last_snapshot_state_;
+  State old_state = state_;
   if (new_state.value() == old_state) {
     return true;
   }
-  last_snapshot_state_ = *new_state;
-  return false;
-}
 
-void TimelineTrigger::UpdateAnimations() {
-  if (last_snapshot_state_ == last_animation_update_state_) {
-    return;
-  }
+  state_ = *new_state;
 
-  last_animation_update_state_ = last_snapshot_state_;
-
-  switch (last_animation_update_state_) {
+  switch (state_) {
     case State::kPrimary:
       PerformActivate();
       break;
@@ -87,6 +79,8 @@ void TimelineTrigger::UpdateAnimations() {
     default:
       NOTREACHED();
   }
+
+  return false;
 }
 
 void TimelineTrigger::Trace(Visitor* visitor) const {
@@ -98,8 +92,7 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
                                         Behavior activate_behavior,
                                         Behavior deactivate_behavior,
                                         ExceptionState& exception_state) {
-  if (last_snapshot_state_ == State::kIdle ||
-      HasPausedCSSPlayState(animation)) {
+  if (state_ == State::kIdle || HasPausedCSSPlayState(animation)) {
     return;
   }
 
@@ -109,7 +102,7 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
   std::optional<Behavior> new_behavior_for_current_state;
   auto old_data_it = BehaviorMap().find(animation);
 
-  switch (last_snapshot_state_) {
+  switch (state_) {
     case State::kPrimary:
       // We last tripped into "activate"; we might need to act.
       new_behavior_for_current_state = activate_behavior;

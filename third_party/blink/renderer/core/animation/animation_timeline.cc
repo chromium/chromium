@@ -230,23 +230,6 @@ void AnimationTimeline::RemoveTrigger(TimelineTrigger* trigger) {
   triggers_.erase(trigger);
 }
 
-void AnimationTimeline::ServiceTriggers() {
-  DCHECK(RuntimeEnabledFeatures::TimelineTriggerEnabled());
-  PhaseAndTime current_phase_and_time = CurrentPhaseAndTime();
-
-  if (last_current_phase_and_time_ != current_phase_and_time) {
-    update_triggers_ = true;
-  }
-
-  if (update_triggers_) {
-    for (TimelineTrigger* trigger : triggers_) {
-      trigger->UpdateAnimations();
-    }
-  }
-
-  update_triggers_ = false;
-}
-
 void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);
