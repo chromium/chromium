@@ -3414,7 +3414,7 @@ shown properly on the user-facing crash UI.
   <int value="1" label="Key error"/>
   <int value="2" label="Signing error"/>
   <int value="3" label="Network error (DEPRECATED)"/>
-  <int value="4" label="HTTP error"/>
+  <int value="4" label="HTTP error (DEPRECATED)"/>
   <int value="5" label="Server requested termination"/>
   <int value="6" label="Invalid configuration JSON (DEPRECATED)"/>
   <int value="7" label="Invalid session ID"/>
