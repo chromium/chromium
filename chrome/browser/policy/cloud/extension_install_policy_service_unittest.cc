@@ -67,7 +67,7 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedUnknown) {
       .WillRepeatedly(testing::Return(false));
   builder.SetPolicyService(std::move(policy_service));
   auto test_profile = builder.Build();
-  ExtensionInstallPolicyService service(test_profile.get());
+  ExtensionInstallPolicyServiceImpl service(test_profile.get());
   EXPECT_FALSE(service
                    .IsExtensionAllowed(
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
@@ -75,7 +75,7 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedUnknown) {
 }
 
 TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedByDefault) {
-  ExtensionInstallPolicyService service(profile());
+  ExtensionInstallPolicyServiceImpl service(profile());
   EXPECT_TRUE(service
                   .IsExtensionAllowed(
                       ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
@@ -92,7 +92,7 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedByPolicy) {
              nullptr);
   policy_provider_->UpdateExtensionInstallPolicy(policy);
 
-  ExtensionInstallPolicyService service(profile());
+  ExtensionInstallPolicyServiceImpl service(profile());
   EXPECT_TRUE(service
                   .IsExtensionAllowed(
                       ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
@@ -109,7 +109,7 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionBlockedByPolicy) {
              nullptr);
   policy_provider_->UpdateExtensionInstallPolicy(policy);
 
-  ExtensionInstallPolicyService service(profile());
+  ExtensionInstallPolicyServiceImpl service(profile());
   EXPECT_FALSE(service
                    .IsExtensionAllowed(
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
@@ -138,7 +138,7 @@ TEST_F(ExtensionInstallPolicyServiceTest,
 
   policy_provider_->UpdateExtensionInstallPolicy(policy);
 
-  ExtensionInstallPolicyService service(profile());
+  ExtensionInstallPolicyServiceImpl service(profile());
   EXPECT_FALSE(service
                    .IsExtensionAllowed(
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))

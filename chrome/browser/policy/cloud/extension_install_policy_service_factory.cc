@@ -48,7 +48,7 @@ ExtensionInstallPolicyServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<ExtensionInstallPolicyService>(profile);
+  return std::make_unique<ExtensionInstallPolicyServiceImpl>(profile);
 }
 
 }  // namespace policy

@@ -19,25 +19,38 @@ class Profile;
 namespace policy {
 struct ExtensionIdAndVersion;
 
-// A keyed service that provides access to the extension install policy.
 class ExtensionInstallPolicyService : public KeyedService {
  public:
-  explicit ExtensionInstallPolicyService(Profile* profile);
-  ~ExtensionInstallPolicyService() override;
-
-  ExtensionInstallPolicyService(const ExtensionInstallPolicyService&) = delete;
-  ExtensionInstallPolicyService& operator=(
-      const ExtensionInstallPolicyService&) = delete;
+  ~ExtensionInstallPolicyService() override = default;
 
   // To call before installing an extension
   // `extension_id_and_version` is an extension ID and version pair formatted
   // as "id@version".
+  virtual void CanInstallExtension(
+      const ExtensionIdAndVersion& extension_id_and_version,
+      base::OnceCallback<void(bool)>) = 0;
+
+  virtual std::optional<bool> IsExtensionAllowed(
+      const ExtensionIdAndVersion& extension_id_and_version) = 0;
+};
+
+// A keyed service that provides access to the extension install policy.
+class ExtensionInstallPolicyServiceImpl : public ExtensionInstallPolicyService {
+ public:
+  explicit ExtensionInstallPolicyServiceImpl(Profile* profile);
+  ~ExtensionInstallPolicyServiceImpl() override;
+
+  ExtensionInstallPolicyServiceImpl(const ExtensionInstallPolicyServiceImpl&) =
+      delete;
+  ExtensionInstallPolicyServiceImpl& operator=(
+      const ExtensionInstallPolicyServiceImpl&) = delete;
+
+  // ExtensionInstallPolicyService:
   void CanInstallExtension(
       const ExtensionIdAndVersion& extension_id_and_version,
-      base::OnceCallback<void(bool)>);
-
+      base::OnceCallback<void(bool)>) override;
   std::optional<bool> IsExtensionAllowed(
-      const ExtensionIdAndVersion& extension_id_and_version);
+      const ExtensionIdAndVersion& extension_id_and_version) override;
 
  private:
   raw_ptr<Profile> profile_;

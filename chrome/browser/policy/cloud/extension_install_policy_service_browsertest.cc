@@ -192,7 +192,7 @@ class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
   void CheckCanInstallExtension(const std::string& extension_id,
                                 const std::string& extension_version,
                                 bool expected_result) {
-    ExtensionInstallPolicyService service(browser()->profile());
+    ExtensionInstallPolicyServiceImpl service(browser()->profile());
     base::test::TestFuture<bool> future;
     service.CanInstallExtension(
         ExtensionIdAndVersion(extension_id, extension_version),
@@ -212,7 +212,7 @@ class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                        CanInstallExtensionAllowedByDefault) {
-  ExtensionInstallPolicyService service(browser()->profile());
+  ExtensionInstallPolicyServiceImpl service(browser()->profile());
   base::test::TestFuture<bool> future;
   service.CanInstallExtension(
       ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1),

@@ -50,15 +50,18 @@ bool IsExtensionInstallBlocked(
 }
 
 }  // namespace
-ExtensionInstallPolicyService::ExtensionInstallPolicyService(Profile* profile)
+
+ExtensionInstallPolicyServiceImpl::ExtensionInstallPolicyServiceImpl(
+    Profile* profile)
     : profile_(profile) {
   CHECK(base::FeatureList::IsEnabled(
       features::kEnableExtensionInstallPolicyFetching));
 }
 
-ExtensionInstallPolicyService::~ExtensionInstallPolicyService() = default;
+ExtensionInstallPolicyServiceImpl::~ExtensionInstallPolicyServiceImpl() =
+    default;
 
-void ExtensionInstallPolicyService::CanInstallExtension(
+void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
     const ExtensionIdAndVersion& extension_id_and_version,
     base::OnceCallback<void(bool)> callback) {
   if (!profile_->GetPrefs()->GetBoolean(
@@ -129,7 +132,7 @@ void ExtensionInstallPolicyService::CanInstallExtension(
   }
 }
 
-std::optional<bool> ExtensionInstallPolicyService::IsExtensionAllowed(
+std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
     const ExtensionIdAndVersion& extension_id_and_version) {
   auto* policy_service =
       profile_->GetProfilePolicyConnector()->policy_service();
