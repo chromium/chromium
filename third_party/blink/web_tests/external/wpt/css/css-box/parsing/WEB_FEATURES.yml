@@ -11,3 +11,9 @@ features:
   files:
   - 'width-*'
   - 'height-*'
+- name: padding
+  files:
+  - 'padding-*'
+- name: visibility
+  files:
+  - 'visibility-*'

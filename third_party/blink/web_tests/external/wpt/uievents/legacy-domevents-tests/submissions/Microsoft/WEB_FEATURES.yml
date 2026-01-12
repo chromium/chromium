@@ -1,0 +1,8 @@
+features:
+- name: composition-events
+  files:
+  - CompositionEvent.html
+  - compositionstart.*
+- name: focus-events
+  files:
+  - focus*

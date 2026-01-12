@@ -14,10 +14,12 @@ features:
   - "!document-base-url.html"
   - "!image-base-url.html"
   - "!image-loading-lazy-base-url.html"
-  # Exclude `srcset`. Keep in sync with `srcset mappings below.
+  # Exclude `srcset`. Keep in sync with `srcset` mappings below.
   - "!responsive-image-select-print.html"
   - "!update-the-source-set.html"
   - "!null-image-source.html"
+  # Exclude `image-maps`. Keep in sync with `image-maps` mappings below.
+  - "!usemap-casing.html"
 - name: loading-lazy
   files:
   # Keep in sync with `img` mappings.
@@ -42,4 +44,5 @@ features:
   - null-image-source.html
 - name: image-maps
   files:
+  # Keep in sync with `img` mappings.
   - usemap-casing.html

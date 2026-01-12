@@ -3,3 +3,7 @@ features:
   files:
   - "css3-modsel-21*"
   - "css3-modsel-66*"
+- name: lang
+  files:
+  - "css3-modsel-22.xml"
+  - "css3-modsel-67.xml"

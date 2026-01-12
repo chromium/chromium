@@ -47,3 +47,22 @@ features:
 - name: open-pseudo
   files:
   - open-pseudo.html
+- name: heading-selectors
+  files:
+  - heading.html
+- name: host
+  files:
+  - featureless-001.html
+  - featureless-002.html
+  - featureless-003.html
+# TODO: Map the is-where-* tests here and in subdirectories to either or both
+# of is/where, or refactor the tests to not overlap.
+- name: is
+  files:
+  - is-default-ns-*
+  - is-nested.html
+  - is-specificity.html
+  - is-specificity-shadow.html
+- name: where
+  files:
+  - pseudo-where-crash.html

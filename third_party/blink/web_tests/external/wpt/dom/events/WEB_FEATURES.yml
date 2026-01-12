@@ -2,3 +2,11 @@ features:
 - name: change-event
   files:
   - legacy-pre-activation-behavior.window.js
+- name: focus-events
+  files:
+  - no-focus-events-at-clicking-editable-content-in-link.html
+- name: events
+  files:
+  - '*'
+  - '!legacy-pre-activation-behavior.window.js'
+  - '!no-focus-events-at-clicking-editable-content-in-link.html'

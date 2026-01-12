@@ -1,4 +1,21 @@
 features:
+- name: box-sizing
+  files:
+  - border-box-and-max-content-*
+  - border-box-and-max-content-002.html
+  - border-box-and-max-content-003.html
+  - box-sizing-*
+  - dynamic-change-inline-size-001.html
+  - inheritance-001.html
+  - intrinsic-percent-replaced-009.html
+  - intrinsic-percent-replaced-012.html
+  - intrinsic-percent-replaced-013.html
+  - intrinsic-percent-replaced-014.html
+  - intrinsic-percent-replaced-019.html
+  - intrinsic-percent-replaced-020.html
+  - intrinsic-ratio-replaced-box-sizing.html
+  - table-child-percentage-height-with-border-box.html
+  - thin-element-render.html
 - name: fit-content
   files:
   - 'div-fit-content-*'

@@ -1,4 +1,7 @@
 features:
+- name: font-family
+  files:
+  - font-family-*
 - name: font-optical-sizing
   files:
   - font-optical-sizing-*
