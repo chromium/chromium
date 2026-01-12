@@ -4,23 +4,30 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "base/cancelable_callback.h"
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_cell.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
+#import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller_delegate.h"
+#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
@@ -31,9 +38,12 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
+
 /// The reuse identifier for the input item cells in the carousel.
 NSString* const kItemCellReuseIdentifier = @"ComposeboxInputItemCell";
 /// The identifier for the main section of the collection view.
@@ -116,13 +126,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config),
       palette);
 }
+
 }  // namespace
 
 @interface ComposeboxInputPlateViewController () <
-    UITextViewDelegate,
     ComposeboxInputItemCellDelegate,
     UICollectionViewDelegate,
-    UICollectionViewDelegateFlowLayout>
+    UICollectionViewDelegateFlowLayout,
+    UIDropInteractionDelegate,
+    UITextViewDelegate>
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
@@ -211,6 +223,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   /// Whether the image generation mode is enabled.
   BOOL _imageGenerationEnabled;
+
+  /// Whether items are being dragged within the input plate view.
+  BOOL _dragSessionWithinInputPlate;
+
+  /// The remaining capacity for attachments.
+  NSUInteger _remainingAttachmentCapacity;
 }
 
 /// ComposeboxAnimationContext
@@ -218,8 +236,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 @synthesize keyboardHeight = _keyboardHeight;
 
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme {
-  self = [super init];
-  if (self) {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _omniboxContainer = [[UIView alloc] init];
     _theme = theme;
   }
@@ -623,6 +640,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self updatePlusButtonItems];
 }
 
+- (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
+  _remainingAttachmentCapacity = capacity;
+}
+
 #pragma mark - Actions
 
 - (void)galleryButtonTapped {
@@ -665,6 +686,73 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)sendButtonTapped {
   [self.delegate composeboxViewController:self didTapSendButton:_sendButton];
+}
+
+#pragma mark - UIDropInteractionDelegate
+
+- (BOOL)dropInteraction:(UIDropInteraction*)interaction
+       canHandleSession:(id<UIDropSession>)session {
+  _dragSessionWithinInputPlate = YES;
+  return YES;
+}
+
+- (UIDropProposal*)dropInteraction:(UIDropInteraction*)interaction
+                  sessionDidUpdate:(id<UIDropSession>)session {
+  if (session.items.count > _remainingAttachmentCapacity) {
+    return
+        [[UIDropProposal alloc] initWithDropOperation:UIDropOperationForbidden];
+  }
+
+  BOOL willAllowPDFDrop = [self willAllowPDFDrop:session];
+
+  // TODO(crbug.com/473569401): Introduce drag and drop for images.
+  BOOL dropWillBeAllowed = willAllowPDFDrop;
+
+  return [[UIDropProposal alloc]
+      initWithDropOperation:dropWillBeAllowed ? UIDropOperationCopy
+                                              : UIDropOperationForbidden];
+}
+
+- (void)dropInteraction:(UIDropInteraction*)interaction
+            performDrop:(id<UIDropSession>)session {
+  // Drop each eligible dragged item into the Composebox.
+  for (UIDragItem* item in session.items) {
+    if ([self willAllowPDFDrop:session] &&
+        [item.itemProvider
+            hasItemConformingToTypeIdentifier:UTTypePDF.identifier]) {
+      [self performDropForPDF:item.itemProvider];
+    }
+    // TODO(crbug.com/473569401): Introduce `else-if` to enable drag and drop
+    // for images.
+  }
+  // Drop complete.
+  _dragSessionWithinInputPlate = NO;
+}
+
+- (void)dropInteraction:(UIDropInteraction*)interaction
+         sessionDidExit:(id<UIDropSession>)session {
+  _dragSessionWithinInputPlate = NO;
+}
+
+- (void)dropInteraction:(UIDropInteraction*)interaction
+          sessionDidEnd:(id<UIDropSession>)session {
+  CHECK(self.delegate);
+
+  if (!_dragSessionWithinInputPlate) {
+    return;
+  }
+
+  if (session.items.count > _remainingAttachmentCapacity) {
+    [self.delegate didFailToAttachDueToAttachmentLimit:self];
+    return;
+  }
+
+  if (_imageGenerationEnabled &&
+      ![session.items.firstObject.itemProvider
+          hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+    [self.delegate didFailToAttachDueToAttachmentLimit:self];
+    return;
+  }
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -912,8 +1000,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 }
 
-// Updates the placeholder text based on the current operating mode of the
-// composebox.
+/// Updates the placeholder text based on the current operating mode of the
+/// composebox.
 - (void)updatePlaceholderText {
   if (_AIModeEnabled) {
     [_editView
@@ -953,7 +1041,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   ]];
 }
 
-/// Creates an extended touch target button with the given image.
+/// Creates an extended touch target button with the given `image`.
 - (UIButton*)createButtonWithImage:(UIImage*)image {
   UIButton* button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
@@ -969,6 +1057,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return button;
 }
 
+/// Creates the AI Mode button.
 - (UIButton*)createAIMButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   button.configurationUpdateHandler = ^(UIButton* updatedButton) {
@@ -1435,6 +1524,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      _inputPlateContainerView);
 
   [self updateDepthShadowAppearance];
+  [_inputPlateContainerView
+      addInteraction:[[UIDropInteraction alloc] initWithDelegate:self]];
   [self.view addSubview:_inputPlateContainerView];
 
   _glowEffectView = ios::provider::CreateGlowEffect(
@@ -1592,6 +1683,77 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   ]];
 
   return button;
+}
+
+/// Returns whether a PDF drop will be allowed based on the Composebox mode,
+/// whether a drag and drop action is allowed, and whether there is a PDF in the
+/// drop session.
+- (BOOL)willAllowPDFDrop:(id<UIDropSession>)session {
+  if (_attachFileActionsDisabled) {
+    return NO;
+  }
+
+  if (_attachFileActionsHidden) {
+    return NO;
+  }
+
+  if (![session
+          hasItemsConformingToTypeIdentifiers:@[ UTTypePDF.identifier ]]) {
+    return NO;
+  }
+
+  return YES;
+}
+
+/// Performs a drop for a dragged PDF file from a given `itemProvider`.
+- (void)performDropForPDF:(NSItemProvider*)itemProvider {
+  CHECK([itemProvider hasItemConformingToTypeIdentifier:UTTypePDF.identifier]);
+
+  __weak __typeof(self) weakSelf = self;
+  [itemProvider
+      loadFileRepresentationForTypeIdentifier:UTTypePDF.identifier
+                            completionHandler:^(NSURL* url, NSError* error) {
+                              [weakSelf handlePDFDrop:url error:error];
+                            }];
+}
+
+/// Helper for `-performDropForPDF`. Handles a drop action for a PDF file.
+- (void)handlePDFDrop:(NSURL*)url error:(NSError*)error {
+  CHECK(self.mutator);
+
+  if (!url) {
+    return;
+  }
+  if (error) {
+    return;
+  }
+
+  NSString* fileName = url.lastPathComponent;
+  NSURL* tempDirectory = [NSFileManager.defaultManager temporaryDirectory];
+  NSURL* destinationURL = [tempDirectory URLByAppendingPathComponent:fileName];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+
+  // Remove existing file at the destination if it exists, so we can overwrite
+  // it.
+  if ([fileManager fileExistsAtPath:destinationURL.path]) {
+    [fileManager removeItemAtURL:destinationURL error:nil];
+  }
+
+  if (![fileManager copyItemAtURL:url toURL:destinationURL error:nil]) {
+    return;
+  }
+
+  GURL pdfURL = net::GURLWithNSURL(destinationURL);
+
+  if (!pdfURL.is_valid()) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.mutator processPDFFileURL:pdfURL];
+  });
 }
 
 @end

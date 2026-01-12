@@ -19,6 +19,7 @@ source_set("ui") {
     "composebox_input_plate_mutator.h",
     "composebox_input_plate_view_controller.h",
     "composebox_input_plate_view_controller.mm",
+    "composebox_input_plate_view_controller_delegate.h",
     "composebox_metrics_recorder.h",
     "composebox_metrics_recorder.mm",
     "composebox_navigation_consumer.h",

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller_delegate.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -331,7 +332,7 @@ const CGFloat kSnackbarBottomMargin = 10;
     (ComposeboxInputPlateViewController*)composeboxViewController {
   PHPickerConfiguration* config = [[PHPickerConfiguration alloc]
       initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  config.selectionLimit = [_mediator maxNumberOfGalleryItemsAllowed];
+  config.selectionLimit = [_mediator maxNumberOfAttachmentsAllowed];
   config.filter = [PHPickerFilter imagesFilter];
   _picker = [[PHPickerViewController alloc] initWithConfiguration:config];
   _picker.delegate = self;
@@ -387,6 +388,21 @@ const CGFloat kSnackbarBottomMargin = 10;
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapSendButton:(UIButton*)button {
   [_omniboxCoordinator acceptInput];
+}
+
+- (void)didFailToAttachDueToAttachmentLimit:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  CHECK_EQ(_viewController, composeboxViewController);
+  switch (_modeHolder.mode) {
+    case ComposeboxMode::kRegularSearch:
+    case ComposeboxMode::kAIM:
+      [self showMaxAttachmentSnackbarError];
+      return;
+    case ComposeboxMode::kImageGeneration:
+      [self showMaxAttachmentForImageGenerationSnackbarError];
+      return;
+  }
+  NOTREACHED();
 }
 
 #pragma mark - PHPickerViewControllerDelegate
@@ -563,6 +579,18 @@ const CGFloat kSnackbarBottomMargin = 10;
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
   [_snackbarPresenter showUnableToAddAttachmentSnackbarWithBottomOffset:offset];
+}
+
+/// Displays a snackbar error indicating the maximum number of attachments has
+/// been reached.
+- (void)showMaxAttachmentForImageGenerationSnackbarError {
+  [self createSnackbarPresenterIfNeeded];
+  CGFloat offset = _viewController.keyboardHeight;
+  if (!_theme.isTopInputPlate) {
+    offset += _viewController.inputHeight + kSnackbarBottomMargin;
+  }
+  [_snackbarPresenter
+      showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:offset];
 }
 
 - (void)createSnackbarPresenterIfNeeded {

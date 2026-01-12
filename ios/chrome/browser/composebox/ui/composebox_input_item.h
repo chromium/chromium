@@ -9,7 +9,7 @@
 
 namespace base {
 class UnguessableToken;
-}
+}  // namespace base
 
 // Enum for the loading state of an item.
 enum class ComposeboxInputItemState {

@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_
 
-#import <Foundation/Foundation.h>
+@class ComposeboxInputItem;
+class GURL;
 
-/// Mutator for the composebox composebox.
-@protocol ComposeboxInputPlateMutator <NSObject>
+/// Mutator for the composebox input plate.
+@protocol ComposeboxInputPlateMutator
 
 /// Removes the given `item` from the context.
 - (void)removeItem:(ComposeboxInputItem*)item;
@@ -21,6 +22,9 @@
 
 /// Requests a refresh of UI.
 - (void)requestUIRefresh;
+
+/// Processes the given `PDFFileURL` for a file.
+- (void)processPDFFileURL:(GURL)PDFFileURL;
 
 @end
 

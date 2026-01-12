@@ -15,6 +15,11 @@ class Browser;
 // Shows a snackbar with the attachment limit message.
 - (void)showAttachmentLimitSnackbar;
 
+// Shows a snackbar with the attachment limit message for an image generation
+// prompt with a bottom offset.
+- (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
+    (CGFloat)bottomOffset;
+
 // Shows a snackbar with the attachment limit message with a bottom offset.
 - (void)showAttachmentLimitSnackbarWithBottomOffset:(CGFloat)bottomOffset;
 

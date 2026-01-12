@@ -69,6 +69,9 @@ enum class ComposeboxInputPlateControls : unsigned int;
 // Sets whether the gallery actions are disabled.
 - (void)disableGalleryActions:(BOOL)disabled;
 
+// Sets the remaining capacity for attachments.
+- (void)setRemainingAttachmentCapacity:(NSUInteger)capacity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_

@@ -1464,6 +1464,11 @@
       <message name="IDS_IOS_COMPOSEBOX_GALLERY_ACTION" desc="The contextual menu option for opening the gallery picker. [iOS only].">
         Gallery
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_IMAGE_GEN_MAXIMUM_ATTACHMENTS_REACHED" desc="Message displayed in a snackbar when the user tries to attach more than the maximum allowed number of images to an image generation prompt. [iOS only].">
+          {COUNT, plural,
+          =1 {Add up to 1 image}
+          other {Add up to {COUNT} images}}
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER" desc="The placeholder displayed in the compose box when the nano banana or image generation mode is enabled. [iOS only].">
         Describe your image
       </message>

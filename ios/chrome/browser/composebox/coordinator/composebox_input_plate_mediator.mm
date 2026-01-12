@@ -348,49 +348,11 @@ CreateInputDataFromAnnotatedPageContent(
   [self commitUIUpdates];
 }
 
-- (void)processPDFFileURL:(GURL)PDFFileURL {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSString* assetID = base::SysUTF8ToNSString(PDFFileURL.spec());
-  if ([_items assetAlreadyLoaded:assetID]) {
-    return;
-  }
-
-  // Check file size.
-  NSURL* nsURL = net::NSURLWithGURL(PDFFileURL);
-  NSError* error = nil;
-  NSNumber* fileSize =
-      [[nsURL resourceValuesForKeys:@[ NSURLFileSizeKey ]
-                              error:&error] objectForKey:NSURLFileSizeKey];
-  if (fileSize && [fileSize unsignedLongLongValue] > kMaxPDFFileSize) {
-    [self.delegate showSnackbarForItemUploadDidFail];
-    return;
-  }
-
-  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
-      initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeFile
-                              assetID:assetID];
-  item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
-  [_items addItem:item];
-  base::UnguessableToken identifier = item.identifier;
-
-  // Read the data in the background then call `onDataReadForItem`.
-  __weak __typeof(self) weakSelf = self;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ReadDataFromURL, PDFFileURL),
-      base::BindOnce(^(NSData* data) {
-        [weakSelf onDataReadForItemWithIdentifier:identifier
-                                          fromURL:PDFFileURL
-                                         withData:data];
-      }));
-}
-
 - (BOOL)canAddMoreAttachments {
-  return _items.canAddMoreAttachments;
+  return [self maxNumberOfAttachmentsAllowed] > 0;
 }
 
-- (NSUInteger)maxNumberOfGalleryItemsAllowed {
+- (NSUInteger)maxNumberOfAttachmentsAllowed {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   NSUInteger availableSlots = _items.availableSlots;
@@ -403,7 +365,9 @@ CreateInputDataFromAnnotatedPageContent(
     case ComposeboxMode::kImageGeneration: {
       // For ImageGeneration, allow 1 image if no images are present, otherwise
       // 0.
-      return _items.hasImage ? 0 : MIN(availableSlots, 1);
+      return _items.hasImage
+                 ? 0
+                 : MIN(availableSlots, kAttachmentLimitForImageGeneration);
     }
   }
 }
@@ -452,6 +416,44 @@ CreateInputDataFromAnnotatedPageContent(
 
   _contextualSearchSession->CreateSearchUrl(std::move(search_url_request_info),
                                             std::move(callback));
+}
+
+- (void)processPDFFileURL:(GURL)PDFFileURL {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSString* assetID = base::SysUTF8ToNSString(PDFFileURL.spec());
+  if ([_items assetAlreadyLoaded:assetID]) {
+    return;
+  }
+
+  // Check file size.
+  NSURL* nsURL = net::NSURLWithGURL(PDFFileURL);
+  NSError* error = nil;
+  NSNumber* fileSize =
+      [[nsURL resourceValuesForKeys:@[ NSURLFileSizeKey ]
+                              error:&error] objectForKey:NSURLFileSizeKey];
+  if (fileSize && [fileSize unsignedLongLongValue] > kMaxPDFFileSize) {
+    [self.delegate showSnackbarForItemUploadDidFail];
+    return;
+  }
+
+  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypeFile
+                              assetID:assetID];
+  item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
+  [_items addItem:item];
+  base::UnguessableToken identifier = item.identifier;
+
+  // Read the data in the background then call `onDataReadForItem`.
+  __weak __typeof(self) weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ReadDataFromURL, PDFFileURL),
+      base::BindOnce(^(NSData* data) {
+        [weakSelf onDataReadForItemWithIdentifier:identifier
+                                          fromURL:PDFFileURL
+                                         withData:data];
+      }));
 }
 
 #pragma mark - ComposeboxModeObserver
@@ -1377,10 +1379,9 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL canSearchWithAI = [self isEligibleToAIM];
   BOOL isImageCreationMode =
       _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  BOOL canAddMoreImages = [self maxNumberOfGalleryItemsAllowed] > 0;
   BOOL attachmentsAvailable =
       (canCreateImage || canSearchWithAI) && [self isContentSharingEnabled];
-  BOOL canAddMoreAttachement = [self canAddMoreAttachments];
+  BOOL canAddMoreAttachments = [self canAddMoreAttachments];
 
   // Image generation action.
   [self.consumer disableCreateImageActions:hasTabOrFile];
@@ -1388,24 +1389,26 @@ CreateInputDataFromAnnotatedPageContent(
 
   // Add tabs action.
   [self.consumer
-      disableAttachTabActions:isImageCreationMode || !canAddMoreAttachement];
+      disableAttachTabActions:isImageCreationMode || !canAddMoreAttachments];
   [self.consumer hideAttachTabActions:!attachmentsAvailable];
 
   // Add files action.
   [self.consumer
-      disableAttachFileActions:isImageCreationMode || !canAddMoreAttachement];
+      disableAttachFileActions:isImageCreationMode || !canAddMoreAttachments];
   [self.consumer
       hideAttachFileActions:!canUploadFiles || !attachmentsAvailable];
 
   // Add pictures from user gallery action.
-  [self.consumer
-      disableGalleryActions:!canAddMoreImages || !canAddMoreAttachement];
+  [self.consumer disableGalleryActions:!canAddMoreAttachments];
   [self.consumer hideGalleryActions:!attachmentsAvailable];
 
   // Add picture from camera action.
-  [self.consumer
-      disableCameraActions:!canAddMoreImages || !canAddMoreAttachement];
+  [self.consumer disableCameraActions:!canAddMoreAttachments];
   [self.consumer hideCameraActions:!attachmentsAvailable];
+
+  // Set the number of attachments that can still be added.
+  [self.consumer
+      setRemainingAttachmentCapacity:[self maxNumberOfAttachmentsAllowed]];
 }
 
 /// Updates the consumer items and maybe trigger AIM.

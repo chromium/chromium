@@ -88,6 +88,8 @@
 }
 - (void)disableGalleryActions:(BOOL)disabled {
 }
+- (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
+}
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)visibleControls {
   _visibleControls = visibleControls;
 }
