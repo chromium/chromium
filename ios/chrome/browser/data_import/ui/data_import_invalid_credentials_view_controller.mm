@@ -55,16 +55,23 @@ NSString* const kDataImportInvalidCredentialsSection =
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  NSString* closeButtonTitle = l10n_util::GetNSString(
-      IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE);
   self.title =
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_TITLE);
-  UIBarButtonItem* closeButton =
-      [[UIBarButtonItem alloc] initWithTitle:closeButtonTitle
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(didTapCloseButton)];
-  self.navigationItem.rightBarButtonItem = closeButton;
+  if (@available(iOS 26, *)) {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(didTapCloseButton)];
+  } else {
+    NSString* closeButtonTitle = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE);
+    UIBarButtonItem* closeButton =
+        [[UIBarButtonItem alloc] initWithTitle:closeButtonTitle
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(didTapCloseButton)];
+    self.navigationItem.rightBarButtonItem = closeButton;
+  }
   /// Sets up table view properties.
   self.tableView.accessibilityIdentifier =
       GetInvalidPasswordsTableViewAccessibilityIdentifier();
