@@ -21,6 +21,7 @@ class DeviceParentalControlsNoOpImpl : public DeviceParentalControls {
       const DeviceParentalControlsNoOpImpl&) = delete;
 
   // DeviceParentalControls:
+  bool IsWebFilteringEnabled() const override;
   bool IsSafeSearchForced() const override;
   bool IsEnabled() const override;
   bool IsBrowserContentFiltersEnabled() const override;

@@ -31,6 +31,10 @@ void AndroidParentalControls::Init() {
 
 AndroidParentalControls::~AndroidParentalControls() = default;
 
+bool AndroidParentalControls::IsWebFilteringEnabled() const {
+  return IsBrowserContentFiltersEnabled();
+}
+
 bool AndroidParentalControls::IsSafeSearchForced() const {
   return IsSearchContentFiltersEnabled();
 }

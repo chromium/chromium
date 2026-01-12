@@ -118,10 +118,6 @@ class SupervisedUserService : public KeyedService,
   // on the UI thread.
   SupervisedUserURLFilter* GetURLFilter() const;
 
-  // Returns true if the user is supervised locally (e.g. on the device) and
-  // requested browser content to be filtered.
-  bool IsLocalBrowserFilteringEnabled() const;
-
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
 
@@ -206,10 +202,6 @@ class SupervisedUserService : public KeyedService,
   void OnSearchContentFiltersDisabled();
   void OnBrowserContentFiltersEnabled();
   void OnBrowserContentFiltersDisabled();
-
-  // Returns true if the user is supervised locally (e.g. on the device) and
-  // requested search content to be filtered.
-  bool IsLocalSearchFilteringEnabled() const;
 
   const raw_ref<PrefService> user_prefs_;
 

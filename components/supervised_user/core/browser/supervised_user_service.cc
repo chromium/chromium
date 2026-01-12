@@ -116,30 +116,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
   return url_filter_.get();
 }
 
-bool SupervisedUserService::IsLocalBrowserFilteringEnabled() const {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
-      IsSubjectToParentalControls(user_prefs_.get())) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  return device_parental_controls_->IsBrowserContentFiltersEnabled();
-}
-
-bool SupervisedUserService::IsLocalSearchFilteringEnabled() const {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
-      IsSubjectToParentalControls(user_prefs_.get())) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  return device_parental_controls_->IsSearchContentFiltersEnabled();
-}
-
 std::optional<Custodian> SupervisedUserService::GetCustodian() const {
   return GetCustodianFromPrefs(user_prefs_.get(),
                                prefs::kSupervisedUserCustodianEmail,
@@ -203,12 +179,12 @@ SupervisedUserService::SupervisedUserService(
 
 #if BUILDFLAG(IS_ANDROID)
   device_parental_controls_observation_.Observe(&*device_parental_controls_);
-  // Notifications might have been missed, because the underlying bridges
-  // might have been created long before this service. Re-trigger them.
-  if (IsLocalBrowserFilteringEnabled()) {
+  if (device_parental_controls_->IsBrowserContentFiltersEnabled()) {
+    // No-op if Family Link parental controls are already enabled.
     OnBrowserContentFiltersEnabled();
   }
-  if (IsLocalSearchFilteringEnabled()) {
+  if (device_parental_controls_->IsSearchContentFiltersEnabled()) {
+    // No-op if Family Link parental controls are already enabled.
     OnSearchContentFiltersEnabled();
   }
 #endif  // BUILDFLAG(IS_ANDROID)

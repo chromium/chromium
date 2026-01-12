@@ -41,6 +41,9 @@ class DeviceParentalControls {
   // Initialized with GlobalFeatures.
   virtual void Init() {}
 
+  // Returns true if web filtering (url classification) is enabled for the user.
+  virtual bool IsWebFilteringEnabled() const = 0;
+
   // Returns true if safe search is forced for the user client-side (can be
   // overridden by policies).
   virtual bool IsSafeSearchForced() const = 0;

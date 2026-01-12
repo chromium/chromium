@@ -9,6 +9,10 @@ namespace supervised_user {
 DeviceParentalControlsNoOpImpl::DeviceParentalControlsNoOpImpl() = default;
 DeviceParentalControlsNoOpImpl::~DeviceParentalControlsNoOpImpl() = default;
 
+bool DeviceParentalControlsNoOpImpl::IsWebFilteringEnabled() const {
+  return false;
+}
+
 bool DeviceParentalControlsNoOpImpl::IsSafeSearchForced() const {
   return false;
 }

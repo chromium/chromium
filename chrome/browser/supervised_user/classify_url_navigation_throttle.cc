@@ -237,7 +237,16 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
     bool already_sent_request,
     bool is_main_frame) const {
 #if BUILDFLAG(IS_ANDROID)
-  if (supervised_user_service()->IsLocalBrowserFilteringEnabled() &&
+  // TODO(crbug.com/471985868): consider making decision on what kind of
+  // interstitial to show when this throttle is created, not in its runtime.
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle()->GetWebContents()->GetBrowserContext());
+
+  // Family link supervised users should not see local supervision
+  // interstitials. Other users can see these interstitials if they have local
+  // supervision enabled.
+  if (!IsSubjectToParentalControls(*profile->GetPrefs()) &&
+      g_browser_process->device_parental_controls().IsWebFilteringEnabled() &&
       UseInterstitialForLocalSupervision()) {
     return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
         result.url, g_browser_process->GetApplicationLocale());

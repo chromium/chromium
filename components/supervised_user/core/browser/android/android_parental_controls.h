@@ -30,6 +30,7 @@ class AndroidParentalControls : public DeviceParentalControls,
 
   // DeviceParentalControls:
   void Init() override;
+  bool IsWebFilteringEnabled() const override;
   bool IsSafeSearchForced() const override;
   bool IsEnabled() const override;
   bool IsBrowserContentFiltersEnabled() const override;
