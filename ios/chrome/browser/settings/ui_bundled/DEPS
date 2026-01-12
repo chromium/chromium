@@ -53,6 +53,7 @@ include_rules = [
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/upgrade/model",
+  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/web/model/features.h",

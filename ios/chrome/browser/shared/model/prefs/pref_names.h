@@ -463,6 +463,11 @@ inline constexpr char kIosReadingListSettingsPromoAlreadySeen[] =
 inline constexpr char kIosReadingListSigninPromoDisplayedCount[] =
     "ios.reading_list.signin_promo_displayed_count";
 
+// Preference that holds a boolean indicating whether the "Reading mode
+// available" message is shown.
+inline constexpr char kIosReaderModeShowAvailability[] =
+    "ios.reading_mode.show_availability";
+
 // Preference that holds a boolean indicating whether the link previews are
 // enabled. Link previews display a live preview of the selected link after a
 // long press.

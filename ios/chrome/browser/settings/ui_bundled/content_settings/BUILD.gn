@@ -34,6 +34,7 @@ source_set("content_settings") {
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",

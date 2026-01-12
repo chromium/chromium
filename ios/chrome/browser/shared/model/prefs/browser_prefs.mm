@@ -743,6 +743,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to show the link preview.
   registry->RegisterBooleanPref(prefs::kLinkPreviewEnabled, true);
 
+  // Register pref used to show the "Reading mode available" message.
+  registry->RegisterBooleanPref(prefs::kIosReaderModeShowAvailability, true);
+
   // Register pref to determine if the user changed the Following sort type.
   registry->RegisterBooleanPref(prefs::kDefaultFollowingFeedSortTypeChanged,
                                 false);

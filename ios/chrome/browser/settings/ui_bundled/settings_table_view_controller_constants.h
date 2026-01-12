@@ -148,6 +148,9 @@ extern NSString* const kSettingsBlockPopupsCellId;
 // The accessibility identifier of the Show Link Preview cell.
 extern NSString* const kSettingsShowLinkPreviewCellId;
 
+// The accessibility identifier of the Show Reading Mode Available cell.
+extern NSString* const kSettingsShowReadingModeAvailableCellId;
+
 // The accessibility identifier of the Detect Addresses cell.
 extern NSString* const kSettingsDetectAddressesCellId;
 

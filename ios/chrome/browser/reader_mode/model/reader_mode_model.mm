@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_panel_item_configuration.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -40,11 +42,14 @@ void ReaderModeModel::FetchConfigurationForWebState(
 
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
-  if (!reader_mode_tab_helper) {
+  PrefService* prefs = profile_->GetPrefs();
+  if (!reader_mode_tab_helper ||
+      !prefs->GetBoolean(prefs::kIosReaderModeShowAvailability)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(nullptr)));
     return;
   }
+
   reader_mode_tab_helper->FetchLastCommittedUrlDistillabilityResult(
       base::BindOnce(&HandleCurrentPageIsDistillableResult, profile_,
                      web_state->GetWeakPtr(), std::move(callback)));

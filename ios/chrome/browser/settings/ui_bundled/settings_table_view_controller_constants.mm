@@ -47,6 +47,8 @@ NSString* const kSettingsPreloadCellId = @"kSettingsPreloadCellId";
 NSString* const kSettingsBlockPopupsCellId = @"kSettingsBlockPopupsCellId";
 NSString* const kSettingsShowLinkPreviewCellId =
     @"kSettingsShowLinkPreviewCellId";
+NSString* const kSettingsShowReadingModeAvailableCellId =
+    @"kSettingsShowReadingModeAvailableCellId";
 NSString* const kSettingsDetectAddressesCellId =
     @"kSettingsDetectAddressesCellId";
 NSString* const kSettingsMimiMapNativeCellId = @"kSettingsMimiMapNativeCellId";
