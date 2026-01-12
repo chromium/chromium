@@ -369,6 +369,12 @@ void GlicActorTaskManager::StopActorTask(
 }
 
 void GlicActorTaskManager::MaybeShowDeactivationToastUi() {
+  // If the ui is deactivated on a tab that is not actuating, don't show the
+  // toast.
+  if (!IsActuating()) {
+    return;
+  }
+
   BrowserWindowInterface* const last_active_bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   actor_keyed_service_->GetActorUiStateManager()->MaybeShowToast(

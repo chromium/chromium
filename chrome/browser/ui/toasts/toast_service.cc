@@ -288,6 +288,7 @@ void ToastService::RegisterToasts(
         ToastId::kGeminiWorkingOnTask,
         ToastSpecification::Builder(GetTaskInProgressIcon(),
                                     IDS_TASK_IN_PROGRESS_TOAST_BODY)
+            .AddGlobalScoped()
             .AddCloseButton()
             .Build());
   }
