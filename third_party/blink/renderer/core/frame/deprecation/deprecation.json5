@@ -592,16 +592,6 @@
       ],
     },
     {
-      name: "XMLNoExternalEntities",
-      message: "Externally loaded entities in XML parsing have been deprecated and will be removed from this browser soon.",
-      translation_note: "Warning displayed to developers that they are using externally loaded entities in an XML document that constitutes a part of the web page. Externally loaded entities are a technical concept of XML document processing.",
-      web_features: [
-        "kXMLExternalResourceLoadEntitiesOnly",
-      ],
-      chrome_status_feature: 6734457763659776,
-      milestone: 144,
-    },
-    {
       name: "XSLT",
       message: "XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon.",
       translation_note: "Warning displayed to developers that they are using either the XSLTProcessor API, or XSLT processing instructions, both of which have been deprecated and are scheduled to be removed.",

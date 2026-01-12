@@ -6,7 +6,7 @@ If you don't crash, you pass. A parsing error in the "xml-parser" subframe is ex
 Frame: 'xml-parser'
 --------
 This page contains the following errors:
-error on line 2 at column 14: Entity ':' not defined
+warning on line 2 at column 14: Entity ':' not defined
 error on line 5 at column 1: AttValue: ' expected
 
 Below is a rendering of the page up to the first error.

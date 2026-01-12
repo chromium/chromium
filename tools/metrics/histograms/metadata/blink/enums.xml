@@ -6347,7 +6347,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5720" label="LcpCandidateRemovedWhilePaintTimePending"/>
   <int value="5721" label="GetBBoxForElementWithZeroWidthOrHeight"/>
   <int value="5722" label="GetBBoxForNestedSVGElementWithZeroWidthOrHeight"/>
-  <int value="5723" label="XMLExternalResourceLoadEntitiesOnly"/>
+  <int value="5723" label="OBSOLETE_kXMLExternalResourceLoadEntitiesOnly"/>
   <int value="5724" label="V8Origin_IsSameOrigin_Method"/>
   <int value="5725" label="V8Origin_IsSameSite_Method"/>
   <int value="5726" label="V8Origin_From_Method"/>

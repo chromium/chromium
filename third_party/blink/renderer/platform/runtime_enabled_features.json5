@@ -6241,6 +6241,7 @@
       // of synchronously including external entities.
       // https://crbug.com/455813733
       name: "XMLNoExternalEntities",
+      status: "stable",
     },
     {
       // Switches from XML parsing through libxml2 to parsing XML using the
