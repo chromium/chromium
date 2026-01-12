@@ -325,16 +325,15 @@ class InspectorPostBodyParser : public RefCounted<InspectorPostBodyParser> {
     if (!request_body || request_body->IsEmpty())
       return;
 
-    parts_.Grow(request_body->Elements().size());
+    raw_parts_.Grow(request_body->Elements().size());
     for (wtf_size_t i = 0; i < request_body->Elements().size(); i++) {
       const FormDataElement& data = request_body->Elements()[i];
       switch (data.type_) {
         case FormDataElement::kData:
-          parts_[i] = String::FromUTF8WithLatin1Fallback(
-              base::as_byte_span(data.data_));
+          raw_parts_[i] = data.data_;
           break;
         case FormDataElement::kEncodedBlob:
-          ReadDataBlob(data.blob_data_handle_, &parts_[i]);
+          ReadDataBlob(data.blob_data_handle_, &raw_parts_[i]);
           break;
         case FormDataElement::kEncodedFile:
         case FormDataElement::kDataPipe:
@@ -350,25 +349,42 @@ class InspectorPostBodyParser : public RefCounted<InspectorPostBodyParser> {
   ~InspectorPostBodyParser() {
     if (error_)
       return;
-    StringBuilder result;
-    for (const auto& part : parts_)
-      result.Append(part);
-    callback_->sendSuccess(result.ToString());
+
+    // Concatenate all parts into a single buffer.
+    Vector<char> combined;
+    for (const auto& part : raw_parts_) {
+      combined.AppendRange(part.begin(), part.end());
+    }
+
+    // Try to decode as UTF-8 first.
+    String text_attempt = String::FromUTF8(base::as_byte_span(combined));
+
+    String result;
+    bool base64_encoded = false;
+
+    if (text_attempt.IsNull()) {
+      // Decode failed, treat as binary.
+      result = Base64Encode(base::as_byte_span(combined));
+      base64_encoded = true;
+    } else {
+      // Decode succeeded, use the result.
+      result = text_attempt;
+    }
+
+    callback_->sendSuccess(result, base64_encoded);
   }
 
-  void BlobReadCallback(String* destination,
+  void BlobReadCallback(Vector<char>* destination,
                         std::optional<SegmentedBuffer> raw_data) {
     if (raw_data) {
-      Vector<char> flattened_data = std::move(*raw_data).CopyAs<Vector<char>>();
-      *destination = String::FromUTF8WithLatin1Fallback(
-          base::as_byte_span(flattened_data));
+      *destination = std::move(*raw_data).CopyAs<Vector<char>>();
     } else {
       error_ = true;
     }
   }
 
   void ReadDataBlob(scoped_refptr<blink::BlobDataHandle> blob_handle,
-                    String* destination) {
+                    Vector<char>* destination) {
     if (!blob_handle)
       return;
     auto* reader = MakeGarbageCollected<InspectorFileReaderLoaderClient>(
@@ -381,7 +397,7 @@ class InspectorPostBodyParser : public RefCounted<InspectorPostBodyParser> {
   std::unique_ptr<GetRequestPostDataCallback> callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool error_;
-  Vector<String> parts_;
+  Vector<Vector<char>> raw_parts_;
 };
 
 KURL UrlWithoutFragment(const KURL& url) {

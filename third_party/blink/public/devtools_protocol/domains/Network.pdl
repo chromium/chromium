@@ -1216,6 +1216,8 @@ domain Network
     returns
       # Request body string, omitting files from multipart requests
       string postData
+      # True, if content was sent as base64.
+      boolean base64Encoded
 
   # Returns content served for the given currently intercepted request.
   experimental command getResponseBodyForInterception

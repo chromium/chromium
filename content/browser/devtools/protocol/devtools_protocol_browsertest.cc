@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -93,6 +94,7 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -4586,6 +4588,124 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpenDevTools_FailWhenUnavailable) {
 
   EXPECT_EQ(*error()->FindString("message"),
             "Failed to create DevTools window");
+}
+
+// Test for crbug.com/356158096: Verify that compressed request bodies can be
+// retrieved via Network.getRequestPostData. The DevTools frontend should be
+// able to decompress the body based on the Content-Encoding header.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CompressedRequestBodyRetrieval) {
+  std::string received_body;
+  std::string received_content_encoding;
+
+  // Set up a handler that receives POST requests and captures the body.
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/post" ||
+            request.method != net::test_server::METHOD_POST) {
+          return nullptr;
+        }
+        received_body = request.content;
+        auto it = request.headers.find("Content-Encoding");
+        if (it != request.headers.end()) {
+          received_content_encoding = it->second;
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/plain");
+        response->set_content("OK");
+        return response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a page.
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL("/title1.html"), 1);
+
+  // Attach DevTools and enable Network domain.
+  Attach();
+  SendCommandAsync("Network.enable");
+
+  // Execute JavaScript that sends a gzip-compressed POST request.
+  // The payload is {"test":"data"} compressed with gzip.
+  const char kScript[] = R"(
+    (async () => {
+      const payload = JSON.stringify({test: "data"});
+      const stream = new Blob([payload]).stream()
+          .pipeThrough(new CompressionStream('gzip'));
+      const compressed = await new Response(stream).arrayBuffer();
+
+      const response = await fetch('/post', {
+        method: 'POST',
+        headers: {
+          'Content-Encoding': 'gzip',
+          'Content-Type': 'application/json'
+        },
+        body: compressed
+      });
+      return response.status;
+    })();
+  )";
+  EXPECT_EQ(200, EvalJs(shell()->web_contents(), kScript));
+
+  // Verify the server received the request with Content-Encoding header.
+  EXPECT_EQ("gzip", received_content_encoding);
+  EXPECT_FALSE(received_body.empty());
+
+  // Wait for Network.requestWillBeSent notification for the POST request.
+  auto matches_post = [](const base::Value::Dict& params) {
+    const std::string* url = params.FindStringByDottedPath("request.url");
+    const std::string* method = params.FindStringByDottedPath("request.method");
+    return url && url->find("/post") != std::string::npos && method &&
+           *method == "POST";
+  };
+  base::Value::Dict notification = WaitForMatchingNotification(
+      "Network.requestWillBeSent", base::BindRepeating(matches_post));
+
+  const std::string* request_id = notification.FindString("requestId");
+  ASSERT_TRUE(request_id);
+
+  // Verify Content-Encoding header is present in the request.
+  const std::string* content_encoding =
+      notification.FindStringByDottedPath("request.headers.Content-Encoding");
+  ASSERT_TRUE(content_encoding);
+
+  // Get the post data via Network.getRequestPostData.
+  base::Value::Dict params;
+  params.Set("requestId", *request_id);
+  const base::Value::Dict* result =
+      SendCommandSync("Network.getRequestPostData", std::move(params));
+
+  // Verify we can retrieve the post data.
+  ASSERT_TRUE(result);
+  const std::string* post_data = result->FindString("postData");
+  ASSERT_TRUE(post_data);
+  EXPECT_FALSE(post_data->empty());
+
+  // Check if the data is base64 encoded (binary data like gzip).
+  std::optional<bool> base64_encoded = result->FindBool("base64Encoded");
+  ASSERT_TRUE(base64_encoded.has_value());
+
+  std::string raw_data;
+  if (*base64_encoded) {
+    // Decode base64 to get the raw gzip bytes.
+    ASSERT_TRUE(base::Base64Decode(*post_data, &raw_data))
+        << "Failed to base64 decode post data";
+  } else {
+    raw_data = *post_data;
+  }
+
+  // Decompress the gzip data and verify it matches the original payload.
+  // This verifies that:
+  // 1. The CDP correctly returns the compressed request body (base64 encoded)
+  // 2. The data can be successfully decompressed
+  std::string decompressed;
+  ASSERT_TRUE(compression::GzipUncompress(raw_data, &decompressed))
+      << "Failed to decompress gzip request body - this is the bug that "
+         "crbug.com/356158096 fixes";
+
+  // Verify the decompressed content matches the original JSON payload.
+  EXPECT_EQ(decompressed, R"({"test":"data"})");
 }
 
 }  // namespace content
