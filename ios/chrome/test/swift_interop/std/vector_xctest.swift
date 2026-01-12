@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Interop
+import StdTestHelpers
 import XCTest
 
 // TODO(crbug.com/465131182): We manually implements subscript() to make an
@@ -14,7 +14,10 @@ extension CxxStringVector {
     // Rebind an unique pointer `UnsafePointer<std.unique_ptr<std.string>>` to
     // a raw pointer `UnsafePointer<UnsafePointer<std.string>>` to bypass the
     // "Move-Only" consumption check.
-    return itemPtr.withMemoryRebound(to: UnsafePointer<std.string>.self, capacity: 1) { rawPtrPtr in
+    return itemPtr.withMemoryRebound(
+      to: UnsafePointer<std.string>.self,
+      capacity: 1
+    ) { rawPtrPtr in
       // Read the inner pointer.
       let stringPtr = rawPtrPtr.pointee
       // Create a string based on the dereference of the raw pointer.

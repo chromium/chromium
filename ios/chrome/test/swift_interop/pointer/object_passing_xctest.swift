@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Interop
+import Pointer
 import XCTest
 
 class ObjectPassingTest: XCTestCase {
@@ -38,14 +38,17 @@ class ObjectPassingTest: XCTestCase {
   // Note: if this method returns `Int` instead of `Int32` the compiler
   // will crash (filed as https://github.com/apple/swift/issues/58458).
   // This has been fixed in ToT.
-  // Note: prior to Swift 5.6, calling GetValue() (which is const) on these objects
-  // results in a compiler error about calling immutable methods on a `let` object.
-  // Omit this test on earlier Swift versions.
+  // Note: prior to Swift 5.6, calling GetValue() (which is const) on these
+  // objects results in a compiler error about calling immutable methods on a
+  // `let` object. Omit this test on earlier Swift versions.
   func addObjects(one: Object, two: Object) -> Int32 {
     return one.GetValue() + two.GetValue()
   }
 
-  func addPointerObjects(one: UnsafeMutablePointer<Object>, two: UnsafeMutablePointer<Object>)
+  func addPointerObjects(
+    one: UnsafeMutablePointer<Object>,
+    two: UnsafeMutablePointer<Object>
+  )
     -> Int32
   {
     return one.pointee.GetValue() + two.pointee.GetValue()

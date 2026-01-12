@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_STRING_HELPER_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_STRING_HELPER_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_STD_STRING_HELPER_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_STD_STRING_HELPER_H_
 
 #include <string>
 
@@ -12,4 +12,4 @@
 
 std::string addStringFromCxx(std::string a);
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_STRING_HELPER_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_STD_STRING_HELPER_H_

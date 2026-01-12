@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/swift_interop/include/vector.h"
+#include "ios/chrome/test/swift_interop/std/vector.h"
 
 SWIFT_DEFINE_MOVE_ONLY_INTEROP_WRAPPER(CxxStringVector, StringVector)
 

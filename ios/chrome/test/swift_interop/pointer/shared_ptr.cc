@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/swift_interop/include/shared_ptr.h"
+#include "ios/chrome/test/swift_interop/pointer/shared_ptr.h"
 
 void RetainSharedObject(SharedObject* obj) {
   if (obj) {

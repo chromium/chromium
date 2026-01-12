@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OBJECT_PASSING_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OBJECT_PASSING_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_OBJECT_PASSING_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_OBJECT_PASSING_H_
 
 class Object {
  public:
@@ -18,8 +18,8 @@ class Object {
 
 class ObjectPassing {
  public:
-  ObjectPassing(){};
-  ~ObjectPassing(){};
+  ObjectPassing() = default;
+  ~ObjectPassing() = default;
 
   int AddReferences(const Object& one, const Object& two) const {
     return one.GetValue() + two.GetValue();
@@ -30,4 +30,4 @@ class ObjectPassing {
   }
 };
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OBJECT_PASSING_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_OBJECT_PASSING_H_

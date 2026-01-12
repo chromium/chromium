@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/swift_interop/include/unique_ptr.h"
+#include "ios/chrome/test/swift_interop/pointer/unique_ptr.h"
 
 std::unique_ptr<Value> ValueReturner::Object() {
   return std::make_unique<Value>(42);

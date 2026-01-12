@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_VECTOR_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_VECTOR_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_STD_VECTOR_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_STD_VECTOR_H_
 
 #include <memory>
 #include <string>
@@ -22,4 +22,4 @@ bool CheckFortyTwoInVector(const IntVector& input);
 SWIFT_DECLARE_MOVE_ONLY_INTEROP_WRAPPER(CxxStringVector, StringVector)
 CxxStringVector GetStringVector();
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_VECTOR_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_STD_VECTOR_H_

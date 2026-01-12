@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OBSERVER_H_
-#define IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OBSERVER_H_
+#ifndef IOS_CHROME_TEST_SWIFT_INTEROP_CLOSURE_OBSERVER_H_
+#define IOS_CHROME_TEST_SWIFT_INTEROP_CLOSURE_OBSERVER_H_
 
 #include "base/apple/swift_interop_util.h"
 #include "base/functional/callback.h"
@@ -31,4 +31,4 @@ class ValueObserver final : public base::RefCounted<ValueObserver> {
   base::WeakPtrFactory<ValueObserver> weak_ptr_factory_{this};
 } SWIFT_REF_COUNTED(ValueObserver);
 
-#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_INCLUDE_OBSERVER_H_
+#endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CLOSURE_OBSERVER_H_

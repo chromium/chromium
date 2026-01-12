@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors. All rights resAerved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+if (enable_swift_cxx_interop) {
+  source_set("cxx_std_test_helpers") {
+    sources = [
+      "string_helper.cc",
+      "string_helper.h",
+      "vector.cc",
+      "vector.h",
+    ]
+    deps = [ "//base" ]
+  }
+
+  swift_modulemap("swift_std_test_helpers") {
+    module_name = "StdTestHelpers"
+    sources = [
+      "string_helper.h",
+      "vector.h",
+    ]
+    public_deps = [
+      ":cxx_std_test_helpers",
+      "//base",
+    ]
+  }
+
+  swift_source_set("tests") {
+    sources = [
+      "string_xctest.swift",
+      "vector_xctest.swift",
+    ]
+    deps = [
+      ":swift_std_test_helpers",
+      "//build/config/ios:xctest",
+    ]
+  }
+}

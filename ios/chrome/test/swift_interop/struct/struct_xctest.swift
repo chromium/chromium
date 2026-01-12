@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Interop
+import Struct
 import XCTest
 
 class StructTest: XCTestCase {
@@ -17,7 +17,8 @@ class StructTest: XCTestCase {
     badFoo.value = false
     badFoo.description = Foolean.GetDescriptionForValue(true)
 
-    // Test passing object defined in C++ and initialized in Swift to top level C++ functions.
+    // Test passing object defined in C++ and initialized in Swift to top level
+    // C++ functions.
     XCTAssertTrue(IsFooleanValid(goodFoo))
     XCTAssertFalse(IsFooleanValid(badFoo))
   }
