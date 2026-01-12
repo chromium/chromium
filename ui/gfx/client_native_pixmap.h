@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(GFX) ClientNativePixmap {
   virtual void* GetMemoryAddress(size_t plane) const = 0;
   virtual int GetStride(size_t plane) const = 0;
   virtual NativePixmapHandle CloneHandleForIPC() const = 0;
+  virtual uint64_t GetPlaneSize(size_t plane) const = 0;
 };
 
 }  // namespace gfx
