@@ -153,7 +153,6 @@ void CopyToGpuMemoryBuffer(
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableSharedImage());
   CHECK(!dst_frame->HasNativeMappableSharedImage());
-  CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);
   auto& context_provider = ctx_wrapper->ContextProvider();
