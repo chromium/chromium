@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="128dp"
+    android:height="128dp"
+    android:viewportWidth="128"
+    android:viewportHeight="128">
+  <group>
+    <clip-path
+        android:pathData="M0,0h128v128h-128z"/>
+    <group>
+      <clip-path
+          android:pathData="M0,0h131.76v131.76h-131.76z"/>
+      <path
+          android:pathData="M0,0h131.76v131.76h-131.76z"
+          android:fillColor="@color/baseline_primary_90"/>
+      <group>
+        <clip-path
+            android:pathData="M35.66,24L161.11,24A11.66,11.66 0,0 1,172.77 35.66L172.77,161.11A11.66,11.66 0,0 1,161.11 172.77L35.66,172.77A11.66,11.66 0,0 1,24 161.11L24,35.66A11.66,11.66 0,0 1,35.66 24z"/>
+        <path
+            android:pathData="M35.66,24L161.11,24A11.66,11.66 0,0 1,172.77 35.66L172.77,161.11A11.66,11.66 0,0 1,161.11 172.77L35.66,172.77A11.66,11.66 0,0 1,24 161.11L24,35.66A11.66,11.66 0,0 1,35.66 24z"
+            android:fillColor="@color/gm3_baseline_surface_light"/>
+        <path
+            android:pathData="M35.66,24L161.11,24A11.66,11.66 0,0 1,172.77 35.66L172.77,161.11A11.66,11.66 0,0 1,161.11 172.77L35.66,172.77A11.66,11.66 0,0 1,24 161.11L24,35.66A11.66,11.66 0,0 1,35.66 24z"
+            android:fillColor="@color/gm3_baseline_surface_tint_light"
+            android:fillAlpha="0.11"/>
+        <path
+            android:pathData="M42.06,32.11L154.3,32.11A11.66,11.66 0,0 1,165.97 43.78L165.97,43.78A11.66,11.66 0,0 1,154.3 55.44L42.06,55.44A11.66,11.66 0,0 1,30.4 43.78L30.4,43.78A11.66,11.66 0,0 1,42.06 32.11z"
+            android:fillColor="@color/baseline_primary_40"
+            android:fillAlpha="0.15"/>
+        <group>
+          <clip-path
+              android:pathData="M39.15,33.05h118.07v21.46h-118.07z"/>
+          <path
+              android:pathData="M38.85,42.96H43.2V44.93H38.85V42.96ZM42.61,42.96H46.95V44.93H42.61V42.96ZM46.36,42.96H50.7V44.93H46.36V42.96ZM50.11,42.96H52.58V44.93H50.11V42.96ZM51.99,42.96H56.33V44.93H51.99V42.96ZM55.75,42.96H60.09V44.93H55.75V42.96ZM63.43,42.96H67.77V44.93H63.43V42.96ZM67.19,42.96H69.65V44.93H67.19V42.96ZM73,42.96H75.46V44.93H73V42.96ZM74.87,42.96H79.22V44.93H74.87V42.96ZM78.63,42.96H82.97V44.93H78.63V42.96ZM82.38,42.96H86.72V44.93H82.38V42.96ZM90.07,42.96H94.41V44.93H90.07V42.96ZM93.82,42.96H98.16V44.93H93.82V42.96ZM97.58,42.96H100.04V44.93H97.58V42.96Z"
+              android:fillColor="@color/baseline_primary_10"/>
+        </group>
+        <path
+            android:pathData="M38.58,64.18L159.56,64.18A8.75,8.75 0,0 1,168.31 72.93L168.31,98.44A8.75,8.75 0,0 1,159.56 107.19L38.58,107.19A8.75,8.75 0,0 1,29.83 98.44L29.83,72.93A8.75,8.75 0,0 1,38.58 64.18z"
+            android:fillColor="@color/gm3_baseline_surface_light"/>
+        <path
+            android:pathData="M38.16,113.26L159.97,113.26A8.75,8.75 0,0 1,168.72 122.01L168.72,195.13A8.75,8.75 0,0 1,159.97 203.88L38.16,203.88A8.75,8.75 0,0 1,29.41 195.13L29.41,122.01A8.75,8.75 0,0 1,38.16 113.26z"
+            android:fillColor="@color/gm3_baseline_surface_light"/>
+      </group>
+    </group>
+  </group>
+</vector>
