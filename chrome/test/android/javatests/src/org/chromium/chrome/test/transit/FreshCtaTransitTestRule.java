@@ -63,11 +63,11 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
                             statement.evaluate();
                         } finally {
                             try {
-                                // crbug.com/460433346: Skip this clean up to avoid issues in some
-                                // tests, mostly post tasks running after instance and tab state
-                                // clean up on destroyed Activities.
                                 if (!mSkipInstanceAndTabStateCleanup) {
-                                    closeAllWindowsAndDeleteInstanceAndTabState();
+                                    // TODO(crbug.com/460433346): Call closeAllWindows().
+                                    // This clean up causes issues in some tests, mostly post tasks
+                                    // running after instance and tab state clean up on destroyed
+                                    // Activities.
                                 }
                             } finally {
                                 TrafficControl.hopOffPublicTransit();
