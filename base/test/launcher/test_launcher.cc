@@ -7,11 +7,8 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <map>
 #include <random>
 #include <string_view>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -65,6 +62,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
@@ -244,8 +243,8 @@ Lock* GetLiveProcessesLock() {
   return lock;
 }
 
-std::map<ProcessHandle, CommandLine>* GetLiveProcesses() {
-  static auto* map = new std::map<ProcessHandle, CommandLine>;
+absl::flat_hash_map<ProcessHandle, CommandLine>* GetLiveProcesses() {
+  static auto* map = new absl::flat_hash_map<ProcessHandle, CommandLine>;
   return map;
 }
 
@@ -1282,7 +1281,8 @@ void TestLauncher::ProcessTestResults(
 
   // TODO(phajdan.jr): Check for duplicates and mismatches between
   // the results we got from XML file and tests we intended to run.
-  std::map<std::string, TestResult> results_map;
+  absl::flat_hash_map<std::string, TestResult> results_map;
+  results_map.reserve(test_results.size());
   for (const auto& i : test_results) {
     results_map[i.full_name] = i;
   }
@@ -1860,14 +1860,15 @@ bool TestLauncher::InitTests() {
   // Check for duplicate test names. These can cause difficult-to-diagnose
   // crashes in the test runner as well as confusion about exactly what test is
   // failing. See https://crbug.com/1463355 for details.
-  std::unordered_set<std::string> full_test_names;
+  absl::flat_hash_set<std::string> full_test_names;
+  full_test_names.reserve(tests.size());
   bool dups_found = false;
   for (auto& test : tests) {
-    const std::string full_test_name =
-        test.test_case_name + "." + test.test_name;
-    auto [it, inserted] = full_test_names.insert(full_test_name);
+    std::string full_test_name =
+        base::StrCat({test.test_case_name, ".", test.test_name});
+    auto [it, inserted] = full_test_names.insert(std::move(full_test_name));
     if (!inserted) {
-      LOG(WARNING) << "Duplicate test name found: " << full_test_name;
+      LOG(WARNING) << "Duplicate test name found: " << *it;
       dups_found = true;
     }
   }
@@ -1941,8 +1942,8 @@ bool TestLauncher::ShuffleTests(CommandLine* command_line) {
 
 bool TestLauncher::ProcessAndValidateTests() {
   bool result = true;
-  std::unordered_set<std::string> disabled_tests;
-  std::unordered_map<std::string, TestInfo> pre_tests;
+  absl::flat_hash_set<std::string> disabled_tests;
+  absl::flat_hash_map<std::string, TestInfo> pre_tests;
 
   // Find disabled and pre tests
   for (const TestInfo& test_info : tests_) {
@@ -2044,9 +2045,9 @@ std::vector<std::string> TestLauncher::CollectTests() {
   // more exact gtest filter, we first split filter into exact filter
   // and wildcards filter, then exact filter can match faster.
   std::vector<std::string_view> positive_wildcards_filter;
-  std::unordered_set<std::string_view> positive_exact_filter;
+  absl::flat_hash_set<std::string_view> positive_exact_filter;
   positive_exact_filter.reserve(positive_test_filter_.size());
-  std::unordered_set<std::string> enforced_positive_tests;
+  absl::flat_hash_set<std::string> enforced_positive_tests;
   for (const std::string& filter : positive_test_filter_) {
     if (filter.find('*') != std::string::npos) {
       positive_wildcards_filter.push_back(filter);
@@ -2056,7 +2057,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
   }
 
   std::vector<std::string_view> negative_wildcards_filter;
-  std::unordered_set<std::string_view> negative_exact_filter;
+  absl::flat_hash_set<std::string_view> negative_exact_filter;
   negative_exact_filter.reserve(negative_test_filter_.size());
   for (const std::string& filter : negative_test_filter_) {
     if (filter.find('*') != std::string::npos) {
