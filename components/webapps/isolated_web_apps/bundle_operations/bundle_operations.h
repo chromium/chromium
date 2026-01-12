@@ -26,21 +26,18 @@ void ReadSignedWebBundleIdInsecurely(
     base::OnceCallback<void(
         base::expected<web_package::SignedWebBundleId, std::string>)> callback);
 
-// Asynchronously validates the integrity and trust of a Signed Web Bundle.
+// Asynchronously validates the integrity of a Signed Web Bundle.
 //
 // This function performs a full security check, including:
 //  - Verifying that the bundle's ID matches the `expected_web_bundle_id`.
 //  - Verifying the bundle's cryptographic signatures.
-//  - Validating that the bundle is trusted for the given `browser_context`
-//    by checking enterprise policies, dev mode status, etc.
 //
 // On success, the callback is run with the parsed integrity block.
 // On failure, the callback is run with a descriptive error message.
-void ValidateSignedWebBundleTrustAndSignatures(
+void ValidateSignedWebBundleSignatures(
     content::BrowserContext* browser_context,
     const base::FilePath& path,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    bool is_dev_mode_bundle,
     base::OnceCallback<
         void(base::expected<web_package::SignedWebBundleIntegrityBlock,
                             std::string>)> callback);

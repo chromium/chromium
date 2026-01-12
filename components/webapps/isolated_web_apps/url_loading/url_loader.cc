@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
@@ -38,7 +39,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
  public:
   IsolatedWebAppURLLoaderImpl(
       const base::FilePath& web_bundle_path,
-      bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const network::ResourceRequest& resource_request,
@@ -47,7 +47,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
         resource_request_(resource_request),
         frame_tree_node_id_(frame_tree_node_id),
         web_bundle_path_(web_bundle_path),
-        dev_mode_(dev_mode),
         web_bundle_id_(web_bundle_id) {}
 
   IsolatedWebAppURLLoaderImpl(const IsolatedWebAppURLLoaderImpl&) = delete;
@@ -58,7 +57,7 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
   void Start(content::BrowserContext* browser_context) {
     IsolatedWebAppReaderRegistryFactory::Get(browser_context)
         ->ReadResponse(
-            web_bundle_path_, dev_mode_, web_bundle_id_, resource_request_,
+            web_bundle_path_, web_bundle_id_, resource_request_,
             base::BindOnce(&IsolatedWebAppURLLoaderImpl::OnResponseRead,
                            weak_factory_.GetWeakPtr()));
   }
@@ -167,7 +166,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
   const network::ResourceRequest resource_request_;
   std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
   const base::FilePath web_bundle_path_;
-  const bool dev_mode_;
   const web_package::SignedWebBundleId web_bundle_id_;
 
   base::WeakPtrFactory<IsolatedWebAppURLLoaderImpl> weak_factory_{this};
@@ -179,7 +177,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
 void IsolatedWebAppURLLoader::CreateAndStart(
     content::BrowserContext* browser_context,
     const base::FilePath& web_bundle_path,
-    bool dev_mode,
     const web_package::SignedWebBundleId& web_bundle_id,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
@@ -189,7 +186,7 @@ void IsolatedWebAppURLLoader::CreateAndStart(
   // dangling pointers (as this is a self-owned class without a shutdown
   // notifier).
   auto loader = std::make_unique<IsolatedWebAppURLLoaderImpl>(
-      web_bundle_path, dev_mode, web_bundle_id, std::move(loader_client),
+      web_bundle_path, web_bundle_id, std::move(loader_client),
       resource_request, frame_tree_node_id);
   auto* raw_loader = loader.get();
   mojo::MakeSelfOwnedReceiver(std::move(loader), std::move(loader_receiver));

@@ -84,8 +84,6 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
     IwaIdentityValidator::CreateSingleton();
-    ON_CALL(iwa_client_, ValidateTrust(_, kWebBundleId, _))
-        .WillByDefault(Return(base::ok()));
 
     browser_context_ = std::make_unique<content::TestBrowserContext>();
 
@@ -215,8 +213,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -251,8 +249,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
     FulfillIntegrityBlock();
@@ -260,21 +257,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
     FulfillResponse(resource_request);
 
     EXPECT_THAT(read_response_future.Take(), HasValue());
-  }
-
-  testing::Mock::VerifyAndClearExpectations(&iwa_client());
-  ON_CALL(iwa_client(), ValidateTrust(_, _, _))
-      .WillByDefault(Return(base::unexpected("public key(s) are not trusted")));
-
-  {
-    base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
-                            read_response_future.GetCallback());
-
-    EXPECT_THAT(read_response_future.Take(),
-                ErrorIs(Field(&ReadResponseError::message,
-                              HasSubstr("public key(s) are not trusted"))));
   }
 }
 
@@ -288,8 +270,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   resource_request.url = kUrl.Resolve("/?bar=baz#foo");
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -319,8 +301,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
   // response.
   {
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
     FulfillIntegrityBlock();
     FulfillMetadata();
@@ -333,33 +314,12 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
   {
     // A request to the already opened bundle should still succeed.
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
     FulfillResponse(resource_request);
     ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
                          read_response_future.Take());
     EXPECT_EQ(response.head()->response_code, 200);
-  }
-
-  // Now revoke trust for this bundle and clear the cache. New requests will
-  // fail from now on.
-  testing::Mock::VerifyAndClearExpectations(&iwa_client());
-  ON_CALL(iwa_client(), ValidateTrust(_, _, _))
-      .WillByDefault(Return(base::unexpected("public key(s) are not trusted")));
-  base::test::TestFuture<void> close_future;
-
-  registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
-  EXPECT_TRUE(close_future.Wait());
-  {
-    base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
-                            read_response_future.GetCallback());
-    FulfillIntegrityBlock();
-    FulfillMetadata();
-    EXPECT_THAT(read_response_future.Take(),
-                testing::Not(base::test::HasValue()));
   }
 }
 
@@ -373,8 +333,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -409,8 +369,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
   resource_request.url = GURL(kUrl.spec() + "foo");
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -451,8 +411,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
     // `SignedWebBundleReader`s should not be evicted from the cache while they
@@ -477,8 +436,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
     // Notably, no `FulfillIntegrityBlock` or `FulfillMetadata` here, since the
@@ -503,8 +461,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
     // Since the SignedWebBundleReader has been evicted from cache, integrity
@@ -536,8 +493,8 @@ TEST_P(IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest,
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   auto error = web_package::mojom::BundleIntegrityBlockParseError::New();
   error->type = GetParam().first;
@@ -582,8 +539,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   auto integrity_block = integrity_block_->Clone();
   // Simulate a failed validation by returning a different ID.
@@ -622,8 +579,8 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
 
@@ -679,8 +636,8 @@ TEST_P(IsolatedWebAppReaderRegistryMetadataParserErrorTest,
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   auto error = web_package::mojom::BundleMetadataParseError::New();
@@ -726,8 +683,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();
@@ -760,8 +717,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();
@@ -800,8 +757,8 @@ TEST_P(IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -852,8 +809,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 
   // Simulate two simultaneous requests for the same web bundle
   base::test::TestFuture<ReadResult> read_response_future_1;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request,
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_1.GetCallback());
 
   histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
@@ -862,8 +818,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
                   base::Bucket(ReaderCacheState::kCachedPending, 0));
 
   base::test::TestFuture<ReadResult> read_response_future_2;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request,
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_2.GetCallback());
 
   histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
@@ -900,8 +855,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   }
 
   base::test::TestFuture<ReadResult> read_response_future_3;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request,
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_3.GetCallback());
 
   histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
@@ -934,8 +888,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, Close) {
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -971,8 +925,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
   resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                          resource_request, read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   base::test::TestFuture<void> close_future;
   registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
@@ -1010,8 +964,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, OpenCloseOpen) {
     resource_request.url = kUrl;
 
     base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
-                            resource_request,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
     FulfillIntegrityBlock();
@@ -1037,7 +990,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, OpenCloseOpen) {
     new_resource_request.url = kUrl;
 
     base::test::TestFuture<ReadResult> new_read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId,
                             new_resource_request,
                             new_read_response_future.GetCallback());
 

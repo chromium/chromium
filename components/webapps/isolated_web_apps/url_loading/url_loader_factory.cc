@@ -60,6 +60,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -333,9 +334,10 @@ class IsolatedWebAppURLLoaderFactoryImpl
  private:
   void LogErrorAndFail(
       const std::string& error_message,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      net::Error err = net::ERR_FAILED) {
     ::web_app::LogErrorAndFail(error_message, frame_tree_node_id_,
-                               std::move(client));
+                               std::move(client), err);
   }
 
   // network::mojom::URLLoaderFactory:
@@ -473,9 +475,17 @@ class IsolatedWebAppURLLoaderFactoryImpl
     std::visit(
         absl::Overload{[&](const IwaSourceBundleWithMode& bundle) {
                          CHECK(!web_bundle_id.is_for_proxy_mode());
+                         RETURN_IF_ERROR(
+                             IwaClient::GetInstance()->ValidateTrust(
+                                 browser_context_, web_bundle_id,
+                                 bundle.dev_mode()),
+                             [&](const std::string& error) {
+                               LogErrorAndFail(error, std::move(loader_client),
+                                               net::ERR_INVALID_WEB_BUNDLE);
+                             });
                          IsolatedWebAppURLLoader::CreateAndStart(
-                             browser_context_, bundle.path(), bundle.dev_mode(),
-                             web_bundle_id, std::move(loader_receiver),
+                             browser_context_, bundle.path(), web_bundle_id,
+                             std::move(loader_receiver),
                              std::move(loader_client), resource_request,
                              frame_tree_node_id_);
                        },

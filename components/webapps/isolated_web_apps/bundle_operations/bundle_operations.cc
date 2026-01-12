@@ -36,7 +36,6 @@ using IntegrityBlockResult =
 void OnTrustAndSignaturesOfBundleChecked(
     base::WeakPtr<content::BrowserContext> browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    bool is_dev_mode_bundle,
     base::OnceCallback<void(IntegrityBlockResult)> callback,
     base::expected<std::unique_ptr<SignedWebBundleReader>,
                    UnusableSwbnFileError> status) {
@@ -56,7 +55,7 @@ void OnTrustAndSignaturesOfBundleChecked(
       IsolatedWebAppValidator::ValidateIntegrityBlockAndMetadata(
           browser_context.get(), expected_web_bundle_id,
           reader->GetIntegrityBlock(), reader->GetPrimaryURL(),
-          reader->GetEntries(), is_dev_mode_bundle);
+          reader->GetEntries());
   UmaLogExpectedStatus("WebApp.Isolated.SwbnFileUsability", validation_result);
 
   IntegrityBlockResult integrity_block_result =
@@ -88,11 +87,10 @@ void ReadSignedWebBundleIdInsecurely(
       }).Then(std::move(callback)));
 }
 
-void ValidateSignedWebBundleTrustAndSignatures(
+void ValidateSignedWebBundleSignatures(
     content::BrowserContext* browser_context,
     const base::FilePath& path,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    bool is_dev_mode_bundle,
     base::OnceCallback<void(IntegrityBlockResult)> callback) {
   auto create_reader = base::BindOnce(
       &SignedWebBundleReader::Create, path,
@@ -100,7 +98,7 @@ void ValidateSignedWebBundleTrustAndSignatures(
       /*verify_signatures=*/true,
       base::BindOnce(&OnTrustAndSignaturesOfBundleChecked,
                      browser_context->GetWeakPtr(), expected_web_bundle_id,
-                     is_dev_mode_bundle, std::move(callback)));
+                     std::move(callback)));
 
   if (auto* provider = IwaClient::GetInstance()->GetRuntimeDataProvider()) {
     provider->OnBestEffortRuntimeDataReady().Post(FROM_HERE,

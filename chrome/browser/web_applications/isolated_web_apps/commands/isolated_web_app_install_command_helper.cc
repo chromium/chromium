@@ -347,9 +347,14 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
               return;
             }
-            ValidateSignedWebBundleTrustAndSignatures(
+            RETURN_IF_ERROR(
+                IsolatedWebAppTrustChecker::IsTrusted(
+                    *profile, url_info_.web_bundle_id(), location.dev_mode()),
+                [&](const std::string& error) {
+                  std::move(callback).Run(base::unexpected(error));
+                });
+            ValidateSignedWebBundleSignatures(
                 profile, location.path(), url_info_.web_bundle_id(),
-                location.dev_mode(),
                 base::BindOnce(&ExpectedToExpectedOptional)
                     .Then(std::move(callback)));
           },
