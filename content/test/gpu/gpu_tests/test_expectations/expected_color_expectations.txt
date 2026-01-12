@@ -135,10 +135,12 @@ crbug.com/425653491 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang
 crbug.com/426594100 [ android android-pixel-2 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/426594100 [ android android-pixel-6 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
+# Crop Boundaries Fails
 crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
-
+# Renderer Hangs
 crbug.com/467247264 [ win11 nvidia-0x2184 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/467247264 [ win11 nvidia-0x2783 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
