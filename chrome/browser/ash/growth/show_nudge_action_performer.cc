@@ -25,9 +25,10 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -209,16 +210,10 @@ views::View* GetWindowCaptionButtonContainer() {
     return nullptr;
   }
 
-  auto* root_view = targeting_window_widget->GetRootView();
-  if (!root_view) {
-    growth::RecordCampaignsManagerError(
-        growth::CampaignsManagerError::kNoRootViewToGetAnchorView);
-    CAMPAIGNS_LOG(ERROR) << "Error: root view not found";
-    return nullptr;
-  }
-
-  return root_view->GetViewByID(
-      chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
+  // Use FirstMatchingView as the container may not be visible yet.
+  return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      chromeos::FrameCaptionButtonContainerView::kElementId,
+      views::ElementTrackerViews::GetContextForWidget(targeting_window_widget));
 }
 
 views::Widget* GetAnchorWidgetForWindowBoundAnchor(

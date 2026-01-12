@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_context.h"
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
@@ -26,6 +27,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_view.h"
@@ -291,8 +293,9 @@ bool ImmersiveFullscreenController::ShouldRevealTopChrome(views::View* view) {
   auto* non_client_view = widget_->non_client_view();
   auto* frame_view = non_client_view ? non_client_view->frame_view() : nullptr;
   auto* caption_button_container =
-      frame_view ? frame_view->GetViewByID(
-                       chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER)
+      frame_view ? views::ElementTrackerViews::GetInstance()->GetUniqueView(
+                       chromeos::FrameCaptionButtonContainerView::kElementId,
+                       views::ElementTrackerViews::GetContextForWidget(widget_))
                  : nullptr;
   return caption_button_container && caption_button_container->Contains(view);
 }

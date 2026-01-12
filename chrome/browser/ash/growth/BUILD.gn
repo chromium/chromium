@@ -50,6 +50,7 @@ static_library("growth") {
     "//chromeos/ash/components/growth:utils",
     "//chromeos/ash/resources:resources_grit",
     "//chromeos/dbus/power",
+    "//chromeos/ui/frame",
     "//components/account_id",
     "//components/app_constants",
     "//components/application_locale_storage",

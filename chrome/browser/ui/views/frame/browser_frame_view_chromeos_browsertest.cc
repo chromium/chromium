@@ -986,6 +986,10 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
         generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, 0);
       } break;
       case kMultitaskMenu: {
+        // The multask menu is not accessible via shortcut in in Tablet mode.
+        if (GetParam()) {
+          continue;
+        }
         SCOPED_TRACE("MultitaskMenu");
         generator.PressKey(ui::KeyboardCode::VKEY_COMMAND, 0);
         generator.PressKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
