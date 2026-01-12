@@ -158,7 +158,7 @@ class ReadAnythingUntrustedPageHandler :
   static const int kMaxWordsDistilled = 25000;
   static const int kWordsDistilledBuckets = 100;
   static constexpr base::TimeDelta kReadingModeHiddenAckTimeout =
-      base::Seconds(0);
+      base::Seconds(2);
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void AccessibilityLocationChangesReceived(
