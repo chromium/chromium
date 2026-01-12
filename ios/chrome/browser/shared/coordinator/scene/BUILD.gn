@@ -167,8 +167,6 @@ source_set("scene") {
     "//ios/chrome/browser/promos_manager/model:scene_agent",
     "//ios/chrome/browser/promos_manager/public:utils",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/safari_data_import/coordinator",
-    "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/scene/coordinator",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",

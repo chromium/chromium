@@ -12,6 +12,8 @@
 
 class Browser;
 class GURL;
+enum class SafariDataImportEntryPoint;
+@protocol SafariDataImportUIHandler;
 @protocol SceneCommands;
 @class ShowSigninCommand;
 @class SigninCoordinator;
@@ -81,6 +83,16 @@ class GURL;
 // with or without animation. Executes its signinCompletion. It’s expected to be
 // not already executed.
 - (void)stopSigninCoordinatorWithCompletionAnimated:(BOOL)animated;
+
+// Shows the Safari Data Import UI.
+- (void)
+    displaySafariDataImportFromEntryPoint:(SafariDataImportEntryPoint)entryPoint
+                            withUIHandler:
+                                (id<SafariDataImportUIHandler>)UIHandler
+                       baseViewController:(UIViewController*)baseViewController;
+
+// Stops the Safari Data Import coordinator.
+- (void)stopSafariDataImportCoordinator;
 
 @end
 

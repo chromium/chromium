@@ -17,10 +17,14 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/model/features.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
@@ -47,7 +51,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }  // namespace
 
 @interface SceneCoordinator () <AccountMenuCoordinatorDelegate,
-                                PolicyWatcherBrowserAgentObserving>
+                                PolicyWatcherBrowserAgentObserving,
+                                SafariDataImportMainCoordinatorDelegate>
 
 // The SceneState for this scene.
 @property(nonatomic, readonly) SceneState* sceneState;
@@ -70,6 +75,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   AccountMenuCoordinator* _accountMenuCoordinator;
   // Coordinator for the sign-in flow.
   SigninCoordinator* _signinCoordinator;
+  // Coordinator for the Safari Data Import flow.
+  SafariDataImportMainCoordinator* _safariDataImportCoordinator;
   // Observer for PolicyWatcherBrowserAgent.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -117,6 +124,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _policyWatcherObserverBridge.reset();
   [self stopAccountMenu];
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
+  [self stopSafariDataImportCoordinator];
   [_tabGridCoordinator stop];
 }
 
@@ -261,6 +269,32 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   signinCompletion(nil, SigninCoordinatorResultInterrupted, nil);
 }
 
+- (void)displaySafariDataImportFromEntryPoint:
+            (SafariDataImportEntryPoint)entryPoint
+                                withUIHandler:
+                                    (id<SafariDataImportUIHandler>)UIHandler
+                           baseViewController:
+                               (UIViewController*)baseViewController {
+  if (_safariDataImportCoordinator) {
+    return;
+  }
+  CHECK(ShouldShowSafariDataImportEntryPoint(
+      self.currentBrowser->GetProfile()->GetPrefs()));
+
+  _safariDataImportCoordinator = [[SafariDataImportMainCoordinator alloc]
+          initFromEntryPoint:entryPoint
+      withBaseViewController:baseViewController
+                     browser:self.currentBrowser];
+  _safariDataImportCoordinator.delegate = self;
+  _safariDataImportCoordinator.UIHandler = UIHandler;
+  [_safariDataImportCoordinator start];
+}
+
+- (void)stopSafariDataImportCoordinator {
+  [_safariDataImportCoordinator stop];
+  _safariDataImportCoordinator = nil;
+}
+
 #pragma mark - Properties
 
 - (void)setDelegate:(id<TabGridCoordinatorDelegate>)delegate {
@@ -308,6 +342,14 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     (AccountMenuCoordinator*)coordinator {
   CHECK_EQ(_accountMenuCoordinator, coordinator);
   [self stopAccountMenu];
+}
+
+#pragma mark - SafariDataImportMainCoordinatorDelegate
+
+- (void)safariImportWorkflowDidEndForCoordinator:
+    (SafariDataImportMainCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _safariDataImportCoordinator);
+  [self stopSafariDataImportCoordinator];
 }
 
 #pragma mark - Private

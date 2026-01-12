@@ -119,8 +119,6 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/promos_manager/public/utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
-#import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
@@ -387,7 +385,6 @@ void OnListFamilyMembersResponse(
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
                                ProfileStateObserver,
-                               SafariDataImportMainCoordinatorDelegate,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                SettingsNavigationControllerDelegate,
@@ -412,9 +409,6 @@ void OnListFamilyMembersResponse(
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
-
-  // The coordinator that manages the workflow importing data from Safari.
-  SafariDataImportMainCoordinator* _safariImportCoordinator;
 
   // JavaScript image transcoder to locally re-encode images to search.
   std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
@@ -1440,8 +1434,6 @@ void OnListFamilyMembersResponse(
   [self.assistantSheetCoordinator stop];
   self.assistantSheetCoordinator = nil;
 
-  [self safariImportWorkflowDidEndForCoordinator:_safariImportCoordinator];
-
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
   _authServiceObserverBridge.reset();
@@ -2390,33 +2382,27 @@ using UserFeedbackDataCallback =
             (SafariDataImportEntryPoint)entryPoint
                                 withUIHandler:
                                     (id<SafariDataImportUIHandler>)UIHandler {
-  if (_safariImportCoordinator) {
-    // Currently displaying.
-    return;
-  }
-  CHECK(ShouldShowSafariDataImportEntryPoint(
-      self.currentInterface.browser->GetProfile()->GetPrefs()));
+  // If presented over settings, the base view controller is the top presented
+  // view controller. Otherwise, it is the active view controller.
   BOOL presentOverSettings = self.settingsNavigationController &&
                              entryPoint == SafariDataImportEntryPoint::kSetting;
   UIViewController* baseViewController = presentOverSettings
                                              ? self.settingsNavigationController
                                              : self.activeViewController;
-  SafariDataImportMainCoordinator* safariDataImportCoordinator =
-      [[SafariDataImportMainCoordinator alloc]
-              initFromEntryPoint:entryPoint
-          withBaseViewController:baseViewController
-                         browser:self.currentInterface.browser];
-  safariDataImportCoordinator.delegate = self;
-  safariDataImportCoordinator.UIHandler = UIHandler;
+
+  __weak __typeof(self.mainCoordinator) weakMainCoordinator =
+      self.mainCoordinator;
+  auto startImport = ^{
+    [weakMainCoordinator
+        displaySafariDataImportFromEntryPoint:entryPoint
+                                withUIHandler:UIHandler
+                           baseViewController:baseViewController];
+  };
   if (presentOverSettings) {
-    [safariDataImportCoordinator start];
+    startImport();
   } else {
-    [self closePresentedViews:YES
-                   completion:^{
-                     [safariDataImportCoordinator start];
-                   }];
+    [self closePresentedViews:YES completion:startImport];
   }
-  _safariImportCoordinator = safariDataImportCoordinator;
 }
 
 - (void)showAppStorePage {
@@ -3892,7 +3878,7 @@ using UserFeedbackDataCallback =
   self.assistantSheetCoordinator = nil;
 
   // If the Safari data import workflow is active, stop it.
-  [self safariImportWorkflowDidEndForCoordinator:_safariImportCoordinator];
+  [self.mainCoordinator stopSafariDataImportCoordinator];
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock resetAndDismiss = ^{
@@ -4295,15 +4281,6 @@ using UserFeedbackDataCallback =
 
 - (void)closeHistory {
   [self closeHistoryWithCompletion:nil];
-}
-
-#pragma mark - SafariImportCoordinatorDelegate
-
-- (void)safariImportWorkflowDidEndForCoordinator:
-    (SafariDataImportMainCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _safariImportCoordinator);
-  [_safariImportCoordinator stop];
-  _safariImportCoordinator = nil;
 }
 
 #pragma mark - AuthenticationServiceObserving
