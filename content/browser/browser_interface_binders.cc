@@ -710,73 +710,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 
 // Documents/frames
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
-  map->Add<media::mojom::ImageCapture>(
-      base::BindRepeating(&ImageCaptureImpl::Create, base::Unretained(host)));
-
-  map->Add<media::mojom::InterfaceFactory>(base::BindRepeating(
-      &RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver,
-      base::Unretained(host)));
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  map->Add<media::mojom::KeySystemSupport>(
-      base::BindRepeating(&RenderFrameHostImpl::BindKeySystemSupportReceiver,
-                          base::Unretained(host)));
-#endif
-
-  map->Add<media::mojom::MediaMetricsProvider>(base::BindRepeating(
-      &RenderFrameHostImpl::BindMediaMetricsProviderReceiver,
-      base::Unretained(host)));
-
-  map->Add<media::mojom::VideoEncoderMetricsProvider>(base::BindRepeating(
-      &RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver,
-      base::Unretained(host)));
-
-  map->Add<media::mojom::WebrtcVideoPerfRecorder>(base::BindRepeating(
-      [](RenderFrameHostImpl* host,
-         mojo::PendingReceiver<media::mojom::WebrtcVideoPerfRecorder>
-             receiver) {
-        DCHECK_CURRENTLY_ON(BrowserThread::UI);
-        media::WebrtcVideoPerfRecorder::Create(
-            BrowserContextImpl::From(host->GetBrowserContext())
-                ->GetWebrtcVideoPerfHistory(),
-            std::move(receiver));
-      },
-      base::Unretained(host)));
-
-  map->Add<media::mojom::WebrtcVideoPerfHistory>(base::BindRepeating(
-      [](RenderFrameHostImpl* host,
-         mojo::PendingReceiver<media::mojom::WebrtcVideoPerfHistory> receiver) {
-        DCHECK_CURRENTLY_ON(BrowserThread::UI);
-        BrowserContextImpl::From(host->GetBrowserContext())
-            ->GetWebrtcVideoPerfHistory()
-            ->BindReceiver(std::move(receiver));
-      },
-      base::Unretained(host)));
-
-#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
-  map->Add<media::mojom::RemoterFactory>(
-      base::BindRepeating(&RenderFrameHostImpl::BindMediaRemoterFactoryReceiver,
-                          base::Unretained(host)));
-#endif
-
-  map->Add<blink::mojom::OneShotBackgroundSyncService>(base::BindRepeating(
-      [](RenderFrameHostImpl* host,
-         mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
-             receiver) {
-        host->GetProcess()->CreateOneShotSyncService(
-            host->GetStorageKey().origin(), std::move(receiver));
-      },
-      base::Unretained(host)));
-
-  map->Add<blink::mojom::PeriodicBackgroundSyncService>(base::BindRepeating(
-      [](RenderFrameHostImpl* host,
-         mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
-             receiver) {
-        host->GetProcess()->CreatePeriodicSyncService(
-            host->GetStorageKey().origin(), std::move(receiver));
-      },
-      base::Unretained(host)));
-
   map->Add<media::mojom::VideoDecodePerfHistory>(
       base::BindRepeating(&RenderProcessHost::BindVideoDecodePerfHistory,
                           base::Unretained(host->GetProcess())));
@@ -1126,6 +1059,68 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::RendererAudioOutputStreamFactory>(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::CreateAudioOutputStreamFactory>);
+
+  map->Add<media::mojom::ImageCapture>(&ImageCaptureImpl::Create);
+
+  map->Add<media::mojom::InterfaceFactory>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver>);
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  map->Add<media::mojom::KeySystemSupport>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindKeySystemSupportReceiver>);
+#endif
+
+  map->Add<media::mojom::MediaMetricsProvider>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindMediaMetricsProviderReceiver>);
+
+  map->Add<media::mojom::VideoEncoderMetricsProvider>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver>);
+
+  map->Add<media::mojom::WebrtcVideoPerfRecorder>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<media::mojom::WebrtcVideoPerfRecorder>
+             receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        media::WebrtcVideoPerfRecorder::Create(
+            BrowserContextImpl::From(host->GetBrowserContext())
+                ->GetWebrtcVideoPerfHistory(),
+            std::move(receiver));
+      }));
+
+  map->Add<media::mojom::WebrtcVideoPerfHistory>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<media::mojom::WebrtcVideoPerfHistory> receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        BrowserContextImpl::From(host->GetBrowserContext())
+            ->GetWebrtcVideoPerfHistory()
+            ->BindReceiver(std::move(receiver));
+      }));
+
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+  map->Add<media::mojom::RemoterFactory>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindMediaRemoterFactoryReceiver>);
+#endif
+
+  map->Add<blink::mojom::OneShotBackgroundSyncService>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
+             receiver) {
+        host->GetProcess()->CreateOneShotSyncService(
+            host->GetStorageKey().origin(), std::move(receiver));
+      }));
+
+  map->Add<blink::mojom::PeriodicBackgroundSyncService>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
+             receiver) {
+        host->GetProcess()->CreatePeriodicSyncService(
+            host->GetStorageKey().origin(), std::move(receiver));
+      }));
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);
