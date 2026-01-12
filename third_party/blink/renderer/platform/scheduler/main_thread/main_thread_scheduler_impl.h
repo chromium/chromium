@@ -602,6 +602,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       base::TimeDelta* expected_use_case_duration) const
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
+  bool ComputeIsInputHandlingFromUseCase(UseCase) const;
+  bool ComputeIsInputHandlingFromPerformanceScenario() const;
+
   // Helper for computing the RAILMode based on the given UseCase and current
   // scheduler state.
   RAILMode ComputeCurrentRAILMode(UseCase) const;

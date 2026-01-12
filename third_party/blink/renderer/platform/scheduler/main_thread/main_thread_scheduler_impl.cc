@@ -196,14 +196,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "busy_loop_for",
                    base::Milliseconds(2));
 
-// Use PerformanceScenario instead of UseCase to compute the current RAILMode.
-BASE_FEATURE(kComputeCurrentRailModeFromPerformanceScenario,
+// Treat "input handling" specially in V8.
+BASE_FEATURE(kInputHandlingModeFromUseCase, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInputHandlingModeFromPerformanceScenario,
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Treat "input" as "loading when computing the current RAILMode.
-BASE_FEATURE(kRAILInputAsLoading, base::FEATURE_DISABLED_BY_DEFAULT);
-// Do not call |SetIsLoading|. This is used for a holdback experiment to
-// determine the impact of |SetIsLoading|.
-BASE_FEATURE(kSetIsLoadingAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
                       double scale_factor) {
@@ -1578,13 +1574,25 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     return;
   }
 
+  if (new_policy.use_case != main_thread_only().current_policy.use_case) {
+    if (isolate()) {
+      if (base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase)) {
+        isolate()->SetIsInputHandling(
+            ComputeIsInputHandlingFromUseCase(new_policy.use_case));
+      }
+      if (base::FeatureList::IsEnabled(
+              kInputHandlingModeFromPerformanceScenario)) {
+        isolate()->SetIsInputHandling(
+            ComputeIsInputHandlingFromPerformanceScenario());
+      }
+    }
+  }
+
   // NOTE: Code below only executes for forced updates or when the policy has
   // changed.
   if (new_policy.rail_mode != main_thread_only().current_policy.rail_mode) {
     if (isolate()) {
-      if (!base::FeatureList::IsEnabled(kSetIsLoadingAblation)) {
-        isolate()->SetIsLoading(new_policy.rail_mode == RAILMode::kLoad);
-      }
+      isolate()->SetIsLoading(new_policy.rail_mode == RAILMode::kLoad);
     }
     for (auto& observer : main_thread_only().rail_mode_observers) {
       observer.OnRAILModeChanged(new_policy.rail_mode);
@@ -1649,44 +1657,46 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-RAILMode ComputeCurrentRAILModeFromPerformanceScenario() {
-  using performance_scenarios::LoadingScenario;
+bool MainThreadSchedulerImpl::ComputeIsInputHandlingFromPerformanceScenario()
+    const {
+  DCHECK(!base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase));
+  using performance_scenarios::InputScenario;
   using performance_scenarios::ScenarioScope;
-  auto loading_state = GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                           ->load(std::memory_order_relaxed);
-  switch (loading_state) {
-    case LoadingScenario::kFocusedPageLoading:
-    case LoadingScenario::kVisiblePageLoading:
-      return RAILMode::kLoad;
-    case LoadingScenario::kBackgroundPageLoading:
-    case LoadingScenario::kNoPageLoading:
-      break;
+
+  auto input_state = GetInputScenario(ScenarioScope::kCurrentProcess)
+                         ->load(std::memory_order_relaxed);
+  switch (input_state) {
+    case InputScenario::kTyping:
+    case InputScenario::kTap:
+    case InputScenario::kScroll:
+      return true;
+    case InputScenario::kNoInput:
+      return false;
   }
 
-  if (base::FeatureList::IsEnabled(kRAILInputAsLoading)) {
-    using performance_scenarios::InputScenario;
-    auto input_state = GetInputScenario(ScenarioScope::kCurrentProcess)
-                           ->load(std::memory_order_relaxed);
-    switch (input_state) {
-      case InputScenario::kTyping:
-      case InputScenario::kTap:
-      case InputScenario::kScroll:
-        return RAILMode::kLoad;
-      case InputScenario::kNoInput:
-        break;
-    }
-  }
+  NOTREACHED();
+}
 
-  return RAILMode::kDefault;
+bool MainThreadSchedulerImpl::ComputeIsInputHandlingFromUseCase(
+    UseCase use_case) const {
+  DCHECK(
+      !base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario));
+  switch (use_case) {
+    case UseCase::kDiscreteInputResponse:
+    case UseCase::kTouchstart:
+    case UseCase::kCompositorGesture:
+    case UseCase::kSynchronizedGesture:
+    case UseCase::kMainThreadGesture:
+    case UseCase::kMainThreadCustomInputHandling:
+      return true;
+    default:
+      return false;
+  }
+  NOTREACHED();
 }
 
 RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     UseCase use_case) const {
-  if (base::FeatureList::IsEnabled(
-          kComputeCurrentRailModeFromPerformanceScenario)) {
-    return ComputeCurrentRAILModeFromPerformanceScenario();
-  }
-
   switch (use_case) {
     case UseCase::kDiscreteInputResponse:
       // TODO(crbug.com/350540984): This really should be `RAILMode::kDefault`,
@@ -1700,11 +1710,7 @@ RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadGesture:
     case UseCase::kMainThreadCustomInputHandling:
-      // TODO(crbug.com/444705203): Don't ship this as-is. Likely want to
-      // update the RAILModes if we decide to ship.
-      return base::FeatureList::IsEnabled(kRAILInputAsLoading)
-                 ? RAILMode::kLoad
-                 : RAILMode::kDefault;
+      return RAILMode::kDefault;
 
     case UseCase::kNone:
       return RAILMode::kDefault;
@@ -2132,9 +2138,7 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
         isolate()) {
       // V8 was already informed that the load started, but now that the load is
       // committed, update the start timestamp.
-      if (!base::FeatureList::IsEnabled(kSetIsLoadingAblation)) {
-        isolate()->SetIsLoading(true);
-      }
+      isolate()->SetIsLoading(true);
     }
   }
 
