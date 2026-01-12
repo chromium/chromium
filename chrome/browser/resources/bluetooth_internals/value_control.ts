@@ -272,6 +272,10 @@ export class ValueControlElement extends CustomElement {
     this.redraw();
   }
 
+  get value(): Value {
+    return this.value_;
+  }
+
   /**
    * Redraws the value control with updated layout depending on the
    * availability of reads and writes and the current cached value.

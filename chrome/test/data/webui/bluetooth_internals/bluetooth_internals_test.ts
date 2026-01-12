@@ -2,28 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {AdapterInfo} from 'chrome://bluetooth-internals/adapter.mojom-webui.js';
+import type {AdapterPage} from 'chrome://bluetooth-internals/adapter_page.js';
 import {adapterBroker, checkSystemPermissions, devices, initializeViews, pageManager, sidebarObj} from 'chrome://bluetooth-internals/bluetooth_internals.js';
 import {BluetoothInternalsHandler} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
+import type {BluetoothInternalsHandlerRemote} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
+import type {DeviceInfo} from 'chrome://bluetooth-internals/device.mojom-webui.js';
 import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
+import type {ObjectFieldsetElement} from 'chrome://bluetooth-internals/object_fieldset.js';
 import {dismissSnackbar, getSnackbarStateForTest, showSnackbar} from 'chrome://bluetooth-internals/snackbar.js';
+import type {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
+import type {ValueControlElement} from 'chrome://bluetooth-internals/value_control.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="is_chromeos">
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 // </if>
 
-import {fakeAdapterInfo, fakeCharacteristicInfo1, fakeDeviceInfo1, fakeDeviceInfo2, fakeDeviceInfo3, fakeServiceInfo1, fakeServiceInfo2, TestAdapter, TestBluetoothInternalsHandler, TestDevice} from './test_utils.js';
+import {fakeAdapterInfo, fakeCharacteristicInfo1, fakeDeviceInfo1, fakeDeviceInfo2, fakeDeviceInfo3, fakeServiceInfo1, fakeServiceInfo2, TestAdapter, TestBluetoothInternalsHandler} from './test_utils.js';
 
 suite('bluetooth_internals', function() {
-  const whenSetupDone = new PromiseResolver();
-  let internalsHandler = null;
-  let adapterFieldSet = null;
-  let deviceTable = null;
-  let sidebarNode = null;
-  let bluetoothInternalsHandlerRemote = null;
+  const whenSetupDone = new PromiseResolver<void>();
+  let internalsHandler: TestBluetoothInternalsHandler;
+  let adapterFieldSet: ObjectFieldsetElement;
+  let deviceTable: HTMLElement;
+  let sidebarNode: HTMLElement;
+  let bluetoothInternalsHandlerRemote: BluetoothInternalsHandlerRemote;
   const pageNames = ['adapter', 'devices'];
   const EXPECTED_DEVICES = 2;
 
@@ -64,49 +72,55 @@ suite('bluetooth_internals', function() {
   });
 
   setup(function() {
-    adapterFieldSet = document.querySelector('#adapter object-fieldset');
-    deviceTable = document.querySelector('#devices device-table')
-                      .shadowRoot.querySelector('table');
-    sidebarNode = document.querySelector('#sidebar');
+    adapterFieldSet = document.querySelector<ObjectFieldsetElement>(
+        '#adapter object-fieldset')!;
+    deviceTable = document.querySelector('#devices device-table')!.shadowRoot!
+                      .querySelector('table')!;
+    sidebarNode = document.querySelector('#sidebar')!;
     devices.resetForTest();
+    assertTrue(!!adapterBroker);
     adapterBroker.deviceAdded(fakeDeviceInfo1());
     adapterBroker.deviceAdded(fakeDeviceInfo2());
   });
 
   teardown(function() {
+    assertTrue(!!sidebarObj);
     internalsHandler.reset();
     sidebarObj.close();
     dismissSnackbar(true);
     connectedDevices.clear();
 
-    pageManager.registeredPages.get('adapter').setAdapterInfo(
-        fakeAdapterInfo());
+    (pageManager.registeredPages.get('adapter') as AdapterPage)
+        .setAdapterInfo(fakeAdapterInfo());
 
     for (const pageName of pageManager.registeredPages.keys()) {
-      const page = pageManager.registeredPages.get(pageName);
+      const page = pageManager.registeredPages.get(pageName)!;
 
       if (pageNames.indexOf(pageName) < 0) {
-        page.pageDiv.parentNode.removeChild(page.pageDiv);
+        page.pageDiv.parentNode!.removeChild(page.pageDiv);
         pageManager.unregister(page);
       }
     }
 
     // Close all of the dialogs.
-    document.getElementById('need-location-services-on').close();
-    document.getElementById('need-location-permission-and-services-on').close();
-    document.getElementById('need-nearby-devices-permission').close();
-    document.getElementById('need-location-permission').close();
-    document.getElementById('can-not-request-permissions').close();
-    document.getElementById('refresh-page').close();
+    getRequiredElement<HTMLDialogElement>('need-location-services-on').close();
+    getRequiredElement<HTMLDialogElement>(
+        'need-location-permission-and-services-on')
+        .close();
+    getRequiredElement<HTMLDialogElement>('need-nearby-devices-permission')
+        .close();
+    getRequiredElement<HTMLDialogElement>('need-location-permission').close();
+    getRequiredElement<HTMLDialogElement>('can-not-request-permissions')
+        .close();
+    getRequiredElement<HTMLDialogElement>('refresh-page').close();
   });
 
   /**
    * Updates device info and verifies the contents of the device table.
-   * @param {!DeviceInfo} deviceInfo
    */
-  function changeDevice(deviceInfo) {
+  function changeDevice(deviceInfo: DeviceInfo) {
     const deviceRow = deviceTable.querySelector(
-        '#' + escapeDeviceAddress(deviceInfo.address));
+        '#' + escapeDeviceAddress(deviceInfo.address))!;
     const nameForDisplayColumn = deviceRow.children[0];
     const addressColumn = deviceRow.children[1];
     const rssiColumn = deviceRow.children[2];
@@ -118,6 +132,7 @@ suite('bluetooth_internals', function() {
     assertTrue(!!rssiColumn);
     assertTrue(!!serviceUuidsColumn);
     assertTrue(!!manufacturerDataColumn);
+    assertTrue(!!adapterBroker);
 
     adapterBroker.deviceChanged(deviceInfo);
 
@@ -143,10 +158,8 @@ suite('bluetooth_internals', function() {
 
   /**
    * Format in a user readable way service UUIDs.
-   * @param ?Array<UUID> uuids
-   * @return {string}
    */
-  function formatServiceUuids(serviceUuids) {
+  function formatServiceUuids(serviceUuids: UUID[]): string {
     if (!serviceUuids) {
       return '';
     }
@@ -156,10 +169,9 @@ suite('bluetooth_internals', function() {
   /**
    * Format in a user readable way device manufacturer data map. Keys are
    * Bluetooth company identifiers (unsigned short), values are bytes.
-   * @param {Map<string, array<number>>} manufacturerDataMap
-   * @return {string}
    */
-  function formatManufacturerDataMap(manufacturerDataMap) {
+  function formatManufacturerDataMap(
+      manufacturerDataMap: {[key: number]: number[]}): string {
     return Object.entries(manufacturerDataMap)
         .map(([key, value]) => {
           const companyIdentifier = parseInt(key).toString(16).padStart(4, '0');
@@ -171,20 +183,17 @@ suite('bluetooth_internals', function() {
 
   /**
    * Escapes colons in a device address for CSS formatting.
-   * @param {string} address
    */
-  function escapeDeviceAddress(address) {
+  function escapeDeviceAddress(address: string): string {
     return address.replace(/:/g, '\\:');
   }
 
   /**
    * Expects whether device with |address| is removed.
-   * @param {string} address
-   * @param {boolean} expectRemoved
    */
-  function expectDeviceRemoved(address, expectRemoved) {
+  function expectDeviceRemoved(address: string, expectRemoved: boolean) {
     const removedRow =
-        deviceTable.querySelector('#' + escapeDeviceAddress(address));
+        deviceTable.querySelector('#' + escapeDeviceAddress(address))!;
 
     assertEquals(expectRemoved, removedRow.classList.contains('removed'));
   }
@@ -193,6 +202,7 @@ suite('bluetooth_internals', function() {
    * Tests whether a device is added successfully and not duplicated.
    */
   test('DeviceAdded', function() {
+    assertTrue(!!adapterBroker);
     let devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
@@ -211,6 +221,7 @@ suite('bluetooth_internals', function() {
    * Tests whether a device is marked properly as removed.
    */
   test('DeviceSetToRemoved', function() {
+    assertTrue(!!adapterBroker);
     let devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
@@ -247,6 +258,7 @@ suite('bluetooth_internals', function() {
    * Tests the entire device cycle, added -> updated -> removed -> re-added.
    */
   test('DeviceUpdateCycle', function() {
+    assertTrue(!!adapterBroker);
     const devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
@@ -273,6 +285,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('DeviceAddedRssiCheck', function() {
+    assertTrue(!!adapterBroker);
     const devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
@@ -281,8 +294,8 @@ suite('bluetooth_internals', function() {
     adapterBroker.deviceAdded(newDeviceInfo);
 
     const deviceRow = deviceTable.querySelector(
-        '#' + escapeDeviceAddress(newDeviceInfo.address));
-    const rssiColumn = deviceRow.children[2];
+        '#' + escapeDeviceAddress(newDeviceInfo.address))!;
+    const rssiColumn = deviceRow.children[2]!;
     assertEquals('Unknown', rssiColumn.textContent);
 
     const newDeviceInfo1 = fakeDeviceInfo3();
@@ -304,12 +317,12 @@ suite('bluetooth_internals', function() {
 
   /* Sidebar Tests */
   test('Sidebar_Setup', function() {
-    const sidebarItems =
-        Array.from(sidebarNode.querySelectorAll('.sidebar-content li'));
+    const sidebarItems = Array.from(
+        sidebarNode.querySelectorAll<HTMLElement>('.sidebar-content li'));
 
     pageNames.forEach(function(pageName) {
       assertTrue(sidebarItems.some(function(item) {
-        return item.dataset.pageName === pageName;
+        return item.dataset['pageName'] === pageName;
       }));
     });
   });
@@ -320,6 +333,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('Sidebar_OpenClose', function() {
+    assertTrue(!!sidebarObj);
     sidebarObj.open();
     assertTrue(sidebarNode.classList.contains('open'));
     sidebarObj.close();
@@ -327,6 +341,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('Sidebar_OpenTwice', function() {
+    assertTrue(!!sidebarObj);
     // Multiple calls to open shouldn't change the state.
     sidebarObj.open();
     sidebarObj.open();
@@ -334,6 +349,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('Sidebar_CloseTwice', function() {
+    assertTrue(!!sidebarObj);
     // Multiple calls to close shouldn't change the state.
     sidebarObj.close();
     sidebarObj.close();
@@ -346,15 +362,13 @@ suite('bluetooth_internals', function() {
    * Checks snackbar showing status and returns a Promise that resolves when
    * |pendingSnackbar| is shown. If the snackbar is already showing, the
    * Promise resolves immediately.
-   * @param {!Snackbar} pendingSnackbar
-   * @return {!Promise}
    */
-  function whenSnackbarShows(pendingSnackbar) {
+  function whenSnackbarShows(pendingSnackbar: HTMLElement): Promise<void> {
     return new Promise(function(resolve) {
       if (pendingSnackbar.classList.contains('open')) {
         resolve();
       } else {
-        pendingSnackbar.addEventListener('showed', resolve);
+        pendingSnackbar.addEventListener('showed', () => resolve());
       }
     });
   }
@@ -363,11 +377,12 @@ suite('bluetooth_internals', function() {
    * Performs final checks for snackbar tests.
    * @return {!Promise} Promise is fulfilled when the checks finish.
    */
-  function finishSnackbarTest() {
+  function finishSnackbarTest(): Promise<void> {
     return new Promise(function(resolve) {
       // Let event queue finish.
       setTimeout(function() {
-        assertEquals(0, $('snackbar-container').children.length);
+        assertEquals(
+            0, getRequiredElement('snackbar-container').children.length);
         assertFalse(!!getSnackbarStateForTest().current);
         resolve();
       }, 50);
@@ -376,7 +391,7 @@ suite('bluetooth_internals', function() {
 
   test('Snackbar_ShowTimeout', function(done) {
     const snackbar1 = showSnackbar('Message 1');
-    assertEquals(1, $('snackbar-container').children.length);
+    assertEquals(1, getRequiredElement('snackbar-container').children.length);
 
     snackbar1.addEventListener('dismissed', function() {
       finishSnackbarTest().then(done);
@@ -385,11 +400,11 @@ suite('bluetooth_internals', function() {
 
   test('Snackbar_ShowDismiss', function() {
     const snackbar1 = showSnackbar('Message 1');
-    assertEquals(1, $('snackbar-container').children.length);
+    assertEquals(1, getRequiredElement('snackbar-container').children.length);
 
     return whenSnackbarShows(snackbar1)
         .then(function() {
-          return dismissSnackbar();
+          return dismissSnackbar(false);
         })
         .then(finishSnackbarTest);
   });
@@ -402,12 +417,12 @@ suite('bluetooth_internals', function() {
     const snackbar2 = showSnackbar('Message 2');
     const snackbar3 = showSnackbar('Message 3');
 
-    assertEquals(1, $('snackbar-container').children.length);
+    assertEquals(1, getRequiredElement('snackbar-container').children.length);
     assertEquals(2, getSnackbarStateForTest().numPending);
 
     function next() {
       actualCalls++;
-      return dismissSnackbar();
+      return dismissSnackbar(false);
     }
 
     whenSnackbarShows(snackbar1).then(next);
@@ -421,14 +436,11 @@ suite('bluetooth_internals', function() {
   });
 
   test('Snackbar_QueueThreeDismissAll', function() {
-    const expectedCalls = 1;
-    const actualCalls = 0;
-
     const snackbar1 = showSnackbar('Message 1');
     const snackbar2 = showSnackbar('Message 2');
     const snackbar3 = showSnackbar('Message 3');
 
-    assertEquals(1, $('snackbar-container').children.length);
+    assertEquals(1, getRequiredElement('snackbar-container').children.length);
     assertEquals(2, getSnackbarStateForTest().numPending);
 
     function next() {
@@ -452,10 +464,10 @@ suite('bluetooth_internals', function() {
   });
 
   /* AdapterPage Tests */
-  function checkAdapterFieldSet(adapterInfo) {
+  function checkAdapterFieldSet(adapterInfo: Record<string, any>) {
     for (const propName in adapterInfo) {
-      const valueCell = adapterFieldSet.shadowRoot.querySelector(
-          `fieldset [data-field="${propName}"]`);
+      const valueCell = adapterFieldSet.shadowRoot!.querySelector(
+          `fieldset [data-field="${propName}"]`)!;
       const value = adapterInfo[propName];
 
       if (typeof (value) === 'boolean') {
@@ -470,11 +482,14 @@ suite('bluetooth_internals', function() {
   }
 
   test('AdapterPage_DefaultState', function() {
+    assertTrue(!!adapterFieldSet.value);
     checkAdapterFieldSet(adapterFieldSet.value);
   });
 
   test('AdapterPage_AdapterChanged', function() {
-    const adapterInfo = adapterFieldSet.value;
+    assertTrue(!!adapterBroker);
+    const adapterInfo = adapterFieldSet.value as AdapterInfo;
+    assertTrue(!!adapterInfo);
 
     adapterInfo.present = !adapterInfo.present;
     adapterBroker.presentChanged(adapterInfo.present);
@@ -486,7 +501,9 @@ suite('bluetooth_internals', function() {
   });
 
   test('AdapterPage_AdapterChanged_RepeatTwice', function() {
-    const adapterInfo = adapterFieldSet.value;
+    assertTrue(!!adapterBroker);
+    const adapterInfo = adapterFieldSet.value as AdapterInfo;
+    assertTrue(!!adapterInfo);
 
     adapterInfo.present = !adapterInfo.present;
     adapterBroker.presentChanged(adapterInfo.present);
@@ -505,10 +522,9 @@ suite('bluetooth_internals', function() {
 
   /**
    * Checks DeviceDetailsPage status fieldset.
-   * @param {!HTMLElement} detailsPage
-   * @param {!Object} deviceInfo
    */
-  function checkDeviceDetailsFieldSet(detailsPage, deviceInfo) {
+  function checkDeviceDetailsFieldSet(
+      detailsPage: HTMLElement, deviceInfo: DeviceInfo) {
     ['name',
      'address',
      'isGattConnected',
@@ -517,14 +533,14 @@ suite('bluetooth_internals', function() {
      'manufacturerDataMap',
     ].forEach(function(propName) {
       const valueCell =
-          detailsPage.querySelector('object-fieldset')
-              .shadowRoot.querySelector(`fieldset [data-field="${propName}"]`);
+          detailsPage.querySelector('object-fieldset')!.shadowRoot!
+              .querySelector(`fieldset [data-field="${propName}"]`)!;
 
       const parts = propName.split('.');
-      let value = deviceInfo;
+      let value: any = deviceInfo;
 
       while (value != null && parts.length > 0) {
-        const part = parts.shift();
+        const part = parts.shift()!;
         value = value[part];
       }
 
@@ -551,12 +567,13 @@ suite('bluetooth_internals', function() {
   }
 
   test('DeviceDetailsPage_NewDelete', function() {
-    const device = devices.item(0);
+    const device = devices.item(0)!;
 
     // Have to search manually since the device row IDs aren't valid selectors.
     const deviceRow = Array.from(deviceTable.querySelectorAll('tr'))
-                          .find(row => row.id === device.address);
-    const deviceInspectLink = deviceRow.querySelector('[is="action-link"]');
+                          .find(row => row.id === device.address)!;
+    const deviceInspectLink =
+        deviceRow.querySelector<HTMLElement>('[is="action-link"]')!;
 
     const deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
@@ -566,13 +583,14 @@ suite('bluetooth_internals', function() {
     let detailsPage = document.getElementById(deviceDetailsPageId);
     assertTrue(!!detailsPage);
 
-    return internalsHandler.adapter.deviceImplMap.get(device.address)
+    return internalsHandler.adapter.deviceImplMap.get(device.address)!
         .whenCalled('getServices')
         .then(function() {
+          assertTrue(!!detailsPage);
           // At this point, the device details page should be fully loaded.
           checkDeviceDetailsFieldSet(detailsPage, device);
 
-          detailsPage.querySelector('.forget').click();
+          detailsPage.querySelector<HTMLElement>('.forget')!.click();
           assertEquals('#devices', window.location.hash);
           detailsPage = document.getElementById(deviceDetailsPageId);
           assertFalse(!!detailsPage);
@@ -580,28 +598,30 @@ suite('bluetooth_internals', function() {
   });
 
   test('DeviceDetailsPage_NewDelete_FromDevicesPage', function() {
-    const device = devices.item(0);
+    const device = devices.item(0)!;
     const deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
     const deviceRow = Array.from(deviceTable.querySelectorAll('tr'))
-                          .find(row => row.id === device.address);
-    const deviceLinks = deviceRow.querySelectorAll('[is="action-link"]');
+                          .find(row => row.id === device.address)!;
+    const deviceLinks =
+        deviceRow.querySelectorAll<HTMLElement>('[is="action-link"]');
 
     // First link is 'Inspect'.
-    deviceLinks[0].click();
+    deviceLinks[0]!.click();
     assertEquals('#' + deviceDetailsPageId, window.location.hash);
 
     let detailsPage = document.getElementById(deviceDetailsPageId);
     assertTrue(!!detailsPage);
 
-    return internalsHandler.adapter.deviceImplMap.get(device.address)
+    return internalsHandler.adapter.deviceImplMap.get(device.address)!
         .whenCalled('getServices')
         .then(function() {
+          assertTrue(!!detailsPage);
           // At this point, the device details page should be fully loaded.
           checkDeviceDetailsFieldSet(detailsPage, device);
 
           // Second link is 'Forget'.
-          deviceLinks[1].click();
+          deviceLinks[1]!.click();
           assertEquals('#devices', window.location.hash);
           detailsPage = document.getElementById(deviceDetailsPageId);
           assertFalse(!!detailsPage);
@@ -619,11 +639,13 @@ suite('bluetooth_internals', function() {
       assert(false);
     });
     await internalsHandler.whenCalled('checkSystemPermissions');
-    assertTrue(document.getElementById('need-location-permission').open);
-    document.getElementById('need-location-permission-permission-link').click();
+    assertTrue(
+        getRequiredElement<HTMLDialogElement>('need-location-permission').open);
+    getRequiredElement('need-location-permission-permission-link').click();
     await internalsHandler.whenCalled('requestSystemPermissions');
-    assertFalse(document.getElementById('need-location-permission').open);
-    assertTrue(document.getElementById('refresh-page').open);
+    assertFalse(
+        getRequiredElement<HTMLDialogElement>('need-location-permission').open);
+    assertTrue(getRequiredElement<HTMLDialogElement>('refresh-page').open);
   });
 
   test(
@@ -641,17 +663,18 @@ suite('bluetooth_internals', function() {
         });
         await internalsHandler.whenCalled('checkSystemPermissions');
         assertTrue(
-            document.getElementById('need-location-permission-and-services-on')
+            getRequiredElement<HTMLDialogElement>(
+                'need-location-permission-and-services-on')
                 .open);
-        document
-            .getElementById(
-                'need-location-permission-and-services-on-permission-link')
+        getRequiredElement(
+            'need-location-permission-and-services-on-permission-link')
             .click();
         await internalsHandler.whenCalled('requestSystemPermissions');
         assertFalse(
-            document.getElementById('need-location-permission-and-services-on')
+            getRequiredElement<HTMLDialogElement>(
+                'need-location-permission-and-services-on')
                 .open);
-        assertTrue(document.getElementById('refresh-page').open);
+        assertTrue(getRequiredElement<HTMLDialogElement>('refresh-page').open);
       });
 
   test(
@@ -669,17 +692,18 @@ suite('bluetooth_internals', function() {
         });
         await internalsHandler.whenCalled('checkSystemPermissions');
         assertTrue(
-            document.getElementById('need-location-permission-and-services-on')
+            getRequiredElement<HTMLDialogElement>(
+                'need-location-permission-and-services-on')
                 .open);
-        document
-            .getElementById(
-                'need-location-permission-and-services-on-services-link')
+        getRequiredElement(
+            'need-location-permission-and-services-on-services-link')
             .click();
         await internalsHandler.whenCalled('requestLocationServices');
         assertFalse(
-            document.getElementById('need-location-permission-and-services-on')
+            getRequiredElement<HTMLDialogElement>(
+                'need-location-permission-and-services-on')
                 .open);
-        assertTrue(document.getElementById('refresh-page').open);
+        assertTrue(getRequiredElement<HTMLDialogElement>('refresh-page').open);
       });
 
   test(
@@ -695,15 +719,17 @@ suite('bluetooth_internals', function() {
           assert(false);
         });
         await internalsHandler.whenCalled('checkSystemPermissions');
-        assertTrue(
-            document.getElementById('need-nearby-devices-permission').open);
-        document
-            .getElementById('need-nearby-devices-permission-permission-link')
+        assertTrue(document
+                       .querySelector<HTMLDialogElement>(
+                           '#need-nearby-devices-permission')!.open);
+        getRequiredElement('need-nearby-devices-permission-permission-link')
             .click();
         await internalsHandler.whenCalled('requestSystemPermissions');
         assertFalse(
-            document.getElementById('need-nearby-devices-permission').open);
-        assertTrue(document.getElementById('refresh-page').open);
+            getRequiredElement<HTMLDialogElement>(
+                'need-nearby-devices-permission')
+                .open);
+        assertTrue(getRequiredElement<HTMLDialogElement>('refresh-page').open);
       });
 
   test('CheckSystemPermissions_can_not_request_permission', async function() {
@@ -717,31 +743,33 @@ suite('bluetooth_internals', function() {
       assert(false);
     });
     await internalsHandler.whenCalled('checkSystemPermissions');
-    assertTrue(document.getElementById('can-not-request-permissions').open);
+    assertTrue(
+        getRequiredElement<HTMLDialogElement>('can-not-request-permissions')
+            .open);
   });
 
   // <if expr="is_chromeos">
   test('Restart system Bluetooth', async function() {
-    const getReStartBluetoothBtn = () => {
-      return document.querySelector('#restart-bluetooth-btn');
-    };
+    function getRestartBluetoothBtn() {
+      return getRequiredElement('restart-bluetooth-btn');
+    }
 
-    assert(getReStartBluetoothBtn());
+    assert(getRestartBluetoothBtn());
     assertEquals(
-        getReStartBluetoothBtn().textContent, 'Restart system Bluetooth');
+        getRestartBluetoothBtn().textContent, 'Restart system Bluetooth');
 
-    getReStartBluetoothBtn().click();
+    getRestartBluetoothBtn().click();
     await flushTasks();
     await internalsHandler.whenCalled('restartSystemBluetooth');
 
     assertEquals(
-        getReStartBluetoothBtn().textContent, 'Restarting system Bluetooth..');
+        getRestartBluetoothBtn().textContent, 'Restarting system Bluetooth..');
 
     internalsHandler.completeRestartSystemBluetooth();
     await flushTasks();
     await internalsHandler.whenCalled('completeRestartSystemBluetooth');
     assertEquals(
-        getReStartBluetoothBtn().textContent, 'Restart system Bluetooth');
+        getRestartBluetoothBtn().textContent, 'Restart system Bluetooth');
   });
   // </if>
 });
@@ -755,126 +783,132 @@ suite('BluetoothInternalsUnitTests', function() {
   const device1 = fakeDeviceInfo1();
   const service1 = fakeServiceInfo1();
   const characteristic1 = fakeCharacteristicInfo1();
-  let valueControl = null;
+  let valueControl: ValueControlElement;
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     valueControl = document.createElement('value-control');
     document.body.appendChild(valueControl);
-    valueControl.dataset.options = JSON.stringify({
+    valueControl.dataset['options'] = JSON.stringify({
       deviceAddress: device1.address,
       serviceId: service1.id,
       characteristicId: characteristic1,
     });
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.HEXADECIMAL;
   });
 
   test('ValueControl_SetValue_Hexadecimal_EmptyArray', function() {
-    valueControl.dataset.value = JSON.stringify([]);
-    assertEquals('', valueControl.shadowRoot.querySelector('input').value);
+    valueControl.dataset['value'] = JSON.stringify([]);
+    assertEquals('', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_Hexadecimal_OneValue', function() {
-    valueControl.dataset.value = JSON.stringify([aCode]);
-    assertEquals('0x61', valueControl.shadowRoot.querySelector('input').value);
+    valueControl.dataset['value'] = JSON.stringify([aCode]);
+    assertEquals(
+        '0x61', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_Hexadecimal_ThreeValues', function() {
-    valueControl.dataset.value = JSON.stringify([aCode, bCode, cCode]);
+    valueControl.dataset['value'] = JSON.stringify([aCode, bCode, cCode]);
     assertEquals(
-        '0x616263', valueControl.shadowRoot.querySelector('input').value);
+        '0x616263', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_UTF8_EmptyArray', function() {
-    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
-    valueControl.dataset.value = JSON.stringify([]);
-    assertEquals('', valueControl.shadowRoot.querySelector('input').value);
+    valueControl.shadowRoot!.querySelector('select')!.value =
+        ValueDataType.UTF8;
+    valueControl.dataset['value'] = JSON.stringify([]);
+    assertEquals('', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_UTF8_OneValue', function() {
-    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
-    valueControl.dataset.value = JSON.stringify([aCode]);
-    assertEquals('a', valueControl.shadowRoot.querySelector('input').value);
+    valueControl.shadowRoot!.querySelector('select')!.value =
+        ValueDataType.UTF8;
+    valueControl.dataset['value'] = JSON.stringify([aCode]);
+    assertEquals('a', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_UTF8_ThreeValues', function() {
-    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
-    valueControl.dataset.value = JSON.stringify([aCode, bCode, cCode]);
-    assertEquals('abc', valueControl.shadowRoot.querySelector('input').value);
+    valueControl.shadowRoot!.querySelector('select')!.value =
+        ValueDataType.UTF8;
+    valueControl.dataset['value'] = JSON.stringify([aCode, bCode, cCode]);
+    assertEquals('abc', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_Decimal_EmptyArray', function() {
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.DECIMAL;
-    valueControl.dataset.value = JSON.stringify([]);
-    assertEquals('', valueControl.shadowRoot.querySelector('input').value);
+    valueControl.dataset['value'] = JSON.stringify([]);
+    assertEquals('', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_Decimal_OneValue', function() {
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.DECIMAL;
-    valueControl.dataset.value = JSON.stringify([aCode]);
+    valueControl.dataset['value'] = JSON.stringify([aCode]);
     assertEquals(
-        String(aCode), valueControl.shadowRoot.querySelector('input').value);
+        String(aCode), valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_SetValue_Decimal_ThreeValues', function() {
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.DECIMAL;
-    valueControl.dataset.value = JSON.stringify([aCode, bCode, cCode]);
+    valueControl.dataset['value'] = JSON.stringify([aCode, bCode, cCode]);
     assertEquals(
-        '97-98-99', valueControl.shadowRoot.querySelector('input').value);
+        '97-98-99', valueControl.shadowRoot!.querySelector('input')!.value);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_EmptyString', function() {
-    valueControl.value_.setAs(ValueDataType.HEXADECIMAL, '');
-    assertEquals(0, valueControl.value_.getArray().length);
+    valueControl.value.setAs(ValueDataType.HEXADECIMAL, '');
+    assertEquals(0, valueControl.value.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_BadHexPrefix', function() {
     assertThrows(function() {
-      valueControl.value_.setAs(ValueDataType.HEXADECIMAL, 'd0x');
+      valueControl.value.setAs(ValueDataType.HEXADECIMAL, 'd0x');
     }, 'Expected new value to start with "0x"');
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_ThreeValues', function() {
-    valueControl.value_.setAs(ValueDataType.HEXADECIMAL, '0x616263');
-    assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
+    valueControl.value.setAs(ValueDataType.HEXADECIMAL, '0x616263');
+    assertDeepEquals([aCode, bCode, cCode], valueControl.value.getArray());
   });
 
   test('ValueControl_ConvertValue_UTF8_EmptyString', function() {
-    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
-    valueControl.value_.setAs(ValueDataType.UTF8, '');
-    assertEquals(0, valueControl.value_.getArray().length);
+    valueControl.shadowRoot!.querySelector('select')!.value =
+        ValueDataType.UTF8;
+    valueControl.value.setAs(ValueDataType.UTF8, '');
+    assertEquals(0, valueControl.value.getArray().length);
   });
 
   test('ValueControl_ConvertValue_UTF8_ThreeValues', function() {
-    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
-    valueControl.value_.setAs(ValueDataType.UTF8, 'abc');
-    assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
+    valueControl.shadowRoot!.querySelector('select')!.value =
+        ValueDataType.UTF8;
+    valueControl.value.setAs(ValueDataType.UTF8, 'abc');
+    assertDeepEquals([aCode, bCode, cCode], valueControl.value.getArray());
   });
 
   test('ValueControl_ConvertValue_Decimal_EmptyString', function() {
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.DECIMAL;
-    valueControl.value_.setAs(ValueDataType.DECIMAL, '');
-    assertEquals(0, valueControl.value_.getArray().length);
+    valueControl.value.setAs(ValueDataType.DECIMAL, '');
+    assertEquals(0, valueControl.value.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues_Fail', function() {
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.DECIMAL;
 
     assertThrows(function() {
-      valueControl.value_.setAs(ValueDataType.DECIMAL, '97-+-99' /* a-+-c */);
+      valueControl.value.setAs(ValueDataType.DECIMAL, '97-+-99' /* a-+-c */);
     }, 'New value can only contain numbers and hyphens');
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues', function() {
-    valueControl.shadowRoot.querySelector('select').value =
+    valueControl.shadowRoot!.querySelector('select')!.value =
         ValueDataType.DECIMAL;
-    valueControl.value_.setAs(ValueDataType.DECIMAL, '97-98-99' /* abc */);
-    assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
+    valueControl.value.setAs(ValueDataType.DECIMAL, '97-98-99' /* abc */);
+    assertDeepEquals([aCode, bCode, cCode], valueControl.value.getArray());
   });
 });

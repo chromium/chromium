@@ -39,7 +39,7 @@ export class ObjectFieldsetElement extends CustomElement {
     return this.hasAttribute('show-all');
   }
 
-  get value(): object|null {
+  get value(): Record<string, any>|null {
     return this.dataset['value'] ? JSON.parse(this.dataset['value']) : null;
   }
 
