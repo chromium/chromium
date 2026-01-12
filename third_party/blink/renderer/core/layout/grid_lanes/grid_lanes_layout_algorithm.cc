@@ -40,6 +40,18 @@ GridLanesLayoutAlgorithm::GridLanesLayoutAlgorithm(
 
 MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
+  // If the intrinsic inline size has been overridden, use the provided value.
+  const auto& node = Node();
+  LayoutUnit override_intrinsic_inline_size =
+      node.OverrideIntrinsicContentInlineSize();
+  if (override_intrinsic_inline_size != kIndefiniteSize) {
+    override_intrinsic_inline_size += BorderScrollbarPadding().InlineSum();
+    MinMaxSizes sizes(override_intrinsic_inline_size,
+                      override_intrinsic_inline_size);
+    return MinMaxSizesResult{sizes,
+                             /* depends_on_block_constraints=*/false};
+  }
+
   const ComputedStyle& style = Style();
   const bool is_for_columns =
       style.GridLanesTrackSizingDirection() == kForColumns;
@@ -50,10 +62,15 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
     GridItems grid_lanes_items;
     Vector<wtf_size_t> collapsed_track_indexes;
 
+    // TODO(almaher): Do we need to do something special for subgrid
+    // related to GetGridLayoutSubtree()?
+
+    const bool should_apply_inline_size_containment =
+        node.ShouldApplyInlineSizeContainment();
     GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
         sizing_constraint, /*intrinsic_repeat_track_sizes=*/nullptr,
-        grid_lanes_items, collapsed_track_indexes, start_offset,
-        needs_intrinsic_track_size);
+        should_apply_inline_size_containment, grid_lanes_items,
+        collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -69,7 +86,8 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
           GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                          track_collection);
       track_collection = ComputeGridAxisTracks(
-          sizing_constraint, &intrinsic_repeat_track_sizes, grid_lanes_items,
+          sizing_constraint, &intrinsic_repeat_track_sizes,
+          should_apply_inline_size_containment, grid_lanes_items,
           collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
     }
 
@@ -132,10 +150,13 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   HeapVector<Member<LayoutBox>> oof_children;
   Vector<wtf_size_t> collapsed_track_indexes;
 
+  // Never apply inline size containment during the layout pass because size
+  // containment is independent from layout.
   GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
       SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
-      grid_lanes_items, collapsed_track_indexes, start_offset,
-      needs_intrinsic_track_size, &oof_children);
+      /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+      collapsed_track_indexes, start_offset, needs_intrinsic_track_size,
+      &oof_children);
 
   // We have a repeat() track definition with an intrinsic sized track(s). The
   // previous track sizing pass was used to find the track size to apply
@@ -152,8 +173,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
                                        track_collection);
     track_collection = ComputeGridAxisTracks(
         SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
-        grid_lanes_items, collapsed_track_indexes, start_offset,
-        needs_intrinsic_track_size);
+        /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+        collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
   }
 
   if (!grid_lanes_items.IsEmpty()) {
@@ -499,7 +520,14 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
 
   // To determine the size of the grid axis, add the size of the tracks.
   const LayoutUnit grid_axis_size = track_collection.CalculateSetSpanSize();
-  intrinsic_block_size_ = is_for_columns ? stacking_axis_size : grid_axis_size;
+  const LayoutUnit current_intrinsic_block_size =
+      is_for_columns ? stacking_axis_size : grid_axis_size;
+  // If block size containment is applied, don't set the intrinsic block size
+  // because we would either use the author-provided intrinsic block size, or if
+  // the author didn't provide one, the block size of an empty container.
+  if (!Node().ShouldApplyBlockSizeContainment()) {
+    intrinsic_block_size_ = current_intrinsic_block_size;
+  }
 
   // Apply content alignment/justification. This is an additional offset
   // determined by the intrinsic inline or block size of the grid-lanes
@@ -512,7 +540,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
         is_for_columns ? grid_axis_size : stacking_axis_size;
 
     const LayoutUnit align_content_offset = AlignContentOffset(
-        is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size,
+        is_for_columns ? current_intrinsic_block_size : intrinsic_inline_size,
         is_for_columns ? ChildAvailableSize().block_size
                        : ChildAvailableSize().inline_size,
         baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
@@ -906,6 +934,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
 GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
     const SizingConstraint sizing_constraint,
     const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
+    const bool should_apply_inline_size_containment,
     GridItems& grid_lanes_items,
     Vector<wtf_size_t>& collapsed_track_indexes,
     wtf_size_t& start_offset,
@@ -918,16 +947,18 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
       Style(), ComputeAutomaticRepetitions(intrinsic_repeat_track_sizes,
                                            needs_intrinsic_track_size));
   const auto& node = Node();
-  if (grid_lanes_items.IsEmpty()) {
-    grid_lanes_items =
-        node.ConstructGridLanesItems(line_resolver, opt_oof_children);
-  } else {
-    // If `grid_lanes_items` is not empty, that means that we are in
-    // a second track sizing pass required for intrinsic tracks within
-    // a repeat() track definition. Don't construct the grid-lanes items
-    // from scratch. Rather, adjust their spans based on the updated
-    // `line_resolver`.
-    node.AdjustGridLanesItemSpans(grid_lanes_items, line_resolver);
+  if (!should_apply_inline_size_containment) {
+    if (grid_lanes_items.IsEmpty()) {
+      grid_lanes_items =
+          node.ConstructGridLanesItems(line_resolver, opt_oof_children);
+    } else {
+      // If `grid_lanes_items` is not empty, that means that we are in
+      // a second track sizing pass required for intrinsic tracks within
+      // a repeat() track definition. Don't construct the grid-lanes items
+      // from scratch. Rather, adjust their spans based on the updated
+      // `line_resolver`.
+      node.AdjustGridLanesItemSpans(grid_lanes_items, line_resolver);
+    }
   }
 
   return BuildGridAxisTracks(line_resolver, grid_lanes_items, sizing_constraint,

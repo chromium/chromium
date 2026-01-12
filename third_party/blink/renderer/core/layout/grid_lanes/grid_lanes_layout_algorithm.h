@@ -71,21 +71,23 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                            HeapVector<Member<LayoutBox>>& oof_children);
 
   // Returns the track collection given the provided `sizing_constraint`.
-  // If `intrinsic_repeat_track_sizes` is non-null, this contains the track
-  // size(s) to use for intrinsic sized track(s) inside a repeat() track
-  // definition. The `grid_lanes_items` and `start_offset` associated with the
-  // returned track collection are returned via the corresponding output params.
-  // If we hit an intrinsic sized track within a repeat() definition and don't
-  // provide `intrinsic_repeat_track_sizes`, then `needs_intrinsic_track_size`
-  // will be set to true, indicating that another track sizing pass will be
-  // required once we've computed the intrinsic track size. `opt_oof_children`
-  // is an optional vector of out-of-flow direct children of the grid-lanes
-  // container that this method will populate. `collapsed_track_indexes` will be
-  // populated with all the grid track indexes that were collapsed as a result
-  // of auto-fit.
+  // If `should_apply_inline_size_containment` is true, build tracks without
+  // using any items. If `intrinsic_repeat_track_sizes` is non-null, this
+  // contains the track size(s) to use for intrinsic sized track(s) inside a
+  // repeat() track definition. The `grid_lanes_items` and `start_offset`
+  // associated with the returned track collection are returned via the
+  // corresponding output params. If we hit an intrinsic sized track within a
+  // repeat() definition and don't provide `intrinsic_repeat_track_sizes`, then
+  // `needs_intrinsic_track_size` will be set to true, indicating that another
+  // track sizing pass will be required once we've computed the intrinsic track
+  // size. `opt_oof_children` is an optional vector of out-of-flow direct
+  // children of the grid-lanes container that this method will populate.
+  // `collapsed_track_indexes` will be populated with all the grid track indexes
+  // that were collapsed as a result of auto-fit.
   GridSizingTrackCollection ComputeGridAxisTracks(
       const SizingConstraint sizing_constraint,
       const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
+      const bool should_apply_inline_size_containment,
       GridItems& grid_lanes_items,
       Vector<wtf_size_t>& collapsed_track_indexes,
       wtf_size_t& start_offset,

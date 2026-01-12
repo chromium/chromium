@@ -28,8 +28,8 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     bool needs_intrinsic_track_size = false;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
         SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
-        grid_lanes_items, collapsed_track_indexes_, start_offset,
-        needs_intrinsic_track_size);
+        /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+        collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -46,8 +46,8 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                                                    grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
           SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
-          grid_lanes_items, collapsed_track_indexes_, start_offset,
-          needs_intrinsic_track_size);
+          /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+          collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
