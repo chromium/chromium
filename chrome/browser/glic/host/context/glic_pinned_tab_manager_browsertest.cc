@@ -192,21 +192,31 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   pinned_tab_manager_->SubscribeToPinCandidates(std::move(options),
                                                 observer.Bind());
 
-  // The initial list should be sorted by creation time. Because the max number
-  // of candidates is 3, the initial "about:blank" tab is not included.
-  ExpectThatEventually(
-      observer, ElementsAre(HasTitle("The Looming Threat of the Undead Rodent"),
-                            HasTitle("My Toaster Is Evil: A User's Guide"),
-                            HasTitle("The Physics of Feline Fluid Dynamics")));
-
-  // Activate the oldest tab (index 1, since "about:blank" is at 0).
+  // Set up the ordering so toggling between them is predictable.
+  browser()->tab_strip_model()->ActivateTabAt(3);
   browser()->tab_strip_model()->ActivateTabAt(1);
 
-  // The activated tab should now be at the front of the list.
-  ExpectThatEventually(
-      observer, ElementsAre(HasTitle("The Physics of Feline Fluid Dynamics"),
-                            HasTitle("The Looming Threat of the Undead Rodent"),
-                            HasTitle("My Toaster Is Evil: A User's Guide")));
+  // Toggle between the tabs a few times to make sure that it gets updated
+  // for every activation event.
+  for (size_t i = 0; i < 3; ++i) {
+    browser()->tab_strip_model()->ActivateTabAt(3);
+
+    // The activated tab should now be at the front of the list.
+    ExpectThatEventually(
+        observer,
+        ElementsAre(HasTitle("The Looming Threat of the Undead Rodent"),
+                    HasTitle("The Physics of Feline Fluid Dynamics"),
+                    HasTitle("My Toaster Is Evil: A User's Guide")));
+
+    browser()->tab_strip_model()->ActivateTabAt(1);
+
+    // The activated tab should now be at the front of the list.
+    ExpectThatEventually(
+        observer,
+        ElementsAre(HasTitle("The Physics of Feline Fluid Dynamics"),
+                    HasTitle("The Looming Threat of the Undead Rodent"),
+                    HasTitle("My Toaster Is Evil: A User's Guide")));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,

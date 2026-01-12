@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"  // For now, maybe not needed if we just pass TabInterface
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
@@ -54,22 +54,31 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& contents_with_index : change.GetInsert()->contents) {
+    const auto& insert = *change.GetInsert();
+    for (const auto& content : insert.contents) {
       tabs::TabInterface* new_tab =
-          tabs::TabInterface::GetFromContents(contents_with_index.contents);
-
-      tabs::TabInterface* old_active_tab = nullptr;
-      if (selection.old_contents) {
-        old_active_tab =
-            tabs::TabInterface::GetFromContents(selection.old_contents);
-      }
-
-      if (new_tab) {
-        TabCreationType creation_type = DetermineTabCreationType(new_tab);
-        callback_.Run(TabCreationEvent{new_tab, old_active_tab, creation_type});
-      }
+          tab_strip_model->GetTabAtIndex(content.index);
+      TabCreationType type = DetermineTabCreationType(new_tab);
+      callback_.Run(TabCreationEvent{new_tab, selection.old_tab, type});
     }
+    return;
   }
+
+  if (selection.active_tab_changed()) {
+    callback_.Run(TabActivationEvent{selection.new_tab, selection.old_tab});
+  }
+
+  if (change.type() == TabStripModelChange::kRemoved ||
+      change.type() == TabStripModelChange::kMoved ||
+      change.type() == TabStripModelChange::kReplaced) {
+    callback_.Run(TabMutationEvent{});
+  }
+}
+
+void GlicTabObserverImpl::OnTabChangedAt(tabs::TabInterface* tab,
+                                         int index,
+                                         TabChangeType change_type) {
+  callback_.Run(TabMutationEvent{});
 }
 
 TabCreationType GlicTabObserverImpl::DetermineTabCreationType(

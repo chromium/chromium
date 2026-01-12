@@ -459,8 +459,9 @@ void GlicPinnedTabManagerImpl::SubscribeToPinCandidates(
       base::Unretained(this)));
   pin_candidates_options_ = std::move(options);
   pin_candidate_updater_->RequestUpdate();
-  tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, nullptr);
-  tab_strip_tracker_->Init();
+  tab_observer_ = GlicTabObserver::Create(
+      profile_, base::BindRepeating(&GlicPinnedTabManagerImpl::OnTabEvent,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GlicPinnedTabManagerImpl::OnPinnedTabContextEvent(
@@ -542,36 +543,17 @@ GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
   return candidates;
 }
 
-void GlicPinnedTabManagerImpl::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
+void GlicPinnedTabManagerImpl::OnTabEvent(const GlicTabEvent& event) {
   if (!pin_candidates_observer_) {
     return;
   }
-  pin_candidate_updater_->RequestUpdate();
-}
-
-void GlicPinnedTabManagerImpl::OnTabChangedAt(tabs::TabInterface* tab,
-                                              int index,
-                                              TabChangeType change_type) {
-  if (!pin_candidates_observer_) {
-    return;
-  }
-  pin_candidate_updater_->RequestUpdate();
-}
-
-void GlicPinnedTabManagerImpl::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                                  int index) {
-  if (!pin_candidates_observer_) {
-    return;
-  }
+  // All events signal a need to update candidates.
   pin_candidate_updater_->RequestUpdate();
 }
 
 void GlicPinnedTabManagerImpl::OnPinCandidatesObserverDisconnected() {
   pin_candidates_observer_.reset();
-  tab_strip_tracker_.reset();
+  tab_observer_.reset();
 }
 
 void GlicPinnedTabManagerImpl::NotifyPinnedTabsChanged() {
