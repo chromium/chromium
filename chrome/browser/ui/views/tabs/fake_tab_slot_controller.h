@@ -76,7 +76,6 @@ class FakeTabSlotController : public TabSlotController {
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
-  bool HasVisibleBackgroundTabShapes() const override;
   SkColor GetTabSeparatorColor() const override;
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;

@@ -218,10 +218,6 @@ class TabStripController {
   virtual bool IsFrameCondensed() const = 0;
 
   // Returns whether the shapes of background tabs are visible against the
-  // frame.
-  virtual bool HasVisibleBackgroundTabShapes() const = 0;
-
-  // Returns whether the shapes of background tabs are visible against the
   // frame for either active or inactive windows.
   virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
 

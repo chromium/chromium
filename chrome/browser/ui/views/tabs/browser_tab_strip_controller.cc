@@ -629,11 +629,6 @@ bool BrowserTabStripController::IsFrameCondensed() const {
   return GetFrameView()->IsFrameCondensed();
 }
 
-bool BrowserTabStripController::HasVisibleBackgroundTabShapes() const {
-  return GetFrameView()->HasVisibleBackgroundTabShapes(
-      BrowserFrameActiveState::kUseCurrent);
-}
-
 bool BrowserTabStripController::EverHasVisibleBackgroundTabShapes() const {
   return GetFrameView()->HasVisibleBackgroundTabShapes(
              BrowserFrameActiveState::kActive) ||

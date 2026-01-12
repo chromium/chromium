@@ -288,10 +288,6 @@ bool FakeBaseTabStripController::IsFrameCondensed() const {
   return false;
 }
 
-bool FakeBaseTabStripController::HasVisibleBackgroundTabShapes() const {
-  return false;
-}
-
 bool FakeBaseTabStripController::EverHasVisibleBackgroundTabShapes() const {
   return false;
 }

@@ -2036,10 +2036,6 @@ bool TabStrip::CanPaintThrobberToLayer() const {
          !widget->IsFullscreen();
 }
 
-bool TabStrip::HasVisibleBackgroundTabShapes() const {
-  return controller_->HasVisibleBackgroundTabShapes();
-}
-
 SkColor TabStrip::GetTabSeparatorColor() const {
   return separator_color_;
 }

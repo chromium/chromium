@@ -114,7 +114,6 @@ class BrowserTabStripController : public TabStripController,
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group_id) const override;
   bool IsFrameCondensed() const override;
-  bool HasVisibleBackgroundTabShapes() const override;
   bool EverHasVisibleBackgroundTabShapes() const override;
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;

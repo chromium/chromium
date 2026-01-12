@@ -83,10 +83,6 @@ bool FakeTabSlotController::CanPaintThrobberToLayer() const {
   return paint_throbber_to_layer_;
 }
 
-bool FakeTabSlotController::HasVisibleBackgroundTabShapes() const {
-  return false;
-}
-
 SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
 }

@@ -190,10 +190,6 @@ class TabSlotController {
   // in the same window will redraw on top of the the favicon area of any tab.
   virtual bool CanPaintThrobberToLayer() const = 0;
 
-  // Returns whether the shapes of background tabs are visible against the
-  // frame.
-  virtual bool HasVisibleBackgroundTabShapes() const = 0;
-
   // Returns the color of the separator between the tabs.
   virtual SkColor GetTabSeparatorColor() const = 0;
 

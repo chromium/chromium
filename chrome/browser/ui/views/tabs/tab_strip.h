@@ -307,7 +307,6 @@ class TabStrip : public views::View,
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
-  bool HasVisibleBackgroundTabShapes() const override;
   SkColor GetTabSeparatorColor() const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   std::optional<int> GetCustomBackgroundId(
