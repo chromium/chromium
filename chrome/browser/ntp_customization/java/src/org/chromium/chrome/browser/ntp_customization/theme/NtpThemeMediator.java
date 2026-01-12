@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
@@ -148,6 +149,13 @@ public class NtpThemeMediator {
     void updateTrailingIconVisibilityForSectionType(@NtpBackgroundImageType int sectionType) {
         for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
             if (i == THEME_COLLECTION) {
+                continue;
+            }
+
+            if (i == COLOR_FROM_HEX && sectionType == CHROME_COLOR) {
+                // Prevents overriding the visibility from visible to invisible if the user chooses
+                // a customized color theme. This is because both types share the same bottom sheet
+                // list item.
                 continue;
             }
 

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
@@ -347,5 +349,51 @@ public class NtpThemeMediatorUnitTest {
         mMediator.fetchAndSetThemeCollectionsLeadingIcon();
 
         verify(mMediator, times(2)).fetchImageOrRunCallback(eq(mImageFetcher), any(), any());
+    }
+
+    @Test
+    public void testUpdateTrailingIconVisibilityForSectionType() {
+        createMediator(true);
+
+        clearInvocations(mThemePropertyModel);
+        mMediator.updateTrailingIconVisibilityForSectionType(DEFAULT);
+        assertIconVisibility(DEFAULT, /* visible= */ true);
+        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ false);
+        assertIconVisibility(CHROME_COLOR, /* visible= */ false);
+        assertIconVisibility(COLOR_FROM_HEX, /* visible= */ false);
+
+        clearInvocations(mThemePropertyModel);
+        mMediator.updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
+        assertIconVisibility(DEFAULT, /* visible= */ false);
+        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ true);
+        assertIconVisibility(CHROME_COLOR, /* visible= */ false);
+        assertIconVisibility(COLOR_FROM_HEX, /* visible= */ false);
+
+        clearInvocations(mThemePropertyModel);
+        mMediator.updateTrailingIconVisibilityForSectionType(CHROME_COLOR);
+        assertIconVisibility(DEFAULT, /* visible= */ false);
+        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ false);
+        assertIconVisibility(CHROME_COLOR, /* visible= */ true);
+        // Verifies that COLOR_FROM_HEX doesn't override the visibility of CHROME_COLOR since they
+        // share the same image icon.
+        verify(mThemePropertyModel, never())
+                .set(
+                        IS_SECTION_TRAILING_ICON_VISIBLE,
+                        new Pair<>(COLOR_FROM_HEX, /* visible= */ false));
+
+        clearInvocations(mThemePropertyModel);
+        mMediator.updateTrailingIconVisibilityForSectionType(COLOR_FROM_HEX);
+        assertIconVisibility(DEFAULT, /* visible= */ false);
+        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ false);
+        assertIconVisibility(CHROME_COLOR, /* visible= */ false);
+        assertIconVisibility(COLOR_FROM_HEX, /* visible= */ true);
+    }
+
+    private void assertIconVisibility(int type, boolean visible) {
+        Pair<Integer, Boolean> pair = mThemePropertyModel.get(IS_SECTION_TRAILING_ICON_VISIBLE);
+        if (pair != null && pair.first == type) {
+            verify(mThemePropertyModel)
+                    .set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(type, visible));
+        }
     }
 }
