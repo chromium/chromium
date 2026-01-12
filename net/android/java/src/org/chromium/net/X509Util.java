@@ -449,56 +449,23 @@ public class X509Util {
         }
     }
 
+    /**
+     * Get the list of user-added roots.
+     *
+     * @return DER-encoded list of user-added roots.
+     */
     public static byte[][] getUserAddedRoots() {
+        List<byte[]> roots = new ArrayList<byte[]>();
         synchronized (sLock) {
-            List<byte[]> roots = new ArrayList<>();
-            if (sCertVerifier.get() != null) {
-                roots.addAll(sCertVerifier.get().getUserAddedRoots());
-            }
-            if (sTestRoot != null) {
-                try {
-                    roots.add(sTestRoot.getEncoded());
-                } catch (CertificateEncodingException e) {
-                    throw new IllegalStateException("Failed to encode test root certificate", e);
-                }
-            }
-            return roots.toArray(new byte[0][]);
-        }
-    }
-
-    private static final class CertificateVerifier {
-        /**
-         * An in-memory cache of which trust anchors are system trust roots. This avoids reading and
-         * decoding the root from disk on every verification. Mirrors a similar in-memory cache in
-         * Conscrypt's X509TrustManager implementation.
-         */
-        private final @NonNull Set<Pair<X500Principal, PublicKey>> mSystemTrustAnchorCache =
-                new HashSet<Pair<X500Principal, PublicKey>>();
-
-        /** Trust manager backed up by the read-only system certificate store. */
-        private final @Nullable X509TrustManagerExtensions mTrustManager;
-
-        public CertificateVerifier(@Nullable KeyStore keyStore)
-                throws KeyStoreException, NoSuchAlgorithmException {
-            mTrustManager = X509Util.createTrustManager(keyStore);
-        }
-
-        /**
-         * Get the list of user-added roots.
-         *
-         * @return DER-encoded list of user-added roots.
-         */
-        public List<byte[]> getUserAddedRoots() {
-            List<byte[]> userRootBytes = new ArrayList<byte[]>();
             KeyStore systemKeyStore = null;
             try {
                 systemKeyStore = Globals.getInstance().getSystemKeyStore();
             } catch (NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
-                return userRootBytes;
+                return new byte[][] {};
             }
 
             if (systemKeyStore == null) {
-                return userRootBytes;
+                return new byte[][] {};
             }
 
             try {
@@ -525,19 +492,45 @@ public class X509Util {
                                 continue;
                             }
                             X509Certificate anchorX509 = (X509Certificate) anchor;
-                            userRootBytes.add(anchorX509.getEncoded());
+                            roots.add(anchorX509.getEncoded());
                         } catch (KeyStoreException e) {
                             Log.e(TAG, "Error reading cert with alias %s, error: %s", alias, e);
                         } catch (CertificateEncodingException e) {
                             Log.e(TAG, "Error encoding cert with alias %s, error: %s", alias, e);
                         }
                     }
-                }
+            }
             } catch (KeyStoreException e) {
                 Log.e(TAG, "Error reading cert aliases: %s", e);
-                return new ArrayList<>();
+                return new byte[][] {};
             }
-            return userRootBytes;
+
+            if (sTestRoot != null) {
+                try {
+                    roots.add(sTestRoot.getEncoded());
+                } catch (CertificateEncodingException e) {
+                    throw new IllegalStateException("Failed to encode test root certificate", e);
+                }
+            }
+        }
+        return roots.toArray(new byte[0][]);
+    }
+
+    private static final class CertificateVerifier {
+        /**
+         * An in-memory cache of which trust anchors are system trust roots. This avoids reading and
+         * decoding the root from disk on every verification. Mirrors a similar in-memory cache in
+         * Conscrypt's X509TrustManager implementation.
+         */
+        private final @NonNull Set<Pair<X500Principal, PublicKey>> mSystemTrustAnchorCache =
+                new HashSet<Pair<X500Principal, PublicKey>>();
+
+        /** Trust manager backed up by the read-only system certificate store. */
+        private final @Nullable X509TrustManagerExtensions mTrustManager;
+
+        public CertificateVerifier(@Nullable KeyStore keyStore)
+                throws KeyStoreException, NoSuchAlgorithmException {
+            mTrustManager = X509Util.createTrustManager(keyStore);
         }
 
         public AndroidCertVerifyResult verifyServerCertificates(
