@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -39,6 +40,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,6 +155,11 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
              is_enterprise_account_data_protected);
     GetProfile()->GetPrefs()->SetDict(glic::prefs::kGlicUserStatus,
                                       std::move(data));
+  }
+
+  void SetIsLikelyDogfoodClient(bool is_likely_dogfood_client) {
+    g_browser_process->variations_service()->SetIsLikelyDogfoodClientForTesting(
+        is_likely_dogfood_client);
   }
 
  protected:
@@ -819,6 +826,18 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
+                       DataProtectedDogfoodUserCanActOnWeb) {
+  SetIsLikelyDogfoodClient(true);
+  SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
+  AddUserStatusPref(/*is_enterprise_account_data_protected=*/true);
+
+  // Dogfood devices are exempted from the data protected check.
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .CanActOnWeb());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
