@@ -113,7 +113,7 @@ void PasswordSaveUpdateViewTest::SimulateSignIn() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@email.com", signin::ConsentLevel::kSync);
+      identity_manager, "test@email.com", signin::ConsentLevel::kSignin);
 }
 
 TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
