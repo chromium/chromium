@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -61,12 +62,14 @@ import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -76,8 +79,10 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -107,8 +112,13 @@ public class NewTabPageLayout extends LinearLayout
     private @Nullable OnSearchBoxScrollListener mSearchBoxScrollListener;
 
     private NewTabPageManager mManager;
+    private WindowAndroid mWindowAndroid;
     private Activity mActivity;
     private Profile mProfile;
+    private ActivityResultTracker mActivityResultTracker;
+    private BottomSheetController mBottomSheetController;
+    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private SnackbarManager mSnackbarManager;
     private UiConfig mUiConfig;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
     private CallbackController mCallbackController = new CallbackController();
@@ -140,7 +150,6 @@ public class NewTabPageLayout extends LinearLayout
     private boolean mTileCountChanged;
 
     private boolean mSnapshotTileGridChanged;
-    private WindowAndroid mWindowAndroid;
 
     /**
      * Vertical inset to add to the top and bottom of the search box bounds. May be 0 if no inset
@@ -237,6 +246,10 @@ public class NewTabPageLayout extends LinearLayout
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param profile The {@link Profile} associated with the NTP.
      * @param windowAndroid An instance of a {@link WindowAndroid}.
+     * @param activityResultTracker Tracker of activity results.
+     * @param bottomSheetController Used to interact with the bottom sheet.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param snackbarManager Manages snackbars shown in the app.
      * @param isTablet {@code true} if the NTP surface is in tablet mode.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
@@ -253,6 +266,10 @@ public class NewTabPageLayout extends LinearLayout
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Profile profile,
             WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
+            BottomSheetController bottomSheetController,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager,
             boolean isTablet,
             Supplier<Integer> tabStripHeightSupplier,
             Supplier<GURL> composeplateUrlSupplier) {
@@ -263,6 +280,10 @@ public class NewTabPageLayout extends LinearLayout
         mProfile = profile;
         mUiConfig = uiConfig;
         mWindowAndroid = windowAndroid;
+        mActivityResultTracker = activityResultTracker;
+        mBottomSheetController = bottomSheetController;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSnackbarManager = snackbarManager;
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
@@ -657,9 +678,15 @@ public class NewTabPageLayout extends LinearLayout
         ViewStub signinPromoViewContainerStub = findViewById(R.id.signin_promo_view_container_stub);
         mSigninPromoCoordinator =
                 new NtpSigninPromoCoordinator(
-                        mContext,
+                        mWindowAndroid,
+                        mActivity,
                         mProfile,
+                        mActivityResultTracker,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
+                        mBottomSheetController,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager,
+                        DeviceLockActivityLauncherImpl.get(),
                         signinPromoViewContainerStub);
     }
 

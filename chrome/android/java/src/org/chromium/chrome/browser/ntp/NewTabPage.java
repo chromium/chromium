@@ -132,8 +132,10 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -503,6 +505,7 @@ public class NewTabPage
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to observe for
      *     offset changes.
      * @param activityTabProvider Provides the current active tab.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param snackbarManager {@link SnackbarManager} object.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param tabModelSelector {@link TabModelSelector} object.
@@ -516,6 +519,7 @@ public class NewTabPage
      * @param shareDelegateSupplier Supplies the Delegate used to open SharingHub.
      * @param windowAndroid The containing window of this page.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @param activityResultTracker Tracker of activity results.
      * @param homeSurfaceTracker Used to decide whether we are the home surface.
      * @param tabContentManagerSupplier Used to create tab thumbnails.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
@@ -529,6 +533,7 @@ public class NewTabPage
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable Tab> activityTabProvider,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
@@ -543,6 +548,7 @@ public class NewTabPage
             WindowAndroid windowAndroid,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
+            ActivityResultTracker activityResultTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
@@ -691,6 +697,10 @@ public class NewTabPage
                 lifecycleDispatcher,
                 mTab.getProfile(),
                 windowAndroid,
+                activityResultTracker,
+                bottomSheetController,
+                modalDialogManagerSupplier,
+                snackbarManager,
                 mIsTablet,
                 mTabStripHeightSupplier,
                 () -> assumeNonNull(mTemplateUrlService.getComposeplateUrl()));

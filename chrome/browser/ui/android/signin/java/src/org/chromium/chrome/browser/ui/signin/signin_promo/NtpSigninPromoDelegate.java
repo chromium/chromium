@@ -215,6 +215,16 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         return SigninSurveyController.SigninSurveyType.NTP_PROMO;
     }
 
+    @Override
+    boolean shouldOverridePrimaryButtonClick() {
+        return !isSeamlessSigninAllowed();
+    }
+
+    @Override
+    boolean shouldOverrideSecondaryButtonClick() {
+        return !isSeamlessSigninAllowed();
+    }
+
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {
         final long timeSinceFirstShownLimitMs =
                 NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS * DateUtils.HOUR_IN_MILLIS;

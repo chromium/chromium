@@ -285,7 +285,8 @@ public class SigninPromoCoordinatorTest {
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && accessPoint == SigninAccessPoint.RECENT_TABS) {
+                && (accessPoint == SigninAccessPoint.RECENT_TABS
+                        || accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO)) {
             verify(mCoordinator).startSigninFlow(configCaptor.capture());
         } else {
             verify(mLauncher)
@@ -336,7 +337,8 @@ public class SigninPromoCoordinatorTest {
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && accessPoint == SigninAccessPoint.RECENT_TABS) {
+                && (accessPoint == SigninAccessPoint.RECENT_TABS
+                        || accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO)) {
             verify(mCoordinator).startSigninFlow(configCaptor.capture());
         } else {
             verify(mLauncher)
@@ -454,7 +456,8 @@ public class SigninPromoCoordinatorTest {
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
-        if (accessPoint == SigninAccessPoint.RECENT_TABS) {
+        if (accessPoint == SigninAccessPoint.RECENT_TABS
+                || accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO) {
             verify(mCoordinator).startSigninFlow(configCaptor.capture());
         } else {
             verify(mLauncher)
