@@ -28,13 +28,7 @@ PixAccountLinkingManager::PixAccountLinkingManager(
     FacilitatedPaymentsClient* client)
     : client_(CHECK_DEREF(client)) {}
 
-PixAccountLinkingManager::~PixAccountLinkingManager() {
-  if (is_prompt_showing_) {
-    // The prompt closed unexpectedly, so the internal state is not updated. The
-    // event listener would log metrics accordingly.
-    client_->DismissPrompt();
-  }
-}
+PixAccountLinkingManager::~PixAccountLinkingManager() = default;
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
     const url::Origin& pix_payment_page_origin) {

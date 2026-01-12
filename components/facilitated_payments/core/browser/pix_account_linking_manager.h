@@ -33,6 +33,9 @@ class PixAccountLinkingManager {
   virtual void MaybeShowPixAccountLinkingPrompt(
       const url::Origin& pix_payment_page_origin);
 
+  // Sets the internal UI state and triggers dismissal.
+  virtual void DismissPrompt();
+
  private:
   friend class PixAccountLinkingManagerTestApi;
 
@@ -45,9 +48,6 @@ class PixAccountLinkingManager {
   // Shows the Pix account linking prompt to user after the predefined wait
   // time.
   void ShowPixAccountLinkingPromptAfterDelay();
-
-  // Sets the internal UI state and triggers dismissal.
-  void DismissPrompt();
 
   void OnAccepted();
 

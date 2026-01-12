@@ -52,7 +52,11 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
   RegisterAllowlists();
 }
 
-ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
+ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() {
+  if (pix_account_linking_manager_) {
+    pix_account_linking_manager_->DismissPrompt();
+  }
+}
 
 void ChromeFacilitatedPaymentsClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> on_risk_data_loaded_callback) {
