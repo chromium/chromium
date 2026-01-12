@@ -77,8 +77,7 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
     case InfobarType::kInfobarTypeCollaborationGroup:
     case InfobarType::kInfobarTypeCollaborationOutOfDate:
     case InfobarType::kInfobarTypeSaveCvc:
-      return IsProactiveSuggestionsFrameworkEnabled() ||
-             IsReaderModeBadgeSupportEnabled();
+      return IsProactiveSuggestionsFrameworkEnabled();
   }
 }
 

@@ -287,7 +287,7 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
       reader_mode_content_tab_helper->ActivateTranslateOnPage(
           source_translation_state_.source_code,
           source_translation_state_.target_code);
-    } else if (IsReaderModeBadgeSupportEnabled()) {
+    } else {
       language::IOSLanguageDetectionTabHelper::FromWebState(
           reader_mode_web_state_.get())
           ->StartLanguageDetection();

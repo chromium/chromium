@@ -334,11 +334,6 @@ void TestResponseProvider::GetLanguageResponse(
     config.features_enabled.push_back(kEnableReaderModeInUS);
   }
 
-  if ([self isRunningTest:@selector
-            (testTranslateBadgeWithReaderModeBadgeSupport)]) {
-    config.features_enabled.push_back(kEnableReaderModeBadgeSupport);
-  }
-
   if ([self isRunningTest:@selector(testInfobarTranslateRevert)] ||
       [self isRunningTest:@selector(testInfobarTranslateRevertIncognito)] ||
       [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
