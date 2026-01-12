@@ -131,8 +131,7 @@ void ShowSyncPassphraseDialog(
               &OnPasswordFieldChanged, base::Unretained(model)));
   // Dummy callback to own the subscription.
   dialog_builder.SetDialogDestroyingCallback(
-      base::BindOnce([](base::CallbackListSubscription subscription) {},
-                     std::move(subscription)));
+      base::DoNothingWithBoundArgs(std::move(subscription)));
 
   chrome::ShowBrowserModal(&browser, dialog_builder.Build());
 }

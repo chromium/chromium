@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
@@ -469,9 +470,7 @@ void PasswordSaveUpdateView::TogglePasswordRevealed() {
         // bubble remains open till the OS closes the authentication
         // dialog and reactivates the bubble.
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce([](std::unique_ptr<CloseOnDeactivatePin> pin) {},
-                           std::move(pin)),
+            FROM_HERE, base::DoNothingWithBoundArgs(std::move(pin)),
             base::Seconds(1));
       },
       base::Unretained(this)));

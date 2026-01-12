@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
@@ -401,9 +402,7 @@ void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(
             // remains open till the OS closes the authentication dialog and
             // reactivates the bubble.
             base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-                FROM_HERE,
-                base::BindOnce([](std::unique_ptr<CloseOnDeactivatePin> pin) {},
-                               std::move(pin)),
+                FROM_HERE, base::DoNothingWithBoundArgs(std::move(pin)),
                 base::Seconds(1));
           },
           base::Unretained(this), std::move(pin)));

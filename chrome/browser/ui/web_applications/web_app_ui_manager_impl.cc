@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -147,10 +148,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(
     SynchronizeOsOptions synchronize_options;
     synchronize_options.force_unregister_os_integration = true;
     provider->scheduler().SynchronizeOsIntegration(
-        app_id,
-        base::BindOnce(
-            [](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive) {},
-            std::move(scoped_keep_alive)),
+        app_id, base::DoNothingWithBoundArgs(std::move(scoped_keep_alive)),
         synchronize_options);
   }
 }
