@@ -278,6 +278,7 @@ class ExtensionProtocolsTestBase : public testing::Test,
   void TearDown() override {
     loader_factory_.reset();
     content_verifier_->Shutdown();
+    content_verifier_.reset();
     // Shut down the PowerMonitor if initialized.
     base::PowerMonitor::GetInstance()->ShutdownForTesting();
   }

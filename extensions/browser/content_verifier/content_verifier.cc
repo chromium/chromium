@@ -562,6 +562,7 @@ ContentVerifier::ContentVerifier(
     : context_(context), delegate_(std::move(delegate)) {}
 
 ContentVerifier::~ContentVerifier() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
 void ContentVerifier::Start() {
@@ -1021,9 +1022,7 @@ ContentVerifier::HashHelper* ContentVerifier::GetOrCreateHashHelper() {
   // case.
   if (!hash_helper_created_) {
     DCHECK(!hash_helper_);
-    hash_helper_ =
-        std::unique_ptr<HashHelper, content::BrowserThread::DeleteOnIOThread>(
-            new HashHelper(this));
+    hash_helper_ = std::make_unique<HashHelper>(this);
     hash_helper_created_ = true;
   }
   return hash_helper_.get();
