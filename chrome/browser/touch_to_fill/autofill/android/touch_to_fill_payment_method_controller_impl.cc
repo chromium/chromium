@@ -83,7 +83,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowPaymentMethods(
   }
 
   if (!view->ShowPaymentMethods(this, suggestions,
-                                delegate->ShouldShowScanCreditCard())) {
+                                delegate->ShouldShowScanCreditCard(),
+                                delegate->ShouldShowGPayLogo())) {
     ResetJavaObject();
     return false;
   }

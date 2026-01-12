@@ -20,7 +20,6 @@ public final class PaymentsPayload implements Payload {
     private final String mLabelContentDescription;
     private final boolean mShouldDisplayTermsAvailable;
     private final String mGuid;
-    private final boolean mIsLocalPaymentsMethod;
     private @Nullable Long mExtractedAmount;
 
     /**
@@ -31,19 +30,15 @@ public final class PaymentsPayload implements Payload {
      *     interpret the content for users.
      * @param shouldDisplayTermsAvailable Whether the terms message is displayed.
      * @param guid The payment method identifier associated with the suggestion.
-     * @param isLocalPaymentsMethod Whether the payments method associated with the suggestion is
-     *     local.
      */
     @CalledByNative
     public PaymentsPayload(
             @JniType("std::u16string") String labelContentDescription,
             boolean shouldDisplayTermsAvailable,
-            @JniType("std::string") String guid,
-            boolean isLocalPaymentsMethod) {
+            @JniType("std::string") String guid) {
         mLabelContentDescription = labelContentDescription;
         mShouldDisplayTermsAvailable = shouldDisplayTermsAvailable;
         mGuid = guid;
-        mIsLocalPaymentsMethod = isLocalPaymentsMethod;
     }
 
     public String getLabelContentDescription() {
@@ -56,10 +51,6 @@ public final class PaymentsPayload implements Payload {
 
     public String getGuid() {
         return mGuid;
-    }
-
-    public boolean isLocalPaymentsMethod() {
-        return mIsLocalPaymentsMethod;
     }
 
     public void setExtractedAmount(@Nullable Long extractedAmount) {
@@ -81,17 +72,12 @@ public final class PaymentsPayload implements Payload {
         return this.mLabelContentDescription.equals(other.mLabelContentDescription)
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && this.mGuid.equals(other.mGuid)
-                && this.mIsLocalPaymentsMethod == other.mIsLocalPaymentsMethod
                 && Objects.equals(this.mExtractedAmount, other.mExtractedAmount);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                mLabelContentDescription,
-                mShouldDisplayTermsAvailable,
-                mGuid,
-                mIsLocalPaymentsMethod,
-                mExtractedAmount);
+                mLabelContentDescription, mShouldDisplayTermsAvailable, mGuid, mExtractedAmount);
     }
 }

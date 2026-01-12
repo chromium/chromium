@@ -501,8 +501,6 @@ public class AutofillTestHelper {
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
      * @param shouldDisplayTermsAvailable Whether to display terms message with the suggestion.
      * @param guid The payment method identifier associated with the suggestion.
-     * @param isLocalPaymentsMethod Whether the payment method associated with the suggestion is
-     *     local.
      * @return A newly created, {@code AutofillSuggestion} object.
      */
     public static AutofillSuggestion createCreditCardSuggestion(
@@ -516,14 +514,9 @@ public class AutofillTestHelper {
             int iconId,
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable,
-            String guid,
-            boolean isLocalPaymentsMethod) {
+            String guid) {
         PaymentsPayload payload =
-                new PaymentsPayload(
-                        labelContentDescription,
-                        shouldDisplayTermsAvailable,
-                        guid,
-                        isLocalPaymentsMethod);
+                new PaymentsPayload(labelContentDescription, shouldDisplayTermsAvailable, guid);
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)

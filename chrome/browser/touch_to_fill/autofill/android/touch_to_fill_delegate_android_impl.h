@@ -134,6 +134,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   // TouchToFillDelegate:
   bool ShouldShowScanCreditCard() override;
+  bool ShouldShowGPayLogo() const override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
   void ShowPaymentMethodSettings() override;

@@ -287,6 +287,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Delete all local credit cards.
   void DeleteAllLocalCreditCards();
 
+  // Checks whether all credit cards are local.
+  bool HasAllLocalCreditCards() const;
+
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
   virtual void UpdateCreditCard(const CreditCard& credit_card);

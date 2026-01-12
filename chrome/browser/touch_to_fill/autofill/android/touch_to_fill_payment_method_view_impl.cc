@@ -38,6 +38,7 @@
 #include "components/autofill/android/main_autofill_jni_headers/LoyaltyCard_jni.h"
 #include "components/autofill/android/payments_jni_headers/BnplIssuerContext_jni.h"
 #include "components/autofill/android/payments_jni_headers/BnplIssuerTosDetail_jni.h"
+#include "components/autofill/android/payments_jni_headers/TouchToFillDisplayOptions_jni.h"
 
 namespace {
 
@@ -122,7 +123,8 @@ bool TouchToFillPaymentMethodViewImpl::IsReadyToShow(
 bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const Suggestion> suggestions,
-    bool should_show_scan_credit_card) {
+    bool should_show_scan_credit_card,
+    bool should_show_gpay_logo) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!IsReadyToShow(controller, env)) {
     return false;
@@ -163,7 +165,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
   }
   Java_TouchToFillPaymentMethodViewBridge_showPaymentMethods(
       env, java_object_, std::move(suggestions_array),
-      should_show_scan_credit_card);
+      Java_TouchToFillDisplayOptions_create(env, should_show_scan_credit_card,
+                                            should_show_gpay_logo));
   return true;
 }
 

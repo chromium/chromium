@@ -70,7 +70,8 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               ShowPaymentMethods,
               ((TouchToFillPaymentMethodViewController * controller),
                (base::span<const Suggestion> suggestions),
-               (bool should_show_scan_credit_card)));
+               (bool should_show_scan_credit_card),
+               (bool should_show_gpay_logo)));
   MOCK_METHOD(bool,
               ShowIbans,
               (TouchToFillPaymentMethodViewController * controller,
@@ -119,6 +120,7 @@ class MockTouchToFillDelegateAndroidImpl
       TestBrowserAutofillManager* autofill_manager)
       : TouchToFillDelegateAndroidImpl(autofill_manager) {
     ON_CALL(*this, ShouldShowScanCreditCard).WillByDefault(Return(true));
+    ON_CALL(*this, ShouldShowGPayLogo).WillByDefault(Return(true));
   }
   ~MockTouchToFillDelegateAndroidImpl() override = default;
 
@@ -132,6 +134,7 @@ class MockTouchToFillDelegateAndroidImpl
               (FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
+  MOCK_METHOD(bool, ShouldShowGPayLogo, (), (const, override));
   MOCK_METHOD(void, ScanCreditCard, (), (override));
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
   MOCK_METHOD(void, ShowPaymentMethodSettings, (), (override));
@@ -309,7 +312,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true));
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
@@ -380,7 +384,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true));
   EXPECT_CALL(*mock_view_,
               OnPurchaseAmountExtracted(
                   testing::ElementsAre(
@@ -419,7 +424,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true));
   EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
 
@@ -459,7 +465,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true));
   EXPECT_CALL(*mock_view_, ShowProgressScreen).Times(0);
   EXPECT_CALL(*new_mock_view, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
@@ -502,7 +509,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true));
   EXPECT_CALL(*mock_view_,
               ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
       .WillOnce(Return(true));
@@ -618,7 +626,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true))
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_view_,
               ShowErrorScreen(&payment_method_controller(), title, description))
@@ -653,7 +662,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true))
+                                 /*should_show_scan_credit_card=*/true,
+                                 /*should_show_gpay_logo=*/true))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_view_, ShowErrorScreen).Times(0);
   EXPECT_CALL(*new_mock_view,

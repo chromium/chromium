@@ -324,6 +324,7 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/payments/Ewallet.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
+    "java/src/org/chromium/components/autofill/payments/TouchToFillDisplayOptions.java",
   ]
   deps = [
     ":payments_interfaces_java",
@@ -379,6 +380,7 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/Ewallet.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
+    "java/src/org/chromium/components/autofill/payments/TouchToFillDisplayOptions.java",
   ]
 }
 

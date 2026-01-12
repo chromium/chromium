@@ -291,12 +291,10 @@ Suggestion::PaymentsPayload::PaymentsPayload() = default;
 Suggestion::PaymentsPayload::PaymentsPayload(
     std::u16string main_text_content_description,
     bool should_display_terms_available,
-    Guid guid,
-    bool is_local_payments_method)
+    Guid guid)
     : main_text_content_description(main_text_content_description),
       should_display_terms_available(should_display_terms_available),
-      guid(std::move(guid)),
-      is_local_payments_method(is_local_payments_method) {}
+      guid(std::move(guid)) {}
 
 Suggestion::PaymentsPayload::PaymentsPayload(const PaymentsPayload&) = default;
 
@@ -314,9 +312,9 @@ Suggestion::PaymentsPayload::~PaymentsPayload() = default;
 base::android::ScopedJavaLocalRef<jobject>
 Suggestion::PaymentsPayload::CreateJavaObject() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_PaymentsPayload_Constructor(
-      env, main_text_content_description, should_display_terms_available,
-      guid.value(), is_local_payments_method);
+  return Java_PaymentsPayload_Constructor(env, main_text_content_description,
+                                          should_display_terms_available,
+                                          guid.value());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

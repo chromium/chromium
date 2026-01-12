@@ -4386,8 +4386,7 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Verify that the suggestion's payment payload includes credit card guid and
-// local card status.
+// Verify that the suggestion's payment payload includes credit card guid.
 TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
        GetCreditCardSuggestionsForTouchToFill_PaymentsPayloadGuid) {
   CreditCard server_card = CreateServerCard();
@@ -4404,15 +4403,9 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   EXPECT_EQ(
       suggestions[0].GetPayload<Suggestion::PaymentsPayload>().guid.value(),
       server_card.guid());
-  EXPECT_FALSE(suggestions[0]
-                   .GetPayload<Suggestion::PaymentsPayload>()
-                   .is_local_payments_method);
   EXPECT_EQ(
       suggestions[1].GetPayload<Suggestion::PaymentsPayload>().guid.value(),
       local_card.guid());
-  EXPECT_TRUE(suggestions[1]
-                  .GetPayload<Suggestion::PaymentsPayload>()
-                  .is_local_payments_method);
 }
 
 }  // namespace

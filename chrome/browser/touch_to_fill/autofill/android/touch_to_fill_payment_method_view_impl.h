@@ -46,7 +46,8 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
   // TouchToFillPaymentMethodView:
   bool ShowPaymentMethods(TouchToFillPaymentMethodViewController* controller,
                           base::span<const Suggestion> suggestions,
-                          bool should_show_scan_credit_card) override;
+                          bool should_show_scan_credit_card,
+                          bool should_show_gpay_logo) override;
   bool ShowIbans(TouchToFillPaymentMethodViewController* controller,
                  base::span<const autofill::Iban> ibans_to_suggest) override;
   bool ShowAffiliatedLoyaltyCards(

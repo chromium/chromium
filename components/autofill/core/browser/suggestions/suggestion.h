@@ -112,8 +112,7 @@ struct Suggestion {
     PaymentsPayload();
     PaymentsPayload(std::u16string main_text_content_description,
                     bool should_display_terms_available,
-                    Guid guid,
-                    bool is_local_payments_method);
+                    Guid guid);
     PaymentsPayload(const PaymentsPayload&);
     PaymentsPayload(PaymentsPayload&&);
     PaymentsPayload& operator=(const PaymentsPayload&);
@@ -136,9 +135,6 @@ struct Suggestion {
 
     // Payments method identifier associated with suggestion.
     Guid guid;
-
-    // If true, the payments method associated with the suggestion is local.
-    bool is_local_payments_method = false;
 
     // The amount of the payment as extracted from the page. For example, used
     // for BNPL suggestions to confirm the amount is in the supported range for

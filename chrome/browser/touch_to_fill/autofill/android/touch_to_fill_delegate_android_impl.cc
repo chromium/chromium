@@ -370,6 +370,13 @@ bool TouchToFillDelegateAndroidImpl::ShouldShowScanCreditCard() {
   return !IsFormOrClientNonSecure(manager_->client(), query_form_);
 }
 
+bool TouchToFillDelegateAndroidImpl::ShouldShowGPayLogo() const {
+  return !manager_->client()
+              .GetPaymentsAutofillClient()
+              ->GetPaymentsDataManager()
+              .HasAllLocalCreditCards();
+}
+
 void TouchToFillDelegateAndroidImpl::ScanCreditCard() {
   manager_->client().GetPaymentsAutofillClient()->ScanCreditCard(base::BindOnce(
       &TouchToFillDelegateAndroidImpl::OnCreditCardScanned, GetWeakPtr()));

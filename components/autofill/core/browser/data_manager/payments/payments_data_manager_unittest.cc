@@ -1443,6 +1443,19 @@ TEST_F(PaymentsDataManagerTest, DeleteAllLocalCreditCards) {
   EXPECT_EQ(0U, payments_data_manager().GetLocalCreditCards().size());
 }
 
+TEST_F(PaymentsDataManagerTest, HasAllLocalCreditCards_LocalCreditCardsOnly) {
+  SetUpReferenceLocalCreditCards();
+
+  EXPECT_TRUE(payments_data_manager().HasAllLocalCreditCards());
+}
+
+TEST_F(PaymentsDataManagerTest, HasAllLocalCreditCards_WithServerCard) {
+  SetServerCards({test::GetMaskedServerCard()});
+  ResetPaymentsDataManager();
+
+  EXPECT_FALSE(payments_data_manager().HasAllLocalCreditCards());
+}
+
 TEST_F(PaymentsDataManagerTest, LogStoredCreditCardMetrics) {
   ASSERT_EQ(0U, payments_data_manager().GetCreditCards().size());
 

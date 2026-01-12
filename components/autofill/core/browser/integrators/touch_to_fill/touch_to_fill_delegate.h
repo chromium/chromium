@@ -51,6 +51,7 @@ class TouchToFillDelegate {
   virtual void Reset() = 0;
 
   virtual bool ShouldShowScanCreditCard() = 0;
+  virtual bool ShouldShowGPayLogo() const = 0;
   virtual void ScanCreditCard() = 0;
   virtual void OnCreditCardScanned(const CreditCard& card) = 0;
   virtual void ShowPaymentMethodSettings() = 0;

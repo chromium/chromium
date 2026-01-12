@@ -1651,5 +1651,30 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
+       ShouldShowGPayLogo_LocalCardOnly) {
+  ASSERT_FALSE(touch_to_fill_delegate_->ShouldShowGPayLogo());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(test::GetCreditCard());
+
+  EXPECT_FALSE(touch_to_fill_delegate_->ShouldShowGPayLogo());
+}
+
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
+       ShouldShowGPayLogo_WithServerCard) {
+  ASSERT_FALSE(touch_to_fill_delegate_->ShouldShowGPayLogo());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddServerCreditCardForTest(
+          std::make_unique<CreditCard>(test::GetMaskedServerCard()));
+
+  EXPECT_TRUE(touch_to_fill_delegate_->ShouldShowGPayLogo());
+}
+
 }  // namespace
 }  // namespace autofill

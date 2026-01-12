@@ -135,6 +135,7 @@ import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
+import org.chromium.components.autofill.payments.TouchToFillDisplayOptions;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.ui.InputProtector;
@@ -434,7 +435,7 @@ class TouchToFillPaymentMethodMediator {
     private String mBnplIssuerIdWithTosShown;
     private Function<LoyaltyCard, Drawable> mValuableImageFunction;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
-    private boolean mShouldShowScanCreditCard;
+    private TouchToFillDisplayOptions mTouchToFillDisplayOptions;
     private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
             mCardImageFunction;
     private AutofillSuggestion mBnplSuggestion;
@@ -458,14 +459,14 @@ class TouchToFillPaymentMethodMediator {
 
     void showPaymentMethods(
             List<AutofillSuggestion> suggestions,
-            boolean shouldShowScanCreditCard,
+            TouchToFillDisplayOptions touchToFillDisplayOptions,
             Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
                     cardImageFunction) {
         mInputProtector.markShowTime();
 
         assert suggestions != null;
         mSuggestions = suggestions;
-        mShouldShowScanCreditCard = shouldShowScanCreditCard;
+        mTouchToFillDisplayOptions = touchToFillDisplayOptions;
         mCardImageFunction = cardImageFunction;
         mIbans = null;
         mAffiliatedLoyaltyCards = null;
@@ -539,8 +540,9 @@ class TouchToFillPaymentMethodMediator {
                                     () -> onSelectedCreditCard(mSuggestions.get(0)))));
         }
 
-        sheetItems.add(0, buildHeaderForPayments(hasOnlyLocalCards(mSuggestions)));
-        sheetItems.add(buildFooterForCreditCard(mShouldShowScanCreditCard));
+        sheetItems.add(0, buildHeaderForPayments(mTouchToFillDisplayOptions.shouldShowGPayLogo()));
+        sheetItems.add(
+                buildFooterForCreditCard(mTouchToFillDisplayOptions.shouldShowScanCreditCard()));
 
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(
@@ -568,7 +570,7 @@ class TouchToFillPaymentMethodMediator {
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
         mValuableImageFunction = null;
-        mShouldShowScanCreditCard = false;
+        mTouchToFillDisplayOptions = null;
         mCardImageFunction = null;
         mBnplIssuerContexts = null;
 
@@ -592,7 +594,7 @@ class TouchToFillPaymentMethodMediator {
                                     () -> this.onSelectedIban(mIbans.get(0)))));
         }
 
-        sheetItems.add(0, buildHeaderForPayments(/* hasOnlyLocalPaymentMethods= */ true));
+        sheetItems.add(0, buildHeaderForPayments(/* shouldShowGPayLogo= */ false));
         sheetItems.add(buildFooterForIban());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
@@ -625,7 +627,7 @@ class TouchToFillPaymentMethodMediator {
         mValuableImageFunction = valuableImageFunction;
         mSuggestions = null;
         mIbans = null;
-        mShouldShowScanCreditCard = false;
+        mTouchToFillDisplayOptions = null;
         mCardImageFunction = null;
         mBnplIssuerContexts = null;
 
@@ -666,7 +668,6 @@ class TouchToFillPaymentMethodMediator {
         mAffiliatedLoyaltyCards = null;
         mSuggestions = null;
         mIbans = null;
-        mShouldShowScanCreditCard = false;
         mCardImageFunction = null;
         mBnplIssuerContexts = null;
 
@@ -1357,15 +1358,15 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    private ListItem buildHeaderForPayments(boolean hasOnlyLocalPaymentMethods) {
+    private ListItem buildHeaderForPayments(boolean shouldShowGPayLogo) {
         return new ListItem(
                 HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(
                                 IMAGE_DRAWABLE_ID,
-                                hasOnlyLocalPaymentMethods
-                                        ? R.drawable.fre_product_logo
-                                        : R.drawable.google_pay)
+                                shouldShowGPayLogo
+                                        ? R.drawable.google_pay
+                                        : R.drawable.fre_product_logo)
                         .with(TITLE_ID, R.string.autofill_payment_method_bottom_sheet_title)
                         .build());
     }
@@ -1513,16 +1514,6 @@ class TouchToFillPaymentMethodMediator {
                         || currentScreen == BNPL_ISSUER_TOS_SCREEN
                         || currentScreen == PROGRESS_SCREEN
                         || currentScreen == ERROR_SCREEN);
-    }
-
-    private static boolean hasOnlyLocalCards(List<AutofillSuggestion> suggestions) {
-        for (AutofillSuggestion suggestion : suggestions) {
-            PaymentsPayload payload = suggestion.getPaymentsPayload();
-            if (payload != null && !payload.isLocalPaymentsMethod()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static void recordTouchToFillCreditCardOutcomeHistogram(

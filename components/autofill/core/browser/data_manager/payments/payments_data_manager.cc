@@ -1472,6 +1472,10 @@ void PaymentsDataManager::DeleteAllLocalCreditCards() {
   DeleteLocalCreditCards(cards_to_delete);
 }
 
+bool PaymentsDataManager::HasAllLocalCreditCards() const {
+  return server_credit_cards_.empty();
+}
+
 void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   DCHECK_EQ(CreditCard::RecordType::kLocalCard, credit_card.record_type());
   CreditCard* existing_credit_card =

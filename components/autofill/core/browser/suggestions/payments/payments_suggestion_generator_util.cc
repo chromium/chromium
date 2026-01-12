@@ -923,8 +923,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     }
     suggestion.payload = Suggestion::PaymentsPayload(
         main_text_content_description, should_display_terms_available,
-        Suggestion::Guid(credit_card.guid()),
-        credit_card.record_type() == CreditCard::RecordType::kLocalCard);
+        Suggestion::Guid(credit_card.guid()));
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       bool acceptable =
           IsCardSuggestionAcceptable(credit_card, manager.client());
