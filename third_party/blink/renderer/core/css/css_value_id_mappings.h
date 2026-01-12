@@ -725,6 +725,34 @@ inline CSSValueID PlatformEnumToCSSValueID(TextJustify v) {
   NOTREACHED();
 }
 
+template <>
+inline GridLanesOrientation CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kNormal:
+      return GridLanesOrientation::kNormal;
+    case CSSValueID::kRow:
+      return GridLanesOrientation::kRow;
+    case CSSValueID::kColumn:
+      return GridLanesOrientation::kColumn;
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(GridLanesOrientation v) {
+  switch (v) {
+    case GridLanesOrientation::kNormal:
+      return CSSValueID::kNormal;
+    case GridLanesOrientation::kRow:
+      return CSSValueID::kRow;
+    case GridLanesOrientation::kColumn:
+      return CSSValueID::kColumn;
+  }
+  NOTREACHED();
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

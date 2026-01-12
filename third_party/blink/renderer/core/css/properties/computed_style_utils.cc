@@ -2251,6 +2251,26 @@ CSSValue* ComputedStyleUtils::ValueForItemTolerance(
   return ZoomAdjustedPixelValueForLength(item_tolerance.GetLength(), style);
 }
 
+CSSValue* ComputedStyleUtils::ValueForGridLanesDirection(
+    const GridLanesDirection& type,
+    const ComputedStyle& style) {
+  // The 'normal' keyword is not allowed alongside either reverse keyword.
+  if (type.orientation == kNormal) {
+    CHECK(!type.is_fill_reverse);
+    CHECK(!type.is_track_reverse);
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(type.orientation));
+  if (type.is_fill_reverse) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kFillReverse));
+  }
+  if (type.is_track_reverse) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kTrackReverse));
+  }
+  return list;
+}
+
 static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
   DCHECK(layout_object.IsSVGChild());
   return layout_object.IsSVGImage() || layout_object.IsSVGForeignObject() ||

@@ -1840,6 +1840,63 @@ ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
   return computed_grid_track_list;
 }
 
+ItemTolerance StyleBuilderConverter::ConvertItemTolerance(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value) {
+    return ItemTolerance(identifier_value->GetValueID());
+  }
+
+  return ItemTolerance(ConvertLength(state, value));
+}
+
+GridLanesDirection StyleBuilderConverter::ConvertGridLanesDirection(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  GridLanesDirection direction =
+      ComputedStyleInitialValues::InitialGridLanesDirection();
+
+  // The 'normal' keyword is parsed as an identifier value because
+  // it is not allowed alongside either of the reverse keywords.
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    CHECK_EQ(ident->GetValueID(), CSSValueID::kNormal);
+    direction.orientation = kNormal;
+    return direction;
+  }
+
+  const auto& list = To<CSSValueList>(value);
+  DCHECK_GE(list.length(), 1u);
+  DCHECK_LE(list.length(), 3u);
+
+  direction.orientation =
+      To<CSSIdentifierValue>(list.Item(0)).ConvertTo<GridLanesOrientation>();
+
+  if (list.length() > 1u) {
+    const bool has_both_reversals = list.length() == 3;
+    if (To<CSSIdentifierValue>(list.Item(1)).GetValueID() ==
+        CSSValueID::kFillReverse) {
+      direction.is_fill_reverse = true;
+      if (has_both_reversals) {
+        CHECK_EQ(To<CSSIdentifierValue>(list.Item(2)).GetValueID(),
+                 CSSValueID::kTrackReverse);
+        direction.is_track_reverse = true;
+      }
+    } else {
+      CHECK_EQ(To<CSSIdentifierValue>(list.Item(1)).GetValueID(),
+               CSSValueID::kTrackReverse);
+      direction.is_track_reverse = true;
+      if (has_both_reversals) {
+        CHECK_EQ(To<CSSIdentifierValue>(list.Item(2)).GetValueID(),
+                 CSSValueID::kFillReverse);
+        direction.is_fill_reverse = true;
+      }
+    }
+  }
+
+  return direction;
+}
+
 ScrollMarkerGroup* StyleBuilderConverter::ConvertScrollMarkerGroup(
     StyleResolverState&,
     const CSSValue& value) {
@@ -1857,17 +1914,6 @@ ScrollMarkerGroup* StyleBuilderConverter::ConvertScrollMarkerGroup(
   auto mode = To<CSSIdentifierValue>(pair.Second())
                   .ConvertTo<ScrollMarkerGroup::ScrollMarkerMode>();
   return MakeGarbageCollected<ScrollMarkerGroup>(position, mode);
-}
-
-ItemTolerance StyleBuilderConverter::ConvertItemTolerance(
-    const StyleResolverState& state,
-    const CSSValue& value) {
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value) {
-    return ItemTolerance(identifier_value->GetValueID());
-  }
-
-  return ItemTolerance(ConvertLength(state, value));
 }
 
 StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(

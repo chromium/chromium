@@ -142,6 +142,7 @@ TEST_F(StylePropertyMapTest, CSSKeywordValuesTest) {
         case CSSPropertyID::kFontVariantNumeric:
         case CSSPropertyID::kGridAutoColumns:
         case CSSPropertyID::kGridAutoRows:
+        case CSSPropertyID::kGridLanesDirection:
         case CSSPropertyID::kOffsetRotate:
         case CSSPropertyID::kPositionArea:
         case CSSPropertyID::kPositionTryFallbacks:

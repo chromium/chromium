@@ -168,6 +168,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForGridPosition(const GridPosition&);
   static CSSValue* ValueForItemTolerance(const ItemTolerance&,
                                          const ComputedStyle&);
+  static CSSValue* ValueForGridLanesDirection(const GridLanesDirection&,
+                                              const ComputedStyle&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);

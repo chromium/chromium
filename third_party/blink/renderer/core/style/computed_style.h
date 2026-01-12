@@ -1163,11 +1163,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Grid Lanes utility functions.
   GridTrackSizingDirection GridLanesTrackSizingDirection() const {
-    switch (GridLanesDirection()) {
-      case EGridLanesDirection::kColumn:
-      case EGridLanesDirection::kColumnReverse:
+    switch (GetGridLanesDirection().orientation) {
+      case kColumn:
         return kForColumns;
-      case EGridLanesDirection::kNormal:
+      case kNormal:
         // The 'normal' keyword resolves to 'columns' or 'rows' depending on
         // whether 'grid-template-columns' or 'grid-template-rows' was set
         // (respectively), defaulting to columns if both or neither are set.
@@ -1177,17 +1176,23 @@ class ComputedStyle final : public ComputedStyleBase {
           return kForRows;
         }
         return kForColumns;
-      case EGridLanesDirection::kRow:
-      case EGridLanesDirection::kRowReverse:
+      case kRow:
         return kForRows;
     }
     NOTREACHED();
   }
 
-  bool IsReverseGridLanesDirection() const {
-    const auto grid_lanes_direction = GridLanesDirection();
-    return (grid_lanes_direction == EGridLanesDirection::kColumnReverse ||
-            grid_lanes_direction == EGridLanesDirection::kRowReverse);
+  // If true, it changes the direction that tracks fill themselves; columns fill
+  // from bottom-up, rows fill rtl.
+  bool IsReverseGridLanesFillDirection() const {
+    return GetGridLanesDirection().is_fill_reverse;
+  }
+
+  // If true, it changes the order you choose tracks when they're tied and what
+  // direction the track cursor moves in; columns choose the rightmost and go
+  // left; rows choose the bottommost and go up.
+  bool IsReverseGridLanesTrackDirection() const {
+    return GetGridLanesDirection().is_track_reverse;
   }
 
   // Grid axis utility functions, usable in Grid and Grid Lanes.

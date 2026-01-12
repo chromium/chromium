@@ -213,6 +213,7 @@ blink_core_sources_layout = [
   "grid/grid_layout_utils.cc",
   "grid/grid_layout_utils.h",
   "grid/subgrid_min_max_sizes_cache.h",
+  "grid_lanes/grid_lanes_direction.h",
   "grid_lanes/grid_lanes_item_group.h",
   "grid_lanes/grid_lanes_layout_algorithm.cc",
   "grid_lanes/grid_lanes_layout_algorithm.h",

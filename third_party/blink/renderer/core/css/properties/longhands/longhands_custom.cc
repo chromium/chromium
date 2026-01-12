@@ -5268,12 +5268,28 @@ const CSSValue* GridColumnStart::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForGridPosition(style.GridColumnStart());
 }
 
+const CSSValue* GridLanesDirection::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext&) const {
+  CSSValue* value = css_parsing_utils::ParseGridLanesDirection(stream);
+
+  // At this point, we should be at the end of the stream or at an !important
+  // token. If not, we should return nullptr.
+  if (!stream.AtEnd() && !(stream.Peek().GetType() == kDelimiterToken &&
+                           stream.Peek().Delimiter() == '!')) {
+    return nullptr;
+  }
+  return value;
+}
+
 const CSSValue* GridLanesDirection::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.GridLanesDirection());
+  return ComputedStyleUtils::ValueForGridLanesDirection(
+      style.GetGridLanesDirection(), style);
 }
 
 const CSSValue* GridRowEnd::ParseSingleValue(CSSParserTokenStream& stream,

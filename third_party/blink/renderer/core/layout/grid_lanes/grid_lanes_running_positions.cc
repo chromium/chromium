@@ -28,7 +28,7 @@ class RunningPositionsIterator {
                            wtf_size_t auto_placement_cursor,
                            wtf_size_t span_size,
                            Vector<LayoutUnit>& running_positions)
-      : is_reverse_direction_(is_reverse_direction),
+      : is_reverse_track_direction_(is_reverse_direction),
         max_index_(running_positions.size() - span_size),
         running_positions_(running_positions) {
     InitializeIterator(auto_placement_cursor, span_size);
@@ -45,14 +45,14 @@ class RunningPositionsIterator {
       wtf_size_t span_size,
       Vector<Vector<GridLanesRunningPositions::TrackOpening>>&
           track_collection_openings)
-      : is_reverse_direction_(is_reverse_direction),
+      : is_reverse_track_direction_(is_reverse_direction),
         max_index_(track_collection_openings.size() - span_size) {
     InitializeIterator(auto_placement_cursor, span_size);
   }
 
   void InitializeIterator(wtf_size_t auto_placement_cursor,
                           wtf_size_t span_size) {
-    if (is_reverse_direction_) {
+    if (is_reverse_track_direction_) {
       // If the auto placement cursor is less than the span size in the reverse
       // direction, we can't place an item there, and need to loop back to the
       // end of the vector.
@@ -73,7 +73,7 @@ class RunningPositionsIterator {
   // Post-increment operator.
   RunningPositionsIterator operator++(int) {
     RunningPositionsIterator prev_position(*this);
-    is_reverse_direction_ ? Decrement() : Increment();
+    is_reverse_track_direction_ ? Decrement() : Increment();
     return prev_position;
   }
 
@@ -103,7 +103,7 @@ class RunningPositionsIterator {
     }
   }
 
-  bool is_reverse_direction_{false};
+  bool is_reverse_track_direction_{false};
   // `end_index_` is the last index the iterator should access before it returns
   // to the starting index we accessed.
   wtf_size_t end_index_;
@@ -146,7 +146,7 @@ GridSpan GridLanesRunningPositions::GetFirstEligibleLine(
   // auto-placement cursor as the item's position in the grid axis; or if there
   // are none such, choose the first one."
   wtf_size_t first_eligible_line = kNotFound;
-  RunningPositionsIterator iterator(is_reverse_direction_,
+  RunningPositionsIterator iterator(is_reverse_track_direction_,
                                     auto_placement_cursor_, span_size,
                                     max_running_positions);
   do {
@@ -200,8 +200,9 @@ void GridLanesRunningPositions::UpdateAutoPlacementCursor(
     const GridArea& resolved_position,
     const GridTrackSizingDirection grid_axis_direction) {
   auto_placement_cursor_ =
-      is_reverse_direction_ ? resolved_position.StartLine(grid_axis_direction)
-                            : resolved_position.EndLine(grid_axis_direction);
+      is_reverse_track_direction_
+          ? resolved_position.StartLine(grid_axis_direction)
+          : resolved_position.EndLine(grid_axis_direction);
 }
 
 LayoutUnit GridLanesRunningPositions::GetMaxPositionForSpan(
@@ -324,10 +325,10 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
   // "start" should be the last track), otherwise within the author-specified
   // track(s).
   RunningPositionsIterator iterator(
-      is_reverse_direction_,
+      is_reverse_track_direction_,
       /*auto_placement_cursor=*/
-      is_reverse_direction_ ? track_collection_openings_.size() : 0, span_size,
-      track_collection_openings_);
+      is_reverse_track_direction_ ? track_collection_openings_.size() : 0,
+      span_size, track_collection_openings_);
   do {
     GridSpan item_span =
         grid_lanes_item.is_auto_placed
@@ -375,7 +376,7 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     // earlier track, store the result in
     // `highest_eligible_track_opening_result`.
     const bool is_in_earlier_track =
-        is_reverse_direction_
+        is_reverse_track_direction_
             ? eligible_track_opening_result.starting_track_index >
                   highest_eligible_track_opening_result.starting_track_index
             : eligible_track_opening_result.starting_track_index <

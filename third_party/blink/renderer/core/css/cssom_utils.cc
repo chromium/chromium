@@ -73,21 +73,27 @@ bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
 // static
 bool CSSOMUtils::IsGridLanesNormalDirectionValue(
     const CSSValue* grid_lanes_direction_values) {
-  const auto* grid_lanes_direction_value =
-      DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values);
-  return grid_lanes_direction_value &&
-         (grid_lanes_direction_value->GetValueID() == CSSValueID::kNormal);
+  // The 'normal' keyword cannot be paired with any reversal keywords and as
+  // such is parsed as an identifier.
+  if (const auto* value =
+          DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values)) {
+    CHECK_EQ(value->GetValueID(), CSSValueID::kNormal);
+    return true;
+  }
+  return false;
 }
 
 // static
 bool CSSOMUtils::IsGridLanesColumnDirectionValue(
     const CSSValue* grid_lanes_direction_values) {
-  const auto* grid_lanes_direction_value =
-      DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values);
-  return grid_lanes_direction_value &&
-         (grid_lanes_direction_value->GetValueID() == CSSValueID::kColumn ||
-          grid_lanes_direction_value->GetValueID() ==
-              CSSValueID::kColumnReverse);
+  // Unlike 'normal', the 'row'/'column' keywords are parsed as a list because
+  // they may be paired with one or more reversal keyword.
+  if (const auto* list = DynamicTo<CSSValueList>(grid_lanes_direction_values)) {
+    CHECK_GE(list->length(), 1u);
+    return To<CSSIdentifierValue>(&list->Item(0))->GetValueID() ==
+           CSSValueID::kColumn;
+  }
+  return false;
 }
 
 // static

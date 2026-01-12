@@ -221,6 +221,8 @@ class StyleBuilderConverter {
                                                 const CSSValue&);
   static ItemTolerance ConvertItemTolerance(const StyleResolverState&,
                                             const CSSValue&);
+  static GridLanesDirection ConvertGridLanesDirection(const StyleResolverState&,
+                                                      const CSSValue&);
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(
       StyleResolverState&,
       const CSSValue&);

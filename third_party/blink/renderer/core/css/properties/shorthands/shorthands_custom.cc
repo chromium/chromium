@@ -3106,16 +3106,13 @@ bool GridLanes::ParseShorthand(
   }
   stream.ConsumeWhitespace();
 
-  if (css_parsing_utils::IdentMatches<
-          CSSValueID::kRow, CSSValueID::kRowReverse, CSSValueID::kColumn,
-          CSSValueID::kColumnReverse, CSSValueID::kNormal>(
+  if (css_parsing_utils::IdentMatches<CSSValueID::kRow, CSSValueID::kColumn,
+                                      CSSValueID::kNormal>(
           stream.Peek().Id())) {
-    if (css_parsing_utils::IdentMatches<CSSValueID::kRow,
-                                        CSSValueID::kRowReverse>(
-            stream.Peek().Id())) {
+    if (css_parsing_utils::IdentMatches<CSSValueID::kRow>(stream.Peek().Id())) {
       is_template_columns = false;
     }
-    grid_lanes_direction = css_parsing_utils::ConsumeIdent(stream);
+    grid_lanes_direction = css_parsing_utils::ParseGridLanesDirection(stream);
   }
 
   // At this point, we should be at the end of the stream or at an !important

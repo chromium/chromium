@@ -111,6 +111,7 @@ ALIGNMENT_ORDER = [
     'wtf_size_t',
     'int',
     'PositionArea',
+    'GridLanesDirection',
     # Aligns like short
     'StyleFlexWrapData',
     'unsigned short',

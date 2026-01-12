@@ -147,10 +147,9 @@ bool IsOverflowKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kUnsafe, CSSValueID::kSafe>(id);
 }
 
-bool IsGridLanesDirectionOrFillKeyword(CSSValueID id) {
-  return IdentMatches<CSSValueID::kRow, CSSValueID::kRowReverse,
-                      CSSValueID::kColumn, CSSValueID::kColumnReverse,
-                      CSSValueID::kNormal, CSSValueID::kReverse>(id);
+bool IsGridLanesDirectionKeyword(CSSValueID id) {
+  return IdentMatches<CSSValueID::kRow, CSSValueID::kColumn,
+                      CSSValueID::kNormal>(id);
 }
 
 bool IsIdent(const CSSValue& value, CSSValueID id) {
@@ -6967,7 +6966,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
   auto HasMoreGridLanesValues = [](CSSParserTokenStream& stream,
                                    bool is_grid_lanes_shorthand) -> bool {
     return (is_grid_lanes_shorthand &&
-            IsGridLanesDirectionOrFillKeyword(stream.Peek().Id()));
+            IsGridLanesDirectionKeyword(stream.Peek().Id()));
   };
 
   do {
@@ -7241,6 +7240,51 @@ CSSValue* ParseGridLanesTemplateAreasValue(
   DCHECK(column_count);
   return MakeGarbageCollected<cssvalue::CSSGridTemplateAreasValue>(
       grid_area_map, row_count, column_count);
+}
+
+CSSValue* ParseGridLanesDirection(CSSParserTokenStream& stream) {
+  CSSValueID orientation_id = stream.Peek().Id();
+  if (!IsGridLanesDirectionKeyword(orientation_id)) {
+    return nullptr;
+  }
+
+  // The reverse keywords are not allowed alongside 'normal'.
+  CSSValue* orientation_value = css_parsing_utils::ConsumeIdent(stream);
+  if (orientation_id == CSSValueID::kNormal) {
+    return orientation_value;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*orientation_value);
+
+  if (stream.AtEnd() || (stream.Peek().GetType() == kDelimiterToken &&
+                         stream.Peek().Delimiter() == '!')) {
+    return list;
+  }
+
+  CSSValueID first_reverse_id = stream.Peek().Id();
+  if (first_reverse_id != CSSValueID::kFillReverse &&
+      first_reverse_id != CSSValueID::kTrackReverse) {
+    return list;
+  }
+  CSSValue* first_reverse_value = css_parsing_utils::ConsumeIdent(stream);
+  list->Append(*first_reverse_value);
+
+  if (stream.AtEnd() || (stream.Peek().GetType() == kDelimiterToken &&
+                         stream.Peek().Delimiter() == '!')) {
+    return list;
+  }
+
+  CSSValueID second_reverse_id = stream.Peek().Id();
+  if ((second_reverse_id != CSSValueID::kFillReverse &&
+       second_reverse_id != CSSValueID::kTrackReverse) ||
+      second_reverse_id == first_reverse_id) {
+    return list;
+  }
+  CSSValue* second_reverse_value = css_parsing_utils::ConsumeIdent(stream);
+  list->Append(*second_reverse_value);
+
+  return list;
 }
 
 CSSValue* ConsumeItemTolerance(CSSParserTokenStream& stream,

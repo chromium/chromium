@@ -1229,10 +1229,11 @@
     "span",
 
     // grid-lanes-direction
+    // normal
     // row
-    // row-reverse
     // column
-    // column-reverse
+    "fill-reverse",
+    "track-reverse",
 
     // grid-template-{columns|rows}
     "minmax",

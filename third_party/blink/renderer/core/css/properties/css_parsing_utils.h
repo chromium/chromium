@@ -591,6 +591,8 @@ CSSValue* ParseGridLanesTemplateAreasValue(
     const String& grid_lanes_template_areas,
     bool is_template_columns);
 
+CSSValue* ParseGridLanesDirection(CSSParserTokenStream&);
+
 CSSValue* ConsumeItemTolerance(CSSParserTokenStream&, const CSSParserContext&);
 
 bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
