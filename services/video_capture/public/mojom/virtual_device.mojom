@@ -47,8 +47,8 @@ interface SharedMemoryVirtualDevice {
                        media.mojom.VideoFrameInfo frame_info);
 };
 
-// Similar to SharedMemoryVirtualDevice but uses MailboxHolders instead of
-// shared memory for transporting frames. The MailboxHolders are to be
+// Similar to SharedMemoryVirtualDevice but uses SharedImages instead of
+// shared memory for transporting frames. The SharedImages are to be
 // provided by the caller.
 interface TextureVirtualDevice {
   // Registers a shared image for subsequent transport of
@@ -70,8 +70,8 @@ interface TextureVirtualDevice {
   // is not supported.
   OnFrameReadyInBuffer(int32 buffer_id,
                        media.mojom.VideoFrameInfo frame_info);
-  // Unregisters a set of mailbox holders previously registered via
-  // OnNewMailboxHolderBufferHandle(). Note, that this should not be called
+  // Unregisters a set of shared images previously registered via
+  // OnNewSharedImageBufferHandle(). Note, that this should not be called
   // while the corresponding buffer is still in use via OnFrameReadyInBuffer().
   OnBufferRetired(int32 buffer_id);
 };

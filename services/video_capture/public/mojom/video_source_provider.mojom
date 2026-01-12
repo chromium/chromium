@@ -47,7 +47,7 @@ interface VideoSourceProvider {
       pending_receiver<SharedMemoryVirtualDevice> virtual_device_receiver);
 
   // Similar to AddSharedMemoryVirtualDevice() but for virtual (non-physical)
-  // devices that are fed with textures (via MailboxHolders) allocated by the
+  // devices that are fed with textures (via SharedImages) allocated by the
   // caller instead of shared memory buffers provided by the service on demand.
   AddTextureVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,

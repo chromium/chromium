@@ -917,7 +917,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
 
   gpu::SharedImageInterface* shared_image_interface =
       context_provider_->SharedImageInterface();
-  // Create the MailboxHolders for each texture in the swap chain
+  // Create the SharedImages for each texture in the swap chain
   graphics_binding_->CreateBaseLayerSharedImages(shared_image_interface);
 }
 

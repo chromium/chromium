@@ -332,7 +332,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
     // Since this is the first time we create the `shared_image_`, we need to
     // guarantee that the shared image is created before it is used.
-    mailbox_holder_sync_token_ = shared_image_interface->GenVerifiedSyncToken();
+    shared_image_sync_token_ = shared_image_interface->GenVerifiedSyncToken();
 
     should_create_shared_image_ = false;
     return true;
@@ -360,12 +360,12 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
     CHECK(shared_image_);
     auto frame = media::VideoFrame::WrapSharedImage(
-        frame_info->pixel_format, shared_image_, mailbox_holder_sync_token_,
+        frame_info->pixel_format, shared_image_, shared_image_sync_token_,
         base::BindOnce(&GpuMemoryBufferHandleHolder::OnMailboxReleased,
                        weak_ptr_factory_.GetWeakPtr()),
         frame_info->coded_size, frame_info->visible_rect,
         frame_info->visible_rect.size(), frame_info->timestamp);
-    mailbox_holder_sync_token_.Clear();
+    shared_image_sync_token_.Clear();
 
     if (!frame) {
       LOG(ERROR) << "Failed to create a video frame.";
@@ -400,9 +400,10 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   // buffer.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
-  // The sync token used when creating a `MailboxHolder`. This will be a
-  // verified sync token the first time we wrap a video frame around a mailbox.
-  gpu::SyncToken mailbox_holder_sync_token_;
+  // The sync token used when creating a SharedImage. This will be a
+  // verified sync token the first time we wrap a video frame around a shared
+  // image.
+  gpu::SyncToken shared_image_sync_token_;
 
   // The release sync token of the above `shared_image_`.
   gpu::SyncToken release_sync_token_;
