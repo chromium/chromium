@@ -10,10 +10,7 @@
 #include <memory>
 #include <set>
 #include <vector>
-#include <optional>
-#include <string_view>
 
-#include "absl/container/flat_hash_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -100,10 +97,6 @@ class POLICY_EXPORT PolicyServiceImpl
   void RemoveProviderUpdateObserver(ProviderUpdateObserver* observer) override;
   bool HasProvider(ConfigurationPolicyProvider* provider) const override;
   const PolicyMap& GetPolicies(const PolicyNamespace& ns) const override;
-
-  std::optional<size_t> GetInitialChromePolicyValueHash(
-      std::string_view policy_name) const override;
-
   bool IsInitializationComplete(PolicyDomain domain) const override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies(base::OnceClosure callback,
@@ -138,9 +131,6 @@ class POLICY_EXPORT PolicyServiceImpl
   static void RecordInitializationTime(ScopeForMetrics scope_for_metrics,
                                        size_t policy_count,
                                        base::TimeDelta initialization_time);
-
-  static absl::flat_hash_map<std::string, size_t> CopyPoliciesStartupHash(
-      const PolicyMap& startup_policy_map);
 
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
@@ -198,11 +188,6 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // Maps each policy namespace to its current policies.
   PolicyBundle policy_bundle_;
-
-  // Map to store the initial hashed policy values for POLICY_DOMAIN_CHROME.
-  // This will only contain hashes for policies that are marked as not
-  // supporting dynamic_refresh.
-  absl::flat_hash_map<std::string, size_t> startup_chrome_policy_hash_map_;
 
   // Maps each policy domain to its observer list.
   std::map<PolicyDomain,

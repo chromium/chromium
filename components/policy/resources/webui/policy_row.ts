@@ -23,7 +23,6 @@ export interface Policy {
   warning: string;
   info: string;
   value: any;
-  restartRequired?: boolean;
   deprecated?: boolean;
   future?: boolean;
   allSourcesMerged?: boolean;
@@ -50,7 +49,6 @@ export class PolicyRowElement extends CustomElement {
   private isMergedValue_: boolean;
   private deprecated_: boolean;
   private future_: boolean;
-  private restartRequired_: boolean;
 
   connectedCallback() {
     const toggle = this.shadowRoot!.querySelector('.policy.row .toggle');
@@ -83,8 +81,6 @@ export class PolicyRowElement extends CustomElement {
     this.deprecated_ = !!policy.deprecated;
 
     this.future_ = !!policy.future;
-
-    this.restartRequired_ = !!policy.restartRequired;
 
     // Populate the name column.
     const nameDisplay = this.shadowRoot!.querySelector('.name .link span');
@@ -178,9 +174,6 @@ export class PolicyRowElement extends CustomElement {
       const deprecationNotice =
           this.deprecated_ ? loadTimeData.getString('deprecated') : '';
       const futureNotice = this.future_ ? loadTimeData.getString('future') : '';
-      const restartRequiredNotice = this.restartRequired_ ?
-          loadTimeData.getString('restartRequired') :
-          '';
       const warningsNotice =
           this.hasWarnings_ ? loadTimeData.getString('warning') : '';
       const conflictsNotice = this.hasConflicts_ && !this.isMergedValue_ ?
@@ -197,7 +190,6 @@ export class PolicyRowElement extends CustomElement {
             deprecationNotice,
             futureNotice,
             warningsNotice,
-            restartRequiredNotice,
             ignoredNotice,
             conflictsNotice,
           ].filter(x => !!x)

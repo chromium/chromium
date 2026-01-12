@@ -713,38 +713,37 @@ EXPECTED_POLICY_CONSTANTS_SOURCE = '''\
 namespace policy {
 
 [[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
-// is_deprecated, is_future, supports_dynamic_refresh, scope id,
-// max_external_data_size, risk tags
+// is_deprecated is_future scope id max_external_data_size, risk tags
   // ExampleStringPolicy
-  { false,        false,    true,            kBrowser,           1,                     0, {  } },
+  { false,        false,    kBrowser,           1,                     0, {  } },
   // ExampleBoolPolicy
-  { false,        false,    true,            kBrowser,           2,                     0, {  } },
+  { false,        false,    kBrowser,           2,                     0, {  } },
   // ExampleBoolMergeMetapolicy
-  { false,        false,    true,            kBrowser,           3,                     0, {  } },
+  { false,        false,    kBrowser,           3,                     0, {  } },
   // ExampleBoolPrecedenceMetapolicy
-  { false,        false,    true,            kBrowser,           4,                     0, {  } },
+  { false,        false,    kBrowser,           4,                     0, {  } },
   // CloudOnlyPolicy
-  { false,        false,    true,            kBrowser,           5,                     0, {  } },
+  { false,        false,    kBrowser,           5,                     0, {  } },
   // CloudManagementEnrollmentToken
-  { false,        false,    true,            kBrowser,           6,                     0, {  } },
+  { false,        false,    kBrowser,           6,                     0, {  } },
   // ChunkZeroLastFieldBooleanPolicy
-  { false,        false,    true,            kBrowser,        1040,                     0, {  } },
+  { false,        false,    kBrowser,        1040,                     0, {  } },
   // ChunkOneFirstFieldBooleanPolicy
-  { false,        false,    true,            kBrowser,        1041,                     0, {  } },
+  { false,        false,    kBrowser,        1041,                     0, {  } },
   // ChunkOneLastFieldBooleanPolicy
-  { false,        false,    true,            kBrowser,        1840,                     0, {  } },
+  { false,        false,    kBrowser,        1840,                     0, {  } },
   // ChunkTwoFirstFieldStringPolicy
-  { false,        false,    true,            kBrowser,        1841,                     0, {  } },
+  { false,        false,    kBrowser,        1841,                     0, {  } },
   // ChunkTwoLastFieldStringPolicy
-  { false,        false,    true,            kBrowser,        2640,                     0, {  } },
+  { false,        false,    kBrowser,        2640,                     0, {  } },
   // SensitivePolicyForMultiplePlatforms
-  { false,        false,    true,            kBrowser,        2643,                     0, {  } },
+  { false,        false,    kBrowser,        2643,                     0, {  } },
   // SensitivePolicyForChromeOSOnly
-  { false,        false,    true,            kBrowser,        2644,                     0, {  } },
+  { false,        false,    kBrowser,        2644,                     0, {  } },
   // SensitivePolicyForChromeOSFuture
-  { false,        true,     true,            kBrowser,        2646,                     0, {  } },
+  { false,        true,     kBrowser,        2646,                     0, {  } },
   // SensitivePolicyForChromeOSDeprecated
-  { true,         false,    true,            kBrowser,        2647,                     0, {  } },
+  { true,         false,    kBrowser,        2647,                     0, {  } },
 };
 
 const char* const kSensitivePolicies[] = {
