@@ -12,6 +12,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "components/webauthn/core/browser/webauthn_security_utils.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "crypto/hash.h"
@@ -39,18 +40,6 @@ class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
  private:
   raw_ptr<IOSPasskeyClient> client_;
 };
-
-bool IsOriginValidForRelyingPartyId(const url::Origin& origin,
-                                    const std::string& rp_id) {
-  if (rp_id.empty()) {
-    return false;
-  }
-
-  // TODO(crbug.com/460485600): Implement proper rp_id/origin validation.
-  //                            See content related origin implementation:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/4973980
-  return true;
-}
 
 // Converts an std::string to a byte vector.
 std::vector<uint8_t> ToByteVector(const std::string& str) {
@@ -190,8 +179,8 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
   CHECK(!passkey_request_id.empty());
   CHECK(web_frame);
 
-  if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
-                                      params.RpId())) {
+  if (!OriginIsAllowedToClaimRelyingPartyId(params.RpId(),
+                                            web_frame->GetSecurityOrigin())) {
     DeferToRenderer(web_frame, passkey_request_id);
     return;
   }
@@ -248,8 +237,8 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   CHECK(!passkey_request_id.empty());
   CHECK(web_frame);
 
-  if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
-                                      params.RpId()) ||
+  if (!OriginIsAllowedToClaimRelyingPartyId(params.RpId(),
+                                            web_frame->GetSecurityOrigin()) ||
       HasExcludedPasskey(params)) {
     DeferToRenderer(web_frame, passkey_request_id);
     return;

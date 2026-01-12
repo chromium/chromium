@@ -146,7 +146,8 @@ class PasskeyTabHelperTest : public PlatformTest {
   // Sets up a web frame manager with a web frame.
   void SetUpWebFramesManagerAndWebFrame() {
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    frames_manager->AddWebFrame(web::FakeWebFrame::CreateMainWebFrame());
+    frames_manager->AddWebFrame(
+        web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com")));
     fake_web_state_.SetWebFramesManager(
         PasskeyJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
         std::move(frames_manager));
