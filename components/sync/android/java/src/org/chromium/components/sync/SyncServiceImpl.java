@@ -466,8 +466,9 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @CalledByNative
     private static void onGetLocalDataDescriptionsResult(
             Callback<HashMap<Integer, LocalDataDescription>> callback,
-            int[] dataTypes,
-            LocalDataDescription[] localDataDescriptions) {
+            @JniType("std::vector<int>") int[] dataTypes,
+            @JniType("std::vector<syncer::LocalDataDescription>")
+                    LocalDataDescription[] localDataDescriptions) {
         HashMap<Integer, LocalDataDescription> localDataDescription =
                 new HashMap<Integer, LocalDataDescription>();
         for (int i = 0; i < dataTypes.length; i++) {

@@ -105,22 +105,9 @@ void NativeGetLocalDataDescriptionsCallback(
     data_types.push_back(data_type);
     local_data_descriptions.push_back(description);
   }
-  base::android::ScopedJavaLocalRef<jclass> localdatadescription_clazz =
-      base::android::GetClass(
-          env, "org/chromium/components/sync/LocalDataDescription");
-  auto array = base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(
-      env, env->NewObjectArray(local_data_descriptions.size(),
-                               localdatadescription_clazz.obj(), nullptr));
-  base::android::CheckException(env);
-
-  for (size_t i = 0; i < local_data_descriptions.size(); ++i) {
-    base::android::ScopedJavaLocalRef<jobject> item =
-        ConvertToJavaLocalDataDescription(env, local_data_descriptions[i]);
-    env->SetObjectArrayElement(array.obj(), i, item.obj());
-  }
 
   Java_SyncServiceImpl_onGetLocalDataDescriptionsResult(
-      env, callback, base::android::ToJavaIntArray(env, data_types), array);
+      env, callback, data_types, local_data_descriptions);
 }
 
 // Native callback for the JNI GetAllNodes method. When
