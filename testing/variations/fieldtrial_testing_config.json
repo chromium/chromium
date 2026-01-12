@@ -28543,7 +28543,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebviewStopBrowserStartupInIsMultiProcessEnabled"
+                        "WebViewStopBrowserStartupInIsMultiProcessEnabled"
                     ]
                 }
             ]
