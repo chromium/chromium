@@ -7,15 +7,16 @@
 
 namespace webnn {
 
-// Schedules the Windows App Runtime package installation when both the
-// `kWebMachineLearningNeuralNetwork` and `kWebNNOnnxRuntime` features are
-// enabled, and the OS is Windows 11 version 24H2 or later.
+// Schedules the installation of the Windows App Runtime package if it was not
+// deployed by the Chrome installer.
 //
-// This function uses the IAppInstallManager API to install the Windows App
-// Runtime package. After installation, a package dependency is created using
-// Chromium's user data directory to prevent the OS from cleaning up the
-// package. The dependency ID and package information will be stored in user
-// settings.
+// Triggers only on Windows 11 24H2+ when both
+// `kWebMachineLearningNeuralNetwork` and `kWebNNOnnxRuntime` features are
+// enabled.
+//
+// Upon successful installation, a package dependency is created using the
+// Chromium user data directory to prevent the OS from removing the package.
+// The dependency ID and package metadata are persisted in user settings.
 void SchedulePlatformRuntimeInstallationIfRequired();
 
 }  // namespace webnn
