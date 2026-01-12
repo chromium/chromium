@@ -5,6 +5,7 @@
 package org.chromium.components.signin;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -18,6 +19,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  * account_capabilities_fetcher_android.{h,cc}.
  */
 @NullMarked
+@JNINamespace("signin")
 public class AccountCapabilitiesFetcher {
     private static final long INVALID_NATIVE_CALLBACK = 0;
     private final CoreAccountInfo mCoreAccountInfo;

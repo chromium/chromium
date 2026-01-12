@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -31,6 +32,7 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
  * <p>
  */
 @NullMarked
+@JNINamespace("signin")
 final class ProfileOAuth2TokenServiceDelegate {
     private final long mNativePtr;
     private final AccountManagerFacade mAccountManagerFacade;

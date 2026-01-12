@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -21,6 +22,7 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
+@JNINamespace("signin")
 public class IdentityManagerImpl implements IdentityManager {
     private long mNativeIdentityManager;
     private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;

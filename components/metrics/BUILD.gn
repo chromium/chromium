@@ -40,7 +40,6 @@ source_set("library_support") {
 
 if (!is_cronet_build && is_android) {
   generate_jni("jni_headers") {
-    namespace = "metrics"
     sources = [
       "android/java/src/org/chromium/components/metrics/LowEntropySource.java",
     ]

@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.mockito.Mockito;
 
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Util class to support {@link org.chromium.components.signin.AccountCapabilitiesFetcher} native
  * tests.
  */
+@JNINamespace("signin")
 final class AccountCapabilitiesFetcherTestUtil {
     private AccountManagerFacade mMockFacade;
     private CoreAccountInfo mExpectedAccount;

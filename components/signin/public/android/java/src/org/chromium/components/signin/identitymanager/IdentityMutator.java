@@ -5,6 +5,7 @@
 package org.chromium.components.signin.identitymanager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * information.
  */
 @NullMarked
+@JNINamespace("signin")
 public class IdentityMutator {
     // Pointer to native IdentityMutator, not final because of destroy().
     private long mNativeIdentityMutator;

@@ -72,7 +72,6 @@ java_cpp_features("signin_java_features_srcjar") {
 }
 
 generate_jni("jni_headers") {
-  namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
     "java/src/org/chromium/components/signin/SigninFeatureMap.java",
@@ -107,7 +106,6 @@ java_cpp_enum("java_enums") {
 }
 
 generate_jni("test_support_jni_headers") {
-  namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
     "java/src/org/chromium/components/signin/test/util/AccountInfoSerializer.java",

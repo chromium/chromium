@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -20,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
  * counterpart called PrimaryAccountChangeEvent.
  */
 @NullMarked
+@JNINamespace("signin")
 public class PrimaryAccountChangeEvent {
     /**
      * This class mirrors the native PrimaryAccountChangeEvent class Type enum from:

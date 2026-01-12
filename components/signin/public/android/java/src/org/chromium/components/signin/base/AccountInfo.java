@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
@@ -29,6 +30,7 @@ import java.util.HashMap;
  */
 @NullMarked
 @DoNotMock("Use TestAccounts or create a real instance.")
+@JNINamespace("signin")
 public class AccountInfo extends CoreAccountInfo {
     /** Used to instantiate `AccountInfo`. */
     public static class Builder {

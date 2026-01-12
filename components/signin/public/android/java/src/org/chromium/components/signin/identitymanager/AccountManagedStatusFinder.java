@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin.identitymanager;
 
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -19,6 +20,7 @@ import java.time.Duration;
  * version of the C++ AccountManagedStatusFinder class.
  */
 @NullMarked
+@JNINamespace("signin")
 public class AccountManagedStatusFinder {
     private final Callback<Integer> mAsyncCallback;
 

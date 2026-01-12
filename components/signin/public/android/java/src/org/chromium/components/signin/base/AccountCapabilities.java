@@ -7,6 +7,7 @@ package org.chromium.components.signin.base;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
@@ -21,6 +22,7 @@ import java.util.Map;
  * counterpart.
  */
 @NullMarked
+@JNINamespace("signin")
 public class AccountCapabilities {
     private final Map<String, Boolean> mAccountCapabilities;
 
