@@ -36,6 +36,3 @@ chrome_module_descs = [
 if (dfmify_dev_ui) {
   chrome_module_descs += [ dev_ui_module_desc ]
 }
-
-# TODO: Remove once unused downstream.
-monochrome_module_descs = chrome_module_descs
