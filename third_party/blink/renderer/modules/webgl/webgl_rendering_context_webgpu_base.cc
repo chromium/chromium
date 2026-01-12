@@ -397,12 +397,6 @@ class ProxyDawnInstanceForANGLE {
       NOTREACHED();
     };
 
-    // ANGLE should use the device we give to it and not request its own
-    // adapter.
-    procs_.instanceRequestAdapter =
-        [](WGPUInstance, const WGPURequestAdapterOptions*,
-           WGPURequestAdapterCallbackInfo) -> WGPUFuture { NOTREACHED(); };
-
     // Ignore refcounts since we ensure the instance outlives ANGLE.
     procs_.instanceAddRef = [](WGPUInstance) {};
     procs_.instanceRelease = [](WGPUInstance) {};
@@ -432,6 +426,14 @@ class ProxyDawnInstanceForANGLE {
     procs_.instanceProcessEvents = [](WGPUInstance angle_instance) {
       WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
       return GetDawnProcs()->instanceProcessEvents(actual_instance);
+    };
+    procs_.instanceRequestAdapter =
+        [](WGPUInstance angle_instance,
+           const WGPURequestAdapterOptions* options,
+           WGPURequestAdapterCallbackInfo callback) -> WGPUFuture {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceRequestAdapter(actual_instance, options,
+                                                    callback);
     };
   }
 
@@ -516,48 +518,6 @@ bool WebGLRenderingContextWebGPUBase::Initialize(
   instance_ = dawn_control_client_->GetWGPUInstance();
   proxy_instance_ = std::make_unique<ProxyDawnInstanceForANGLE>(
       instance_, dawn_control_client_);
-
-  // Synchronously request the wgpu::Adapter.
-  auto adapter_future = instance_.RequestAdapter(
-      nullptr, wgpu::CallbackMode::AllowProcessEvents,
-      [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
-          wgpu::StringView error_message) {
-        if (status != wgpu::RequestAdapterStatus::Success) {
-          *error_msg = String::FromUTF8WithLatin1Fallback(error_message);
-          return;
-        }
-
-        adapter_ = std::move(adapter);
-      });
-  dawn_control_client_->Flush();
-  CHECK_EQ(
-      wgpu::WaitStatus::Success,
-      instance_.WaitAny(adapter_future, std::numeric_limits<uint64_t>::max()));
-
-  if (!adapter_) {
-    return false;
-  }
-
-  // Synchronously request the wgpu::Device.
-  auto device_future = adapter_.RequestDevice(
-      nullptr, wgpu::CallbackMode::AllowProcessEvents,
-      [&](wgpu::RequestDeviceStatus status, wgpu::Device device,
-          wgpu::StringView error_message) {
-        if (status != wgpu::RequestDeviceStatus::Success) {
-          *error_msg = String::FromUTF8WithLatin1Fallback(error_message);
-          return;
-        }
-
-        device_ = std::move(device);
-      });
-  dawn_control_client_->Flush();
-  CHECK_EQ(
-      wgpu::WaitStatus::Success,
-      instance_.WaitAny(device_future, std::numeric_limits<uint64_t>::max()));
-
-  if (!device_) {
-    return false;
-  }
 
   InitializeContext();
 
@@ -3951,8 +3911,6 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       proxy_instance_->GetProcTableForANGLE(),
       EGL_PLATFORM_ANGLE_WEBGPU_INSTANCE_ANGLE,
       proxy_instance_->GetInstanceForANGLE(),
-      EGL_PLATFORM_ANGLE_WEBGPU_DEVICE_ANGLE,
-      reinterpret_cast<EGLAttrib>(device_.Get()),
       EGL_NONE,
   };
   display_ = driver_egl_.fn.eglGetPlatformDisplayFn(EGL_PLATFORM_ANGLE_ANGLE,
@@ -3965,6 +3923,19 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // Setup the ANGLE platform for internal logging and trace events
   angle::InitializePlatform(display_, get_proc_address);
+
+  // Query the wgpu::Device that was created by ANGLE.
+  EGLAttrib eglDevice = 0;
+  driver_egl_.fn.eglQueryDisplayAttribEXTFn(display_, EGL_DEVICE_EXT,
+                                            &eglDevice);
+  CHECK_NE(0, eglDevice);
+
+  EGLAttrib wgpuDevice = 0;
+  driver_egl_.fn.eglQueryDeviceAttribEXTFn(
+      reinterpret_cast<EGLDeviceEXT>(eglDevice), EGL_WEBGPU_DEVICE_ANGLE,
+      &wgpuDevice);
+  CHECK_NE(0, wgpuDevice);
+  device_ = wgpu::Device::Acquire(reinterpret_cast<WGPUDevice>(wgpuDevice));
 
   // Create a GL Context.
   // TODO(413078308): Request version 2 vs 3 depending on WebGL version.

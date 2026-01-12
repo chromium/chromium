@@ -1474,7 +1474,6 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   std::unique_ptr<ProxyDawnInstanceForANGLE> proxy_instance_;
   wgpu::Instance instance_;
-  wgpu::Adapter adapter_;
   wgpu::Device device_;
   std::unique_ptr<gpu::gles2::GLES2Interface> gles2_for_objects_;
 
