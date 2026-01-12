@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
@@ -810,6 +811,97 @@ void MaybeMergeServerPredictions(
   }
 }
 
+// This function erases crowdsourced address classifications for small forms.
+// This was built to reduce the risk of false positive classifications but is
+// legacy code. We are not sure if this is the best possible implementation
+// today.
+void ClearSmallAddressFormPredictions(
+    AutofillQueryResponse::FormSuggestion& form_suggestion) {
+  // If predictions are overridden for debugging via the command line, skip the
+  // clearing of small address form predictions.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          features::debug::kAutofillOverridePredictions)) {
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // Only forms with up to 2 fields are considered small forms.
+  static constexpr int kSmallFormThreshold = 3;
+  if (form_suggestion.field_suggestions().size() >= kSmallFormThreshold) {
+    return;
+  }
+
+  // A small form must contain only address fields (or undetermined field types)
+  // to be a small address form.
+  auto is_address_or_undetermined_type = [](const FieldPrediction& prediction) {
+    FieldType type = ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
+    // For historic reasons, AutofillAI types are treated as "unknown type".
+    // They don't influence the small form handling.
+    if (GroupTypeOfFieldType(type) == FieldTypeGroup::kAutofillAi) {
+      return true;
+    }
+    return type == NO_SERVER_DATA || type == UNKNOWN_TYPE ||
+           IsAddressType(type);
+  };
+  auto has_only_address_or_undetermined_types =
+      [&is_address_or_undetermined_type](
+          const AutofillQueryResponse::FormSuggestion::FieldSuggestion& field) {
+        return field.predictions().empty() ||
+               std::ranges::all_of(field.predictions(),
+                                   is_address_or_undetermined_type);
+      };
+  bool is_small_address_form =
+      std::ranges::all_of(form_suggestion.field_suggestions(),
+                          has_only_address_or_undetermined_types);
+  if (!is_small_address_form) {
+    return;
+  }
+
+  // If the form is a small address form, all address field predictions from
+  // the server are cleared.
+  auto eligible_for_deletion = [](const FieldPrediction& prediction) {
+    FieldPrediction::Source source =
+        ToSafeFieldPredictionSource(prediction.source());
+    switch (source) {
+      case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
+      case FieldPrediction::SOURCE_FIELD_RANKS:
+        break;  // Continue below to check if this is an address prediction.
+      case FieldPrediction::SOURCE_UNSPECIFIED:
+      case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
+      case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
+      case FieldPrediction::SOURCE_OVERRIDE:
+      case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+      case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
+      case FieldPrediction::SOURCE_AUTOFILL_AI:
+      case FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING:
+        return false;
+    }
+    // Only address types should be wiped.
+    FieldType type = ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
+    return IsAddressType(type);
+  };
+
+  for (AutofillQueryResponse::FormSuggestion::FieldSuggestion& field :
+       *form_suggestion.mutable_field_suggestions()) {
+    auto& predictions = *field.mutable_predictions();
+    predictions.erase(std::remove_if(predictions.begin(), predictions.end(),
+                                     eligible_for_deletion),
+                      predictions.end());
+    // In case the last suggestion was removed, backfill a NO_SERVER_DATA
+    // suggestion to simulate the behavior of the server. This may seem
+    // unnecessary but is implemented to stick to the behavior of the server and
+    // ensure that for example UKM reporting happens as expected.
+    if (field.predictions_size() == 0) {
+      FieldPrediction* sentinel = field.add_predictions();
+      sentinel->set_type(NO_SERVER_DATA);
+      sentinel->set_source(
+          AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+              FieldPrediction::SOURCE_UNSPECIFIED);
+    }
+  }
+}
+
 }  // namespace
 
 EncodeUploadRequestOptions::Field::Field() = default;
@@ -825,6 +917,11 @@ EncodeUploadRequestOptions&
 EncodeUploadRequestOptions::EncodeUploadRequestOptions::operator=(
     EncodeUploadRequestOptions&&) = default;
 EncodeUploadRequestOptions::~EncodeUploadRequestOptions() = default;
+
+void ClearSmallAddressFormPredictionsForTesting(
+    AutofillQueryResponse::FormSuggestion& form_suggestion) {
+  ClearSmallAddressFormPredictions(form_suggestion);
+}
 
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
@@ -992,18 +1089,29 @@ void ParseServerPredictionsQueryResponse(
   DVLOG(1) << "Autofill query response from API was successfully parsed: "
            << response;
 
-  ProcessServerPredictionsQueryResponse(response, forms,
+  ProcessServerPredictionsQueryResponse(std::move(response), forms,
                                         queried_form_signatures, log_manager);
 }
 
 void ProcessServerPredictionsQueryResponse(
-    const AutofillQueryResponse& response,
+    AutofillQueryResponse response,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   LOG_AF(log_manager) << LoggingScope::kParsing
                       << LogMessage::kProcessingServerData;
+
+  // Suppress crowdsourced suggestions for small forms if the form does
+  // not contain non-address fields (meaning it is an address-only
+  // form).
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillMoveSmallFormLogicToClient)) {
+    for (AutofillQueryResponse::FormSuggestion& form_suggestion :
+         *response.mutable_form_suggestions()) {
+      ClearSmallAddressFormPredictions(form_suggestion);
+    }
+  }
 
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;

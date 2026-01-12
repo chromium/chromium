@@ -193,6 +193,34 @@ Matcher<AutofillUploadContents> SerializesAndDeepEquals(
 #undef PROPERTY_EQ
 }
 
+Matcher<AutofillQueryResponse::FormSuggestion::FieldSuggestion>
+DeepEqualsFieldSuggestion(
+    const AutofillQueryResponse::FormSuggestion::FieldSuggestion& expected) {
+  auto field_prediction_matcher =
+      [](const FieldPrediction& expected_field_prediction) {
+        return AllOf(Property("type", &FieldPrediction::type,
+                              expected_field_prediction.type()),
+                     Property("override", &FieldPrediction::override,
+                              expected_field_prediction.override()),
+                     Property("source", &FieldPrediction::source,
+                              expected_field_prediction.source()));
+      };
+  return AllOf(
+      Property("field_signature",
+               &AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                   field_signature,
+               expected.field_signature()),
+      Property(
+          "predictions",
+          &AutofillQueryResponse::FormSuggestion::FieldSuggestion::predictions,
+          ElementsAreArray(base::ToVector(expected.predictions(),
+                                          field_prediction_matcher))),
+      // Other fields than field_signature and predictions are just compared
+      // in a binary way. They probably don't matter for these tests.
+      EqualsProto<AutofillQueryResponse::FormSuggestion::FieldSuggestion>(
+          expected));
+}
+
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   std::string unencoded_response_string;
   if (!response.SerializeToString(&unencoded_response_string)) {
@@ -3918,6 +3946,291 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseFormatString) {
               Optional(AutofillFormatString(u"-4", FormatString_Type_AFFIX)));
   EXPECT_THAT(form.field(2)->Type().GetTypes(), ElementsAre(PASSPORT_NUMBER));
   EXPECT_EQ(form.field(2)->format_string(), std::nullopt);
+}
+
+// Tests that `ParseServerPredictionsQueryResponse` removes predictions from
+// address fields when ignoring small forms is enabled. This is an integration
+// test with details of small forms handling tested in
+// `ClearSmallAddressFormPredictionsTest`.
+TEST_F(AutofillCrowdsourcingEncoding,
+       ParseServerPredictionsQueryResponse_IgnoreSmallAddressForms) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillMoveSmallFormLogicToClient};
+
+  FormData form;
+  form.set_url(GURL("http://foo.com"));
+  form.set_fields(
+      {CreateTestFormField("Address line 1", "address-line-1", "",
+                           FormControlType::kInputText, "address-line1"),
+       CreateTestFormField("Address line 2", "address-line-2", "",
+                           FormControlType::kInputText, "address-line2")});
+  FormStructure form_structure(form);
+  ParseRationalizeAndSection(form_structure);
+
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
+
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldPredictionToForm(form.fields()[0], ADDRESS_HOME_LINE1,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields()[1], ADDRESS_HOME_LINE2,
+                           form_suggestion);
+
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr);
+
+  // Verify that the form fields remain intact.
+  ASSERT_GE(forms[0]->field_count(), 2U);
+  // Server predictions are cleared, but other predictions stay (i.e. html
+  // attribute).
+  EXPECT_EQ(forms[0]->field(0)->server_type(), NO_SERVER_DATA);
+  EXPECT_EQ(forms[0]->field(0)->html_type(), HtmlFieldType::kAddressLine1);
+  EXPECT_THAT(forms[0]->field(0)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(forms[0]->field(1)->server_type(), NO_SERVER_DATA);
+  EXPECT_EQ(forms[0]->field(1)->html_type(), HtmlFieldType::kAddressLine2);
+  EXPECT_THAT(forms[0]->field(1)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_LINE2));
+}
+
+struct ClearSmallAddressFormPredictions_TestCase {
+  std::string test_name;
+  std::vector<std::vector<FieldPrediction>> received_predictions;
+  std::vector<std::vector<FieldPrediction>> expected_predictions;
+};
+
+const ClearSmallAddressFormPredictions_TestCase
+    kClearSmallAddressFormPredictionsTestCases[] = {
+        {
+            // Verifies that address fields of a small address form (form of 2
+            // fields that are classified as address fields) are not propagated
+            // as address fields. It's not clear if that's ideal behavior but
+            // reflects the status quo.
+            .test_name = "SmallFormWithAddressOnlyFieldsSuppressed",
+            .received_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_CITY,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                },
+            .expected_predictions =
+                {
+                    {CreateFieldPrediction(
+                        NO_SERVER_DATA,
+                        FieldPrediction::SOURCE_UNSPECIFIED)},
+                    {CreateFieldPrediction(
+                        NO_SERVER_DATA,
+                        FieldPrediction::SOURCE_UNSPECIFIED)},
+                },
+        },
+        {
+            // Verifies that address fields of a large address form (form of 3+
+            // fields that are classified as address fields) are kept
+            // as address fields.
+            .test_name = "LargeFormWithAddressOnlyFieldsIsKept",
+            .received_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_CITY,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        NO_SERVER_DATA,
+                        FieldPrediction::SOURCE_UNSPECIFIED)},
+                },
+            .expected_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_CITY,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        NO_SERVER_DATA,
+                        FieldPrediction::SOURCE_UNSPECIFIED)},
+                },
+        },
+        {
+            // Tests that small forms with non-address field are not suppressed.
+            .test_name = "SmallFormWithNonAddressFieldNotSuppressed",
+            .received_predictions =
+                {
+                    {CreateFieldPrediction(
+                        CREDIT_CARD_NUMBER,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                },
+            .expected_predictions =
+                {
+                    {CreateFieldPrediction(
+                        CREDIT_CARD_NUMBER,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                },
+        },
+        {
+            // Tests that small forms with mixed address and non-address fields
+            // are not suppressed.
+            .test_name = "SmallFormWithMixedFieldsNotSuppressed",
+            .received_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        CREDIT_CARD_NUMBER,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                },
+            .expected_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                    {CreateFieldPrediction(
+                        CREDIT_CARD_NUMBER,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                },
+        },
+        {
+            // Tests that for small forms with a password field, an
+            // EMAIL_ADDRESS, which is an address type, does not get wiped.
+            .test_name = "PasswordClassificationsMakeEmailsStick",
+            .received_predictions =
+                {
+                    {
+                        CreateFieldPrediction(
+                            EMAIL_ADDRESS,
+                            FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+                        CreateFieldPrediction(
+                            USERNAME,
+                            FieldPrediction::SOURCE_PASSWORDS_DEFAULT),
+                    },
+                    {CreateFieldPrediction(
+                        PASSWORD,
+                        FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
+                },
+            .expected_predictions =
+                {
+                    {
+                        CreateFieldPrediction(
+                            EMAIL_ADDRESS,
+                            FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+                        CreateFieldPrediction(
+                            USERNAME,
+                            FieldPrediction::SOURCE_PASSWORDS_DEFAULT),
+                    },
+                    {CreateFieldPrediction(
+                        PASSWORD,
+                        FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
+                },
+        },
+        {
+            // Verifies that overrides are not wiped.
+            .test_name = "NoWipeOfManualOverrides",
+            .received_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_MANUAL_OVERRIDE)},
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_CITY,
+                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT)},
+                },
+            .expected_predictions =
+                {
+                    {CreateFieldPrediction(
+                        ADDRESS_HOME_STREET_ADDRESS,
+                        FieldPrediction::SOURCE_MANUAL_OVERRIDE)},
+                    {CreateFieldPrediction(
+                        NO_SERVER_DATA,
+                        FieldPrediction::SOURCE_UNSPECIFIED)},
+                },
+        },
+        {
+            // Verifies that AutofillAI classifications are protected but
+            // address classifications of small forms are wiped. This is legacy
+            // behavior. It's unclear if it's ideal.
+            .test_name = "NoWipeOfFormsAIClassifications",
+            .received_predictions =
+                {
+                    {CreateFieldPrediction(
+                         EMAIL_ADDRESS,
+                         FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+                     CreateFieldPrediction(
+                         NATIONAL_ID_CARD_NUMBER,
+                         FieldPrediction::SOURCE_AUTOFILL_AI)},
+                },
+            .expected_predictions =
+                {
+                    {CreateFieldPrediction(
+                        NATIONAL_ID_CARD_NUMBER,
+                        FieldPrediction::SOURCE_AUTOFILL_AI)},
+                },
+        },
+};
+
+class ClearSmallAddressFormPredictionsTest
+    : public AutofillCrowdsourcingEncoding,
+      public ::testing::WithParamInterface<
+          ClearSmallAddressFormPredictions_TestCase> {
+ public:
+  static std::string ParamInfoToString(
+      ::testing::TestParamInfo<ClearSmallAddressFormPredictions_TestCase>
+          param_info) {
+    return param_info.param.test_name;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ClearSmallAddressFormPredictionsTest,
+    ::testing::ValuesIn(kClearSmallAddressFormPredictionsTestCases),
+    ClearSmallAddressFormPredictionsTest::ParamInfoToString);
+
+TEST_P(ClearSmallAddressFormPredictionsTest,
+       ProcessServerPredictionsQueryResponse) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillMoveSmallFormLogicToClient};
+  const auto& test_case = GetParam();
+
+  ASSERT_EQ(test_case.received_predictions.size(),
+            test_case.expected_predictions.size());
+
+  auto to_form_suggestion =
+      [](const std::vector<std::vector<FieldPrediction>>& predictions) {
+        AutofillQueryResponse::FormSuggestion suggestion;
+        for (size_t i = 0; i < predictions.size(); ++i) {
+          auto* field_suggestions = suggestion.add_field_suggestions();
+          field_suggestions->set_field_signature(i);
+          field_suggestions->mutable_predictions()->Assign(
+              predictions[i].begin(), predictions[i].end());
+        }
+        return suggestion;
+      };
+
+  AutofillQueryResponse::FormSuggestion received_form_suggestion =
+      to_form_suggestion(test_case.received_predictions);
+
+  AutofillQueryResponse::FormSuggestion expected_form_suggestion =
+      to_form_suggestion(test_case.expected_predictions);
+
+  AutofillQueryResponse::FormSuggestion processed_form_suggestion;
+  processed_form_suggestion.CopyFrom(received_form_suggestion);
+  ClearSmallAddressFormPredictionsForTesting(processed_form_suggestion);
+
+  EXPECT_THAT(processed_form_suggestion,
+              EqualsProto<AutofillQueryResponse::FormSuggestion>(
+                  expected_form_suggestion));
+
+  EXPECT_THAT(processed_form_suggestion.field_suggestions(),
+              ElementsAreArray(
+                  base::ToVector(expected_form_suggestion.field_suggestions(),
+                                 DeepEqualsFieldSuggestion)));
 }
 
 }  // namespace

@@ -13,7 +13,7 @@ constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||
                                          BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
 constexpr bool IS_WALLET_PASSES_SUPPORTED_PLATFORM = !BUILDFLAG(IS_IOS);
-}
+}  // namespace
 
 // If enabled, we start forwarding submissions with source
 // DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.
@@ -58,7 +58,7 @@ BASE_FEATURE(kAutofillActorSuppressImport, base::FEATURE_DISABLED_BY_DEFAULT);
 // sequence.
 // TODO(crbug.com/329016404): Remove after M146 branch point (2026-02-09).
 BASE_FEATURE(kAutofillAddressParseSurnameNameSequence,
-  base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag to control displaying of Autofill suggestions on
 // unclassified fields based on prefix matching. These suggestions are displayed
@@ -788,6 +788,11 @@ BASE_FEATURE_PARAM(int,
                    "max_offset_to_center_px",
                    92);
 
+// When Enabled Autofill server will stop applying small form rule and Chrome
+// will take care of this logic.
+BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the new suggestion generation logic is used.
 // TODO(crbug.com/409962888): Remove once launched.
 BASE_FEATURE(kAutofillNewSuggestionGeneration,
@@ -875,7 +880,6 @@ BASE_FEATURE(kAutofillServerExperimentalSignatures,
 // Enables uploading of more data to the Autofill server to use for computing
 // signatures: go/autofill-signatures-more-data.
 BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 // When enabled, password manager and autofill bubbles will be shown based on
 // the priorities of the bubbles.

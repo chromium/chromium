@@ -272,6 +272,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_IGNORE_CHECKABLE_ELEMENTS,
                 "Does not extract checkboxes and radio buttons"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_MOVE_SMALL_FORM_LOGIC_TO_CLIENT,
+                "Moves the small form handling from Autofill server to client."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_OPTIMIZE_CACHE_UPDATES,
                 "Reduces the number of field members copied between forms during cache updates."),
         Flag.baseFeature(

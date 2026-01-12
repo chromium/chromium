@@ -166,10 +166,13 @@ void ParseServerPredictionsQueryResponse(
 // same as the one passed to `EncodeAutofillPageQueryRequest()` when
 // constructing the query.
 void ProcessServerPredictionsQueryResponse(
-    const AutofillQueryResponse& response,
+    AutofillQueryResponse response,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager);
+
+void ClearSmallAddressFormPredictionsForTesting(
+    AutofillQueryResponse::FormSuggestion& form_suggestion);
 
 }  // namespace autofill
 
