@@ -43,6 +43,7 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   // Overriding methods from content::BrowserMainParts.
   int PreEarlyInitialization() override;
   int PreCreateThreads() override;
+  void PreCreateMainMessageLoop() override;
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;

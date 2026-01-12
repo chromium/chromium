@@ -235,6 +235,15 @@ AwBrowserMainParts::AwBrowserMainParts(AwContentBrowserClient* browser_client)
 AwBrowserMainParts::~AwBrowserMainParts() {
 }
 
+void AwBrowserMainParts::PreCreateMainMessageLoop() {
+  // WebView should not override the main thread name.
+  // This switch is set here instead of
+  // `android_webview/lib/aw_main_delegate.cc` because it must be available in
+  // `BrowserMainLoop::CreateMainMessageLoop`.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableMainThreadNameOverride);
+}
+
 int AwBrowserMainParts::PreEarlyInitialization() {
   // Network change notifier factory must be singleton, only set factory
   // instance while it is not been created.

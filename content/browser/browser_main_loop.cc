@@ -638,7 +638,10 @@ void BrowserMainLoop::CreateMainMessageLoop() {
 
   TRACE_EVENT0("startup", "BrowserMainLoop::CreateMainMessageLoop");
 
-  base::PlatformThread::SetName("CrBrowserMain");
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableMainThreadNameOverride)) {
+    base::PlatformThread::SetName("CrBrowserMain");
+  }
 
   // Register the main thread. The main thread's task runner should already have
   // been initialized but it's not yet known as BrowserThread::UI.

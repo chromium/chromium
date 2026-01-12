@@ -196,6 +196,14 @@ const char kDisableLogging[]                = "disable-logging";
 // Disables using CODECAPI_AVLowLatencyMode when creating DXVA decoders.
 const char kDisableLowLatencyDxva[]         = "disable-low-latency-dxva";
 
+// Disables renaming the main browser thread to "CrBrowserMain" during browser
+// startup. The internally mapped thread name is being emitted to Perfetto
+// traces, which means that the main thread is identified as "CrBrowserMain"
+// instead of the process name. Enabling this switch will prevent the thread
+// from being named, which fixes the Perfetto trace issue.
+const char kDisableMainThreadNameOverride[] =
+    "disable-main-thread-name-override";
+
 // Disables Mojo broker capabilities in the browser during Mojo initialization.
 const char kDisableMojoBroker[] = "disable-mojo-broker";
 
