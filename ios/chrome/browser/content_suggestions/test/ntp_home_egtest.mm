@@ -1044,6 +1044,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (void)testMinimumHeight {
+  if (!base::ios::IsRunningOnIOS18OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"On iOS 17, EarlGrey finishes the test before the "
+        @"MostVisitedTilesCollectionView goes through its next layout pass "
+        @"based on the actual width of the new tab page content.");
+  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self
