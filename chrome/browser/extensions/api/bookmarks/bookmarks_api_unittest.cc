@@ -17,6 +17,7 @@
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "extensions/browser/api_test_utils.h"
@@ -493,7 +494,7 @@ TEST_F(BookmarksApiUnittest,
   ASSERT_EQ(result.GetList().size(), 1u);
   auto root_node =
       api::bookmarks::BookmarkTreeNode::FromValue(result.GetList()[0]);
-  EXPECT_EQ(root_node->id, "0");
+  EXPECT_EQ(root_node->id, base::NumberToString(bookmarks::kRootNodeId));
 
   ASSERT_EQ(root_node->children.value().size(), 2u);
   EXPECT_EQ(root_node->children.value()[0].id,

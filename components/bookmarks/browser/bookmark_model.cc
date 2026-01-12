@@ -205,7 +205,7 @@ void RecordPermanentNodesLocalAndAccountStoragesMetrics(BookmarkModel* model) {
 
 BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
     : owned_root_(std::make_unique<BookmarkNode>(
-          /*id=*/0,
+          /*id=*/kRootNodeId,
           base::Uuid::ParseLowercase(kRootNodeUuid),
           GURL())),
       root_(owned_root_.get()),

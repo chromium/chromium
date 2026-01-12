@@ -21,6 +21,7 @@
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
@@ -187,6 +189,15 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
 
   ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
 }
+
+IN_PROC_BROWSER_TEST_P(BookmarksApiTest, RootNodeId) {
+  ExtensionTestMessageListener listener;
+
+  ASSERT_TRUE(RunExtensionTest("bookmarks_root_node_id"));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(base::NumberToString(bookmarks::kRootNodeId), listener.message());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/414844449): The tests below depend on which permanent folders
@@ -272,8 +283,7 @@ class BookmarksApiEventsTest : public ExtensionApiTest {
     auto get_function = base::MakeRefCounted<BookmarksGetChildrenFunction>();
     return extensions::api_test_utils::RunFunctionAndReturnSingleResult(
                get_function.get(),
-               absl::StrFormat(R"(["%lu"])", model()->root_node()->id()),
-               profile())
+               absl::StrFormat(R"(["%lu"])", bookmarks::kRootNodeId), profile())
         .value()
         .GetList()
         .Clone();

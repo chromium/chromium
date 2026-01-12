@@ -489,7 +489,7 @@ class Property(object):
           json['type'] = 'integer'
         elif isinstance(self.value, float):
           json['type'] = 'double'
-        elif isinstance(self.value, basestring):
+        elif isinstance(self.value, str):
           json['type'] = 'string'
         else:
           # TODO(kalman): support more types as necessary.

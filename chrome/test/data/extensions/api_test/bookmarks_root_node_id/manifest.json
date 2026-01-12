@@ -1,0 +1,11 @@
+{
+  "name": "chrome.bookmarks root node ID",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Check that the root node ID is exposed by the chrome.bookmarks API",
+  "background": {
+    "persistent": false,
+    "scripts": ["test.js"]
+  },
+  "permissions": ["bookmarks"]
+}

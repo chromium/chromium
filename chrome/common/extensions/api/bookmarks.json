@@ -16,6 +16,10 @@
         "value": 1000000,
         "deprecated": "Bookmark write operations are no longer limited by Chrome.",
         "description": ""
+      },
+      "ROOT_NODE_ID": {
+        "value": "0",
+        "description": "The <code>id</code> associated with the root level node."
       }
     },
     "types": [
