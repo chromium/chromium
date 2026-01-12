@@ -46,7 +46,7 @@ static jint JNI_CronetTestUtil_GetLoadFlags(JNIEnv* env,
   return TestUtil::GetURLRequest(jurl_request_adapter)->load_flags();
 }
 
-static jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
+static bool JNI_CronetTestUtil_URLRequestContextExistsForTesting(
     JNIEnv* env,
     jlong jcontext_adapter,
     jlong jnetwork_handle) {
@@ -185,7 +185,7 @@ static void JNI_CronetTestUtil_CleanupNetworkThread(JNIEnv* env,
       jcontext_adapter, base::BindOnce(&CleanupNetworkThreadOnNetworkThread));
 }
 
-static jboolean JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {
+static bool JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {
   return net::CanGetTaggedBytes();
 }
 

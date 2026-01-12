@@ -355,8 +355,8 @@ jni_zero::ScopedJavaLocalRef<jobject> GoogleServiceAuthError::ToJavaObject(
   return Java_GoogleServiceAuthError_Constructor(env, state());
 }
 
-static jboolean JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env,
-                                                            jint state) {
+static bool JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env,
+                                                        jint state) {
   return IsTransientError(static_cast<GoogleServiceAuthError::State>(state));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

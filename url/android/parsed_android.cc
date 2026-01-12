@@ -51,7 +51,7 @@ ScopedJavaLocalRef<jobject> ParsedAndroid::InitFromParsed(
 }
 
 static void JNI_Parsed_InitNative(jlong native_ptr,
-                                  jboolean is_inner,
+                                  bool is_inner,
                                   jint scheme_begin,
                                   jint scheme_length,
                                   jint username_begin,
@@ -68,7 +68,7 @@ static void JNI_Parsed_InitNative(jlong native_ptr,
                                   jint query_length,
                                   jint ref_begin,
                                   jint ref_length,
-                                  jboolean potentially_dangling_markup) {
+                                  bool potentially_dangling_markup) {
   Parsed inner_parsed;
   Parsed* outer_parsed = reinterpret_cast<Parsed*>(native_ptr);
   Parsed* target = is_inner ? &inner_parsed : outer_parsed;

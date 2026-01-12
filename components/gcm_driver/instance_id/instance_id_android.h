@@ -74,12 +74,8 @@ class InstanceIDAndroid : public InstanceID {
   void DidGetToken(JNIEnv* env,
                    jint request_id,
                    const base::android::JavaRef<jstring>& jtoken);
-  void DidDeleteToken(JNIEnv* env,
-                      jint request_id,
-                      jboolean success);
-  void DidDeleteID(JNIEnv* env,
-                   jint request_id,
-                   jboolean success);
+  void DidDeleteToken(JNIEnv* env, jint request_id, bool success);
+  void DidDeleteID(JNIEnv* env, jint request_id, bool success);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

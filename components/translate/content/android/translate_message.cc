@@ -71,7 +71,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
       base::android::ScopedJavaLocalRef<jstring> title,
       base::android::ScopedJavaLocalRef<jstring> description,
       base::android::ScopedJavaLocalRef<jstring> primary_button_text,
-      jboolean has_overflow_menu) override {
+      bool has_overflow_menu) override {
     Java_TranslateMessage_showMessage(
         env, java_translate_message_, std::move(title), std::move(description),
         std::move(primary_button_text), has_overflow_menu);
@@ -515,7 +515,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     JNIEnv* env,
     jint overflow_menu_item_id,
     const base::android::JavaRef<jstring>& language_code,
-    jboolean had_checkmark) {
+    bool had_checkmark) {
   has_been_interacted_with_ = true;
 
   // Interacting with the secondary menu can cause the page to be translated or

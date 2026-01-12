@@ -54,7 +54,7 @@ static bool CalculatePublicKeySha256(const net::X509Certificate& cert,
 static jlong JNI_MockCertVerifier_CreateMockCertVerifier(
     JNIEnv* env,
     const JavaRef<jobjectArray>& jcerts,
-    const jboolean jknown_root,
+    const bool jknown_root,
     const JavaRef<jstring>& jtest_data_dir) {
   base::FilePath test_data_dir(
       base::android::ConvertJavaStringToUTF8(env, jtest_data_dir));

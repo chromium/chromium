@@ -91,8 +91,8 @@ void CastContentWindowAndroid::RevokeScreenAccess() {
 
 void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CastContentWindowAndroid_enableTouchInput(
-      env, java_window_, static_cast<jboolean>(enabled));
+  Java_CastContentWindowAndroid_enableTouchInput(env, java_window_,
+                                                 static_cast<bool>(enabled));
 }
 
 void CastContentWindowAndroid::OnActivityStopped(JNIEnv* env) {

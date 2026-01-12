@@ -51,7 +51,7 @@ AutofillManager* ToMainFrameAutofillManager(
 
 }  // namespace
 
-static jboolean
+static bool
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
@@ -104,7 +104,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   return true;
 }
 
-static jboolean
+static bool
 JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerResponseForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,

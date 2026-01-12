@@ -33,7 +33,7 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
                                         const JavaRef<jobject>& obj,
                                         jlong high,
                                         jlong low,
-                                        jboolean power_efficient) {
+                                        bool power_efficient) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::optional<base::UnguessableToken> token =

@@ -159,7 +159,7 @@ void InitializePerfetto() {
 }  // namespace
 
 static void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
-                                               jboolean initializePerfetto) {
+                                               bool initializePerfetto) {
   logging::InitLogging(logging::LoggingSettings());
 
   if (!base::ThreadPoolInstance::Get()) {

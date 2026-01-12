@@ -14,7 +14,7 @@
 
 namespace user_prefs {
 
-static jboolean JNI_UserPrefs_AreNativePrefsLoaded(
+static bool JNI_UserPrefs_AreNativePrefsLoaded(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
   content::BrowserContext* browser_context =

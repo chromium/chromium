@@ -29,7 +29,7 @@ namespace webauthn {
 //
 // [1] https://www.w3.org/TR/webauthn/#attestation-object
 // [2] https://w3c.github.io/webauthn/#sctn-public-key-easy
-static jboolean JNI_Fido2Api_ParseAttestationObject(
+static bool JNI_Fido2Api_ParseAttestationObject(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& jattestation_object_bytes,
     const base::android::JavaRef<jobject>& out_result) {

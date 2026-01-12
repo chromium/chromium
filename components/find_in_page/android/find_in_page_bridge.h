@@ -24,10 +24,10 @@ class FindInPageBridge {
 
   void StartFinding(JNIEnv* env,
                     const base::android::JavaRef<jstring>& search_string,
-                    jboolean forward_direction,
-                    jboolean case_sensitive);
+                    bool forward_direction,
+                    bool case_sensitive);
 
-  void StopFinding(JNIEnv* env, jboolean clearSelection);
+  void StopFinding(JNIEnv* env, bool clearSelection);
 
   base::android::ScopedJavaLocalRef<jstring> GetPreviousFindText(JNIEnv* env);
 

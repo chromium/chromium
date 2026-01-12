@@ -22,7 +22,7 @@
 
 namespace payments {
 
-static jboolean JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
+static bool JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& buffer) {
   mojom::PaymentDetailsPtr details;
@@ -35,7 +35,7 @@ static jboolean JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
                                 &unused_error_message);
 }
 
-static jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
+static bool JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& buffer) {
   mojom::PaymentValidationErrorsPtr errors;

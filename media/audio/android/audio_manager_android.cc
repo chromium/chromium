@@ -348,8 +348,7 @@ bool UseAAudioPerStreamDeviceSelection() {
 // reports a change to the list of available audio devices. `added` is `true` if
 // the invocation is caused by devices being added, and `false` if it is caused
 // by devices being removed.
-static void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env,
-                                                     jboolean added) {
+static void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env, bool added) {
   auto* system_monitor = base::SystemMonitor::Get();
   if (system_monitor) {
     // Asynchronous call
@@ -958,13 +957,13 @@ void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
   GetJniDelegate().MaybeSetBluetoothScoState(false);
 }
 
-void AudioManagerAndroid::SetMute(JNIEnv* env, jboolean muted) {
+void AudioManagerAndroid::SetMute(JNIEnv* env, bool muted) {
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AudioManagerAndroid::DoSetMuteOnAudioThread,
                                 base::Unretained(this), muted));
 }
 
-void AudioManagerAndroid::OnScoStateChanged(JNIEnv* env, jboolean state) {
+void AudioManagerAndroid::OnScoStateChanged(JNIEnv* env, bool state) {
   GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioManagerAndroid::OnScoStateChangedOnAudioThread,

@@ -73,7 +73,7 @@ class TranslateMessage {
       JNIEnv* env,
       jint overflow_menu_item_id,
       const base::android::JavaRef<jstring>& language_code,
-      jboolean had_checkmark);
+      bool had_checkmark);
 
   // Passes on JNI calls to the stored Java TranslateMessage object, if
   // applicable. This interface exists in order to make it easier to test
@@ -99,7 +99,7 @@ class TranslateMessage {
         base::android::ScopedJavaLocalRef<jstring> title,
         base::android::ScopedJavaLocalRef<jstring> description,
         base::android::ScopedJavaLocalRef<jstring> primary_button_text,
-        jboolean has_overflow_menu) = 0;
+        bool has_overflow_menu) = 0;
 
     virtual base::android::ScopedJavaLocalRef<jobjectArray>
     ConstructMenuItemArray(

@@ -125,7 +125,7 @@ bool TrackerImplAndroid::WouldTriggerHelpUi(
 bool TrackerImplAndroid::HasEverTriggered(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jfeature,
-    const jboolean j_from_window) {
+    const bool j_from_window) {
   std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 

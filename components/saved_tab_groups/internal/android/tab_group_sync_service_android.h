@@ -68,7 +68,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   void OnTabGroupUnShareComplete(JNIEnv* env,
                                  const JavaRef<jobject>& j_group_id,
-                                 const jboolean j_success);
+                                 const bool j_success);
 
   // Mutator methods that result in tab metadata mutation.
   void AddTab(JNIEnv* env,
@@ -138,7 +138,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   void UpdateArchivalStatus(JNIEnv* env,
                             const JavaRef<jstring>& j_sync_group_id,
-                            const jboolean j_archival_status);
+                            const bool j_archival_status);
 
   ScopedJavaLocalRef<jobject> GetVersioningMessageController(
       JNIEnv* env,

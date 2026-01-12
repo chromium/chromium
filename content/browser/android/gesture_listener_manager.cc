@@ -140,13 +140,13 @@ void GestureListenerManager::ResetGestureDetection(JNIEnv* env) {
 }
 
 void GestureListenerManager::SetDoubleTapSupportEnabled(JNIEnv* env,
-                                                        jboolean enabled) {
+                                                        bool enabled) {
   if (rwhva_)
     rwhva_->SetDoubleTapSupportEnabled(enabled);
 }
 
 void GestureListenerManager::SetMultiTouchZoomSupportEnabled(JNIEnv* env,
-                                                             jboolean enabled) {
+                                                             bool enabled) {
   if (rwhva_)
     rwhva_->SetMultiTouchZoomSupportEnabled(enabled);
 }

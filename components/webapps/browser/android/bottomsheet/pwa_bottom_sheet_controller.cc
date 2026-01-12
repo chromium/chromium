@@ -55,8 +55,7 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
 PwaBottomSheetController::~PwaBottomSheetController() = default;
 
 // static
-static jboolean
-JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
+static bool JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
     int install_trigger) {

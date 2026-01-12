@@ -33,7 +33,7 @@ void JourneyLoggerAndroid::SetNumberOfSuggestionsShown(
     JNIEnv* env,
     jint jsection,
     jint jnumber,
-    jboolean jhas_complete_suggestion) {
+    bool jhas_complete_suggestion) {
   DCHECK_GE(jsection, 0);
   DCHECK_LT(jsection, JourneyLogger::Section::SECTION_MAX);
   journey_logger_.SetNumberOfSuggestionsShown(
@@ -73,10 +73,10 @@ void JourneyLoggerAndroid::SetSelectedMethod(JNIEnv* env,
 }
 
 void JourneyLoggerAndroid::SetRequestedInformation(JNIEnv* env,
-                                                   jboolean requested_shipping,
-                                                   jboolean requested_email,
-                                                   jboolean requested_phone,
-                                                   jboolean requested_name) {
+                                                   bool requested_shipping,
+                                                   bool requested_email,
+                                                   bool requested_phone,
+                                                   bool requested_name) {
   journey_logger_.SetRequestedInformation(requested_shipping, requested_email,
                                           requested_phone, requested_name);
 }

@@ -21,9 +21,7 @@ void CSPCheckerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void CSPCheckerAndroid::OnResult(JNIEnv* env,
-                                 jint callback_id,
-                                 jboolean result) {
+void CSPCheckerAndroid::OnResult(JNIEnv* env, jint callback_id, bool result) {
   auto iter = result_callbacks_.find(callback_id);
   if (iter == result_callbacks_.end())
     return;

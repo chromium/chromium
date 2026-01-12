@@ -66,10 +66,9 @@ class MessagingBackendServiceBridge
       const base::android::JavaRef<jstring>& j_message_id,
       jint j_type);
 
-  void RunInstantaneousMessageSuccessCallback(
-      JNIEnv* env,
-      jlong j_callback,
-      jboolean j_result);
+  void RunInstantaneousMessageSuccessCallback(JNIEnv* env,
+                                              jlong j_callback,
+                                              bool j_result);
 
  private:
   friend class MessagingBackendServiceBridgeTest;

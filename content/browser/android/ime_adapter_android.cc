@@ -129,12 +129,12 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     jlong ime_text_spans_ptr,
     jint start,
     jint end,
-    jboolean is_misspelling,
-    jboolean remove_on_finish_composing,
+    bool is_misspelling,
+    bool remove_on_finish_composing,
     jint underline_color,
     jint suggestion_highlight_color,
     const JavaRef<jobjectArray>& suggestions,
-    jboolean should_hide_suggestion_menu) {
+    bool should_hide_suggestion_menu) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
 
@@ -254,9 +254,9 @@ void ImeAdapterAndroid::UpdateFrameInfo(
   if (obj.is_null())
     return;
 
-  const jboolean has_insertion_marker =
+  const bool has_insertion_marker =
       selection_start.type() != gfx::SelectionBound::EMPTY;
-  const jboolean is_insertion_marker_visible = selection_start.visible();
+  const bool is_insertion_marker_visible = selection_start.visible();
   const jfloat insertion_marker_horizontal =
       has_insertion_marker ? selection_start.edge_start().x() : 0.0f;
   const jfloat insertion_marker_top =
@@ -280,7 +280,7 @@ void ImeAdapterAndroid::OnRenderFrameMetadataChangedAfterActivation(
   if (obj.is_null())
     return;
 
-  const jboolean surface_height_reduced =
+  const bool surface_height_reduced =
       new_viewport_size.width() == old_viewport_size_.width() &&
       new_viewport_size.height() < old_viewport_size_.height();
   old_viewport_size_ = new_viewport_size;

@@ -29,13 +29,13 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
 
   void ClearPref(JNIEnv* env,
                  const base::android::JavaRef<jstring>& j_preference);
-  jboolean HasPrefPath(JNIEnv* env,
-                       const base::android::JavaRef<jstring>& j_preference);
-  jboolean GetBoolean(JNIEnv* env,
-                      const base::android::JavaRef<jstring>& j_preference);
+  bool HasPrefPath(JNIEnv* env,
+                   const base::android::JavaRef<jstring>& j_preference);
+  bool GetBoolean(JNIEnv* env,
+                  const base::android::JavaRef<jstring>& j_preference);
   void SetBoolean(JNIEnv* env,
                   const base::android::JavaRef<jstring>& j_preference,
-                  const jboolean j_value);
+                  const bool j_value);
   jint GetInteger(JNIEnv* env,
                   const base::android::JavaRef<jstring>& j_preference);
   void SetInteger(JNIEnv* env,
@@ -57,19 +57,17 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   void SetString(JNIEnv* env,
                  const base::android::JavaRef<jstring>& j_preference,
                  const base::android::JavaRef<jstring>& j_value);
-  jboolean IsManagedPreference(
+  bool IsManagedPreference(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& j_preference);
+  bool HasRecommendation(JNIEnv* env,
+                         const base::android::JavaRef<jstring>& j_preference);
+  bool IsFollowingRecommendation(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
-  jboolean HasRecommendation(
+  bool IsRecommendedPreference(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
-  jboolean IsFollowingRecommendation(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_preference);
-  jboolean IsRecommendedPreference(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_preference);
-  jboolean IsDefaultValuePreference(
+  bool IsDefaultValuePreference(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
 

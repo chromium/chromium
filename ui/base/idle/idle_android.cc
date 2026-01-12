@@ -64,7 +64,7 @@ class AndroidIdleMonitor {
 
   bool CheckIdleStateIsLocked() {
     JNIEnv* env = AttachCurrentThread();
-    jboolean result = Java_IdleDetector_isScreenLocked(env, j_idle_manager_);
+    bool result = Java_IdleDetector_isScreenLocked(env, j_idle_manager_);
     return result;
   }
 

@@ -117,7 +117,7 @@ void CookieControlsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
+static bool JNI_CookieControlsBridge_IsCookieControlsEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle) {
   content::BrowserContext* context =
@@ -132,7 +132,7 @@ static jlong JNI_CookieControlsBridge_Init(
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents_android,
     const JavaRef<jobject>& joriginal_browser_context_handle,
-    jboolean is_incognito_branded) {
+    bool is_incognito_branded) {
   return reinterpret_cast<intptr_t>(new CookieControlsBridge(
       env, obj, jweb_contents_android, joriginal_browser_context_handle,
       is_incognito_branded));

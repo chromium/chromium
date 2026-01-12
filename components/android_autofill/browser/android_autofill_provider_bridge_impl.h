@@ -53,7 +53,7 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   void DetachFromJavaAutofillProvider(JNIEnv* env);
 
   // Asks the `Delegate` whether passkeys options are available.
-  jboolean HasPasskeyRequest(JNIEnv* env);
+  bool HasPasskeyRequest(JNIEnv* env);
 
   // Informs the `Delegate` that the linked form should be sent to the renderer
   // for filling. Invoked when the user has accepted Autofill.
@@ -78,8 +78,8 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   // `provided_autofill_structure` describes whether an Autofill ViewStructure
   // was provided to the Autofill framework prior to showing the bottom sheet.
   void OnShowBottomSheetResult(JNIEnv* env,
-                               jboolean is_shown,
-                               jboolean provided_autofill_structure);
+                               bool is_shown,
+                               bool provided_autofill_structure);
 
   // Informs the `Delegate` that the user explicitly requested passkeys options.
   void OnTriggerPasskeyRequest(JNIEnv* env);

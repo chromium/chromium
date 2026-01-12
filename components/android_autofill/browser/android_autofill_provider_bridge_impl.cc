@@ -233,7 +233,7 @@ void AndroidAutofillProviderBridgeImpl::DetachFromJavaAutofillProvider(
   java_ref_.reset();
 }
 
-jboolean AndroidAutofillProviderBridgeImpl::HasPasskeyRequest(JNIEnv* env) {
+bool AndroidAutofillProviderBridgeImpl::HasPasskeyRequest(JNIEnv* env) {
   return delegate_->HasPasskeyRequest();
 }
 
@@ -260,8 +260,8 @@ void AndroidAutofillProviderBridgeImpl::SetAnchorViewRect(
 
 void AndroidAutofillProviderBridgeImpl::OnShowBottomSheetResult(
     JNIEnv* env,
-    jboolean is_shown,
-    jboolean provided_autofill_structure) {
+    bool is_shown,
+    bool provided_autofill_structure) {
   delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
 }
 

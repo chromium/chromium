@@ -59,7 +59,7 @@ JNI_DomDistillerUrlUtils_GetOriginalUrlFromDistillerUrl(
   return url::GURLAndroid::FromNativeGURL(env, original_url);
 }
 
-static jboolean JNI_DomDistillerUrlUtils_IsDistilledPage(
+static bool JNI_DomDistillerUrlUtils_IsDistilledPage(
     JNIEnv* env,
     const JavaRef<jstring>& j_url) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));

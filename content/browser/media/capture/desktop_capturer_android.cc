@@ -24,8 +24,8 @@ class DesktopCapturerAndroidJni : public DesktopCapturerAndroidJniInterface {
                                                     jlong native_ptr) override {
     return Java_ScreenCapture_create(env, native_ptr);
   }
-  jboolean StartCapture(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& obj) override {
+  bool StartCapture(JNIEnv* env,
+                    const base::android::JavaRef<jobject>& obj) override {
     return Java_ScreenCapture_startCapture(env, obj);
   }
   void Destroy(JNIEnv* env,

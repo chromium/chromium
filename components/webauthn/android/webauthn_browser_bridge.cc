@@ -199,7 +199,7 @@ void TriggerFullRequest(
 void WebauthnBrowserBridge::OnCredManConditionalRequestPending(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jframe_host,
-    jboolean jhas_results,
+    bool jhas_results,
     const base::android::JavaRef<jobject>& jfull_request_runnable) {
   auto* client = WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
@@ -218,7 +218,7 @@ void WebauthnBrowserBridge::OnCredManConditionalRequestPending(
 void WebauthnBrowserBridge::OnCredManUiClosed(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jframe_host,
-    jboolean jsuccess) {
+    bool jsuccess) {
   auto* client = WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);

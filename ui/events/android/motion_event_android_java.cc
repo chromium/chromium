@@ -46,7 +46,7 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     jint meta_state,
     jfloat raw_offset_x_pixels,
     jfloat raw_offset_y_pixels,
-    jboolean for_touch_handle,
+    bool for_touch_handle,
     const Pointer* const pointer0,
     const Pointer* const pointer1,
     std::unique_ptr<MotionEventAndroidSource> source)

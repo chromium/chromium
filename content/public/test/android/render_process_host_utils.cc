@@ -25,7 +25,7 @@ static jint JNI_RenderProcessHostUtils_GetSpareRenderBindingState(JNIEnv* env) {
       SpareRenderProcessHostManager::Get().GetSpares()[0];
   return static_cast<jint>(spare->GetEffectiveChildBindingState());
 }
-static jboolean JNI_RenderProcessHostUtils_IsSpareRenderReady(JNIEnv* env) {
+static bool JNI_RenderProcessHostUtils_IsSpareRenderReady(JNIEnv* env) {
   RenderProcessHost* spare =
       SpareRenderProcessHostManager::Get().GetSpares()[0];
   return spare->IsReady();

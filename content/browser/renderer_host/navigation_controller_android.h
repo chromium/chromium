@@ -37,22 +37,19 @@ class CONTENT_EXPORT NavigationControllerAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  jboolean CanGoBack(JNIEnv* env);
-  jboolean CanGoForward(JNIEnv* env);
-  jboolean CanGoToOffset(JNIEnv* env,
-                         jint offset);
+  bool CanGoBack(JNIEnv* env);
+  bool CanGoForward(JNIEnv* env);
+  bool CanGoToOffset(JNIEnv* env, jint offset);
   void GoBack(JNIEnv* env);
   void GoForward(JNIEnv* env);
   void GoToOffset(JNIEnv* env,
                   jint offset);
-  jboolean IsInitialNavigation(JNIEnv* env);
+  bool IsInitialNavigation(JNIEnv* env);
   void LoadIfNecessary(JNIEnv* env);
   void ContinuePendingReload(JNIEnv* env);
-  void Reload(JNIEnv* env,
-              jboolean check_for_repost);
-  void ReloadBypassingCache(JNIEnv* env,
-                            jboolean check_for_repost);
-  jboolean NeedsReload(JNIEnv* env);
+  void Reload(JNIEnv* env, bool check_for_repost);
+  void ReloadBypassingCache(JNIEnv* env, bool check_for_repost);
+  bool NeedsReload(JNIEnv* env);
   void SetNeedsReload(JNIEnv* env);
   void CancelPendingReload(JNIEnv* env);
   void GoToNavigationIndex(JNIEnv* env,
@@ -70,22 +67,22 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       const base::android::JavaRef<jstring>& base_url_for_data_url,
       const base::android::JavaRef<jstring>& virtual_url_for_special_cases,
       const base::android::JavaRef<jstring>& data_url_as_string,
-      jboolean can_load_local_resources,
-      jboolean is_renderer_initiated,
-      jboolean should_replace_current_entry,
+      bool can_load_local_resources,
+      bool is_renderer_initiated,
+      bool should_replace_current_entry,
       const base::android::JavaRef<jobject>& j_initiator_origin,
-      jboolean has_user_gesture,
-      jboolean should_clear_history_list,
+      bool has_user_gesture,
+      bool should_clear_history_list,
       const base::android::JavaRef<jobject>& j_additional_navigation_params,
       jlong input_start,
       jlong navigation_ui_data_ptr,
-      jboolean is_pdf);
+      bool is_pdf);
   void ClearSslPreferences(JNIEnv* env);
   bool GetUseDesktopUserAgent(JNIEnv* env);
   void SetUseDesktopUserAgent(JNIEnv* env,
-                              jboolean state,
-                              jboolean reload_on_state_change,
-                              jboolean skip_on_initial_navigation);
+                              bool state,
+                              bool reload_on_state_change,
+                              bool skip_on_initial_navigation);
   base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(JNIEnv* env,
                                                              int index);
   base::android::ScopedJavaLocalRef<jobject> GetVisibleEntry(JNIEnv* env);
@@ -95,13 +92,12 @@ class CONTENT_EXPORT NavigationControllerAndroid {
   void GetDirectedNavigationHistory(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& history,
-      jboolean is_forward,
+      bool is_forward,
       jint max_entries);
   void ClearHistory(JNIEnv* env);
   int GetLastCommittedEntryIndex(JNIEnv* env);
-  jboolean CanViewSource(JNIEnv* env);
-  jboolean RemoveEntryAtIndex(JNIEnv* env,
-                              jint index);
+  bool CanViewSource(JNIEnv* env);
+  bool RemoveEntryAtIndex(JNIEnv* env, jint index);
   void PruneForwardEntries(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetEntryExtraData(
       JNIEnv* env,
@@ -113,7 +109,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
                          const base::android::JavaRef<jstring>& jvalue);
   void CopyStateFrom(JNIEnv* env,
                      jlong source_navigation_controller_ptr,
-                     jboolean needs_reload);
+                     bool needs_reload);
 
  private:
   void SetUseDesktopUserAgentInternal(bool enabled,

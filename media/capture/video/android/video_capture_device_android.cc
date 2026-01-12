@@ -154,7 +154,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
       base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture);
 
   JNIEnv* env = AttachCurrentThread();
-  jboolean ret = Java_VideoCapture_allocate(
+  bool ret = Java_VideoCapture_allocate(
       env, j_capture_, params.requested_format.frame_size.width(),
       params.requested_format.frame_size.height(),
       params.requested_format.frame_rate, params.enable_face_detection,
@@ -214,7 +214,7 @@ void VideoCaptureDeviceAndroid::StopAndDeAllocate() {
 
   JNIEnv* env = AttachCurrentThread();
 
-  const jboolean ret =
+  const bool ret =
       Java_VideoCapture_stopCaptureAndBlockUntilStopped(env, j_capture_);
   if (!ret) {
     SetErrorState(media::VideoCaptureError::kAndroidFailedToStopCapture,

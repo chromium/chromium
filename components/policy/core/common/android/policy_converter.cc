@@ -80,9 +80,8 @@ base::android::ScopedJavaLocalRef<jobject> PolicyConverter::GetJavaObject() {
 
 void PolicyConverter::SetPolicyBoolean(JNIEnv* env,
                                        const JavaRef<jstring>& policyKey,
-                                       jboolean value) {
-  SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
-                 base::Value(static_cast<bool>(value)));
+                                       bool value) {
+  SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey), base::Value(value));
 }
 
 void PolicyConverter::SetPolicyInteger(JNIEnv* env,

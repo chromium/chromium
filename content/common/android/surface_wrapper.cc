@@ -14,7 +14,7 @@ namespace content {
 base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& surface,
-    jboolean canBeUsedWithSurfaceControl,
+    bool canBeUsedWithSurfaceControl,
     const base::android::JavaRef<jobject>& browserInputToken) {
   return Java_SurfaceWrapper_create(env, surface, canBeUsedWithSurfaceControl,
                                     browserInputToken);
@@ -23,7 +23,7 @@ base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_create(
 base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& surface,
-    jboolean canBeUsedWithSurfaceControl) {
+    bool canBeUsedWithSurfaceControl) {
   return Java_SurfaceWrapper_create(env, surface, canBeUsedWithSurfaceControl);
 }
 
@@ -39,13 +39,13 @@ JNI_SurfaceWrapper_createFromSurfaceControl(
                                                       java_surface_control);
 }
 
-jboolean JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
+bool JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   return Java_SurfaceWrapper_canBeUsedWithSurfaceControl(env, obj);
 }
 
-jboolean JNI_SurfaceWrapper_getWrapsSurface(
+bool JNI_SurfaceWrapper_getWrapsSurface(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   return Java_SurfaceWrapper_getWrapsSurface(env, obj);

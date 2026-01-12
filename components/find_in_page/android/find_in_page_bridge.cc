@@ -31,8 +31,8 @@ void FindInPageBridge::Destroy(JNIEnv*) {
 
 void FindInPageBridge::StartFinding(JNIEnv* env,
                                     const JavaRef<jstring>& search_string,
-                                    jboolean forward_direction,
-                                    jboolean case_sensitive) {
+                                    bool forward_direction,
+                                    bool case_sensitive) {
   find_in_page::FindTabHelper::FromWebContents(web_contents_)
       ->StartFinding(
           base::android::ConvertJavaStringToUTF16(env, search_string),
@@ -40,7 +40,7 @@ void FindInPageBridge::StartFinding(JNIEnv* env,
           true /* find_match */);
 }
 
-void FindInPageBridge::StopFinding(JNIEnv* env, jboolean clearSelection) {
+void FindInPageBridge::StopFinding(JNIEnv* env, bool clearSelection) {
   find_in_page::FindTabHelper::FromWebContents(web_contents_)
       ->StopFinding(clearSelection ? find_in_page::SelectionAction::kClear
                                    : find_in_page::SelectionAction::kKeep);

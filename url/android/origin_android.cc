@@ -60,7 +60,7 @@ static void JNI_Origin_AssignNativeOrigin(JNIEnv* env,
                                           std::string& scheme,
                                           std::string& host,
                                           jshort port,
-                                          jboolean is_opaque,
+                                          bool is_opaque,
                                           jlong token_high_bits,
                                           jlong token_low_bits,
                                           jlong native_origin) {

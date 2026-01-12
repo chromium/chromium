@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/content_capture/android/jni_headers/ContentCaptureFeatures_jni.h"
 
-static jboolean JNI_ContentCaptureFeatures_IsEnabled(JNIEnv* env) {
+static bool JNI_ContentCaptureFeatures_IsEnabled(JNIEnv* env) {
   return content_capture::features::IsContentCaptureEnabled();
 }
 

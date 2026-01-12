@@ -57,7 +57,7 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
   // JNI methods.
   void PositiveButtonClicked(JNIEnv* env);
   void NegativeButtonClicked(JNIEnv* env);
-  void CheckboxToggled(JNIEnv* env, jboolean is_checked);
+  void CheckboxToggled(JNIEnv* env, bool is_checked);
   void MenuItemClicked(JNIEnv* env, jint index);
   void ParagraphLinkClicked(JNIEnv* env, jint index);
   void Dismissed(JNIEnv* env);

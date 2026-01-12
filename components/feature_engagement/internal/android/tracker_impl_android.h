@@ -86,7 +86,7 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jstring>& jfeature);
   virtual bool HasEverTriggered(JNIEnv* env,
                                 const base::android::JavaRef<jstring>& jfeature,
-                                const jboolean j_from_window);
+                                const bool j_from_window);
   virtual jint GetTriggerState(JNIEnv* env,
                                const base::android::JavaRef<jstring>& jfeature);
   virtual void Dismissed(JNIEnv* env,

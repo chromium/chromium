@@ -72,7 +72,7 @@ class MockDesktopCapturerAndroidJni
               Create,
               (JNIEnv*, jlong),
               (override));
-  MOCK_METHOD(jboolean,
+  MOCK_METHOD(bool,
               StartCapture,
               (JNIEnv*, const base::android::JavaRef<jobject>&),
               (override));

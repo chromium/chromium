@@ -63,7 +63,7 @@ class PaymentHandlerHost {
 
   // Checks whether any payment method, shipping address or shipping option
   // change is currently in progress.
-  jboolean IsWaitingForPaymentDetailsUpdate(JNIEnv* env) const;
+  bool IsWaitingForPaymentDetailsUpdate(JNIEnv* env) const;
 
   // Destroys this object.
   void Destroy(JNIEnv* env);

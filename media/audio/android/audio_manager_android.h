@@ -152,11 +152,11 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const std::string& device_id,
       const LogCallback& log_callback) override;
 
-  void SetMute(JNIEnv* env, jboolean muted);
+  void SetMute(JNIEnv* env, bool muted);
 
   // Called by the Java `AudioManagerAndroid` when the Bluetooth SCO state
   // changes. Note that this is called on the main thread.
-  void OnScoStateChanged(JNIEnv* env, jboolean state);
+  void OnScoStateChanged(JNIEnv* env, bool state);
 
   // Sets a volume that applies to all this manager's output audio streams.
   // This overrides other SetVolume calls (e.g. through AudioHostMsg_SetVolume).

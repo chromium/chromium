@@ -182,26 +182,25 @@ void SyncServiceAndroidBridge::AcknowledgeBookmarksLimitExceededError(
   native_sync_service_->AcknowledgeBookmarksLimitExceededError();
 }
 
-jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
   return native_sync_service_->IsSyncFeatureEnabled();
 }
 
-jboolean SyncServiceAndroidBridge::IsSyncFeatureActive(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsSyncFeatureActive(JNIEnv* env) {
   return native_sync_service_->IsSyncFeatureActive();
 }
 
-jboolean SyncServiceAndroidBridge::IsSyncDisabledByEnterprisePolicy(
-    JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsSyncDisabledByEnterprisePolicy(JNIEnv* env) {
   return native_sync_service_->HasDisableReason(
       SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
-jboolean SyncServiceAndroidBridge::IsEngineInitialized(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsEngineInitialized(JNIEnv* env) {
   return native_sync_service_->IsEngineInitialized();
 }
 
 void SyncServiceAndroidBridge::SetSetupInProgress(JNIEnv* env,
-                                                  jboolean in_progress) {
+                                                  bool in_progress) {
   if (!in_progress) {
     sync_blocker_.reset();
     return;
@@ -212,8 +211,7 @@ void SyncServiceAndroidBridge::SetSetupInProgress(JNIEnv* env,
   }
 }
 
-jboolean SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(
-    JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->IsInitialSyncFeatureSetupComplete();
 }
@@ -269,21 +267,20 @@ void SyncServiceAndroidBridge::TriggerLocalDataMigration(
       JavaIntArrayToDataTypeSet(env, types));
 }
 
-jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
-                                                         jint type) {
+bool SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env, jint type) {
   return native_sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
       IntToUserSelectableTypeChecked(type));
 }
 
-jboolean SyncServiceAndroidBridge::IsTypeManagedByCustodian(JNIEnv* env,
-                                                            jint type) {
+bool SyncServiceAndroidBridge::IsTypeManagedByCustodian(JNIEnv* env,
+                                                        jint type) {
   return native_sync_service_->GetUserSettings()->IsTypeManagedByCustodian(
       IntToUserSelectableTypeChecked(type));
 }
 
 void SyncServiceAndroidBridge::SetSelectedTypes(
     JNIEnv* env,
-    jboolean sync_everything,
+    bool sync_everything,
     const JavaRef<jintArray>& user_selectable_type_array) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
     // This function shouldn't be called while signed out, but evidence suggests
@@ -310,7 +307,7 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 
 void SyncServiceAndroidBridge::SetSelectedType(JNIEnv* env,
                                                jint type,
-                                               jboolean is_type_on) {
+                                               bool is_type_on) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
     // This function shouldn't be called while signed out, but evidence suggests
     // it sometimes does get called.
@@ -325,38 +322,37 @@ void SyncServiceAndroidBridge::SetSelectedType(JNIEnv* env,
       IntToUserSelectableTypeChecked(type), is_type_on);
 }
 
-jboolean SyncServiceAndroidBridge::IsCustomPassphraseAllowed(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsCustomPassphraseAllowed(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsCustomPassphraseAllowed();
 }
 
-jboolean SyncServiceAndroidBridge::IsEncryptEverythingEnabled(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsEncryptEverythingEnabled(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
-jboolean SyncServiceAndroidBridge::IsPassphraseRequiredForPreferredDataTypes(
+bool SyncServiceAndroidBridge::IsPassphraseRequiredForPreferredDataTypes(
     JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->IsPassphraseRequiredForPreferredDataTypes();
 }
 
-jboolean SyncServiceAndroidBridge::IsTrustedVaultKeyRequired(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsTrustedVaultKeyRequired(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsTrustedVaultKeyRequired();
 }
 
-jboolean
-SyncServiceAndroidBridge::IsTrustedVaultKeyRequiredForPreferredDataTypes(
+bool SyncServiceAndroidBridge::IsTrustedVaultKeyRequiredForPreferredDataTypes(
     JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
 
-jboolean SyncServiceAndroidBridge::IsTrustedVaultRecoverabilityDegraded(
+bool SyncServiceAndroidBridge::IsTrustedVaultRecoverabilityDegraded(
     JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->IsTrustedVaultRecoverabilityDegraded();
 }
 
-jboolean SyncServiceAndroidBridge::IsUsingExplicitPassphrase(JNIEnv* env) {
+bool SyncServiceAndroidBridge::IsUsingExplicitPassphrase(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
@@ -384,7 +380,7 @@ void SyncServiceAndroidBridge::SetEncryptionPassphrase(
       ConvertJavaStringToUTF8(env, passphrase));
 }
 
-jboolean SyncServiceAndroidBridge::SetDecryptionPassphrase(
+bool SyncServiceAndroidBridge::SetDecryptionPassphrase(
     JNIEnv* env,
     const JavaRef<jstring>& passphrase) {
   return native_sync_service_->GetUserSettings()->SetDecryptionPassphrase(
@@ -417,12 +413,11 @@ SyncServiceAndroidBridge::GetAccountInfo(JNIEnv* env) {
              : ConvertToJavaCoreAccountInfo(env, account_info);
 }
 
-jboolean SyncServiceAndroidBridge::HasSyncConsent(JNIEnv* env) {
+bool SyncServiceAndroidBridge::HasSyncConsent(JNIEnv* env) {
   return native_sync_service_->HasSyncConsent();
 }
 
-jboolean
-SyncServiceAndroidBridge::IsPassphrasePromptMutedForCurrentProductVersion(
+bool SyncServiceAndroidBridge::IsPassphrasePromptMutedForCurrentProductVersion(
     JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->IsPassphrasePromptMutedForCurrentProductVersion();
@@ -434,11 +429,11 @@ void SyncServiceAndroidBridge::
       ->MarkPassphrasePromptMutedForCurrentProductVersion();
 }
 
-jboolean SyncServiceAndroidBridge::HasKeepEverythingSynced(JNIEnv* env) {
+bool SyncServiceAndroidBridge::HasKeepEverythingSynced(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
 
-jboolean SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
+bool SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
   return syncer::ShouldOfferTrustedVaultOptIn(native_sync_service_);
 }
 

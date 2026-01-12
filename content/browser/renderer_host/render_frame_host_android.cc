@@ -177,19 +177,19 @@ void RenderFrameHostAndroid::NotifyWebAuthnAssertionRequestSucceeded(
   render_frame_host_->WebAuthnAssertionRequestSucceeded();
 }
 
-jboolean RenderFrameHostAndroid::IsCloseWatcherActive(JNIEnv* env) const {
+bool RenderFrameHostAndroid::IsCloseWatcherActive(JNIEnv* env) const {
   auto* close_listener_host =
       CloseListenerHost::GetForCurrentDocument(render_frame_host_);
   return close_listener_host && close_listener_host->IsActive();
 }
 
-jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(JNIEnv* env) const {
+bool RenderFrameHostAndroid::SignalCloseWatcherIfActive(JNIEnv* env) const {
   auto* close_listener_host =
       CloseListenerHost::GetForCurrentDocument(render_frame_host_);
   return close_listener_host && close_listener_host->SignalIfActive();
 }
 
-jboolean RenderFrameHostAndroid::IsRenderFrameLive(JNIEnv* env) const {
+bool RenderFrameHostAndroid::IsRenderFrameLive(JNIEnv* env) const {
   return render_frame_host_->IsRenderFrameLive();
 }
 
@@ -212,7 +212,7 @@ void RenderFrameHostAndroid::TerminateRendererDueToBadMessage(
                      static_cast<bad_message::BadMessageReason>(reason));
 }
 
-jboolean RenderFrameHostAndroid::IsProcessBlocked(JNIEnv* env) const {
+bool RenderFrameHostAndroid::IsProcessBlocked(JNIEnv* env) const {
   return render_frame_host_->GetProcess()->IsBlocked();
 }
 
@@ -220,7 +220,7 @@ void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& relying_party_id,
     const base::android::JavaRef<jobject>& effective_origin,
-    jboolean is_payment_credential_get_assertion,
+    bool is_payment_credential_get_assertion,
     const base::android::JavaRef<jobject>&
         remote_desktop_client_override_origin,
     const base::android::JavaRef<jobject>& callback) const {
@@ -250,7 +250,7 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& relying_party_id,
     const base::android::JavaRef<jobject>& effective_origin,
-    jboolean is_payment_credential_creation,
+    bool is_payment_credential_creation,
     const base::android::JavaRef<jobject>&
         remote_desktop_client_override_origin,
     const base::android::JavaRef<jobject>& callback) const {

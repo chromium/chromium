@@ -25,8 +25,8 @@ class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
   virtual base::android::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
       jlong native_ptr) = 0;
-  virtual jboolean StartCapture(JNIEnv* env,
-                                const base::android::JavaRef<jobject>& obj) = 0;
+  virtual bool StartCapture(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& obj) = 0;
   virtual void Destroy(JNIEnv* env,
                        const base::android::JavaRef<jobject>& obj) = 0;
 };

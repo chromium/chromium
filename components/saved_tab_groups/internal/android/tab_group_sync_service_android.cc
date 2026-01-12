@@ -214,7 +214,7 @@ void TabGroupSyncServiceAndroid::AboutToUnShareTabGroup(
 void TabGroupSyncServiceAndroid::OnTabGroupUnShareComplete(
     JNIEnv* env,
     const JavaRef<jobject>& j_group_id,
-    const jboolean j_success) {
+    const bool j_success) {
   LocalTabGroupID tab_group_id =
       TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   tab_group_sync_service_->OnTabGroupUnShareComplete(tab_group_id, j_success);
@@ -414,7 +414,7 @@ void TabGroupSyncServiceAndroid::RecordTabGroupEvent(
 void TabGroupSyncServiceAndroid::UpdateArchivalStatus(
     JNIEnv* env,
     const JavaRef<jstring>& j_sync_group_id,
-    const jboolean j_archival_status) {
+    const bool j_archival_status) {
   auto sync_group_id = JavaStringToUuid(env, j_sync_group_id);
   tab_group_sync_service_->UpdateArchivalStatus(sync_group_id,
                                                 j_archival_status);

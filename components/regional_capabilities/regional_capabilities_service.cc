@@ -679,7 +679,7 @@ void RegionalCapabilitiesService::DestroyJavaObject() {
   }
 }
 
-jboolean RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {
+bool RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {
   return IsInEeaCountry();
 }
 #endif

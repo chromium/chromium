@@ -42,8 +42,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
 
   // Called from Java, when printing settings from the user are ready or the
   // printing operation is canceled.
-  void AskUserForSettingsReply(JNIEnv* env,
-                               jboolean success);
+  void AskUserForSettingsReply(JNIEnv* env, bool success);
 
   // Called from Java, when a printing process initiated by a script finishes.
   void ShowSystemDialogDone(JNIEnv* env);

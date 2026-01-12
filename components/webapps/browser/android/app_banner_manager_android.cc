@@ -717,7 +717,7 @@ JNI_AppBannerManager_GetInstallableWebAppManifestId(
 }
 
 // static
-static jboolean JNI_AppBannerManager_IsProbablyPromotable(
+static bool JNI_AppBannerManager_IsProbablyPromotable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_web_contents) {
   auto* manager =
@@ -753,7 +753,7 @@ static void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env,
 static void
 JNI_AppBannerManager_SetOverrideSegmentationResultForTesting(  // IN-TEST
     JNIEnv* env,
-    jboolean show) {
+    bool show) {
   AmbientBadgeManager::SetOverrideSegmentationResultForTesting(show);
 }
 

@@ -29,13 +29,13 @@ void HeapProfilingTestShim::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean HeapProfilingTestShim::RunTestForMode(
+bool HeapProfilingTestShim::RunTestForMode(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& mode,
-    jboolean dynamically_start_profiling,
+    bool dynamically_start_profiling,
     const base::android::JavaRef<jstring>& stack_mode,
-    jboolean should_sample,
-    jboolean sample_everything) {
+    bool should_sample,
+    bool sample_everything) {
   heap_profiling::TestDriver driver;
   heap_profiling::TestDriver::Options options;
   options.mode = heap_profiling::ConvertStringToMode(

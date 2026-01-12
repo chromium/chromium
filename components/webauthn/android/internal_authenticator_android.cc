@@ -215,10 +215,9 @@ void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
 }
 
 void InternalAuthenticatorAndroid::
-    InvokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-        JNIEnv* env,
-        jboolean is_uvpaa) {
-  std::move(is_uvpaa_callback_).Run(static_cast<bool>(is_uvpaa));
+    InvokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(JNIEnv* env,
+                                                                bool is_uvpaa) {
+  std::move(is_uvpaa_callback_).Run(is_uvpaa);
 }
 
 void InternalAuthenticatorAndroid::InvokeGetMatchingCredentialIdsResponse(

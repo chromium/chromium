@@ -39,7 +39,7 @@ class VolumeControlAndroid : SystemVolumeTableAccessApi {
 
   // Called from java to signal a change volume.
   void OnVolumeChange(JNIEnv* env, jint type, jfloat level);
-  void OnMuteChange(JNIEnv* env, jint type, jboolean muted);
+  void OnMuteChange(JNIEnv* env, jint type, bool muted);
 
   // SystemVolumeTableAccessApi implementation.
   int GetMaxVolumeIndex(AudioContentType type) override;

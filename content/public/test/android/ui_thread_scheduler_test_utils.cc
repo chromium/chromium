@@ -12,7 +12,7 @@ namespace content {
 
 static void JNI_UiThreadSchedulerTestUtils_PostBrowserMainLoopStartupTasks(
     JNIEnv* env,
-    jboolean enabled) {
+    bool enabled) {
   BrowserMainLoop::EnableStartupTasks(enabled);
 }
 

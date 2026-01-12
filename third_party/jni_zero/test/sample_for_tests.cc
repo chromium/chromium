@@ -199,8 +199,8 @@ JNI_SampleForAnnotationProcessor_SendSamplesToNative(
   return jni_zero::tests::JNI_SampleForTests_GetNonPODDatatype(env, strs);
 }
 
-static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {
-  return jboolean(true);
+static bool JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {
+  return true;
 }
 
 static std::vector<int> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
@@ -219,7 +219,7 @@ static std::vector<int> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     const JavaRef<jdoubleArray>& doubles,
     jfloat zfloat,
     const JavaRef<jfloatArray>& floats,
-    jboolean zbool,
+    bool zbool,
     const JavaRef<jbooleanArray>& bools) {
   return {};
 }

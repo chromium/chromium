@@ -235,10 +235,10 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
     JNIEnv* env,
     jlong termination_info_ptr,
     jint binding_state,
-    jboolean killed_by_us,
-    jboolean clean_exit,
-    jboolean exception_during_init,
-    jboolean is_spare_renderer) {
+    bool killed_by_us,
+    bool clean_exit,
+    bool exception_during_init,
+    bool is_spare_renderer) {
   ChildProcessTerminationInfo* info =
       reinterpret_cast<ChildProcessTerminationInfo*>(termination_info_ptr);
   info->binding_state =
@@ -249,8 +249,8 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
   info->is_spare_renderer = is_spare_renderer;
 }
 
-static jboolean
-JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
+static bool JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(
+    JNIEnv* env) {
   // Not this is called on the launcher thread, not UI thread.
   //
   // Note that service grouping is mandatory for site isolation on pre-U devices

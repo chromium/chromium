@@ -46,7 +46,7 @@ void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
 static void JNI_WebContentsUtils_ReportAllFrameSubmissions(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jboolean enabled) {
+    bool enabled) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   RenderFrameMetadataProviderImpl* provider =
       RenderWidgetHostImpl::From(web_contents->GetRenderViewHost()->GetWidget())

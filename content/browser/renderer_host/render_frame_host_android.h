@@ -57,11 +57,11 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
 
   void NotifyWebAuthnAssertionRequestSucceeded(JNIEnv* env);
 
-  jboolean IsCloseWatcherActive(JNIEnv* env) const;
+  bool IsCloseWatcherActive(JNIEnv* env) const;
 
-  jboolean SignalCloseWatcherIfActive(JNIEnv* env) const;
+  bool SignalCloseWatcherIfActive(JNIEnv* env) const;
 
-  jboolean IsRenderFrameLive(JNIEnv* env) const;
+  bool IsRenderFrameLive(JNIEnv* env) const;
 
   void GetInterfaceToRendererFrame(
       JNIEnv* env,
@@ -72,13 +72,13 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       jint reason) const;
 
-  jboolean IsProcessBlocked(JNIEnv* env) const;
+  bool IsProcessBlocked(JNIEnv* env) const;
 
   void PerformGetAssertionWebAuthSecurityChecks(
       JNIEnv* env,
       const base::android::JavaRef<jstring>&,
       const base::android::JavaRef<jobject>&,
-      jboolean is_payment_credential_get_assertion,
+      bool is_payment_credential_get_assertion,
       const base::android::JavaRef<jobject>&
           remote_desktop_client_override_origin,
       const base::android::JavaRef<jobject>& callback) const;
@@ -87,7 +87,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaRef<jstring>&,
       const base::android::JavaRef<jobject>&,
-      jboolean is_payment_credential_creation,
+      bool is_payment_credential_creation,
       const base::android::JavaRef<jobject>&
           remote_desktop_client_override_origin,
       const base::android::JavaRef<jobject>& callback) const;

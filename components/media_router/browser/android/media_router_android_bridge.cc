@@ -172,7 +172,7 @@ void MediaRouterAndroidBridge::OnRouteCreated(
     const JavaRef<jstring>& jmedia_route_id,
     const JavaRef<jstring>& jsink_id,
     jint jroute_request_id,
-    jboolean jis_local) {
+    bool jis_local) {
   native_media_router_->OnRouteCreated(
       ConvertJavaStringToUTF8(env, jmedia_route_id),
       ConvertJavaStringToUTF8(env, jsink_id), jroute_request_id, jis_local);

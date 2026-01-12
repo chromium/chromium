@@ -220,7 +220,7 @@ PaintPreviewTestService::CreateSingleSkp(
   return base::android::ToJavaIntArray(env, out);
 }
 
-jboolean PaintPreviewTestService::SerializeFrames(
+bool PaintPreviewTestService::SerializeFrames(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& j_key,
     const base::android::JavaRef<jstring>& j_url) {

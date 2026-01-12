@@ -55,7 +55,7 @@ struct PendingWriteData {
       const base::android::JavaRef<jobjectArray>& jwrite_buffer_list,
       const base::android::JavaRef<jintArray>& jwrite_buffer_pos_list,
       const base::android::JavaRef<jintArray>& jwrite_buffer_limit_list,
-      jboolean jwrite_end_of_stream);
+      bool jwrite_end_of_stream);
 
   PendingWriteData(const PendingWriteData&) = delete;
   PendingWriteData& operator=(const PendingWriteData&) = delete;
@@ -68,7 +68,7 @@ struct PendingWriteData {
   base::android::ScopedJavaGlobalRef<jintArray> jwrite_buffer_pos_list;
   base::android::ScopedJavaGlobalRef<jintArray> jwrite_buffer_limit_list;
   // A copy of the end of stream flag passed in from Java.
-  jboolean jwrite_end_of_stream;
+  bool jwrite_end_of_stream;
   // Every IOBuffer in |write_buffer_list| points to the memory owned by the
   // corresponding Java ByteBuffer in |jwrite_buffer_list|.
   std::vector<scoped_refptr<net::IOBuffer>> write_buffer_list;
@@ -117,7 +117,7 @@ class CronetBidirectionalStreamAdapter
              jint jpriority,
              const base::android::JavaRef<jstring>& jmethod,
              const base::android::JavaRef<jobjectArray>& jheaders,
-             jboolean jend_of_stream);
+             bool jend_of_stream);
 
   // Sends request headers to server.
   // When |send_request_headers_automatically_| is
@@ -134,10 +134,10 @@ class CronetBidirectionalStreamAdapter
   // Reads more data into |jbyte_buffer| starting at |jposition| and not
   // exceeding |jlimit|. Arguments are preserved to ensure that |jbyte_buffer|
   // is not modified by the application during read.
-  jboolean ReadData(JNIEnv* env,
-                    const base::android::JavaRef<jobject>& jbyte_buffer,
-                    jint jposition,
-                    jint jlimit);
+  bool ReadData(JNIEnv* env,
+                const base::android::JavaRef<jobject>& jbyte_buffer,
+                jint jposition,
+                jint jlimit);
 
   // Writes more data from |jbyte_buffers|. For the i_th buffer in
   // |jbyte_buffers|, bytes to write start from i_th position in |jpositions|
@@ -145,11 +145,11 @@ class CronetBidirectionalStreamAdapter
   // Arguments are preserved to ensure that |jbyte_buffer|
   // is not modified by the application during write. The |jend_of_stream| is
   // passed to remote to indicate end of stream.
-  jboolean WritevData(JNIEnv* env,
-                      const base::android::JavaRef<jobjectArray>& jbyte_buffers,
-                      const base::android::JavaRef<jintArray>& jpositions,
-                      const base::android::JavaRef<jintArray>& jlimits,
-                      jboolean jend_of_stream);
+  bool WritevData(JNIEnv* env,
+                  const base::android::JavaRef<jobjectArray>& jbyte_buffers,
+                  const base::android::JavaRef<jintArray>& jpositions,
+                  const base::android::JavaRef<jintArray>& jlimits,
+                  bool jend_of_stream);
 
   // Releases all resources for the request and deletes the object itself.
   // Responsible for collecting the metrics before destroying the object and

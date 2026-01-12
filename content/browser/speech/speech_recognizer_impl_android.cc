@@ -176,7 +176,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
     JNIEnv* env,
     const JavaRef<jobjectArray>& strings,
     const JavaRef<jfloatArray>& floats,
-    jboolean provisional) {
+    bool provisional) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<std::u16string> options;
   AppendJavaStringArrayToStringVector(env, strings, &options);

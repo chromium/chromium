@@ -352,7 +352,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthErrorFromJava(
     JNIEnv* env,
     CoreAccountId& core_account_id,
     GoogleServiceAuthError& auth_error,
-    jboolean fire_auth_error_changed) {
+    bool fire_auth_error_changed) {
   UpdateAuthError(core_account_id, auth_error, fire_auth_error_changed);
 }
 

@@ -110,7 +110,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
       JNIEnv* env,
       const base::android::JavaRef<jfloatArray>& supported_refresh_rates);
   void OnAdaptiveRefreshRateInfoChanged(JNIEnv* env,
-                                        jboolean supports_adaptive_refresh_rate,
+                                        bool supports_adaptive_refresh_rate,
                                         jfloat suggested_frame_rate_high);
   void OnOverlayTransformUpdated(JNIEnv* env);
   void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, jlong begin_time);

@@ -94,7 +94,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   jint GetBackgroundColor(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetLastCommittedURL(
       JNIEnv* env) const;
-  jboolean IsIncognito(JNIEnv* env);
+  bool IsIncognito(JNIEnv* env);
 
   void ResumeLoadingCreatedWebContents(JNIEnv* env);
 
@@ -102,24 +102,24 @@ class CONTENT_EXPORT WebContentsAndroid {
                                 jint main_frame_importance,
                                 jint subframe_importance);
   void SuspendAllMediaPlayers(JNIEnv* env);
-  void SetAudioMuted(JNIEnv* env, jboolean mute);
-  jboolean IsAudioMuted(JNIEnv* env);
+  void SetAudioMuted(JNIEnv* env, bool mute);
+  bool IsAudioMuted(JNIEnv* env);
 
-  jboolean FocusLocationBarByDefault(JNIEnv* env);
+  bool FocusLocationBarByDefault(JNIEnv* env);
   bool IsFullscreenForCurrentTab(JNIEnv* env);
   void ExitFullscreen(JNIEnv* env);
   void ScrollFocusedEditableNodeIntoView(JNIEnv* env);
   void SelectAroundCaret(JNIEnv* env,
                          jint granularity,
-                         jboolean should_show_handle,
-                         jboolean should_show_context_menu,
+                         bool should_show_handle,
+                         bool should_show_context_menu,
                          jint startOffset,
                          jint endOffset,
                          jint surroundingTextLength);
   void AdjustSelectionByCharacterOffset(JNIEnv* env,
                                         jint start_adjust,
                                         jint end_adjust,
-                                        jboolean show_selection_menu);
+                                        bool show_selection_menu);
   void EvaluateJavaScript(JNIEnv* env,
                           const base::android::JavaRef<jstring>& script,
                           const base::android::JavaRef<jobject>& callback);
@@ -140,9 +140,9 @@ class CONTENT_EXPORT WebContentsAndroid {
       const base::android::JavaRef<jstring>& jtarget_origin,
       const base::android::JavaRef<jobjectArray>& jports);
 
-  jboolean HasAccessedInitialDocument(JNIEnv* env);
+  bool HasAccessedInitialDocument(JNIEnv* env);
 
-  jboolean HasViewTransitionOptIn(JNIEnv* env);
+  bool HasViewTransitionOptIn(JNIEnv* env);
 
   // No theme color is represented by SK_ColorTRANSPARENT.
   jint GetThemeColor(JNIEnv* env);
@@ -177,11 +177,11 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   int DownloadImage(JNIEnv* env,
                     const base::android::JavaRef<jobject>& url,
-                    jboolean is_fav_icon,
+                    bool is_fav_icon,
                     jint max_bitmap_size,
-                    jboolean bypass_cache,
+                    bool bypass_cache,
                     const base::android::JavaRef<jobject>& jcallback);
-  void SetHasPersistentVideo(JNIEnv* env, jboolean value);
+  void SetHasPersistentVideo(JNIEnv* env, bool value);
   bool HasActiveEffectivelyFullscreenVideo(JNIEnv* env);
   bool IsPictureInPictureAllowedForFullscreenVideo(JNIEnv* env);
 
@@ -197,7 +197,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   void SendOrientationChangeEvent(JNIEnv* env, jint orientation);
 
   void OnScaleFactorChanged(JNIEnv* env);
-  void SetFocus(JNIEnv* env, jboolean focused);
+  void SetFocus(JNIEnv* env, bool focused);
   bool IsBeingDestroyed(JNIEnv* env);
 
   void SetDisplayCutoutSafeArea(JNIEnv* env,
@@ -247,15 +247,15 @@ class CONTENT_EXPORT WebContentsAndroid {
       const base::android::JavaRef<jobject>& callback,
       gfx::Image snapshot);
 
-  void SetLongPressLinkSelectText(JNIEnv* env, jboolean enabled);
+  void SetLongPressLinkSelectText(JNIEnv* env, bool enabled);
 
-  void SetCanAcceptLoadDrops(JNIEnv* env, jboolean enabled);
+  void SetCanAcceptLoadDrops(JNIEnv* env, bool enabled);
 
   bool GetCanAcceptLoadDropsForTesting(JNIEnv* env);
 
-  void SetSupportsForwardTransitionAnimation(JNIEnv* env, jboolean enabled);
+  void SetSupportsForwardTransitionAnimation(JNIEnv* env, bool enabled);
 
-  jboolean HasOpener(JNIEnv* env);
+  bool HasOpener(JNIEnv* env);
 
   jint GetOriginalWindowOpenDisposition(JNIEnv* env);
 

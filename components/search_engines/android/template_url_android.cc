@@ -50,7 +50,7 @@ static ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
   return url::GURLAndroid::FromNativeGURL(env, template_url->favicon_url());
 }
 
-static jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
+static bool JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);

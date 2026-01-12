@@ -29,7 +29,7 @@ class CaptioningController : public WebContentsObserver {
 
   void SetTextTrackSettings(
       JNIEnv* env,
-      jboolean textTracksEnabled,
+      bool textTracksEnabled,
       const base::android::JavaRef<jstring>& textTrackBackgroundColor,
       const base::android::JavaRef<jstring>& textTrackFontFamily,
       const base::android::JavaRef<jstring>& textTrackFontStyle,

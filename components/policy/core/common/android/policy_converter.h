@@ -47,7 +47,7 @@ class POLICY_EXPORT PolicyConverter {
   // To be called from Java:
   void SetPolicyBoolean(JNIEnv* env,
                         const base::android::JavaRef<jstring>& policyKey,
-                        jboolean value);
+                        bool value);
   void SetPolicyInteger(JNIEnv* env,
                         const base::android::JavaRef<jstring>& policyKey,
                         jint value);

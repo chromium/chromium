@@ -199,8 +199,8 @@ void GamepadPlatformDataFetcherAndroid::ResetVibration(
 static void JNI_GamepadList_SetGamepadData(JNIEnv* env,
                                            jlong data_fetcher,
                                            jint index,
-                                           jboolean mapping,
-                                           jboolean connected,
+                                           bool mapping,
+                                           bool connected,
                                            const JavaRef<jstring>& devicename,
                                            jint vendor_id,
                                            jint product_id,
@@ -208,7 +208,7 @@ static void JNI_GamepadList_SetGamepadData(JNIEnv* env,
                                            const JavaRef<jfloatArray>& jaxes,
                                            const JavaRef<jfloatArray>& jbuttons,
                                            jint buttons_length,
-                                           jboolean supports_dual_rumble) {
+                                           bool supports_dual_rumble) {
   DCHECK(data_fetcher);
   GamepadPlatformDataFetcherAndroid* fetcher =
       reinterpret_cast<GamepadPlatformDataFetcherAndroid*>(data_fetcher);

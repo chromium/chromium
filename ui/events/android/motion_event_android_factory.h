@@ -38,7 +38,7 @@ class EVENTS_EXPORT MotionEventAndroidFactory {
       jint android_button_state,
       jfloat raw_offset_x_pixels,
       jfloat raw_offset_y_pixels,
-      jboolean for_touch_handle,
+      bool for_touch_handle,
       const MotionEventAndroid::Pointer* const pointer0,
       const MotionEventAndroid::Pointer* const pointer1);
 
@@ -61,7 +61,7 @@ class EVENTS_EXPORT MotionEventAndroidFactory {
       jint android_button_state,
       jfloat raw_offset_x_pixels,
       jfloat raw_offset_y_pixels,
-      jboolean for_touch_handle,
+      bool for_touch_handle,
       const MotionEventAndroid::Pointer* const pointer0,
       const MotionEventAndroid::Pointer* const pointer1,
       bool is_latest_event_time_resampled);

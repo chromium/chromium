@@ -44,8 +44,7 @@ JavascriptInjector::~JavascriptInjector() {
   Java_JavascriptInjectorImpl_onDestroy(env, j_obj);
 }
 
-void JavascriptInjector::SetAllowInspection(JNIEnv* env,
-                                            jboolean allow) {
+void JavascriptInjector::SetAllowInspection(JNIEnv* env, bool allow) {
   DCHECK(java_bridge_dispatcher_host_);
   java_bridge_dispatcher_host_->SetAllowObjectContentsInspection(allow);
 }

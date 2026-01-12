@@ -20,7 +20,7 @@ PolicyMapAndroid::PolicyMapAndroid(const PolicyMap& policy_map)
 
 PolicyMapAndroid::~PolicyMapAndroid() = default;
 
-jboolean PolicyMapAndroid::HasValue(
+bool PolicyMapAndroid::HasValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
   return GetValue(env, policy) != nullptr;
@@ -35,7 +35,7 @@ jint PolicyMapAndroid::GetIntValue(
   return value->GetInt();
 }
 
-jboolean PolicyMapAndroid::GetBooleanValue(
+bool PolicyMapAndroid::GetBooleanValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
@@ -66,7 +66,7 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetDictValue(
   return GetListOrDictValue(env, policy, /* is_dict */ true);
 }
 
-jboolean PolicyMapAndroid::Equals(JNIEnv* env, jlong other) const {
+bool PolicyMapAndroid::Equals(JNIEnv* env, jlong other) const {
   return policy_map_->Equals(
       *reinterpret_cast<PolicyMapAndroid*>(other)->policy_map_);
 }

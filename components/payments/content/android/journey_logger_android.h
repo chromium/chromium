@@ -27,7 +27,7 @@ class JourneyLoggerAndroid {
   void SetNumberOfSuggestionsShown(JNIEnv* env,
                                    jint jsection,
                                    jint jnumber,
-                                   jboolean jhas_complete_suggestion);
+                                   bool jhas_complete_suggestion);
   void SetOptOutOffered(JNIEnv* env);
   void SetActivationlessShow(JNIEnv* env);
   void SetSkippedShow(JNIEnv* env);
@@ -36,10 +36,10 @@ class JourneyLoggerAndroid {
   void SetSelectedMethod(JNIEnv* env,
                          jint jPaymentMethodCategory);
   void SetRequestedInformation(JNIEnv* env,
-                               jboolean requested_shipping,
-                               jboolean requested_email,
-                               jboolean requested_phone,
-                               jboolean requested_name);
+                               bool requested_shipping,
+                               bool requested_email,
+                               bool requested_phone,
+                               bool requested_name);
   void SetRequestedPaymentMethods(
       JNIEnv* env,
       const base::android::JavaRef<jintArray>& jmethods);

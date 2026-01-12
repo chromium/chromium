@@ -22,7 +22,7 @@ class RenderFrameHostTestExt : public base::SupportsUserData::Data {
   void ExecuteJavaScript(JNIEnv* env,
                          const base::android::JavaRef<jstring>& jscript,
                          const base::android::JavaRef<jobject>& jcallback,
-                         jboolean with_user_gesture);
+                         bool with_user_gesture);
   // This calls InsertVisualStateCallback(). See it for details on the return
   // value.
   void UpdateVisualState(JNIEnv* env,

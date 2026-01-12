@@ -197,7 +197,7 @@ void InstanceIDAndroid::DidGetToken(
 
 void InstanceIDAndroid::DidDeleteToken(JNIEnv* env,
                                        jint request_id,
-                                       jboolean success) {
+                                       bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   DeleteTokenCallback* callback = delete_token_callbacks_.Lookup(request_id);
@@ -209,7 +209,7 @@ void InstanceIDAndroid::DidDeleteToken(JNIEnv* env,
 
 void InstanceIDAndroid::DidDeleteID(JNIEnv* env,
                                     jint request_id,
-                                    jboolean success) {
+                                    bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   DeleteIDCallback* callback = delete_id_callbacks_.Lookup(request_id);

@@ -23,7 +23,7 @@ class LargeIconBridge {
   LargeIconBridge& operator=(const LargeIconBridge& bridge) = delete;
 
   void Destroy(JNIEnv* env);
-  jboolean GetLargeIconForURL(
+  bool GetLargeIconForURL(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_browser_context,
       const base::android::JavaRef<jobject>& j_page_url,
@@ -34,7 +34,7 @@ class LargeIconBridge {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_browser_context,
       const base::android::JavaRef<jobject>& j_page_url,
-      jboolean should_trim_page_url_path,
+      bool should_trim_page_url_path,
       jint j_network_annotation_hash_code,
       const base::android::JavaRef<jobject>& j_callback);
   void TouchIconFromGoogleServer(

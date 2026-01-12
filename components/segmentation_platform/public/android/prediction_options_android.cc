@@ -29,9 +29,9 @@ PredictionOptions PredictionOptionsAndroid::ToNativePredictionOptions(
 void PredictionOptionsAndroid::FromJavaParams(
     JNIEnv* env,
     const jlong target,
-    const jboolean on_demand_execution,
-    const jboolean can_update_cache_for_future_requests,
-    const jboolean fallback_allowed) {
+    const bool on_demand_execution,
+    const bool can_update_cache_for_future_requests,
+    const bool fallback_allowed) {
   PredictionOptions* prediction_options =
       reinterpret_cast<PredictionOptions*>(target);
 
@@ -44,9 +44,9 @@ void PredictionOptionsAndroid::FromJavaParams(
 static void JNI_PredictionOptions_FillNative(
     JNIEnv* env,
     const jlong prediction_options_ptr,
-    const jboolean on_demand_execution,
-    const jboolean can_update_cache_for_future_requests,
-    const jboolean fallback_allowed) {
+    const bool on_demand_execution,
+    const bool can_update_cache_for_future_requests,
+    const bool fallback_allowed) {
   segmentation_platform::PredictionOptionsAndroid::FromJavaParams(
       env, prediction_options_ptr, on_demand_execution,
       can_update_cache_for_future_requests, fallback_allowed);

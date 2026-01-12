@@ -100,9 +100,9 @@ void CronetContextAdapter::InitRequestContextOnInitThread(
 
 void CronetContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
     JNIEnv* env,
-    jboolean use_local_host_requests,
-    jboolean use_smaller_responses,
-    jboolean disable_offline_check) {
+    bool use_local_host_requests,
+    bool use_smaller_responses,
+    bool disable_offline_check) {
   context_->ConfigureNetworkQualityEstimatorForTesting(
       use_local_host_requests == JNI_TRUE, use_smaller_responses == JNI_TRUE,
       disable_offline_check == JNI_TRUE);
@@ -219,7 +219,7 @@ bool CronetContextAdapter::IsOnNetworkThread() const {
 
 bool CronetContextAdapter::StartNetLogToFile(JNIEnv* env,
                                              const JavaRef<jstring>& jfile_name,
-                                             jboolean jlog_all) {
+                                             bool jlog_all) {
   std::string file_name(
       base::android::ConvertJavaStringToUTF8(env, jfile_name));
   return context_->StartNetLogToFile(file_name, jlog_all == JNI_TRUE);
@@ -227,7 +227,7 @@ bool CronetContextAdapter::StartNetLogToFile(JNIEnv* env,
 
 void CronetContextAdapter::StartNetLogToDisk(JNIEnv* env,
                                              const JavaRef<jstring>& jdir_name,
-                                             jboolean jlog_all,
+                                             bool jlog_all,
                                              jint jmax_size) {
   std::string dir_name(base::android::ConvertJavaStringToUTF8(env, jdir_name));
   context_->StartNetLogToDisk(dir_name, jlog_all == JNI_TRUE, jmax_size);
@@ -313,7 +313,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
     jlong jurl_request_context_config,
     const JavaRef<jstring>& jhost,
     const JavaRef<jobjectArray>& jhashes,
-    jboolean jinclude_subdomains,
+    bool jinclude_subdomains,
     jlong jexpiration_time) {
   URLRequestContextConfig* config =
       reinterpret_cast<URLRequestContextConfig*>(jurl_request_context_config);

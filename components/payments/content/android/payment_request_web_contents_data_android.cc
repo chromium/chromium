@@ -14,7 +14,7 @@ namespace payments {
 namespace android {
 
 // static
-static jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
+static bool JNI_PaymentRequestWebContentsData_HadActivationlessShow(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =

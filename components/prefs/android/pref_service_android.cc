@@ -59,22 +59,22 @@ void PrefServiceAndroid::ClearPref(JNIEnv* env,
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
-jboolean PrefServiceAndroid::HasPrefPath(
+bool PrefServiceAndroid::HasPrefPath(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& j_preference) {
   return pref_service_->HasPrefPath(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
-jboolean PrefServiceAndroid::GetBoolean(JNIEnv* env,
-                                        const JavaRef<jstring>& j_preference) {
+bool PrefServiceAndroid::GetBoolean(JNIEnv* env,
+                                    const JavaRef<jstring>& j_preference) {
   return pref_service_->GetBoolean(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
 void PrefServiceAndroid::SetBoolean(JNIEnv* env,
                                     const JavaRef<jstring>& j_preference,
-                                    const jboolean j_value) {
+                                    const bool j_value) {
   pref_service_->SetBoolean(
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }
@@ -135,14 +135,14 @@ void PrefServiceAndroid::SetString(
       base::android::ConvertJavaStringToUTF8(env, j_value));
 }
 
-jboolean PrefServiceAndroid::IsManagedPreference(
+bool PrefServiceAndroid::IsManagedPreference(
     JNIEnv* env,
     const JavaRef<jstring>& j_preference) {
   return pref_service_->IsManagedPreference(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
-jboolean PrefServiceAndroid::HasRecommendation(
+bool PrefServiceAndroid::HasRecommendation(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& j_preference) {
   const PrefService::Preference* pref = pref_service_->FindPreference(
@@ -150,7 +150,7 @@ jboolean PrefServiceAndroid::HasRecommendation(
   return pref && pref->GetRecommendedValue() != nullptr;
 }
 
-jboolean PrefServiceAndroid::IsFollowingRecommendation(
+bool PrefServiceAndroid::IsFollowingRecommendation(
     JNIEnv* env,
     const JavaRef<jstring>& j_preference) {
   const PrefService::Preference* pref = pref_service_->FindPreference(
@@ -159,7 +159,7 @@ jboolean PrefServiceAndroid::IsFollowingRecommendation(
          *pref->GetRecommendedValue() == *pref->GetValue();
 }
 
-jboolean PrefServiceAndroid::IsRecommendedPreference(
+bool PrefServiceAndroid::IsRecommendedPreference(
     JNIEnv* env,
     const JavaRef<jstring>& j_preference) {
   const PrefService::Preference* pref = pref_service_->FindPreference(
@@ -167,7 +167,7 @@ jboolean PrefServiceAndroid::IsRecommendedPreference(
   return pref && pref->IsRecommended();
 }
 
-jboolean PrefServiceAndroid::IsDefaultValuePreference(
+bool PrefServiceAndroid::IsDefaultValuePreference(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& j_preference) {
   const PrefService::Preference* pref = pref_service_->FindPreference(

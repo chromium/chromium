@@ -73,7 +73,7 @@ class TestBridge : public TranslateMessage::Bridge {
                base::android::ScopedJavaLocalRef<jstring>,
                base::android::ScopedJavaLocalRef<jstring>,
                base::android::ScopedJavaLocalRef<jstring>,
-               jboolean),
+               bool),
               (override));
 
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobjectArray>,
@@ -561,7 +561,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleAlwaysTranslateLanguage) {
         static_cast<int>(TranslateMessage::OverflowMenuItemId::
                              kToggleAlwaysTranslateLanguage),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(false)));
+        static_cast<bool>(false)));
     histogram_tester.ExpectUniqueSample(
         kInfobarEventHistogram, InfobarEvent::INFOBAR_ALWAYS_TRANSLATE, 1);
   }
@@ -598,7 +598,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleAlwaysTranslateLanguage) {
         static_cast<int>(TranslateMessage::OverflowMenuItemId::
                              kToggleAlwaysTranslateLanguage),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(true)));
+        static_cast<bool>(true)));
     histogram_tester.ExpectUniqueSample(
         kInfobarEventHistogram, InfobarEvent::INFOBAR_ALWAYS_TRANSLATE_UNDO, 1);
   }
@@ -649,7 +649,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateLanguage) {
         static_cast<int>(TranslateMessage::OverflowMenuItemId::
                              kToggleNeverTranslateLanguage),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(false)));
+        static_cast<bool>(false)));
     histogram_tester.ExpectUniqueSample(
         kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE, 1);
   }
@@ -683,7 +683,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateLanguage) {
         static_cast<int>(TranslateMessage::OverflowMenuItemId::
                              kToggleNeverTranslateLanguage),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(true)));
+        static_cast<bool>(true)));
     histogram_tester.ExpectUniqueSample(
         kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE_UNDO, 1);
   }
@@ -734,7 +734,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateSite) {
         static_cast<int>(
             TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(false)));
+        static_cast<bool>(false)));
     histogram_tester.ExpectUniqueSample(
         kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE, 1);
   }
@@ -769,7 +769,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateSite) {
         static_cast<int>(
             TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(true)));
+        static_cast<bool>(true)));
     histogram_tester.ExpectUniqueSample(
         kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE_UNDO,
         1);
@@ -836,7 +836,7 @@ TEST_F(TranslateMessageTest, OverflowMenuChangeSourceLanguage) {
         static_cast<int>(
             TranslateMessage::OverflowMenuItemId::kChangeSourceLanguage),
         base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(false)));
+        static_cast<bool>(false)));
     histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
                                         InfobarEvent::INFOBAR_PAGE_NOT_IN, 1);
   }
@@ -848,7 +848,7 @@ TEST_F(TranslateMessageTest, OverflowMenuChangeSourceLanguage) {
       static_cast<int>(
           TranslateMessage::OverflowMenuItemId::kChangeSourceLanguage),
       base::android::ConvertUTF8ToJavaString(env, "de"),
-      static_cast<jboolean>(false)));
+      static_cast<bool>(false)));
 
   FinishTranslation(env, "de", "en");
 }
@@ -919,7 +919,7 @@ TEST_F(TranslateMessageTest,
       static_cast<int>(
           TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
       base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(false)));
+      static_cast<bool>(false)));
 
   // Clicking a language should kick off a translation.
   ExpectTranslationInProgress(env, "fr", "de");
@@ -928,7 +928,7 @@ TEST_F(TranslateMessageTest,
       static_cast<int>(
           TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
       base::android::ConvertUTF8ToJavaString(env, "de"),
-      static_cast<jboolean>(false)));
+      static_cast<bool>(false)));
 
   FinishTranslation(env, "fr", "de");
 }

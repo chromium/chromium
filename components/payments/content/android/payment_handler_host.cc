@@ -46,8 +46,7 @@ PaymentHandlerHost::PaymentHandlerHost(
 
 PaymentHandlerHost::~PaymentHandlerHost() = default;
 
-jboolean PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(
-    JNIEnv* env) const {
+bool PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(JNIEnv* env) const {
   return payment_handler_host_.is_waiting_for_payment_details_update();
 }
 

@@ -69,7 +69,7 @@ void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
 
 void UsbServiceAndroid::DevicePermissionRequestComplete(JNIEnv* env,
                                                         jint device_id,
-                                                        jboolean granted) {
+                                                        bool granted) {
   const auto it = devices_by_id_.find(device_id);
   if (it == devices_by_id_.end()) {
     return;

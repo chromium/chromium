@@ -20,12 +20,12 @@ class HeapProfilingTestShim {
   HeapProfilingTestShim(const HeapProfilingTestShim&) = delete;
   HeapProfilingTestShim& operator=(const HeapProfilingTestShim&) = delete;
 
-  jboolean RunTestForMode(JNIEnv* env,
-                          const base::android::JavaRef<jstring>& mode,
-                          jboolean dynamically_start_profiling,
-                          const base::android::JavaRef<jstring>& stack_mode,
-                          jboolean should_sample,
-                          jboolean sample_everything);
+  bool RunTestForMode(JNIEnv* env,
+                      const base::android::JavaRef<jstring>& mode,
+                      bool dynamically_start_profiling,
+                      const base::android::JavaRef<jstring>& stack_mode,
+                      bool should_sample,
+                      bool sample_everything);
 
  private:
   ~HeapProfilingTestShim();

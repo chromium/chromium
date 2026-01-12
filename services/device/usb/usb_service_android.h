@@ -32,7 +32,7 @@ class UsbServiceAndroid final : public UsbService {
                       jint device_id);
   void DevicePermissionRequestComplete(JNIEnv* env,
                                        jint device_id,
-                                       jboolean granted);
+                                       bool granted);
 
   // Called by UsbDeviceAndroid.
   base::android::ScopedJavaLocalRef<jobject> OpenDevice(

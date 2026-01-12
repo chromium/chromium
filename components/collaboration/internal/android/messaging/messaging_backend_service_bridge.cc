@@ -181,7 +181,7 @@ void MessagingBackendServiceBridge::ClearPersistentMessage(
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
     JNIEnv* env,
     jlong j_callback,
-    jboolean j_result) {
+    bool j_result) {
   CHECK(j_callback);
   std::unique_ptr<
       MessagingBackendService::InstantMessageDelegate::SuccessCallback>

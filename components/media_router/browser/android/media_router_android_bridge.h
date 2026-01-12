@@ -61,7 +61,7 @@ class MediaRouterAndroidBridge {
                       const base::android::JavaRef<jstring>& jmedia_route_id,
                       const base::android::JavaRef<jstring>& jmedia_sink_id,
                       jint jroute_request_id,
-                      jboolean jis_local);
+                      bool jis_local);
   void OnCreateRouteRequestError(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jerror_text,

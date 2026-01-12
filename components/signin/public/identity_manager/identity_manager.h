@@ -556,7 +556,7 @@ class IdentityManager : public KeyedService,
   void RefreshAccountInfoIfStale(JNIEnv* env);
 
   // Returns true if the browser allows the primary account to be cleared.
-  jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;
+  bool IsClearPrimaryAccountAllowed(JNIEnv* env) const;
 #endif
 
   // Returns a weak pointer of this.

@@ -69,7 +69,7 @@ void LargeIconBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean LargeIconBridge::GetLargeIconForURL(
+bool LargeIconBridge::GetLargeIconForURL(
     JNIEnv* env,
     const JavaRef<jobject>& j_browser_context,
     const JavaRef<jobject>& j_page_url,
@@ -105,7 +105,7 @@ void LargeIconBridge::
         JNIEnv* env,
         const base::android::JavaRef<jobject>& j_browser_context,
         const base::android::JavaRef<jobject>& j_page_url,
-        jboolean should_trim_page_url_path,
+        bool should_trim_page_url_path,
         jint j_network_annotation_hash_code,
         const base::android::JavaRef<jobject>& j_callback) {
   content::BrowserContext* browser_context =

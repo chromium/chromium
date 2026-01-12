@@ -238,7 +238,7 @@ void ModalDialogWrapper::BuildPropertyModel() {
   }
 
   std::u16string checkbox_text;
-  jboolean checked = false;
+  bool checked = false;
   std::vector<std::vector<std::u16string>> all_paragraph_spans;
   std::vector<std::vector<base::RepeatingClosure>> all_paragraph_closures;
   std::vector<const SkBitmap*> menu_item_icons;
@@ -378,13 +378,12 @@ void ModalDialogWrapper::NegativeButtonClicked(JNIEnv* env) {
   dialog_model_->OnDialogCancelAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, jboolean is_checked) {
+void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, bool is_checked) {
   if (!checkbox_id_) {
     return;
   }
   dialog_model_->GetCheckboxByUniqueId(checkbox_id_)
-      ->OnChecked(DialogModelFieldHost::GetPassKey(),
-                  static_cast<bool>(is_checked));
+      ->OnChecked(DialogModelFieldHost::GetPassKey(), is_checked);
 }
 
 void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, jint index) {

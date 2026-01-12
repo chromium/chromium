@@ -58,10 +58,10 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                      jint rotationDegrees,
                      jint bitsPerPixel,
                      jint bitsPerComponent,
-                     jboolean isWideColorGamut,
-                     jboolean isHdr,
+                     bool isWideColorGamut,
+                     bool isHdr,
                      jfloat hdrMaxLuminanceRatio,
-                     jboolean isInternal);
+                     bool isInternal);
   void RemoveDisplay(JNIEnv* env,
                      jint sdkDisplayId);
   void SetPrimaryDisplayId(JNIEnv* env,

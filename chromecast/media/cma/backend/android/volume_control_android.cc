@@ -138,9 +138,7 @@ void VolumeControlAndroid::OnVolumeChange(JNIEnv* env,
                      static_cast<AudioContentType>(type), level));
 }
 
-void VolumeControlAndroid::OnMuteChange(JNIEnv* env,
-                                        jint type,
-                                        jboolean muted) {
+void VolumeControlAndroid::OnMuteChange(JNIEnv* env, jint type, bool muted) {
   thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&VolumeControlAndroid::ReportMuteChangeOnThread,
                                 base::Unretained(this),

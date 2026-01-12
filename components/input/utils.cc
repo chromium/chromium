@@ -27,7 +27,7 @@ using perfetto::protos::pbzero::ChromeLatencyInfo2;
 bool InputUtils::initialized_ = false;
 bool InputUtils::has_security_update_ = false;
 
-static jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
+static bool JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
   return InputUtils::IsTransferInputToVizSupported();
 }
 

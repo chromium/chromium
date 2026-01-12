@@ -76,7 +76,7 @@ PendingWriteData::PendingWriteData(
     const JavaRef<jobjectArray>& jwrite_buffer_list,
     const JavaRef<jintArray>& jwrite_buffer_pos_list,
     const JavaRef<jintArray>& jwrite_buffer_limit_list,
-    jboolean jwrite_end_of_stream) {
+    bool jwrite_end_of_stream) {
   this->jwrite_buffer_list.Reset(jwrite_buffer_list);
   this->jwrite_buffer_pos_list.Reset(jwrite_buffer_pos_list);
   this->jwrite_buffer_limit_list.Reset(jwrite_buffer_limit_list);
@@ -94,10 +94,10 @@ static jlong JNI_CronetBidirectionalStream_CreateBidirectionalStream(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbidi_stream,
     jlong jurl_request_context_adapter,
-    jboolean jsend_request_headers_automatically,
-    jboolean jtraffic_stats_tag_set,
+    bool jsend_request_headers_automatically,
+    bool jtraffic_stats_tag_set,
     jint jtraffic_stats_tag,
-    jboolean jtraffic_stats_uid_set,
+    bool jtraffic_stats_uid_set,
     jint jtraffic_stats_uid,
     jlong jnetwork_handle) {
   CronetContextAdapter* context_adapter =
@@ -152,7 +152,7 @@ jint CronetBidirectionalStreamAdapter::Start(
     jint jpriority,
     const base::android::JavaRef<jstring>& jmethod,
     const base::android::JavaRef<jobjectArray>& jheaders,
-    jboolean jend_of_stream) {
+    bool jend_of_stream) {
   // Prepare request info here to be able to return the error.
   std::unique_ptr<net::BidirectionalStreamRequestInfo> request_info(
       new net::BidirectionalStreamRequestInfo());
@@ -189,7 +189,7 @@ jint CronetBidirectionalStreamAdapter::Start(
   return 0;
 }
 
-jboolean CronetBidirectionalStreamAdapter::ReadData(
+bool CronetBidirectionalStreamAdapter::ReadData(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbyte_buffer,
     jint jposition,
@@ -208,12 +208,12 @@ jboolean CronetBidirectionalStreamAdapter::ReadData(
   return JNI_TRUE;
 }
 
-jboolean CronetBidirectionalStreamAdapter::WritevData(
+bool CronetBidirectionalStreamAdapter::WritevData(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& jbyte_buffers,
     const base::android::JavaRef<jintArray>& jbyte_buffers_pos,
     const base::android::JavaRef<jintArray>& jbyte_buffers_limit,
-    jboolean jend_of_stream) {
+    bool jend_of_stream) {
   size_t buffers_array_size = SafeGetArrayLength(env, jbyte_buffers.obj());
   size_t pos_array_size = SafeGetArrayLength(env, jbyte_buffers.obj());
   size_t limit_array_size = SafeGetArrayLength(env, jbyte_buffers.obj());

@@ -221,10 +221,10 @@ void DisplayAndroidManager::UpdateDisplay(
     jint rotationDegrees,
     jint bitsPerPixel,
     jint bitsPerComponent,
-    jboolean isWideColorGamut,
-    jboolean isHdr,
+    bool isWideColorGamut,
+    bool isHdr,
     jfloat hdrMaxLuminanceRatio,
-    jboolean isInternal) {
+    bool isInternal) {
   std::vector<int> bounds_array, work_area_array;
   base::android::JavaIntArrayToIntVector(env, jBounds, &bounds_array);
   base::android::JavaIntArrayToIntVector(env, jWorkArea, &work_area_array);

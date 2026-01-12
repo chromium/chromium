@@ -173,7 +173,7 @@ void GetOrigins(JNIEnv* env,
                 ContentSettingsType content_type,
                 InfoListInsertionFunction insertionFunc,
                 const JavaRef<jobject>& list,
-                jboolean managedOnly) {
+                bool managedOnly) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   HostContentSettingsMap* content_settings_map =
       GetHostContentSettingsMap(browser_context);
@@ -378,7 +378,7 @@ bool IsContentSettingUserModifiable(
 
 }  // anonymous namespace
 
-static jboolean JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
+static bool JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const JavaRef<jstring>& origin) {
@@ -483,7 +483,7 @@ static void JNI_WebsitePreferenceBridge_SetPermissionSettingForOrigin(
   }
 }
 
-static jboolean
+static bool
 JNI_WebsitePreferenceBridge_CanAddExceptionsForJavascriptOptimizerSetting(
     JNIEnv* env) {
   // If origin isolation for JavaScript-optimization exceptions is disabled,
@@ -587,8 +587,7 @@ static void JNI_WebsitePreferenceBridge_SetEphemeralGrantForTesting(  // IN-TEST
           constraints);
 }
 
-static jboolean
-JNI_WebsitePreferenceBridge_HasHeuristicDataForTesting(  // IN-TEST
+static bool JNI_WebsitePreferenceBridge_HasHeuristicDataForTesting(  // IN-TEST
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const JavaRef<jstring>& jorigin,
@@ -619,14 +618,14 @@ static void JNI_WebsitePreferenceBridge_GetOriginsForPermission(
     const JavaRef<jobject>& jbrowser_context_handle,
     jint content_settings_type,
     const JavaRef<jobject>& list,
-    jboolean managedOnly) {
+    bool managedOnly) {
   GetOrigins(env, jbrowser_context_handle,
              static_cast<ContentSettingsType>(content_settings_type),
              &Java_WebsitePreferenceBridge_insertPermissionInfoIntoList, list,
              managedOnly);
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingsPatternValid(
+static bool JNI_WebsitePreferenceBridge_IsContentSettingsPatternValid(
     JNIEnv* env,
     const JavaRef<jstring>& pattern) {
   return ContentSettingsPattern::FromString(
@@ -634,7 +633,7 @@ static jboolean JNI_WebsitePreferenceBridge_IsContentSettingsPatternValid(
       .IsValid();
 }
 
-static jboolean JNI_WebsitePreferenceBridge_UrlMatchesContentSettingsPattern(
+static bool JNI_WebsitePreferenceBridge_UrlMatchesContentSettingsPattern(
     JNIEnv* env,
     const JavaRef<jstring>& jurl,
     const JavaRef<jstring>& jpattern) {
@@ -674,7 +673,7 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
     ScopedJavaLocalRef<jstring> jserialized =
         ConvertUTF8ToJavaString(env, serialized);
 
-    jboolean jis_managed =
+    bool jis_managed =
         object->source == content_settings::SettingSource::kPolicy;
 
     Java_WebsitePreferenceBridge_insertChosenObjectInfoIntoList(
@@ -846,7 +845,7 @@ static void JNI_WebsitePreferenceBridge_FetchLocalStorageInfo(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const JavaRef<jobject>& java_callback,
-    jboolean fetch_important) {
+    bool fetch_important) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   auto local_storage_helper =
       base::MakeRefCounted<browsing_data::LocalStorageHelper>(
@@ -966,7 +965,7 @@ static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
       base::DoNothing());
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsDSEOrigin(
+static bool JNI_WebsitePreferenceBridge_IsDSEOrigin(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const JavaRef<jstring>& jorigin) {
@@ -975,7 +974,7 @@ static jboolean JNI_WebsitePreferenceBridge_IsDSEOrigin(
       url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
 }
 
-static jboolean JNI_WebsitePreferenceBridge_GetAdBlockingActivated(
+static bool JNI_WebsitePreferenceBridge_GetAdBlockingActivated(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const JavaRef<jstring>& jorigin) {
@@ -993,7 +992,7 @@ static void JNI_WebsitePreferenceBridge_ResetNotificationsSettingsForTest(
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsCookieDeletionDisabled(
+static bool JNI_WebsitePreferenceBridge_IsCookieDeletionDisabled(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const JavaRef<jstring>& jorigin) {
@@ -1002,7 +1001,7 @@ static jboolean JNI_WebsitePreferenceBridge_IsCookieDeletionDisabled(
       unwrap(jbrowser_context_handle), GURL(origin));
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingEnabled(
+static bool JNI_WebsitePreferenceBridge_IsContentSettingEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     int content_settings_type) {
@@ -1016,7 +1015,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     int content_settings_type,
-    jboolean allow) {
+    bool allow) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
   content_settings_uma_util::RecordContentSettingsHistogram(
@@ -1191,7 +1190,7 @@ static int JNI_WebsitePreferenceBridge_GetContentSetting(
           static_cast<ContentSettingsType>(content_settings_type));
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingGlobal(
+static bool JNI_WebsitePreferenceBridge_IsContentSettingGlobal(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     int content_settings_type,
@@ -1293,7 +1292,7 @@ static void JNI_WebsitePreferenceBridge_SetDefaultContentSetting(
       ->SetDefaultPermissionSetting(type, permission_setting);
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingUserModifiable(
+static bool JNI_WebsitePreferenceBridge_IsContentSettingUserModifiable(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     int content_settings_type) {
@@ -1311,7 +1310,7 @@ static jint JNI_WebsitePreferenceBridge_GetDefaultContentSettingProviderSource(
       static_cast<ContentSettingsType>(content_settings_type)));
 }
 
-static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
+static bool JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle) {
   auto type = permissions::PermissionUtil::GetGeolocationType();

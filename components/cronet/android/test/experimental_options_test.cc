@@ -65,7 +65,7 @@ static void JNI_ExperimentalOptionsTest_WriteToHostCache(
                      base::android::ConvertJavaStringToUTF8(env, jaddress)));
 }
 
-static jboolean
+static bool
 JNI_ExperimentalOptionsTest_ExperimentalOptionsParsingIsAllowedToFail(
     JNIEnv* env) {
   return URLRequestContextConfig::ExperimentalOptionsParsingIsAllowedToFail();

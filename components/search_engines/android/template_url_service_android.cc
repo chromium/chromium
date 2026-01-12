@@ -156,15 +156,15 @@ void TemplateUrlServiceAndroid::SetUserSelectedDefaultSearchProvider(
       static_cast<search_engines::ChoiceMadeLocation>(choice_made_location));
 }
 
-jboolean TemplateUrlServiceAndroid::IsLoaded(JNIEnv* env) const {
+bool TemplateUrlServiceAndroid::IsLoaded(JNIEnv* env) const {
   return template_url_service_->loaded();
 }
 
-jboolean TemplateUrlServiceAndroid::IsDefaultSearchManaged(JNIEnv* env) {
+bool TemplateUrlServiceAndroid::IsDefaultSearchManaged(JNIEnv* env) {
   return template_url_service_->is_default_search_managed();
 }
 
-jboolean TemplateUrlServiceAndroid::IsSearchByImageAvailable(JNIEnv* env) {
+bool TemplateUrlServiceAndroid::IsSearchByImageAvailable(JNIEnv* env) {
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
   return default_search_provider &&
@@ -173,8 +173,7 @@ jboolean TemplateUrlServiceAndroid::IsSearchByImageAvailable(JNIEnv* env) {
              template_url_service_->search_terms_data());
 }
 
-jboolean TemplateUrlServiceAndroid::DoesDefaultSearchEngineHaveLogo(
-    JNIEnv* env) {
+bool TemplateUrlServiceAndroid::DoesDefaultSearchEngineHaveLogo(JNIEnv* env) {
   // |kSearchProviderLogoURL| applies to all search engines (Google or
   // third-party).
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -200,12 +199,11 @@ jboolean TemplateUrlServiceAndroid::DoesDefaultSearchEngineHaveLogo(
           default_search_provider->logo_url().is_valid());
 }
 
-jboolean TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(JNIEnv* env) {
+bool TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(JNIEnv* env) {
   return IsDefaultSearchEngineGoogle();
 }
 
-jboolean
-TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
+bool TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
@@ -327,7 +325,7 @@ TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
     JNIEnv* env,
     const JavaRef<jstring>& jquery,
     const JavaRef<jstring>& jalternate_term,
-    jboolean jshould_prefetch,
+    bool jshould_prefetch,
     const JavaRef<jstring>& jprotocol_version) {
   std::u16string query(base::android::ConvertJavaStringToUTF16(env, jquery));
 
@@ -387,7 +385,7 @@ int TemplateUrlServiceAndroid::GetSearchEngineTypeFromTemplateUrl(
   return template_url->GetEngineType(search_terms_data);
 }
 
-jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
+bool TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jname,
     const base::android::JavaRef<jstring>& jkeyword,

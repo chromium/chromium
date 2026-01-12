@@ -90,9 +90,8 @@ void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
       ConvertSecurePayloadToJavaObject(secure_payload));
 }
 
-void FacilitatedPaymentsApiClientAndroid::OnIsAvailable(
-    JNIEnv* env,
-    jboolean is_api_available) {
+void FacilitatedPaymentsApiClientAndroid::OnIsAvailable(JNIEnv* env,
+                                                        bool is_api_available) {
   if (is_available_callback_) {
     std::move(is_available_callback_).Run(is_api_available);
   }

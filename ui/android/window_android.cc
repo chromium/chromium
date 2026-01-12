@@ -227,7 +227,7 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
 
 void WindowAndroid::OnAdaptiveRefreshRateInfoChanged(
     JNIEnv* env,
-    jboolean supports_adaptive_refresh_rate,
+    bool supports_adaptive_refresh_rate,
     jfloat suggested_frame_rate_high) {
   adaptive_refresh_rate_info_.supports_adaptive_refresh_rate =
       supports_adaptive_refresh_rate;
@@ -417,7 +417,7 @@ static jlong JNI_WindowAndroid_Init(JNIEnv* env,
                                     const JavaRef<jobject>& obj,
                                     jint sdk_display_id,
                                     jfloat scroll_factor,
-                                    jboolean window_is_wide_color_gamut) {
+                                    bool window_is_wide_color_gamut) {
   WindowAndroid* window = new WindowAndroid(
       env, obj, sdk_display_id, scroll_factor, window_is_wide_color_gamut);
   return reinterpret_cast<intptr_t>(window);
