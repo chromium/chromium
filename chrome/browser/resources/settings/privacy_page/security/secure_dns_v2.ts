@@ -139,6 +139,11 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
        */
       selectedMode_: String,
 
+      isSecureDnsWarningIconVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * Controls visibility of the custom input container.
        * Replaces the old 'showSecureDnsOptions_' logic.
@@ -163,6 +168,7 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
   declare private secureDnsInputValue_: string;
   declare private secureDnsModeUncheckedValues_: SecureDnsMode[];
   declare private selectedMode_: SecureDnsV2ResolverType;
+  declare private isSecureDnsWarningIconVisible_: boolean;
   declare private showCustomInput_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
@@ -223,6 +229,9 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
       default:
         assertNotReachedCase(setting.mode);
     }
+
+    this.updateManagementView_(setting);
+    this.updateAppearance_();
   }
 
   /**
@@ -231,7 +240,9 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
    */
   private onSecureDnsRadioGroupChange_() {
     // If the toggle is OFF, clicking a radio button should turn it ON.
-    if (!this.secureDnsToggle_.value) {
+    if (this.getPref('dns_over_https.mode').enforcement !==
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !this.secureDnsToggle_.value) {
       this.set('secureDnsToggle_.value', true);
     }
 
@@ -263,6 +274,7 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
       return;
     }
 
+    this.updateAppearance_();
     // Restore the state based on the current radio selection
     this.onSecureDnsRadioGroupChange_();
   }
@@ -378,6 +390,23 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
     }
     this.secureDnsToggle_ = pref;
   }
+
+  private updateAppearance_() {
+    if (this.prefs === undefined) {
+      return;
+    }
+
+    const enforced = this.getPref('dns_over_https.mode').enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+
+    this.$.automaticRadioButton.disabled = enforced;
+    this.$.fallbackRadioButton.disabled = enforced;
+    this.$.customRadioButton.disabled = enforced;
+
+    this.isSecureDnsWarningIconVisible_ =
+        !this.secureDnsToggle_.value && !enforced;
+  }
+
 
   /**
    * Updates the UI to match the provided configuration parameters.
