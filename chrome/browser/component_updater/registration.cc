@@ -18,6 +18,7 @@
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
+#include "chrome/browser/component_updater/cookie_readiness_list_component_remover.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
@@ -161,6 +162,11 @@ void RegisterComponentsForUpdate() {
     //
     // TODO(crbug.com/473796598): Remove this code in M146+.
     DeleteOpenCookieDatabase(path);
+
+    // Clean up remaining state for Cookie Readiness List component.
+    //
+    // TODO(crbug.com/473796598): Remove this code in M146+.
+    DeleteCookieReadinessList(path);
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Lacros is sunsetted. While rootfs Lacros was already taken care of,
