@@ -60,7 +60,7 @@ class FaviconLoader;
         reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
                  exportHandler:(id<PasswordExportHandler>)exportHandler
                    syncService:(syncer::SyncService*)syncService
-    NS_DESIGNATED_INITIALIZER;
+                     userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

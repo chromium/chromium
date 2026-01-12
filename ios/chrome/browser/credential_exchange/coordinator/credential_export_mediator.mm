@@ -55,6 +55,9 @@ const CGFloat kMinFaviconSize = 16.0;
 
   // Service to know whether passwords are synced.
   raw_ptr<syncer::SyncService> _syncService;
+
+  // Email of the signed-in user account.
+  NSString* _userEmail;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
@@ -64,7 +67,8 @@ const CGFloat kMinFaviconSize = 16.0;
                  faviconLoader:(FaviconLoader*)faviconLoader
         reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
                  exportHandler:(id<PasswordExportHandler>)exportHandler
-                   syncService:(syncer::SyncService*)syncService {
+                   syncService:(syncer::SyncService*)syncService
+                     userEmail:(NSString*)userEmail {
   self = [super init];
   if (self) {
     _window = window;
@@ -73,7 +77,7 @@ const CGFloat kMinFaviconSize = 16.0;
     _faviconLoader = faviconLoader;
     _exportHandler = exportHandler;
     _syncService = syncService;
-
+    _userEmail = userEmail;
     _passwordExporter =
         [[PasswordExporter alloc] initWithReauthenticationModule:reauthModule
                                                         delegate:self];
@@ -193,10 +197,10 @@ const CGFloat kMinFaviconSize = 16.0;
                                         passkeys {
   if (@available(iOS 26, *)) {
     _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window];
-
     [_credentialExporter startExportWithPasswords:std::move(passwords)
                                          passkeys:std::move(passkeys)
-                                 trustedVaultKeys:trustedVaultKeys];
+                                 trustedVaultKeys:trustedVaultKeys
+                                        userEmail:_userEmail];
   }
 }
 

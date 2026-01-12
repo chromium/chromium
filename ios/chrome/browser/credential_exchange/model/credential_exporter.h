@@ -30,7 +30,7 @@
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
                 trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
-    API_AVAILABLE(ios(26.0));
+                       userEmail:(NSString*)userEmail API_AVAILABLE(ios(26.0));
 
 @end
 

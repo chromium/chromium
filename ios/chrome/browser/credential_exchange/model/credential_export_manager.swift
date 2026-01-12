@@ -53,7 +53,8 @@ import UIKit
   /// Converts credential data into the `ASExportedCredentialData` format.
   @available(iOS 26, *)
   private static func buildExportData(
-    from passwords: [ExportablePassword], and passkeys: [ExportablePasskey]
+    from passwords: [ExportablePassword], and passkeys: [ExportablePasskey],
+    and userEmail: String, and exporterName: String
   ) async
     -> ASExportedCredentialData
   {
@@ -78,8 +79,7 @@ import UIKit
       }
       let scope = ASImportableCredentialScope(urls: [password.url])
       let item = ASImportableItem(
-        // TODO(crbug.com/447142330): Replace placeholder data: id, created, lastModified.
-        // Confirm final choices for title, subtitle, favorite.
+        // TODO(crbug.com/447142330): Replace placeholder data: created, lastModified.
         id: UUID().uuidString.data(using: .utf8)!,
         created: Date(),
         lastModified: Date(),
@@ -118,10 +118,9 @@ import UIKit
     }
 
     let account = ASImportableAccount(
-      // TODO(crbug.com/447142330): Replace placeholder data: id, username and email.
       id: UUID().uuidString.data(using: .utf8)!,
-      userName: "Chrome User",
-      email: "user@example.com",
+      userName: "",  // No user-defined pseudonym for the account in GPM.
+      email: userEmail,
       fullName: nil,
       collections: [],
       items: importableItems
@@ -129,9 +128,8 @@ import UIKit
     let exportedData = ASExportedCredentialData(
       accounts: [account],
       formatVersion: .v1,
-      exporterRelyingPartyIdentifier: "",
-      // TODO(crbug.com/447144466): Localize user-visible strings.
-      exporterDisplayName: "Chromium",
+      exporterRelyingPartyIdentifier: "passwords.google.com",
+      exporterDisplayName: exporterName,
       timestamp: Date()
     )
     return exportedData
@@ -140,10 +138,10 @@ import UIKit
   /// Begins the credential exchange process by requesting the export options, which triggers the
   /// system UI allowing the user to pick the import credential manager.
   @available(iOS 26, *)
-  @objc(startExportWithPasswords:passkeys:window:)
+  @objc(startExportWithPasswords:passkeys:window:userEmail:exporterName:)
   public func startExport(
     passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey],
-    window: UIWindow
+    window: UIWindow, userEmail: String, exporterName: String
   ) {
     Task { @MainActor in
       do {
@@ -156,7 +154,7 @@ import UIKit
         let _ = try await exportManager.requestExport(for: nil)
 
         let exportedData = await CredentialExportManager.buildExportData(
-          from: exportablePasswords, and: exportablePasskeys)
+          from: exportablePasswords, and: exportablePasskeys, and: userEmail, and: exporterName)
 
         try await exportManager.exportCredentials(exportedData)
       } catch {

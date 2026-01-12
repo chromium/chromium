@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/prefs/pref_service.h"
@@ -84,12 +85,12 @@
 
 - (void)start {
   _viewController = [[CredentialExportViewController alloc] init];
-
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
-
   _reauthModule = password_manager::BuildReauthenticationModule();
-
+  _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email;
   _mediator = [[CredentialExportMediator alloc]
               initWithWindow:_baseNavigationController.view.window
             affiliatedGroups:std::move(_affiliatedGroups)
@@ -97,16 +98,13 @@
                faviconLoader:faviconLoader
       reauthenticationModule:_reauthModule
                exportHandler:self
-                 syncService:SyncServiceFactory::GetForProfile(self.profile)];
+                 syncService:SyncServiceFactory::GetForProfile(self.profile)
+                   userEmail:base::SysUTF8ToNSString(_userEmail)];
   _affiliatedGroups = {};
   _viewController.delegate = _mediator;
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.faviconProvider = _mediator;
-
-  _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                   .email;
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }

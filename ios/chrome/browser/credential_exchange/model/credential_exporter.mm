@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_export_manager_swift.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation CredentialExporter {
   // Used as a presentation anchor for OS views. Must not be nil.
@@ -42,16 +44,21 @@
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
                 trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
-    API_AVAILABLE(ios(26.0)) {
+                       userEmail:(NSString*)userEmail API_AVAILABLE(ios(26.0)) {
   NSArray<CredentialExchangePassword*>* exportedPasswords =
       [self transformPasswords:std::move(passwords)];
   NSArray<CredentialExchangePasskey*>* exportedPasskeys =
       [self transformPasskeys:std::move(passkeys)
           usingTrustedVaultKeys:trustedVaultKeys];
 
-  [_credentialExportManager startExportWithPasswords:exportedPasswords
-                                            passkeys:exportedPasskeys
-                                              window:_window];
+  [_credentialExportManager
+      startExportWithPasswords:exportedPasswords
+                      passkeys:exportedPasskeys
+                        window:_window
+                     userEmail:userEmail
+                  exporterName:
+                      l10n_util::GetNSString(
+                          IDS_IOS_CREDENTIAL_EXCHANGE_EXPORTER_DISPLAY_NAME)];
 }
 
 #pragma mark - Private
