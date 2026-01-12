@@ -63,8 +63,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -113,7 +111,6 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
-#import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
@@ -380,17 +377,6 @@ void OnListFamilyMembersResponse(
   }
 }
 
-// Records a SigninFullscreenPromoEvents UMA histogram.
-void RecordIfNeededSigninFullscreenPromoEvent(
-    SigninFullscreenPromoEvents event,
-    signin_metrics::AccessPoint accessPoint) {
-  if (accessPoint != signin_metrics::AccessPoint::kFullscreenSigninPromo) {
-    return;
-  }
-  base::UmaHistogramEnumeration("IOS.SignInpromo.Fullscreen.PromoEvents",
-                                event);
-}
-
 }  // namespace
 
 // TODO(crbug.com/429355979): Order and group methods by interface.
@@ -400,7 +386,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
-                               PolicyWatcherBrowserAgentObserving,
                                ProfileStateObserver,
                                SafariDataImportMainCoordinatorDelegate,
                                SceneUIProvider,
@@ -409,18 +394,12 @@ void RecordIfNeededSigninFullscreenPromoEvent(
                                TabGridCoordinatorDelegate,
                                YoutubeIncognitoCoordinatorDelegate> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
-  std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
-      _policyWatcherObserverBridge;
   std::unique_ptr<
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
       _incognitoWebStateObserver;
   std::unique_ptr<
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
       _mainWebStateObserver;
-  std::unique_ptr<
-      base::ScopedObservation<PolicyWatcherBrowserAgent,
-                              PolicyWatcherBrowserAgentObserverBridge>>
-      _policyWatcherObserver;
 
   // The scene level component for url loading. Is passed down to
   // profile level UrlLoadingService instances.
@@ -509,10 +488,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 // TODO(crbug.com/429356457): Rename this to "BrowserLifecycleManager" or
 // something and reduce scope.
 @property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
-// The coordinator used to control sign-in UI flows. Lazily created the first
-// time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
-// the coordinator.
-@property(nonatomic, strong) SigninCoordinator* signinCoordinator;
 
 // The coordinator used to present the Incognito interstitial on Incognito
 // third-party intents. Created in
@@ -557,9 +532,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
     _webStateListForwardingObserver =
         std::make_unique<WebStateListObserverBridge>(self);
-
-    _policyWatcherObserverBridge =
-        std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
   }
   return self;
 }
@@ -917,20 +889,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 #pragma mark - private
 
-- (void)webSigninCompletion:(SigninCoordinator*)coordinator
-                     result:(SigninCoordinatorResult)result
-         completionIdentity:(id<SystemIdentity>)completionIdentity
-                        URL:(const GURL&)URL {
-  CHECK_EQ(coordinator, self.signinCoordinator);
-  // If the sign-in is not successful do not load the continuation URL.
-  BOOL success = result == SigninCoordinatorResultSuccess;
-  if (!success) {
-    return;
-  }
-  UrlLoadingBrowserAgent::FromBrowser(self.mainInterface.browser)
-      ->Load(UrlLoadParams::InCurrentTab(URL));
-}
-
 // If sign-in is disabled, switch to the personal profile and sign-out.
 - (void)signoutIfNeeded {
   AuthenticationService* authenticationService =
@@ -1122,16 +1080,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   return nil;
 }
 
-// Stops the signin coordinator.
-// TODO(crbug.com/381444097): always use the animated.
-- (void)stopSigninCoordinatorAnimated:(BOOL)animated {
-  // This ensure that when the SceneController receives the `signinFinished`
-  // command, it does not detect the SigninCoordinator as still presented.
-  SigninCoordinator* signinCoordinator = self.signinCoordinator;
-  self.signinCoordinator = nil;
-  [signinCoordinator stopAnimated:animated];
-}
-
 // Creates, if needed, and presents saved passwords settings. Assumes all modal
 // dialods are dismissed and `baseViewController` is available to present.
 - (void)showSavedPasswordsSettingsAfterModalDismissFromViewController:
@@ -1141,9 +1089,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     // dispatched command.
     baseViewController = self.currentInterface.viewController;
   }
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
 
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
@@ -1480,10 +1426,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 - (void)teardownUI {
   // The UI should be stopped before the models they observe are stopped.
-  [self stopSigninCoordinatorWithCompletionAnimated:NO];
-  DCHECK(!self.signinCoordinator)
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
@@ -1503,7 +1445,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
   _authServiceObserverBridge.reset();
-  _policyWatcherObserver.reset();
 
   // TODO(crbug.com/40778288): Consider moving this at the beginning of
   // teardownUI to indicate that the UI is about to be torn down and that the
@@ -1696,7 +1637,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   }
 
   if (IsSigninForcedByPolicy()) {
-    if (self.sceneState.signinInProgress) {
+    if (self.mainCoordinator.isSigninInProgress) {
       // Return NO because intents cannot be handled when a sign-in is in
       // progress.
       return NO;
@@ -1837,10 +1778,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   // changes.
   PolicyWatcherBrowserAgent* policyWatcherAgent =
       PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
-  _policyWatcherObserver = std::make_unique<base::ScopedObservation<
-      PolicyWatcherBrowserAgent, PolicyWatcherBrowserAgentObserverBridge>>(
-      _policyWatcherObserverBridge.get());
-  _policyWatcherObserver->Observe(policyWatcherAgent);
   policyWatcherAgent->Initialize(policyChangeCommandsHandler);
 
   if (ShouldPromoManagerDisplayPromos()) {
@@ -1905,20 +1842,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 - (void)showFullscreenSigninPromoWithCompletion:
     (SigninCoordinatorCompletionCallback)dismissalCompletion {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  Browser* browser = self.mainInterface.browser;
-  [self stopSigninCoordinatorWithCompletionAnimated:NO];
-  self.signinCoordinator = [SigninCoordinator
-      fullscreenSigninPromoCoordinatorWithBaseViewController:self.mainInterface
-                                                                 .viewController
-                                                     browser:browser
-                                                contextStyle:
-                                                    SigninContextStyle::kDefault
-                           changeProfileContinuationProvider:
-                               DoNothingContinuationProvider()];
-  [self startSigninCoordinatorWithCompletion:dismissalCompletion];
+  [self.mainCoordinator
+      showFullscreenSigninPromoWithCompletion:dismissalCompletion];
 }
 
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion {
@@ -2060,9 +1985,7 @@ using UserFeedbackDataCallback =
                                    timeout:(base::TimeDelta)timeout
                                 completion:
                                     (UserFeedbackDataCallback)completion {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     return;
   }
@@ -2226,62 +2149,12 @@ using UserFeedbackDataCallback =
   _sceneURLLoadingService->LoadUrlInNewTab(params);
 }
 
-// Returns `YES` if a signin coordinator can be opened by the scene controller.
-// Otherwise, execute the completion with `SigninCoordinatorUINotAvailable`.
-// Fails if another signin coordinator is already opened.
-- (BOOL)canPresentSigninCoordinatorOrCompletion:
-            (SigninCoordinatorCompletionCallback)completion
-                             baseViewController:
-                                 (UIViewController*)baseViewController
-                                    accessPoint:(signin_metrics::AccessPoint)
-                                                    accessPoint {
-  if (self.signinCoordinator) {
-    // As of M121, the CHECK bellow is known to fire in various cases. The goal
-    // of the histograms below is to detect the number of incorrect cases and
-    // for which of the access points they are triggered.
-    base::UmaHistogramEnumeration(
-        "Signin.ShowSigninCoordinatorWhenAlreadyPresent.NewAccessPoint",
-        accessPoint);
-    base::UmaHistogramEnumeration(
-        "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
-        self.signinCoordinator.accessPoint);
-    // The goal of this histogram is to understand if the issue is related to
-    // a double tap (duration less than 1s), or if `self.signinCoordinator`
-    // is not visible anymore on the screen (duration more than 1s).
-    const base::TimeDelta duration =
-        base::TimeTicks::Now() - self.signinCoordinator.creationTimeTicks;
-    UmaHistogramTimes("Signin.ShowSigninCoordinatorWhenAlreadyPresent."
-                      "DurationBetweenTwoSigninCoordinatorCreation",
-                      duration);
-  }
-  // TODO(crbug.com/40071586): Change this to a CHECK once this invariant is
-  // correct.
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  return YES;
-}
-
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
 // dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
-  if (!baseViewController) {
-    baseViewController = self.currentInterface.viewController;
-  }
-  if (![self
-          canPresentSigninCoordinatorOrCompletion:command.completion
-                               baseViewController:baseViewController
-                                      accessPoint:command.accessPoint]) {
-    return;
-  }
-  Browser* mainBrowser = self.mainInterface.browser;
-  [self stopSigninCoordinatorWithCompletionAnimated:NO];
-  self.signinCoordinator =
-      [SigninCoordinator signinCoordinatorWithCommand:command
-                                              browser:mainBrowser
-                                   baseViewController:baseViewController];
-  [self startSigninCoordinatorWithCompletion:command.completion];
+  [self.mainCoordinator showSignin:command
+                baseViewController:baseViewController];
 }
 
 - (void)showAccountMenuFromWebWithURL:(const GURL&)url {
@@ -2293,51 +2166,14 @@ using UserFeedbackDataCallback =
 
 - (void)showWebSigninPromoFromViewController:
             (UIViewController*)baseViewController
-                                         URL:(const GURL&)url {
+                                         URL:(const GURL&)URL {
   // Do not display the web sign-in promo if there is any UI on the screen.
   if (baseViewController.presentedViewController ||
       ![self isTabAvailableToPresentViewController]) {
     return;
   }
-  if (!signin::ShouldPresentWebSignin(self.mainInterface.profile)) {
-    return;
-  }
-  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                         BrowserCoordinatorCommands);
-  void (^prepareChangeProfile)() = ^() {
-    [browserCoordinatorCommandsHandler closeCurrentTab];
-  };
-  ChangeProfileContinuationProvider provider =
-      base::BindRepeating(&CreateChangeProfileOpensURLContinuation, url);
-  [self stopSigninCoordinatorWithCompletionAnimated:NO];
-  self.signinCoordinator = [SigninCoordinator
-      consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
-                                                      browser:self.mainInterface
-                                                                  .browser
-                                                 contextStyle:
-                                                     SigninContextStyle::
-                                                         kDefault
-                                                  accessPoint:signin_metrics::
-                                                                  AccessPoint::
-                                                                      kWebSignin
-                                         prepareChangeProfile:
-                                             prepareChangeProfile
-                                         continuationProvider:provider];
-  if (!self.signinCoordinator) {
-    return;
-  }
-  __weak SceneController* weakSelf = self;
-  // Copy the URL so it can be safely captured in the block.
-  GURL copiedURL = url;
-  [self startSigninCoordinatorWithCompletion:^(
-            SigninCoordinator* coordinator, SigninCoordinatorResult result,
-            id<SystemIdentity> completionIdentity) {
-    [weakSelf webSigninCompletion:coordinator
-                           result:result
-               completionIdentity:completionIdentity
-                              URL:copiedURL];
-  }];
+  [self.mainCoordinator showWebSigninPromoFromViewController:baseViewController
+                                                         URL:URL];
 }
 
 - (void)showSigninAccountNotificationFromViewController:
@@ -2375,7 +2211,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)maybeShowSettingsFromViewController {
-  if (self.signinCoordinator) {
+  if (self.mainCoordinator.isSigninInProgress) {
     return;
   }
   [self showSettingsFromViewController:nil];
@@ -2408,9 +2244,7 @@ using UserFeedbackDataCallback =
     baseViewController = self.currentInterface.viewController;
   }
 
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     DCHECK(self.settingsNavigationController.presentingViewController)
         << base::SysNSStringToUTF8(
@@ -2432,7 +2266,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showPriceTrackingNotificationsSettings {
-  CHECK(!self.signinCoordinator);
+  CHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     __weak SceneController* weakSelf = self;
     [self closePresentedViews:NO
@@ -2512,7 +2346,7 @@ using UserFeedbackDataCallback =
 
 // Returns YES if the current Tab is available to present a view controller.
 - (BOOL)isTabAvailableToPresentViewController {
-  if (self.sceneState.signinInProgress) {
+  if (self.mainCoordinator.isSigninInProgress) {
     return NO;
   }
   if (self.settingsNavigationController) {
@@ -2602,9 +2436,7 @@ using UserFeedbackDataCallback =
                                ![self isTabAvailableToPresentViewController])) {
     return;
   }
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (!baseViewController) {
     DCHECK_EQ(self.currentInterface.viewController,
               self.mainCoordinator.activeViewController);
@@ -2636,9 +2468,7 @@ using UserFeedbackDataCallback =
 // MainController.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (!baseViewController) {
     DCHECK_EQ(self.currentInterface.viewController,
               self.mainCoordinator.activeViewController);
@@ -2666,9 +2496,7 @@ using UserFeedbackDataCallback =
 // TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSyncSettingsFromViewController:baseViewController];
@@ -2687,9 +2515,7 @@ using UserFeedbackDataCallback =
 // TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSyncPassphraseSettingsFromViewController:baseViewController];
@@ -2811,9 +2637,7 @@ using UserFeedbackDataCallback =
 // TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showProfileSettingsFromViewController:baseViewController];
@@ -2831,9 +2655,7 @@ using UserFeedbackDataCallback =
 
 // TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showCreditCardSettings {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  DCHECK(!self.mainCoordinator.isSigninInProgress);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController showCreditCardSettings];
     return;
@@ -3697,9 +3519,7 @@ using UserFeedbackDataCallback =
   ProceduralBlock completionWithBVC = ^{
     DCHECK(self.currentInterface.viewController);
     DCHECK(!self.mainCoordinator.isTabGridActive);
-    DCHECK(!self.signinCoordinator)
-        << "self.signinCoordinator: "
-        << base::SysNSStringToUTF8([self.signinCoordinator description]);
+    DCHECK(!self.mainCoordinator.isSigninInProgress);
     // This will dismiss the SSO view controller.
     [self.currentInterface clearPresentedStateWithCompletion:completion
                                               dismissOmnibox:dismissOmnibox];
@@ -3708,9 +3528,7 @@ using UserFeedbackDataCallback =
     // `self.currentInterface.bvc` may exist but tab switcher should be
     // active.
     DCHECK(self.mainCoordinator.isTabGridActive);
-    DCHECK(!self.signinCoordinator)
-        << "self.signinCoordinator: "
-        << base::SysNSStringToUTF8([self.signinCoordinator description]);
+    DCHECK(!self.mainCoordinator.isSigninInProgress);
     // History coordinator can be started on top of the tab grid.
     // This is not true of the other tab switchers.
     DCHECK(self.mainCoordinator);
@@ -4093,7 +3911,7 @@ using UserFeedbackDataCallback =
     // to be closed first.
     // If signinCoordinator is already dismissing, completion execution will
     // happen when it is done animating.
-    [self stopSigninCoordinatorWithCompletionAnimated:animated];
+    [self.mainCoordinator stopSigninCoordinatorWithCompletionAnimated:animated];
     UIViewController* presentingViewController =
         self.settingsNavigationController.presentingViewController;
     if (presentingViewController) {
@@ -4107,125 +3925,9 @@ using UserFeedbackDataCallback =
   } else {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
-    [self stopSigninCoordinatorWithCompletionAnimated:animated];
+    [self.mainCoordinator stopSigninCoordinatorWithCompletionAnimated:animated];
     resetAndDismiss();
   }
-}
-
-// Stops the sign-in coordinator actions and dismisses its views either
-// with or without animation. Executes its signinCompletion. It’s expected to be
-// not already executed.
-- (void)stopSigninCoordinatorWithCompletionAnimated:(BOOL)animated {
-  // We retain the coordinator until the end of the completion, while ensuring
-  // that when the completion requests `self` to stop the signin coordinator,
-  // `stop` is not called a second time.
-  SigninCoordinator* signinCoordinator = self.signinCoordinator;
-  if (!signinCoordinator) {
-    return;
-  }
-  self.signinCoordinator = nil;
-
-  [signinCoordinator stopAnimated:animated];
-  SigninCoordinatorCompletionCallback signinCompletion =
-      signinCoordinator.signinCompletion;
-  signinCoordinator.signinCompletion = nil;
-  CHECK(signinCompletion, base::NotFatalUntil::M142);
-  // The `signinCoordinator` must be nil here, because `self.signinCoordinator`
-  // was set to `nil` above.
-  signinCompletion(nil, SigninCoordinatorResultInterrupted, nil);
-}
-
-// Starts the sign-in coordinator with a default cleanup completion.
-// Call completion with Cancelled if the current scene is blocked.
-- (void)startSigninCoordinatorWithCompletion:
-    (SigninCoordinatorCompletionCallback)completion {
-  DCHECK(self.signinCoordinator);
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  AuthenticationService::ServiceStatus statusService =
-      authenticationService->GetServiceStatus();
-  switch (statusService) {
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy: {
-      if (completion) {
-        // The coordinator argument is `nil` because this completion has never
-        // been assigned to a signinCoordinator’s `signinCompletion`. It works
-        // because the part that check the coordinator value is in the
-        // `signinCompletedWithCoordinator:...` below, and so not integrated in
-        // the completion function yet.
-        completion(nil, SigninCoordinatorResultDisabled, nil);
-      }
-      [self stopSigninCoordinatorAnimated:NO];
-      id<PolicyChangeCommands> handler = HandlerForProtocol(
-          self.signinCoordinator.browser->GetCommandDispatcher(),
-          PolicyChangeCommands);
-      [handler showForceSignedOutPrompt];
-      RecordIfNeededSigninFullscreenPromoEvent(
-          SigninFullscreenPromoEvents::kPromoCanceledByPolicy,
-          self.signinCoordinator.accessPoint);
-      return;
-    }
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed: {
-      break;
-    }
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
-      DUMP_WILL_BE_NOTREACHED()
-          << "Status service: " << static_cast<int>(statusService);
-      break;
-    }
-  }
-
-  DCHECK(self.signinCoordinator);
-
-  if (self.sceneState.isUIBlocked) {
-    // This could occur due to race condition with multiple windows and
-    // simultaneous taps. See crbug.com/368310663.
-    if (completion) {
-      // The coordinator argument is `nil` because this completion has never
-      // been assigned to a signinCoordinator’s `signinCompletion`. It works
-      // because the part that check the coordinator value is in the
-      // `signinCompletedWithCoordinator:...` below, and so not integrated in
-      // the completion function yet.
-      completion(nil, SigninCoordinatorResultInterrupted, nil);
-    }
-    self.signinCoordinator = nil;
-    RecordIfNeededSigninFullscreenPromoEvent(
-        SigninFullscreenPromoEvents::kPromoCanceledByUIBlocked,
-        self.signinCoordinator.accessPoint);
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  self.signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
-        [weakSelf signinCompletedWithCoordinator:coordinator
-                                          result:result
-                                        identity:identity
-                                      completion:completion];
-      };
-
-  // Log that the fullscreen sign-in promo UI has started.
-  RecordIfNeededSigninFullscreenPromoEvent(
-      SigninFullscreenPromoEvents::kPromoUIStarted,
-      self.signinCoordinator.accessPoint);
-
-  [self.signinCoordinator start];
-}
-
-// Completion block for Signin coordinators.
-- (void)signinCompletedWithCoordinator:(SigninCoordinator*)coordinator
-                                result:(SigninCoordinatorResult)result
-                              identity:(id<SystemIdentity>)identity
-                            completion:(SigninCoordinatorCompletionCallback)
-                                           completion {
-  CHECK_EQ(coordinator, self.signinCoordinator, base::NotFatalUntil::M151);
-
-  if (completion) {
-    completion(coordinator, result, identity);
-  }
-  [self stopSigninCoordinatorAnimated:YES];
 }
 
 #pragma mark - WebStateListObserving
@@ -4570,19 +4272,6 @@ using UserFeedbackDataCallback =
   // Always set the new otr Browser for the tablet or grid switcher.
   // Notify the TabGrid with the new Incognito Browser.
   self.mainCoordinator.incognitoBrowser = self.incognitoInterface.browser;
-}
-
-#pragma mark - PolicyWatcherBrowserAgentObserving
-
-- (void)policyWatcherBrowserAgentNotifySignInDisabled:
-    (PolicyWatcherBrowserAgent*)policyWatcher {
-
-  if (self.signinCoordinator) {
-    [self stopSigninCoordinatorWithCompletionAnimated:YES];
-    UMA_HISTOGRAM_BOOLEAN(
-        "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
-    policyWatcher->SignInUIDismissed();
-  }
 }
 
 #pragma mark - SceneUIProvider
