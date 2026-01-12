@@ -150,6 +150,37 @@ TEST_P(AutofillAiMayPerformActionTest, ReturnsFalseWhenMainFeatureIsOff) {
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
+// Tests that when `kAutofillAiAvailableByDefault` and the user is opted out,
+// everything but IPH and model related actions is permitted.
+TEST_P(
+    AutofillAiMayPerformActionTest,
+    ReturnsTrueWhenAvailableByDefault_ExceptForNonModelRelatedActionsAndIph) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiAvailableByDefault};
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
+
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn, AutofillAiAction::kLogToMqls,
+                AutofillAiAction::kServerClassificationModel});
+
+  using enum EntityTypeName;
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      !kForbiddenActions.contains(GetParam()));
+}
+
+// Tests that when `kAutofillAiAvailableByDefault` and the user is opted in,
+// everything but IPH is permitted.
+TEST_P(AutofillAiMayPerformActionTest,
+       ReturnsTrueWhenAvailableByDefault_ExceptForIph) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiAvailableByDefault};
+  using enum EntityTypeName;
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      GetParam() != AutofillAiAction::kIphForOptIn);
+}
+
 // Tests that the server model cannot be run and its cache cannot be used if
 // `kAutofillAiServerModel` is disabled.
 TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {

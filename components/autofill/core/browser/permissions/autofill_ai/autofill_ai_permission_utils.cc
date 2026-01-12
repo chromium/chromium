@@ -326,27 +326,30 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
           kAutofillPredictionImprovementsEnterprisePolicyAllowed);
   const bool policy_pref_enabled =
       policy_pref_state != kAutofillPredictionSettingsDisabled;
-  const bool user_opted_in = GetAutofillAiOptInStatus(client);
+  const bool autofill_ai_available =
+      GetAutofillAiOptInStatus(client) ||
+      base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault);
   // Note that the policy can become disabled even after a user has opted in.
   switch (action) {
+    case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kServerClassificationModel:
+      return policy_pref_enabled && GetAutofillAiOptInStatus(client);
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
-    case AutofillAiAction::kLogToMqls:
-    case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
-      return policy_pref_enabled && user_opted_in;
+      return policy_pref_enabled && autofill_ai_available;
     case AutofillAiAction::kImportToWallet:
-      return policy_pref_enabled && user_opted_in &&
+      return policy_pref_enabled && autofill_ai_available &&
              client.IsWalletStorageEnabled();
     case AutofillAiAction::kIphForOptIn:
       // The IPH should only show if the user has not opted in yet.
-      return policy_pref_enabled && !user_opted_in;
+      return policy_pref_enabled && !autofill_ai_available;
     case AutofillAiAction::kOptIn:
       if (!policy_pref_enabled) {
-        MaybeOutputReason(debug_message, "Address Autofill is not enabled.");
+        MaybeOutputReason(debug_message, "Enterprise policy is not enabled.");
       }
       return policy_pref_enabled;
     case autofill::AutofillAiAction::kListEntityInstancesInSettings:

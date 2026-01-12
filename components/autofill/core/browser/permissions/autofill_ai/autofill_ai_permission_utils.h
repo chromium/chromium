@@ -39,7 +39,10 @@ enum class AutofillAiAction {
   kListEntityInstancesInSettings,
   // Log data to the `ModelQualityLogsService`.
   kLogToMqls,
-  // Opt into (and out of) the AutofillAI feature.
+  // If AutofillAiAvailableByDefault is disabled: Opt into (and out of) the
+  // AutofillAI feature.
+  // If AutofillAiAvailableByDefault is enabled: Opt into online model runs and
+  // MQLS logging.
   kOptIn,
   // Trigger a run of the server classification model.
   kServerClassificationModel,
@@ -47,9 +50,16 @@ enum class AutofillAiAction {
   kUseCachedServerClassificationModelResults,
   // Whether the user can store entities in the Google Wallet server.
   kImportToWallet,
+  kMaxValue = kImportToWallet,
 };
 
 // Opt-in status for the AutofillAI feature.
+// TODO(crbug.com/440488776): Remove the following comment once default
+// availability is launched.
+// Note that the feature AutofillAiAvailableByDefault is currently in the
+// process of being launched. Once this is done, this enum will not represent
+// whether Autofill AI is available, rather whether online model calls
+// (Enhanced Autofill) are.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -83,6 +93,12 @@ bool MayPerformAutofillAiAction(
 // `client`. Opt-in status is a profile pref, but keyed by (hashed) GAIA id. In
 // particular, it is always `false` for users without a signed-in primary
 // account.
+// TODO(crbug.com/440488776): Remove the following comment once default
+// availability is launched.
+// Note that the feature AutofillAiAvailableByDefault is currently in the
+// process of being launched. Once this is done, this method will not control
+// whether Autofill AI is available, rather whether online model calls
+// (Enhanced Autofill) are.
 [[nodiscard]] bool GetAutofillAiOptInStatus(const AutofillClient& client);
 [[nodiscard]] bool GetAutofillAiOptInStatus(
     const PrefService* prefs,
@@ -91,6 +107,12 @@ bool MayPerformAutofillAiAction(
 // Sets the AutofillAI opt-in status for the profile and account tied to
 // `client`. Returns `false` if the opt-in status may not be changed and `true`
 // otherwise.
+// TODO(crbug.com/440488776): Remove the following comment once default
+// availability is launched.
+// Note that the feature AutofillAiAvailableByDefault is currently in the
+// process of being launched. Once this is done, this method will not control
+// whether Autofill AI is available, rather whether online model calls
+// (Enhanced Autofill) are.
 bool SetAutofillAiOptInStatus(AutofillClient& client,
                               AutofillAiOptInStatus opt_in_status);
 

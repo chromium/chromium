@@ -37,13 +37,15 @@ inline constexpr char kAutofillAiIdentityEntitiesEnabled[] =
 // `kAutofillAiOptInStatus` will have its current value migrated to
 // `kAutofillAiSyncedOptInStatus` at start-up time, this way users will not need
 // to opt-in into the feature twice.
+// TODO(crbug.com/459767753): Delete this pref as feature is obsolete.
 inline constexpr char kAutofillAiSyncedOptInStatus[] =
     "autofill.autofill_ai.synced_opt_in_status";
 // A dictionary that contains (hashed) GAIA ids and their opt-in status for
-// Autofill AI. This pref is in the process of being deprecated by
-// `kAutofillAiSyncedOptInStatus`, which is a simple synced pref (not keyed by
-// GAIA ids).
-// TODO(crbug.com/459767753): Clean up pref once fully deprecated.
+// Autofill AI.
+// Note that the feature AutofillAiAvailableByDefault is currently in the
+// process of being launched. Once this is done, this pref will not control
+// whether Autofill AI is available, but whether online model calls and MQLS
+// logging (Enhanced Autofill) are.
 inline constexpr char kAutofillAiOptInStatus[] =
     "autofill.autofill_ai.opt_in_status";
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
