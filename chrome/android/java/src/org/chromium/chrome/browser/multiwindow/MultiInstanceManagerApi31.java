@@ -1365,6 +1365,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         for (InstanceStateObserver observer : mInstanceStateObservers) {
             observer.onInstanceRestored(instanceId);
         }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.MultiWindowMode.InactiveInstanceRestore.AppSource",
+                source,
+                NewWindowAppSource.NUM_ENTRIES);
     }
 
     @Override

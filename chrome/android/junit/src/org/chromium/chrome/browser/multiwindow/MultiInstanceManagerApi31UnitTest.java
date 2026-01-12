@@ -2388,6 +2388,13 @@ public class MultiInstanceManagerApi31UnitTest {
             destroyActivity(mTabbedActivityTask63);
         }
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.MultiWindowMode.InactiveInstanceRestore.AppSource",
+                                NewWindowAppSource.WINDOW_MANAGER)
+                        .build();
+
         // Try to restore the instance in task from |mTabbedActivityTask62|.
         multiInstanceManager62.openWindow(1, NewWindowAppSource.WINDOW_MANAGER);
 
@@ -2405,6 +2412,7 @@ public class MultiInstanceManagerApi31UnitTest {
             verify(appTasks.get(1)).finishAndRemoveTask();
             verify(mActivityManager, never()).moveTaskToFront(TASK_ID_63, 0);
             verify(instanceStateObserver).onInstanceRestored(1);
+            histogramWatcher.assertExpected();
         }
     }
 

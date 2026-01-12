@@ -39,7 +39,7 @@ import java.util.List;
 public abstract class MultiInstanceManager {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     public static final String NEW_WINDOW_APP_SOURCE_HISTOGRAM =
-            "Android.MultiWindowMode.NewWindow.AppSource";
+            "Android.MultiWindowMode.NewWindow.AppSource2";
 
     @VisibleForTesting
     static final String CLOSE_WINDOW_APP_SOURCE_HISTOGRAM =
