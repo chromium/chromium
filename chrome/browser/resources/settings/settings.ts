@@ -148,7 +148,7 @@ export {SettingsMenuElement} from './settings_menu/settings_menu.js';
 export {SearchableViewContainerMixin} from './settings_page/searchable_view_container_mixin.js';
 export {SettingsSectionElement} from './settings_page/settings_section.js';
 export {SettingsViewMixin} from './settings_page/settings_view_mixin.js';
-export {SettingsUiElement} from './settings_ui/settings_ui.js';
+export {MAX_QUERY_LENGTH, SettingsUiElement} from './settings_ui/settings_ui.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin} from './tooltip_mixin.js';

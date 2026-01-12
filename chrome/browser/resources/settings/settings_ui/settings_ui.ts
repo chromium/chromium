@@ -60,6 +60,8 @@ export interface SettingsUiElement {
   };
 }
 
+export const MAX_QUERY_LENGTH = 1000;
+
 const SettingsUiElementBase = RouteObserverMixin(
     CrContainerShadowMixin(FindShortcutMixin(PolymerElement)));
 
@@ -232,7 +234,10 @@ export class SettingsUiElement extends SettingsUiElementBase {
    * Handles the 'search-changed' event fired from the toolbar.
    */
   private onSearchChanged_(e: CustomEvent<string>) {
-    const query = e.detail;
+    let query = e.detail;
+    if (query.length > MAX_QUERY_LENGTH) {
+      query = query.substring(0, MAX_QUERY_LENGTH);
+    }
     Router.getInstance().navigateTo(
         routes.BASIC,
         query.length > 0 ?
