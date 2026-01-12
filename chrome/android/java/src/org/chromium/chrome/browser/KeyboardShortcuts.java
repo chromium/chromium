@@ -1106,12 +1106,16 @@ public class KeyboardShortcuts {
                         if (!currentTabModel.isTabMultiSelected(tab.getId())) continue;
                         selectedTabs.add(tab);
                     }
+                    List<Tab> tabsToClose =
+                            selectedTabs.isEmpty()
+                                    ? List.of(TabModelUtils.getCurrentTab(currentTabModel))
+                                    : selectedTabs;
                     Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
                     if (tab != null) {
                         currentTabModel
                                 .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTabs(selectedTabs)
+                                        TabClosureParams.closeTabs(tabsToClose)
                                                 .allowUndo(false)
                                                 .tabClosingSource(
                                                         TabClosingSource.KEYBOARD_SHORTCUT)

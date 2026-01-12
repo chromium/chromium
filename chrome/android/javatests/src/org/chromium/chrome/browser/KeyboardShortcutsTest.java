@@ -162,6 +162,26 @@ public class KeyboardShortcutsTest {
         }
     }
 
+    @Test
+    @SmallTest
+    public void testCloseTab_noMultiSelect() {
+        setUpTabModelSelector(List.of(mTab));
+        when(mTabModel.isTabMultiSelected(TAB_ID)).thenReturn(false);
+
+        boolean isKeyEventHandled =
+                keyDown(KeyEvent.KEYCODE_W, KeyEvent.META_CTRL_ON, /* isCurrentTabVisible= */ true);
+
+        assertTrue("Expected key event to be handled", isKeyEventHandled);
+        verify(mTabRemover, description("Expected closeTabs to be called with the current tab"))
+                .closeTabs(
+                        eq(
+                                TabClosureParams.closeTabs(List.of(mTab))
+                                        .allowUndo(false)
+                                        .tabClosingSource(TabClosingSource.KEYBOARD_SHORTCUT)
+                                        .build()),
+                        /* allowDialog= */ eq(true));
+    }
+
     // Bookmarks shortcuts
 
     @Test
