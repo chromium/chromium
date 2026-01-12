@@ -6,6 +6,10 @@
 
 #include <string>
 
+#include "components/policy/core/common/policy_types.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_chain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
@@ -124,5 +128,44 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRuleProxyFromString) {
   ASSERT_FALSE(ProxyOverrideRuleProxyFromString("://").IsValid());
   ASSERT_FALSE(ProxyOverrideRuleProxyFromString("123456789").IsValid());
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
+  TestingPrefServiceSimple prefs;
+  PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
+
+  // If rules are set at the machine scope, they are always allowed.
+  prefs.SetInteger(prefs::kProxyOverrideRulesScope,
+                   policy::POLICY_SCOPE_MACHINE);
+  for (bool affiliation : {true, false}) {
+    for (int enabled_for_all_users : {0, 1}) {
+      prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, affiliation);
+      prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
+                       enabled_for_all_users);
+      EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+    }
+  }
+
+  // If rules are set at the user scope, they are always allowed for affiliated
+  // users.
+  prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
+  prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, true);
+  for (int enabled_for_all_users : {0, 1}) {
+    prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
+                     enabled_for_all_users);
+    EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+  }
+
+  // If rules are set at the user scope for an unaffiliated user, they are only
+  // allowed when `kEnableProxyOverrideRulesForAllUsers` is set to 1.
+  prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, false);
+
+  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
+  EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs));
+
+  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 1);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+}
+#endif
 
 }  // namespace proxy_config

@@ -9,6 +9,8 @@
 #include "net/base/proxy_chain.h"
 #include "url/scheme_host_port.h"
 
+class PrefService;
+
 namespace proxy_config {
 
 // Constants used to parse the "ProxyOverrideRules" policy value.
@@ -34,6 +36,13 @@ PROXY_CONFIG_EXPORT url::SchemeHostPort ProxyOverrideRuleHostFromString(
 // `net::ProxyConfig::ProxyOverrideRule::proxy_list`.
 PROXY_CONFIG_EXPORT net::ProxyChain ProxyOverrideRuleProxyFromString(
     std::string_view raw_value);
+
+// Returns false if the proxy override prefs should not be converted into
+// `ProxyConfig::ProxyOverrideRule`s. This is the case when they are set from an
+// unaffiliated user and the "EnableProxyOverrideRulesForAllUsers" is not set to
+// allow it.
+PROXY_CONFIG_EXPORT bool ProxyOverrideRulesAllowed(
+    const PrefService* pref_service);
 
 }  // namespace proxy_config
 

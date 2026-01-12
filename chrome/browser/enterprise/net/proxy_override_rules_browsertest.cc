@@ -35,8 +35,12 @@ class ProxyOverrideRulesBrowserTest : public MixinBasedPlatformBrowserTest {
  public:
   ProxyOverrideRulesBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(kEnableProxyOverrideRules);
-    management_context_mixin_ = ManagementContextMixin::Create(
-        &mixin_host_, this, ManagementContext{.is_cloud_user_managed = true});
+    management_context_mixin_ =
+        ManagementContextMixin::Create(&mixin_host_, this,
+                                       ManagementContext{
+                                           .is_cloud_user_managed = true,
+                                           .affiliated = true,
+                                       });
   }
 
   void SetUpOnMainThread() override {

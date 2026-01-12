@@ -69,11 +69,20 @@ constexpr char kSchema[] = R"(
         "type": "object"
       },
       "type": "array"
+    },
+    "EnableProxyOverrideRulesForAllUsers": {
+      "type": "integer"
     }
   }
 })";
 
-constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
+struct TestCase {
+  const char* policy_value;
+  const char16_t* expected_messages;
+  bool affiliated = true;
+};
+
+constexpr TestCase kInvalidTestCases[] = {
     {
         R"([
              {
@@ -206,10 +215,30 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
         u"Error at ProxyOverrideRules[0].Conditions[0].Host: \"://\" is not a "
         u"valid value.",
     },
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {
+        R"([
+             {
+               "DestinationMatchers": ["https://*"],
+               "ProxyList": ["DIRECT"],
+               "Conditions": [
+                 {
+                   "DnsProbe": {
+                     "Host": "foo.com",
+                     "Result": "not_found"
+                   }
+                 }
+               ]
+             }
+           ])",
+        u"This policy value is ignored since the user is not affiliated.",
+        /*affiliated=*/false,
+    },
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 };
 
 class ProxyOverrideRulesPolicyHandlerTest
-    : public testing::TestWithParam<std::pair<const char*, const char16_t*>> {
+    : public testing::TestWithParam<TestCase> {
  public:
   policy::Schema schema() {
     ASSIGN_OR_RETURN(const auto validation_schema,
@@ -223,17 +252,20 @@ class ProxyOverrideRulesPolicyHandlerTest
   policy::PolicyMap CreatePolicyMap(const std::string& policy,
                                     policy::PolicySource policy_source) {
     policy::PolicyMap policy_map;
+    policy_map.SetDeviceAffiliationIds({"same_id"});
+    if (GetParam().affiliated) {
+      policy_map.SetUserAffiliationIds({"same_id"});
+    } else {
+      policy_map.SetUserAffiliationIds({"different_id"});
+    }
     policy_map.Set(kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
-                   policy::PolicyScope::POLICY_SCOPE_MACHINE, policy_source,
-                   base::JSONReader::Read(policy_value(),
+                   policy::PolicyScope::POLICY_SCOPE_USER, policy_source,
+                   base::JSONReader::Read(GetParam().policy_value,
                                           base::JSON_ALLOW_TRAILING_COMMAS),
                    nullptr);
 
     return policy_map;
   }
-
-  const char* policy_value() { return GetParam().first; }
-  const char16_t* expected_messages() { return GetParam().second; }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -242,7 +274,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ProxyOverrideRulesPolicyHandlerTest, Test) {
   policy::PolicyMap map = CreatePolicyMap(
-      policy_value(), policy::PolicySource::POLICY_SOURCE_CLOUD);
+      GetParam().policy_value, policy::PolicySource::POLICY_SOURCE_CLOUD);
   auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
 
   policy::PolicyErrorMap errors;
@@ -255,7 +287,7 @@ TEST_P(ProxyOverrideRulesPolicyHandlerTest, Test) {
   ASSERT_TRUE(errors.HasError(kPolicyName));
 
   std::u16string messages = errors.GetErrorMessages(kPolicyName);
-  ASSERT_EQ(messages, expected_messages());
+  ASSERT_EQ(messages, GetParam().expected_messages);
 }
 
 }  // namespace

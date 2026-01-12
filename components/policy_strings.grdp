@@ -335,6 +335,9 @@
   <message name="IDS_POLICY_PROXY_INVALID_DESTINATION" desc="The text displayed in the status column when a proxy destination has an invalid value.">
     "<ph name="PROXY_INVALID_DESTINATION">$1<ex>example.com</ex></ph>" is not a valid destination pattern.
   </message>
+  <message name="IDS_POLICY_UNAFFILIATED_USER_ERROR" desc="The text displayed in the status column when a policy is set from an unaffiliated user.">
+    This policy value is ignored since the user is not affiliated.
+  </message>
   <message name="IDS_POLICY_DEVELOPER_TOOLS_EXTENSIONS_CONFLICT_MESSAGE" desc="The text displayed in the status column when the value of DeveloperToolsAvailability conflicts with ExtensionDeveloperModeSettings.">
     <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME">$1<ex>ExtensionDeveloperModeSettings</ex></ph> policy is set. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">$2<ex>DeveloperToolsAvailability</ex></ph> will not control the availability of developer mode on extensions page.
   </message>

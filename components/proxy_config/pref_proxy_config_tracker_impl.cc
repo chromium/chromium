@@ -277,9 +277,9 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
     return false;
   }
 
-  // TODO(crbug.com/419548922): Check affiliation status is allowed by the
-  // "EnableProxyOverrideRulesForAllUsers" policy and return "false" if it's
-  // not.
+  if (!proxy_config::ProxyOverrideRulesAllowed(pref_service)) {
+    return false;
+  }
 
   net::ProxyConfig new_config(config->value());
   std::vector<net::ProxyConfig::ProxyOverrideRule> proxy_override_rules;
@@ -530,6 +530,10 @@ void PrefProxyConfigTrackerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterIntegerPref(
       proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
+  registry->RegisterIntegerPref(proxy_config::prefs::kProxyOverrideRulesScope,
+                                0);
+  registry->RegisterBooleanPref(
+      proxy_config::prefs::kProxyOverrideRulesAffiliation, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
@@ -540,10 +544,14 @@ void PrefProxyConfigTrackerImpl::RegisterProfilePrefs(
                                    ProxyConfigDictionary::CreateSystem());
   registry->RegisterBooleanPref(proxy_config::prefs::kUseSharedProxies, false);
   registry->RegisterListPref(proxy_config::prefs::kProxyOverrideRules);
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterIntegerPref(
+      proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
   registry->RegisterIntegerPref(proxy_config::prefs::kProxyOverrideRulesScope,
                                 0);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(
+      proxy_config::prefs::kProxyOverrideRulesAffiliation, true);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 // static

@@ -4,6 +4,9 @@
 
 #include "components/proxy_config/proxy_prefs_utils.h"
 
+#include "components/policy/core/common/policy_types.h"
+#include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -53,6 +56,19 @@ net::ProxyChain ProxyOverrideRuleProxyFromString(std::string_view raw_value) {
                                                   url.port());
   }
   return net::PacResultElementToProxyChain(raw_value);
+}
+
+bool ProxyOverrideRulesAllowed(const PrefService* pref_service) {
+  CHECK(pref_service);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (pref_service->GetInteger(prefs::kProxyOverrideRulesScope) ==
+          policy::POLICY_SCOPE_USER &&
+      !pref_service->GetBoolean(prefs::kProxyOverrideRulesAffiliation)) {
+    return pref_service->GetInteger(
+               prefs::kEnableProxyOverrideRulesForAllUsers) == 1;
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  return true;
 }
 
 }  // namespace proxy_config
