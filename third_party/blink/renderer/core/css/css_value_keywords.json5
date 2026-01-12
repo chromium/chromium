@@ -1235,6 +1235,10 @@
     "fill-reverse",
     "track-reverse",
 
+    // grid-lanes-pack
+    // normal
+    // dense
+
     // grid-template-{columns|rows}
     "minmax",
     "subgrid",

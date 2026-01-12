@@ -257,6 +257,7 @@ gridColumnStart
 gridGap
 gridLanes
 gridLanesDirection
+gridLanesPack
 gridRow
 gridRowEnd
 gridRowGap

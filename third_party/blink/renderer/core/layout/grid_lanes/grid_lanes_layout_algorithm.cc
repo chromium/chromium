@@ -405,7 +405,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     // `item_span` as well as the offset of `containing_rect`, which is sized
     // based on the items within the grid-lanes container. Margins need to be
     // added to the item's size in the stacking axis.
-    const bool is_dense_packing = style.IsGridAutoFlowAlgorithmDense();
+    const bool is_dense_packing = style.IsGridLanesPackDense();
     bool item_moved_to_earlier_opening = false;
     if (is_dense_packing) {
       LayoutUnit updated_item_start_offset =

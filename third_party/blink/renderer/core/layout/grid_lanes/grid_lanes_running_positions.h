@@ -54,7 +54,7 @@ class CORE_EXPORT GridLanesRunningPositions {
                                    ? track_collection.EndLineOfImplicitGrid()
                                    : 0),
         tie_threshold_(tie_threshold),
-        is_dense_packing_(style.IsGridAutoFlowAlgorithmDense()),
+        is_dense_packing_(style.IsGridLanesPackDense()),
         is_reverse_track_direction_(style.IsReverseGridLanesTrackDirection()) {
     // To avoid placing items in collapsed tracks, set such tracks to the max
     // size.

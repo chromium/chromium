@@ -3523,6 +3523,17 @@
       runtime_flag: "CSSGridLanesLayout",
     },
     {
+      name: "grid-lanes-pack",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      typedom_types: ["Keyword"],
+      keywords: ["normal", "dense"],
+      default_value: "normal",
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSGridLanesLayout",
+    },
+    {
       name: "grid-row-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",

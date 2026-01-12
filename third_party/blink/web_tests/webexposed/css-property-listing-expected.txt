@@ -230,6 +230,7 @@ All changes to this list should go through Blink's feature review process: http:
     grid-column-end
     grid-column-start
     grid-lanes-direction
+    grid-lanes-pack
     grid-row-end
     grid-row-start
     grid-template-areas

@@ -509,6 +509,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridColumnStart() == b.GridColumnStart();
     case CSSPropertyID::kGridLanesDirection:
       return a.GetGridLanesDirection() == b.GetGridLanesDirection();
+    case CSSPropertyID::kGridLanesPack:
+      return a.GridLanesPack() == b.GridLanesPack();
     case CSSPropertyID::kGridRowEnd:
       return a.GridRowEnd() == b.GridRowEnd();
     case CSSPropertyID::kGridRowStart:

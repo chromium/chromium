@@ -215,6 +215,7 @@ grid-auto-rows: auto
 grid-column-end: auto
 grid-column-start: auto
 grid-lanes-direction: normal
+grid-lanes-pack: normal
 grid-row-end: auto
 grid-row-start: auto
 grid-template-areas: none

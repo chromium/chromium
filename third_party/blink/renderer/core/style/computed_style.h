@@ -1195,6 +1195,10 @@ class ComputedStyle final : public ComputedStyleBase {
     return GetGridLanesDirection().is_track_reverse;
   }
 
+  bool IsGridLanesPackDense() const {
+    return GridLanesPack() == EGridLanesPack::kDense;
+  }
+
   // Grid axis utility functions, usable in Grid and Grid Lanes.
   const GridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {
