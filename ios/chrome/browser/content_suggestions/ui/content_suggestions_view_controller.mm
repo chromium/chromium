@@ -129,6 +129,8 @@
     [self.mostVisitedModuleContainer.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor]
   ]];
+  // Force layout to make sure the subviews correctly calculates its frame size.
+  [self.view setNeedsLayout];
   [self.view layoutIfNeeded];
 }
 

@@ -221,6 +221,10 @@ void TapMagicStackEditButton() {
 // Tests the "Remove" action of the Most Visited context menu, and the "Undo"
 // action.
 - (void)testMostVisitedRemoveUndo {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_enabled.push_back(kMostVisitedTilesCustomizationIOS);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   [self setupMostVisitedTileLongPress];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
@@ -228,7 +232,7 @@ void TapMagicStackEditButton() {
   // Tap on remove.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)]
+                     IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE)]
       performAction:grey_tap()];
 
   // Check the tile is removed.
