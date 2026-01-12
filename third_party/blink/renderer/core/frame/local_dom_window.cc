@@ -91,7 +91,6 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/bar_prop.h"
-#include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/core/frame/crash_report_storage.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
@@ -2551,7 +2550,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(global_cache_storage_impl_);
   visitor->Trace(global_cookie_store_impl_);
   visitor->Trace(global_performance_impl_);
-  visitor->Trace(cached_permission_status_);
   visitor->Trace(container_timing_);
   visitor->Trace(fullscreen_);
   visitor->Trace(highlight_registry_);

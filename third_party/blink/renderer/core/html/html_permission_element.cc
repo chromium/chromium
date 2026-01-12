@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -414,7 +413,7 @@ Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
   if (!is_cache_registered_ && !permission_descriptors_.empty()) {
-    CachedPermissionStatus::From(GetDocument().domWindow())
+    CachedPermissionStatus::From(GetExecutionContext())
         ->RegisterClient(this, permission_descriptors_);
     is_cache_registered_ = true;
   }
@@ -466,10 +465,9 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
     disable_reason_expire_timer_.Stop();
   }
   intersection_rect_ = std::nullopt;
-  LocalDOMWindow* window = GetDocument().domWindow();
-  if (window && is_cache_registered_) {
-    CachedPermissionStatus::From(window)->UnregisterClient(
-        this, permission_descriptors_);
+  if (is_cache_registered_) {
+    CachedPermissionStatus::From(GetExecutionContext())
+        ->UnregisterClient(this, permission_descriptors_);
     is_cache_registered_ = false;
   }
   EnsureUnregisterPageEmbeddedPermissionControl();

@@ -84,6 +84,7 @@ class AIInterfaceProxy;
 class AuditsIssue;
 class BackgroundReadback;
 class BarcodeDetectorStatics;
+class CachedPermissionStatus;
 class CachedVideoFramePool;
 class CanvasResourceProviderCache;
 class CodeCacheHost;
@@ -602,6 +603,14 @@ class CORE_EXPORT ExecutionContext : public MojoBindingContext,
     barcode_detector_statics_ = barcode_detector_statics;
   }
 
+  CachedPermissionStatus* GetCachedPermissionStatus() const {
+    return cached_permission_status_;
+  }
+  void SetCachedPermissionStatus(
+      CachedPermissionStatus* cached_permission_status) {
+    cached_permission_status_ = cached_permission_status;
+  }
+
   ForwardDeclaredMember<CachedVideoFramePool> GetCachedVideoFramePool() const {
     return cached_video_frame_pool_;
   }
@@ -868,6 +877,7 @@ class CORE_EXPORT ExecutionContext : public MojoBindingContext,
   ForwardDeclaredMember<GlobalIndexedDB> global_indexed_db_;
 
   Member<AbortSignalRegistry> abort_signal_registry_;
+  Member<CachedPermissionStatus> cached_permission_status_;
   Member<ContextFeatureSettings> context_feature_settings_;
   Member<DOMScheduler> dom_scheduler_;
   Member<FileBackedBlobFactoryDispatcher> file_backed_blob_factory_dispatcher_;

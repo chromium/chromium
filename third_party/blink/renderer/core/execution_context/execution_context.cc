@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/execution_context_csp_delegate.h"
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
@@ -562,6 +563,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(ai_interface_proxy_);
   visitor->Trace(background_readback_);
   visitor->Trace(barcode_detector_statics_);
+  visitor->Trace(cached_permission_status_);
   visitor->Trace(cached_video_frame_pool_);
   visitor->Trace(canvas_resource_provider_cache_);
   visitor->Trace(codec_pressure_manager_provider_);

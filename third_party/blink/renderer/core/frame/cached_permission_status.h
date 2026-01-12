@@ -20,7 +20,7 @@
 
 namespace blink {
 
-class LocalDOMWindow;
+class ExecutionContext;
 
 // This cache keeps track of permission statuses, restricted to the permission
 // element. These permission statuses are not canonical and should not be used
@@ -36,7 +36,7 @@ class CORE_EXPORT CachedPermissionStatus final
       public mojom::blink::PermissionObserver {
  public:
   // Returns the supplement, creating one as needed.
-  static CachedPermissionStatus* From(LocalDOMWindow* window);
+  static CachedPermissionStatus* From(ExecutionContext* context);
 
   using PermissionStatusMap =
       HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>;
@@ -56,7 +56,7 @@ class CORE_EXPORT CachedPermissionStatus final
         PermissionStatusMap initilized_map) = 0;
   };
 
-  explicit CachedPermissionStatus(LocalDOMWindow* local_dom_window);
+  explicit CachedPermissionStatus(ExecutionContext* context);
 
   ~CachedPermissionStatus() override = default;
 
@@ -121,7 +121,7 @@ class CORE_EXPORT CachedPermissionStatus final
     return permission_observer_receivers_;
   }
 
-  Member<LocalDOMWindow> local_dom_window_;
+  Member<ExecutionContext> execution_context_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
