@@ -112,7 +112,10 @@ void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal(
     return;
   }
 
-  CHECK_EQ(level, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  // TODO(465068849): Handle MODERATE memory pressure.
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return;
+  }
 
   // Check if there is already a pending request, while ensuring the timestamp
   // of the most recent request is saved.
