@@ -424,11 +424,10 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
 };
 
 // TODO(crbug.com/429359215): The test is flaky on Linux, deflake and re-enable.
-#if !BUILDFLAG(IS_LINUX)
-#define MAYBE_InvokeUi_ConsentEEA InvokeUi_ConsentEEA
-#else
+// TODO(crbug.com/475126751): The test is flaky on other platforms as well.
+// Re-enable when not flaky.
 #define MAYBE_InvokeUi_ConsentEEA DISABLED_InvokeUi_ConsentEEA
-#endif
+
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
     MAYBE_InvokeUi_ConsentEEA) {
@@ -441,14 +440,21 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/475126751): These tests are flaky on multiple platforms.
+// Re-enable when not flaky.
+#define MAYBE_InvokeUi_NoticeEEAadsMeasurementLearnMore \
+  DISABLED_InvokeUi_NoticeEEAadsMeasurementLearnMore
+
+#define MAYBE_InvokeUi_NoticeROW DISABLED_InvokeUi_NoticeROW
+
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
-    InvokeUi_NoticeEEAadsMeasurementLearnMore) {
+    MAYBE_InvokeUi_NoticeEEAadsMeasurementLearnMore) {
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
-    InvokeUi_NoticeROW) {
+    MAYBE_InvokeUi_NoticeROW) {
   ShowAndVerifyUi();
 }
