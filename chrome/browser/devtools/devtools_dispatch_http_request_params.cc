@@ -61,5 +61,6 @@ DevToolsDispatchHttpRequestParams::FromDict(const base::Value::Dict& dict) {
     }
   }
 
+  params.stream_id = dict.FindInt("streamId");
   return params;
 }

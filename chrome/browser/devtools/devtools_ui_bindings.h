@@ -67,6 +67,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 #endif
                            public DevToolsFileHelper::Delegate {
   friend class DevToolsUIBindingsDispatchHttpRequestTest;
+  friend class DevToolsUIBindingsDispatchHttpRequestStreamingTest;
 
  public:
   class Delegate {
@@ -144,6 +145,15 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       std::unique_ptr<DevToolsHttpServiceRegistry> service_registry);
 
   static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
+
+ protected:
+  virtual void CallClientMethodImpl(
+      const std::string& object_name,
+      const std::string& method_name,
+      base::Value arg1,
+      base::Value arg2,
+      base::Value arg3,
+      base::OnceCallback<void(base::Value)> completion_callback);
 
  private:
   using DevToolsUIBindingsList = std::vector<DevToolsUIBindings*>;

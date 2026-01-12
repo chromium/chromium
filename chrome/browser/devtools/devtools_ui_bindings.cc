@@ -500,6 +500,30 @@ GURL SanitizeFrontendURL(const GURL& url,
 constexpr base::TimeDelta kInitialBackoffDelay = base::Milliseconds(250);
 constexpr base::TimeDelta kMaxBackoffDelay = base::Seconds(10);
 
+void StreamWrite(DevToolsUIBindings* bindings,
+                 int stream_id,
+                 std::string_view chunk) {
+  base::Value chunkValue;
+  // Chunks are individually inspected for UTF-8 validity. The DevTools
+  // protocol requires all string data to be valid UTF-8 for transport.
+  // Non-UTF-8 chunks are Base64-encoded to prevent data corruption or
+  // serialization errors. The frontend compatibility layer
+  // (devtools_compatibility.js) uses the `encoded` flag to transparently
+  // decode these chunks. This ensures downstream consumers receive the
+  // original byte stream as a string, allowing handling of mixed
+  // content (e.g. binary resources) even within a single response.
+  bool encoded = !base::IsStringUTF8AllowingNoncharacters(chunk);
+  if (encoded) {
+    chunkValue = base::Value(base::Base64Encode(chunk));
+  } else {
+    chunkValue = base::Value(chunk);
+  }
+
+  bindings->CallClientMethod("DevToolsAPI", "streamWrite",
+                             base::Value(stream_id), std::move(chunkValue),
+                             base::Value(encoded));
+}
+
 }  // namespace
 
 class DevToolsUIBindings::NetworkResourceLoader
@@ -596,18 +620,7 @@ class DevToolsUIBindings::NetworkResourceLoader
 
   void OnDataReceived(std::string_view chunk,
                       base::OnceClosure resume) override {
-    base::Value chunkValue;
-
-    bool encoded = !base::IsStringUTF8AllowingNoncharacters(chunk);
-    if (encoded) {
-      chunkValue = base::Value(base::Base64Encode(chunk));
-    } else {
-      chunkValue = base::Value(chunk);
-    }
-
-    bindings_->CallClientMethod("DevToolsAPI", "streamWrite",
-                                base::Value(stream_id_), std::move(chunkValue),
-                                base::Value(encoded));
+    StreamWrite(bindings_, stream_id_, chunk);
     std::move(resume).Run();
   }
 
@@ -1098,6 +1111,25 @@ void DevToolsUIBindings::OnAidaResponse(
 void DevToolsUIBindings::DispatchHttpRequest(
     DispatchCallback callback,
     const DevToolsDispatchHttpRequestParams& params) {
+  if (params.stream_id.has_value()) {
+    int stream_id = *params.stream_id;
+    auto stream_writer = base::BindRepeating(
+        [](base::WeakPtr<DevToolsUIBindings> bindings, int stream_id,
+           std::string_view chunk) {
+          if (!bindings) {
+            return;
+          }
+          StreamWrite(bindings.get(), stream_id, chunk);
+        },
+        weak_factory_.GetWeakPtr(), stream_id);
+
+    http_service_registry_->RequestAsStream(
+        profile_, params, std::move(stream_writer),
+        base::BindOnce(&DevToolsUIBindings::OnHttpRequestPerformed,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   http_service_registry_->Request(
       profile_, params,
       base::BindOnce(&DevToolsUIBindings::OnHttpRequestPerformed,
@@ -2760,6 +2792,18 @@ void DevToolsUIBindings::OnThemeChanged() {
 #endif
 
 void DevToolsUIBindings::CallClientMethod(
+    const std::string& object_name,
+    const std::string& method_name,
+    base::Value arg1,
+    base::Value arg2,
+    base::Value arg3,
+    base::OnceCallback<void(base::Value)> completion_callback) {
+  CallClientMethodImpl(object_name, method_name, std::move(arg1),
+                       std::move(arg2), std::move(arg3),
+                       std::move(completion_callback));
+}
+
+void DevToolsUIBindings::CallClientMethodImpl(
     const std::string& object_name,
     const std::string& method_name,
     base::Value arg1,

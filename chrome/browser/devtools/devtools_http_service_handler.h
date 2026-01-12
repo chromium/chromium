@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_HTTP_SERVICE_HANDLER_H_
 
 #include <compare>
+#include <map>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -16,6 +17,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 
 class GURL;
 class Profile;
@@ -55,9 +57,11 @@ class DevToolsHttpServiceHandler {
   DevToolsHttpServiceHandler();
   virtual ~DevToolsHttpServiceHandler();
 
-  void Request(Profile* profile,
-               const DevToolsDispatchHttpRequestParams& params,
-               Callback callback);
+  using StreamWriter = base::RepeatingCallback<void(std::string_view)>;
+  virtual void Request(Profile* profile,
+                       const DevToolsDispatchHttpRequestParams& params,
+                       std::optional<StreamWriter> stream_writer,
+                       Callback callback);
 
  protected:
   // Performs service-specific pre-request validation. Can be asynchronous.
@@ -77,11 +81,13 @@ class DevToolsHttpServiceHandler {
 
   void OnValidationDone(Callback callback,
                         Profile* profile,
+                        std::optional<StreamWriter> stream_writer,
                         const DevToolsDispatchHttpRequestParams& params,
                         bool validation_success);
 
   void OnTokenFetched(Callback callback,
                       Profile* profile,
+                      std::optional<StreamWriter> stream_writer,
                       const DevToolsDispatchHttpRequestParams& params,
                       base::UnguessableToken fetcher_id,
                       GoogleServiceAuthError error,
@@ -91,6 +97,50 @@ class DevToolsHttpServiceHandler {
       Callback callback,
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
       std::optional<std::string> response_body);
+
+  class DevToolsStreamConsumer;
+
+  // The ActiveStreamRequest owns the DevToolsStreamConsumer (via unique_ptr).
+  // The DevToolsStreamConsumer needs to destroy the ActiveStreamRequest when
+  // the stream is complete or cancelled (to free the SimpleURLLoader and
+  // itself).
+  //
+  // ┌──────────────────────────────────────┐
+  // │      DevToolsHttpServiceHandler      │◄─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+  // └──────────────────┬───────────────────┘                     │
+  //                    │                                         │
+  //                    │ owns (std::map)                         │
+  //                    ▼                                         │
+  // ┌──────────────────────────────────────┐                     │
+  // │         ActiveStreamRequest          │                     │
+  // └───────┬──────────────────────┬───────┘                     │
+  //         │                      │                             │
+  //         │ unique_ptr           │ unique_ptr                  │
+  //         │                      │                             │
+  //         ▼                      ▼                             │
+  // ┌───────────────┐      ┌──────────────────────────────┐      │
+  // │SimpleURLLoader│      │    DevToolsStreamConsumer    │      │
+  // └───────┬───────┘      └──────────────┬───────────────┘      │
+  //         │                             │                      │
+  //         │ streams data to             │ cleanup_ callback    │
+  //         │ (via interface)             │ (holds WeakPtr + ID) │
+  //         │                             │                      │
+  //         ▼                             ▼                      │
+  //    (Interface)         (Calls active_streams_.erase(id)) ─ ─ ┘
+  //
+  // This cycle is resolved when the Consumer runs the cleanup callback (in
+  // OnComplete), which removes the Request from the map, destroying the
+  // Request, the Consumer, and the callback itself.
+  struct ActiveStreamRequest {
+    ActiveStreamRequest();
+    ~ActiveStreamRequest();
+    ActiveStreamRequest(ActiveStreamRequest&&);
+    ActiveStreamRequest& operator=(ActiveStreamRequest&&);
+
+    std::unique_ptr<network::SimpleURLLoader> loader;
+    std::unique_ptr<DevToolsStreamConsumer> consumer;
+  };
+  std::map<base::UnguessableToken, ActiveStreamRequest> active_streams_;
 
   std::map<base::UnguessableToken, std::unique_ptr<signin::AccessTokenFetcher>>
       access_token_fetchers_;

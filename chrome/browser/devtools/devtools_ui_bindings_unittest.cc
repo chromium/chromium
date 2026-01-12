@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 
+#include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -200,70 +201,6 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
   EXPECT_NE(info.FindString("accountImage"), nullptr);
 }
 
-// This class uses the actual implementation of the CanMakeRequest
-class TestServiceHandler : public DevToolsHttpServiceHandler {
- public:
-  TestServiceHandler() = default;
-  ~TestServiceHandler() override = default;
-
-  GURL BaseURL() const override { return GURL("http://localhost:8000"); }
-  signin::OAuthConsumerId OAuthConsumerId() const override {
-    return signin::OAuthConsumerId::kDevtoolsAida;
-  }
-  net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()
-      const override {
-    return TRAFFIC_ANNOTATION_FOR_TESTS;
-  }
-};
-
-class DevToolsHttpServiceHandlerTest : public testing::Test {
- protected:
-  void SetUp() override {
-    TestingProfile::Builder builder;
-    profile_ = builder.Build();
-    mock_handler_ = base::WrapUnique(new TestServiceHandler());
-
-    params_.service = "unknownService";
-    params_.path = "/path";
-    params_.method = "GET";
-  }
-
-  DevToolsDispatchHttpRequestParams params_;
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<TestServiceHandler> mock_handler_;
-};
-
-TEST_F(DevToolsHttpServiceHandlerTest, RequestWithNullProfileFails) {
-  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
-      result_future;
-
-  mock_handler_->Request(nullptr, params_, result_future.GetCallback());
-
-  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
-      result_future.Take();
-
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->error,
-            DevToolsHttpServiceHandler::Result::Error::kValidationFailed);
-}
-
-TEST_F(DevToolsHttpServiceHandlerTest, RequestWithOTRProfileFails) {
-  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
-      result_future;
-
-  auto* incognito_profile = profile_->GetPrimaryOTRProfile(true);
-  mock_handler_->Request(incognito_profile, params_,
-                         result_future.GetCallback());
-
-  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
-      result_future.Take();
-
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->error,
-            DevToolsHttpServiceHandler::Result::Error::kValidationFailed);
-}
-
 class MockServiceHandler : public DevToolsHttpServiceHandler {
  public:
   MockServiceHandler() = default;
@@ -351,7 +288,7 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
     return last_request_;
   }
 
- private:
+ protected:
   bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
     last_request_ = params->url_request;
     const GURL& url = params->url_request.url;
@@ -663,4 +600,145 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
             GURL("http://localhost:8000/getFoo?q=test%2Ftoescape&q=test2"));
   EXPECT_EQ(*result.FindString("response"), "body");
   EXPECT_EQ(*result.FindInt("statusCode"), net::HTTP_OK);
+}
+
+class TestDevToolsUIBindings : public DevToolsUIBindings {
+ public:
+  explicit TestDevToolsUIBindings(content::WebContents* web_contents)
+      : DevToolsUIBindings(web_contents) {}
+
+  MOCK_METHOD(void,
+              CallClientMethodImpl,
+              (const std::string& object_name,
+               const std::string& method_name,
+               base::Value arg1,
+               base::Value arg2,
+               base::Value arg3,
+               base::OnceCallback<void(base::Value)> completion_callback),
+              (override));
+};
+
+// Override the bindings creation to use TestDevToolsUIBindings.
+class DevToolsUIBindingsDispatchHttpRequestStreamingTest
+    : public DevToolsUIBindingsDispatchHttpRequestTest {
+ public:
+  void SetUp() override {
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    interceptor_ = std::make_unique<
+        content::URLLoaderInterceptor>(base::BindRepeating(
+        &DevToolsUIBindingsDispatchHttpRequestStreamingTest::InterceptRequest,
+        base::Unretained(this)));
+
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    test_bindings_ = std::make_unique<TestDevToolsUIBindings>(web_contents_);
+
+    auto registry = std::make_unique<DevToolsHttpServiceRegistry>();
+    auto mock_handler = base::WrapUnique(new MockServiceHandler());
+    mock_handler_ptr_ = mock_handler.get();
+    registry->AddForTesting(DevToolsHttpServiceRegistry::Service(
+        "mockService", {{"/getFoo", "GET"}}, std::move(mock_handler)));
+    test_bindings_->SetHttpServiceRegistryForTesting(std::move(registry));
+  }
+
+  void DispatchHttpRequest(DevToolsUIBindings::DispatchCallback callback,
+                           const DevToolsDispatchHttpRequestParams& params) {
+    test_bindings_->DispatchHttpRequest(std::move(callback), params);
+  }
+
+  void TearDown() override {
+    // Clear dangling pointer before test_bindings_ destroys the handler.
+    mock_handler_ptr_ = nullptr;
+    test_bindings_.reset();
+    DevToolsUIBindingsDispatchHttpRequestTest::TearDown();
+  }
+
+  TestDevToolsUIBindings* bindings() { return test_bindings_.get(); }
+
+ protected:
+  std::unique_ptr<TestDevToolsUIBindings> test_bindings_;
+};
+
+TEST_F(DevToolsUIBindingsDispatchHttpRequestStreamingTest,
+       DispatchHttpRequestStreaming) {
+  ExpectCanMakeRequest(true);
+  identity_test_env_adaptor()->identity_test_env()->MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+
+  const std::string kChunk = "test_chunk";
+  SetResponse(GURL("http://localhost:8000/getFoo"), "", kChunk, net::OK);
+
+  base::RunLoop run_loop;
+  DevToolsDispatchHttpRequestParams params;
+  params.service = "mockService";
+  params.path = "/getFoo";
+  params.method = "GET";
+  params.stream_id = 99;
+
+  EXPECT_CALL(*bindings(),
+              CallClientMethodImpl("DevToolsAPI", "streamWrite", testing::_,
+                                   testing::_, testing::_, testing::_))
+      .WillOnce([&](const std::string& object_name,
+                    const std::string& method_name, base::Value arg1,
+                    base::Value arg2, base::Value arg3,
+                    base::OnceCallback<void(base::Value)> completion_callback) {
+        EXPECT_EQ(arg1.GetInt(), 99);
+        EXPECT_EQ(arg2.GetString(), kChunk);
+        EXPECT_EQ(arg3.GetBool(), false);  // encoded = false
+      });
+
+  DispatchHttpRequest(base::BindLambdaForTesting(
+                          [&](const base::Value* value) { run_loop.Quit(); }),
+                      params);
+
+  identity_test_env_adaptor()
+      ->identity_test_env()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+          "test_token", base::Time::Max());
+
+  run_loop.Run();
+}
+
+TEST_F(DevToolsUIBindingsDispatchHttpRequestStreamingTest,
+       DispatchHttpRequestStreamingBinary) {
+  ExpectCanMakeRequest(true);
+  identity_test_env_adaptor()->identity_test_env()->MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+
+  // A chunk that is not valid UTF-8 (e.g., 0xFF 0xFE).
+  const std::string kBinaryChunk = "\xFF\xFE\x00\x00";
+  SetResponse(GURL("http://localhost:8000/getFoo"), "", kBinaryChunk, net::OK);
+
+  base::RunLoop run_loop;
+  DevToolsDispatchHttpRequestParams params;
+  params.service = "mockService";
+  params.path = "/getFoo";
+  params.method = "GET";
+  params.stream_id = 99;
+
+  // The chunk should be base64 encoded and the 'encoded' flag set to true.
+  EXPECT_CALL(*bindings(),
+              CallClientMethodImpl("DevToolsAPI", "streamWrite", testing::_,
+                                   testing::_, testing::_, testing::_))
+      .WillOnce([&](const std::string& object_name,
+                    const std::string& method_name, base::Value arg1,
+                    base::Value arg2, base::Value arg3,
+                    base::OnceCallback<void(base::Value)> completion_callback) {
+        EXPECT_EQ(arg1.GetInt(), 99);
+        EXPECT_EQ(arg2.GetString(), base::Base64Encode(kBinaryChunk));
+        EXPECT_EQ(arg3.GetBool(), true);  // encoded = true
+      });
+
+  DispatchHttpRequest(base::BindLambdaForTesting(
+                          [&](const base::Value* value) { run_loop.Quit(); }),
+                      params);
+
+  identity_test_env_adaptor()
+      ->identity_test_env()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+          "test_token", base::Time::Max());
+
+  run_loop.Run();
 }
