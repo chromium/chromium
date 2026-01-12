@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
@@ -101,6 +102,12 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
     gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.suggestionHandler = gemini_suggestion_handler_;
+
+    if (IsGeminiImageRemixToolEnabled()) {
+      gemini_camera_handler_ = [[GeminiCameraHandler alloc]
+          initWithPrefService:browser_->GetProfile()->GetPrefs()];
+      bwg_gateway_.cameraHandler = gemini_camera_handler_;
+    }
   }
 
   // Ensures a `FullscreenController` is created.

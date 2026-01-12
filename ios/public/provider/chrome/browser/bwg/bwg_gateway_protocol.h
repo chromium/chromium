@@ -9,6 +9,7 @@
 
 @protocol BWGLinkOpeningDelegate;
 @protocol BWGPageStateChangeDelegate;
+@protocol GeminiCameraDelegate;
 @protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
 
@@ -19,6 +20,7 @@
 @property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
 @property(nonatomic, weak) id<BWGPageStateChangeDelegate>
     pageStateChangeHandler;
+@property(nonatomic, weak) id<GeminiCameraDelegate> cameraHandler;
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 
