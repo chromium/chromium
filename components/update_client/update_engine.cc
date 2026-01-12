@@ -35,6 +35,7 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace update_client {
 
@@ -287,7 +288,8 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   CHECK(results);
   CHECK_EQ(0, error);
 
-  std::map<std::string, ProtocolParser::App> id_to_result;
+  absl::flat_hash_map<std::string, ProtocolParser::App> id_to_result;
+  id_to_result.reserve(results->apps.size());
   for (const auto& result : results->apps) {
     id_to_result[result.app_id] = result;
   }
