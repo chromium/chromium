@@ -27481,6 +27481,21 @@
             ]
         }
     ],
+    "WebRTC-Agc2MaxSpeechLevelExperimental": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Agc2SpeechLevelEstimatorExperimental": [
         {
             "platforms": [
