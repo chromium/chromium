@@ -18,7 +18,7 @@ namespace android {
 class ScopedAllowBlockingForImportantFileWriter
     : public base::ScopedAllowBlocking {};
 
-static jboolean JNI_ImportantFileWriterAndroid_WriteFileAtomically(
+static bool JNI_ImportantFileWriterAndroid_WriteFileAtomically(
     JNIEnv* env,
     std::string& native_file_name,
     jni_zero::ByteArrayView& data) {

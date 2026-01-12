@@ -127,11 +127,11 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
     JNIEnv* env,
     const JavaRef<jstring>& jurl,
     const JavaRef<jstring>& jtitle,
-    jboolean is_folder,
+    bool is_folder,
     jlong parent_id,
     const JavaRef<jbyteArray>& favicon,
     const JavaRef<jbyteArray>& touchicon,
-    jboolean fetch_uncached_favicons_from_server,
+    bool fetch_uncached_favicons_from_server,
     jint desired_favicon_size_px,
     const JavaRef<jobject>& j_callback) {
   std::u16string url;

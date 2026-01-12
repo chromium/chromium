@@ -46,9 +46,8 @@ static jint JNI_DownloadUtils_GetResumeMode(
       true /* user_action_required */));
 }
 
-static jboolean JNI_DownloadUtils_IsDownloadRestrictedByPolicy(
-    JNIEnv* env,
-    Profile* profile) {
+static bool JNI_DownloadUtils_IsDownloadRestrictedByPolicy(JNIEnv* env,
+                                                           Profile* profile) {
   content::DownloadManager* manager = profile->GetDownloadManager();
   if (manager) {
     return manager->GetDelegate()->IsDownloadRestrictedByPolicy();

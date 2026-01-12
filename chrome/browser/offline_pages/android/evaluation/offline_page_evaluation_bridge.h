@@ -82,7 +82,7 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
                      std::string& url,
                      std::string& name_space,
                      std::string& client_id,
-                     jboolean user_requested);
+                     bool user_requested);
 
  private:
   void NotifyIfDoneLoading() const;

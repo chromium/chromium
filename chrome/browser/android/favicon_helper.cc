@@ -58,7 +58,7 @@ void FaviconHelper::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean FaviconHelper::GetLocalFaviconImageForURL(
+bool FaviconHelper::GetLocalFaviconImageForURL(
     JNIEnv* env,
     Profile* profile,
     GURL& page_url,
@@ -116,7 +116,7 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
       cancelable_task_tracker_.get());
 }
 
-jboolean FaviconHelper::GetForeignFaviconImageForURL(
+bool FaviconHelper::GetForeignFaviconImageForURL(
     JNIEnv* env,
     Profile* profile,
     GURL& page_url,

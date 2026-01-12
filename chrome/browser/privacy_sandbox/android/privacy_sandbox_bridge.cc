@@ -56,13 +56,13 @@ std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaTopicsArray(
 }
 }  // namespace
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
+static bool JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)->IsPrivacySandboxRestricted();
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
+static bool JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)->IsRestrictedNoticeEnabled();
@@ -108,7 +108,7 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(
     const JavaRef<jobject>& j_profile,
     jint topic_id,
     jint taxonomy_version,
-    jboolean allowed) {
+    bool allowed) {
   GetPrivacySandboxService(j_profile)->SetTopicAllowed(
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
                                       taxonomy_version),
@@ -143,7 +143,7 @@ static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     const JavaRef<jstring>& top_frame_etld_plus1,
-    jboolean allowed) {
+    bool allowed) {
   GetPrivacySandboxService(j_profile)->SetFledgeJoiningAllowed(
       base::android::ConvertJavaStringToUTF8(top_frame_etld_plus1), allowed);
 }
@@ -173,14 +173,14 @@ static void JNI_PrivacySandboxBridge_PromptActionOccurred(
       static_cast<PrivacySandboxService::SurfaceType>(surface_type));
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
+static bool JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
       ->IsRelatedWebsiteSetsDataAccessEnabled();
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
+static bool JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
@@ -190,7 +190,7 @@ static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
 static void JNI_PrivacySandboxBridge_SetRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean enabled) {
+    bool enabled) {
   GetPrivacySandboxService(j_profile)->SetRelatedWebsiteSetsDataAccessEnabled(
       enabled);
 }
@@ -211,7 +211,7 @@ JNI_PrivacySandboxBridge_GetRelatedWebsiteSetOwner(
   return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().GetHost());
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
+static bool JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     const JavaRef<jstring>& origin) {
@@ -225,7 +225,7 @@ static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
 static void JNI_PrivacySandboxBridge_TopicsToggleChanged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean new_value) {
+    bool new_value) {
   GetPrivacySandboxService(j_profile)->TopicsToggleChanged(new_value);
 }
 
@@ -254,7 +254,7 @@ static void JNI_PrivacySandboxBridge_RecordActivityType(
                       PrivacySandboxStorageActivityType>(activity_type));
 }
 
-static jboolean
+static bool
 JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
@@ -262,7 +262,7 @@ JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
       ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
 }
 
-static jboolean JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
+static bool JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)

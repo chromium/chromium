@@ -78,7 +78,7 @@ void AwSupervisedUserUrlClassifier::SetUserRequiresUrlChecks(
 
 static void JNI_AwSupervisedUserUrlClassifier_SetUserRequiresUrlChecks(
     JNIEnv* env,
-    jboolean user_requires_url_checks) {
+    bool user_requires_url_checks) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AwSupervisedUserUrlClassifier::GetInstance()->SetUserRequiresUrlChecks(
       user_requires_url_checks);

@@ -53,7 +53,7 @@ void LocaleTemplateUrlLoader::OnProfileWillBeDestroyed(Profile* profile) {
   template_url_service_ = nullptr;
 }
 
-jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
+bool LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
   DCHECK(locale_.length() == 2);
 
   if (!template_url_service_) {

@@ -164,7 +164,7 @@ static void JNI_FakeServerHelper_DeleteFakeServer(JNIEnv* env,
   delete reinterpret_cast<fake_server::FakeServer*>(fake_server);
 }
 
-static jboolean JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
+static bool JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
     JNIEnv* env,
     jlong fake_server,
     jint count,
@@ -184,7 +184,7 @@ static jboolean JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
   return result;
 }
 
-static jboolean JNI_FakeServerHelper_VerifySessions(
+static bool JNI_FakeServerHelper_VerifySessions(
     JNIEnv* env,
     jlong fake_server,
     const JavaRef<jobjectArray>& url_array) {

@@ -131,7 +131,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;
-  friend jboolean JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
+  friend bool JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
       JNIEnv* env);
   friend class base::android::MemoryPurgeManagerAndroid;
   friend class base::OneShotDelayedBackgroundTimer;

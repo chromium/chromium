@@ -59,8 +59,7 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
                          jint list_index);
 
   // Called when the user closes the deletion dialog.
-  void OnDeletionDialogClosed(JNIEnv* env,
-                              jboolean confirmed);
+  void OnDeletionDialogClosed(JNIEnv* env, bool confirmed);
 
   // Called when this view was dismissed.
   void ViewDismissed(JNIEnv* env);

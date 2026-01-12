@@ -173,7 +173,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     std::string& java_origin_str,
     std::string& scope_url_str,
     std::string& profile_id,
-    jboolean incognito,
+    bool incognito,
     std::string& webapk_package,
     jint java_action_index,
     const JavaRef<jstring>& java_reply) {
@@ -228,8 +228,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
     jint java_notification_type,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito,
-    jboolean by_user) {
+    bool incognito,
+    bool by_user) {
   // The notification was closed by the platform, so clear all local state.
   regenerated_notification_infos_.erase(notification_id);
 
@@ -257,8 +257,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     jint java_notification_type,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito,
-    jboolean is_suspicious) {
+    bool incognito,
+    bool is_suspicious) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -287,7 +287,7 @@ void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -306,7 +306,7 @@ void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -325,7 +325,7 @@ void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -344,7 +344,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
     const base::android::JavaRef<jobject>& java_object,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -363,7 +363,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 

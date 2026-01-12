@@ -48,7 +48,7 @@ using base::android::JavaRef;
 
 namespace android {
 
-static jboolean JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
+static bool JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
   return features::IsAndroidSurfaceControlEnabled();
 }
 
@@ -75,7 +75,7 @@ static jlong JNI_CompositorView_Init(
   return reinterpret_cast<intptr_t>(view);
 }
 
-static jboolean JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
+static bool JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
   return features::PreferRGB565ResourcesForDisplay();
 }
 
@@ -240,7 +240,7 @@ void CompositorView::OnPhysicalBackingSizeChanged(
 void CompositorView::OnControlsResizeViewChanged(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jboolean controls_resize_view) {
+    bool controls_resize_view) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   web_contents->GetNativeView()->OnControlsResizeViewChanged(
@@ -432,7 +432,7 @@ void CompositorView::PreserveChildSurfaceControls(JNIEnv* env) {
 }
 
 void CompositorView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
-                                                      jboolean enable) {
+                                                      bool enable) {
   compositor_->SetDidSwapBuffersCallbackEnabled(enable);
 }
 

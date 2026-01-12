@@ -438,7 +438,7 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
 static void JNI_CableAuthenticatorModuleProvider_OnHaveWorkProfileResult(
     JNIEnv* env,
     jlong system_interface_pointer,
-    jboolean in_work_profile) {
+    bool in_work_profile) {
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostTask(
           FROM_HERE,

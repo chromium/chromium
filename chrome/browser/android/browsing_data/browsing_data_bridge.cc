@@ -215,7 +215,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
                                                                        origin);
 }
 
-static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
+static bool JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
     jint data_type) {
@@ -241,7 +241,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
     jint data_type,
-    jboolean value) {
+    bool value) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
             static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));

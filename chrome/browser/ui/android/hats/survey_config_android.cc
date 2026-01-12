@@ -48,7 +48,7 @@ void SurveyConfigHolder::InitJavaHolder(Profile* profile) {
     ScopedJavaLocalRef<jobjectArray> jpsd_string_data_fields =
         base::android::ToJavaArrayOfStrings(
             env, survey_config.product_specific_string_data_fields);
-    jboolean juser_prompted = survey_config.user_prompted;
+    bool juser_prompted = survey_config.user_prompted;
     jdouble jprobability = survey_config.probability;
     std::optional<base::TimeDelta> cooldown_period_override =
         survey_config.GetCooldownPeriodOverride(profile);

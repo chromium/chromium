@@ -384,8 +384,8 @@ bool TabAndroid::HasParentCollection() {
 
 void TabAndroid::InitWebContents(
     JNIEnv* env,
-    jboolean incognito,
-    jboolean is_background_tab,
+    bool incognito,
+    bool is_background_tab,
     const JavaRef<jobject>& jweb_contents,
     const JavaRef<jobject>& jweb_contents_delegate,
     const JavaRef<jobject>& jcontext_menu_populator_factory) {
@@ -613,7 +613,7 @@ void TabAndroid::OnShow() {
   web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded);
 }
 
-void TabAndroid::NotifyPinnedStateChanged(jboolean is_pinned) {
+void TabAndroid::NotifyPinnedStateChanged(bool is_pinned) {
   pinned_state_changed_callback_list_.Notify(this, is_pinned);
 }
 
@@ -628,7 +628,7 @@ bool TabAndroid::IsDragging() const {
   return Java_TabImpl_isDragging(env, weak_java_tab_.get(env));
 }
 
-void TabAndroid::OnDraggingStateChanged(jboolean is_dragging) {
+void TabAndroid::OnDraggingStateChanged(bool is_dragging) {
   dragging_changed_callback_list_.Notify(this, is_dragging);
 }
 
@@ -905,7 +905,7 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
   return jtab;
 }
 
-static jboolean JNI_TabImpl_HandleNonNavigationAboutURL(
+static bool JNI_TabImpl_HandleNonNavigationAboutURL(
     JNIEnv* env,
     const JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);

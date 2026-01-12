@@ -940,7 +940,7 @@ JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
     JNIEnv* env,
     std::string& origin,
     std::string& profile_id,
-    jboolean app_level_notifications_enabled) {
+    bool app_level_notifications_enabled) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 

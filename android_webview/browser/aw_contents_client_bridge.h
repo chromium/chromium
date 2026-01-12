@@ -136,9 +136,7 @@ class AwContentsClientBridge {
       const net::HttpResponseHeaders* response_headers);
 
   // Methods called from Java.
-  void ProceedSslError(JNIEnv* env,
-                       jboolean proceed,
-                       jint id);
+  void ProceedSslError(JNIEnv* env, bool proceed, jint id);
   void ProvideClientCertificateResponse(
       JNIEnv* env,
       jint request_id,

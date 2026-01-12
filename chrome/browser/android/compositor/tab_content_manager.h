@@ -43,7 +43,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                     jint default_cache_size,
                     jint compression_queue_max_size,
                     jint write_queue_max_size,
-                    jboolean save_jpeg_thumbnails);
+                    bool save_jpeg_thumbnails);
 
   TabContentManager(const TabContentManager&) = delete;
   TabContentManager& operator=(const TabContentManager&) = delete;
@@ -75,7 +75,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void CaptureThumbnail(JNIEnv* env,
                         const base::android::JavaRef<jobject>& tab,
                         jfloat thumbnail_scale,
-                        jboolean return_bitmap,
+                        bool return_bitmap,
                         const base::android::JavaRef<jobject>& j_callback);
   void CacheTabWithBitmap(JNIEnv* env,
                           const base::android::JavaRef<jobject>& tab,
@@ -98,7 +98,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                            jint tab_id,
                            const base::android::JavaRef<jobject>& j_callback);
   void SetCaptureMinRequestTimeForTesting(JNIEnv* env, jint timeMs);
-  jboolean IsTabCaptureInFlightForTesting(JNIEnv* env, jint tab_id);
+  bool IsTabCaptureInFlightForTesting(JNIEnv* env, jint tab_id);
 
   // ThumbnailCacheObserver implementation;
   void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;

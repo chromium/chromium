@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/serial/android/jni_headers/SerialBridge_jni.h"
 
-static jboolean JNI_SerialBridge_IsWebContentsConnectedToSerialPort(
+static bool JNI_SerialBridge_IsWebContentsConnectedToSerialPort(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_web_contents) {
   return content::WebContents::FromJavaWebContents(java_web_contents)

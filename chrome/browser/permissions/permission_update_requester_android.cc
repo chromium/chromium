@@ -37,7 +37,7 @@ PermissionUpdateRequester::~PermissionUpdateRequester() {
 
 void PermissionUpdateRequester::OnPermissionResult(
     JNIEnv* env,
-    jboolean all_permissions_granted) {
+    bool all_permissions_granted) {
   std::move(callback_).Run(all_permissions_granted);
 }
 

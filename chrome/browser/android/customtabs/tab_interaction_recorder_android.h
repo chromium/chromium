@@ -120,10 +120,10 @@ class TabInteractionRecorderAndroid
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   // JNI methods
-  jboolean DidGetUserInteraction(JNIEnv* env) const;
-  jboolean HadFormInteractionInSession(JNIEnv* env) const;
-  jboolean HadFormInteractionInActivePage(JNIEnv* env) const;
-  jboolean HadNavigationInteraction(JNIEnv* env) const;
+  bool DidGetUserInteraction(JNIEnv* env) const;
+  bool HadFormInteractionInSession(JNIEnv* env) const;
+  bool HadFormInteractionInActivePage(JNIEnv* env) const;
+  bool HadNavigationInteraction(JNIEnv* env) const;
   void Reset(JNIEnv* env);
 
 #ifdef UNIT_TEST

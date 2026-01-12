@@ -809,7 +809,7 @@ base::android::ScopedJavaLocalRef<jobject> AwSettings::GetJavaObject() {
 void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
-    jboolean enabled) {
+    bool enabled) {
   enterprise_authentication_app_link_policy_enabled_ = enabled;
 }
 

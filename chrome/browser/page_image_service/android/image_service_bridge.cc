@@ -95,9 +95,8 @@ void ImageServiceBridge::FetchImageUrlForImpl(
                                 std::move(callback));
 }
 
-jboolean ImageServiceBridge::HasConsentToFetchImages(
-    JNIEnv* env,
-    const bool is_account_data) {
+bool ImageServiceBridge::HasConsentToFetchImages(JNIEnv* env,
+                                                 const bool is_account_data) {
   return HasConsentToFetchImagesImpl(is_account_data);
 }
 

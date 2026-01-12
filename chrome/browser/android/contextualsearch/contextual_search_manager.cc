@@ -164,7 +164,7 @@ static jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(manager);
 }
 
-static jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
+static bool JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
     JNIEnv* env,
     Profile* profile) {
   // Attempt to resolve a (empty) query. Return whether resulting URL is

@@ -67,8 +67,8 @@ bool LibraryLoaded(LibraryProcessType library_process_type) {
   return true;
 }
 
-static jboolean JNI_LibraryLoader_LibraryLoaded(JNIEnv* env,
-                                                jint library_process_type) {
+static bool JNI_LibraryLoader_LibraryLoaded(JNIEnv* env,
+                                            jint library_process_type) {
   return LibraryLoaded(static_cast<LibraryProcessType>(library_process_type));
 }
 

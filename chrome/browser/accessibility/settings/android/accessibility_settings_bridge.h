@@ -12,13 +12,13 @@ namespace accessibility {
 // JNI bridge for the caret browsing feature.
 class AccessibilitySettingsBridge {
  public:
-  static jboolean IsCaretBrowsingEnabled(
+  static bool IsCaretBrowsingEnabled(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_profile);
   static void SetCaretBrowsingEnabled(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_profile,
-      jboolean enabled);
+      bool enabled);
 };
 
 }  // namespace accessibility

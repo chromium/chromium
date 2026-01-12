@@ -98,9 +98,8 @@ void OverlayPanelContent::SetInterceptNavigationDelegate(
           env, delegate));
 }
 
-void OverlayPanelContent::UpdateBrowserControlsState(
-    JNIEnv* env,
-    jboolean are_controls_hidden) {
+void OverlayPanelContent::UpdateBrowserControlsState(JNIEnv* env,
+                                                     bool are_controls_hidden) {
   if (!web_contents_)
     return;
 

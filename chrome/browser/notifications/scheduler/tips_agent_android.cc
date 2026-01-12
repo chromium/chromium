@@ -94,15 +94,14 @@ void TipsAgentAndroid::ShowTipsPromo(
   Java_TipsAgent_showTipsPromo(env, static_cast<jint>(feature_type));
 }
 
-static void JNI_TipsAgent_MaybeScheduleNotification(
-    JNIEnv* env,
-    Profile* profile,
-    jboolean j_is_bottom_omnibox) {
+static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
+                                                    Profile* profile,
+                                                    bool j_is_bottom_omnibox) {
   if (!profile) {
     return;
   }
 
-  bool is_bottom_omnibox = static_cast<bool>(j_is_bottom_omnibox);
+  bool is_bottom_omnibox = j_is_bottom_omnibox;
 
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::

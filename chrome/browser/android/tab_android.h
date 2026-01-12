@@ -178,8 +178,8 @@ class TabAndroid : public tabs::TabInterface,
   bool HasParentCollection();
   void InitWebContents(
       JNIEnv* env,
-      jboolean incognito,
-      jboolean is_background_tab,
+      bool incognito,
+      bool is_background_tab,
       const base::android::JavaRef<jobject>& jweb_contents,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
@@ -203,10 +203,10 @@ class TabAndroid : public tabs::TabInterface,
                                            std::u16string& jtitle);
   void LoadOriginalImage();
   void OnShow();
-  void NotifyPinnedStateChanged(jboolean is_pinned);
+  void NotifyPinnedStateChanged(bool is_pinned);
   void NotifyTabGroupChanged(std::optional<base::Token> tab_group_id);
   bool IsDragging() const;
-  void OnDraggingStateChanged(jboolean is_dragging);
+  void OnDraggingStateChanged(bool is_dragging);
   base::CallbackListSubscription RegisterDraggingChanged(
       base::RepeatingCallback<void(TabInterface*, bool)> callback);
 

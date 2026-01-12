@@ -154,7 +154,7 @@ static void JNI_SimpleConfirmInfoBarBuilder_Create(
     const JavaRef<jstring>& j_primary,
     const JavaRef<jstring>& j_secondary,
     const JavaRef<jstring>& j_link_text,
-    jboolean auto_expire,
+    bool auto_expire,
     const JavaRef<jobject>& j_listener) {
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier =
       static_cast<infobars::InfoBarDelegate::InfoBarIdentifier>(j_identifier);

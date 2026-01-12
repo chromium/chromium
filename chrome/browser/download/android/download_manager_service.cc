@@ -172,7 +172,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
 
 static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
                                              const JavaRef<jobject>& jobj,
-                                             jboolean is_full_browser_started) {
+                                             bool is_full_browser_started) {
   DownloadManagerService* service = DownloadManagerService::GetInstance();
   service->Init(env, jobj, is_full_browser_started);
   return reinterpret_cast<intptr_t>(service);
@@ -690,7 +690,7 @@ void DownloadManagerService::InitializeForProfile(ProfileKey* profile_key) {
 }
 
 // static
-static jboolean JNI_DownloadManagerService_IsSupportedMimeType(
+static bool JNI_DownloadManagerService_IsSupportedMimeType(
     JNIEnv* env,
     std::string& mime_type) {
   return blink::IsSupportedMimeType(mime_type);

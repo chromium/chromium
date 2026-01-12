@@ -456,7 +456,7 @@ static jlong JNI_AwContents_Init(JNIEnv* env, jlong browser_context_pointer) {
   return reinterpret_cast<intptr_t>(new AwContents(std::move(web_contents)));
 }
 
-static jboolean JNI_AwContents_HasRequiredHardwareExtensions(JNIEnv* env) {
+static bool JNI_AwContents_HasRequiredHardwareExtensions(JNIEnv* env) {
   ScopedAllowInitGLBindings scoped_allow_init_gl_bindings;
   // Make sure GPUInfo is collected. This will initialize GL bindings,
   // collect GPUInfo, and compute GpuFeatureInfo if they have not been
@@ -626,7 +626,7 @@ void AwContents::ShowGeolocationPrompt(const GURL& requesting_frame,
 
 // Invoked from Java
 void AwContents::InvokeGeolocationCallback(JNIEnv* env,
-                                           jboolean value,
+                                           bool value,
                                            const JavaRef<jstring>& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (pending_geolocation_prompts_.empty())
@@ -761,7 +761,7 @@ void AwContents::FindAllAsync(JNIEnv* env,
   GetFindHelper()->FindAllAsync(ConvertJavaStringToUTF16(env, search_string));
 }
 
-void AwContents::FindNext(JNIEnv* env, jboolean forward) {
+void AwContents::FindNext(JNIEnv* env, bool forward) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetFindHelper()->FindNext(forward);
 }
@@ -771,7 +771,7 @@ void AwContents::ClearMatches(JNIEnv* env) {
   GetFindHelper()->ClearMatches();
 }
 
-void AwContents::ClearCache(JNIEnv* env, jboolean include_disk_files) {
+void AwContents::ClearCache(JNIEnv* env, bool include_disk_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AwRenderProcess* aw_render_process =
       AwRenderProcess::GetInstanceForRenderProcessHost(
@@ -1022,7 +1022,7 @@ bool AwContents::IsDisplayingInterstitialForTesting(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
     JNIEnv* env,
     jint max_size,
-    jboolean include_forward_state) {
+    bool include_forward_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
   // there has been no navigations.
@@ -1042,8 +1042,8 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   return base::android::ToJavaByteArray(env, *pickle);
 }
 
-jboolean AwContents::RestoreFromOpaqueState(JNIEnv* env,
-                                            const JavaRef<jbyteArray>& state) {
+bool AwContents::RestoreFromOpaqueState(JNIEnv* env,
+                                        const JavaRef<jbyteArray>& state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(boliu): This copy can be optimized out if this is a performance
   // problem.
@@ -1058,14 +1058,14 @@ jboolean AwContents::RestoreFromOpaqueState(JNIEnv* env,
 
 bool AwContents::OnDraw(JNIEnv* env,
                         const JavaRef<jobject>& canvas,
-                        jboolean is_hardware_accelerated,
+                        bool is_hardware_accelerated,
                         jint scroll_x,
                         jint scroll_y,
                         jint visible_left,
                         jint visible_top,
                         jint visible_right,
                         jint visible_bottom,
-                        jboolean force_auxiliary_bitmap_rendering) {
+                        bool force_auxiliary_bitmap_rendering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   gfx::Point scroll(scroll_x, scroll_y);
   browser_view_renderer_.PrepareToDraw(
@@ -1278,7 +1278,7 @@ jlong AwContents::CapturePicture(JNIEnv* env, int width, int height) {
       new AwPicture(browser_view_renderer_.CapturePicture(width, height)));
 }
 
-void AwContents::EnableOnNewPicture(JNIEnv* env, jboolean enabled) {
+void AwContents::EnableOnNewPicture(JNIEnv* env, bool enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.EnableOnNewPicture(enabled);
 }
@@ -1546,7 +1546,7 @@ void AwContents::SetExtraHeadersForUrl(JNIEnv* env,
       GURL(ConvertJavaStringToUTF8(env, url)), extra_headers);
 }
 
-void AwContents::SetJsOnlineProperty(JNIEnv* env, jboolean network_up) {
+void AwContents::SetJsOnlineProperty(JNIEnv* env, bool network_up) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AwRenderProcess* aw_render_process =
       AwRenderProcess::GetInstanceForRenderProcessHost(
@@ -1555,7 +1555,7 @@ void AwContents::SetJsOnlineProperty(JNIEnv* env, jboolean network_up) {
   aw_render_process->SetJsOnlineProperty(network_up);
 }
 
-void AwContents::TrimMemory(JNIEnv* env, jint level, jboolean visible) {
+void AwContents::TrimMemory(JNIEnv* env, jint level, bool visible) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Constants from Android ComponentCallbacks2.
   enum {

@@ -49,10 +49,10 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
                                content_scroll_offset);
 }
 
-jboolean OverscrollSceneLayer::Update(JNIEnv* env,
-                                      const JavaRef<jobject>& jresource_manager,
-                                      jfloat accumulated_overscroll_x,
-                                      jfloat delta_x) {
+bool OverscrollSceneLayer::Update(JNIEnv* env,
+                                  const JavaRef<jobject>& jresource_manager,
+                                  jfloat accumulated_overscroll_x,
+                                  jfloat delta_x) {
   if (!resource_manager_) {
     if (jresource_manager.is_null()) {
       return false;

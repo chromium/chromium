@@ -211,7 +211,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
   }
 }
 
-jboolean PersonalDataManagerAndroid::IsDataLoaded(JNIEnv* env) const {
+bool PersonalDataManagerAndroid::IsDataLoaded(JNIEnv* env) const {
   return pdm_observation_.GetSource()->IsDataLoaded();
 }
 
@@ -236,7 +236,7 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
   return profile->CreateJavaObject(g_browser_process->GetApplicationLocale());
 }
 
-jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
+bool PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
     JNIEnv* env) {
   return address_data_manager().IsEligibleForAddressAccountStorage();
 }
@@ -465,8 +465,7 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
       static_cast<jlong>(bank_account.payment_instrument().instrument_id()),
       jnickname, jdisplay_icon_url,
       ToJavaIntArray(env, supported_payment_rails_array),
-      static_cast<jboolean>(
-          bank_account.payment_instrument().is_fido_enrolled()),
+      static_cast<bool>(bank_account.payment_instrument().is_fido_enrolled()),
       jbank_name, jaccount_number_suffix,
       static_cast<jint>(bank_account.account_type()));
 }
@@ -561,7 +560,7 @@ PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
       env, static_cast<jlong>(ewallet.payment_instrument().instrument_id()),
       jnickname, jdisplay_icon_url,
       ToJavaIntArray(env, supported_payment_rails_array),
-      static_cast<jboolean>(ewallet.payment_instrument().is_fido_enrolled()),
+      static_cast<bool>(ewallet.payment_instrument().is_fido_enrolled()),
       jewallet_name, jaccount_display_name);
 }
 
@@ -762,12 +761,12 @@ std::string PersonalDataManagerAndroid::AddOrUpdateLocalIban(
   return guid;
 }
 
-jboolean PersonalDataManagerAndroid::IsValidIban(JNIEnv* env,
-                                                 std::u16string& iban_value) {
+bool PersonalDataManagerAndroid::IsValidIban(JNIEnv* env,
+                                             std::u16string& iban_value) {
   return Iban::IsValid(iban_value);
 }
 
-jboolean PersonalDataManagerAndroid::ShouldShowAddIbanButtonOnSettingsPage(
+bool PersonalDataManagerAndroid::ShouldShowAddIbanButtonOnSettingsPage(
     JNIEnv* env) {
   return ShouldShowIbanOnSettingsPage(
       payments_data_manager().GetCountryCodeForExperimentGroup(), prefs_);
@@ -787,11 +786,11 @@ PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
                                                   type.obj());
 }
 
-jboolean PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
+bool PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
   return prefs::IsAutofillProfileManaged(prefs_);
 }
 
-jboolean PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
+bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
   return prefs::IsAutofillCreditCardManaged(prefs_);
 }
 
@@ -801,9 +800,8 @@ jboolean PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
 static std::string JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
     JNIEnv* env,
     std::u16string& card_number,
-    const jboolean jempty_if_invalid) {
-  if (static_cast<bool>(jempty_if_invalid) &&
-      !IsValidCreditCardNumber(card_number)) {
+    const bool jempty_if_invalid) {
+  if (jempty_if_invalid && !IsValidCreditCardNumber(card_number)) {
     return "";
   }
   return data_util::GetPaymentRequestData(GetCardNetwork(card_number))
@@ -829,7 +827,7 @@ static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(personal_data_manager_android);
 }
 
-jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
+bool PersonalDataManagerAndroid::IsCardEligibleForBenefits(
     JNIEnv* env,
     const std::string& guid) {
   if (const CreditCard* card =
@@ -839,7 +837,7 @@ jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
   return false;
 }
 
-jboolean PersonalDataManagerAndroid::ShouldShowBnplSettings(JNIEnv* env) {
+bool PersonalDataManagerAndroid::ShouldShowBnplSettings(JNIEnv* env) {
   return payments_data_manager().ShouldShowBnplSettings();
 }
 

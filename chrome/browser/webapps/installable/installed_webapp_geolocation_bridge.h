@@ -46,13 +46,13 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
                               jdouble latitude,
                               jdouble longitude,
                               jdouble time_stamp,
-                              jboolean has_altitude,
+                              bool has_altitude,
                               jdouble altitude,
-                              jboolean has_accuracy,
+                              bool has_accuracy,
                               jdouble accuracy,
-                              jboolean has_heading,
+                              bool has_heading,
                               jdouble heading,
-                              jboolean has_speed,
+                              bool has_speed,
                               jdouble speed);
   void OnNewErrorAvailable(JNIEnv* env, std::string& message);
 

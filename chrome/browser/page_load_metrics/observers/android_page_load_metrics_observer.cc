@@ -168,7 +168,7 @@ void AndroidPageLoadMetricsObserver::OnUserTimingMarkFullyLoaded(
       GetDelegate().GetNavigationStart().ToUptimeMicros(),
       static_cast<jlong>(
           timing.user_timing_mark_fully_loaded->InMilliseconds()),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::OnUserTimingMarkFullyVisible(
@@ -185,7 +185,7 @@ void AndroidPageLoadMetricsObserver::OnUserTimingMarkFullyVisible(
       GetDelegate().GetNavigationStart().ToUptimeMicros(),
       static_cast<jlong>(
           timing.user_timing_mark_fully_visible->InMilliseconds()),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::OnUserTimingMarkInteractive(
@@ -201,7 +201,7 @@ void AndroidPageLoadMetricsObserver::OnUserTimingMarkInteractive(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
       GetDelegate().GetNavigationStart().ToUptimeMicros(),
       static_cast<jlong>(timing.user_timing_mark_interactive->InMilliseconds()),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportNewNavigation(
@@ -213,8 +213,8 @@ void AndroidPageLoadMetricsObserver::ReportNewNavigation(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PageLoadMetrics_onNewNavigation(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
-      static_cast<jboolean>(GetDelegate().IsFirstNavigationInWebContents()),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(GetDelegate().IsFirstNavigationInWebContents()),
+      static_cast<bool>(IsPrerendering()));
 
   int64_t http_rtt = network_quality_tracker_->GetHttpRTT().InMilliseconds();
   int64_t transport_rtt =
@@ -272,7 +272,7 @@ void AndroidPageLoadMetricsObserver::ReportBufferedMetrics(
                               .GetMainFrameRenderData()
                               .layout_shift_score_before_input_or_scroll),
       static_cast<jfloat>(GetDelegate().GetPageRenderData().layout_shift_score),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportNetworkQualityEstimate(
@@ -286,7 +286,7 @@ void AndroidPageLoadMetricsObserver::ReportNetworkQualityEstimate(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
       static_cast<jint>(connection_type), static_cast<jlong>(http_rtt_ms),
       static_cast<jlong>(transport_rtt_ms),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportFirstContentfulPaint(
@@ -323,7 +323,7 @@ void AndroidPageLoadMetricsObserver::ReportLoadEventStart(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
       navigation_start_tick.ToUptimeMicros(),
       static_cast<jlong>(load_event_start.InMilliseconds()),
-      static_cast<jboolean>(IsPrerendering()));
+      static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportLoadedMainResource(
@@ -342,7 +342,7 @@ void AndroidPageLoadMetricsObserver::ReportLoadedMainResource(
       static_cast<jlong>(dns_start_ms), static_cast<jlong>(dns_end_ms),
       static_cast<jlong>(connect_start_ms), static_cast<jlong>(connect_end_ms),
       static_cast<jlong>(request_start_ms), static_cast<jlong>(send_start_ms),
-      static_cast<jlong>(send_end_ms), static_cast<jboolean>(IsPrerendering()));
+      static_cast<jlong>(send_end_ms), static_cast<bool>(IsPrerendering()));
 }
 
 void AndroidPageLoadMetricsObserver::ReportFirstInputDelay(

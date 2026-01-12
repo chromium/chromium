@@ -15,7 +15,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PrivacyPreferencesManagerImpl_jni.h"
 
-static jboolean JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled(
+static bool JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled(
     JNIEnv* env) {
   PrefService* local_state = g_browser_process->local_state();
   return local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
@@ -23,12 +23,12 @@ static jboolean JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled(
 
 static void JNI_PrivacyPreferencesManagerImpl_SetMetricsReportingEnabled(
     JNIEnv* env,
-    jboolean enabled) {
+    bool enabled) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(metrics::prefs::kMetricsReportingEnabled, enabled);
 }
 
-static jboolean
+static bool
 JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingDisabledByPolicy(
     JNIEnv* env) {
   const PrefService* local_state = g_browser_process->local_state();

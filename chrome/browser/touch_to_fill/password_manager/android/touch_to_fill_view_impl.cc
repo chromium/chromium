@@ -175,7 +175,7 @@ void TouchToFillViewImpl::OnWebAuthnCredentialSelected(
 }
 
 void TouchToFillViewImpl::OnManagePasswordsSelected(JNIEnv* env,
-                                                    jboolean passkeys_shown) {
+                                                    bool passkeys_shown) {
   controller_->OnManagePasswordsSelected(passkeys_shown);
 }
 

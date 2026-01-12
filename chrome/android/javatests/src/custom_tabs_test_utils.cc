@@ -10,7 +10,7 @@
 
 namespace customtabs {
 
-static jboolean JNI_CustomTabsTestUtils_HasVariationId(JNIEnv* env, jint id) {
+static bool JNI_CustomTabsTestUtils_HasVariationId(JNIEnv* env, jint id) {
   auto ids = variations::VariationsIdsProvider::GetInstance()
                  ->GetVariationsVectorForWebPropertiesKeys();
   return base::Contains(ids, id);

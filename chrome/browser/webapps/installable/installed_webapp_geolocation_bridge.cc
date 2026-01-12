@@ -139,13 +139,13 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
     jdouble latitude,
     jdouble longitude,
     jdouble time_stamp,
-    jboolean has_altitude,
+    bool has_altitude,
     jdouble altitude,
-    jboolean has_accuracy,
+    bool has_accuracy,
     jdouble accuracy,
-    jboolean has_heading,
+    bool has_heading,
     jdouble heading,
-    jboolean has_speed,
+    bool has_speed,
     jdouble speed) {
   auto position = device::mojom::Geoposition::New();
   position->latitude = latitude;

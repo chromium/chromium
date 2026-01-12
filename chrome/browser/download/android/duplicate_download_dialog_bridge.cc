@@ -83,7 +83,7 @@ void DuplicateDownloadDialogBridge::Show(
 
 void DuplicateDownloadDialogBridge::OnConfirmed(JNIEnv* env,
                                                 jlong callback_id,
-                                                jboolean accepted) {
+                                                bool accepted) {
   if (!validator_.ValidateAndClearJavaCallback(callback_id))
     return;
   // Convert java long long int to c++ pointer, take ownership.

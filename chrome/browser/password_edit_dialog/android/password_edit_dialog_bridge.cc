@@ -76,14 +76,13 @@ void PasswordEditDialogBridge::OnDialogAccepted(JNIEnv* env,
 }
 
 void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,
-                                                 jboolean dialogAccepted) {
+                                                 bool dialogAccepted) {
   java_password_dialog_.Reset();
   delegate_->HandleDialogDismissed(dialogAccepted);
 }
 
-jboolean PasswordEditDialogBridge::IsUsingAccountStorage(
-    JNIEnv* env,
-    std::u16string& username) {
+bool PasswordEditDialogBridge::IsUsingAccountStorage(JNIEnv* env,
+                                                     std::u16string& username) {
   return delegate_->IsUsingAccountStorage(username);
 }
 

@@ -10,7 +10,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerHelper_jni.h"
 
-static jboolean JNI_PasswordManagerHelper_HasChosenToSyncPasswords(
+static bool JNI_PasswordManagerHelper_HasChosenToSyncPasswords(
     JNIEnv* env,
     syncer::SyncService* sync_service) {
   return password_manager::sync_util::HasChosenToSyncPasswords(sync_service);

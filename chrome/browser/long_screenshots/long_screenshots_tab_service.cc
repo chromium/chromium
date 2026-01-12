@@ -280,7 +280,7 @@ void LongScreenshotsTabService::CaptureTabAndroid(
     jint clip_y,
     jint clip_width,
     jint clip_height,
-    jboolean in_memory,
+    bool in_memory,
     jint clip_x_coord_override,
     jint clip_y_coord_override) {
   CHECK_GE(
@@ -302,7 +302,7 @@ void LongScreenshotsTabService::CaptureTabAndroid(
   CaptureTab(static_cast<int>(j_tab_id), url, web_contents,
              static_cast<int>(clip_x), static_cast<int>(clip_y),
              static_cast<int>(clip_width), static_cast<int>(clip_height),
-             static_cast<bool>(in_memory),
+             in_memory,
              static_cast<paint_preview::mojom::ClipCoordOverride>(
                  clip_x_coord_override),
              static_cast<paint_preview::mojom::ClipCoordOverride>(

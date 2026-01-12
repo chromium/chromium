@@ -83,7 +83,7 @@ void TopToolbarSceneLayer::UpdateProgressBar(
     jint progress_bar_static_background_width,
     jint progress_bar_static_background_color,
     jfloat corner_radius,
-    jboolean progress_bar_visual_update_available,
+    bool progress_bar_visual_update_available,
     bool visible) {
   if (!toolbar_layer_)
     return;

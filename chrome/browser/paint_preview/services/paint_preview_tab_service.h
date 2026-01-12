@@ -89,17 +89,17 @@ class PaintPreviewTabService : public PaintPreviewBaseService,
   void CaptureTabAndroid(JNIEnv* env,
                          jint j_tab_id,
                          const base::android::JavaRef<jobject>& j_web_contents,
-                         jboolean j_accessibility_enabled,
+                         bool j_accessibility_enabled,
                          jfloat j_page_scale_factor,
                          jint j_x,
                          jint j_y,
                          const base::android::JavaRef<jobject>& j_callback);
   void TabClosedAndroid(JNIEnv* env, jint j_tab_id);
-  jboolean HasCaptureForTabAndroid(JNIEnv* env, jint j_tab_id);
+  bool HasCaptureForTabAndroid(JNIEnv* env, jint j_tab_id);
   void AuditArtifactsAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jintArray>& j_tab_ids);
-  jboolean IsCacheInitializedAndroid(JNIEnv* env);
+  bool IsCacheInitializedAndroid(JNIEnv* env);
   std::string GetPathAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }

@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/LensPolicyUtils_jni.h"
 
-static jboolean JNI_LensPolicyUtils_GetLensCameraAssistedSearchEnabled(
+static bool JNI_LensPolicyUtils_GetLensCameraAssistedSearchEnabled(
     JNIEnv* env) {
   return g_browser_process->local_state()->GetBoolean(
       lens::kLensCameraAssistedSearchEnabled);

@@ -39,11 +39,11 @@ class PartnerBookmarksReader {
   jlong AddPartnerBookmark(JNIEnv* env,
                            const base::android::JavaRef<jstring>& jurl,
                            const base::android::JavaRef<jstring>& jtitle,
-                           jboolean is_folder,
+                           bool is_folder,
                            jlong parent_id,
                            const base::android::JavaRef<jbyteArray>& favicon,
                            const base::android::JavaRef<jbyteArray>& touchicon,
-                           jboolean fetch_uncached_favicons_from_server,
+                           bool fetch_uncached_favicons_from_server,
                            jint desired_favicon_size_px,
                            // Callback<FaviconFetchResult>
                            const base::android::JavaRef<jobject>& j_callback);

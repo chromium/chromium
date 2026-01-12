@@ -35,9 +35,7 @@ class ContextMenuNativeDelegateImpl {
                              jint max_width_px,
                              jint max_height_px,
                              jint j_image_type);
-  void StartDownload(JNIEnv* env,
-                     const GURL& gurl,
-                     jboolean jis_media);
+  void StartDownload(JNIEnv* env, const GURL& gurl, bool jis_media);
   void SearchForImage(JNIEnv* env, content::RenderFrameHost* render_frame_host);
   void InspectElement(JNIEnv* env,
                       content::RenderFrameHost* render_frame_host,
@@ -45,7 +43,7 @@ class ContextMenuNativeDelegateImpl {
                       jint y);
   void SetPictureInPicture(JNIEnv* env,
                            content::RenderFrameHost* render_frame_host,
-                           jboolean enter_pip);
+                           bool enter_pip);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(

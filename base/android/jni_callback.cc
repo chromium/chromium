@@ -109,7 +109,7 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
 
 static void JNI_JniCallbackImpl_OnResult(
     JNIEnv* env,
-    jboolean isRepeating,
+    bool isRepeating,
     jlong callbackPtr,
     const jni_zero::JavaRef<jobject>& j_result) {
   if (isRepeating) {
@@ -124,7 +124,7 @@ static void JNI_JniCallbackImpl_OnResult(
 }
 
 static void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
-                                        jboolean isRepeating,
+                                        bool isRepeating,
                                         jlong callbackPtr) {
   if (isRepeating) {
     auto* callback =

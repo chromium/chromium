@@ -207,23 +207,23 @@ void MostVisitedSitesBridge::SetObserver(JNIEnv* env,
   most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
 }
 
-jboolean MostVisitedSitesBridge::AddCustomLinkTo(JNIEnv* env,
-                                                 const std::u16string& name,
-                                                 const GURL& url,
-                                                 jint pos) {
+bool MostVisitedSitesBridge::AddCustomLinkTo(JNIEnv* env,
+                                             const std::u16string& name,
+                                             const GURL& url,
+                                             jint pos) {
   return most_visited_->AddCustomLinkTo(url, name, pos);
 }
 
-jboolean MostVisitedSitesBridge::AddCustomLink(JNIEnv* env,
-                                               const std::u16string& name,
-                                               const GURL& url) {
+bool MostVisitedSitesBridge::AddCustomLink(JNIEnv* env,
+                                           const std::u16string& name,
+                                           const GURL& url) {
   return most_visited_->AddCustomLink(url, name);
 }
 
-jboolean MostVisitedSitesBridge::AssignCustomLink(JNIEnv* env,
-                                                  const GURL& key_url,
-                                                  const std::u16string& name,
-                                                  const GURL& url) {
+bool MostVisitedSitesBridge::AssignCustomLink(JNIEnv* env,
+                                              const GURL& key_url,
+                                              const std::u16string& name,
+                                              const GURL& url) {
   if (most_visited_->HasCustomLink(key_url)) {
     // Update existing Custom link. In rare cases (e.g., split-window editing
     // and/or race conditions) HasCustomLink() can output stale results. But
@@ -236,26 +236,25 @@ jboolean MostVisitedSitesBridge::AssignCustomLink(JNIEnv* env,
   return most_visited_->AddCustomLink(url, name);
 }
 
-jboolean MostVisitedSitesBridge::DeleteCustomLink(JNIEnv* env,
-                                                  const GURL& key_url) {
+bool MostVisitedSitesBridge::DeleteCustomLink(JNIEnv* env,
+                                              const GURL& key_url) {
   return most_visited_->DeleteCustomLink(key_url);
 }
 
-jboolean MostVisitedSitesBridge::HasCustomLink(JNIEnv* env,
-                                               const GURL& key_url) {
+bool MostVisitedSitesBridge::HasCustomLink(JNIEnv* env, const GURL& key_url) {
   return most_visited_->HasCustomLink(key_url);
 }
 
-jboolean MostVisitedSitesBridge::ReorderCustomLink(JNIEnv* env,
-                                                   const GURL& key_url,
-                                                   jint new_pos) {
+bool MostVisitedSitesBridge::ReorderCustomLink(JNIEnv* env,
+                                               const GURL& key_url,
+                                               jint new_pos) {
   return most_visited_->ReorderCustomLink(key_url, new_pos);
 }
 
 void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
     JNIEnv* env,
     const JavaRef<jobject>& j_url,
-    jboolean add_url) {
+    bool add_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   most_visited_->AddOrRemoveBlockedUrl(url, add_url);
 }
@@ -305,7 +304,7 @@ jdouble MostVisitedSitesBridge::GetSuggestionScore(JNIEnv* env,
 
 static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
                                              Profile* profile,
-                                             jboolean enable_custom_links) {
+                                             bool enable_custom_links) {
   MostVisitedSitesBridge* most_visited_sites =
       new MostVisitedSitesBridge(profile, enable_custom_links);
   return reinterpret_cast<intptr_t>(most_visited_sites);

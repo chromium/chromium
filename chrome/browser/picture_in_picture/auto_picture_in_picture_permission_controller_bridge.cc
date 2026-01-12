@@ -21,8 +21,7 @@ using base::android::JavaRef;
 
 namespace picture_in_picture {
 
-jboolean
-JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
+bool JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
     JNIEnv* env,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

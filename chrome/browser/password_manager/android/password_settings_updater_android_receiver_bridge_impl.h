@@ -33,7 +33,7 @@ class PasswordSettingsUpdaterAndroidReceiverBridgeImpl
   // Called via JNI from PasswordSettingsUpdaterAndroidReceiverBridge.java
   void OnSettingValueFetched(JNIEnv* env,
                              jint setting,
-                             jboolean offerToSavePasswordsEnabled);
+                             bool offerToSavePasswordsEnabled);
   void OnSettingValueAbsent(JNIEnv* env, jint setting);
   void OnSettingFetchingError(JNIEnv* env,
                               jint setting,

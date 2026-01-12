@@ -150,7 +150,7 @@ void AwContentsClientBridge::AllowCertificateError(int cert_error,
 }
 
 void AwContentsClientBridge::ProceedSslError(JNIEnv* env,
-                                             jboolean proceed,
+                                             bool proceed,
                                              jint id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CertErrorCallback* callback = pending_cert_error_callbacks_.Lookup(id);

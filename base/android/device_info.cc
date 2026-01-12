@@ -66,22 +66,21 @@ void Set(const IDeviceInfo& info) {
 
 static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       std::string& gmsVersionCode,
-                                      jboolean isTV,
-                                      jboolean isAutomotive,
-                                      jboolean isFoldable,
-                                      jboolean isDesktop,
+                                      bool isTV,
+                                      bool isAutomotive,
+                                      bool isFoldable,
+                                      bool isDesktop,
                                       jint vulkanDeqpLevel,
-                                      jboolean isXr,
-                                      jboolean wasLaunchedOnLargeDisplay) {
+                                      bool isXr,
+                                      bool wasLaunchedOnLargeDisplay) {
   Set(IDeviceInfo{.gmsVersionCode = gmsVersionCode,
-                  .isAutomotive = static_cast<bool>(isAutomotive),
-                  .isDesktop = static_cast<bool>(isDesktop),
-                  .isFoldable = static_cast<bool>(isFoldable),
-                  .isTv = static_cast<bool>(isTV),
+                  .isAutomotive = isAutomotive,
+                  .isDesktop = isDesktop,
+                  .isFoldable = isFoldable,
+                  .isTv = isTV,
                   .vulkanDeqpLevel = vulkanDeqpLevel,
-                  .isXr = static_cast<bool>(isXr),
-                  .wasLaunchedOnLargeDisplay =
-                      static_cast<bool>(wasLaunchedOnLargeDisplay)});
+                  .isXr = isXr,
+                  .wasLaunchedOnLargeDisplay = wasLaunchedOnLargeDisplay});
 }
 
 const std::string& gms_version_code() {

@@ -63,7 +63,7 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 static void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_finished_callback,
-    jboolean j_on_demand_update) {
+    bool j_on_demand_update) {
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
           &base::android::RunIntCallbackAndroid,

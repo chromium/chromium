@@ -307,8 +307,8 @@ ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     const base::android::JavaRef<jobject>& state,
     BrowserContext* browser_context,
     int saved_state_version,
-    jboolean initially_hidden,
-    jboolean no_renderer) {
+    bool initially_hidden,
+    bool no_renderer) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
@@ -517,8 +517,8 @@ JNI_WebContentsState_RestoreContentsFromByteBuffer(
     Profile* profile,
     const JavaRef<jobject>& state,
     int saved_state_version,
-    jboolean initially_hidden,
-    jboolean no_renderer) {
+    bool initially_hidden,
+    bool no_renderer) {
   return WebContentsState::RestoreContentsFromByteBuffer(
       env, state, profile, saved_state_version, initially_hidden, no_renderer);
 }
@@ -567,7 +567,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     Profile* profile,
     const JavaRef<jobject>& state,
     int saved_state_version,
-    jboolean clobber_current_entry,
+    bool clobber_current_entry,
     std::optional<std::u16string>& title,
     std::string& url,
     std::optional<std::string>& referrer_url,

@@ -8,7 +8,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
-static jboolean
+static bool
 JNI_JavascriptOptimizerFeatureTestHelperAndroid_AreJavascriptOptimizersEnabledOnWebContents(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jweb_contents) {

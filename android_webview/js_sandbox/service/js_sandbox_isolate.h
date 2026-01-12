@@ -53,11 +53,10 @@ class JsSandboxIsolate {
                             size_t max_heap_size_bytes);
   ~JsSandboxIsolate();
 
-  jboolean EvaluateJavascript(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& jcode,
-      const base::android::JavaRef<jobject>& j_callback);
-  jboolean EvaluateJavascriptWithFd(
+  bool EvaluateJavascript(JNIEnv* env,
+                          const base::android::JavaRef<jstring>& jcode,
+                          const base::android::JavaRef<jobject>& j_callback);
+  bool EvaluateJavascriptWithFd(
       JNIEnv* env,
       const jint fd,
       const jlong length,
@@ -65,13 +64,12 @@ class JsSandboxIsolate {
       const base::android::JavaRef<jobject>& j_callback,
       const base::android::JavaRef<jobject>& pfd);
   void DestroyNative(JNIEnv* env);
-  jboolean ProvideNamedData(JNIEnv* env,
-                            const base::android::JavaRef<jstring>& jname,
-                            const jint fd,
-                            const jint length);
+  bool ProvideNamedData(JNIEnv* env,
+                        const base::android::JavaRef<jstring>& jname,
+                        const jint fd,
+                        const jint length);
   // May enable or disable inspection, as needed.
-  void SetConsoleEnabled(JNIEnv* env,
-                         jboolean enable);
+  void SetConsoleEnabled(JNIEnv* env, bool enable);
 
   void ProvideMessagePort(
       JNIEnv* env,

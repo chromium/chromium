@@ -196,8 +196,8 @@ static void JNI_ConnectivityChecker_CheckConnectivity(
   connectivity_checker->StartAsyncCheck();
 }
 
-static jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env,
-                                                   std::string& j_url) {
+static bool JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env,
+                                               std::string& j_url) {
   GURL url(j_url);
   return url.is_valid();
 }

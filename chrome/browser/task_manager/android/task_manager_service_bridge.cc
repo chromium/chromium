@@ -89,8 +89,8 @@ JNI_TaskManagerServiceBridge_GetGpuMemoryUsage(JNIEnv* env, TaskId task_id) {
   return Java_GpuMemoryUsage_Constructor(env, bytes, has_duplicates);
 }
 
-static jboolean JNI_TaskManagerServiceBridge_IsTaskKillable(JNIEnv* env,
-                                                            TaskId task_id) {
+static bool JNI_TaskManagerServiceBridge_IsTaskKillable(JNIEnv* env,
+                                                        TaskId task_id) {
   return TaskManagerInterface::GetTaskManager()->IsTaskKillable(task_id);
 }
 

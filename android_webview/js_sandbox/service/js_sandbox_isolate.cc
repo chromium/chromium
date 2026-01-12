@@ -357,7 +357,7 @@ JsSandboxIsolate::~JsSandboxIsolate() {
 // in v8. Only isolate_task_runner_ should be used to interact with the isolate
 // for thread-affine v8 APIs. The callback is invoked from the
 // isolate_task_runner_.
-jboolean JsSandboxIsolate::EvaluateJavascript(
+bool JsSandboxIsolate::EvaluateJavascript(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jcode,
     const base::android::JavaRef<jobject>& j_callback) {
@@ -376,7 +376,7 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
 // Called from Binder thread.
 // Refer to comment above EvaluateJavascript method. In addition, this method
 // checks for streaming failures.
-jboolean JsSandboxIsolate::EvaluateJavascriptWithFd(
+bool JsSandboxIsolate::EvaluateJavascriptWithFd(
     JNIEnv* env,
     const jint fd,
     const jlong length,
@@ -405,7 +405,7 @@ void JsSandboxIsolate::DestroyNative(JNIEnv* env) {
 }
 
 // Called from Binder thread.
-jboolean JsSandboxIsolate::ProvideNamedData(
+bool JsSandboxIsolate::ProvideNamedData(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jname,
     const jint fd,
@@ -418,9 +418,7 @@ jboolean JsSandboxIsolate::ProvideNamedData(
 }
 
 // Called from Binder thread.
-void JsSandboxIsolate::SetConsoleEnabled(
-    JNIEnv* env,
-    const jboolean enable) {
+void JsSandboxIsolate::SetConsoleEnabled(JNIEnv* env, const bool enable) {
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::SetConsoleEnabledOnControlThread,

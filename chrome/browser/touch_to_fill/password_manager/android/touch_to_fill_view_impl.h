@@ -36,7 +36,7 @@ class TouchToFillViewImpl : public TouchToFillView {
   void OnWebAuthnCredentialSelected(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& credential);
-  void OnManagePasswordsSelected(JNIEnv* env, jboolean passkeys_shown);
+  void OnManagePasswordsSelected(JNIEnv* env, bool passkeys_shown);
   void OnHybridSignInSelected(JNIEnv* env);
   void OnShowCredManSelected(JNIEnv* env);
   void OnDismiss(JNIEnv* env);

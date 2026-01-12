@@ -37,7 +37,7 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
   // Sets the properties needed to resolve a context.
   void SetResolveProperties(JNIEnv* env,
                             std::string& home_country,
-                            jboolean j_may_send_base_page_url);
+                            bool j_may_send_base_page_url);
 
   // Adjust the current selection offsets by the given signed amounts.
   void AdjustSelection(JNIEnv* env,
@@ -52,7 +52,7 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
   // identify related searches. If the string is empty then Related Searches
   // are not being requested.
   void PrepareToResolve(JNIEnv* env,
-                        jboolean j_is_exact_resolve,
+                        bool j_is_exact_resolve,
                         std::string& related_searches_stamp);
 
   // Detects the language of the context using CLD from the translate utility.

@@ -316,7 +316,7 @@ void UmaSessionStats::SessionTimeTracker::BeginBackgroundSession() {
 // the Java side.
 static void JNI_UmaSessionStats_ChangeMetricsReportingConsent(
     JNIEnv*,
-    jboolean consent,
+    bool consent,
     jint called_from) {
   UpdateMetricsPrefsOnPermissionChange(
       consent, static_cast<ChangeMetricsReportingStateCalledFrom>(called_from));
@@ -357,7 +357,7 @@ static void JNI_UmaSessionStats_UnsetMetricsAndCrashReportingForTesting(
 // repeatedly. Used only for testing.
 static void JNI_UmaSessionStats_UpdateMetricsAndCrashReportingForTesting(
     JNIEnv*,
-    jboolean consent) {
+    bool consent) {
   DCHECK(g_browser_process);
 
   g_metrics_consent_for_testing = consent;
@@ -377,9 +377,8 @@ static void JNI_UmaSessionStats_UpdateMetricsAndCrashReportingForTesting(
 // This can be called at any time when consent hasn't changed, such as
 // connection type change, or start up. If consent has changed, then
 // ChangeMetricsReportingConsent() should be called first.
-static void JNI_UmaSessionStats_UpdateMetricsServiceState(
-    JNIEnv*,
-    jboolean may_upload) {
+static void JNI_UmaSessionStats_UpdateMetricsServiceState(JNIEnv*,
+                                                          bool may_upload) {
   // This will also apply the consent state, taken from Chrome Local State
   // prefs.
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
@@ -389,7 +388,7 @@ static void JNI_UmaSessionStats_UpdateMetricsServiceState(
 static void JNI_UmaSessionStats_RegisterExternalExperiment(
     JNIEnv* env,
     const JavaRef<jintArray>& jexperiment_ids,
-    jboolean override_existing_ids) {
+    bool override_existing_ids) {
   std::vector<int> experiment_ids;
   // A null |jexperiment_ids| is the same as an empty list.
   if (jexperiment_ids) {
@@ -423,9 +422,8 @@ static void JNI_UmaSessionStats_RecordTabCountPerLoad(
   UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", num_tabs, 1, 200, 50);
 }
 
-static void JNI_UmaSessionStats_RecordPageLoaded(
-    JNIEnv*,
-    jboolean is_desktop_user_agent) {
+static void JNI_UmaSessionStats_RecordPageLoaded(JNIEnv*,
+                                                 bool is_desktop_user_agent) {
   // Should be called whenever a page has been loaded.
   base::RecordAction(UserMetricsAction("MobilePageLoaded"));
   if (is_desktop_user_agent) {

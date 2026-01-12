@@ -38,11 +38,11 @@ bool AwSupervisedUserSafeModeAction::IsSupervisionEnabled() {
 
 static void JNI_AwSupervisedUserSafeModeAction_SetSupervisionEnabled(
     JNIEnv* env,
-    jboolean value) {
+    bool value) {
   AwSupervisedUserSafeModeAction::GetInstance()->SetSupervisionEnabled(value);
 }
 
-static jboolean JNI_AwSupervisedUserSafeModeAction_IsSupervisionEnabled(
+static bool JNI_AwSupervisedUserSafeModeAction_IsSupervisionEnabled(
     JNIEnv* env) {
   return AwSupervisedUserSafeModeAction::GetInstance()->IsSupervisionEnabled();
 }

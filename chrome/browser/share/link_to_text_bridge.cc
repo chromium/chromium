@@ -28,14 +28,14 @@ ukm::SourceId GetSourceId(
 // TODO(gayane): Update the name whenever
 // |ShouldOfferLinkToText| updated to more descriptive
 // name.
-static jboolean JNI_LinkToTextBridge_ShouldOfferLinkToText(
+static bool JNI_LinkToTextBridge_ShouldOfferLinkToText(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return shared_highlighting::ShouldOfferLinkToText(url);
 }
 
-static jboolean JNI_LinkToTextBridge_SupportsLinkGenerationInIframe(
+static bool JNI_LinkToTextBridge_SupportsLinkGenerationInIframe(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);

@@ -25,14 +25,13 @@ ToolbarSwipeSceneLayer::ToolbarSwipeSceneLayer(JNIEnv* env,
 
 ToolbarSwipeSceneLayer::~ToolbarSwipeSceneLayer() = default;
 
-void ToolbarSwipeSceneLayer::UpdateLayer(
-    JNIEnv* env,
-    jint id,
-    jboolean left_tab,
-    jboolean can_use_live_layer,
-    jint default_background_color,
-    jfloat x,
-    jfloat y) {
+void ToolbarSwipeSceneLayer::UpdateLayer(JNIEnv* env,
+                                         jint id,
+                                         bool left_tab,
+                                         bool can_use_live_layer,
+                                         jint default_background_color,
+                                         jfloat x,
+                                         jfloat y) {
   background_color_ = default_background_color;
   ContentLayer* content_layer =
       left_tab ? left_content_layer_.get() : right_content_layer_.get();

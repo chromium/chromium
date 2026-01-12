@@ -28,9 +28,9 @@ static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
     JNIEnv* env,
     Profile* profile,
     jlong bookmark_id,
-    jboolean enabled,
+    bool enabled,
     const JavaRef<jobject>& j_callback,
-    jboolean bookmark_created_by_price_tracking) {
+    bool bookmark_created_by_price_tracking) {
   CHECK(profile);
 
   ShoppingService* service =

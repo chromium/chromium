@@ -129,7 +129,7 @@ static void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
                                                     jlong vector_pointer,
                                                     std::string& uri,
                                                     std::string& display_name,
-                                                    jboolean is_directory,
+                                                    bool is_directory,
                                                     jlong size,
                                                     jlong last_modified) {
   auto* result =

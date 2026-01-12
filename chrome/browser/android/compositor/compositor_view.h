@@ -73,7 +73,7 @@ class CompositorView : public content::CompositorClient,
   void OnControlsResizeViewChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      jboolean controls_resize_view);
+      bool controls_resize_view);
   void NotifyVirtualKeyboardOverlayRect(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
@@ -99,7 +99,7 @@ class CompositorView : public content::CompositorClient,
   void EvictCachedBackBuffer(JNIEnv* env);
   void OnTabChanged(JNIEnv* env);
   void PreserveChildSurfaceControls(JNIEnv* env);
-  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, jboolean enable);
+  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, bool enable);
 
   // CompositorClient implementation:
   void RecreateSurface() override;

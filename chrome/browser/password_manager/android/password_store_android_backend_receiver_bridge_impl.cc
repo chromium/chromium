@@ -116,7 +116,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnError(
     jint job_id,
     jint error_type,
     jint api_error_code,
-    jboolean has_connection_result,
+    bool has_connection_result,
     jint connection_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);

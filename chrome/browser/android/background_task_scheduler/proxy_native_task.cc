@@ -90,7 +90,7 @@ void ProxyNativeTask::OnFullBrowserLoaded(JNIEnv* env,
   background_task_->OnFullBrowserLoaded(profile);
 }
 
-jboolean ProxyNativeTask::StopBackgroundTask(JNIEnv* env) {
+bool ProxyNativeTask::StopBackgroundTask(JNIEnv* env) {
   if (!background_task_)
     return false;
 

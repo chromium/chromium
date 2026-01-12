@@ -60,7 +60,7 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
     jint color_argb,
     jint divider_color,
     jfloat y_offset,
-    jboolean has_constraint,
+    bool has_constraint,
     const base::android::JavaRef<jobject>& joffset_tag) {
   view_container_->SetBounds(gfx::Size(container_width, container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset - container_height));

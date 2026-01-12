@@ -47,7 +47,7 @@ ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetOriginalKey(JNIEnv* env) {
   return original_key->GetJavaObject();
 }
 
-jboolean ProfileKeyAndroid::IsOffTheRecord(JNIEnv* env) {
+bool ProfileKeyAndroid::IsOffTheRecord(JNIEnv* env) {
   return key_->IsOffTheRecord();
 }
 

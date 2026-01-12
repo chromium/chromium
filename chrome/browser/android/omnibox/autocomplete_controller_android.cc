@@ -433,7 +433,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       ->OnOmniboxOpenedUrl(log);
 }
 
-jboolean AutocompleteControllerAndroid::OnSuggestionTouchDown(
+bool AutocompleteControllerAndroid::OnSuggestionTouchDown(
     JNIEnv* env,
     uintptr_t match_ptr,
     int match_index,

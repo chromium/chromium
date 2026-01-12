@@ -62,7 +62,7 @@ JNI_PeriodicBackgroundSyncChromeWakeUpTask_FirePeriodicBackgroundSyncEvents(
 static void
 JNI_BackgroundSyncBackgroundTaskScheduler_SetPlayServicesVersionCheckDisabledForTests(
     JNIEnv* env,
-    jboolean disabled) {
+    bool disabled) {
   BackgroundSyncLauncherAndroid::SetPlayServicesVersionCheckDisabledForTests(
       disabled);
 }

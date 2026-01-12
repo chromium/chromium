@@ -660,14 +660,14 @@ void AwBrowserContext::SetExtraHeadersForUrl(const GURL& url,
 }
 
 // static
-static jboolean JNI_AwBrowserContext_IsValidHttpHeaderName(
+static bool JNI_AwBrowserContext_IsValidHttpHeaderName(
     JNIEnv* env,
     std::string& header_name) {
   return net::HttpUtil::IsValidHeaderName(header_name);
 }
 
 // static
-static jboolean JNI_AwBrowserContext_IsValidHttpHeaderValue(
+static bool JNI_AwBrowserContext_IsValidHttpHeaderValue(
     JNIEnv* env,
     std::string& header_value) {
   return net::HttpUtil::IsValidHeaderValue(header_value);

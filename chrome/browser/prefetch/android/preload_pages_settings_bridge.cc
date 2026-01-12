@@ -20,7 +20,7 @@ static jint JNI_PreloadPagesSettingsBridge_GetState(JNIEnv* env,
   return static_cast<int>(prefetch::GetPreloadPagesState(*profile->GetPrefs()));
 }
 
-static jboolean JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
+static bool JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
     JNIEnv* env,
     Profile* profile) {
   return profile->GetPrefs()->IsManagedPreference(

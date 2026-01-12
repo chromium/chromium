@@ -14,9 +14,8 @@
 #include "chrome/browser/composeplate/android/jni_headers/ComposeplateUtils_jni.h"
 
 // static
-static jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(
-    JNIEnv* env,
-    Profile* profile) {
+static bool JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
+                                                          Profile* profile) {
   DCHECK(profile);
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       AimEligibilityServiceFactory::GetForProfile(profile),
@@ -25,9 +24,8 @@ static jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(
 }
 
 // static
-static jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(
-    JNIEnv* env,
-    Profile* profile) {
+static bool JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(JNIEnv* env,
+                                                             Profile* profile) {
   DCHECK(profile);
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       AimEligibilityServiceFactory::GetForProfile(profile),
@@ -36,8 +34,8 @@ static jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(
 }
 
 // static
-static jboolean JNI_ComposeplateUtils_IsEnabledByPolicy(JNIEnv* env,
-                                                        Profile* profile) {
+static bool JNI_ComposeplateUtils_IsEnabledByPolicy(JNIEnv* env,
+                                                    Profile* profile) {
   DCHECK(profile);
   // TODO(crbug.com/469142288): this should only disable sharing; for now the
   // resolution is that in M144 we disable all of the fusebox.

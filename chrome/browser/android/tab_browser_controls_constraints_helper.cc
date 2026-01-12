@@ -34,7 +34,7 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
     const JavaRef<jobject>& jweb_contents,
     jint constraints,
     jint current,
-    jboolean animate,
+    bool animate,
     const JavaRef<jobject>& joffset_tag_modifications) {
   cc::BrowserControlsState constraints_state =
       static_cast<cc::BrowserControlsState>(constraints);

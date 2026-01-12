@@ -174,7 +174,7 @@ void ForeignSessionHelper::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean ForeignSessionHelper::IsTabSyncEnabled(JNIEnv* env) {
+bool ForeignSessionHelper::IsTabSyncEnabled(JNIEnv* env) {
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
   return service && service->GetOpenTabsUIDelegate();
@@ -206,9 +206,8 @@ void ForeignSessionHelper::FireForeignSessionCallback() {
   Java_ForeignSessionCallback_onUpdated(env, callback_);
 }
 
-jboolean ForeignSessionHelper::GetForeignSessions(
-    JNIEnv* env,
-    const JavaRef<jobject>& result) {
+bool ForeignSessionHelper::GetForeignSessions(JNIEnv* env,
+                                              const JavaRef<jobject>& result) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
     return false;
@@ -258,7 +257,7 @@ jboolean ForeignSessionHelper::GetForeignSessions(
   return true;
 }
 
-jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
+bool ForeignSessionHelper::GetMobileAndTabletForeignSessions(
     JNIEnv* env,
     const JavaRef<jobject>& result) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
@@ -296,7 +295,7 @@ jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
   return (skipped_tabs_on_restore != sessions.size());
 }
 
-jboolean ForeignSessionHelper::OpenForeignSessionTab(
+bool ForeignSessionHelper::OpenForeignSessionTab(
     JNIEnv* env,
     const JavaRef<jobject>& j_tab,
     const JavaRef<jstring>& session_tag,
@@ -347,9 +346,8 @@ void ForeignSessionHelper::DeleteForeignSession(
   }
 }
 
-void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(
-    JNIEnv* env,
-    jboolean enabled) {
+void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(JNIEnv* env,
+                                                              bool enabled) {
   syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service) {
     return;

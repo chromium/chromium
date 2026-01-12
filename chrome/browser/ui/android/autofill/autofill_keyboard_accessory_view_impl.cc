@@ -174,9 +174,8 @@ void AutofillKeyboardAccessoryViewImpl::DeletionRequested(JNIEnv* env,
   }
 }
 
-void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(
-    JNIEnv* env,
-    jboolean confirmed) {
+void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(JNIEnv* env,
+                                                               bool confirmed) {
   if (deletion_callback_.is_null()) {
     LOG(DFATAL) << "OnDeletionDialogClosed called but no deletion is pending!";
     return;

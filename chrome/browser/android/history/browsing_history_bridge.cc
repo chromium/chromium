@@ -53,7 +53,7 @@ void BrowsingHistoryBridge::QueryHistory(
     const JavaRef<jobject>& j_result_obj,
     const base::android::JavaRef<jstring>& j_query,
     const JavaRef<jstring>& j_app_id,
-    jboolean j_host_only) {
+    bool j_host_only) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 

@@ -244,7 +244,7 @@ static void JNI_OfflineTestUtil_DumpRequestCoordinatorState(
 
 static void JNI_OfflineTestUtil_WaitForConnectivityState(
     JNIEnv* env,
-    jboolean connected,
+    bool connected,
     const base::android::JavaRef<jobject>& callback) {
   network::mojom::ConnectionType type =
       connected ? network::mojom::ConnectionType::CONNECTION_UNKNOWN

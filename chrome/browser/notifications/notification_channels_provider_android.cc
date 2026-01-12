@@ -227,7 +227,7 @@ static void JNI_NotificationSettingsBridge_OnChannelStateChanged(
     JNIEnv* env,
     const JavaRef<jstring>& j_channel_id,
     const JavaRef<jstring>& j_origin,
-    jboolean blocked) {
+    bool blocked) {
   if (GetChannelStateChangedCallback().is_null()) {
     return;
   }

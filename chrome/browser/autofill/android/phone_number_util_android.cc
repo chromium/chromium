@@ -87,7 +87,7 @@ static std::string JNI_PhoneNumberUtil_FormatForResponse(
 // Checks whether the given number `phone_number` is a possible number for a
 // given country `jcountry_code` by using
 // i18n::phonenumbers::PhoneNumberUtil::IsPossibleNumberForString.
-static jboolean JNI_PhoneNumberUtil_IsPossibleNumber(
+static bool JNI_PhoneNumberUtil_IsPossibleNumber(
     JNIEnv* env,
     std::string& phone_number,
     const JavaRef<jstring>& jcountry_code) {

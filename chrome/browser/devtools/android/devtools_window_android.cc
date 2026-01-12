@@ -27,7 +27,7 @@ static void JNI_DevToolsWindowAndroid_OpenDevTools(
 #endif
 }
 
-static jboolean JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
+static bool JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& java_profile,
     const jni_zero::JavaRef<jobject>& java_web_contents) {

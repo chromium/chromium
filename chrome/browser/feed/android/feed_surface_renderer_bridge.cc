@@ -305,11 +305,10 @@ static void JNI_FeedSurfaceRendererBridge_ReportFeedViewed(JNIEnv* env,
   feed_api->ReportFeedViewed(FromJavaSurfaceId(surface_id));
 }
 
-static void JNI_FeedSurfaceRendererBridge_ReportPageLoaded(
-    JNIEnv* env,
-    Profile* profile,
-    jint surface_id,
-    jboolean in_new_tab) {
+static void JNI_FeedSurfaceRendererBridge_ReportPageLoaded(JNIEnv* env,
+                                                           Profile* profile,
+                                                           jint surface_id,
+                                                           bool in_new_tab) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;

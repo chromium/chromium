@@ -33,7 +33,7 @@ class ContextManager {
       int height,
       int scroll_x,
       int scroll_y,
-      jboolean readback_quadrants) = 0;
+      bool readback_quadrants) = 0;
 
  protected:
   void CreateContext(JNIEnv* env,

@@ -63,7 +63,7 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
 
 void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
                                          jint id,
-                                         jboolean can_use_live_layer,
+                                         bool can_use_live_layer,
                                          jint default_background_color,
                                          jfloat x,
                                          jfloat y,

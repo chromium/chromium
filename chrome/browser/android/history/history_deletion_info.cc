@@ -33,7 +33,7 @@ static ScopedJavaLocalRef<jobjectArray> JNI_HistoryDeletionInfo_GetDeletedURLs(
   return base::android::ToJavaArrayOfStrings(env, deleted_urls);
 }
 
-static jboolean JNI_HistoryDeletionInfo_IsTimeRangeValid(
+static bool JNI_HistoryDeletionInfo_IsTimeRangeValid(
     JNIEnv* env,
     jlong history_deletion_info_ptr) {
   history::DeletionInfo* deletion_info =
@@ -41,7 +41,7 @@ static jboolean JNI_HistoryDeletionInfo_IsTimeRangeValid(
   return deletion_info->time_range().IsValid();
 }
 
-static jboolean JNI_HistoryDeletionInfo_IsTimeRangeForAllTime(
+static bool JNI_HistoryDeletionInfo_IsTimeRangeForAllTime(
     JNIEnv* env,
     jlong history_deletion_info_ptr) {
   history::DeletionInfo* deletion_info =

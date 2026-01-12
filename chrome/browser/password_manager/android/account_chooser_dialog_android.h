@@ -49,7 +49,7 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
   // finishes.
   void OnCredentialClicked(JNIEnv* env,
                            jint credential_item,
-                           jboolean sign_button_clicked);
+                           bool sign_button_clicked);
 
   // Opens new tab with page which explains the Smart Lock branding.
   // Destroys |this|.

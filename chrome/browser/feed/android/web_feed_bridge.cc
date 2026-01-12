@@ -222,18 +222,18 @@ static void JNI_WebFeedBridge_FollowWebFeed(
       std::move(callback));
 }
 
-static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
+static bool JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
   return feed::IsWebFeedEnabledForLocale(FeedServiceFactory::GetCountry());
 }
 
-static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
+static bool JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
   return JNI_WebFeedBridge_IsWebFeedEnabled(env);
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& webFeedId,
-    jboolean is_durable,
+    bool is_durable,
     jint change_reason,
     const base::android::JavaRef<jobject>& j_callback) {
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
@@ -254,7 +254,7 @@ static void JNI_WebFeedBridge_FollowWebFeedById(
 static void JNI_WebFeedBridge_UnfollowWebFeed(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& webFeedId,
-    jboolean is_durable,
+    bool is_durable,
     jint change_reason,
     const base::android::JavaRef<jobject>& j_callback) {
   auto callback =

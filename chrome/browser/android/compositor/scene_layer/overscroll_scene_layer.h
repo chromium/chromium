@@ -39,10 +39,10 @@ class OverscrollSceneLayer : public SceneLayer,
                jfloat start_y,
                jint width,
                jint height);
-  jboolean Update(JNIEnv* env,
-                  const base::android::JavaRef<jobject>& jresource_manager,
-                  jfloat accumulated_overscroll_x,
-                  jfloat delta_x);
+  bool Update(JNIEnv* env,
+              const base::android::JavaRef<jobject>& jresource_manager,
+              jfloat accumulated_overscroll_x,
+              jfloat delta_x);
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);
   void OnReset(JNIEnv* env);

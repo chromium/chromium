@@ -9,7 +9,7 @@
 namespace gesturenav {
 
 // static
-static jboolean JNI_GestureNavigationUtils_ShouldAnimateBackForwardTransitions(
+static bool JNI_GestureNavigationUtils_ShouldAnimateBackForwardTransitions(
     JNIEnv* env) {
   return content::BackForwardTransitionAnimationManager::
       ShouldAnimateBackForwardTransitions();

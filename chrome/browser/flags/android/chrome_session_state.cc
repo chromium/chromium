@@ -135,7 +135,7 @@ static void JNI_ChromeSessionState_SetDarkModeState(JNIEnv* env, jint state) {
 
 static void JNI_ChromeSessionState_SetIsInMultiWindowMode(
     JNIEnv* env,
-    jboolean j_is_in_multi_window_mode) {
+    bool j_is_in_multi_window_mode) {
   is_in_multi_window_mode = j_is_in_multi_window_mode;
 }
 

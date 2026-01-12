@@ -87,7 +87,7 @@ static void JNI_DownloadBackgroundTask_StartBackgroundTask(
 }
 
 // static
-static jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
+static bool JNI_DownloadBackgroundTask_StopBackgroundTask(
     JNIEnv* env,
     const JavaRef<jobject>& jkey,
     jint task_type) {

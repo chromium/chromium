@@ -9,7 +9,7 @@
 
 namespace android_webview {
 
-static jboolean JNI_TrafficStatsTestUtil_CanGetTaggedBytes(JNIEnv* env) {
+static bool JNI_TrafficStatsTestUtil_CanGetTaggedBytes(JNIEnv* env) {
   return net::CanGetTaggedBytes();
 }
 

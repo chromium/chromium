@@ -14,7 +14,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/safety_check/android/jni_headers/SafetyCheckBridge_jni.h"
 
-static jboolean JNI_SafetyCheckBridge_UserSignedIn(
+static bool JNI_SafetyCheckBridge_UserSignedIn(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jhandle) {
   return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(

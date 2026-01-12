@@ -34,7 +34,7 @@ static void JNI_HttpsFirstModeBridge_UpdatePrefs(
   return;
 }
 
-static jboolean JNI_HttpsFirstModeBridge_IsManaged(
+static bool JNI_HttpsFirstModeBridge_IsManaged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);

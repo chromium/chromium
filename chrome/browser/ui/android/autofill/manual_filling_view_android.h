@@ -58,9 +58,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
                          std::vector<uint8_t>& passkey);
   void OnOptionSelected(JNIEnv* env,
                         jint selected_action);
-  void OnToggleChanged(JNIEnv* env,
-                       jint selected_action,
-                       jboolean enabled);
+  void OnToggleChanged(JNIEnv* env, jint selected_action, bool enabled);
   void RequestAccessorySheet(JNIEnv* env,
                              jint tab_type);
   void OnViewDestroyed(JNIEnv* env);

@@ -47,7 +47,7 @@ FeedApi* GetFeedApi() {
 
 }  // namespace
 
-static jboolean JNI_FeedServiceBridge_IsEnabled(JNIEnv* env) {
+static bool JNI_FeedServiceBridge_IsEnabled(JNIEnv* env) {
   return FeedServiceBridge::IsEnabled();
 }
 
@@ -73,7 +73,7 @@ static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
 static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_observer,
-    jboolean is_web_feed) {
+    bool is_web_feed) {
   FeedApi* api = GetFeedApi();
   if (!api)
     return static_cast<jint>(ContentOrder::kUnspecified);
@@ -134,7 +134,7 @@ static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
   NOTREACHED() << "Invalid content order: " << content_order;
 }
 
-static jboolean JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {
+static bool JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {
   return FeedServiceBridge::IsSignedIn();
 }
 

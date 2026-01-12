@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/usb/android/jni_headers/UsbBridge_jni.h"
 
-static jboolean JNI_UsbBridge_IsWebContentsConnectedToUsbDevice(
+static bool JNI_UsbBridge_IsWebContentsConnectedToUsbDevice(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_web_contents) {
   return content::WebContents::FromJavaWebContents(java_web_contents)

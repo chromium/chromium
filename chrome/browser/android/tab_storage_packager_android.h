@@ -60,7 +60,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       std::optional<std::string> opener_app_id,
       jint theme_color,
       jlong last_navigation_committed_timestamp_millis,
-      jboolean tab_has_sensitive_content,
+      bool tab_has_sensitive_content,
       TabAndroid* tab);
   // Returns a pointer to an UnmappedTabStripCollectionStorageData (as a long in
   // Java). The caller is responsible for managing the lifecycle of the returned

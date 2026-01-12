@@ -44,8 +44,8 @@ const Feature* FeatureMap::FindFeatureExposedToJava(
              << feature_name;
 }
 
-static jboolean JNI_FeatureMap_IsEnabled(jlong jfeature_map,
-                                         std::string& feature_name) {
+static bool JNI_FeatureMap_IsEnabled(jlong jfeature_map,
+                                     std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
       feature_map->FindFeatureExposedToJava(feature_name);
@@ -86,11 +86,11 @@ static jdouble JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
                                                    jdefault_value);
 }
 
-static jboolean JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
+static bool JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
     jlong jfeature_map,
     std::string& feature_name,
     std::string& param_name,
-    const jboolean jdefault_value) {
+    const bool jdefault_value) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
       feature_map->FindFeatureExposedToJava(feature_name);

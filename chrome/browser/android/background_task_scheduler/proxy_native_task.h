@@ -34,7 +34,7 @@ class ProxyNativeTask {
   void OnFullBrowserLoaded(JNIEnv* env,
                            Profile* profile);
 
-  jboolean StopBackgroundTask(JNIEnv* env);
+  bool StopBackgroundTask(JNIEnv* env);
 
   void Destroy(JNIEnv* env);
 

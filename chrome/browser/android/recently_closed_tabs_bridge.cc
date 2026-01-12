@@ -274,7 +274,7 @@ void RecentlyClosedTabsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
+bool RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
     JNIEnv* env,
     const JavaRef<jobject>& jentries_list,
     jint max_entry_count) {
@@ -288,7 +288,7 @@ jboolean RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
   return true;
 }
 
-jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
+bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
     jint tab_session_id,
@@ -316,7 +316,7 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
   return !restored_tabs.empty();
 }
 
-jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
+bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
     jint entry_session_id) {
@@ -340,7 +340,7 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
   return !restored_tabs.empty();
 }
 
-jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
+bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model) {
   EnsureTabRestoreService();

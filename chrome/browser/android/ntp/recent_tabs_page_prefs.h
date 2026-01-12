@@ -17,24 +17,19 @@ class RecentTabsPagePrefs {
   RecentTabsPagePrefs(const RecentTabsPagePrefs&) = delete;
   RecentTabsPagePrefs& operator=(const RecentTabsPagePrefs&) = delete;
 
-  jboolean GetSnapshotDocumentCollapsed(JNIEnv* env);
-  void SetSnapshotDocumentCollapsed(
-      JNIEnv* env,
-      jboolean is_collapsed);
+  bool GetSnapshotDocumentCollapsed(JNIEnv* env);
+  void SetSnapshotDocumentCollapsed(JNIEnv* env, bool is_collapsed);
 
-  jboolean GetRecentlyClosedTabsCollapsed(JNIEnv* env);
-  void SetRecentlyClosedTabsCollapsed(
-      JNIEnv* env,
-      jboolean is_collapsed);
+  bool GetRecentlyClosedTabsCollapsed(JNIEnv* env);
+  void SetRecentlyClosedTabsCollapsed(JNIEnv* env, bool is_collapsed);
 
-  jboolean GetSyncPromoCollapsed(JNIEnv* env);
-  void SetSyncPromoCollapsed(JNIEnv* env,
-                             jboolean is_collapsed);
+  bool GetSyncPromoCollapsed(JNIEnv* env);
+  void SetSyncPromoCollapsed(JNIEnv* env, bool is_collapsed);
 
-  jboolean GetForeignSessionCollapsed(JNIEnv* env, std::string& session_tag);
+  bool GetForeignSessionCollapsed(JNIEnv* env, std::string& session_tag);
   void SetForeignSessionCollapsed(JNIEnv* env,
                                   std::string& session_tag,
-                                  jboolean is_collapsed);
+                                  bool is_collapsed);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

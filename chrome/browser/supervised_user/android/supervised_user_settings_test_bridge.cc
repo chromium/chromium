@@ -38,7 +38,7 @@ static void JNI_SupervisedUserSettingsTestBridge_SetManualFilterForHost(
     JNIEnv* env,
     Profile* profile,
     const JavaRef<jstring>& host,
-    jboolean allowlist) {
+    bool allowlist) {
   std::string host_string(base::android::ConvertJavaStringToUTF8(env, host));
   supervised_user_test_util::SetManualFilterForHost(profile, host_string,
                                                     allowlist);
@@ -63,7 +63,7 @@ static void
 JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
     JNIEnv* env,
     Profile* profile,
-    jboolean is_allowed) {
+    bool is_allowed) {
   SupervisedUserServiceFactory::GetInstance()
       ->GetForProfile(profile)
       ->GetURLFilter()

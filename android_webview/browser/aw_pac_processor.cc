@@ -434,8 +434,7 @@ bool AwPacProcessor::SetProxyScript(std::string script) {
   return job.ExecSync();
 }
 
-jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
-                                        std::string& script) {
+bool AwPacProcessor::SetProxyScript(JNIEnv* env, std::string& script) {
   return SetProxyScript(script);
 }
 

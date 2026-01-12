@@ -289,7 +289,7 @@ void ManualFillingViewAndroid::OnOptionSelected(JNIEnv* env,
 
 void ManualFillingViewAndroid::OnToggleChanged(JNIEnv* env,
                                                jint selected_action,
-                                               jboolean enabled) {
+                                               bool enabled) {
   controller_->OnToggleChanged(
       static_cast<autofill::AccessoryAction>(selected_action), enabled);
 }
@@ -330,7 +330,7 @@ static void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
     const base::android::JavaRef<jobject>& j_web_contents,
     std::vector<std::string>& usernames,
     std::vector<std::string>& passwords,
-    jboolean j_blocklisted) {
+    bool j_blocklisted) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
@@ -370,7 +370,7 @@ static void
 JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jboolean j_available) {
+    bool j_available) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 

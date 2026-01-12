@@ -53,7 +53,7 @@ void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
 static void JNI_WebApkSyncService_OnWebApkUsed(
     JNIEnv* env,
     const JavaRef<jbyteArray>& java_webapk_specifics,
-    jboolean is_install) {
+    bool is_install) {
   if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }
@@ -74,7 +74,7 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
     return;
   }
   WebApkSyncServiceFactory::GetForProfile(profile)->OnWebApkUsed(
-      std::move(specifics), static_cast<bool>(is_install));
+      std::move(specifics), is_install);
 }
 
 static void JNI_WebApkSyncService_OnWebApkUninstalled(

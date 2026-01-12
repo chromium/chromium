@@ -50,11 +50,11 @@ uint64_t UkmUtilsForTest::GetClientId() {
 
 }  // namespace ukm
 
-static jboolean JNI_UkmUtilsForTest_IsEnabled(JNIEnv*) {
+static bool JNI_UkmUtilsForTest_IsEnabled(JNIEnv*) {
   return ukm::UkmUtilsForTest::IsEnabled();
 }
 
-static jboolean JNI_UkmUtilsForTest_HasSourceWithId(JNIEnv*, jlong source_id) {
+static bool JNI_UkmUtilsForTest_HasSourceWithId(JNIEnv*, jlong source_id) {
   ukm::SourceId source = static_cast<ukm::SourceId>(source_id);
   return ukm::UkmUtilsForTest::HasSourceWithId(source);
 }

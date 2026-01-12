@@ -300,7 +300,7 @@ void BookmarkBridge::Destroy(JNIEnv* env) {
   bookmark_model_->RemoveUserData(kBookmarkBridgeUserDataKey);
 }
 
-jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
+bool BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
   return bookmark_model_->account_mobile_node() != nullptr;
 }
 
@@ -355,7 +355,7 @@ BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrlImpl(const GURL& url) {
   return nullptr;
 }
 
-jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {
+bool BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {
   return IsEditBookmarksEnabled();
 }
 
@@ -947,7 +947,7 @@ bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env, jlong id, jint type) {
   }
 }
 
-jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env, jlong id, jint type) {
+bool BookmarkBridge::IsFolderVisible(JNIEnv* env, jlong id, jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (type == BookmarkType::BOOKMARK_TYPE_NORMAL ||
       type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
@@ -1242,7 +1242,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
 
 void BookmarkBridge::SetReadStatus(JNIEnv* env,
                                    const JavaRef<jobject>& j_id,
-                                   jboolean j_read) {
+                                   bool j_read) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
@@ -1275,8 +1275,8 @@ int BookmarkBridge::GetUnreadCount(JNIEnv* env, const JavaRef<jobject>& j_id) {
   return count;
 }
 
-jboolean BookmarkBridge::IsAccountBookmark(JNIEnv* env,
-                                           const JavaRef<jobject>& j_id) {
+bool BookmarkBridge::IsAccountBookmark(JNIEnv* env,
+                                       const JavaRef<jobject>& j_id) {
   return IsAccountBookmarkImpl(GetNodeByID(JavaBookmarkIdGetId(env, j_id),
                                            JavaBookmarkIdGetType(env, j_id)));
 }

@@ -88,7 +88,7 @@ static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
   base::TrackEvent::AddSessionObserver(TraceEnabledObserver::GetInstance());
 }
 
-static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
+static bool JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
   static const unsigned char* enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
           kAndroidViewHierarchyTraceCategory);
@@ -125,8 +125,8 @@ static void JNI_TraceEvent_AddViewDump(
     JNIEnv* env,
     jint id,
     jint parent_id,
-    jboolean is_shown,
-    jboolean is_dirty,
+    bool is_shown,
+    bool is_dirty,
     const base::android::JavaRef<jstring>& class_name,
     const base::android::JavaRef<jstring>& resource_name,
     jlong activity_proto_ptr) {
@@ -253,7 +253,7 @@ static void JNI_TraceEvent_WebViewStartupFirstInstance(
     JNIEnv* env,
     jlong start_time_ms,
     jlong duration_ms,
-    jboolean included_global_startup) {
+    bool included_global_startup) {
   auto t = perfetto::ThreadTrack::Current();
   if (included_global_startup) {
     TRACE_EVENT_BEGIN(

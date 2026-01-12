@@ -125,7 +125,7 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jint default_cache_size,
                                      jint compression_queue_max_size,
                                      jint write_queue_max_size,
-                                     jboolean save_jpeg_thumbnails)
+                                     bool save_jpeg_thumbnails)
     : weak_java_tab_content_manager_(env, obj) {
   thumbnail_cache_ = std::make_unique<thumbnail::ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
@@ -257,7 +257,7 @@ void TabContentManager::CaptureThumbnail(
     JNIEnv* env,
     const JavaRef<jobject>& tab,
     jfloat thumbnail_scale,
-    jboolean return_bitmap,
+    bool return_bitmap,
     const base::android::JavaRef<jobject>& j_callback) {
   // Ensure capture only happens on UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -437,8 +437,8 @@ void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
   thumbnail_cache_->SetCaptureMinRequestTimeForTesting(timeMs);
 }
 
-jboolean TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
-                                                           jint tab_id) {
+bool TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
+                                                       jint tab_id) {
   return in_flight_captures_.find(tab_id) != in_flight_captures_.end();
 }
 
@@ -451,7 +451,7 @@ static jlong JNI_TabContentManager_Init(JNIEnv* env,
                                         jint default_cache_size,
                                         jint compression_queue_max_size,
                                         jint write_queue_max_size,
-                                        jboolean save_jpeg_thumbnails) {
+                                        bool save_jpeg_thumbnails) {
   // Ensure this and its thumbnail cache are created on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

@@ -47,8 +47,7 @@ AwPermissionRequest::~AwPermissionRequest() {
   OnAcceptInternal(false);
 }
 
-void AwPermissionRequest::OnAccept(JNIEnv* env,
-                                   jboolean accept) {
+void AwPermissionRequest::OnAccept(JNIEnv* env, bool accept) {
   OnAcceptInternal(accept);
 }
 

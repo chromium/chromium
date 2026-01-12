@@ -66,7 +66,7 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
                jint job_id,
                jint error_type,
                jint api_error_code,
-               jboolean has_connection_result,
+               bool has_connection_result,
                jint connection_result_code);
 
  private:

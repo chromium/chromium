@@ -37,8 +37,8 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
                    const std::u16string& cvc,
                    const std::u16string& month,
                    const std::u16string& year,
-                   jboolean enable_fido_auth,
-                   jboolean was_checkbox_visible);
+                   bool enable_fido_auth,
+                   bool was_checkbox_visible);
   void OnNewCardLinkClicked(JNIEnv* env);
   int GetExpectedCvcLength(JNIEnv* env);
   void PromptDismissed(JNIEnv* env);

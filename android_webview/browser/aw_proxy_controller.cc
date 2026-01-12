@@ -55,7 +55,7 @@ static std::string JNI_AwProxyController_SetProxyOverride(
     const base::android::JavaRef<jobjectArray>& jbypass_rules,
     const JavaRef<jobject>& listener,
     const JavaRef<jobject>& executor,
-    const jboolean reverse_bypass) {
+    const bool reverse_bypass) {
   std::vector<std::string> url_schemes;
   base::android::AppendJavaStringArrayToStringVector(env, jurl_schemes,
                                                      &url_schemes);

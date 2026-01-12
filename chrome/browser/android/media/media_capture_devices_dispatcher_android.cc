@@ -18,9 +18,9 @@ using base::android::JavaRef;
 
 namespace {
 
-jboolean CallIndicator(const JavaRef<jobject>& java_web_contents,
-                       bool (MediaStreamCaptureIndicator::*predicate)(
-                           content::WebContents*) const) {
+bool CallIndicator(const JavaRef<jobject>& java_web_contents,
+                   bool (MediaStreamCaptureIndicator::*predicate)(
+                       content::WebContents*) const) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   const auto& indicator = MediaCaptureDevicesDispatcher::GetInstance()
@@ -30,35 +30,35 @@ jboolean CallIndicator(const JavaRef<jobject>& java_web_contents,
 
 }  // namespace
 
-static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingAudio(
+static bool JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingAudio(
     JNIEnv* env,
     const JavaRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingAudio);
 }
 
-static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingVideo(
+static bool JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingVideo(
     JNIEnv* env,
     const JavaRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingVideo);
 }
 
-static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingTab(
+static bool JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingTab(
     JNIEnv* env,
     const JavaRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingTab);
 }
 
-static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingWindow(
+static bool JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingWindow(
     JNIEnv* env,
     const JavaRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingWindow);
 }
 
-static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingScreen(
+static bool JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingScreen(
     JNIEnv* env,
     const JavaRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,

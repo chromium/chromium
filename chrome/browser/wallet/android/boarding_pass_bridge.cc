@@ -33,9 +33,8 @@ base::OnceCallback<void(const std::vector<std::string>&)> AdaptCallbackForJava(
 }
 }  // namespace
 
-static jboolean JNI_BoardingPassBridge_ShouldDetect(
-    JNIEnv* env,
-    const JavaRef<jstring>& jurl) {
+static bool JNI_BoardingPassBridge_ShouldDetect(JNIEnv* env,
+                                                const JavaRef<jstring>& jurl) {
   return BoardingPassDetector::ShouldDetect(ConvertJavaStringToUTF8(env, jurl));
 }
 

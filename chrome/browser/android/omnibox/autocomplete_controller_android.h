@@ -83,7 +83,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       jint completed_length,
       const base::android::JavaRef<jobject>& j_web_contents,
       jlong omnibox_action_ptr);
-  jboolean OnSuggestionTouchDown(
+  bool OnSuggestionTouchDown(
       JNIEnv* env,
       uintptr_t match_ptr,
       int match_index,

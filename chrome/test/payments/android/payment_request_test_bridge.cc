@@ -182,7 +182,7 @@ static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
 static void JNI_PaymentRequestTestBridge_InvokeBooleanCallback(
     JNIEnv* env,
     jlong callback_ptr,
-    jboolean jvalue) {
+    bool jvalue) {
   auto* callback =
       reinterpret_cast<base::RepeatingCallback<void(bool)>*>(callback_ptr);
   callback->Run(jvalue);

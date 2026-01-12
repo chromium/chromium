@@ -55,7 +55,7 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::SetConsumer(
 void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingValueFetched(
     JNIEnv* env,
     jint setting,
-    jboolean setting_value) {
+    bool setting_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!consumer_) {
     return;

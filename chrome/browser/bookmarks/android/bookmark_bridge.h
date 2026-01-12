@@ -98,7 +98,7 @@ class BookmarkBridge : public ProfileObserver,
   const bookmarks::BookmarkNode* GetParentNode(
       const bookmarks::BookmarkNode* node);
 
-  jboolean AreAccountBookmarkFoldersActive(JNIEnv* env);
+  bool AreAccountBookmarkFoldersActive(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject>
   GetMostRecentlyAddedUserBookmarkIdForUrl(JNIEnv* env, const GURL& url);
@@ -107,7 +107,7 @@ class BookmarkBridge : public ProfileObserver,
 
   bool IsDoingExtensiveChanges(JNIEnv* env);
 
-  jboolean IsEditBookmarksEnabled(JNIEnv* env);
+  bool IsEditBookmarksEnabled(JNIEnv* env);
 
   void LoadEmptyPartnerBookmarkShimForTesting(JNIEnv* env);
 
@@ -203,9 +203,7 @@ class BookmarkBridge : public ProfileObserver,
                          jlong id,
                          jint type);
 
-  jboolean IsFolderVisible(JNIEnv* env,
-                           jlong id,
-                           jint type);
+  bool IsFolderVisible(JNIEnv* env, jlong id, jint type);
 
   void SearchBookmarks(JNIEnv* env,
                        const base::android::JavaRef<jobject>& j_list,
@@ -260,13 +258,13 @@ class BookmarkBridge : public ProfileObserver,
 
   void SetReadStatus(JNIEnv* env,
                      const base::android::JavaRef<jobject>& j_id,
-                     jboolean j_read);
+                     bool j_read);
   void SetReadStatusImpl(const GURL& url, bool read);
 
   jint GetUnreadCount(JNIEnv* env, const base::android::JavaRef<jobject>& j_id);
 
-  jboolean IsAccountBookmark(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& j_id);
+  bool IsAccountBookmark(JNIEnv* env,
+                         const base::android::JavaRef<jobject>& j_id);
   bool IsAccountBookmarkImpl(const bookmarks::BookmarkNode* node);
 
   void Undo(JNIEnv* env);

@@ -97,7 +97,7 @@ class LongScreenshotsTabService
                          jint clip_y,
                          jint clip_width,
                          jint clip_height,
-                         jboolean in_memory,
+                         bool in_memory,
                          jint override_x_coordinate,
                          jint override_y_coordinate);
   void LongScreenshotsClosedAndroid(JNIEnv* env);

@@ -177,16 +177,16 @@ static void JNI_DevToolsServer_DestroyRemoteDebugging(JNIEnv* env,
   delete reinterpret_cast<DevToolsServer*>(server);
 }
 
-static jboolean JNI_DevToolsServer_IsRemoteDebuggingEnabled(JNIEnv* env,
-                                                            jlong server) {
+static bool JNI_DevToolsServer_IsRemoteDebuggingEnabled(JNIEnv* env,
+                                                        jlong server) {
   return reinterpret_cast<DevToolsServer*>(server)->IsStarted();
 }
 
 static void JNI_DevToolsServer_SetRemoteDebuggingEnabled(
     JNIEnv* env,
     jlong server,
-    jboolean enabled,
-    jboolean allow_debug_permission) {
+    bool enabled,
+    bool allow_debug_permission) {
   DevToolsServer* devtools_server = reinterpret_cast<DevToolsServer*>(server);
   if (enabled) {
     devtools_server->Start(allow_debug_permission);

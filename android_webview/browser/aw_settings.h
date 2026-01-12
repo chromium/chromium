@@ -150,7 +150,7 @@ class AwSettings : public content::WebContentsObserver {
   void SetEnterpriseAuthenticationAppLinkPolicyEnabled(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
-      jboolean enabled);
+      bool enabled);
   bool GetEnterpriseAuthenticationAppLinkPolicyEnabled(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj);

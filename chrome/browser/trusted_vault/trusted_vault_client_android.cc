@@ -92,10 +92,9 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
   std::move(ongoing_fetch_keys.callback).Run(converted_keys);
 }
 
-void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(
-    JNIEnv* env,
-    jint request_id,
-    jboolean succeeded) {
+void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(JNIEnv* env,
+                                                              jint request_id,
+                                                              bool succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
@@ -107,7 +106,7 @@ void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
     JNIEnv* env,
     jint request_id,
-    jboolean is_degraded) {
+    bool is_degraded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);

@@ -293,8 +293,8 @@ static jlong JNI_ExtensionActionsBridge_Init(
       new ExtensionActionsBridge(browser, java_object));
 }
 
-static jboolean JNI_ExtensionActionsBridge_ExtensionsEnabled(JNIEnv* env,
-                                                             Profile* profile) {
+static bool JNI_ExtensionActionsBridge_ExtensionsEnabled(JNIEnv* env,
+                                                         Profile* profile) {
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile);
   return extension_management->ExtensionsEnabledForDesktopAndroid();

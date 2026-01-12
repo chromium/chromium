@@ -137,7 +137,7 @@ ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
 
 void ContextMenuNativeDelegateImpl::StartDownload(JNIEnv* env,
                                                   const GURL& url,
-                                                  jboolean jis_media) {
+                                                  bool jis_media) {
   DownloadControllerBase::Get()->StartContextMenuDownload(
       url, *context_menu_params_, web_contents_, jis_media);
 }
@@ -219,7 +219,7 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
 void ContextMenuNativeDelegateImpl::SetPictureInPicture(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
-    jboolean enter_pip) {
+    bool enter_pip) {
   if (!render_frame_host) {
     return;
   }

@@ -72,7 +72,7 @@ static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
   service->UpdateTabProperties(group_id, tab_id, tab_builder);
 }
 
-static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
+static bool JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
     JNIEnv* env,
     Profile* profile,
     const jni_zero::JavaRef<jobject>& j_group_id,
@@ -99,9 +99,9 @@ static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
   return tab->IsURLInRedirectChain(url);
 }
 
-static jboolean JNI_TabGroupSyncUtils_IsSaveableNavigation(
+static bool JNI_TabGroupSyncUtils_IsSaveableNavigation(
     JNIEnv* env,
-    jboolean is_extension_navigation_allowed,
+    bool is_extension_navigation_allowed,
     jlong navigation_handle_ptr) {
   auto* navigation_handle =
       reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);

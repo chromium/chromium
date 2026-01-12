@@ -48,9 +48,9 @@ class WebApkHandlerDelegate {
       const jlong jdark_background_color,
       const jlong jlast_update_check_time_ms,
       const jlong jlast_update_completion_time_ms,
-      const jboolean jrelax_updates,
+      const bool jrelax_updates,
       const base::android::JavaRef<jstring>& jbacking_browser_package_name,
-      const jboolean jis_backing_browser,
+      const bool jis_backing_browser,
       const std::string& jupdate_status);
 
  private:

@@ -161,7 +161,7 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
     std::optional<std::string> opener_app_id,
     jint theme_color,
     jlong last_navigation_committed_timestamp_millis,
-    jboolean tab_has_sensitive_content,
+    bool tab_has_sensitive_content,
     TabAndroid* tab) {
   std::optional<std::vector<uint8_t>> web_contents_state_bytes;
   if (web_contents_state_buffer) {

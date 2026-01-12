@@ -53,14 +53,14 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // operation previously initiated from C++ and identified by |request_id|.
   void MarkLocalKeysAsStaleCompleted(JNIEnv* env,
                                      jint request_id,
-                                     jboolean succeeded);
+                                     bool succeeded);
 
   // Called from Java to notify the completion of a
   // GetIsRecoverabilityDegraded() operation previously initiated from C++ and
   // identified by |request_id|.
   void GetIsRecoverabilityDegradedCompleted(JNIEnv* env,
                                             jint request_id,
-                                            jboolean is_degraded);
+                                            bool is_degraded);
 
   // Called from Java to notify the completion of a
   // AddTrustedRecoveryMethod() operation previously initiated from C++ and

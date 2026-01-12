@@ -112,8 +112,8 @@ ScopedJavaLocalRef<jobject> ToJavaAwUserAgentMetadata(
       ToJavaArrayOfStringArray(env, brand_version_list);
   ScopedJavaLocalRef<jobjectArray> java_brand_full_version_lis =
       ToJavaArrayOfStringArray(env, brand_full_version_list);
-  jboolean java_mobile = ua_metadata.mobile;
-  jboolean java_wow64 = ua_metadata.wow64;
+  bool java_mobile = ua_metadata.mobile;
+  bool java_wow64 = ua_metadata.wow64;
   ScopedJavaLocalRef<jobjectArray> java_form_factors =
       ToJavaArrayOfStrings(env, ua_metadata.form_factors);
 
