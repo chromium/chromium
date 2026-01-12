@@ -14490,6 +14490,19 @@
                     ]
                 },
                 {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "ImmersiveReadAnything"
+                    ]
+                },
+                {
+                    "name": "Enabled_Dogfood_WithReadability",
+                    "enable_features": [
+                        "ImmersiveReadAnything",
+                        "ReadAnythingWithReadability"
+                    ]
+                },
+                {
                     "name": "Disabled",
                     "disable_features": [
                         "ImmersiveReadAnything"
@@ -20767,6 +20780,36 @@
                     },
                     "enable_features": [
                         "IPH_ReadingModeSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ReadAnythingLineFocusExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReadAnythingLineFocus"
+                    ]
+                },
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "ReadAnythingLineFocus"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ReadAnythingLineFocus"
                     ]
                 }
             ]
