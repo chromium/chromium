@@ -308,6 +308,14 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   views::MenuItemView* UpdateOtherNodeSeparator();
   void BuildOtherNodeMenuHeader(views::MenuItemView* menu);
 
+  // For bookmark folders that are direct children of the bookmarks bar,
+  // we may add items at the start to open all (top level) URLs. These
+  // functions help with the management of those items.
+  void MaybeAppendOpenAllCommandItems(views::MenuItemView* menu,
+                                      const BookmarkParentFolder& folder);
+  void UpdateOpenAllCommands(views::MenuItemView* menu,
+                             const BookmarkParentFolder& folder);
+
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
 
