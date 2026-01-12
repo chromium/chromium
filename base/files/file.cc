@@ -162,18 +162,6 @@ bool File::WriteAtCurrentPosAndCheck(span<const uint8_t> data) {
   return WriteAtCurrentPos(data) == data.size();
 }
 
-std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
-    base::span<uint8_t> data) {
-  span<char> chars = base::as_writable_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result = UNSAFE_BUFFERS(ReadAtCurrentPosNoBestEffort(chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
-}
-
 // static
 std::string File::ErrorToString(Error error) {
   switch (error) {

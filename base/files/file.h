@@ -238,9 +238,6 @@ class BASE_EXPORT File {
                                          base::span<uint8_t> data);
 
   // Same as above but without seek.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int ReadAtCurrentPosNoBestEffort(char* data, int size);
   std::optional<size_t> ReadAtCurrentPosNoBestEffort(base::span<uint8_t> data);
 
   // Simplified versions of Write() and friends (see below) that check the

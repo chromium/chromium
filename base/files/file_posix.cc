@@ -346,16 +346,19 @@ std::optional<size_t> File::ReadNoBestEffort(int64_t offset,
   return checked_cast<size_t>(bytes_read);
 }
 
-int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
+std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
+    base::span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0) {
-    return -1;
-  }
 
-  SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPosNoBestEffort", size);
-  return checked_cast<int>(
-      HANDLE_EINTR(read(file_.get(), data, static_cast<size_t>(size))));
+  SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPosNoBestEffort",
+                              base::checked_cast<int64_t>(data.size()));
+  const ssize_t bytes_read =
+      HANDLE_EINTR(read(file_.get(), data.data(), data.size()));
+  if (bytes_read < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(bytes_read);
 }
 
 int File::Write(int64_t offset, const char* data, int size) {
