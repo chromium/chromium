@@ -369,6 +369,13 @@ NET_EXPORT bool ParseCIDRBlock(std::string_view cidr_literal,
                                IPAddress* ip_address,
                                size_t* prefix_length_in_bits);
 
+// Same as above, but parses IPv6 addresses as URL-safe IP literals (surrounded
+// by brackets). Will return std::nullopt on failure. Value of
+// |prefix_length_in_bits| on failure is undefined.
+NET_EXPORT std::optional<IPAddress> ParseCIDRBlockNonStandardURLFormat(
+    std::string_view cidr_literal,
+    size_t* prefix_length_in_bits);
+
 // Parses a URL-safe IP literal (see RFC 3986, Sec 3.2.2) to its numeric value.
 // Returns true on success, and fills |ip_address| with the numeric value.
 // In other words, |hostname| must be an IPv4 literal, or an IPv6 literal

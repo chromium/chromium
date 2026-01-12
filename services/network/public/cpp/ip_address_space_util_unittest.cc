@@ -561,6 +561,112 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideIPv4MappedIPv6) {
             IPAddressSpace::kLoopback);
 }
 
+// Basic CIDR override test.
+TEST(IPAddressSpaceTest, CIDROverride) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "10.0.0.1/8=loopback");
+  // 10.*.*.* address matches
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("10.64.2.4"), 2001)),
+      IPAddressSpace::kLoopback);
+
+  // and the port doesn't matter
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("10.64.2.4"), 1002)),
+      IPAddressSpace::kLoopback);
+
+  // and these don't match.
+  EXPECT_EQ(IPEndPointToIPAddressSpace(
+                IPEndPoint(ParseIPAddress("192.168.0.1"), 2001)),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("11.64.2.4"), 1002)),
+      IPAddressSpace::kPublic);
+}
+
+// Check that the 0.0.0.0/0 CIDR will override every IPv4 address.
+TEST(IPAddressSpaceTest, CIDROverrideAll) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "0.0.0.0/0=public");
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("10.64.2.4"), 2001)),
+      IPAddressSpace::kPublic);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("10.64.2.4"), 1002)),
+      IPAddressSpace::kPublic);
+  EXPECT_EQ(IPEndPointToIPAddressSpace(
+                IPEndPoint(ParseIPAddress("192.168.0.1"), 2001)),
+            IPAddressSpace::kPublic);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("11.64.2.4"), 1002)),
+      IPAddressSpace::kPublic);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("127.0.0.1"), 1002)),
+      IPAddressSpace::kPublic);
+}
+
+TEST(IPAddressSpaceTest, CIDROverrideV6) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "[2001::]/16=loopback,[2020::1]/16=local");
+
+  // First override.
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2001::1"), 2001)),
+      IPAddressSpace::kLoopback);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2001::"), 2001)),
+      IPAddressSpace::kLoopback);
+
+  // Second override.
+  EXPECT_EQ(IPEndPointToIPAddressSpace(
+                IPEndPoint(ParseIPAddress("2020:1234::"), 1234)),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2020::1"), 1234)),
+      IPAddressSpace::kLocal);
+
+  // Neither
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2002::1"), 2001)),
+      IPAddressSpace::kPublic);
+}
+
+// Check that the [::]/0 CIDR will override every IPv6 address.
+TEST(IPAddressSpaceTest, CIDRV6OverrideAll) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "[::]/0=public");
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("fc00::4"), 2001)),
+      IPAddressSpace::kPublic);
+  EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("::"), 1002)),
+            IPAddressSpace::kPublic);
+  EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("::1"), 2001)),
+            IPAddressSpace::kPublic);
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("11.64.2.4"), 1002)),
+      IPAddressSpace::kPublic);
+  EXPECT_EQ(IPEndPointToIPAddressSpace(
+                IPEndPoint(ParseIPAddress("::ffff:5:1"), 1002)),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that IPv4-mapped IPv6 addresses are not overridden as though they
+// were the mapped IPv4 address instead.
+TEST(IPAddressSpaceTest, CIDROverrideIPv4MappedIPv6) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "10.0.0.16/8=public");
+
+  EXPECT_EQ(
+      IPEndPointToIPAddressSpace(IPEndPoint(
+          net::ConvertIPv4ToIPv4MappedIPv6(IPAddress(10, 64, 10, 1)), 80)),
+      IPAddressSpace::kLocal);
+}
+
 TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanLoopback) {
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kLoopback,
                                         IPAddressSpace::kLoopback));
