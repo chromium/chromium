@@ -6,6 +6,8 @@ package org.chromium.chrome.browser;
 
 import android.util.ArraySet;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
@@ -18,11 +20,12 @@ import java.util.Set;
 
 /** Implements {@link RecentlyClosedEntriesManagerTracker} as a singleton. */
 @NullMarked
-final class RecentlyClosedEntriesManagerTrackerImpl
+public final class RecentlyClosedEntriesManagerTrackerImpl
         implements RecentlyClosedEntriesManagerTracker, InstanceStateObserver {
     private static @Nullable RecentlyClosedEntriesManagerTrackerImpl sInstance;
 
     private final Set<RecentlyClosedEntriesManager> mManagers = new ArraySet<>();
+    private boolean mOpenMostRecentTabEntryNext;
 
     static RecentlyClosedEntriesManagerTrackerImpl getInstance() {
         if (sInstance == null) {
@@ -68,6 +71,15 @@ final class RecentlyClosedEntriesManagerTrackerImpl
         for (RecentlyClosedEntriesManager manager : mManagers) {
             manager.onWindowRestored(instanceId);
         }
+    }
+
+    @VisibleForTesting
+    public void setOpenMostRecentTabEntryNext(boolean openMostRecentTab) {
+        mOpenMostRecentTabEntryNext = openMostRecentTab;
+    }
+
+    /* package */ boolean shouldOpenMostRecentTabEntryNext() {
+        return mOpenMostRecentTabEntryNext;
     }
 
     public Set<RecentlyClosedEntriesManager> getManagersForTesting() {
