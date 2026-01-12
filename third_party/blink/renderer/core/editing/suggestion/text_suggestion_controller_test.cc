@@ -748,4 +748,76 @@ TEST_F(TextSuggestionControllerTest, GrammarMarkerWithSuggestionHidden) {
   EXPECT_FALSE(
       GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
 }
+
+TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithSuggestionNotHidden) {
+  SetBodyContent("<div contenteditable>helloo</div>");
+  Element* div = QuerySelector("div");
+  auto* text = To<Text>(div->firstChild());
+
+  GetDocument().Markers().AddSuggestionMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)),
+      SuggestionMarkerProperties::Builder()
+          .SetSuggestions(Vector<String>({"hello", "yellow"}))
+          .SetShouldHideSuggestionMenu(false)
+          .Build());
+
+  // Set the caret inside the word.
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 3), Position(text, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  // Handle potential suggestion tap on the caret position.
+  // This is to force a connection to the host.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .HandlePotentialSuggestionTap(PositionInFlatTree(text, 3));
+
+  // Force open suggestion menu.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .SuggestionMenuTimeoutCallback(/*max_number_of_suggestions=*/3);
+
+  EXPECT_TRUE(
+      GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
+}
+
+TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithSuggestionHidden) {
+  SetBodyContent("<div contenteditable>helloo</div>");
+  Element* div = QuerySelector("div");
+  auto* text = To<Text>(div->firstChild());
+
+  GetDocument().Markers().AddSuggestionMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)),
+      SuggestionMarkerProperties::Builder()
+          .SetSuggestions(Vector<String>({"hello", "yellow"}))
+          .SetShouldHideSuggestionMenu(true)
+          .Build());
+
+  // Set the caret inside the word.
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 3), Position(text, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  // Handle potential suggestion tap on the caret position.
+  // This is to force a connection to the host.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .HandlePotentialSuggestionTap(PositionInFlatTree(text, 3));
+
+  // Force open suggestion menu.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .SuggestionMenuTimeoutCallback(/*max_number_of_suggestions=*/3);
+
+  EXPECT_FALSE(
+      GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
+}
 }  // namespace blink

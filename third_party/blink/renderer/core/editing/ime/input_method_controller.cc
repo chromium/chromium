@@ -866,6 +866,8 @@ void InputMethodController::AddImeTextSpans(
                 .SetBackgroundColor(ime_text_span.BackgroundColor())
                 .SetRemoveOnFinishComposing(
                     ime_text_span.NeedsRemovalOnFinishComposing())
+                .SetShouldHideSuggestionMenu(
+                    ime_text_span.ShouldHideSuggestionMenu())
                 .Build());
         break;
     }

@@ -85,4 +85,13 @@ SuggestionMarkerProperties::Builder::SetTextColor(Color text_color) {
   return *this;
 }
 
+SuggestionMarkerProperties::Builder&
+SuggestionMarkerProperties::Builder::SetShouldHideSuggestionMenu(
+    bool should_hide_suggestion_menu) {
+  data_.should_hide_suggestion_menu_ =
+      should_hide_suggestion_menu ? SuggestionMarker::HideSuggestionMenu::kYes
+                                  : SuggestionMarker::HideSuggestionMenu::kNo;
+  return *this;
+}
+
 }  // namespace blink
