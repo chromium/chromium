@@ -7,13 +7,14 @@
 
 #include "ui/base/class_property.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
 class Insets;
+class Rect;
+class Size;
 }  // namespace gfx
 
 namespace views {
@@ -125,6 +126,7 @@ DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::Widget*)
 
 #if !defined(USE_AURA)
 // aura_constants.h declares this.
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Rect*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Size*)
 #endif
 
