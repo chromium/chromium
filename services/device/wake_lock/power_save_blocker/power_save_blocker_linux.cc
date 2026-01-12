@@ -71,13 +71,13 @@ constexpr auto kServiceInfos = base::MakeFixedFlatMap<DBusApi, DbusServiceInfo>(
       {"org.freedesktop.ScreenSaver", "org.freedesktop.ScreenSaver",
        "/org/freedesktop/ScreenSaver"}}});
 
-bool ShouldPreventDisplaySleep(mojom::WakeLockType type) {
+DBusApi FallbackDBusApiForWakeLockType(mojom::WakeLockType type) {
   switch (type) {
     case mojom::WakeLockType::kPreventAppSuspension:
-      return false;
+      return DBusApi::kFreedesktopPower;
     case mojom::WakeLockType::kPreventDisplaySleep:
     case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
-      return true;
+      return DBusApi::kFreedesktopScreensaver;
   }
 }
 
@@ -170,10 +170,7 @@ class PowerSaveBlocker::Delegate {
 
   void FallBackToFreedesktopApis() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (ShouldPreventDisplaySleep(type_)) {
-      DoInhibitCall(DBusApi::kFreedesktopScreensaver);
-    }
-    DoInhibitCall(DBusApi::kFreedesktopPower);
+    DoInhibitCall(FallbackDBusApiForWakeLockType(type_));
   }
 
   // Makes the Inhibit method call after ensuring the service exists.
