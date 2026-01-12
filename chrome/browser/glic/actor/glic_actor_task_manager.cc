@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -179,6 +180,8 @@ void GlicActorTaskManager::DidFinishBuildObservation(
         journal_entry) {
   CHECK(result);
 
+  actor::RecordTabObservationResultHistogram(*result);
+
   if (base::FeatureList::IsEnabled(kGlicRetryFailedObservations) &&
       !attempted_observation_retry_) {
     using optimization_guide::proto::TabObservation;
@@ -209,6 +212,9 @@ void GlicActorTaskManager::DidFinishBuildObservation(
       }
     }
   }
+
+  actor::RecordObservationOutcomeHistogram(*result,
+                                           attempted_observation_retry_);
 
   std::move(callback).Run(mojo_base::ProtoWrapper(*result));
 }

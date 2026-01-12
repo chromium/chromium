@@ -96,12 +96,13 @@ using ::tabs::TabInterface;
 
 namespace {
 
-// Test only callback for overriding the TabObservationResult provided from
-// BuildActionsResultWithObservations.
-base::RepeatingCallback<apc::TabObservation::TabObservationResult()>&
+// Test only callback for mutating and returning the TabObservationResult
+// provided from BuildActionsResultWithObservations.
+base::RepeatingCallback<void(apc::TabObservation*,
+                             const FetchPageContextResult&)>&
 GetTabObservationResultOverrideForTesting() {
-  static base::NoDestructor<
-      base::RepeatingCallback<apc::TabObservation::TabObservationResult()>>
+  static base::NoDestructor<base::RepeatingCallback<void(
+      apc::TabObservation*, const FetchPageContextResult&)>>
       callback;
   return *callback;
 }
@@ -837,8 +838,7 @@ void FetchCallback(
   TabInterface* const tab = tab_handle.Get();
 
   if (!GetTabObservationResultOverrideForTesting().is_null()) {
-    tab_observation->set_result(
-        GetTabObservationResultOverrideForTesting().Run());
+    GetTabObservationResultOverrideForTesting().Run(tab_observation, **result);
     return;
   }
 
@@ -1111,9 +1111,9 @@ void BuildActionsResultWithObservations(
 }
 
 void SetTabObservationResultOverrideForTesting(
-    base::RepeatingCallback<
-        optimization_guide::proto::TabObservation::TabObservationResult()>
-        callback) {
+    base::RepeatingCallback<void(
+        optimization_guide::proto::TabObservation*,
+        const page_content_annotations::FetchPageContextResult&)> callback) {
   GetTabObservationResultOverrideForTesting() = callback;
 }
 

@@ -120,6 +120,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ActorObservationOutcome) -->
+
+<enum name="ActorObservationOutcome">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Succeeded after retry"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="FailedAfterRetry"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorObservationOutcome) -->
+
+<!-- LINT.IfChange(ActorTabObservationResult) -->
+
+<enum name="ActorTabObservationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Tab went away"/>
+  <int value="2" label="Page crashed"/>
+  <int value="3" label="Unknown error"/>
+  <int value="4" label="Web contents changed"/>
+  <int value="5" label="Page context not eligible"/>
+  <int value="6" label="APC timeout"/>
+  <int value="7" label="APC error"/>
+  <int value="8" label="Screenshot timeout"/>
+  <int value="9" label="Screenshot error"/>
+  <int value="10" label="Both APC and Screenshot not OK"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorTabObservationResult) -->
+
 <!-- LINT.IfChange(ActorUiTabControllerError) -->
 
 <enum name="ActorUiTabControllerError">

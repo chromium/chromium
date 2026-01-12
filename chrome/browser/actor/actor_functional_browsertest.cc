@@ -17,11 +17,13 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -61,6 +63,7 @@ using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ActionsResult;
 using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::TabObservation;
+using ::page_content_annotations::FetchPageContextResult;
 using ::testing::Property;
 
 // Helper to mock the result returned on a TabObservation built using
@@ -69,13 +72,14 @@ using ::testing::Property;
 class ScopedMockTabObservationResult {
  public:
   explicit ScopedMockTabObservationResult(
-      base::RepeatingCallback<TabObservation::TabObservationResult()>
-          callback) {
+      base::RepeatingCallback<void(TabObservation*,
+                                   const FetchPageContextResult&)> callback) {
     SetTabObservationResultOverrideForTesting(callback);
   }
   ~ScopedMockTabObservationResult() {
     SetTabObservationResultOverrideForTesting(
-        base::RepeatingCallback<TabObservation::TabObservationResult()>());
+        base::RepeatingCallback<void(TabObservation*,
+                                     const FetchPageContextResult&)>());
   }
 };
 
@@ -704,14 +708,19 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   // Mock the context fetch so that the first time the TabObservationResult is a
   // failure. This should result in a retry which then succeeds.
   int num_calls = 0;
-  ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting([&]() {
-    ++num_calls;
-    if (num_calls == 1) {
-      return TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
-    }
-
-    return TabObservation::TAB_OBSERVATION_OK;
-  }));
+  ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting(
+      [&](TabObservation* observation, const FetchPageContextResult&) {
+        ++num_calls;
+        if (num_calls == 1) {
+          observation->set_result(
+              TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
+        } else {
+          observation->set_result(TabObservation::TAB_OBSERVATION_OK);
+          observation->set_annotated_page_content_result(
+              TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+          observation->set_screenshot_result(TabObservation::SCREENSHOT_OK);
+        }
+      }));
 
   EXPECT_THAT(PerformActions(action),
               ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
@@ -731,10 +740,12 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   action.set_task_id(task_id.value());
 
   int num_calls = 0;
-  ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting([&]() {
-    ++num_calls;
-    return TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
-  }));
+  ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting(
+      [&](TabObservation* observation, const FetchPageContextResult&) {
+        ++num_calls;
+        observation->set_result(
+            TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
+      }));
 
   optimization_guide::proto::ActionsResult result =
       PerformActions(action).value();
@@ -788,6 +799,220 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
               base::test::ValueIs(glic::mojom::CancelActionsResult::kSuccess));
   EXPECT_EQ(actor_keyed_service()->GetTask(task_id)->GetState(),
             ActorTask::State::kCreated);
+}
+
+class ActorPageContextMetricsTest : public ActorFunctionalBrowserTest {
+ public:
+  using ResultCallback =
+      base::RepeatingCallback<void(size_t /*fetch_num*/,
+                                   TabObservation*,
+                                   const FetchPageContextResult&)>;
+  void RunTestWithPageContextResult(ResultCallback result_callback) {
+    ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+    ASSERT_NE(task_id, TaskId());
+
+    // Perform an arbitrary action.
+    ::optimization_guide::proto::Actions action =
+        MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
+                  ::optimization_guide::proto::ClickAction::LEFT,
+                  ::optimization_guide::proto::ClickAction::SINGLE);
+    action.set_task_id(task_id.value());
+
+    // Each test case provides its own faked/mocked result for the
+    // TabObservation.
+    ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting(
+        [&, this](TabObservation* observation,
+                  const FetchPageContextResult& fetch_result) {
+          ++num_fetches_;
+          result_callback.Run(num_fetches_, observation, fetch_result);
+        }));
+
+    auto result = PerformActions(action);
+
+    ASSERT_TRUE(result.has_value());
+  }
+
+  void SuccessfulObservation(TabObservation* observation) {
+    observation->set_result(TabObservation::TAB_OBSERVATION_OK);
+    observation->set_annotated_page_content_result(
+        TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+    observation->set_screenshot_result(TabObservation::SCREENSHOT_OK);
+  }
+
+  size_t num_fetches() const { return num_fetches_; }
+
+ private:
+  size_t num_fetches_ = 0;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       ObservationOutcomeMetrics_Success) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        SuccessfulObservation(observation);
+      }));
+
+  ASSERT_EQ(num_fetches(), 1ul);
+
+  histogram_tester.ExpectUniqueSample(kActorPageContextObservationOutcome,
+                                      ActorObservationOutcome::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       ObservationOutcomeMetrics_SuccessAfterRetry) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        if (fetch_num == 1) {
+          observation->set_result(
+              TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
+        } else {
+          SuccessfulObservation(observation);
+        }
+      }));
+
+  ASSERT_EQ(num_fetches(), 2ul);
+
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextObservationOutcome,
+      ActorObservationOutcome::kSuccessAfterRetry, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       ObservationOutcomeMetrics_Failure) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        observation->set_result(
+            TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
+      }));
+
+  ASSERT_EQ(num_fetches(), 2ul);
+
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextObservationOutcome,
+      ActorObservationOutcome::kFailureAfterRetry, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       TabObservationResult_Success) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        SuccessfulObservation(observation);
+      }));
+
+  ASSERT_EQ(num_fetches(), 1ul);
+
+  histogram_tester.ExpectUniqueSample(kActorPageContextTabObservationResult,
+                                      ActorTabObservationResult::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       TabObservationResult_APCFailure) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        if (fetch_num == 1) {
+          observation->set_result(TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+          observation->set_annotated_page_content_result(
+              TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+          observation->set_screenshot_result(TabObservation::SCREENSHOT_OK);
+        } else {
+          SuccessfulObservation(observation);
+        }
+      }));
+
+  ASSERT_EQ(num_fetches(), 2ul);
+
+  // Ensure we record a failure in APC (for initial failure) and a success (for
+  // retry).
+  histogram_tester.ExpectTotalCount(kActorPageContextTabObservationResult, 2);
+  histogram_tester.ExpectBucketCount(kActorPageContextTabObservationResult,
+                                     ActorTabObservationResult::kApcError, 1);
+  histogram_tester.ExpectBucketCount(kActorPageContextTabObservationResult,
+                                     ActorTabObservationResult::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       TabObservationResult_RepeatedAPCFailure) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        observation->set_result(TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+        observation->set_annotated_page_content_result(
+            TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+        observation->set_screenshot_result(TabObservation::SCREENSHOT_OK);
+      }));
+
+  ASSERT_EQ(num_fetches(), 2ul);
+
+  // Ensure we record two failures in APC since the retry fails as well.
+  histogram_tester.ExpectUniqueSample(kActorPageContextTabObservationResult,
+                                      ActorTabObservationResult::kApcError, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       TabObservationResult_APCAndScreenshotFailure) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        observation->set_result(TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+        observation->set_annotated_page_content_result(
+            TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+        observation->set_screenshot_result(TabObservation::SCREENSHOT_ERROR);
+      }));
+
+  ASSERT_EQ(num_fetches(), 2ul);
+
+  // Since both APC and screenshot had failures ensure the combined bucket is
+  // used.
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kApcAndScreenshotNotOk, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPageContextMetricsTest,
+                       TabObservationResult_MultipleFailures) {
+  base::HistogramTester histogram_tester;
+
+  RunTestWithPageContextResult(base::BindLambdaForTesting(
+      [&](size_t fetch_num, TabObservation* observation,
+          const FetchPageContextResult&) {
+        if (fetch_num == 1) {
+          observation->set_result(TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+          observation->set_annotated_page_content_result(
+              TabObservation::ANNOTATED_PAGE_CONTENT_TIMEOUT);
+          observation->set_screenshot_result(TabObservation::SCREENSHOT_OK);
+        } else {
+          observation->set_result(
+              TabObservation::TAB_OBSERVATION_WEB_CONTENTS_CHANGED);
+        }
+      }));
+
+  ASSERT_EQ(num_fetches(), 2ul);
+
+  histogram_tester.ExpectTotalCount(kActorPageContextTabObservationResult, 2);
+  histogram_tester.ExpectBucketCount(kActorPageContextTabObservationResult,
+                                     ActorTabObservationResult::kApcTimeout, 1);
+  histogram_tester.ExpectBucketCount(
+      kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kWebContentsChanged, 1);
 }
 
 class ActorFunctionalBrowserTestCreateActorTab

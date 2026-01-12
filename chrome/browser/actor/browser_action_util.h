@@ -79,12 +79,13 @@ void BuildActionsResultWithObservations(
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
         callback);
 
-// For testing: when set, every TabObservation will receive this given
-// mock_result. This allows tests to verify error handling.
+// For testing: when set, the callback is used to fill in the TabObservation
+// using the resulting FetchPageContextResult allowing tests to verify error
+// handling of the fetch.
 void SetTabObservationResultOverrideForTesting(
-    base::RepeatingCallback<
-        optimization_guide::proto::TabObservation::TabObservationResult()>
-        callback);
+    base::RepeatingCallback<void(
+        optimization_guide::proto::TabObservation*,
+        const page_content_annotations::FetchPageContextResult&)> callback);
 
 optimization_guide::proto::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,

@@ -6,10 +6,15 @@
 #define CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_
 
 #include <cstddef>
+#include <string_view>
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor.mojom.h"
+
+namespace optimization_guide::proto {
+class ActionsResult;
+}  // namespace optimization_guide::proto
 
 namespace actor {
 
@@ -77,6 +82,47 @@ void RecordActorNavigationGatingListSize(size_t allow_list_size,
 
 // Records the outcome of navigation gating decisions.
 void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision);
+
+void RecordObservationOutcomeHistogram(
+    const optimization_guide::proto::ActionsResult& result,
+    bool is_for_retry);
+
+// Histogram for tracking the overall outcome of a page context fetch after
+// performActions.
+inline constexpr std::string_view kActorPageContextObservationOutcome =
+    "Actor.PageContext.ObservationOutcome";
+
+enum class ActorObservationOutcome {
+  kSuccess,
+  kSuccessAfterRetry,
+  kFailure,
+  kFailureAfterRetry,
+  kMaxValue = kFailureAfterRetry,
+};
+
+// Records the outcome of an post-performActions observation fetch.
+void RecordTabObservationResultHistogram(
+    const optimization_guide::proto::ActionsResult& result);
+
+// Histogram for tracking the individual result codes for tab observations in a
+// fetch.
+inline constexpr std::string_view kActorPageContextTabObservationResult =
+    "Actor.PageContext.TabObservationResult";
+
+enum class ActorTabObservationResult {
+  kSuccess,
+  kTabWentAway,
+  kPageCrashed,
+  kUnknown,
+  kWebContentsChanged,
+  kPageContextNotEligible,
+  kApcTimeout,
+  kApcError,
+  kScreenshotTimeout,
+  kScreenshotError,
+  kApcAndScreenshotNotOk,
+  kMaxValue = kApcAndScreenshotNotOk,
+};
 
 }  // namespace actor
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_
