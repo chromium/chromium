@@ -53,6 +53,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/animation/ink_drop.h"
@@ -991,4 +992,26 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarTest, BookmarkFolderButtonHighlight) {
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarTest, AppsPageShortcutHighlight) {
   TestContextMenuHighlight(GetAppsPageShortCut());
+}
+
+namespace {
+
+ui::AXActionData CreateAXActionDataWithAction(ax::mojom::Action action) {
+  ui::AXActionData data;
+  data.action = action;
+  return data;
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarTest, BookmarkFolderAXExpand) {
+  CreateBookmarkFolder();
+  EXPECT_TRUE(GetBookmarkButton(0)->HandleAccessibleAction(
+      CreateAXActionDataWithAction(ax::mojom::Action::kExpand)));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarTest, BookmarkFolderAXCollapse) {
+  CreateBookmarkFolder();
+  EXPECT_TRUE(GetBookmarkButton(0)->HandleAccessibleAction(
+      CreateAXActionDataWithAction(ax::mojom::Action::kCollapse)));
 }
