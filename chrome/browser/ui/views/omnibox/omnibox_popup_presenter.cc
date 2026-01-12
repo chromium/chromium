@@ -30,9 +30,6 @@ OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
 
 void OmniboxPopupPresenter::Hide() {
   OmniboxPopupPresenterBase::Hide();
-  // Note: This makes the widget and webview have heights that are not synced.
-  // So if the webview content height does not change (No resize event happens)
-  // we need to manually call OnContentHeightChanged to update this value.
   content_height_ = 1;
 }
 
