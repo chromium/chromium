@@ -146,12 +146,11 @@ class ReadAnythingUntrustedPageHandler :
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
 
-  // For testing.
-  const std::optional<std::string>& distilled_title_for_testing() const {
-    return distilled_title_for_testing_;
+  const std::optional<std::string>& dom_distiller_title() const {
+    return dom_distiller_title_;
   }
-  const std::optional<std::string>& distilled_content_for_testing() const {
-    return distilled_content_for_testing_;
+  const std::optional<std::string>& dom_distiller_content() const {
+    return dom_distiller_content_;
   }
   bool ack_timed_out_for_testing() const { return ack_timed_out_for_testing_; }
 
@@ -427,9 +426,9 @@ class ReadAnythingUntrustedPageHandler :
   base::OneShotTimer reading_mode_hidden_ack_timer_;
   bool ack_timed_out_for_testing_ = false;
 
-  // Used for readability distillation tests.
-  std::optional<std::string> distilled_title_for_testing_;
-  std::optional<std::string> distilled_content_for_testing_;
+  // Hold DOM distiller distillation results.
+  std::optional<std::string> dom_distiller_title_;
+  std::optional<std::string> dom_distiller_content_;
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };

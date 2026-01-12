@@ -1250,13 +1250,13 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     const dom_distiller::DistilledArticleProto* article_proto) {
   CHECK(features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_);
   if (article_proto && article_proto->pages_size() > 0) {
-    distilled_title_for_testing_ = article_proto->title();
+    dom_distiller_title_ = article_proto->title();
 
     std::string full_html;
     for (const auto& page : article_proto->pages()) {
       full_html.append(page.html());
     }
-    distilled_content_for_testing_ = full_html;
+    dom_distiller_content_ = full_html;
   }
 }
 

@@ -1925,9 +1925,9 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
   OnActiveAXTreeIDChanged();
 
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->distilled_title_for_testing().has_value(); }));
+      [&]() { return handler_->dom_distiller_title().has_value(); }));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->distilled_content_for_testing().has_value(); }));
+      [&]() { return handler_->dom_distiller_content().has_value(); }));
 }
 
 }  // namespace
