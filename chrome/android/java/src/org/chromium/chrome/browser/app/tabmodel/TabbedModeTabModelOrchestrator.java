@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
@@ -15,10 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -33,14 +29,11 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
-import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
-import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -51,7 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -67,26 +59,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private static final String TAG = "TMTMOrchestrator";
-
-    /**
-     * Allows for an easy conversion from {@link TabPersistentStore} into something @{link
-     * SupplierUtils.waitForAll} can consume.
-     */
-    private static class OneshotStateLoadedObserver extends OneshotSupplierImpl<Boolean>
-            implements TabPersistentStoreObserver {
-        private final TabPersistentStore mTabPersistentStore;
-
-        private OneshotStateLoadedObserver(TabPersistentStore tabPersistentStore) {
-            mTabPersistentStore = tabPersistentStore;
-            tabPersistentStore.addObserver(this);
-        }
-
-        @Override
-        public void onStateLoaded() {
-            set(true);
-            mTabPersistentStore.removeObserver(this);
-        }
-    }
 
     private final boolean mTabMergingEnabled;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -310,59 +282,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             mTabPersistencePolicy,
                             mCipherFactory);
 
-            SupplierUtils.waitForAll(
-                    this::onBothStateLoaded,
-                    new OneshotStateLoadedObserver(mTabPersistentStore),
-                    new OneshotStateLoadedObserver(mShadowTabPersistentStore));
+            new ShadowTabStoreValidator(
+                    mTabPersistentStore,
+                    mShadowTabPersistentStore,
+                    mTabModelSelector.getModel(/* incognito= */ false),
+                    mRegularShadowTabCreator,
+                    /* recordMetrics= */ true);
         }
-    }
-
-    private void onBothStateLoaded() {
-        assertCreated();
-        // Unless mTabStateStoreIsAuthoritative is true, createNewTabArgumentsList should be empty.
-        assert Boolean.FALSE.equals(mTabStateStoreIsAuthoritative)
-                || mRegularShadowTabCreator.createNewTabArgumentsList.isEmpty();
-
-        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-        int tabCountDelta =
-                tabModel.getCount() - mRegularShadowTabCreator.createFrozenTabArgumentsList.size();
-        if (tabCountDelta > 0) {
-            RecordHistogram.recordCount1000Histogram(
-                    "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher", tabCountDelta);
-        } else if (tabCountDelta < 0) {
-            RecordHistogram.recordCount1000Histogram(
-                    "Tabs.TabStateStore.TabCountDelta.ShadowHigher", -tabCountDelta);
-        }
-
-        for (CreateFrozenTabArguments arguments :
-                mRegularShadowTabCreator.createFrozenTabArgumentsList) {
-            Tab tab = tabModel.getTabById(arguments.id);
-            if (tab == null || arguments.state.contentsState == null) continue;
-
-            String authUrl = tab.getUrl().getSpec();
-            String shadowUrl = arguments.state.contentsState.getVirtualUrlFromState();
-
-            if (!TextUtils.equals(authUrl, shadowUrl)) {
-                long timeDelta = tab.getTimestampMillis() - arguments.state.timestampMillis;
-                if (timeDelta > 0) {
-                    RecordHistogram.recordTimesHistogram(
-                            "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer", timeDelta);
-                } else if (timeDelta < 0) {
-                    RecordHistogram.recordTimesHistogram(
-                            "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer", -timeDelta);
-                }
-            }
-        }
-
-        for (CreateFrozenTabArguments arguments :
-                mRegularShadowTabCreator.createFrozenTabArgumentsList) {
-            WebContentsState webContentsState = arguments.state.contentsState;
-            if (webContentsState != null) {
-                webContentsState.destroy();
-            }
-        }
-        mRegularShadowTabCreator.createNewTabArgumentsList.clear();
-        mRegularShadowTabCreator.createFrozenTabArgumentsList.clear();
     }
 
     private void createArchivedTabModelInDeferredTask(TabContentManager tabContentManager) {
