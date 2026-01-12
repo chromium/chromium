@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/minidump_with_crashpad_info.h"
+
+#include <stdint.h>
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -43,11 +41,9 @@ class MinidumpUpdater {
   bool AppendSimpleDictionary(const StringStringMap& crash_keys);
 
  private:
-  // Writes |data_len| bytes from |data| to the file at the current location.
-  bool WriteData(const void* data, size_t data_len);
-  bool WriteAndAdvance(const void* data,
-                       size_t data_len,
-                       FilePosition* position);
+  // Writes |data| to the file at the current location.
+  bool WriteData(base::span<const uint8_t> data);
+  bool WriteAndAdvance(base::span<const uint8_t> data, FilePosition* position);
 
   raw_ptr<base::File> file_;
   std::vector<MINIDUMP_DIRECTORY> directory_;
@@ -61,21 +57,19 @@ bool MinidumpUpdater::Initialize(base::File* file) {
 
   // Read the file header.
   MINIDUMP_HEADER header = {};
-  int bytes_read =
-      file->Read(0, reinterpret_cast<char*>(&header), sizeof(header));
-  if (bytes_read != sizeof(header))
+  if (!file->ReadAndCheck(0, base::byte_span_from_ref(header))) {
     return false;
-  if (header.Signature != MINIDUMP_SIGNATURE || header.NumberOfStreams == 0)
+  }
+  if (header.Signature != MINIDUMP_SIGNATURE || header.NumberOfStreams == 0) {
     return false;
+  }
 
   // Read the stream directory.
   directory_.resize(header.NumberOfStreams);
-  int bytes_to_read = header.NumberOfStreams * sizeof(directory_[0]);
-  bytes_read =
-      file->Read(header.StreamDirectoryRva,
-                 reinterpret_cast<char*>(&directory_[0]), bytes_to_read);
-  if (bytes_read != bytes_to_read)
+  if (!file->ReadAndCheck(header.StreamDirectoryRva,
+                          base::as_writable_byte_span(directory_))) {
     return false;
+  }
 
   // Crashpad has some fairly unreasonable checking on the minidump header and
   // directory. Match with those checks for now to allow Crashpad to read the
@@ -93,18 +87,15 @@ bool MinidumpUpdater::Initialize(base::File* file) {
   header.NumberOfStreams = base::saturated_cast<ULONG32>(directory_.size());
 
   // Write back the potentially shortened and packed dictionary.
-  int bytes_to_write = header.NumberOfStreams * sizeof(directory_[0]);
-  int bytes_written = file->Write(header.StreamDirectoryRva,
-                                  reinterpret_cast<const char*>(&directory_[0]),
-                                  bytes_to_write);
-  if (bytes_written != bytes_to_write)
+  if (!file->WriteAndCheck(header.StreamDirectoryRva,
+                           base::as_byte_span(directory_))) {
     return false;
+  }
 
   // Write back the header.
-  bytes_written =
-      file->Write(0, reinterpret_cast<const char*>(&header), sizeof(header));
-  if (bytes_written != sizeof(header))
+  if (!file->WriteAndCheck(0, base::byte_span_from_ref(header))) {
     return false;
+  }
 
   // Success, stash the file.
   file_ = file;
@@ -135,11 +126,10 @@ bool MinidumpUpdater::AppendSimpleDictionary(
   if (crashpad_info_pos == 0)
     return false;
 
-  int bytes_read =
-      file_->Read(crashpad_info_pos, reinterpret_cast<char*>(&crashpad_info),
-                  sizeof(crashpad_info));
-  if (bytes_read != sizeof(crashpad_info))
+  if (!file_->ReadAndCheck(crashpad_info_pos,
+                           base::byte_span_from_ref(crashpad_info))) {
     return false;
+  }
 
   if (crashpad_info.version != crashpad::MinidumpCrashpadInfo::kVersion)
     return false;
@@ -166,16 +156,19 @@ bool MinidumpUpdater::AppendSimpleDictionary(
     if (!kv.second.empty()) {
       entry.key = next_available_byte;
       uint32_t key_len = base::saturated_cast<uint32_t>(kv.first.size());
-      if (!WriteAndAdvance(&key_len, sizeof(key_len), &next_available_byte) ||
-          !WriteAndAdvance(&kv.first[0], key_len, &next_available_byte)) {
+      if (!WriteAndAdvance(base::byte_span_from_ref(key_len),
+                           &next_available_byte) ||
+          !WriteAndAdvance(base::as_byte_span(kv.first),
+                           &next_available_byte)) {
         return false;
       }
 
       entry.value = next_available_byte;
       uint32_t value_len = base::saturated_cast<uint32_t>(kv.second.size());
-      if (!WriteAndAdvance(&value_len, sizeof(value_len),
+      if (!WriteAndAdvance(base::byte_span_from_ref(value_len),
                            &next_available_byte) ||
-          !WriteAndAdvance(&kv.second[0], value_len, &next_available_byte)) {
+          !WriteAndAdvance(base::as_byte_span(kv.second),
+                           &next_available_byte)) {
         return false;
       }
 
@@ -186,10 +179,9 @@ bool MinidumpUpdater::AppendSimpleDictionary(
   // Write the dictionary array itself - note the array is count-prefixed.
   FilePosition dict_pos = next_available_byte;
   uint32_t entry_count = base::saturated_cast<uint32_t>(entries.size());
-  if (!WriteAndAdvance(&entry_count, sizeof(entry_count),
+  if (!WriteAndAdvance(base::byte_span_from_ref(entry_count),
                        &next_available_byte) ||
-      !WriteAndAdvance(&entries[0], entry_count * sizeof(entries[0]),
-                       &next_available_byte)) {
+      !WriteAndAdvance(base::as_byte_span(entries), &next_available_byte)) {
     return false;
   }
 
@@ -197,42 +189,31 @@ bool MinidumpUpdater::AppendSimpleDictionary(
   crashpad_info.simple_annotations.DataSize = next_available_byte - dict_pos;
   crashpad_info.simple_annotations.Rva = dict_pos;
 
-  int bytes_written = file_->Write(
-      crashpad_info_pos, reinterpret_cast<const char*>(&crashpad_info),
-      sizeof(crashpad_info));
-  if (bytes_written != sizeof(crashpad_info))
+  if (!file_->WriteAndCheck(crashpad_info_pos,
+                            base::byte_span_from_ref(crashpad_info))) {
     return false;
+  }
 
   return true;
 }
 
-bool MinidumpUpdater::WriteData(const void* data, size_t data_len) {
+bool MinidumpUpdater::WriteData(base::span<const uint8_t> data) {
   DCHECK(file_);
-  DCHECK(data);
-  DCHECK_NE(0U, data_len);
+  DCHECK(!data.empty());
 
-  if (data_len > INT_MAX)
-    return false;
-
-  int bytes_to_write = static_cast<int>(data_len);
-  int written_bytes = file_->WriteAtCurrentPos(
-      reinterpret_cast<const char*>(data), bytes_to_write);
-  if (written_bytes == -1)
-    return false;
-
-  return true;
+  return file_->WriteAtCurrentPosAndCheck(data);
 }
 
-bool MinidumpUpdater::WriteAndAdvance(const void* data,
-                                      size_t data_len,
+bool MinidumpUpdater::WriteAndAdvance(base::span<const uint8_t> data,
                                       FilePosition* position) {
   DCHECK(position);
   DCHECK_EQ(file_->Seek(base::File::FROM_CURRENT, 0), *position);
 
-  if (!WriteData(data, data_len))
+  if (!WriteData(data)) {
     return false;
+  }
 
-  *position += base::saturated_cast<FilePosition>(data_len);
+  *position += base::saturated_cast<FilePosition>(data.size());
   return true;
 }
 
@@ -298,17 +279,16 @@ bool AppendFileContents(base::File* source, crashpad::FileWriter* dest) {
   if (source->Seek(base::File::FROM_BEGIN, 0) == -1)
     return false;
 
-  std::vector<char> buf;
-  buf.resize(1024);
+  std::vector<uint8_t> buf(1024);
   while (true) {
-    int bytes_read =
-        source->ReadAtCurrentPos(&buf[0], static_cast<int>(buf.size()));
-    if (bytes_read < 0)
+    std::optional<size_t> bytes_read = source->ReadAtCurrentPos(buf);
+    if (!bytes_read) {
       return false;
+    }
     if (bytes_read == 0)
       break;
 
-    if (!dest->Write(&buf[0], static_cast<size_t>(bytes_read))) {
+    if (!dest->Write(buf.data(), *bytes_read)) {
       return false;
     }
   }
