@@ -277,8 +277,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   if (error) {
     CHECK(!results);
     for (const auto& id : update_context->components_to_check_for_updates) {
-      CHECK_EQ(1u, update_context->components.count(id));
-      auto& component = update_context->components.at(id);
+      auto it = update_context->components.find(id);
+      CHECK(it != update_context->components.end());
+      auto& component = it->second;
       component->SetUpdateCheckResult(std::nullopt, ErrorCategory::kUpdateCheck,
                                       error, complete);
     }
@@ -295,8 +296,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   }
 
   for (const auto& id : update_context->components_to_check_for_updates) {
-    CHECK_EQ(1u, update_context->components.count(id));
-    auto& component = update_context->components.at(id);
+    auto components_it = update_context->components.find(id);
+    CHECK(components_it != update_context->components.end());
+    auto& component = components_it->second;
     const auto& it = id_to_result.find(id);
     if (it != id_to_result.end()) {
       const auto& result = it->second;
@@ -366,8 +368,9 @@ void UpdateEngine::UpdateCheckComplete(
 
     // Handle the |kChecking| state and transition the component to the
     // next state, depending on the update check results.
-    CHECK_EQ(1u, update_context->components.count(id));
-    auto& component = update_context->components.at(id);
+    auto components_it = update_context->components.find(id);
+    CHECK(components_it != update_context->components.end());
+    auto& component = components_it->second;
     CHECK_EQ(component->state(), ComponentState::kChecking);
     component->Handle(base::DoNothing());
   }
@@ -396,8 +399,9 @@ void UpdateEngine::HandleComponent(
   }
 
   const auto& id = queue.front();
-  CHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
+  auto components_it = update_context->components.find(id);
+  CHECK(components_it != update_context->components.end());
+  auto& component = components_it->second;
   CHECK(component);
 
   auto& next_update_delay = update_context->next_update_delay;
@@ -423,8 +427,9 @@ void UpdateEngine::HandleComponentComplete(
   CHECK(!queue.empty());
 
   const auto& id = queue.front();
-  CHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
+  auto components_it = update_context->components.find(id);
+  CHECK(components_it != update_context->components.end());
+  auto& component = components_it->second;
   CHECK(component);
 
   base::OnceClosure callback =
