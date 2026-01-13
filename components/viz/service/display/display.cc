@@ -440,17 +440,24 @@ void Display::SetVisible(bool visible) {
 void Display::Resize(const gfx::Size& size) {
   disable_swap_until_resize_ = false;
 
-  if (size == current_surface_size_)
+  auto clamped_size_px = size;
+  auto max_texture_size = output_surface_->capabilities().max_texture_size;
+  if (max_texture_size > 0) {
+    clamped_size_px.SetToMin(gfx::Size(max_texture_size, max_texture_size));
+  }
+
+  if (clamped_size_px == current_surface_size_) {
     return;
+  }
 
   // This DCHECK should probably go at the top of the function, but mac
   // sometimes calls Resize() with 0x0 before it sets a real size. This will
   // early out before the DCHECK fails.
-  DCHECK(!size.IsEmpty());
+  DCHECK(!clamped_size_px.IsEmpty());
   TRACE_EVENT0("viz", "Display::Resize");
 
   swapped_since_resize_ = false;
-  current_surface_size_ = size;
+  current_surface_size_ = clamped_size_px;
 
   damage_tracker_->DisplayResized();
 }
