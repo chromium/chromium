@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test :stalled timing relative to stalled and progress events
+  assert_implements: :stalled is not supported undefined
+Harness: the test ran to completion.
+

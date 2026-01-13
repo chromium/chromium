@@ -10562,6 +10562,13 @@
        {}
       ]
      ],
+     "selection-from-svg-use-to-its-child.html": [
+      "394a63930c8466817e1d2c04de1c4317ce1a76ec",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-modify-around-input.html": [
       "24b9ae7d35bea3510bb21ca03787436db64cbc47",
       [
@@ -148718,7 +148725,7 @@
          ]
         ],
         "column-grid-lanes-container-baseline-006.html": [
-         "c981f313f0299bd16dd10fd25bbff8ab40145616",
+         "ade2160c0c3852f8b8491f0cec1e830a2a72f7d1",
          [
           null,
           [
@@ -149036,7 +149043,7 @@
          ]
         ],
         "grid-lanes-grid-placement-named-lines-dense-packing-001.html": [
-         "9a78105ad95ebf3d70e5d094a830123614fcd1ae",
+         "2c8dc5ef763774b0e83d08831482b47565ee39ef",
          [
           null,
           [
@@ -150041,7 +150048,7 @@
          ]
         ],
         "column-reverse-dense-packing-001.html": [
-         "991a29ff8c444411bd27af89cfc6ce7507c6af34",
+         "0c8cb35205251a96cfa01d20500316365b64975d",
          [
           null,
           [
@@ -150054,7 +150061,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-001.html": [
-         "e059b306ac4ad5fc05b54ed184a02c77cbfc9564",
+         "3883b908862106f3aaad3848cb54dfdc43391dae",
          [
           null,
           [
@@ -150067,7 +150074,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-002.html": [
-         "09c43bc7cf9a504be84789939f8b63df51ece596",
+         "a6005ede0b028ecd44a9119e5cb831a37feb3350",
          [
           null,
           [
@@ -150080,7 +150087,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-003.html": [
-         "0aa6b7e939c615d6e97a27370496c3c3729426d0",
+         "d3553a8169cba90c197d68d4a9f51aaef1d1bb2a",
          [
           null,
           [
@@ -150093,7 +150100,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-004.html": [
-         "e328f0443b3687ce7533c515af215553ba0c7a7b",
+         "745842979404a040fb27347218b3a3b389566673",
          [
           null,
           [
@@ -150106,7 +150113,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-005.html": [
-         "0ff794b1c5f9e8318219000c6386db8381260c86",
+         "2c1ac8554962035b6f35d487543abd580060f171",
          [
           null,
           [
@@ -150119,7 +150126,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-006.html": [
-         "b03d2d576e4902719834e11218898db6b5107eb4",
+         "87aa2eec246e3603cb3cbbcc993dab1e8dbedce5",
          [
           null,
           [
@@ -150133,7 +150140,7 @@
         ],
         "dense-packing": {
          "column-dense-packing-001.html": [
-          "f77e4ddc8135cadb099f3091e2277ff368783229",
+          "b21a8650f281f0f42fb9abe2836ec24890473a64",
           [
            null,
            [
@@ -150146,7 +150153,7 @@
           ]
          ],
          "column-dense-packing-002.html": [
-          "d298abd11340d2251da5eab1dff3f71ce8fe9d75",
+          "8062808d035839bf6cc648a0236f1cf5a39fdab5",
           [
            null,
            [
@@ -150159,7 +150166,7 @@
           ]
          ],
          "column-dense-packing-003.html": [
-          "3d9b24f93781e1abef4c717ec07f47f1da2be800",
+          "8c9b00d916303b136b4819f24f5f55be529c414b",
           [
            null,
            [
@@ -150172,7 +150179,7 @@
           ]
          ],
          "column-dense-packing-004.html": [
-          "ce2eecde7717532a790f012e3d9fded4c77858d9",
+          "71083c29e544c5e6f6b38d2d8379d9d9a4516b68",
           [
            null,
            [
@@ -150185,7 +150192,7 @@
           ]
          ],
          "column-dense-packing-005.html": [
-          "972f422db72fb8b62d143d54022b250812f16bad",
+          "71df9df236d3e8fec4ea298f31e41253311397e4",
           [
            null,
            [
@@ -150198,7 +150205,7 @@
           ]
          ],
          "column-dense-packing-006.html": [
-          "bff8b43f876546d4fd351d4224d7cf8aa1300b9d",
+          "fbd69beda690496c75cc0e5fe34976cfdf4feb82",
           [
            null,
            [
@@ -150211,7 +150218,7 @@
           ]
          ],
          "column-dense-packing-007.html": [
-          "fe5530906c4d3c6986b5bd2a076744f1195a38f9",
+          "136410f93c9557bfb8fa2d4ec36cbfb5c9a808af",
           [
            null,
            [
@@ -150224,7 +150231,7 @@
           ]
          ],
          "column-dense-packing-008.html": [
-          "3a7211527fe8ae1151f3be6b572180d8e8de61c2",
+          "4158b83ef47b9b0f1464cd7573060004b07acbbc",
           [
            null,
            [
@@ -150237,7 +150244,7 @@
           ]
          ],
          "column-dense-packing-multi-span-001.html": [
-          "f22680868506d43eb4a3d232ce6e45755f4ca1cd",
+          "3a5b324c6854621f8a3320b2a3f0eff5aba8fdec",
           [
            null,
            [
@@ -150250,7 +150257,7 @@
           ]
          ],
          "column-dense-packing-multi-span-002.html": [
-          "3ad17beb8ab37034a35915c62035745708f05bb5",
+          "6e404f9b70a42024332833a07e955ed479a00ccf",
           [
            null,
            [
@@ -150263,7 +150270,7 @@
           ]
          ],
          "column-dense-packing-multi-span-003.html": [
-          "c1782b32af3faa6eb0d128fea3169fe8b7804675",
+          "6cce9cbe19c3a815037cecb8ba76e7688fe8f169",
           [
            null,
            [
@@ -150276,7 +150283,7 @@
           ]
          ],
          "column-dense-packing-multi-span-004.html": [
-          "e8235bf638490182b37a7234448bf64d483ff13e",
+          "5c29eeaf4a4a042f5f66b0f745dd12d888dae691",
           [
            null,
            [
@@ -150289,7 +150296,7 @@
           ]
          ],
          "column-dense-packing-multi-span-006.html": [
-          "5fa8d07c3eb94142ff59453848430e4c93e71421",
+          "b1370fd5f4b48990b89a32af237fdcf653e535c2",
           [
            null,
            [
@@ -150302,7 +150309,7 @@
           ]
          ],
          "column-dense-packing-multi-span-007.html": [
-          "c02fb81a48881ba3b4e85e140052c7ced89423f8",
+          "376ecc14acde16b1e8bcae2d56ef8e63559b9b0d",
           [
            null,
            [
@@ -150315,7 +150322,7 @@
           ]
          ],
          "column-dense-packing-multi-span-008.html": [
-          "b0e8d114d799a269cfb13f11c606042cc02e3e62",
+          "55e70eb278535d755acc9baf4ea92f69df75850d",
           [
            null,
            [
@@ -150328,7 +150335,7 @@
           ]
          ],
          "column-dense-packing-multi-span-009.html": [
-          "9d3bc4387b7f22eb13b20a0d8b966e78fc5f2430",
+          "8fab265006576ca9086075534b5553eec15da8a7",
           [
            null,
            [
@@ -150341,7 +150348,7 @@
           ]
          ],
          "column-dense-packing-multi-span-010.html": [
-          "976d69fa8441cb82c2d31ed6007989dd29be54ea",
+          "1e87f9f55b897e575f04afc23514163538ba3328",
           [
            null,
            [
@@ -150354,7 +150361,7 @@
           ]
          ],
          "column-dense-packing-multi-span-011.html": [
-          "f9233f88c7778099b857be4a69a6988a7e9beb6f",
+          "4198832104f4764511931d2269c5a48fa1d2265b",
           [
            null,
            [
@@ -150367,7 +150374,7 @@
           ]
          ],
          "column-dense-packing-multi-span-012.html": [
-          "6ef49fd32892850a2567471296e70a5b8bffb789",
+          "fa9818d93d53b34bb63c326371e27369285d9daa",
           [
            null,
            [
@@ -150380,7 +150387,7 @@
           ]
          ],
          "row-dense-packing-001.html": [
-          "6c8dbd22e750445e2de5d255f3a31e6b32a24558",
+          "082bbd0f67190ae50359cb242030604b5bb86d5b",
           [
            null,
            [
@@ -150393,7 +150400,7 @@
           ]
          ],
          "row-dense-packing-002.html": [
-          "2d925b066295d1e4ba65f4f431e543b3f4ef4b70",
+          "d695793f904268e0a879c5cbbaf0cdba65e777d5",
           [
            null,
            [
@@ -150406,7 +150413,7 @@
           ]
          ],
          "row-dense-packing-003.html": [
-          "9be84f0e0d7507e6b7df16249a85c8f35e60259f",
+          "ee979263774f7fe549ff2c3064fd3e6052863029",
           [
            null,
            [
@@ -150419,7 +150426,7 @@
           ]
          ],
          "row-dense-packing-004.html": [
-          "42630210cb4daf7b65bdea309757b3efbc4225c6",
+          "b313f894a996ff458ca07e8f6a6930da5e9f086b",
           [
            null,
            [
@@ -150432,7 +150439,7 @@
           ]
          ],
          "row-dense-packing-multi-span-001.html": [
-          "154a436bbbda4406de4dd84d1f44c593f822c378",
+          "8143ad87fbbc950274b5c340bde12c0a7bdf381f",
           [
            null,
            [
@@ -150445,7 +150452,7 @@
           ]
          ],
          "row-dense-packing-multi-span-002.html": [
-          "f91060f14d5b30f3ae4c072c082adde4528b62d4",
+          "b32de280312feb30dbae82af1b39543541c8c666",
           [
            null,
            [
@@ -150458,7 +150465,7 @@
           ]
          ],
          "row-dense-packing-multi-span-003.html": [
-          "2eae25f9533349cd413c0df1cfcfc9ca5594f1f5",
+          "a591a5b9b7d98ace8cd7dd7c324e80699e2d58f7",
           [
            null,
            [
@@ -150471,7 +150478,7 @@
           ]
          ],
          "row-dense-packing-multi-span-004.html": [
-          "13d721573739ac6bee76f13812bcb15bce1a324c",
+          "016102da30e30f2e7288f934a56d833bdb8910f7",
           [
            null,
            [
@@ -150484,7 +150491,7 @@
           ]
          ],
          "row-dense-packing-multi-span-005.html": [
-          "0a1834cc22c08cf05f7eedb5b71bb5a3965973a6",
+          "823dfbfb27a4e090e9237ffd14114fcb8e033b7c",
           [
            null,
            [
@@ -150877,7 +150884,7 @@
          ]
         ],
         "row-reverse-dense-packing-001.html": [
-         "633d70b06919ede2c28bba0f382ab57fe90b5c7b",
+         "e4e5a99ee1d4d0656e6dd2b431fedcce75ce19ef",
          [
           null,
           [
@@ -150903,7 +150910,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-001.html": [
-         "9f54d331f4ea7fa98f22f2bcc580c3a255725f70",
+         "664aa1100aef6b8b51dba4d224c892ef97aa2b2a",
          [
           null,
           [
@@ -150916,7 +150923,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-002.html": [
-         "9b6189764f7a024333cd44a286d6c9bdf17ba1a1",
+         "6601e4196e20094a32f237807c7de87d4c278235",
          [
           null,
           [
@@ -150929,7 +150936,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-003.html": [
-         "853d7146625ab43e9371e83940f17fb05c004d64",
+         "90133a13c6abcc557fcae5204c550f8b0d886ac2",
          [
           null,
           [
@@ -150942,7 +150949,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-004.html": [
-         "a9fa2a22d9de5bd6e317208cb73b3d2402bf7149",
+         "308c00886a8e80474f14acb23cad5514773302e0",
          [
           null,
           [
@@ -150955,7 +150962,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-005.html": [
-         "3dfa3e5fde20f5049f4cb768a2e6e450b089fc1b",
+         "25211c6bcabaf490f8ea3aec997dd79b208000f4",
          [
           null,
           [
@@ -170213,6 +170220,71 @@
        {}
       ]
      ],
+     "li-value-reversed-023.html": [
+      "109ff88151354be1d2a1e63c447a9adb1aa34223",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-024.html": [
+      "a51cf98ed8f74fffdf1e15f22f12e08f64b25291",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-024-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-025.html": [
+      "e2d075147d15daedb38bcf0a12af6f0e3e3c044b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-025-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-026.html": [
+      "03cddba5e84ce267051c0c761af8279890c91d2b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-027.html": [
+      "9147673ff3e7166d4aa00d118316e051fde590fb",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "li-with-height-001.html": [
       "ad2ac65e179714dd5fb85de6b67a6f097823a507",
       [
@@ -176542,6 +176614,32 @@
         [
          [
           "about:blank",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "bad-mask-image-svg-2.html": [
+       "2c2103d37b482af82758457ff9ccdc39361f9a54",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/mask-image/reference/mask-image-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "bad-mask-image-svg-3.html": [
+       "da2abf5b5b962c1ed785f9dd3312771f0d258291",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/mask-image/reference/mask-image-ref.html",
           "=="
          ]
         ],
@@ -345483,6 +345581,10 @@
       "87dfcf878955358752bf9e5e044072e800864c79",
       []
      ],
+     "reporting-api-sends-reports-on-violation.https.sub-expected.txt": [
+      "7013e852dd71383cf61afaf4ed5a65067f0cf49c",
+      []
+     ],
      "reporting-api-sends-reports-on-violation.https.sub.html.sub.headers": [
       "e6e488d4aa6b92f384a61bed865541b51f296128",
       []
@@ -355974,6 +356076,10 @@
        "3b9b819d256f47eaeacecb9867c5919c6ff938b9",
        []
       ],
+      "background-size-valid-expected.txt": [
+       "311c9c44e5164b5574336eaf7b09caa2a1b6cfe4",
+       []
+      ],
       "background-valid-expected.txt": [
        "b347a8f0c5761f9d7a5f1e63ebc093a4900a7516",
        []
@@ -359111,13 +359217,19 @@
       "e72f837c95c06189d2945adedaa02351989590ab",
       []
      ],
+     "animation": {
+      "WEB_FEATURES.yml": [
+       "d0a7649f0577b7da71738bd6a81bdb4b97b22a5a",
+       []
+      ]
+     },
      "inheritance-expected.txt": [
       "e1454f172caec7c5a98bb54816a970f1a5ce6ff9",
       []
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "9c2d5830e46c0741a074c38ebe154296e77964ed",
+       "57c45609eb570f58f580caece390ce9b974d5ca5",
        []
       ],
       "print-color-adjust-expected.txt": [
@@ -378305,6 +378417,14 @@
       "40118946f37a7b3a8b639f3510776a3ebd8ec471",
       []
      ],
+     "li-value-reversed-024-ref.html": [
+      "cef9d859cd449ee5a6167cb83fbb2efa04f4acf0",
+      []
+     ],
+     "li-value-reversed-025-ref.html": [
+      "eca8777067bceeda7f0fa95633b7231702160f76",
+      []
+     ],
      "li-with-height-001-ref.html": [
       "486009d5604ab7a2cb66df735efff3c11c00b685",
       []
@@ -379595,7 +379715,7 @@
        []
       ],
       "mask-size-valid-expected.txt": [
-       "3fd69f3ef8221f60bac9027b75e529f57423db5b",
+       "5e2458f488de38177da1e92ee70f2a88ee96ec3a",
        []
       ],
       "mask-valid.sub-expected.txt": [
@@ -404730,14 +404850,28 @@
        "4de3618e7de779ac4480e3d92db3375b77332e9b",
        []
       ],
+      "media-loading-state-timing.sub-expected.txt": [
+       "b0319fa955ed27edfd98751cbca056b6a357ccb0",
+       []
+      ],
       "media-playback-state-expected.txt": [
        "2e755dd3990bffb205ee1740e5b6cb01501cc465",
+       []
+      ],
+      "media-playback-state-timing-expected.txt": [
+       "7d6f7c49b05061ae527de7a324d9f56be06eaf09",
        []
       ],
       "sound-state-expected.txt": [
        "ae2a58d0c249d6c0f159a404c151a6f83b9bfbe2",
        []
-      ]
+      ],
+      "support": {
+       "stall-resume.py": [
+        "ea04ec6df14bc418c1f9bce54337dfcd416d284c",
+        []
+       ]
+      }
      },
      "not-links-ref.html": [
       "1b2515a5cd1ec257fa8ebda2041699f5d4d09230",
@@ -417831,9 +417965,17 @@
        []
       ],
       "api": {
+       "file-scheme-origin.tentative.any-expected.txt": [
+        "1376144a60910317b1ee06133c48049f89e21d73",
+        []
+       ],
+       "file-scheme-origin.tentative.any.worker-expected.txt": [
+        "1376144a60910317b1ee06133c48049f89e21d73",
+        []
+       ],
        "resources": {
         "serializations.js": [
-         "dec7fbdd1da7fee8422aa67e4bed073f4d362302",
+         "8fd8fad2546c8468fcb491b061ab0b06b6ffe4d8",
          []
         ]
        }
@@ -427212,11 +427354,11 @@
         []
        ],
        "lists-styles-expected.txt": [
-        "81b6a35048976eb53cc311abcd7c3199fc39d08a",
+        "d0b93dfa7128235f485c3ca6800f161509848e21",
         []
        ],
        "lists-styles-quirks-expected.txt": [
-        "81b6a35048976eb53cc311abcd7c3199fc39d08a",
+        "d0b93dfa7128235f485c3ca6800f161509848e21",
         []
        ],
        "ol-display-contents-ref.html": [
@@ -428557,7 +428699,15 @@
        ]
       },
       "the-meta-element": {
+       "WEB_FEATURES.yml": [
+        "76682a26086eb5e5a7e846a08ebb2901c0a4157d",
+        []
+       ],
        "color-scheme": {
+        "WEB_FEATURES.yml": [
+         "48bbe25901e085455ca7569c4bfbc0147fd40455",
+         []
+        ],
         "support": {
          "compute-root-color-scheme.js": [
           "74cbf895ced3d9b7f4783be993d5da274ca081f3",
@@ -433523,6 +433673,18 @@
      },
      "the-button-element": {
       "command-and-commandfor": {
+       "button-event-dispatch-expected.txt": [
+        "7409e68534642e6202c830cd6472ffbb1800d2dc",
+        []
+       ],
+       "on-dialog-invalid-behavior-expected.txt": [
+        "11341866082be8eac1d9b74a3dc2f676353fdb05",
+        []
+       ],
+       "on-popover-invalid-behavior-expected.txt": [
+        "f6545cb0e806c5a030bab12858be3ac063110021",
+        []
+       ],
        "resources": {
         "invoker-utils.js": [
          "4261f9c0d32fa2911a3a8ce252246e55a655655f",
@@ -448156,20 +448318,8 @@
      "0e88a7cddc0eb3a93e892f9ffe57f9f2b806888c",
      []
     ],
-    "authentication-accepted.https-expected.txt": [
-     "cc41cd292b6c7f76c9201b129edf70dd79fea592",
-     []
-    ],
-    "authentication-invalid-payment-entity-logo.https-expected.txt": [
-     "4a77d491724b68bd3b73837e72868a59fdced10b",
-     []
-    ],
     "authentication-requires-user-activation.https-expected.txt": [
      "19b11cfe3c365baf22b767ce7784ea17a4a0fbe8",
-     []
-    ],
-    "constructor-validate-payment-method-data.https-expected.txt": [
-     "2b79dec23319043a1c262fdeac43e8581412cdca",
      []
     ],
     "resources": {
@@ -518740,7 +518890,7 @@
       ]
      ],
      "reporting-api-sends-reports-on-violation.https.sub.html": [
-      "94f14d94e45cf3e5561408ad8c864656f32ffc28",
+      "46f386c844829bfe14fad5f4054ed0300ec56669",
       [
        null,
        {}
@@ -528480,7 +528630,7 @@
        ]
       ],
       "background-size-valid.html": [
-       "c169232cb32757d477612f064ebfd028b6c49009",
+       "5529659e21d077a793db40a892cc328d961c7151",
        [
         null,
         {}
@@ -541165,6 +541315,27 @@
           {}
          ]
         ],
+        "grid-lanes-pack-computed.html": [
+         "ee1be44816f46d6c37c7b9b75511982438f831b4",
+         [
+          null,
+          {}
+         ]
+        ],
+        "grid-lanes-pack-invalid.html": [
+         "922d287bd1360ddc17c511c6ff6ea24ad29e49c0",
+         [
+          null,
+          {}
+         ]
+        ],
+        "grid-lanes-pack-valid.html": [
+         "7d45ecc8ac7395bd36e7b6af670c7c2d5e9d6eab",
+         [
+          null,
+          {}
+         ]
+        ],
         "grid-lanes-shorthand-computed.html": [
          "61a6e89bdcf3eac2159b537ac4b15971f43132ba",
          [
@@ -544466,7 +544637,7 @@
        ]
       ],
       "mask-size-valid.html": [
-       "320a7974d39e343a6c25e03615ef920145419f64",
+       "0953f42b5d7846140fe2d7ec10a54abfab7b76e9",
        [
         null,
         {}
@@ -571551,6 +571722,13 @@
       ]
      ],
      "media": {
+      "media-loading-state-timing.sub.html": [
+       "e60d88a12b03b0851932840732999c282cc2b5bd",
+       [
+        null,
+        {}
+       ]
+      ],
       "media-loading-state.html": [
        "d054d128ff47003f8cba178a75a58d6048d09f59",
        [
@@ -571558,6 +571736,13 @@
         {
          "timeout": "long"
         }
+       ]
+      ],
+      "media-playback-state-timing.html": [
+       "7292d5acd9fff96965fa3f4244bfb4adedde3139",
+       [
+        null,
+        {}
        ]
       ],
       "media-playback-state.html": [
@@ -575075,6 +575260,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "label-default-action.html": [
+      "5ac5ab548f490b445168f68140d1f0ebf157aa12",
+      [
+       null,
+       {}
       ]
      ],
      "legacy-pre-activation-behavior.window.js": [
@@ -640756,8 +640948,33 @@
      },
      "origin": {
       "api": {
+       "file-scheme-origin.tentative.any.js": [
+        "c636cee965703de8cc2e8c8e4c7049877eea8054",
+        [
+         "html/browsers/origin/api/file-scheme-origin.tentative.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from('file://')`"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/file-scheme-origin.tentative.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from('file://')`"
+           ]
+          ]
+         }
+        ]
+       ],
        "origin-comparison.any.js": [
-        "06fe9befaf811cbd58ba3f52c5720793364f03c0",
+        "e0ca06a536c32ef4506467b743c20bf4ddaabf48",
         [
          "html/browsers/origin/api/origin-comparison.any.html",
          {
@@ -640883,7 +641100,7 @@
         ]
        ],
        "origin-from-htmlhyperlinkelementutils.window.js": [
-        "3bb317a2cb482b6b711982df6768534699de0474",
+        "214a216360427d4c62a1d8ec8d71f59e568e95a9",
         [
          "html/browsers/origin/api/origin-from-htmlhyperlinkelementutils.window.html",
          {
@@ -640988,7 +641205,7 @@
         ]
        ],
        "origin-from-string.any.js": [
-        "5cf47ccfb8feb15d2d6f0b7d4bede044c1f5da48",
+        "f905b1575396d17662380c4ea5cd6bda80664592",
         [
          "html/browsers/origin/api/origin-from-string.any.html",
          {
@@ -641021,7 +641238,7 @@
         ]
        ],
        "origin-from-url.any.js": [
-        "e8a128ecc0c96c5d21c7d3eeaf95702b28b756fb",
+        "c125da6181d429dfe72f918eed22089b4889d7fa",
         [
          "html/browsers/origin/api/origin-from-url.any.html",
          {
@@ -641054,18 +641271,32 @@
         ]
        ],
        "origin-from-window.window.js": [
-        "78543db246b8da30e6ad3a93f07b6d5ba4fc2238",
+        "ca9309f405dbef10629c6b8fbe42df7df32c50aa",
         [
          "html/browsers/origin/api/origin-from-window.window.html",
          {
           "script_metadata": [
            [
             "title",
-            "`Origin.from(Location)`"
+            "`Origin.from(Window)`"
            ],
            [
             "script",
             "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-worker.window.js": [
+        "68495a855e5584ee53cc000d43838975c2acab43",
+        [
+         "html/browsers/origin/api/origin-from-worker.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(Worker)`"
            ]
           ]
          }
@@ -694067,7 +694298,7 @@
         ]
        ],
        "button-event-dispatch.html": [
-        "85f32c0d135050916ea2dc398bec22f0db637363",
+        "73751bf3dc145b12a0b1833fa69b502c93fa5d4e",
         [
          null,
          {
@@ -694234,7 +694465,7 @@
         ]
        ],
        "on-dialog-invalid-behavior.html": [
-        "862bb1f4d7f094cf1fe792eeb6a2a096285d6cc8",
+        "9eac28181aee9dfd103fade5fcb48b8694797d04",
         [
          null,
          {
@@ -694270,7 +694501,7 @@
         ]
        ],
        "on-popover-invalid-behavior.html": [
-        "31b460b30ee8c1146e2508048c5bfd30163fd30c",
+        "8c25fe5ba05f52130c546c4de7721c1b2b192a06",
         [
          null,
          {
@@ -737368,7 +737599,7 @@
      ]
     ],
     "crashReport-test.html": [
-     "08ee5fa813a2df03cb899cd2f80a7bd89f4050be",
+     "37294a38f6a38564efdfdb5375548d4a0266af6b",
      [
       null,
       {}
@@ -743442,6 +743673,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "setBaseAndExtent-start-or-end-in-anonymous-shadow-container.html": [
+      "4e161f749d474788e2fe5dc459b3b25ba82e9e41",
+      [
+       null,
+       {}
       ]
      ]
     },
@@ -771222,6 +771460,27 @@
       ],
       "tabindex-focus-flag.svg": [
        "29ba209b2badecaac695a678540cc53e5c4ed3f5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-hittest-001.html": [
+       "083fc53e17045b19841f8df1a5274eb10ab097d4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-hittest-002.html": [
+       "70cb6c684a89e64af9f31bc0f7887f7beebd636c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-hittest-003.html": [
+       "655749276b65fca02dcb00c9c417ea69c03cbca8",
        [
         null,
         {}

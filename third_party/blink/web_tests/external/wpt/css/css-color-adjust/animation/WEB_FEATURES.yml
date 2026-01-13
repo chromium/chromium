@@ -2,6 +2,6 @@ features:
 - name: color-scheme
   files:
   - color-scheme-*
-- name: print-color-adjust
+- name: forced-colors
   files:
-  - print-color-adjust.html
+  - forced-color-adjust-*

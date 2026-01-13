@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] invoking (as show-picker) on dialog does nothing
+  assert_false: command event fired expected false got true
+[FAIL] invoking (as show-picker) on open dialog does nothing
+  assert_false: command event fired expected false got true
+[FAIL] invoking (as show-picker) on open modal dialog does nothing
+  assert_false: command event fired expected false got true
+Harness: the test ran to completion.
+
