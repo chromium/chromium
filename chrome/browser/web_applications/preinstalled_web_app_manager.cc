@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -14,7 +15,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -255,7 +255,7 @@ SynchronizeDecision GetSynchronizeDecision(
 
   // Remove if not applicable to current user type.
   DCHECK_GT(options.user_type_allowlist.size(), 0u);
-  if (!base::Contains(options.user_type_allowlist, user_type)) {
+  if (!std::ranges::contains(options.user_type_allowlist, user_type)) {
     return {.type = SynchronizeDecision::kUninstall,
             .reason = DisabledReason::kUninstallUserTypeNotAllowed,
             .log = base::StrCat({options.install_url.spec(),

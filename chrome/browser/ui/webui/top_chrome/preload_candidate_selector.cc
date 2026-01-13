@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -34,7 +34,7 @@ namespace webui {
 bool PreloadCandidateSelector::IsUrlExcludedByFlag(const GURL& url) const {
   static base::NoDestructor<std::vector<url::Origin>> excluded_origins_(
       GetOriginsExcludedByFlag());
-  return base::Contains(*excluded_origins_, url::Origin::Create(url));
+  return std::ranges::contains(*excluded_origins_, url::Origin::Create(url));
 }
 
 }  // namespace webui

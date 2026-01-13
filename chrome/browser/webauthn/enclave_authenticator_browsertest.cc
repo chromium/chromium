@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -2378,9 +2379,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 
-  EXPECT_FALSE(
-      base::Contains(model_observer()->all_steps(),
-                     AuthenticatorRequestDialogModel::Step::kGPMTouchID));
+  EXPECT_FALSE(std::ranges::contains(
+      model_observer()->all_steps(),
+      AuthenticatorRequestDialogModel::Step::kGPMTouchID));
 }
 #endif
 

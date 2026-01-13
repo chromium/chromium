@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
 
   // Check spare was taken.
   EXPECT_TRUE(
-      base::Contains(spare_ids_before_navigation,
-                     ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      std::ranges::contains(spare_ids_before_navigation,
+                            ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // No processes should be unnecessarily terminated.
   const std::set<content::ChildProcessId> ending_rph_ids =

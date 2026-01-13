@@ -21,7 +21,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -544,7 +543,7 @@ WebAppPublisherHelper::~WebAppPublisherHelper() = default;
 // static
 bool WebAppPublisherHelper::IsSupportedWebAppPermissionType(
     ContentSettingsType permission_type) {
-  return base::Contains(kSupportedPermissionTypes, permission_type);
+  return std::ranges::contains(kSupportedPermissionTypes, permission_type);
 }
 
 void WebAppPublisherHelper::Shutdown() {

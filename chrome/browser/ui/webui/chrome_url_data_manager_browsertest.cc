@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
@@ -187,7 +186,8 @@ static constexpr const char* const kSlowChromeUrls[] = {
     "chrome://prefs-internals",
 #else
     // Placeholder entry to prevent zero-sized array which causes template
-    // instantiation failures with std::ranges algorithms in base::Contains.
+    // instantiation failures with std::ranges algorithms in
+    // std::ranges::contains.
     "",
 #endif
 };
@@ -216,7 +216,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
   void CheckNoTrustedTypesViolation(std::string_view url) {
     std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
-    if (base::Contains(kSlowChromeUrls, url)) {
+    if (std::ranges::contains(kSlowChromeUrls, url)) {
       timeout = std::make_unique<base::test::ScopedRunLoopTimeout>(
           FROM_HERE, GetSlowTestTimeout());
     }
@@ -237,7 +237,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
   void CheckTrustedTypesEnabled(std::string_view url) {
     std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
-    if (base::Contains(kSlowChromeUrls, url)) {
+    if (std::ranges::contains(kSlowChromeUrls, url)) {
       timeout = std::make_unique<base::test::ScopedRunLoopTimeout>(
           FROM_HERE, GetSlowTestTimeout());
     }

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/values_equivalent.h"
@@ -409,7 +409,7 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
 
 #if DCHECK_IS_ON()
   for (auto action_id : types_enabled) {
-    DCHECK(base::Contains(page_actions::kActionIds, action_id));
+    DCHECK(std::ranges::contains(page_actions::kActionIds, action_id));
   }
 #endif
 

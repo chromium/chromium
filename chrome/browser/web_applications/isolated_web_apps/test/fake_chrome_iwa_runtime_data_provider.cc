@@ -4,9 +4,10 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
@@ -144,20 +145,20 @@ FakeIwaRuntimeDataProvider::GetUserInstallAllowlistData(
 
 bool FakeIwaRuntimeDataProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
-  return base::Contains(managed_allowlist_, web_bundle_id,
-                        &web_package::SignedWebBundleId::id);
+  return std::ranges::contains(managed_allowlist_, web_bundle_id,
+                               &web_package::SignedWebBundleId::id);
 }
 
 bool FakeIwaRuntimeDataProvider::IsManagedUpdatePermitted(
     std::string_view web_bundle_id) const {
-  return base::Contains(managed_allowlist_, web_bundle_id,
-                        &web_package::SignedWebBundleId::id);
+  return std::ranges::contains(managed_allowlist_, web_bundle_id,
+                               &web_package::SignedWebBundleId::id);
 }
 
 bool FakeIwaRuntimeDataProvider::IsBundleBlocklisted(
     std::string_view web_bundle_id) const {
-  return base::Contains(blocklist_, web_bundle_id,
-                        &web_package::SignedWebBundleId::id);
+  return std::ranges::contains(blocklist_, web_bundle_id,
+                               &web_package::SignedWebBundleId::id);
 }
 
 const ChromeIwaRuntimeDataProvider::SpecialAppPermissionsInfo*

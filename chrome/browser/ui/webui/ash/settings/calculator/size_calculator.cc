@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <numeric>
 #include <type_traits>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -563,7 +563,7 @@ void OtherUsersSizeCalculator::OnGetOtherUserSize(
 
   // If all the requests succeed, shows the total bytes in the UI.
   const int64_t other_users_total_bytes =
-      base::Contains(user_sizes_, -1)
+      std::ranges::contains(user_sizes_, -1)
           ? -1
           : std::accumulate(user_sizes_.begin(), user_sizes_.end(), 0LL);
   NotifySizeCalculated(other_users_total_bytes);

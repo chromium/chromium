@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -1059,7 +1059,7 @@ TEST_F(WebAppRegistrarTest,
     if (web_app.app_id() == web_app_in_sync_install_id) {
       web_app_in_sync_install_found = true;
     } else {
-      EXPECT_TRUE(base::Contains(ids, web_app.app_id()));
+      EXPECT_TRUE(std::ranges::contains(ids, web_app.app_id()));
     }
   }
   EXPECT_TRUE(web_app_in_sync_install_found);
@@ -1881,7 +1881,7 @@ TEST_F(WebAppRegistrarAshTest, SourceSupported) {
   EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
             GURL("https://example.com/uninstalling/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(uninstalling_id).has_value());
-  EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
+  EXPECT_FALSE(std::ranges::contains(registrar.GetAppIds(), uninstalling_id));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
@@ -1279,7 +1280,8 @@ TEST_F(NewTabPageHandlerModuleRemovalTest,
 
   // Assert.
   EXPECT_EQ(1u, removed_modules.size());
-  EXPECT_TRUE(base::Contains(removed_modules, ntp_modules::kDriveModuleId));
+  EXPECT_TRUE(
+      std::ranges::contains(removed_modules, ntp_modules::kDriveModuleId));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrueDisabledAndTrueUserAction) {

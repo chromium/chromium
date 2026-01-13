@@ -16,7 +16,6 @@
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
 #include "base/feature_list.h"
@@ -453,8 +452,9 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
 
   for (const auto& [web_bundle_id, installed_iwa] : installed_iwas) {
     if (installed_iwa->GetSources().Has(WebAppManagement::kIwaPolicy) &&
-        !base::Contains(apps_in_policy, web_bundle_id,
-                        &IsolatedWebAppExternalInstallOptions::web_bundle_id)) {
+        !std::ranges::contains(
+            apps_in_policy, web_bundle_id,
+            &IsolatedWebAppExternalInstallOptions::web_bundle_id)) {
       app_actions.emplace(web_bundle_id, AppActionRemoveInstallSource(
                                              WebAppManagement::kIwaPolicy));
     }

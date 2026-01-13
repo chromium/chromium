@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <optional>
@@ -16,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -388,7 +388,7 @@ void PopulateFileHandlerInfoFromManifest(
           icon_info.url = image_resource.src;
           icon_info.purpose =
               ManifestPurposeToIconInfoPurpose(manifest_purpose);
-          if (base::Contains(image_resource.sizes, gfx::Size()) &&
+          if (std::ranges::contains(image_resource.sizes, gfx::Size()) &&
               image_resource.src.spec().find(".svg") != std::string::npos) {
             web_app_info->icons_with_size_any
                 .file_handling_icons[manifest_purpose] = image_resource.src;

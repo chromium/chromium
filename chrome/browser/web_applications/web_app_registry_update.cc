@@ -4,7 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
@@ -35,7 +36,7 @@ void WebAppRegistryUpdate::CreateApp(std::unique_ptr<WebApp> web_app) {
   CHECK(web_app->manifest_id().is_valid());
   DCHECK(!web_app->app_id().empty());
   DCHECK(!registrar_->GetAppById(web_app->app_id()));
-  DCHECK(!base::Contains(update_data_->apps_to_create, web_app));
+  DCHECK(!std::ranges::contains(update_data_->apps_to_create, web_app));
 
   update_data_->apps_to_create.push_back(std::move(web_app));
 }
@@ -44,7 +45,7 @@ void WebAppRegistryUpdate::DeleteApp(const webapps::AppId& app_id) {
   DCHECK(update_data_);
   DCHECK(!app_id.empty());
   DCHECK(registrar_->GetAppById(app_id));
-  DCHECK(!base::Contains(update_data_->apps_to_delete, app_id));
+  DCHECK(!std::ranges::contains(update_data_->apps_to_delete, app_id));
 
   update_data_->apps_to_delete.push_back(app_id);
 }

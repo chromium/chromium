@@ -17,7 +17,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -557,9 +556,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
 #if BUILDFLAG(IS_LINUX)
   // No caBLEv1 on Linux. It tends to crash bluez.
-  if (base::Contains(pairings_from_extension,
-                     device::CableDiscoveryData::Version::V1,
-                     &device::CableDiscoveryData::version)) {
+  if (std::ranges::contains(pairings_from_extension,
+                            device::CableDiscoveryData::Version::V1,
+                            &device::CableDiscoveryData::version)) {
     pairings_from_extension = base::span<const device::CableDiscoveryData>();
   }
 #endif
@@ -571,8 +570,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
   const bool cable_extension_accepted = !pairings.empty();
   const bool cablev2_extension_provided =
-      base::Contains(pairings, device::CableDiscoveryData::Version::V2,
-                     &device::CableDiscoveryData::version);
+      std::ranges::contains(pairings, device::CableDiscoveryData::Version::V2,
+                            &device::CableDiscoveryData::version);
 
   const bool non_extension_cablev2_enabled =
       (!cable_extension_permitted ||

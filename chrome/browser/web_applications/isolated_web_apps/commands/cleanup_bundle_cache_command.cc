@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -46,7 +47,7 @@ CleanupBundleCacheResult CleanupBundleCacheCommandImpl(
                                          base::FileEnumerator::DIRECTORIES);
   all_iwa_dirs_iter.ForEach(
       [&dirs_to_keep, &dirs_to_delete](const base::FilePath& dir_path) {
-        if (!base::Contains(dirs_to_keep, dir_path)) {
+        if (!std::ranges::contains(dirs_to_keep, dir_path)) {
           dirs_to_delete.push_back(dir_path);
         }
       });

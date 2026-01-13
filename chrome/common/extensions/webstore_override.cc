@@ -4,12 +4,12 @@
 
 #include "chrome/common/extensions/webstore_override.h"
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -82,7 +82,7 @@ bool AreWebstoreFeaturesAvailable(const std::string& api_full_name,
   if (context != extensions::mojom::ContextType::kWebPage) {
     return false;
   }
-  if (!base::Contains(kWebstoreOverrideFeatureList, api_full_name)) {
+  if (!std::ranges::contains(kWebstoreOverrideFeatureList, api_full_name)) {
     return false;
   }
 

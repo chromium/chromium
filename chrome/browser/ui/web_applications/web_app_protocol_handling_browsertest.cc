@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -93,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest,
       "/banners/manifest_protocol_handlers.json?testing=%s"));
 
   ASSERT_EQ(2u, protocol_handlers.size());
-  EXPECT_TRUE(base::Contains(protocol_handlers, protocol_handler1));
-  EXPECT_TRUE(base::Contains(protocol_handlers, protocol_handler2));
+  EXPECT_TRUE(std::ranges::contains(protocol_handlers, protocol_handler1));
+  EXPECT_TRUE(std::ranges::contains(protocol_handlers, protocol_handler2));
 
   histogram_tester_.ExpectBucketCount(kUseCounterHistogram,
                                       protocol_handling_feature, 1);

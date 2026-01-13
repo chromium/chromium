@@ -4,10 +4,10 @@
 
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -43,7 +43,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
     CHECK(!icon.purpose.empty());
 
     for (IconPurpose purpose : icon.purpose) {
-      if (base::Contains(icon.sizes, gfx::Size()) &&
+      if (std::ranges::contains(icon.sizes, gfx::Size()) &&
           icon.src.spec().contains(".svg")) {
         svg_icons_no_size[purpose] = icon.src;
       }

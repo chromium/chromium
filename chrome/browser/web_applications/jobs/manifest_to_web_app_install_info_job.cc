@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -173,7 +172,7 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
       apps::IconInfo info;
 
       if (!icon.sizes.empty()) {
-        if (base::Contains(icon.sizes, gfx::Size()) &&
+        if (std::ranges::contains(icon.sizes, gfx::Size()) &&
             icon.src.spec().find(".svg") != std::string::npos) {
           web_app_info->icons_with_size_any.manifest_icons[purpose] = icon.src;
         }
@@ -252,13 +251,13 @@ void PopulateWebAppShortcutsMenuItemInfos(
       std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons;
       for (const auto& icon : shortcut.icons) {
         CHECK(!icon.purpose.empty());
-        if (!base::Contains(icon.purpose, purpose)) {
+        if (!std::ranges::contains(icon.purpose, purpose)) {
           continue;
         }
 
         WebAppShortcutsMenuItemInfo::Icon info;
 
-        if (base::Contains(icon.sizes, gfx::Size()) &&
+        if (std::ranges::contains(icon.sizes, gfx::Size()) &&
             icon.src.spec().find(".svg") != std::string::npos) {
           web_app_info->icons_with_size_any.shortcut_menu_icons[purpose] =
               icon.src;
@@ -430,7 +429,7 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
     CHECK(!icon.purpose.empty());
 
     if (!icon.sizes.empty()) {
-      if (base::Contains(icon.sizes, gfx::Size()) &&
+      if (std::ranges::contains(icon.sizes, gfx::Size()) &&
           icon.src.spec().find(".svg") != std::string::npos) {
         for (const auto& purpose : icon.purpose) {
           web_app_info->icons_with_size_any.home_tab_icons[purpose] = icon.src;

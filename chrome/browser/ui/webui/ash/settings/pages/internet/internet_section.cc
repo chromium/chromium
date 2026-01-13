@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_section.h"
 
+#include <algorithm>
 #include <array>
 
 #include "ash/constants/ash_features.h"
@@ -12,7 +13,6 @@
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -696,13 +696,13 @@ bool IsPartOfDetailsSubpage(mojom::SearchResultType type,
       const mojom::Setting& setting = id.setting;
       switch (details_subpage) {
         case mojom::Subpage::kEthernetDetails:
-          return base::Contains(GetEthernetDetailsSettings(), setting);
+          return std::ranges::contains(GetEthernetDetailsSettings(), setting);
         case mojom::Subpage::kWifiDetails:
-          return base::Contains(GetWifiDetailsSettings(), setting);
+          return std::ranges::contains(GetWifiDetailsSettings(), setting);
         case mojom::Subpage::kCellularDetails:
-          return base::Contains(GetCellularDetailsSettings(), setting);
+          return std::ranges::contains(GetCellularDetailsSettings(), setting);
         case mojom::Subpage::kTetherDetails:
-          return base::Contains(GetTetherDetailsSettings(), setting);
+          return std::ranges::contains(GetTetherDetailsSettings(), setting);
         default:
           return false;
       }

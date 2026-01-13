@@ -10,7 +10,6 @@
 #include <string>
 #include <type_traits>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -754,7 +753,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
   // 1. Remove buttons for actions in the UI that are not present in the
   // model.
   for (actions::ActionId id : old_ids) {
-    if (base::Contains(new_ids, id)) {
+    if (std::ranges::contains(new_ids, id)) {
       continue;
     }
 
@@ -768,7 +767,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
 
   // 2. Add buttons for actions that are in the model but not in the UI.
   for (actions::ActionId id : new_ids) {
-    if (base::Contains(old_ids, id)) {
+    if (std::ranges::contains(old_ids, id)) {
       continue;
     }
 

@@ -182,7 +182,7 @@ void TabCollectionAnimatingLayoutManager::ResetToTargetLayout() {
 
 void TabCollectionAnimatingLayoutManager::AnimateAndRemoveChildView(
     views::View* child_view) {
-  DCHECK(base::Contains(host_view()->children(), child_view));
+  DCHECK(std::ranges::contains(host_view()->children(), child_view));
   child_view->SetCanProcessEventsWithinSubtree(false);
   child_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   child_view->SetProperty(kPendingDeletion, true);

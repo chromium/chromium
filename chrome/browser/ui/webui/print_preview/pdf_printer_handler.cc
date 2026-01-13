@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -139,7 +139,7 @@ base::Value::Dict GetPdfCapabilities(
           .WithNameMaybeBasedOnSize(/*custom_display_name=*/"",
                                     /*vendor_id=*/"")
           .Build();
-  if (!base::Contains(kPdfMedia, default_media.size_name)) {
+  if (!std::ranges::contains(kPdfMedia, default_media.size_name)) {
     default_media =
         cloud_devices::printer::MediaBuilder()
             .WithStandardName(locale == "en-US" ? MediaSize::NA_LETTER

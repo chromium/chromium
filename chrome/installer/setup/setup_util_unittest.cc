@@ -8,6 +8,7 @@
 
 #include <shlobj.h>
 
+#include <algorithm>
 #include <ios>
 #include <memory>
 #include <string>
@@ -17,7 +18,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -695,8 +695,8 @@ TEST_F(DeleteRegistryKeyPartialTest, NonEmptyKeyWithPreserve) {
     ASSERT_EQ(to_preserve_.size(), it.SubkeyCount());
     std::wstring (*to_lower)(std::wstring_view) = &base::ToLowerASCII;
     for (; it.Valid(); ++it) {
-      ASSERT_TRUE(
-          base::Contains(to_preserve_, base::ToLowerASCII(it.Name()), to_lower))
+      ASSERT_TRUE(std::ranges::contains(
+          to_preserve_, base::ToLowerASCII(it.Name()), to_lower))
           << it.Name();
     }
   }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 
+#include <algorithm>
+
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -67,10 +69,10 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
           kCorpCrdAutopushOrigin,
           kCorpCrdDailyOrigin,
       };
-      EXPECT_EQ(
-          delegate.OriginMayUseRemoteDesktopClientOverride(
-              browser_context(), url::Origin::Create(GURL(origin))),
-          base::Contains(crd_origins, origin) && policy == Policy::kEnabled);
+      EXPECT_EQ(delegate.OriginMayUseRemoteDesktopClientOverride(
+                    browser_context(), url::Origin::Create(GURL(origin))),
+                std::ranges::contains(crd_origins, origin) &&
+                    policy == Policy::kEnabled);
     }
   }
 }

@@ -15,7 +15,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
@@ -754,7 +753,8 @@ void NewTabPageHandler::OnModulesLoadedWithData(
       GetSurveyEligibleModuleIds();
   if (std::any_of(module_ids.begin(), module_ids.end(),
                   [&survey_eligible_module_ids](std::string id) {
-                    return base::Contains(survey_eligible_module_ids, id);
+                    return std::ranges::contains(survey_eligible_module_ids,
+                                                 id);
                   })) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
         profile_, /*create_if_necessary=*/true);
@@ -886,7 +886,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::ranges::copy_if(ntp_features::GetModulesOrder(),
                        std::back_inserter(module_ids),
                        [&module_ids](const std::string& id) {
-                         return !base::Contains(module_ids, id);
+                         return !std::ranges::contains(module_ids, id);
                        });
 
   // Third, append default module order for any modules not ordered by
@@ -894,7 +894,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::ranges::copy_if(ntp_modules::kOrderedModuleIds,
                        std::back_inserter(module_ids),
                        [&module_ids](const std::string& id) {
-                         return !base::Contains(module_ids, id);
+                         return !std::ranges::contains(module_ids, id);
                        });
 
   std::move(callback).Run(std::move(module_ids));

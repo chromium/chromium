@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <vector>
@@ -228,7 +229,7 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
   const auto& iph_specifications = registry.feature_data();
   for (const auto& [feature, spec] : iph_specifications) {
     const auto config = feature_engagement::GetClientSideFeatureConfig(feature);
-    if (config && !Contains(kAllowedConfigurations, feature)) {
+    if (config && !std::ranges::contains(kAllowedConfigurations, feature)) {
       invalid_configs.emplace_back(feature->name);
     }
   }
@@ -274,7 +275,8 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
   bool failed = false;
   for (const auto& [feature, spec] : iph_specifications) {
     const auto errors = CheckMetadata(spec.metadata());
-    if (!errors.empty() && !Contains(kExistingPromosWithoutMetadata, feature)) {
+    if (!errors.empty() &&
+        !std::ranges::contains(kExistingPromosWithoutMetadata, feature)) {
       failed = true;
       oss << "\n"
           << feature->name

@@ -14,7 +14,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -275,7 +274,7 @@ bool DeleteInstallerOutput(UpdaterScope updater_scope,
       delete_value(kRegValueInstallerResultUIString),
       delete_value(kRegValueInstallerSuccessLaunchCmdLine),
   };
-  return !base::Contains(results, false);
+  return !std::ranges::contains(results, false);
 }
 
 std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,

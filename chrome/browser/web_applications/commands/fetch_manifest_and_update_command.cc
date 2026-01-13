@@ -4,9 +4,9 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
@@ -134,8 +134,8 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
 
   bool has_any_icon = false;
   for (const auto& icon : manifest->icons) {
-    if (base::Contains(icon.purpose,
-                       blink::mojom::ManifestImageResource_Purpose::ANY)) {
+    if (std::ranges::contains(
+            icon.purpose, blink::mojom::ManifestImageResource_Purpose::ANY)) {
       has_any_icon = true;
       break;
     }

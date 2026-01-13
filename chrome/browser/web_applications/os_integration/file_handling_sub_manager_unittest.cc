@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -943,8 +944,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, MultipleValidExtensions) {
   EXPECT_EQ(file_handler_url, std::get<GURL>(launch_infos[0]));
   const auto& paths = std::get<std::vector<base::FilePath>>(launch_infos[0]);
   EXPECT_EQ(2u, paths.size());
-  EXPECT_TRUE(base::Contains(paths, path1));
-  EXPECT_TRUE(base::Contains(paths, path2));
+  EXPECT_TRUE(std::ranges::contains(paths, path1));
+  EXPECT_TRUE(std::ranges::contains(paths, path2));
 }
 
 TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, PartialExtensionMatch) {
@@ -975,8 +976,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, PartialExtensionMatch) {
   EXPECT_EQ(file_handler_url, std::get<GURL>(launch_infos[0]));
   const auto& paths = std::get<std::vector<base::FilePath>>(launch_infos[0]);
   EXPECT_EQ(1u, paths.size());
-  EXPECT_TRUE(base::Contains(paths, path1));
-  EXPECT_FALSE(base::Contains(paths, path2));
+  EXPECT_TRUE(std::ranges::contains(paths, path1));
+  EXPECT_FALSE(std::ranges::contains(paths, path2));
 }
 
 TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
@@ -1035,8 +1036,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   EXPECT_EQ(file_handler_url, std::get<GURL>(launch_infos[0]));
   const auto& paths = std::get<std::vector<base::FilePath>>(launch_infos[0]);
   EXPECT_EQ(1u, paths.size());
-  EXPECT_FALSE(base::Contains(paths, path1));
-  EXPECT_TRUE(base::Contains(paths, path2));
+  EXPECT_FALSE(std::ranges::contains(paths, path1));
+  EXPECT_TRUE(std::ranges::contains(paths, path2));
 }
 
 TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, MultiLaunch) {
@@ -1103,15 +1104,15 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, MultiLaunch) {
     expected_counts[launch_url]--;
     if (launch_url == foo_url) {
       EXPECT_EQ(2u, launch_paths.size());
-      EXPECT_TRUE(base::Contains(launch_paths, foo_path1));
-      EXPECT_TRUE(base::Contains(launch_paths, foo_path2));
+      EXPECT_TRUE(std::ranges::contains(launch_paths, foo_path1));
+      EXPECT_TRUE(std::ranges::contains(launch_paths, foo_path2));
     } else if (launch_url == bar_url) {
       EXPECT_EQ(1u, launch_paths.size());
-      EXPECT_TRUE(base::Contains(launch_paths, bar_path));
+      EXPECT_TRUE(std::ranges::contains(launch_paths, bar_path));
     } else if (launch_url == baz_url) {
       EXPECT_EQ(1u, launch_paths.size());
-      bool has_path1 = base::Contains(launch_paths, baz_path1);
-      bool has_path2 = base::Contains(launch_paths, baz_path2);
+      bool has_path1 = std::ranges::contains(launch_paths, baz_path1);
+      bool has_path2 = std::ranges::contains(launch_paths, baz_path2);
       EXPECT_NE(has_path1, has_path2);
     } else {
       FAIL() << " Got unexpected URL " << launch_url;

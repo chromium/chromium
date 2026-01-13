@@ -727,7 +727,7 @@ void TabSearchPageHandler::GetTabOrganizationSession(
     session = organization_service_->CreateSessionForBrowser(browser_);
   }
 
-  if (!base::Contains(listened_sessions_, session)) {
+  if (!std::ranges::contains(listened_sessions_, session)) {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
   }
@@ -826,7 +826,7 @@ void TabSearchPageHandler::RequestTabOrganization() {
     session = organization_service_->ResetSessionForBrowser(browser_);
   }
 
-  if (!base::Contains(listened_sessions_, session)) {
+  if (!std::ranges::contains(listened_sessions_, session)) {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
   }
@@ -905,7 +905,7 @@ void TabSearchPageHandler::RestartSession() {
   // Don't notify observers to avoid a repaint
   TabOrganizationSession* session =
       organization_service_->ResetSessionForBrowser(browser_, base_session_tab);
-  if (!base::Contains(listened_sessions_, session)) {
+  if (!std::ranges::contains(listened_sessions_, session)) {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
   }
@@ -1755,7 +1755,7 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
 
 void TabSearchPageHandler::OnTabOrganizationSessionUpdated(
     const TabOrganizationSession* session) {
-  if (restarting_ || !base::Contains(listened_sessions_, session)) {
+  if (restarting_ || !std::ranges::contains(listened_sessions_, session)) {
     return;
   }
 

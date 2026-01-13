@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -368,7 +367,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
 
   EXPECT_EQ(test_install_options_list.size(), install_options_list.size());
   for (const auto& install_option : test_install_options_list) {
-    EXPECT_TRUE(base::Contains(install_options_list, install_option));
+    EXPECT_TRUE(std::ranges::contains(install_options_list, install_option));
   }
   ExpectHistograms(/*enabled=*/2, /*disabled=*/0, /*errors=*/0);
 }

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -172,8 +172,8 @@ TEST_F(ProfilePreloadCandidateSelectorTest, IgnorePresentWebUI) {
                      SiteEngagementService::GetMaxPoints());
 
   // By default no WebUI is present, selects either URL1 or URL2.
-  EXPECT_TRUE(
-      base::Contains(GetAllPreloableURLs(), *GetURLToPreload(profile())));
+  EXPECT_TRUE(std::ranges::contains(GetAllPreloableURLs(),
+                                    *GetURLToPreload(profile())));
 
   // If URL1 is present, selects URL2.
   ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl1))
@@ -288,8 +288,8 @@ TEST_F(ProfilePreloadCandidateSelectorTest, IgnoreDisabledWebUIs) {
                      SiteEngagementService::GetMaxPoints() - 1);
 
   // By default no WebUI is present, selects either URL1 or URL2.
-  EXPECT_TRUE(
-      base::Contains(GetAllPreloableURLs(), *GetURLToPreload(profile())));
+  EXPECT_TRUE(std::ranges::contains(GetAllPreloableURLs(),
+                                    *GetURLToPreload(profile())));
 
   // If URL1 is disabled, selects URL2.
   base::AutoReset<bool> disable_webui_1(&enabled_webui_1_, false);

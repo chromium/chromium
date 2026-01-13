@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
+#include <algorithm>
 #include <string>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -195,7 +195,8 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
 #else
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&
-        base::Contains(enabled_and_available_languages, config.language_name)) {
+        std::ranges::contains(enabled_and_available_languages,
+                              config.language_name)) {
       base::Value::Dict available_language_pack;
       available_language_pack.Set(kCodeKey, config.language_name);
       available_language_pack.Set(

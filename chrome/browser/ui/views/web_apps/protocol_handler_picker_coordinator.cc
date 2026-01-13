@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -123,7 +123,7 @@ std::optional<std::string> ProtocolHandlerPickerCoordinator::FindPreferredApp(
     const std::vector<std::string>& app_ids) {
   if (std::optional<std::string> app_id =
           proxy_->PreferredAppsList().FindPreferredAppForUrl(protocol_url)) {
-    if (base::Contains(app_ids, *app_id)) {
+    if (std::ranges::contains(app_ids, *app_id)) {
       return app_id;
     }
   }

@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -1949,7 +1948,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFaviconWithResize) {
 
   // App does not declare an icon of gfx::kFaviconSize, forcing a resize.
   const std::vector<int> sizes_px{8, icon_size::k48, icon_size::k64};
-  ASSERT_FALSE(base::Contains(sizes_px, gfx::kFaviconSize));
+  ASSERT_FALSE(std::ranges::contains(sizes_px, gfx::kFaviconSize));
   const std::vector<SkColor> colors{SK_ColorBLACK, SK_ColorGREEN, SK_ColorRED};
   IconManagerWriteGeneratedIcons(icon_manager(), app_id,
                                  {{IconPurpose::ANY, sizes_px, colors}});
@@ -1993,7 +1992,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
   // App declares icons precisely matching suspported UI scale factors.
   const std::vector<int> sizes_px{icon_size::k16, icon_size::k32,
                                   icon_size::k48, icon_size::k64};
-  ASSERT_TRUE(base::Contains(sizes_px, gfx::kFaviconSize));
+  ASSERT_TRUE(std::ranges::contains(sizes_px, gfx::kFaviconSize));
 
   const std::vector<SkColor> colors{SK_ColorYELLOW, SK_ColorGREEN, SK_ColorRED,
                                     SK_ColorBLUE};
@@ -2038,7 +2037,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
   // App declares only bigger icons, forcing a downsize to suspported UI scale
   // factors.
   const std::vector<int> sizes_px{icon_size::k24, icon_size::k48};
-  ASSERT_FALSE(base::Contains(sizes_px, gfx::kFaviconSize));
+  ASSERT_FALSE(std::ranges::contains(sizes_px, gfx::kFaviconSize));
 
   const std::vector<SkColor> colors{SK_ColorCYAN, SK_ColorMAGENTA};
   IconManagerWriteGeneratedIcons(icon_manager(), app_id,
@@ -2310,7 +2309,7 @@ TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
   // App declares icons precisely matching suspported UI scale factors.
   const std::vector<int> sizes_px{icon_size::k16, icon_size::k32,
                                   icon_size::k64};
-  ASSERT_TRUE(base::Contains(sizes_px, gfx::kFaviconSize));
+  ASSERT_TRUE(std::ranges::contains(sizes_px, gfx::kFaviconSize));
 
   const std::vector<SkColor> colors{SK_ColorYELLOW, SK_ColorTRANSPARENT,
                                     SK_ColorRED};

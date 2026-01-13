@@ -4,7 +4,8 @@
 
 #include "chrome/test/base/ui_test_utils.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -55,9 +56,9 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, FindMatchingBrowsers) {
   auto all_browsers = ui_test_utils::FindMatchingBrowsers(
       [](BrowserWindowInterface*) { return true; });
   EXPECT_EQ(3u, all_browsers.size());
-  EXPECT_TRUE(base::Contains(all_browsers, regular_browser1));
-  EXPECT_TRUE(base::Contains(all_browsers, regular_browser2));
-  EXPECT_TRUE(base::Contains(all_browsers, incognito_browser));
+  EXPECT_TRUE(std::ranges::contains(all_browsers, regular_browser1));
+  EXPECT_TRUE(std::ranges::contains(all_browsers, regular_browser2));
+  EXPECT_TRUE(std::ranges::contains(all_browsers, incognito_browser));
 
   // No browsers.
   auto no_browsers = ui_test_utils::FindMatchingBrowsers(
@@ -78,6 +79,6 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, FindMatchingBrowsers) {
         return !browser->GetProfile()->IsIncognitoProfile();
       });
   EXPECT_EQ(2u, regular_browsers.size());
-  EXPECT_TRUE(base::Contains(regular_browsers, regular_browser1));
-  EXPECT_TRUE(base::Contains(regular_browsers, regular_browser2));
+  EXPECT_TRUE(std::ranges::contains(regular_browsers, regular_browser1));
+  EXPECT_TRUE(std::ranges::contains(regular_browsers, regular_browser2));
 }

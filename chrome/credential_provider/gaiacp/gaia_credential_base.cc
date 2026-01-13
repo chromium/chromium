@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2418,7 +2417,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
     const std::wstring email_domain = email.substr(email.find(L"@") + 1);
     const std::vector<std::wstring> allowed_domains = GetEmailDomainsList();
 
-    if (!base::Contains(allowed_domains, email_domain)) {
+    if (!std::ranges::contains(allowed_domains, email_domain)) {
       LOGFN(ERROR) << "Account " << email
                    << " isn't in a domain from allowed domains."
                    << "Allowed Domains: "
@@ -2431,7 +2430,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
 
     std::vector<std::wstring> permitted_accounts = GetPermittedAccounts();
     if (!permitted_accounts.empty() &&
-        !base::Contains(permitted_accounts, email)) {
+        !std::ranges::contains(permitted_accounts, email)) {
       *status_text = AllocErrorString(IDS_EMAIL_MISMATCH_BASE);
       SecurelyClearDictionaryValue(properties);
       return E_FAIL;

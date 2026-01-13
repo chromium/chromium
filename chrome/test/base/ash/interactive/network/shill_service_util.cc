@@ -4,9 +4,9 @@
 
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
@@ -25,7 +25,7 @@ ShillServiceInfo::ShillServiceInfo(unsigned int id, std::string service_type)
   const std::array<std::string, 4> valid_service_types = {
       shill::kTypeWifi, shill::kTypeCellular, shill::kTypeEthernet,
       shill::kTypeVPN};
-  CHECK(base::Contains(valid_service_types, service_type_));
+  CHECK(std::ranges::contains(valid_service_types, service_type_));
 }
 
 ShillServiceInfo::~ShillServiceInfo() = default;

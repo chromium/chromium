@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_database_serialization.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -16,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -839,7 +839,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       apps::ShareTarget::Files files_entry;
       files_entry.name = share_target_params_file.name();
       for (const auto& file_type : share_target_params_file.accept()) {
-        if (base::Contains(files_entry.accept, file_type)) {
+        if (std::ranges::contains(files_entry.accept, file_type)) {
           // We intentionally don't return a nullptr here; instead, duplicate
           // entries are absorbed.
           DLOG(ERROR) << "apps::ShareTarget::Files parsing encountered "

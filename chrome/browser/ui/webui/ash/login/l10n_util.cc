@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
@@ -157,7 +156,7 @@ base::Value::List GetLanguageList(
       continue;
     }
 
-    if (base::Contains(base_language_codes, language_id)) {
+    if (std::ranges::contains(base_language_codes, language_id)) {
       // Language is supported. No need to replace
       continue;
     }
@@ -167,7 +166,7 @@ base::Value::List GetLanguageList(
       continue;
     }
 
-    if (!base::Contains(base_language_codes, *resolved_locale)) {
+    if (!std::ranges::contains(base_language_codes, *resolved_locale)) {
       // Resolved locale is not supported.
       continue;
     }
@@ -188,7 +187,7 @@ base::Value::List GetLanguageList(
   for (const auto& language_code : language_codes) {
     // Exclude the language which is not in `base_langauge_codes` even it has
     // input methods.
-    if (!base::Contains(base_language_codes, language_code)) {
+    if (!std::ranges::contains(base_language_codes, language_code)) {
       continue;
     }
 

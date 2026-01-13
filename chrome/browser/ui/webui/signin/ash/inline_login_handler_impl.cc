@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -350,7 +351,7 @@ void InlineLoginHandlerImpl::HandleDialogClose(const base::Value::List& args) {
 void InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin(
     const CompleteLoginParams& params,
     const std::vector<::account_manager::Account>& accounts) {
-  bool is_new_account = !base::Contains(
+  bool is_new_account = !std::ranges::contains(
       accounts, params.gaia_id.ToString(),
       [](const account_manager::Account& account) { return account.key.id(); });
 

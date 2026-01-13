@@ -7,13 +7,13 @@
 #include <credentialprovider.h>
 #include <shlguid.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <map>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -180,7 +180,7 @@ bool BackgroundTokenHandleUpdater::IsAuthEnforcedOnAssociatedUsers() {
     const std::wstring& sid = sid_to_association.first;
     // Checks if the login UI was already refreshed due to
     // auth enforcements on this sid.
-    if (reauth_sids_ != nullptr && base::Contains(*reauth_sids_, sid)) {
+    if (reauth_sids_ != nullptr && std::ranges::contains(*reauth_sids_, sid)) {
       continue;
     }
 

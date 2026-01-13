@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -434,7 +435,7 @@ void LockScreenReauthHandler::HandleOnPasswordTyped(
 
 void LockScreenReauthHandler::OnPasswordTyped(const std::string& password) {
   if (scraped_saml_passwords_.empty() ||
-      base::Contains(scraped_saml_passwords_, password)) {
+      std::ranges::contains(scraped_saml_passwords_, password)) {
     OnPasswordConfirmed(password);
     return;
   }

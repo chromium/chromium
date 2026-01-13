@@ -10,12 +10,12 @@
 #include <process.h>
 #include <winhttp.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -492,7 +492,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     std::optional<int> error_code =
         error_detail->FindInt(kHttpErrorCodeKeyNameInResponse);
     if (error_code.has_value() &&
-        !base::Contains(kRetryableHttpErrorCodes, error_code.value())) {
+        !std::ranges::contains(kRetryableHttpErrorCodes, error_code.value())) {
       return E_FAIL;
     }
   }

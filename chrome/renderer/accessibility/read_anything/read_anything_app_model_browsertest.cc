@@ -803,8 +803,8 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
   // Assert model().Reset state.
   ASSERT_FALSE(model().distillation_in_progress());
 
-  ASSERT_TRUE(base::Contains(model().content_node_ids(), 1));
-  ASSERT_TRUE(base::Contains(model().content_node_ids(), 2));
+  ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 1));
+  ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 2));
 
   ASSERT_FALSE(model().display_node_ids().contains(1));
   ASSERT_FALSE(model().display_node_ids().contains(3));
@@ -815,10 +815,10 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
   // Calling model().Reset with different content nodes updates the content
   // nodes.
   model().Reset({5, 4});
-  ASSERT_FALSE(base::Contains(model().content_node_ids(), 1));
-  ASSERT_FALSE(base::Contains(model().content_node_ids(), 2));
-  ASSERT_TRUE(base::Contains(model().content_node_ids(), 5));
-  ASSERT_TRUE(base::Contains(model().content_node_ids(), 4));
+  ASSERT_FALSE(std::ranges::contains(model().content_node_ids(), 1));
+  ASSERT_FALSE(std::ranges::contains(model().content_node_ids(), 2));
+  ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 5));
+  ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppModelTest, Reset_ResetsSelectionState) {

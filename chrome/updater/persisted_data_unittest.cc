@@ -4,10 +4,10 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -59,9 +59,9 @@ TEST_F(PersistedDataTest, Simple) {
   EXPECT_FALSE(metadata->GetProductVersion("appid2-nopv").IsValid());
   const auto app_ids = metadata->GetAppIds();
   EXPECT_EQ(2u, app_ids.size());
-  EXPECT_TRUE(base::Contains(app_ids, "someappid"));
-  EXPECT_TRUE(base::Contains(app_ids, "appid1"));
-  EXPECT_FALSE(base::Contains(app_ids, "appid2-nopv"));  // No valid pv.
+  EXPECT_TRUE(std::ranges::contains(app_ids, "someappid"));
+  EXPECT_TRUE(std::ranges::contains(app_ids, "appid1"));
+  EXPECT_FALSE(std::ranges::contains(app_ids, "appid2-nopv"));  // No valid pv.
 
   const base::Time time1 = base::Time::FromSecondsSinceUnixEpoch(10);
   metadata->SetLastChecked(time1);

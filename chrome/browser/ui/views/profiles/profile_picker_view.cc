@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -872,7 +873,8 @@ void ProfilePickerView::NavigateBack() {
 void ProfilePickerView::ConfigureAccelerators() {
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
-    if (!base::Contains(kSupportedAcceleratorCommands, entry.command_id)) {
+    if (!std::ranges::contains(kSupportedAcceleratorCommands,
+                               entry.command_id)) {
       continue;
     }
     ui::Accelerator accelerator(entry.keycode, entry.modifiers);

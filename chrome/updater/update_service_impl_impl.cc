@@ -17,7 +17,6 @@
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
@@ -1143,7 +1142,7 @@ void UpdateServiceImplImpl::UpdateAll(
 
   auto app_ids = config_->GetUpdaterPersistedData()->GetAppIds();
 
-  CHECK(base::Contains(
+  CHECK(std::ranges::contains(
       app_ids, base::ToLowerASCII(kUpdaterAppId),
       static_cast<std::string (*)(std::string_view)>(&base::ToLowerASCII)));
 

@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -620,7 +621,7 @@ TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
   // Expect that GetNextValidPosition fails without inserted the granularity.
   // The first segment was returned correctly.
   EXPECT_EQ(current_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(current_granularity.node_ids, kId1));
+  EXPECT_TRUE(std::ranges::contains(current_granularity.node_ids, kId1));
 
   ui::AXNodePosition::AXPositionInstance new_position =
       GetNextNodePosition(&current_nodes);
@@ -767,12 +768,12 @@ TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
   a11y::ReadAloudCurrentGranularity first_granularity =
       GetNextNodes(&current_nodes);
   EXPECT_EQ(first_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(first_granularity.node_ids, kId1));
+  EXPECT_TRUE(std::ranges::contains(first_granularity.node_ids, kId1));
   EXPECT_EQ(first_granularity.text, sentence1);
   a11y::ReadAloudCurrentGranularity next_granularity =
       GetNextNodes(&current_nodes);
   EXPECT_EQ(next_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(next_granularity.node_ids, kId2));
+  EXPECT_TRUE(std::ranges::contains(next_granularity.node_ids, kId2));
   EXPECT_EQ(next_granularity.text, sentence2);
 
   // If we init without resetting we should just go to the next sentence
@@ -780,7 +781,7 @@ TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
   a11y::ReadAloudCurrentGranularity last_granularity =
       GetNextNodes(&current_nodes);
   EXPECT_EQ(last_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(last_granularity.node_ids, kId3));
+  EXPECT_TRUE(std::ranges::contains(last_granularity.node_ids, kId3));
   EXPECT_EQ(last_granularity.text, sentence3);
 
   // After reset and then init, we should get the first sentence again.
@@ -788,7 +789,7 @@ TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
   InitAXPositionWithNode(kId1);
   a11y::ReadAloudCurrentGranularity after_reset = GetNextNodes(&current_nodes);
   EXPECT_EQ(after_reset.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(after_reset.node_ids, kId1));
+  EXPECT_TRUE(std::ranges::contains(after_reset.node_ids, kId1));
   EXPECT_EQ(first_granularity.text, sentence1);
 }
 

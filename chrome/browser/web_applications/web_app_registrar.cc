@@ -15,7 +15,6 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -1255,8 +1254,8 @@ bool WebAppRegistrar::IsRegisteredLaunchProtocol(
     return false;
   }
 
-  return base::Contains(web_app->protocol_handlers(), protocol_scheme,
-                        [](const auto& info) { return info.protocol; });
+  return std::ranges::contains(web_app->protocol_handlers(), protocol_scheme,
+                               [](const auto& info) { return info.protocol; });
 }
 
 base::flat_set<std::string> WebAppRegistrar::GetAllAllowedLaunchProtocols()
@@ -1770,7 +1769,8 @@ bool WebAppRegistrar::IsAppPolicyDefinedHandlerForFileExtension(
       WebAppPolicyManager::GetPolicyIds(profile(), *web_app);
 
   if (!app_policy_ids->empty()) {
-    return base::Contains(app_policy_ids.value(), *file_extension_policy_id);
+    return std::ranges::contains(app_policy_ids.value(),
+                                 *file_extension_policy_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return false;
@@ -1792,7 +1792,7 @@ bool WebAppRegistrar::IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
 
   if (!app_policy_ids->empty()) {
     return std::ranges::any_of(default_handlers, [&](const auto& handler) {
-      return base::Contains(*app_policy_ids, handler.second.GetString());
+      return std::ranges::contains(*app_policy_ids, handler.second.GetString());
     });
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

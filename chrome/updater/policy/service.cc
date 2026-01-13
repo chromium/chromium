@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -379,11 +378,12 @@ PolicyStatus<std::string> PolicyService::GetProxyMode() const {
       &PolicyManagerInterface::GetProxyMode,
       base::BindRepeating([](std::optional<std::string> proxy_mode) {
         return (proxy_mode.has_value() &&
-                base::Contains(std::vector<std::string>(
-                                   {kProxyModeDirect, kProxyModeSystem,
-                                    kProxyModeFixedServers, kProxyModePacScript,
-                                    kProxyModeAutoDetect}),
-                               base::ToLowerASCII(proxy_mode.value())))
+                std::ranges::contains(
+                    std::vector<std::string>(
+                        {kProxyModeDirect, kProxyModeSystem,
+                         kProxyModeFixedServers, kProxyModePacScript,
+                         kProxyModeAutoDetect}),
+                    base::ToLowerASCII(proxy_mode.value())))
                    ? proxy_mode
                    : std::nullopt;
       }));

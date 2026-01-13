@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
@@ -729,7 +730,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestAllKnownInteractionProfileTypes) {
       static_cast<uint32_t>(kInitialInteractionProfile) + 1;
   for (uint32_t i = kFirstChangedProfileIndex; i <= kFinalValue; i++) {
     auto profile = static_cast<device::mojom::OpenXrInteractionProfileType>(i);
-    if (base::Contains(kSkippedInteractionProfiles, profile)) {
+    if (std::ranges::contains(kSkippedInteractionProfiles, profile)) {
       continue;
     }
     my_mock.UpdateInteractionProfile(profile);
