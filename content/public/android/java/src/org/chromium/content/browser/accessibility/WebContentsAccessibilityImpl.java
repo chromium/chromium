@@ -39,6 +39,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_LEFT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_RIGHT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_UP;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_PROGRESS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
@@ -1470,47 +1471,45 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 }
             }
             return false;
-        } else {
-            if (ContentFeatureMap.isEnabled(ACCESSIBILITY_EXTENDED_SELECTION)) {
-                AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-                if (delegate != null
-                        && delegate.getActionSetExtendedSelectionId() != null
-                        && action == delegate.getActionSetExtendedSelectionId()) {
-                    if (arguments == null) return false;
+        } else if (action == ACTION_SET_EXTENDED_SELECTION.getId()) {
+            if (!ContentFeatureMap.isEnabled(ACCESSIBILITY_EXTENDED_SELECTION)) {
+                return false;
+            }
+            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate == null || !delegate.isActionSetExtendedSelectionSupported()) {
+                return false;
+            }
+            if (arguments == null) return false;
 
-                    // Since `delegate.getActionSetExtendedSelectionId()` is not null, extended
-                    // selection should be available and hence a null value for start node means
-                    // that `node.getSelection()` has returned null.
-                    var selectionStart =
-                            delegate.getActionSetExtendedSelectionStartArgument(arguments);
-                    if (selectionStart == null) {
-                        WebContentsAccessibilityImplJni.get()
-                                .clearExtendedSelection(mNativeObj, virtualViewId);
-                        return true;
-                    }
-
-                    var selectionEnd = delegate.getActionSetExtendedSelectionEndArgument(arguments);
-                    // This is not expected since start node is not null, but since the error is
-                    // from
-                    // the platform, assume selection is cleared.
-                    if (selectionEnd == null) {
-                        WebContentsAccessibilityImplJni.get()
-                                .clearExtendedSelection(mNativeObj, virtualViewId);
-                        return true;
-                    }
-
-                    WebContentsAccessibilityImplJni.get()
-                            .setExtendedSelection(
-                                    mNativeObj,
-                                    virtualViewId,
-                                    /* startNodeId= */ selectionStart.first,
-                                    /* startNodeOffset= */ selectionStart.second,
-                                    /* endNodeId= */ selectionEnd.first,
-                                    /* endNodeOffset= */ selectionEnd.second);
-                    return true;
-                }
+            // Since `delegate.isActionSetExtendedSelectionSupported()` is true, extended
+            // selection should be readable and hence a null value for start node means
+            // that `node.getSelection()` has returned null.
+            var selectionStart = delegate.getActionSetExtendedSelectionStartArgument(arguments);
+            if (selectionStart == null) {
+                WebContentsAccessibilityImplJni.get()
+                        .clearExtendedSelection(mNativeObj, virtualViewId);
+                return true;
             }
 
+            var selectionEnd = delegate.getActionSetExtendedSelectionEndArgument(arguments);
+            // This is not expected since start node is not null, but since the error is
+            // from the platform, assume selection is cleared.
+            if (selectionEnd == null) {
+                WebContentsAccessibilityImplJni.get()
+                        .clearExtendedSelection(mNativeObj, virtualViewId);
+                return true;
+            }
+
+            WebContentsAccessibilityImplJni.get()
+                    .setExtendedSelection(
+                            mNativeObj,
+                            virtualViewId,
+                            /* startNodeId= */ selectionStart.first,
+                            /* startNodeOffset= */ selectionStart.second,
+                            /* endNodeId= */ selectionEnd.first,
+                            /* endNodeOffset= */ selectionEnd.second);
+            return true;
+        } else {
             // This should never be hit, so do the equivalent of NOTREACHED;
             assert false : "AccessibilityNodeProvider called performAction with unexpected action.";
 

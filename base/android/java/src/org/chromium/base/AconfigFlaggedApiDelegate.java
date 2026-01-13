@@ -302,6 +302,16 @@ public interface AconfigFlaggedApiDelegate {
     default void clearSelection(AccessibilityNodeInfoCompat info) {}
 
     /**
+     * @return True if requirements for processing ACTION_SET_EXTENDED_SELECTION are supported by
+     *     the platform.
+     */
+    default boolean isActionSetExtendedSelectionSupported() {
+        return false;
+    }
+
+    /**
+     * TODO(crbug.com/443078007): Deprecated, remove after internal implementation is updated.
+     *
      * @return Id of
      *     androidx.core.view.accessibility.AccessibilityNodeInfo.AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION
      */
