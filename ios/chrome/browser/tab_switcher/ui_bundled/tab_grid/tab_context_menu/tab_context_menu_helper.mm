@@ -277,6 +277,15 @@ using tab_groups::SharingState;
     [collectionsActions addObject:closeTabAction];
   }
 
+  if (collectionsActions.count > 0) {
+    UIMenu* collectionsMenu = [UIMenu menuWithTitle:@""
+                                              image:nil
+                                         identifier:nil
+                                            options:UIMenuOptionsDisplayInline
+                                           children:collectionsActions];
+    [menuElements addObject:collectionsMenu];
+  }
+
   if (IsCloseOtherTabsEnabled()) {
     if ([self canCloseOtherTabsForTabWithID:tabID]) {
       UIAction* closeOtherTabsAction =
@@ -286,17 +295,14 @@ using tab_groups::SharingState;
                 closeTabsExceptIdentifier:tabID
                                 incognito:weakSelf.incognito];
           }];
-      [collectionsActions addObject:closeOtherTabsAction];
-    }
-  }
 
-  if (collectionsActions.count > 0) {
-    UIMenu* collectionsMenu = [UIMenu menuWithTitle:@""
-                                              image:nil
-                                         identifier:nil
-                                            options:UIMenuOptionsDisplayInline
-                                           children:collectionsActions];
-    [menuElements addObject:collectionsMenu];
+      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                               image:nil
+                                          identifier:nil
+                                             options:UIMenuOptionsDisplayInline
+                                            children:@[ closeOtherTabsAction ]];
+      [menuElements addObject:closeOtherMenu];
+    }
   }
 
   return menuElements;

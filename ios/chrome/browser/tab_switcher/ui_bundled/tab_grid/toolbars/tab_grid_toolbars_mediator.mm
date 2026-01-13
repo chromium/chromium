@@ -111,6 +111,9 @@
 
   [self.topToolbarConsumer
       setSelectTabsActionEnabled:_configuration.selectTabsButton];
+
+  [self.topToolbarConsumer
+      setCloseOtherTabsEnabled:_configuration.closeOtherTabsButton];
 }
 
 - (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate {
@@ -266,24 +269,6 @@
   [self.topToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
 }
 
-// Returns YES if "Close Other Tabs" should be enabled.
-- (BOOL)canCloseOtherTabs {
-  if (!base::FeatureList::IsEnabled(kCloseOtherTabs)) {
-    return NO;
-  }
-  if (!_webStateList) {
-    return NO;
-  }
-  int activeIndex = _webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex) {
-    return NO;
-  }
-  if (_webStateList->IsWebStatePinnedAt(activeIndex)) {
-    return _webStateList->regular_tabs_count() > 0;
-  }
-  return _webStateList->regular_tabs_count() > 1;
-}
-
 // Configures buttons that are available under the edit menu.
 - (void)configureEditButtons {
   BOOL shouldEnableEditButton =
@@ -300,11 +285,17 @@
           [weakButtonDelegate closeAllButtonTapped:nil];
         }] ] mutableCopy];
 
-    if ([self canCloseOtherTabs]) {
-      [menuElements
-          addObject:[actionFactory actionToCloseAllOtherTabsWithBlock:^{
+    if (_configuration.closeOtherTabsButton) {
+      UIAction* closeOtherTabsAction =
+          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
             [weakButtonDelegate closeOtherTabsButtonTapped:nil];
-          }]];
+          }];
+      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                               image:nil
+                                          identifier:nil
+                                             options:UIMenuOptionsDisplayInline
+                                            children:@[ closeOtherTabsAction ]];
+      [menuElements addObject:closeOtherMenu];
     }
     // Disable the "Select All" option from the edit button when there are no
     // tabs in the regular tab grid. "Close All" can still be called if there
