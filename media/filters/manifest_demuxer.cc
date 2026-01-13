@@ -87,15 +87,16 @@ ManifestDemuxer::ManifestDemuxer(
 
 std::vector<DemuxerStream*> ManifestDemuxer::GetAllStreams() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
   // For each stream that ChunkDemuxer returns, we need to wrap it so that we
   // can grab the timestamp. Chunk demuxer's streams live forever, so ours
   // might as well also live forever, even if that leaks a small amount of
   // memory.
   // TODO(crbug.com/40057824): Rearchitect the demuxer stream ownership model to
   // prevent long-lived streams from potentially leaking memory.
+
   std::vector<DemuxerStream*> streams;
-  for (DemuxerStream* chunk_demuxer_stream : chunk_demuxer_->GetAllStreams()) {
+  for (DemuxerStream* chunk_demuxer_stream :
+       impl_->FilterDemuxerStreams(chunk_demuxer_->GetAllStreams())) {
     auto it = streams_.find(chunk_demuxer_stream);
     if (it != streams_.end()) {
       streams.push_back(it->second.get());
@@ -283,9 +284,9 @@ void ManifestDemuxer::OnChunkDemuxerTracksChangeComplete(
   DCHECK(stream);
 
   if (type == DemuxerStream::AUDIO) {
-    impl_->SelectAudioRendition(*track_id);
+    impl_->SelectAudioTrack(*track_id);
   } else if (type == DemuxerStream::VIDEO) {
-    impl_->SelectVideoVariant(*track_id);
+    impl_->SelectVideoTrack(*track_id);
   } else {
     NOTREACHED();
   }

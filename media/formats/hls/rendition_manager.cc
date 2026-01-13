@@ -38,35 +38,41 @@ RenditionManager::CodecSupportType VariantTypeSupported(
   return mp2t;
 }
 
+bool HasVideoSupport(RenditionManager::CodecSupportType cst) {
+  return cst == RenditionManager::CodecSupportType::kSupportedAudioVideo ||
+         cst == RenditionManager::CodecSupportType::kSupportedVideoOnly;
+}
+
+constexpr RenditionManager::CodecSupportType operator|(
+    RenditionManager::CodecSupportType l,
+    RenditionManager::CodecSupportType r) {
+  return static_cast<RenditionManager::CodecSupportType>(
+      static_cast<uint8_t>(l) | static_cast<uint8_t>(r));
+}
+
 std::vector<raw_ptr<const VariantStream>> FilterVariants(
     const MultivariantPlaylist* playlist,
-    bool* is_audio_only,
+    RenditionManager::CodecSupportType* supported,
     RenditionManager::IsTypeSupportedCallback support_cb) {
   std::vector<raw_ptr<const VariantStream>> supported_variants;
-  *is_audio_only = true;
+  *supported = RenditionManager::CodecSupportType::kUnsupported;
+
   for (const VariantStream& variant : playlist->GetVariants()) {
-    switch (VariantTypeSupported(support_cb, variant)) {
-      case RenditionManager::CodecSupportType::kSupportedAudioVideo:
-      case RenditionManager::CodecSupportType::kSupportedVideoOnly: {
-        if (*is_audio_only) {
-          supported_variants.clear();
-        }
-        *is_audio_only = false;
-        break;
-      }
-      case RenditionManager::CodecSupportType::kSupportedAudioOnly: {
-        if (!*is_audio_only) {
-          continue;
-        }
-        break;
-      }
-      case RenditionManager::CodecSupportType::kUnsupported: {
-        continue;
-      }
+    auto determined = VariantTypeSupported(support_cb, variant);
+    if (determined == RenditionManager::CodecSupportType::kUnsupported) {
+      continue;
     }
-    // This variant is supported and possible to select (IE, it is not an
-    // audio-only variant in a stream with video-present variants).
-    supported_variants.push_back(&variant);
+
+    if (*supported == RenditionManager::CodecSupportType::kSupportedAudioOnly &&
+        HasVideoSupport(determined)) {
+      // All these variants were audio only, drop them.
+      supported_variants.clear();
+    }
+
+    if (HasVideoSupport(determined) || !HasVideoSupport(*supported)) {
+      supported_variants.push_back(&variant);
+      *supported = *supported | determined;
+    }
   }
 
   constexpr auto compare = [](raw_ptr<const VariantStream>& lhs,
@@ -115,7 +121,7 @@ RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
   // TODO(crbug.com/XXXXX): In the case of no codecs listed, we probably want to
   // have a mechanism by which we can test these renditions and asynchronously
   // either enable or disable them.
-  selectable_variants_ = FilterVariants(playlist_.get(), &audio_only_,
+  selectable_variants_ = FilterVariants(playlist_.get(), &supported_streams_,
                                         std::move(is_type_supported_cb));
 
   // Based on player metrics (ABR Speed & Resolution)
@@ -182,7 +188,7 @@ void RenditionManager::UpdateAudioRenditions(const VariantStream* best) {
     return;
   }
 
-  if (audio_only_) {
+  if (supported_streams_ == CodecSupportType::kSupportedAudioOnly) {
     // For audio-only content, the set of selectable tracks has to be every
     // unique rendition from each variant. By exposing all audio tracks to the
     // player, at least any JS-based player implementation can parse the set of
@@ -214,7 +220,7 @@ void RenditionManager::UpdateAudioRenditions(const VariantStream* best) {
 }
 
 void RenditionManager::UpdateVideoRenditions() {
-  if (audio_only_) {
+  if (supported_streams_ == CodecSupportType::kSupportedAudioOnly) {
     return;
   }
 
@@ -236,7 +242,7 @@ void RenditionManager::Reselect(SelectedCallonce cb) {
     return;
   }
 
-  if (audio_only_) {
+  if (supported_streams_ == CodecSupportType::kSupportedAudioOnly) {
     if (preferred_audio_rendition_.has_value()) {
       // The user's audio preference is always selected as-is for audio-only
       // content. Only fire the selected callback if the preference is not the
@@ -323,7 +329,7 @@ void RenditionManager::SetPreferredAudioRendition(
     return;
   }
 
-  if (audio_only_) {
+  if (supported_streams_ == CodecSupportType::kSupportedAudioOnly) {
     auto lookup = track_map_.find(*track_id);
     if (lookup == track_map_.end()) {
       return;
@@ -358,7 +364,7 @@ void RenditionManager::SetPreferredAudioRendition(
 
 void RenditionManager::SetPreferredVideoRendition(
     std::optional<MediaTrack::Id> track_id) {
-  CHECK(!audio_only_);
+  CHECK(supported_streams_ != CodecSupportType::kSupportedAudioOnly);
 
   if (!track_id.has_value()) {
     preferred_video_rendition_ = std::nullopt;

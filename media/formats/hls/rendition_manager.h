@@ -53,11 +53,11 @@ class MEDIA_EXPORT RenditionManager {
   // We want to ask if a codec string is supported, but also if it contains
   // audio, video, or both types of content, allowing us to sort our variants
   // into groups.
-  enum class CodecSupportType {
-    kUnsupported,
-    kSupportedAudioVideo,
-    kSupportedAudioOnly,
-    kSupportedVideoOnly,
+  enum class CodecSupportType : uint8_t {
+    kUnsupported = 0x00,
+    kSupportedAudioVideo = 0x03,
+    kSupportedAudioOnly = 0x01,
+    kSupportedVideoOnly = 0x02,
   };
 
   // Callback used to query whether the given MIME+codec string is supported,
@@ -102,12 +102,16 @@ class MEDIA_EXPORT RenditionManager {
 
   bool HasSelectableVariants() const { return !selectable_variants_.empty(); }
 
+  RenditionManager::CodecSupportType GetSupportedStreamTypes() const {
+    return supported_streams_;
+  }
+
   sequence::Sequence<MediaTrack> auto GetSelectableVideoRenditions() const {
     return sequence::Reference(selectable_video_tracks_);
   }
 
   sequence::Sequence<MediaTrack> auto GetSelectableAudioRenditions() const {
-    if (audio_only_) {
+    if (supported_streams_ == CodecSupportType::kSupportedAudioOnly) {
       return sequence::Concat(sequence::EmptySinglet<const MediaTrack&>(),
                               selectable_audio_tracks_);
     }
@@ -167,7 +171,7 @@ class MEDIA_EXPORT RenditionManager {
   std::optional<RenditionGroup::RenditionTrack> selected_extra_rendition_;
 
   // This selection of variants are entirely audio.
-  bool audio_only_ = false;
+  CodecSupportType supported_streams_;
 
   // Playback qualities not tied to a specific variant.
   gfx::Size player_resolution_ = {limits::kMaxDimension, limits::kMaxDimension};
