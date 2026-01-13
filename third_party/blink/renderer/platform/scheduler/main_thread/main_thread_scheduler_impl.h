@@ -421,12 +421,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
   scoped_refptr<MainThreadTaskQueue> V8TaskQueue();
 
-  // `current_use_case` will be overwritten by the next call to UpdatePolicy.
-  // Thus, this function should be only used for testing purposes.
-  void SetCurrentUseCaseForTest(UseCase use_case) {
-    main_thread_only().current_use_case = use_case;
-  }
-
   virtual void PerformMicrotaskCheckpoint();
 
  private:

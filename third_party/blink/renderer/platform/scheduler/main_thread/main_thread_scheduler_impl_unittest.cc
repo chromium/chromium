@@ -360,10 +360,6 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
       std::move(on_microtask_checkpoint_).Run();
   }
 
-  void SetCurrentUseCase(UseCase use_case) {
-    SetCurrentUseCaseForTest(use_case);
-  }
-
   UseCase ComputeCurrentUseCase(base::TimeTicks now,
                                 base::TimeDelta* expected_use_case_duration)
       const override EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_) {
