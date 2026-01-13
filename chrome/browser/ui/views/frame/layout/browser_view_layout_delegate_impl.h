@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 
 class BrowserFrameView;
+class BrowserView;
 
 // Base class for concrete implementations of layout delegate used in live
 // browsers. Use `CreateDelegate()` to generate an appropriate delegate.
@@ -26,14 +27,8 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   bool IsVerticalTabStripCollapsed() const override;
   bool ShouldDrawWebAppFrameToolbar() const override;
   bool GetBorderlessModeEnabled() const override;
-  gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
-  gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;
-  gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override;
   BrowserLayoutParams GetBrowserLayoutParams(
       bool use_browser_bounds) const override;
-  int GetTopInsetInBrowserView() const override;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const override;
   views::LayoutAlignment GetWindowTitleAlignment() const override;
   bool IsToolbarVisible() const override;
   bool IsBookmarkBarVisible() const override;
@@ -45,7 +40,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override;
   bool IsTopControlsSlideBehaviorEnabled() const override;
   float GetTopControlsSlideBehaviorShownRatio() const override;
-  bool SupportsWindowFeature(Browser::WindowFeature feature) const override;
   gfx::NativeView GetHostViewForAnchoring() const override;
   bool HasFindBarController() const override;
   void MoveWindowForFindBarIfNecessary() const override;

@@ -138,7 +138,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // Test-only methods.
 
   // Returns the minimum acceptable width for the browser web contents.
-  bool IsInfobarVisibleForTesting() const;
   void SetDelegateForTesting(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate);
 
@@ -168,9 +167,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // Returns the current pref for vertical tabs by accessing the vertical
   // tab strip state controller
   bool ShouldDisplayVerticalTabs() const;
-
-  // Returns true if an infobar is showing.
-  bool IsInfobarVisible() const;
 
   // Updates bubbles, dialogs, and infobars.
   // Must be called *after* contents pane is laid out.

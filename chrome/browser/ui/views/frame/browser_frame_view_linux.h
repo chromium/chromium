@@ -38,8 +38,6 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;
   int GetTranslucentTopAreaHeight() const override;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const override;
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
   bool CaptionButtonsOnTrailingEdge() const override;

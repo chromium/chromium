@@ -82,18 +82,6 @@ constexpr int kMaximizedLeftMargin = 2;
 
 constexpr int kIconTitleSpacing = 5;
 
-void LayoutWebAppWindowTitleCommon(const gfx::Rect& available_space,
-                                   views::Label& window_title_label) {
-  gfx::Rect bounds = available_space;
-  if (bounds.x() < kMinimumTitleLeftBorderMargin) {
-    bounds.SetHorizontalBounds(kMinimumTitleLeftBorderMargin, bounds.right());
-  }
-  window_title_label.SetSubpixelRenderingEnabled(false);
-  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  window_title_label.SetAutoColorReadabilityEnabled(false);
-  window_title_label.SetBoundsRect(bounds);
-}
-
 }  // namespace
 
 // Wrapper around MinimizeButtonMetrics so that calls don't need to be routed
@@ -337,7 +325,14 @@ void BrowserFrameViewWin::WindowControlsOverlayEnabledChanged() {
 void BrowserFrameViewWin::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {
-  LayoutWebAppWindowTitleCommon(available_space, window_title_label);
+  gfx::Rect bounds = available_space;
+  if (bounds.x() < kMinimumTitleLeftBorderMargin) {
+    bounds.SetHorizontalBounds(kMinimumTitleLeftBorderMargin, bounds.right());
+  }
+  window_title_label.SetSubpixelRenderingEnabled(false);
+  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  window_title_label.SetAutoColorReadabilityEnabled(false);
+  window_title_label.SetBoundsRect(bounds);
 }
 
 BrowserFrameViewWin::BoundsAndMargins
@@ -1033,21 +1028,4 @@ void BrowserFrameViewWin::InitThrobberIcons() {
 }
 
 BEGIN_METADATA(BrowserFrameViewWin)
-END_METADATA
-
-OpaqueBrowserFrameViewWin::OpaqueBrowserFrameViewWin(
-    BrowserWidget* widget,
-    BrowserView* browser_view,
-    OpaqueBrowserFrameViewLayout* layout)
-    : OpaqueBrowserFrameView(widget, browser_view, layout) {}
-
-OpaqueBrowserFrameViewWin::~OpaqueBrowserFrameViewWin() = default;
-
-void OpaqueBrowserFrameViewWin::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  LayoutWebAppWindowTitleCommon(available_space, window_title_label);
-}
-
-BEGIN_METADATA(OpaqueBrowserFrameViewWin)
 END_METADATA

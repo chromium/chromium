@@ -83,7 +83,7 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
   }
 
   // If the infobar is visible, the separator has to go in the top container.
-  if (IsInfobarVisible()) {
+  if (delegate().IsInfobarVisible()) {
     return TopSeparatorType::kTopContainer;
   }
 

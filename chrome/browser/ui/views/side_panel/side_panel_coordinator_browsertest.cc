@@ -679,16 +679,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   MultiContentsView* multi_contents_view =
       browser()->GetBrowserView().multi_contents_view();
-  if (base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-    EXPECT_EQ(multi_contents_view->width(),
-              GetMinWebContentsWidth() + views::Separator::kThickness);
-  } else {
-    EXPECT_EQ(multi_contents_view->width(), GetMinWebContentsWidth());
-    EXPECT_GT(
-        multi_contents_view->width(),
-        multi_contents_view->GetActiveContentsContainerView()->width() +
-            multi_contents_view->GetInactiveContentsContainerView()->width());
-  }
+  EXPECT_EQ(multi_contents_view->width(),
+            GetMinWebContentsWidth() + views::Separator::kThickness);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {

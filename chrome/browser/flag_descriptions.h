@@ -3832,27 +3832,6 @@ inline constexpr char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
     "Learn more: https://goo.gle/3pcd-flags";
 
-inline constexpr char kAppBrowserUseNewLayoutId[] =
-    "app-browser-use-new-layout";
-inline constexpr char kAppBrowserUseNewLayoutName[] =
-    "App Browser Use New Layout";
-inline constexpr char kAppBrowserUseNewLayoutDescription[] =
-    "Use the new App Browser Layout. Visually nothing should change.";
-
-inline constexpr char kPopupBrowserUseNewLayoutId[] =
-    "popup-browser-use-new-layout";
-inline constexpr char kPopupBrowserUseNewLayoutName[] =
-    "Popup Browser Use New Layout";
-inline constexpr char kPopupBrowserUseNewLayoutDescription[] =
-    "Use the new Popup Browser Layout. Visually nothing should change.";
-
-inline constexpr char kTabbedBrowserUseNewLayoutId[] =
-    "tabbed-browser-use-new-layout";
-inline constexpr char kTabbedBrowserUseNewLayoutName[] =
-    "Tabbed Browser Use New Layout";
-inline constexpr char kTabbedBrowserUseNewLayoutDescription[] =
-    "Use the new Tabbed Browser Layout. Visually nothing should change.";
-
 inline constexpr char kSidePanelRelativeAlignmentName[] =
     "Side Panel Relative Alignment";
 inline constexpr char kSidePanelRelativeAlignmentDescription[] =

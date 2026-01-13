@@ -108,12 +108,6 @@ BASE_FEATURE_ENUM_PARAM(SidePanelRelativeAlignment,
                         SidePanelRelativeAlignment::kShowPanelsOnOppositeSides,
                         &kSidePanelRelativeAlignmentOptions);
 
-BASE_FEATURE(kAppBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPopupBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables tabs to be frozen when collapsed.

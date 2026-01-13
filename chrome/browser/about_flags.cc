@@ -13237,21 +13237,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(unexportable_keys::kUnexportableKeyDeletion)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {flag_descriptions::kAppBrowserUseNewLayoutId,
-     flag_descriptions::kAppBrowserUseNewLayoutName,
-     flag_descriptions::kAppBrowserUseNewLayoutDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kAppBrowserUseNewLayout)},
-    {flag_descriptions::kPopupBrowserUseNewLayoutId,
-     flag_descriptions::kPopupBrowserUseNewLayoutName,
-     flag_descriptions::kPopupBrowserUseNewLayoutDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPopupBrowserUseNewLayout)},
-    {flag_descriptions::kTabbedBrowserUseNewLayoutId,
-     flag_descriptions::kTabbedBrowserUseNewLayoutName,
-     flag_descriptions::kTabbedBrowserUseNewLayoutDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabbedBrowserUseNewLayout)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-audio-monitoring-on-android",
      flag_descriptions::kEnableAudioMonitoringOnAndroidName,

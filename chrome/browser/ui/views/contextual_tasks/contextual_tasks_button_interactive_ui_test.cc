@@ -180,8 +180,7 @@ class ContextualTasksButtonInteractiveTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageActionsMigration, {}},
          {contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEntryPoint", "toolbar-permanent"}}},
-         {features::kTabbedBrowserUseNewLayout, {}}},
+          {{"ContextualTasksEntryPoint", "toolbar-permanent"}}}},
         {});
     InteractiveBrowserTest::SetUp();
   }
@@ -267,8 +266,7 @@ class ContextualTasksEphemeralButtonInteractiveTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEntryPoint", "toolbar-revisit"}}},
-         {features::kTabbedBrowserUseNewLayout, {}}},
+          {{"ContextualTasksEntryPoint", "toolbar-revisit"}}}},
         {});
     InteractiveBrowserTest::SetUp();
   }

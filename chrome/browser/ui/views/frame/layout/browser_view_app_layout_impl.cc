@@ -366,7 +366,7 @@ void BrowserViewAppLayoutImpl::DoPostLayoutVisualAdjustments() {
     // immersive fullscreen, it is drawn in a way that isn't detected by the
     // DCHECK in Label. As such, disable the DCHECK.
     label.SetSkipSubpixelRenderingOpacityCheck(
-        ImmersiveModeController::From(browser())->IsEnabled());
+        delegate().GetImmersiveModeController()->IsEnabled());
 #elif BUILDFLAG(IS_WIN)
     label.SetSubpixelRenderingEnabled(false);
     label.SetHorizontalAlignment(gfx::ALIGN_LEFT);

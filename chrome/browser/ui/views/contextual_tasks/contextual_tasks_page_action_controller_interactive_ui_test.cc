@@ -29,8 +29,7 @@ class ContextualTasksPageActionControllerInteractiveTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageActionsMigration, {}},
          {contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEntryPoint", "page-action-revisit"}}},
-         {features::kTabbedBrowserUseNewLayout, {}}},
+          {{"ContextualTasksEntryPoint", "page-action-revisit"}}}},
         {});
     InteractiveBrowserTest::SetUp();
   }

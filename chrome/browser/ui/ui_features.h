@@ -155,12 +155,6 @@ enum class SidePanelRelativeAlignment {
 BASE_DECLARE_FEATURE_PARAM(SidePanelRelativeAlignment,
                            kSidePanelRelativeAlignment);
 
-BASE_DECLARE_FEATURE(kAppBrowserUseNewLayout);
-
-BASE_DECLARE_FEATURE(kPopupBrowserUseNewLayout);
-
-BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
-
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);

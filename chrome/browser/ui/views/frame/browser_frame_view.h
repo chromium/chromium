@@ -24,10 +24,6 @@
 
 class BrowserView;
 
-namespace views {
-class Label;
-}
-
 // This enum is used for functions who rely on the state of the browser to alter
 // the appearance of the window frame.
 enum class BrowserFrameActiveState {
@@ -105,13 +101,6 @@ class BrowserFrameView : public views::FrameView {
   // the WebAppFrameToolbarView, which contains controls for a web app.
   virtual gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const = 0;
-
-  // Lays out the window title for a web app within the given available space.
-  // Unlike the above GetBounds methods this is not just a method to return the
-  // bounds the title should occupy, since different implementations might also
-  // want to change other attributes of the title, such as alignment.
-  virtual void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                                       views::Label& window_title_label) const;
 
   // Returns which alignment the title uses.
   virtual views::LayoutAlignment GetWindowTitleAlignment() const;

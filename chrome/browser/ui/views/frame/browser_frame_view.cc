@@ -176,13 +176,6 @@ bool BrowserFrameView::CaptionButtonsOnTrailingEdge() const {
   return !CaptionButtonsOnLeadingEdge();
 }
 
-void BrowserFrameView::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  // Default is no title.
-  window_title_label.SetVisible(false);
-}
-
 views::LayoutAlignment BrowserFrameView::GetWindowTitleAlignment() const {
   return views::LayoutAlignment::kStart;
 }

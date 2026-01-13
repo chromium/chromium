@@ -711,47 +711,29 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
   gfx::Point header_offset;
   views::View::ConvertPointToTarget(browser_view(), frame_view, &header_offset);
 
-  // The calculations are different for the new layout. The old layout is
-  // actually *wrong* but it passes the old version of the test below.
-  if (base::FeatureList::IsEnabled(features::kAppBrowserUseNewLayout)) {
-    const auto params = frame_view->GetBrowserLayoutParams();
+  const auto params = frame_view->GetBrowserLayoutParams();
 
 #if BUILDFLAG(IS_MAC)
-    // The system paints the caption area, so the contents start at the top of
-    // the layout.
-    const int bottom_of_header = 0;
+  // The system paints the caption area, so the contents start at the top of
+  // the layout.
+  const int bottom_of_header = 0;
 #else
-    // The position of the bottom of the header (the bar with the window
-    // controls) in the coordinates of the browser view.
-    const int bottom_of_header = base::ClampCeil(
-        std::max(params.leading_exclusion.ContentWithPadding().height(),
-                 params.trailing_exclusion.ContentWithPadding().height()));
+  // The position of the bottom of the header (the bar with the window
+  // controls) in the coordinates of the browser view.
+  const int bottom_of_header = base::ClampCeil(
+      std::max(params.leading_exclusion.ContentWithPadding().height(),
+               params.trailing_exclusion.ContentWithPadding().height()));
 #endif
 
-    // The top of the browser view in the coordinates of the frame.
-    const int top_inset = bottom_of_header + params.visual_client_area.y();
+  // The top of the browser view in the coordinates of the frame.
+  const int top_inset = bottom_of_header + params.visual_client_area.y();
 
-    // The web contents should be flush with the bottom of the header.
-    EXPECT_EQ(bottom_of_header, contents_container_y);
+  // The web contents should be flush with the bottom of the header.
+  EXPECT_EQ(bottom_of_header, contents_container_y);
 
-    // The find bar should be aligned with the bottom of the header in the
-    // coordinates of the frame.
-    EXPECT_EQ(top_inset, browser_view()->GetFindBarBoundingBox().y());
-
-  } else {
-    // The position of the bottom of the header (the bar with the window
-    // controls) in the coordinates of BrowserView.
-    const int top_inset =
-        browser_view()->browser_widget()->GetFrameView()->GetTopInset(false);
-    const int bottom_of_header = top_inset - header_offset.y();
-
-    // The web contents should be flush with the bottom of the header.
-    EXPECT_EQ(bottom_of_header, contents_container_y);
-
-    // The find bar should butt against the 1px header/web-contents separator at
-    // the bottom of the header.
-    EXPECT_EQ(top_inset, browser_view()->GetFindBarBoundingBox().y());
-  }
+  // The find bar should be aligned with the bottom of the header in the
+  // coordinates of the frame.
+  EXPECT_EQ(top_inset, browser_view()->GetFindBarBoundingBox().y());
 }
 
 using BrowserViewWindowTypeTest = BrowserWithTestWindowTest;

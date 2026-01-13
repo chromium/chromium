@@ -54,8 +54,6 @@ class BrowserFrameViewMac : public BrowserFrameView,
   void UpdateThrobber(bool running) override;
   void PaintAsActiveChanged() override;
   void OnThemeChanged() override;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const override;
   views::LayoutAlignment GetWindowTitleAlignment() const override;
 
   // views::FrameView:
