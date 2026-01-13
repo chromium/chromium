@@ -1186,6 +1186,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.onInputMouseDown_(null);
   }
 
+  protected onContextMenuClosed_() {
+    this.focusInput();
+  }
+
   protected onComposeButtonClick_(e: CustomEvent<ClickEventDetail>) {
     // TODO(crbug.com/463667769): Call submitQuery here since RealboxHandler is
     // now a `ContextualSearchboxHandler`.

@@ -42,6 +42,7 @@ export function getHtml(this: SearchboxElement) {
         @open-voice-search="${this.onVoiceSearchClick_}"
         @get-tab-preview="${this.getTabPreview_}"
         @context-menu-container-click="${this.onContextMenuContainerClick_}"
+        @context-menu-closed="${this.onContextMenuClosed_}"
         ?show-dropdown="${this.dropdownIsVisible}"
         ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
         ?show-voice-search="${this.shouldShowVoiceSearch_}"

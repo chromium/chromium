@@ -298,6 +298,7 @@ export class ContextMenuEntrypointElement extends
         this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
     assert(entrypoint);
     entrypoint.classList.remove('menu-open');
+    this.fire('context-menu-closed');
   }
 
   private showMenuAtEntrypoint_() {
