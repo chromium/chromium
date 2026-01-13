@@ -560,7 +560,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onViewWaiting(withText(TestAccounts.ACCOUNT2.getEmail())).check(matches(isDisplayed()));
+        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
     }
 
     @Test
