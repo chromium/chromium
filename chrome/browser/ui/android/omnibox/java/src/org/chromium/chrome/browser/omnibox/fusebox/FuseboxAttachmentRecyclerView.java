@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.View;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 
 /** A RecyclerView for the FuseboxAttachment component. */
 @NullMarked
@@ -47,17 +50,39 @@ public class FuseboxAttachmentRecyclerView extends RecyclerView {
         }
     }
 
+    /**
+     * Adds trailing space on each child. This creates a slight amount of bloat on the tail end that
+     * is visible when scrolling, but avoid all animation artifacts due to being much more simple.
+     */
+    /* package */ static class SimpleSpacingItemDecoration extends ItemDecoration {
+        private final @Px int mSpacing;
+
+        /* package */ SimpleSpacingItemDecoration(@Px int spacing) {
+            mSpacing = spacing;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
+            if (parent.getLayoutDirection() == View.LAYOUT_DIRECTION_LTR) {
+                outRect.right = mSpacing;
+            } else {
+                outRect.left = mSpacing;
+            }
+        }
+    }
+
     private final ScrollToEndOnInsertionObserver mScrollToEndOnInsertion;
 
     public FuseboxAttachmentRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mScrollToEndOnInsertion = new ScrollToEndOnInsertionObserver(this);
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        addItemDecoration(
-                new SpacingRecyclerViewItemDecoration(
-                        /* leadInSpace= */ 0,
-                        /* elementSpace= */ context.getResources()
-                                .getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing)));
+
+        Resources res = context.getResources();
+        @Px int decorationSpacing = res.getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
+        // TODO(https://crbug.com/475600644): Consider replacing with
+        // SpacingRecyclerViewItemDecoration.
+        addItemDecoration(new SimpleSpacingItemDecoration(decorationSpacing));
     }
 
     @Override
