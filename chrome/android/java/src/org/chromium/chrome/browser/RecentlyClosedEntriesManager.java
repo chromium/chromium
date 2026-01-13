@@ -15,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -55,19 +54,14 @@ public class RecentlyClosedEntriesManager {
 
     private List<RecentlyClosedEntry> mRecentlyClosedEntries = new ArrayList<>();
     private @Nullable Callback<List<RecentlyClosedEntry>> mEntriesUpdatedCallback;
-    private @Nullable InstanceStateObserver mInstanceStateObserver;
 
     /**
      * @param multiInstanceManager The {@link MultiInstanceManager} instance used to observe window
      *     closures and restore windows.
      * @param tabModelSelector The selector that owns the Tab Model to access restored tabs.
-     * @param instanceStateObserver The {@link InstanceStateObserver} to observe and consume window
-     *     closure events.
      */
     /* package */ RecentlyClosedEntriesManager(
-            MultiInstanceManager multiInstanceManager,
-            TabModelSelector tabModelSelector,
-            InstanceStateObserver instanceStateObserver) {
+            MultiInstanceManager multiInstanceManager, TabModelSelector tabModelSelector) {
         mMultiInstanceManager = multiInstanceManager;
         mRegularTabModel = tabModelSelector.getModel(/* incognito= */ false);
         // TODO: Move this profile extraction logic inside RecentlyClosedTabManager.
@@ -78,10 +72,6 @@ public class RecentlyClosedEntriesManager {
                         ? sRecentlyClosedTabManagerForTests
                         : new RecentlyClosedBridge(profile, tabModelSelector);
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
-        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            mInstanceStateObserver = instanceStateObserver;
-            mMultiInstanceManager.addInstanceStateObserver(mInstanceStateObserver);
-        }
     }
 
     /**
@@ -290,10 +280,6 @@ public class RecentlyClosedEntriesManager {
         if (mRecentlyClosedTabManager != null) {
             mRecentlyClosedTabManager.destroy();
             mRecentlyClosedTabManager = null;
-        }
-        if (mInstanceStateObserver != null) {
-            mMultiInstanceManager.removeInstanceStateObserver(mInstanceStateObserver);
-            mInstanceStateObserver = null;
         }
 
         mEntriesUpdatedCallback = null;

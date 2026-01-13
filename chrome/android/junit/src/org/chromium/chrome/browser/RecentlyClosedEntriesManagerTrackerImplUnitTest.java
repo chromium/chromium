@@ -62,7 +62,6 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
 
         mTracker.destroy(manager);
 
-        verify(mMultiInstanceManager).removeInstanceStateObserver(mTracker);
         verify(mRecentlyClosedTabManager).destroy();
         assertFalse(mTracker.getManagersForTesting().contains(manager));
     }

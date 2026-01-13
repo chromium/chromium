@@ -46,6 +46,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -1359,9 +1360,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         mActivity.startActivity(intent);
 
         // If a new activity was started, it implies that an inactive instance was restored.
-        for (InstanceStateObserver observer : mInstanceStateObservers) {
-            observer.onInstanceRestored(instanceId);
-        }
+        RecentlyClosedEntriesManagerTrackerFactory.getInstance().onInstanceRestored(instanceId);
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.MultiWindowMode.InactiveInstanceRestore.AppSource",
@@ -1422,8 +1421,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     /**
-     * Notifies {@link InstanceStateObserver}s of an instance closure. This method is expected to be
-     * called upon initial reception of a user, system or app initiated signal to close an instance.
+     * Notifies the Recent Tabs UI of an instance closure. This method is expected to be called upon
+     * initial reception of a user, system or app initiated signal to close an instance.
      *
      * @param instanceId The id of the instance that was closed.
      * @param isPermanentDeletion Whether the instance is permanently deleted.
@@ -1431,9 +1430,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     private void notifyInstanceClosed(int instanceId, boolean isPermanentDeletion) {
         // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
         // closed instance was finished, because activity destruction is asynchronous.
-        // InstanceStateObserver's will receive an InstanceInfo that is created synchronously so
-        // they have adequate information about the closed instance without relying on completion of
-        // an asynchronous activity destruction that may be initiated during this time.
+        // We will create an InstanceInfo synchronously with adequate information about the closed
+        // instance, without relying on completion of an asynchronous activity destruction that may
+        // be initiated during this time.
         InstanceInfo instanceInfo =
                 new InstanceInfo(
                         instanceId,
@@ -1448,9 +1447,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         MultiInstancePersistentStore.readLastAccessedTime(instanceId),
                         !isPermanentDeletion);
 
-        for (InstanceStateObserver instanceStateObserver : mInstanceStateObservers) {
-            instanceStateObserver.onInstanceClosed(instanceInfo, isPermanentDeletion);
-        }
+        RecentlyClosedEntriesManagerTrackerFactory.getInstance()
+                .onInstanceClosed(instanceInfo, isPermanentDeletion);
     }
 
     /**
@@ -1555,6 +1553,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
 
         MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+
+        // Notify Recent Tabs page that the instance is closing.
+        notifyInstanceClosed(mInstanceId, /* isPermanentDeletion= */ false);
 
         if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);

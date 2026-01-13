@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -462,46 +461,6 @@ public abstract class MultiInstanceManager {
 
     public abstract void setTabModelObserverForTesting(
             TabModelSelectorTabModelObserver tabModelObserver);
-
-    protected ObserverList<InstanceStateObserver> mInstanceStateObservers = new ObserverList<>();
-
-    /** Observer interface to notify about instance closure and restoration events. */
-    public interface InstanceStateObserver {
-        /**
-         * Notifies when an instance is closed. Closure can be system-initiated (for e.g. low-memory
-         * kill), app-initiated (for e.g. instance retention expiration) or user-initiated (for e.g.
-         * window manager closure).
-         *
-         * @param instanceInfo The {@link InstanceInfo} for the closed instance.
-         * @param isPermanentDeletion Whether the closed instance is permanently deleted.
-         */
-        void onInstanceClosed(InstanceInfo instanceInfo, boolean isPermanentDeletion);
-
-        /**
-         * Notifies when an inactive instance is restored.
-         *
-         * @param instanceId The id for the restored instance.
-         */
-        void onInstanceRestored(int instanceId);
-    }
-
-    /**
-     * Registers an observer to receive notifications about changes to the instance state.
-     *
-     * @param instanceStateObserver The observer to be added.
-     */
-    public void addInstanceStateObserver(InstanceStateObserver instanceStateObserver) {
-        mInstanceStateObservers.addObserver(instanceStateObserver);
-    }
-
-    /**
-     * Unregisters an observer, stopping notifications about changes to the instance state.
-     *
-     * @param instanceStateObserver The observer to be removed.
-     */
-    public void removeInstanceStateObserver(InstanceStateObserver instanceStateObserver) {
-        mInstanceStateObservers.removeObserver(instanceStateObserver);
-    }
 
     // The instance types are defined as bit flags, so they can be or-ed to reflect
     // more than one value. Or-ed values should be validated at points of access.
