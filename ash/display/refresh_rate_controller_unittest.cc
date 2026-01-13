@@ -196,7 +196,9 @@ class RefreshRateControllerTest : public AshTestBase {
     game_mode_controller_.reset();
     controller_ = nullptr;
     performance_controller_ = nullptr;
+    native_display_delegate_ = nullptr;
     AshTestBase::TearDown();
+    logger_.reset();
   }
 
  protected:
@@ -227,8 +229,7 @@ class RefreshRateControllerTest : public AshTestBase {
   // Not owned.
   raw_ptr<DisplayPerformanceModeController> performance_controller_;
   // Owned by DisplayConfigurator.
-  raw_ptr<MockNativeDisplayDelegate, DanglingUntriaged>
-      native_display_delegate_;
+  raw_ptr<MockNativeDisplayDelegate> native_display_delegate_;
   base::test::ScopedFeatureList scoped_features_;
 };
 
