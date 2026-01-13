@@ -497,7 +497,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Returns the color space of this frame's content.
   gfx::ColorSpace ColorSpace() const;
-  void set_color_space(const gfx::ColorSpace& color_space);
+  void set_color_space(const gfx::ColorSpace& color_space) {
+    color_space_ = color_space;
+  }
 
   // Return the full-range RGB component of the color space of this frame's
   // content. This will replace several color spaces (Rec601, Rec709, and
