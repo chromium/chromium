@@ -4,6 +4,8 @@
 
 #include "storage/browser/blob/blob_url_store_impl.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -274,12 +276,12 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
     // TODO(crbug.com/40051700): Once `storage_key_` corresponds to an
     // opaque origin under the circumstances described in the crbug, remove the
     // ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH workaround here.
-    valid_origin =
-        storage_key_origin.opaque() ||
-        base::Contains(url::GetLocalSchemes(), storage_key_origin.scheme()) ||
-        validity_check_behavior_ ==
-            BlobURLValidityCheckBehavior::
-                ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH;
+    valid_origin = storage_key_origin.opaque() ||
+                   std::ranges::contains(url::GetLocalSchemes(),
+                                         storage_key_origin.scheme()) ||
+                   validity_check_behavior_ ==
+                       BlobURLValidityCheckBehavior::
+                           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH;
   } else {
     valid_origin = storage_key_origin == url_origin;
   }

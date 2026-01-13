@@ -4,6 +4,7 @@
 
 #include "storage/browser/file_system/file_system_quota_client.h"
 
+#include <algorithm>
 #include <numeric>
 #include <string>
 #include <utility>
@@ -225,7 +226,7 @@ std::vector<FileSystemType> FileSystemQuotaClient::GetFileSystemTypes() const {
       file_system_context_->GetFileSystemTypes();
   std::vector<FileSystemType> fs_types;
   for (auto fs_type : kTemporaryAndPersistentAndSyncable) {
-    if (base::Contains(backend_types, fs_type)) {
+    if (std::ranges::contains(backend_types, fs_type)) {
       fs_types.push_back(fs_type);
     }
   }
