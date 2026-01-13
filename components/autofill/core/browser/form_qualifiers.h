@@ -34,8 +34,10 @@ class LogManager;
 
 // Returns true if heuristic autofill type detection should be attempted for
 // this form.
-[[nodiscard]] bool ShouldRunHeuristics(const FormData& form);
-[[nodiscard]] bool ShouldRunHeuristics(const FormStructure& form);
+[[nodiscard]] bool ShouldRunHeuristics(const FormData& form,
+                                       bool ignore_small_forms);
+[[nodiscard]] bool ShouldRunHeuristics(const FormStructure& form,
+                                       bool ignore_small_forms);
 
 // Returns true if autofill's heuristic field type detection should be attempted
 // for this form given that `kMinRequiredFieldsForHeuristics` is not met.

@@ -32,7 +32,7 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
                                                bool ignore_small_forms) {
   FieldCandidatesMap field_type_map;
 
-  if (ShouldRunHeuristics(form)) {
+  if (ShouldRunHeuristics(form, ignore_small_forms)) {
     FormFieldParser::ParseFormFields(context, form.fields(), field_type_map,
                                      ignore_small_forms);
   } else if (ShouldRunHeuristicsForSingleFields(form)) {

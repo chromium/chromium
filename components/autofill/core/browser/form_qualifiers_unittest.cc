@@ -28,9 +28,11 @@ class FormStructureShouldTest : public testing::Test {
     return r;
   }
 
-  static bool ShouldRunHeuristics(const FormStructure& form) {
-    const bool r = autofill::ShouldRunHeuristics(form);
-    CHECK_EQ(r, autofill::ShouldRunHeuristics(form.ToFormData()))
+  static bool ShouldRunHeuristics(const FormStructure& form,
+                                  bool ignore_small_forms) {
+    const bool r = autofill::ShouldRunHeuristics(form, ignore_small_forms);
+    CHECK_EQ(
+        r, autofill::ShouldRunHeuristics(form.ToFormData(), ignore_small_forms))
         << "ShouldRunHeuristics(FormStructure) and "
            "ShouldRunHeuristics(FormData) must be equivalent";
     return r;
@@ -246,7 +248,8 @@ TEST_F(FormStructureShouldTest, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("http://wwww.foo.com/myform"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(ShouldBeParsed(*form_structure));
-  EXPECT_TRUE(ShouldRunHeuristics(*form_structure));
+  EXPECT_TRUE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldBeQueried(*form_structure));
   EXPECT_TRUE(ShouldBeUploaded(*form_structure));
 
@@ -254,7 +257,8 @@ TEST_F(FormStructureShouldTest, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("https://wwww.foo.com/myform"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(ShouldBeParsed(*form_structure));
-  EXPECT_TRUE(ShouldRunHeuristics(*form_structure));
+  EXPECT_TRUE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldBeQueried(*form_structure));
   EXPECT_TRUE(ShouldBeUploaded(*form_structure));
 
@@ -262,7 +266,8 @@ TEST_F(FormStructureShouldTest, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("chrome://settings"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(ShouldBeParsed(*form_structure));
-  EXPECT_FALSE(ShouldRunHeuristics(*form_structure));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
   EXPECT_FALSE(ShouldBeQueried(*form_structure));
   EXPECT_FALSE(ShouldBeUploaded(*form_structure));
 
@@ -270,7 +275,8 @@ TEST_F(FormStructureShouldTest, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("ftp://ftp.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(ShouldBeParsed(*form_structure));
-  EXPECT_FALSE(ShouldRunHeuristics(*form_structure));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
   EXPECT_FALSE(ShouldBeQueried(*form_structure));
   EXPECT_FALSE(ShouldBeUploaded(*form_structure));
 
@@ -278,7 +284,8 @@ TEST_F(FormStructureShouldTest, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("blob://blob.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(ShouldBeParsed(*form_structure));
-  EXPECT_FALSE(ShouldRunHeuristics(*form_structure));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
   EXPECT_FALSE(ShouldBeQueried(*form_structure));
   EXPECT_FALSE(ShouldBeUploaded(*form_structure));
 
@@ -286,9 +293,31 @@ TEST_F(FormStructureShouldTest, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("about://about.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(ShouldBeParsed(*form_structure));
-  EXPECT_FALSE(ShouldRunHeuristics(*form_structure));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
   EXPECT_FALSE(ShouldBeQueried(*form_structure));
   EXPECT_FALSE(ShouldBeUploaded(*form_structure));
+}
+
+TEST_F(FormStructureShouldTest, ShouldRunHeuristics_SmallForm) {
+  std::unique_ptr<FormStructure> form_structure;
+  FormData form;
+  form.set_fields({test::CreateTestFormField(
+                       "Name", "name", "", FormControlType::kInputText, "name"),
+                   test::CreateTestFormField("Address", "address", "",
+                                             FormControlType::kInputText,
+                                             "address-line1")});
+
+  form.set_url(GURL("http://wwww.foo.com/myform"));
+  form_structure = std::make_unique<FormStructure>(form);
+
+  // Small address forms shouldn't run heuristics unless the small form
+  // requirement is explicitly bypassed.
+  EXPECT_FALSE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/true));
+
+  EXPECT_TRUE(
+      ShouldRunHeuristics(*form_structure, /*ignore_small_forms=*/false));
 }
 
 // Tests that ShouldBeParsed returns true for a form containing less than three

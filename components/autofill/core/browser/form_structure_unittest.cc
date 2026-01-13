@@ -528,7 +528,8 @@ TEST_F(FormStructureTestImpl,
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/true));
 
   EXPECT_TRUE(ShouldBeQueried(FormStructure(form)));
 
@@ -551,6 +552,33 @@ TEST_F(FormStructureTestImpl,
   }
 }
 
+// Tests whether the heuristics predict address types for small forms if they
+// aren't ignored.
+TEST_F(FormStructureTestImpl,
+       HeuristicsAndServerPredictions_SmallFormParsingEnabled) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL}, {.role = EMAIL_ADDRESS}}});
+
+  EXPECT_TRUE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/false));
+  EXPECT_TRUE(ShouldBeQueried(FormStructure(form)));
+
+  FormStructure form_structure(form);
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
+      nullptr, /*ignore_small_forms=*/false);
+  regex_predictions.ApplyTo(form_structure.fields());
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
+
+  // The predictions should stay since small forms were not ignored.
+  ASSERT_EQ(2U, form_structure.field_count());
+  ASSERT_EQ(2U, AutofillCount(form_structure));
+  EXPECT_EQ(NAME_FULL, form_structure.field(0)->heuristic_type());
+  EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(1)->heuristic_type());
+  EXPECT_TRUE(IsAutofillable(form_structure));
+}
+
 // Tests the heuristics and server predictions are not run for forms with less
 // than 3 fields, if the minimum fields required feature is enforced, even if an
 // autocomplete attribute is specified.
@@ -564,7 +592,8 @@ TEST_F(FormStructureTestImpl,
                            FormControlType::kInputText, "given-name"),
        CreateTestFormField("Last Name", "lastname", "",
                            FormControlType::kInputText, "")});
-  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldBeQueried(FormStructure(form)));
 
   // As a side effect of parsing small forms, if any of the heuristics, query,
@@ -2153,8 +2182,9 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
-  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/true));
+  EXPECT_FALSE(ShouldRunHeuristics(form, /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
@@ -2181,8 +2211,9 @@ TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
-  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/true));
+  EXPECT_FALSE(ShouldRunHeuristics(form, /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
@@ -2211,8 +2242,9 @@ TEST_F(FormStructureTestImpl,
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
-  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/true));
+  EXPECT_FALSE(ShouldRunHeuristics(form, /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
@@ -2241,8 +2273,9 @@ TEST_F(FormStructureTestImpl,
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(ShouldRunHeuristics(FormStructure(form)));
-  EXPECT_FALSE(ShouldRunHeuristics(form));
+  EXPECT_FALSE(
+      ShouldRunHeuristics(FormStructure(form), /*ignore_small_forms=*/true));
+  EXPECT_FALSE(ShouldRunHeuristics(form, /*ignore_small_forms=*/true));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(FormStructure(form)));
   EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
   {

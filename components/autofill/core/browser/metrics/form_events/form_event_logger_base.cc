@@ -50,12 +50,14 @@ const char* AblationGroupToString(AblationGroup ablation_group) {
   return nullptr;
 }
 
-bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
+bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form,
+                                           bool ignore_small_forms) {
   // First, check the prerequisites. The forms for which this classification is
   // applicable  must not run heuristics normally (i.e., their field count is
   // below `kMinRequiredFieldsForHeuristics`), but must be eligible for single
   // field form heuristics.
-  if (ShouldRunHeuristics(form) || !ShouldRunHeuristicsForSingleFields(form)) {
+  if (ShouldRunHeuristics(form, ignore_small_forms) ||
+      !ShouldRunHeuristicsForSingleFields(form)) {
     return false;
   }
   // Having met the prerequisites, now determine if there's a field whose
@@ -178,8 +180,10 @@ void FormEventLoggerBase::OnWillSubmitForm(const FormStructure& form) {
   submitted_form_types_ = GetFormTypesForLogging(form);
 
   // Determine whether logging of email-heuristic only metrics is required.
-  is_heuristic_only_email_form_ = (is_heuristic_only_email_form_ ||
-                                   DetermineHeuristicOnlyEmailFormStatus(form));
+  is_heuristic_only_email_form_ =
+      (is_heuristic_only_email_form_ ||
+       DetermineHeuristicOnlyEmailFormStatus(
+           form, /*ignore_small_forms=*/!owner_->client().IsTabInActorMode()));
 
   LogWillSubmitForm(form);
 

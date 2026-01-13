@@ -159,10 +159,13 @@ bool ShouldBeParsed(const T& form,
 
 template <typename T>
   requires IsForm<T>
-bool ShouldRunHeuristics(const T& form) {
-  return AtLeastNumFieldsSatisfy(form, kMinRequiredFieldsForHeuristics,
-                                 is_active) &&
-         HasAllowedScheme(url(form));
+bool ShouldRunHeuristics(const T& form, bool ignore_small_forms) {
+  if (ignore_small_forms &&
+      !AtLeastNumFieldsSatisfy(form, kMinRequiredFieldsForHeuristics,
+                               is_active)) {
+    return false;
+  }
+  return HasAllowedScheme(url(form));
 }
 
 template <typename T>
@@ -250,12 +253,12 @@ bool ShouldBeParsed(const FormStructure& form, LogManager* log_manager) {
   return internal::ShouldBeParsed(form, {}, log_manager);
 }
 
-bool ShouldRunHeuristics(const FormData& form) {
-  return internal::ShouldRunHeuristics(form);
+bool ShouldRunHeuristics(const FormData& form, bool ignore_small_forms) {
+  return internal::ShouldRunHeuristics(form, ignore_small_forms);
 }
 
-bool ShouldRunHeuristics(const FormStructure& form) {
-  return internal::ShouldRunHeuristics(form);
+bool ShouldRunHeuristics(const FormStructure& form, bool ignore_small_forms) {
+  return internal::ShouldRunHeuristics(form, ignore_small_forms);
 }
 
 bool ShouldRunHeuristicsForSingleFields(const FormData& form) {
