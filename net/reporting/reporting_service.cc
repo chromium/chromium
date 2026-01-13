@@ -73,15 +73,6 @@ class ReportingServiceImpl : public ReportingService {
                        origin, std::move(endpoints)));
   }
 
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override {
-    if (!base::FeatureList::IsEnabled(
-            net::features::kReportingApiEnableEnterpriseCookieIssues)) {
-      return;
-    }
-    // TODO(crbug.com/405973642): Delete function in followup cl.
-  }
-
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
     DCHECK(!reporting_source.is_empty());

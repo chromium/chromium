@@ -956,11 +956,6 @@ class MockReportingService : public net::ReportingService {
     NOTREACHED();
   }
 
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override {
-    NOTREACHED();
-  }
-
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
     NOTREACHED();

@@ -345,9 +345,6 @@ class TestReportingService : public ReportingService {
       const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {}
 
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override {}
-
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {}
 

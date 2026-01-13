@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -560,17 +559,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateCorsNonWildcardRequestHeadersSupport,
                           base::Unretained(this)));
-
-#if BUILDFLAG(ENABLE_REPORTING)
-  if (base::FeatureList::IsEnabled(
-          net::features::kReportingApiEnableEnterpriseCookieIssues)) {
-    pref_change_registrar_.Add(
-        prefs::kReportingEndpoints,
-        base::BindRepeating(
-            &ProfileNetworkContextService::UpdateEnterpriseReportingEndpoints,
-            base::Unretained(this)));
-  }
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -1086,38 +1074,6 @@ void ProfileNetworkContextService::UpdateSSLComplianceConfig() {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_REPORTING)
-base::flat_map<std::string, GURL>
-ProfileNetworkContextService::GetEnterpriseReportingEndpoints() const {
-  using FlatMap = base::flat_map<std::string, GURL>;
-  // Create the underlying container first to allow sorting to
-  // be done in a single pass.
-  FlatMap::container_type pairs;
-  const base::Value::Dict& pref_dict =
-      profile_->GetPrefs()->GetDict(prefs::kReportingEndpoints);
-  pairs.reserve(pref_dict.size());
-  // The iterator for base::Value::Dict returns a temporary value when
-  // dereferenced, so a const reference is not used below.
-  for (const auto [endpoint_name, endpoint_url] : pref_dict) {
-    GURL endpoint(endpoint_url.GetString());
-    if (endpoint.is_valid() && endpoint.SchemeIsCryptographic()) {
-      pairs.emplace_back(endpoint_name, std::move(endpoint));
-    }
-  }
-  return FlatMap(std::move(pairs));
-}
-
-void ProfileNetworkContextService::UpdateEnterpriseReportingEndpoints() {
-  base::flat_map<std::string, GURL> endpoints =
-      GetEnterpriseReportingEndpoints();
-  profile_->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()->SetEnterpriseReportingEndpoints(
-            endpoints);
-      });
-}
-#endif
 
 // static
 network::mojom::CookieManagerParamsPtr
