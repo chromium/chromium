@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -169,6 +171,39 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
   EXPECT_EQ(registrar.GetAppScope(app_id), GURL("http://www.chromium.org/"));
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
+}
+
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, MigratingAppsDoNotSync) {
+  WebAppProvider* provider1 = WebAppProvider::GetForTest(GetProfile(0));
+
+  auto start_url = GURL("http://www.chromium.org/path");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Test name";
+  info->description = u"Test description";
+  info->scope = GURL("http://www.chromium.org/");
+  info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+
+  // Install app on first profile, mark it suggested for migration.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  WebAppInstallParams params;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+  params.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+  provider1->scheduler().InstallFromInfoWithParams(
+      std::move(info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback(), params);
+  ASSERT_TRUE(install_future.Wait());
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+  EXPECT_EQ(proto::SUGGESTED_FROM_MIGRATION,
+            provider1->registrar_unsafe().GetInstallState(app_id));
+
+  // Wait for any syncing to complete, verify app is not synced.
+  ASSERT_TRUE(apps_helper::AwaitWebAppQuiescence(GetAllProfiles()));
+  EXPECT_FALSE(AllProfilesHaveSameWebAppIds());
+  EXPECT_FALSE(GetRegistrar(GetProfile(/*index=*/1)).IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {

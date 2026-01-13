@@ -431,6 +431,8 @@ class WebApp {
   bool HasOnlySource(WebAppManagement::Type source) const;
   WebAppManagementTypes GetSources() const;
 
+  // Provides information on whether this app will be synced across devices. App
+  // suggested for migration shouldn't be synced.
   bool IsSynced() const;
   // Returns true if the app is preinstalled through PreinstalledWebAppManager.
   // Does not include apps preloaded through the App Preload Service.

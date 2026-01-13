@@ -361,7 +361,8 @@ WebAppManagementTypes WebApp::GetSources() const {
 }
 
 bool WebApp::IsSynced() const {
-  return sources_.Has(WebAppManagement::kSync);
+  return install_state_ != proto::SUGGESTED_FROM_MIGRATION &&
+         sources_.Has(WebAppManagement::kSync);
 }
 
 bool WebApp::IsPreinstalledApp() const {
