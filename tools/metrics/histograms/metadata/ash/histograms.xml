@@ -3496,6 +3496,7 @@ chromium-metrics-reviews@google.com.
   <owner>vincentchiang@chromium.org</owner>
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {EventType} for ash UI, from when the user input
     causing the event is generated until the frame caused by the event is

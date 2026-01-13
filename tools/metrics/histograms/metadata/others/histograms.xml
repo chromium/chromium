@@ -2982,6 +2982,7 @@ chromium-metrics-reviews@google.com.
   <owner>uekawa@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time from power on to login UI ready on Chrome OS. This is recorded from the
     platform side after receiving &quot;login-ui-visible&quot; event on the

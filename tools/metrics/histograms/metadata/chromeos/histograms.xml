@@ -1286,6 +1286,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     expires_after="2026-05-24">
   <owner>raging@google.com</owner>
   <owner>chromeos-memory@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Reports pressure metrics every 10 seconds. The percentage of time {PPath} on
     {PType}. Expressed as a percentage with 2 decimal points (99.99%), but

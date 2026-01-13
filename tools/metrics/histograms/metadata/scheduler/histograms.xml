@@ -151,6 +151,7 @@ chromium-metrics-reviews@google.com.
   <owner>vmiura@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time delta between the draw times of back-to-back BeginImplFrames,
     regardless of whether or not they result in a swap.

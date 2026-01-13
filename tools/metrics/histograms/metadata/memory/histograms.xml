@@ -1110,6 +1110,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric is only recorded on iOS. This measures the sum of
     PrivateMemoryFootprint and SharedMemoryFootprint, which is possible because

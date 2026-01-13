@@ -3702,6 +3702,7 @@ chromium-metrics-reviews@google.com.
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures First Input Delay, the duration between the hardware timestamp and
     the start of event processing on the main thread for the first meaningful
@@ -4812,6 +4813,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time from frame navigation start to FirstContentfulPaint of each
     ad frame that receives a FirstContentfulPaint. The time could be quite

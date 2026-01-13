@@ -920,6 +920,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-06-28">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Chrome OS battery life while in active state, measured in minutes using the
     {BatteryCapacityType}.

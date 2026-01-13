@@ -3470,6 +3470,7 @@ chromium-metrics-reviews@google.com.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The durations of time in which the app is too busy to handle user input
     responsively. This covers all forms of user input, including all touch
@@ -3558,6 +3559,7 @@ chromium-metrics-reviews@google.com.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The reason for the application termination in background. Recorded when a
     MXMetricPayload is received from the OS (at most once per day) at
@@ -3638,6 +3640,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>justincohen@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The amount of time taken to launch the app until the app UI is ready to
     receive input. This measures startup until the same point as
@@ -3674,6 +3677,7 @@ chromium-metrics-reviews@google.com.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The reason for the application termination in foreground. Recorded when a
     MXMetricPayload is received from the OS (at most once per day) at

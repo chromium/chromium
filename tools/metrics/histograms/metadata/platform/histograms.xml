@@ -614,6 +614,7 @@ chromium-metrics-reviews@google.com.
   <owner>bsimonnet@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Total use time (device ON and not asleep) in the previous day, or the most
     recent day the device was in use. Reported at most once a day.

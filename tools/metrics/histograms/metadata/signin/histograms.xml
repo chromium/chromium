@@ -3146,6 +3146,7 @@ OAuth Multilogin call. -->
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-ds@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records that the user signed in to Chrome, and logs the original access
     point associated with this event.
@@ -3491,6 +3492,7 @@ OAuth Multilogin call. -->
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-ds@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records that the user signed out of Chrome, and logs the original access
     point associated with this event. Note that turning off Sync almost always
