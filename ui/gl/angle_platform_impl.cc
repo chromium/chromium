@@ -67,24 +67,18 @@ TraceEventHandle ANGLEPlatformImpl_addTraceEvent(
   base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
   base::trace_event::TraceArguments args(num_args, arg_names, arg_types,
                                          arg_values);
-  base::trace_event::TraceEventHandle handle =
       TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
           phase, category_group_enabled, name, id,
           base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
-  TraceEventHandle result;
-  memcpy(&result, &handle, sizeof(result));
-  return result;
+      return 0;
 }
 
 void ANGLEPlatformImpl_updateTraceEventDuration(
     PlatformMethods* platform,
     const unsigned char* category_group_enabled,
     const char* name,
-    TraceEventHandle handle) {
-  base::trace_event::TraceEventHandle trace_event_handle;
-  memcpy(&trace_event_handle, &handle, sizeof(handle));
-  TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_group_enabled, name,
-                                              trace_event_handle);
+    TraceEventHandle) {
+  TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_group_enabled, name);
 }
 
 void ANGLEPlatformImpl_histogramCustomCounts(PlatformMethods* platform,

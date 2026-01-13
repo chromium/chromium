@@ -234,7 +234,7 @@ void OnUpdateLegacyTraceEventDuration(
       perfetto::internal::TrackEventInternal::kDefaultTrack, timestamp);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
+void AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -243,9 +243,8 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
     const base::TimeTicks& timestamp,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
-  base::trace_event::TraceEventHandle handle = {};
   if (!*category_group_enabled) {
-    return handle;
+    return;
   }
   DCHECK(!timestamp.is_null());
 
@@ -254,7 +253,6 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
                                                 id, args, flags);
 
   base::trace_event::OnAddLegacyTraceEvent(&new_trace_event);
-  return handle;
 }
 
 }  // namespace
@@ -638,27 +636,25 @@ void TraceLog::SetProcessID(ProcessId process_id) {
 
 namespace trace_event_internal {
 
-base::trace_event::TraceEventHandle AddTraceEvent(
-    char phase,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    uint64_t id,
-    base::trace_event::TraceArguments* args,
-    unsigned int flags) {
+void AddTraceEvent(char phase,
+                   const unsigned char* category_group_enabled,
+                   const char* name,
+                   uint64_t id,
+                   base::trace_event::TraceArguments* args,
+                   unsigned int flags) {
   auto thread_id = base::PlatformThread::CurrentId();
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
   return AddTraceEventWithThreadIdAndTimestamp(
       phase, category_group_enabled, name, id, thread_id, now, args, flags);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
-    char phase,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    uint64_t id,
-    base::ProcessId process_id,
-    base::trace_event::TraceArguments* args,
-    unsigned int flags) {
+void AddTraceEventWithProcessId(char phase,
+                                const unsigned char* category_group_enabled,
+                                const char* name,
+                                uint64_t id,
+                                base::ProcessId process_id,
+                                base::trace_event::TraceArguments* args,
+                                unsigned int flags) {
   static_assert(sizeof(base::PlatformThreadId::UnderlyingType) >=
                 sizeof(base::ProcessId));
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
@@ -669,7 +665,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
       now, args, flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
+void AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -683,7 +679,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
       flags);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
+void AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -697,8 +693,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
 }
 
 void UpdateTraceEventDuration(const unsigned char* category_group_enabled,
-                              const char* name,
-                              base::trace_event::TraceEventHandle handle) {
+                              const char* name) {
   if (!*category_group_enabled) {
     return;
   }

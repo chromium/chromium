@@ -37,10 +37,6 @@ using ArgumentFilterPredicate =
 using MetadataFilterPredicate =
     base::RepeatingCallback<bool(const std::string& metadata_name)>;
 
-struct TraceEventHandle {
-  uint64_t dummy;
-};
-
 class BASE_EXPORT TraceEvent {
  public:
   TraceEvent(PlatformThreadId thread_id,

@@ -174,24 +174,10 @@ uint64_t DawnPlatform::AddTraceEvent(
       num_args, arg_names, arg_types,
       reinterpret_cast<const unsigned long long*>(arg_values));
 
-  base::trace_event::TraceEventHandle handle =
       TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
           phase, category_group_enabled, name, id,
           base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
-
-  uint64_t result = 0;
-  static_assert(sizeof(base::trace_event::TraceEventHandle) <= sizeof(result),
-                "TraceEventHandle must be at most the size of uint64_t");
-
-  static_assert(
-      std::is_trivial_v<base::trace_event::TraceEventHandle> &&
-          std::is_standard_layout_v<base::trace_event::TraceEventHandle>,
-      "TraceEventHandle must be a plain old data type for byte-wise copy.");
-
-  base::byte_span_from_ref(result)
-      .first(sizeof(handle))
-      .copy_from(base::byte_span_from_ref(handle));
-  return result;
+      return 0;
 }
 
 void DawnPlatform::HistogramCacheCountHelper(std::string name,
