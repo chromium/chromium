@@ -27,6 +27,7 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/credit_card_form_event.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
@@ -318,6 +319,21 @@ class ClientSideDetectionHost
       mojom::PhishingDetectorResult result,
       std::optional<mojo_base::ProtoWrapper> verdict);
 
+  // Calls the CSD service to classify phishing through thresholds presented in
+  // `verdict`.
+  void ClassifyPhishingThroughThresholds(ClientPhishingRequest* verdict);
+
+  // Determines visual features extraction capabilities.
+  // `can_extract_visual_features_result` will be used to handle visual features
+  // in ClientPhishingRequest after.
+  visual_utils::CanExtractVisualFeaturesResult
+  DetermineVisualFeaturesExtraction();
+
+  // Iterate through redirect chain of the current URL to see if any of the
+  // sites in the chain has a llama forced request.
+  void CheckRedirectChainForLlamaForcedTriggerInfo(
+      ClientPhishingRequest* verdict);
+
   // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
   void MaybeSendClientPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
@@ -331,6 +347,11 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       mojom::PhishingImageEmbeddingResult result,
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
+
+  // Add miscellaneous metadata to ClientPhishingRequest prior to sending the
+  // ping.
+  void AddMiscellaneousMetadataToClientPhishingRequest(
+      ClientPhishingRequest* verdict);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, which will
   // contain the intelligent scan result if the execution is successful.
