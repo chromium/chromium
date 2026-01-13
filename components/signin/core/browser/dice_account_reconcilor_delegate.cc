@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -144,9 +143,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   bool primary_account_has_token = false;
   if (!primary_account.empty()) {
     primary_account_has_token =
-        base::Contains(chrome_accounts, primary_account);
+        std::ranges::contains(chrome_accounts, primary_account);
     bool primary_account_has_cookie =
-        base::Contains(valid_gaia_accounts_ids, primary_account);
+        std::ranges::contains(valid_gaia_accounts_ids, primary_account);
     if (primary_account_has_token && !primary_account_has_cookie) {
       return InconsistencyReason::kMissingSyncCookie;
     }
@@ -159,7 +158,7 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   bool missing_first_web_account_token =
       primary_account.empty() && !gaia_accounts.empty() &&
       gaia_accounts[0].valid &&
-      !base::Contains(chrome_accounts, gaia_accounts[0].id);
+      !std::ranges::contains(chrome_accounts, gaia_accounts[0].id);
 
   if (missing_first_web_account_token) {
     return InconsistencyReason::kMissingFirstWebAccountToken;
@@ -204,7 +203,7 @@ bool DiceAccountReconcilorDelegate::ShouldDeleteAccountsFromGaia(
   // account.
   for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
     if (gaia_account.valid &&
-        !base::Contains(chrome_accounts, gaia_account.id)) {
+        !std::ranges::contains(chrome_accounts, gaia_account.id)) {
       return true;
     }
   }
@@ -331,7 +330,7 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
   }
 
   // The default gaia account doesn't have token.
-  if (!base::Contains(chrome_accounts, gaia_accounts[0].id)) {
+  if (!std::ranges::contains(chrome_accounts, gaia_accounts[0].id)) {
     if (IsCookieBasedConsistencyMode()) {
       // Logout only if the default cookie account is valid.
       return gaia_accounts[0].valid;
@@ -361,7 +360,7 @@ CoreAccountId DiceAccountReconcilorDelegate::GetFirstGaiaAccountForMultilogin(
   // should try to put cached first account first since Gaia has no information
   // about it.
   if (gaia_accounts.empty() && !last_known_first_account_.empty() &&
-      base::Contains(chrome_accounts, last_known_first_account_)) {
+      std::ranges::contains(chrome_accounts, last_known_first_account_)) {
     // last_known_account_ is always empty on first execution.
     DCHECK(!first_execution);
     return last_known_first_account_;

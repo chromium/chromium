@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
@@ -2092,7 +2091,7 @@ TEST_P(UkmServiceTestWithIndependentAppKM, RejectWhenNotConsented) {
 
   std::vector<SourceId> source_ids;
   for (int i = 0; i < 5; ++i) {
-    if (base::Contains(app_indices, i)) {
+    if (std::ranges::contains(app_indices, i)) {
       source_ids.push_back(UkmServiceTest::GetAppIDSourceId(i));
       recorder.UpdateSourceURL(source_ids.back(), kAppURL);
     } else {
@@ -2184,7 +2183,7 @@ TEST_P(UkmServiceTestWithIndependentAppKMFullConsent, VerifyAllAndNoneConsent) {
 
   std::vector<SourceId> source_ids;
   for (int i = 0; i < 5; ++i) {
-    if (base::Contains(app_indices, i)) {
+    if (std::ranges::contains(app_indices, i)) {
       source_ids.push_back(UkmServiceTest::GetAppIDSourceId(i));
       recorder.UpdateSourceURL(source_ids.back(), kAppURL);
     } else {

@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -668,7 +668,7 @@ TEST_F(SubresourceFilterFeaturesTest, AdTagging_EnablesDryRun) {
       Configuration::MakePresetForPerformanceTestingDryRunOnAllSites();
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(kAdTagging);
-  EXPECT_TRUE(base::Contains(
+  EXPECT_TRUE(std::ranges::contains(
       GetEnabledConfigurations()->configs_by_decreasing_priority(), dryrun));
 }
 
@@ -677,7 +677,7 @@ TEST_F(SubresourceFilterFeaturesTest, AdTaggingDisabled_DisablesDryRun) {
       Configuration::MakePresetForPerformanceTestingDryRunOnAllSites();
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndDisableFeature(kAdTagging);
-  EXPECT_FALSE(base::Contains(
+  EXPECT_FALSE(std::ranges::contains(
       GetEnabledConfigurations()->configs_by_decreasing_priority(), dryrun));
 }
 

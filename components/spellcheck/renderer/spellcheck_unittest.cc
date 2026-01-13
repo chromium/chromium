@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -605,7 +605,7 @@ TEST_F(SpellCheckTest, SpellCheckSuggestions_EN_US) {
     EXPECT_EQ(test_case.expected_result, result);
 
     // Check if the suggested words occur.
-    bool suggested_word_is_present = base::Contains(
+    bool suggested_word_is_present = std::ranges::contains(
         suggestions, base::WideToUTF16(test_case.suggested_word));
     EXPECT_TRUE(suggested_word_is_present);
   }

@@ -4,7 +4,8 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -92,7 +93,7 @@ void RecordSuggestionUKM(
         input->GetMetadataArgument(tab_recent_foreground_count_input);
     std::optional<ProcessedValue> ukm_source_id =
         input->GetMetadataArgument(ukm_source_id_input);
-    if (!base::Contains(shown_suggestion.tab_ids, tab_id->float_val) ||
+    if (!std::ranges::contains(shown_suggestion.tab_ids, tab_id->float_val) ||
         ukm_source_id->int64_val == ukm::kInvalidSourceId) {
       continue;
     }
@@ -130,7 +131,7 @@ void RecordTabIndexMetrics(
         input->GetMetadataArgument(tab_index_input);
     std::optional<ProcessedValue> is_last_tab =
         input->GetMetadataArgument(is_last_tab_input);
-    if (!base::Contains(shown_suggestion.tab_ids, tab_id->float_val)) {
+    if (!std::ranges::contains(shown_suggestion.tab_ids, tab_id->float_val)) {
       continue;
     }
     if (is_last_tab->float_val) {

@@ -4,11 +4,11 @@
 
 #include "components/translate/core/browser/translate_language_list.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
@@ -125,12 +125,12 @@ TEST_F(TranslateLanguageListTest, GetSupportedLanguages) {
   // Check there are a lot of default languages.
   EXPECT_GE(languages.size(), 100ul);
   // Check that some very common languages are there.
-  EXPECT_TRUE(base::Contains(languages, "en"));
-  EXPECT_TRUE(base::Contains(languages, "es"));
-  EXPECT_TRUE(base::Contains(languages, "fr"));
-  EXPECT_TRUE(base::Contains(languages, "ru"));
-  EXPECT_TRUE(base::Contains(languages, "zh-CN"));
-  EXPECT_TRUE(base::Contains(languages, "zh-TW"));
+  EXPECT_TRUE(std::ranges::contains(languages, "en"));
+  EXPECT_TRUE(std::ranges::contains(languages, "es"));
+  EXPECT_TRUE(std::ranges::contains(languages, "fr"));
+  EXPECT_TRUE(std::ranges::contains(languages, "ru"));
+  EXPECT_TRUE(std::ranges::contains(languages, "zh-CN"));
+  EXPECT_TRUE(std::ranges::contains(languages, "zh-TW"));
 }
 
 // Sanity test for the default set of partial translate supported languages. The
@@ -144,21 +144,21 @@ TEST_F(TranslateLanguageListTest, GetSupportedPartialTranslateLanguages) {
   // Check there are a lot of default languages.
   EXPECT_GE(languages.size(), 100ul);
   // Check that some very common languages are there.
-  EXPECT_TRUE(base::Contains(languages, "en"));
-  EXPECT_TRUE(base::Contains(languages, "es"));
-  EXPECT_TRUE(base::Contains(languages, "fr"));
-  EXPECT_TRUE(base::Contains(languages, "ru"));
-  EXPECT_TRUE(base::Contains(languages, "zh-CN"));
-  EXPECT_TRUE(base::Contains(languages, "zh-TW"));
+  EXPECT_TRUE(std::ranges::contains(languages, "en"));
+  EXPECT_TRUE(std::ranges::contains(languages, "es"));
+  EXPECT_TRUE(std::ranges::contains(languages, "fr"));
+  EXPECT_TRUE(std::ranges::contains(languages, "ru"));
+  EXPECT_TRUE(std::ranges::contains(languages, "zh-CN"));
+  EXPECT_TRUE(std::ranges::contains(languages, "zh-TW"));
 
   // Check that unsupported languages are not there
-  EXPECT_FALSE(base::Contains(languages, "ilo"));
-  EXPECT_FALSE(base::Contains(languages, "lus"));
-  EXPECT_FALSE(base::Contains(languages, "mni-Mtei"));
-  EXPECT_FALSE(base::Contains(languages, "gom"));
-  EXPECT_FALSE(base::Contains(languages, "doi"));
-  EXPECT_FALSE(base::Contains(languages, "bm"));
-  EXPECT_FALSE(base::Contains(languages, "ckb"));
+  EXPECT_FALSE(std::ranges::contains(languages, "ilo"));
+  EXPECT_FALSE(std::ranges::contains(languages, "lus"));
+  EXPECT_FALSE(std::ranges::contains(languages, "mni-Mtei"));
+  EXPECT_FALSE(std::ranges::contains(languages, "gom"));
+  EXPECT_FALSE(std::ranges::contains(languages, "doi"));
+  EXPECT_FALSE(std::ranges::contains(languages, "bm"));
+  EXPECT_FALSE(std::ranges::contains(languages, "ckb"));
 }
 
 // Check that we contact the translate server to update the supported language

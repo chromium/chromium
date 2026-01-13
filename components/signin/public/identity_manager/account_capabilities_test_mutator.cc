@@ -4,10 +4,10 @@
 
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
@@ -176,7 +176,7 @@ void AccountCapabilitiesTestMutator::SetCapability(const std::string& name,
                                                    bool value) {
   base::span<const std::string_view> capability_names =
       AccountCapabilities::GetSupportedAccountCapabilityNames();
-  CHECK(base::Contains(capability_names, name))
+  CHECK(std::ranges::contains(capability_names, name))
       << "Invalid capability name: " << name;
   capabilities_->capabilities_map_[name] = value;
 }

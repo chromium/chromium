@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/bsp_compare_result.h"
@@ -548,8 +547,8 @@ TEST(DrawPolygonSplitTest, AlmostCoplanarSplit) {
   EXPECT_TRUE(back_polygon != nullptr);
 
   for (auto vertex : vertices_b) {
-    EXPECT_TRUE(base::Contains(front_polygon->points(), vertex) ||
-                base::Contains(back_polygon->points(), vertex));
+    EXPECT_TRUE(std::ranges::contains(front_polygon->points(), vertex) ||
+                std::ranges::contains(back_polygon->points(), vertex));
   }
 }
 
@@ -611,8 +610,8 @@ TEST(DrawPolygonSplitTest, DoubleSplit) {
   EXPECT_EQ(3u, second_back_polygon->points().size());
 
   for (auto vertex : saved_back_polygon_vertices) {
-    EXPECT_TRUE(base::Contains(second_front_polygon->points(), vertex) ||
-                base::Contains(second_back_polygon->points(), vertex));
+    EXPECT_TRUE(std::ranges::contains(second_front_polygon->points(), vertex) ||
+                std::ranges::contains(second_back_polygon->points(), vertex));
   }
 }
 

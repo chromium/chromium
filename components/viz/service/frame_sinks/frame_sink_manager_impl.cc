@@ -429,7 +429,7 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   CHECK(iter_child != frame_sink_source_map_.end());
 
   auto& child_mapping = iter_child->second;
-  DCHECK(base::Contains(child_mapping.parent, parent_frame_sink_id));
+  DCHECK(std::ranges::contains(child_mapping.parent, parent_frame_sink_id));
 
   // Delete `parent_frame_sink_id` from parent list of `child_frame_sink_id` in
   // `frame_sink_source_map_`.

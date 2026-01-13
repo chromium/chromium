@@ -4,9 +4,9 @@
 
 #include "components/translate/core/browser/translate_manager.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -604,7 +604,7 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
   // Accept languages shouldn't contain "hi" before translating to that language
   std::vector<std::string> languages;
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_FALSE(base::Contains(languages, "hi"));
+  EXPECT_FALSE(std::ranges::contains(languages, "hi"));
 
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
@@ -616,7 +616,7 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
   // Accept languages should now contain "hi" because the user chose to
   // translate to it once.
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_TRUE(base::Contains(languages, "hi"));
+  EXPECT_TRUE(std::ranges::contains(languages, "hi"));
 }
 
 TEST_F(TranslateManagerTest,
@@ -649,21 +649,21 @@ TEST_F(TranslateManagerTest,
   // Accept languages shouldn't contain "en" before translating to that language
   std::vector<std::string> languages;
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_FALSE(base::Contains(languages, "en"));
+  EXPECT_FALSE(std::ranges::contains(languages, "en"));
 
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
   network_notifier_.SimulateOnline();
   translate_manager_->InitiateTranslation("fr");
 
-  EXPECT_FALSE(base::Contains(languages, "en"));
+  EXPECT_FALSE(std::ranges::contains(languages, "en"));
   translate_manager_->TranslatePage("fr", "en", false);
 
   // Accept languages should not contain "en" because it is redundant
   // with "en-US" already being present.
   languages.clear();
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_FALSE(base::Contains(languages, "en"));
+  EXPECT_FALSE(std::ranges::contains(languages, "en"));
 }
 
 TEST_F(TranslateManagerTest, DontTranslateOffline) {

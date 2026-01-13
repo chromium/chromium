@@ -4,8 +4,9 @@
 
 #include "components/sync_preferences/preferences_merge_helper.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -28,7 +29,7 @@ base::Value::List MergeListValues(const base::Value::List& local_value,
                                   const base::Value::List& server_value) {
   base::Value::List result = server_value.Clone();
   for (const auto& value : local_value) {
-    if (!base::Contains(result, value)) {
+    if (!std::ranges::contains(result, value)) {
       result.Append(value.Clone());
     }
   }

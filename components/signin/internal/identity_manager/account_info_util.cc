@@ -4,12 +4,12 @@
 
 #include "components/signin/internal/identity_manager/account_info_util.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -173,7 +173,7 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromServerResponse(
     }
 
     // Add the capability to the map if it's supported in Chrome.
-    if (base::Contains(
+    if (std::ranges::contains(
             AccountCapabilities::GetSupportedAccountCapabilityNames(), *name)) {
       capabilities_map.insert({*name, *boolean_value});
     }

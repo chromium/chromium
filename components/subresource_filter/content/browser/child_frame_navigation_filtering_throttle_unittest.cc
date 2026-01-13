@@ -4,11 +4,11 @@
 
 #include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
@@ -128,8 +128,8 @@ TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnStart) {
   CreateTestSubframeAndInitNavigation(url, main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_TRUE(
-      base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
+  EXPECT_TRUE(std::ranges::contains(GetConsoleMessages(),
+                                    GetFilterConsoleMessage(url)));
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnRedirect) {
@@ -153,8 +153,8 @@ TEST_F(ChildFrameNavigationFilteringThrottleTest, DryRunOnStart) {
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_FALSE(
-      base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
+  EXPECT_FALSE(std::ranges::contains(GetConsoleMessages(),
+                                     GetFilterConsoleMessage(url)));
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleTest, DryRunOnRedirect) {
@@ -249,8 +249,8 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
 
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             SimulateCommitAndGetResult(navigation_simulator()));
-  EXPECT_TRUE(
-      base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
+  EXPECT_TRUE(std::ranges::contains(GetConsoleMessages(),
+                                    GetFilterConsoleMessage(url)));
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
@@ -269,8 +269,8 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
-  EXPECT_FALSE(
-      base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
+  EXPECT_FALSE(std::ranges::contains(GetConsoleMessages(),
+                                     GetFilterConsoleMessage(url)));
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
@@ -286,8 +286,8 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
-  EXPECT_FALSE(
-      base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
+  EXPECT_FALSE(std::ranges::contains(GetConsoleMessages(),
+                                     GetFilterConsoleMessage(url)));
 }
 
 }  // namespace subresource_filter

@@ -531,7 +531,7 @@ bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
                          std::string_view soc) {
   std::vector<std::string_view> allowlist = base::SplitStringPiece(
       soc_allowlist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::Contains(allowlist, soc);
+  return std::ranges::contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

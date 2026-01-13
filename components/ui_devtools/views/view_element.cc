@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -106,7 +105,7 @@ void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
 
 void ViewElement::OnChildViewAdded(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  if (base::Contains(children(), view, [](UIElement* child) {
+  if (std::ranges::contains(children(), view, [](UIElement* child) {
         return UIElement::GetBackingElement<views::View, ViewElement>(child);
       })) {
     RebuildTree();
@@ -185,9 +184,10 @@ void ViewElement::PaintRect() const {
 
 bool ViewElement::FindMatchByElementID(
     const ui::ElementIdentifier& identifier) {
-  return base::Contains(views::ElementTrackerViews::GetInstance()
-                            ->GetAllMatchingViewsInAnyContext(identifier),
-                        view_);
+  return std::ranges::contains(
+      views::ElementTrackerViews::GetInstance()
+          ->GetAllMatchingViewsInAnyContext(identifier),
+      view_);
 }
 
 bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {

@@ -4,12 +4,12 @@
 
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
+#include <algorithm>
 #include <bit>
 #include <cstdint>
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -429,7 +429,7 @@ IDNSpoofCheckerResult IDNSpoofChecker::SafeToDisplayAsUnicode(
       if (IsLabelWholeScriptConfusableForScript(*script, label_string) &&
           !IsWholeScriptConfusableAllowedForTLD(*script, top_level_domain,
                                                 top_level_domain_unicode) &&
-          !base::Contains(kAllowedWholeScriptConfusableWords, label)) {
+          !std::ranges::contains(kAllowedWholeScriptConfusableWords, label)) {
         return IDNSpoofCheckerResult::kWholeScriptConfusable;
       }
     }
@@ -803,7 +803,7 @@ bool IDNSpoofChecker::IsWholeScriptConfusableAllowedForTLD(
   if (script.all_letters->containsSome(tld_string)) {
     return true;
   }
-  return base::Contains(script.allowed_tlds, tld);
+  return std::ranges::contains(script.allowed_tlds, tld);
 }
 
 // static

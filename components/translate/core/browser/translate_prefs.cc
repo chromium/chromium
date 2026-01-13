@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
@@ -340,7 +339,7 @@ void TranslatePrefs::AddToLanguageList(std::string_view input_language,
   }
 
   // Add the language to the list.
-  if (!base::Contains(languages, chrome_language)) {
+  if (!std::ranges::contains(languages, chrome_language)) {
     user_selected_languages.push_back(chrome_language);
     language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
   }

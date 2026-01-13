@@ -4,13 +4,13 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -352,14 +352,14 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       delegate_->load_credentials_state());
 
   EXPECT_FALSE(delegate_->RefreshTokenIsAvailable(account_info_.account_id));
-  EXPECT_FALSE(
-      base::Contains(delegate_->GetAccounts(), account_info_.account_id));
+  EXPECT_FALSE(std::ranges::contains(delegate_->GetAccounts(),
+                                     account_info_.account_id));
 
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
 
   EXPECT_TRUE(delegate_->RefreshTokenIsAvailable(account_info_.account_id));
-  EXPECT_TRUE(
-      base::Contains(delegate_->GetAccounts(), account_info_.account_id));
+  EXPECT_TRUE(std::ranges::contains(delegate_->GetAccounts(),
+                                    account_info_.account_id));
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
@@ -369,15 +369,15 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       delegate_->load_credentials_state());
 
   EXPECT_FALSE(delegate_->RefreshTokenIsAvailable(account_info_.account_id));
-  EXPECT_FALSE(
-      base::Contains(delegate_->GetAccounts(), account_info_.account_id));
+  EXPECT_FALSE(std::ranges::contains(delegate_->GetAccounts(),
+                                     account_info_.account_id));
 
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail,
                                     AccountManager::kInvalidToken);
 
   EXPECT_TRUE(delegate_->RefreshTokenIsAvailable(account_info_.account_id));
-  EXPECT_TRUE(
-      base::Contains(delegate_->GetAccounts(), account_info_.account_id));
+  EXPECT_TRUE(std::ranges::contains(delegate_->GetAccounts(),
+                                    account_info_.account_id));
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
@@ -919,6 +919,6 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSObserverTest,
   const std::vector<CoreAccountId>& first_batch =
       observer.batch_change_records_[0];
   EXPECT_EQ(2UL, first_batch.size());
-  EXPECT_TRUE(base::Contains(first_batch, account1.account_id));
-  EXPECT_TRUE(base::Contains(first_batch, account2.account_id));
+  EXPECT_TRUE(std::ranges::contains(first_batch, account1.account_id));
+  EXPECT_TRUE(std::ranges::contains(first_batch, account2.account_id));
 }

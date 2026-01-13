@@ -4,10 +4,10 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
 
+#include <algorithm>
 #include <unordered_map>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
@@ -288,7 +288,7 @@ bool IsGroupVisible(const GroupSuggestion& suggestion,
     }
 
     int tab_id = tab_data->last_active_tab.id;
-    if (!base::Contains(suggestion.tab_ids, tab_id)) {
+    if (!std::ranges::contains(suggestion.tab_ids, tab_id)) {
       continue;
     }
 

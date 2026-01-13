@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -648,7 +648,7 @@ TranslateMessage::ConstructLanguagePickerMenu(
 
   // Add the content languages to the menu.
   for (const std::string& content_language_code : content_language_codes) {
-    if (base::Contains(skip_language_codes, content_language_code)) {
+    if (std::ranges::contains(skip_language_codes, content_language_code)) {
       continue;
     }
 
@@ -676,7 +676,7 @@ TranslateMessage::ConstructLanguagePickerMenu(
   // Add the full list of languages to the menu.
   for (size_t i = 0U; i < ui_languages_manager_->GetNumberOfLanguages(); ++i) {
     std::string code = ui_languages_manager_->GetLanguageCodeAt(i);
-    if (base::Contains(skip_language_codes, code)) {
+    if (std::ranges::contains(skip_language_codes, code)) {
       continue;
     }
 

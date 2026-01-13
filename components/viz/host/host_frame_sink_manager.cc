@@ -4,12 +4,12 @@
 
 #include "components/viz/host/host_frame_sink_manager.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -297,7 +297,7 @@ bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
   }
 
   FrameSinkData& parent_data = iter->second;
-  CHECK(!base::Contains(parent_data.children, child_frame_sink_id));
+  CHECK(!std::ranges::contains(parent_data.children, child_frame_sink_id));
   parent_data.children.push_back(child_frame_sink_id);
 
   // Register and store the parent.

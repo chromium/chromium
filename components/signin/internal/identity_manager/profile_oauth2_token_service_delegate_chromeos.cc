@@ -4,12 +4,12 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -220,9 +220,9 @@ bool ProfileOAuth2TokenServiceDelegateChromeOS::RefreshTokenIsAvailable(
 
   // We intentionally do NOT check if the refresh token associated with
   // |account_id| is valid or not. See crbug.com/919793 for details.
-  return base::Contains(GetOAuthAccountIdsFromAccountKeys(
-                            account_keys_, account_tracker_service_),
-                        account_id);
+  return std::ranges::contains(GetOAuthAccountIdsFromAccountKeys(
+                                   account_keys_, account_tracker_service_),
+                               account_id);
 }
 
 // Note: This method should use the same logic for filtering accounts as

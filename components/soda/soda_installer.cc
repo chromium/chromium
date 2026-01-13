@@ -4,10 +4,10 @@
 
 #include "components/soda/soda_installer.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
@@ -295,7 +295,7 @@ void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
 }
 
 bool SodaInstaller::IsLanguageEnabled(std::string_view language) {
-  return base::Contains(GetLiveCaptionEnabledLanguages(), language);
+  return std::ranges::contains(GetLiveCaptionEnabledLanguages(), language);
 }
 
 bool SodaInstaller::IsSodaLanguageDownloading(

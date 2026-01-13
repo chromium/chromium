@@ -4,7 +4,8 @@
 
 #include "components/webapps/browser/installable/installable_evaluator.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "components/security_state/core/security_state.h"
@@ -153,7 +154,7 @@ bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
       continue;
     }
 
-    if (!base::Contains(icon.purpose, IconPurpose::ANY)) {
+    if (!std::ranges::contains(icon.purpose, IconPurpose::ANY)) {
       continue;
     }
 

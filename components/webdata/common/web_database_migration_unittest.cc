@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -50,13 +50,13 @@ std::string NormalizeSchemaForComparison(const std::string& schema) {
   normalized.reserve(schema.size());
   bool skip_following_spaces = false;
   for (char c : schema) {
-    if (base::Contains("\"[]`", c)) {  // Quotes
+    if (std::ranges::contains("\"[]`", c)) {  // Quotes
       continue;
     }
     if (c == ' ' && skip_following_spaces) {
       continue;
     }
-    bool is_separator = base::Contains(",()", c);
+    bool is_separator = std::ranges::contains(",()", c);
     if (is_separator && !normalized.empty() && normalized.back() == ' ') {
       normalized.pop_back();
     }

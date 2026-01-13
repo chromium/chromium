@@ -4,9 +4,9 @@
 
 #include "components/viz/client/frame_evictor.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "build/buildflag.h"
 #include "components/viz/common/features.h"
@@ -55,7 +55,7 @@ std::vector<SurfaceId> FrameEvictor::CollectSurfaceIdsForEviction() const {
   std::vector<SurfaceId> output_ids = std::move(ids.embedded_ids);
   auto current = client_->GetCurrentSurfaceId();
   DCHECK(output_ids.empty() || !current.is_valid() ||
-         base::Contains(output_ids, current));
+         std::ranges::contains(output_ids, current));
 
   if (output_ids.empty() && current.is_valid()) {
     output_ids.push_back(current);

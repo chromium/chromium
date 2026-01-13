@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -820,8 +819,8 @@ void AccountTrackerService::SeedAccountsInfo(
     for (const auto& account : GetAccounts()) {
       CoreAccountId curr_account_id = account.account_id;
       if (curr_account_id != primary_account_id &&
-          !base::Contains(accounts, curr_account_id,
-                          &AccountInfo::account_id)) {
+          !std::ranges::contains(accounts, curr_account_id,
+                                 &AccountInfo::account_id)) {
         RemoveAccount(curr_account_id);
       }
     }

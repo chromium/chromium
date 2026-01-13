@@ -4,9 +4,9 @@
 
 #include "components/user_education/webui/whats_new_registry.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_education/webui/mock_whats_new_storage_service.h"
@@ -150,8 +150,10 @@ TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledFeatures) {
 
   auto active_commands = whats_new_registry_->GetActiveCommands();
   EXPECT_EQ(static_cast<size_t>(2), active_commands.size());
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kNoOpCommand));
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kUnknownCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kNoOpCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kUnknownCommand));
 }
 
 TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledModulesAndEditions) {
@@ -160,15 +162,18 @@ TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledModulesAndEditions) {
 
   auto active_commands = whats_new_registry_->GetActiveCommands();
   EXPECT_EQ(static_cast<size_t>(4), active_commands.size());
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kNoOpCommand));
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kUnknownCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kNoOpCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kUnknownCommand));
 
   // Note: If you are removing one of these commands, you may change
   // these to any available command to match the above Edition
   // registratrion.
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kOpenAISettings));
   EXPECT_TRUE(
-      base::Contains(active_commands, BrowserCommand::kOpenSafetyCheck));
+      std::ranges::contains(active_commands, BrowserCommand::kOpenAISettings));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kOpenSafetyCheck));
 }
 
 TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeatures) {

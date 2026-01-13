@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
@@ -891,11 +890,11 @@ void FlagsState::MergeFeatureCommandLineSwitch(
   std::vector<std::string_view> features =
       base::FeatureList::SplitFeatureListString(original_switch_value);
   // Only add features that don't already exist in the lists.
-  // Note: The base::Contains() call results in O(n^2) performance, but in
-  // practice n should be very small.
+  // Note: The std::ranges::contains() call results in O(n^2) performance, but
+  // in practice n should be very small.
   for (const auto& entry : feature_switches) {
     if (entry.second == feature_state &&
-        !base::Contains(features, entry.first)) {
+        !std::ranges::contains(features, entry.first)) {
       features.push_back(entry.first);
       appended_switches_[switch_name].insert(entry.first);
     }

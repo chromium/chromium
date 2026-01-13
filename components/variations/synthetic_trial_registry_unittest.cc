@@ -4,9 +4,9 @@
 
 #include "components/variations/synthetic_trial_registry.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -280,12 +280,12 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   ActiveGroupId trial1_id = trial1.id();
   std::string trial1_hash =
       base::StringPrintf("%x-%x", trial1_id.name, trial1_id.group);
-  EXPECT_TRUE(base::Contains(output, trial1_hash));
+  EXPECT_TRUE(std::ranges::contains(output, trial1_hash));
 
   ActiveGroupId trial2_id = trial2.id();
   std::string trial2_hash =
       base::StringPrintf("%x-%x", trial2_id.name, trial2.id().group);
-  EXPECT_TRUE(base::Contains(output, trial2_hash));
+  EXPECT_TRUE(std::ranges::contains(output, trial2_hash));
 }
 
 TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {

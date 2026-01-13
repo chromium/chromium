@@ -4,10 +4,10 @@
 
 #include "components/sync/service/device_statistics_tracker.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -101,7 +101,8 @@ GetRelevantEventsByType(
     }
 
     // Don't consider the current device.
-    if (base::Contains(current_device_cache_guids, device.cache_guid())) {
+    if (std::ranges::contains(current_device_cache_guids,
+                              device.cache_guid())) {
       continue;
     }
 
