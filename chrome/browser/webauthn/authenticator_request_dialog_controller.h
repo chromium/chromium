@@ -69,7 +69,7 @@ class AuthenticatorRequestDialogController
   // AuthenticatorRequestDialogModel::Observer:
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void StartOver() override;
-  void OnCreatePasskeyAccepted() override;
+  void OnChromeProfileCreatePasskeyAccepted() override;
   void OnGPMRecoverSecurityDomainClosed() override;
   void ContinueWithFlowAfterBleAdapterPowered() override;
   void PowerOnBleAdapter() override;

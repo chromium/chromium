@@ -105,7 +105,7 @@ using UIPresentation =
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreationSelected)                        \
   /* Called when the user accepts the create passkey sheet. */                \
   /* (But not the GPM one.) */                                                \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                      \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnChromeProfileCreatePasskeyAccepted)         \
   /* Called when the user accepts passkey creation dialog. */                 \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreationConfirmed)                       \
   /* Called when the user accepts the warning dialog for creating a GPM */    \
@@ -274,7 +274,7 @@ struct AuthenticatorRequestDialogModel
     // GPM passkey creation.
     kGPMCreatePasskey,
     kGPMConfirmOffTheRecordCreate,
-    kCreatePasskey,
+    kChromeProfileCreatePasskey,
     kGPMError,
     kGPMConnecting,
     // Device bootstrap to use GPM passkeys.

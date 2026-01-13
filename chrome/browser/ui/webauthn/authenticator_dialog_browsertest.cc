@@ -368,7 +368,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "create_passkey") {
       controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+          AuthenticatorRequestDialogModel::Step::kChromeProfileCreatePasskey);
     }
 #if BUILDFLAG(IS_MAC)
     else if (name == "ble_permission_mac") {  // NOLINT

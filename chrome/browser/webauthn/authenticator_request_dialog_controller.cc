@@ -159,10 +159,10 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
   }
 }
 
-// Whether to show Step::kCreatePasskey, which prompts the user before platform
-// authenticator dispatch during MakeCredential. This is currently only shown on
-// MacOS, because that is the only desktop platform authenticator without a
-// "native" WebAuthn UI.
+// Whether to show Step::kChromeProfileCreatePasskey, which prompts the user
+// before platform authenticator dispatch during MakeCredential. This is
+// currently only shown on MacOS, because that is the only desktop platform
+// authenticator without a "native" WebAuthn UI.
 constexpr bool kShowCreatePlatformPasskeyStep = BUILDFLAG(IS_MAC);
 
 password_manager::PasskeyCredential::Source ToPasswordManagerSource(
@@ -534,7 +534,8 @@ void AuthenticatorRequestDialogController::StartOver() {
   SetCurrentStep(Step::kMechanismSelection);
 }
 
-void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
+void AuthenticatorRequestDialogController::
+    OnChromeProfileCreatePasskeyAccepted() {
   HideDialogAndDispatchToPlatformAuthenticator();
 }
 
@@ -1169,12 +1170,12 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
   if (transport_availability_.request_type ==
       FidoRequestType::kMakeCredential) {
     if (kShowCreatePlatformPasskeyStep) {
-      SetCurrentStep(Step::kCreatePasskey);
+      SetCurrentStep(Step::kChromeProfileCreatePasskey);
       return;
     }
 
     if (model_->is_off_the_record) {
-      // Step::kCreatePasskey incorporates an incognito warning if
+      // Step::kChromeProfileCreatePasskey incorporates an incognito warning if
       // applicable, so the OTR interstitial step only needs to show in the
       // "old" UI.
       after_off_the_record_interstitial_ =
@@ -1789,7 +1790,7 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
          model_->step() == Step::kUsbInsertAndActivate ||
          model_->step() == Step::kCableActivate ||
          model_->step() == Step::kPasskeyAutofill ||
-         model_->step() == Step::kCreatePasskey ||
+         model_->step() == Step::kChromeProfileCreatePasskey ||
          model_->step() == Step::kPreSelectAccount ||
          model_->step() == Step::kSelectPriorityMechanism ||
          model_->step() == Step::kSelectAccount ||

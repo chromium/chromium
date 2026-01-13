@@ -506,22 +506,22 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kPlatformAuthenticator;
   const auto cable_ui = Step::kCableActivate;
-  [[maybe_unused]] const auto create_pk = Step::kCreatePasskey;
+  [[maybe_unused]] const auto create_pk = Step::kChromeProfileCreatePasskey;
   const auto create_pk_or_mss =
 #if BUILDFLAG(IS_MAC)
-      Step::kCreatePasskey;
+      Step::kChromeProfileCreatePasskey;
 #else
       Step::kMechanismSelection;
 #endif
   const auto create_pk_or_plat_ui =
 #if BUILDFLAG(IS_MAC)
-      Step::kCreatePasskey;
+      Step::kChromeProfileCreatePasskey;
 #else
       Step::kPlatformAuthenticator;
 #endif
   const auto create_pk_or_qr =
 #if BUILDFLAG(IS_MAC)
-      Step::kCreatePasskey;
+      Step::kChromeProfileCreatePasskey;
 #else
       Step::kCableV2QRCode;
 #endif
@@ -1584,7 +1584,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 #if BUILDFLAG(IS_MAC)
-    EXPECT_EQ(Step::kCreatePasskey, model->step());
+    EXPECT_EQ(Step::kChromeProfileCreatePasskey, model->step());
 #else
     EXPECT_EQ(Step::kMechanismSelection, model->step());
 #endif
@@ -2393,7 +2393,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
       if (should_create_in_icloud_keychain) {
         EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
       } else {
-        EXPECT_EQ(model->step(), Step::kCreatePasskey);
+        EXPECT_EQ(model->step(), Step::kChromeProfileCreatePasskey);
         controller.HideDialogAndDispatchToPlatformAuthenticator();
         EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
       }

@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NonWebauthnRequest) {
   // the UI, which is not simulated here.
   EXPECT_TRUE(
       dialog_model()->step() ==
-          AuthenticatorRequestDialogModel::Step::kCreatePasskey ||
+          AuthenticatorRequestDialogModel::Step::kChromeProfileCreatePasskey ||
       dialog_model()->step() ==
           AuthenticatorRequestDialogModel::Step::kErrorNoAvailableTransports);
 }
