@@ -83,6 +83,9 @@ extern const base::FeatureParam<bool> kCsdCreditCardFormEnableHeuristicFilter;
 extern const base::FeatureParam<bool>
     kCsdCreditCardFormEnableReferringAppFilter;
 
+// Deprecate the DOM model and do not onboard to renderer.
+BASE_DECLARE_FEATURE(kClientSideDetectionDeprecateDOMModel);
+
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
 

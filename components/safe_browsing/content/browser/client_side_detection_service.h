@@ -169,6 +169,11 @@ class ClientSideDetectionService
   // can override it.
   virtual const base::File& GetImageEmbeddingModel();
 
+  virtual int GetClassificationInputWidth();
+  virtual int GetClassificationInputHeight();
+  virtual int GetImageEmbeddingInputWidth();
+  virtual int GetImageEmbeddingInputHeight();
+
   virtual bool IsModelMetadataImageEmbeddingVersionMatching();
 
   // Returns the visual TFLite model thresholds from the model class

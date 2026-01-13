@@ -96,6 +96,9 @@ const base::FeatureParam<bool> kCsdCreditCardFormEnableReferringAppFilter{
     &kClientSideDetectionCreditCardForm, "EnableReferringAppFilter",
     /*default_value=*/false};
 
+BASE_FEATURE(kClientSideDetectionDeprecateDOMModel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

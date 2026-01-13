@@ -69,12 +69,28 @@ class Scorer {
   static std::unique_ptr<Scorer> Create(base::ReadOnlySharedMemoryRegion region,
                                         base::File visual_tflite_model);
 
+  static std::unique_ptr<Scorer> Create(int classification_input_width,
+                                        int classification_input_height,
+                                        base::File tflite_visual_model);
+
   static std::unique_ptr<Scorer> CreateScorerWithImageEmbeddingModel(
       base::ReadOnlySharedMemoryRegion region,
       base::File visual_tflite_model,
       base::File image_embedding_model);
 
+  static std::unique_ptr<Scorer> CreateScorerWithImageEmbeddingModel(
+      int classification_input_width,
+      int classification_input_height,
+      base::File tflite_visual_model,
+      int image_embedding_input_width,
+      int image_embedding_input_height,
+      base::File image_embedding_model);
+
   void AttachImageEmbeddingModel(base::File image_embedding_model);
+
+  void AttachImageEmbeddingModel(int image_embedding_input_width,
+                                 int image_embedding_input_height,
+                                 base::File image_embedding_model);
 
   // This method computes the probability that the given features are indicative
   // of phishing.  It returns a score value that falls in the range [0.0,1.0]
@@ -139,6 +155,14 @@ class Scorer {
   const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
   tflite_thresholds() const;
 
+  // Set the dimensions for image classification.
+  void SetClassificationDimensions(int classification_input_width,
+                                   int classification_input_height);
+
+  // Set the dimensions for image embedding.
+  void SetImageEmbeddingDimensions(int image_embedding_input_width,
+                                   int image_embedding_input_height);
+
   // Disable copy and move.
   Scorer(const Scorer&) = delete;
   Scorer& operator=(const Scorer&) = delete;
@@ -187,6 +211,13 @@ class Scorer {
       thresholds_;
   base::MemoryMappedFile image_embedding_model_;
   base::MemoryMappedFile visual_tflite_model_;
+
+  int classification_input_width_;
+  int classification_input_height_;
+
+  int image_embedding_input_width_;
+  int image_embedding_input_height_;
+
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 };
 

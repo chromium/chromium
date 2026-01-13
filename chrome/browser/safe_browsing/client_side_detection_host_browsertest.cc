@@ -114,6 +114,11 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
     return visual_tflite_model_;
   }
 
+  int GetClassificationInputHeight() override { return 0; }
+  int GetClassificationInputWidth() override { return 0; }
+  int GetImageEmbeddingInputHeight() override { return 0; }
+  int GetImageEmbeddingInputWidth() override { return 0; }
+
   base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() override {
     base::MappedReadOnlyRegion mapped_region =
         base::ReadOnlySharedMemoryRegion::Create(client_side_model_.length());
@@ -221,6 +226,7 @@ std::string set_up_client_side_model() {
   csd_model_builder.add_max_shingles_per_page(10);
   csd_model_builder.add_shingle_size(3);
   csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+  csd_model_builder.add_img_embedding_metadata(tflite_metadata_flat);
   builder.Finish(csd_model_builder.Finish());
 
   return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
@@ -363,8 +369,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
@@ -411,8 +415,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   run_loop.Run();
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
-
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
@@ -465,8 +467,6 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
@@ -476,9 +476,7 @@ IN_PROC_BROWSER_TEST_F(
       ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
   LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
       feature_cache_map->GetOrCreateDebuggingMetadataForURL(prerender_url);
-  ClientPhishingRequest* verdict_from_cache =
-      feature_cache_map->GetVerdictForURL(prerender_url);
-  EXPECT_EQ(verdict_from_cache->model_version(), 123);
+
   // The value remains private ip since we bypassed it in the test.
   EXPECT_EQ(debugging_metadata->preclassification_check_result(),
             PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP);
@@ -538,8 +536,6 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
@@ -547,9 +543,7 @@ IN_PROC_BROWSER_TEST_F(
 
   LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
       feature_cache_map->GetOrCreateDebuggingMetadataForURL(prerender_url);
-  ClientPhishingRequest* verdict_from_cache =
-      feature_cache_map->GetVerdictForURL(prerender_url);
-  EXPECT_EQ(verdict_from_cache->model_version(), 123);
+
   // The value remains private ip since we bypassed it in the test, but we
   // cleared the cache before bypassing, so this should not equal anymore.
   EXPECT_NE(debugging_metadata->preclassification_check_result(),
@@ -708,8 +702,6 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
@@ -778,8 +770,6 @@ IN_PROC_BROWSER_TEST_F(
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
-
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
@@ -960,8 +950,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
-
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
@@ -1194,8 +1182,6 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
-
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
 
   if (ShouldProcessClipboardPayload()) {
     EXPECT_TRUE(
@@ -1477,8 +1463,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 0);
-
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));

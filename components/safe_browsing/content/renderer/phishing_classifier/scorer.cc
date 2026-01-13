@@ -434,6 +434,9 @@ std::unique_ptr<Scorer> Scorer::Create(base::ReadOnlySharedMemoryRegion region,
 
   RecordScorerCreationStatus(SCORER_SUCCESS);
   scorer->flatbuffer_mapping_ = std::move(mapping);
+  scorer->SetClassificationDimensions(
+      scorer->flatbuffer_model_->tflite_metadata()->input_width(),
+      scorer->flatbuffer_model_->tflite_metadata()->input_height());
 
   return scorer;
 }
@@ -454,6 +457,65 @@ std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
     }
   }
 
+  scorer->SetImageEmbeddingDimensions(
+      scorer->flatbuffer_model_->img_embedding_metadata()->input_width(),
+      scorer->flatbuffer_model_->img_embedding_metadata()->input_height());
+
+  return scorer;
+}
+
+std::unique_ptr<Scorer> Scorer::Create(int classification_input_width,
+                                       int classification_input_height,
+                                       base::File tflite_visual_model) {
+  std::unique_ptr<Scorer> scorer = std::make_unique<Scorer>();
+
+  if (tflite_visual_model.IsValid()) {
+    if (!scorer->visual_tflite_model_.Initialize(
+            std::move(tflite_visual_model))) {
+      RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
+      return nullptr;
+    }
+  }
+
+  // TODO(crbug.com/475518063): Add unit tests that test these dimensions are
+  // checked in the scorer object.
+  scorer->SetClassificationDimensions(classification_input_width,
+                                      classification_input_height);
+
+  return scorer;
+}
+
+std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
+    int classification_input_width,
+    int classification_input_height,
+    base::File tflite_visual_model,
+    int image_embedding_input_width,
+    int image_embedding_input_height,
+    base::File image_embedding_model) {
+  std::unique_ptr<Scorer> scorer = std::make_unique<Scorer>();
+
+  if (tflite_visual_model.IsValid()) {
+    if (!scorer->visual_tflite_model_.Initialize(
+            std::move(tflite_visual_model))) {
+      RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
+      return nullptr;
+    }
+  }
+
+  if (image_embedding_model.IsValid()) {
+    if (!scorer->image_embedding_model_.Initialize(
+            std::move(image_embedding_model))) {
+      RecordScorerCreationStatus(
+          SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
+      return nullptr;
+    }
+  }
+
+  scorer->SetClassificationDimensions(classification_input_width,
+                                      classification_input_height);
+  scorer->SetImageEmbeddingDimensions(image_embedding_input_width,
+                                      image_embedding_input_height);
+
   return scorer;
 }
 
@@ -465,6 +527,21 @@ void Scorer::AttachImageEmbeddingModel(base::File image_embedding_model) {
       return;
     }
   }
+}
+
+void Scorer::AttachImageEmbeddingModel(int image_embedding_input_width,
+                                       int image_embedding_input_height,
+                                       base::File image_embedding_model) {
+  if (image_embedding_model.IsValid()) {
+    if (!image_embedding_model_.Initialize(std::move(image_embedding_model))) {
+      RecordScorerCreationStatus(
+          SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
+      return;
+    }
+  }
+
+  SetImageEmbeddingDimensions(image_embedding_input_width,
+                              image_embedding_input_height);
 }
 
 double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
@@ -522,14 +599,14 @@ void Scorer::ApplyVisualTfLiteModel(
   if (visual_tflite_model_.IsValid()) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
-                       flatbuffer_model_->tflite_metadata()->input_width(),
-                       flatbuffer_model_->tflite_metadata()->input_height(),
-                       std::string(reinterpret_cast<const char*>(
-                                       visual_tflite_model_.data()),
-                                   visual_tflite_model_.length()),
-                       base::SequencedTaskRunner::GetCurrentDefault(),
-                       std::move(callback)));
+        base::BindOnce(
+            &ApplyVisualTfLiteModelHelper, bitmap, classification_input_width_,
+            classification_input_height_,
+            std::string(
+                reinterpret_cast<const char*>(visual_tflite_model_.data()),
+                visual_tflite_model_.length()),
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            std::move(callback)));
   } else {
     std::move(callback).Run(std::vector<double>());
   }
@@ -546,8 +623,7 @@ void Scorer::ApplyVisualTfLiteModelImageEmbedding(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             &ApplyImageEmbeddingTfLiteModelHelper, bitmap,
-            flatbuffer_model_->img_embedding_metadata()->input_width(),
-            flatbuffer_model_->img_embedding_metadata()->input_height(),
+            image_embedding_input_width_, image_embedding_input_height_,
             std::string(
                 reinterpret_cast<const char*>(image_embedding_model_.data()),
                 image_embedding_model_.length()),
@@ -627,6 +703,18 @@ int Scorer::tflite_model_version() const {
 const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
 Scorer::tflite_thresholds() const {
   return thresholds_;
+}
+
+void Scorer::SetClassificationDimensions(int classification_input_width,
+                                         int classification_input_height) {
+  classification_input_width_ = classification_input_width;
+  classification_input_height_ = classification_input_height;
+}
+
+void Scorer::SetImageEmbeddingDimensions(int image_embedding_input_width,
+                                         int image_embedding_input_height) {
+  image_embedding_input_width_ = image_embedding_input_width;
+  image_embedding_input_height_ = image_embedding_input_height;
 }
 
 int Scorer::image_embedding_tflite_model_version() const {

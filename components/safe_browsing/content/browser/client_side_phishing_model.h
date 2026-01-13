@@ -147,6 +147,11 @@ class ClientSidePhishingModel
 
   bool IsSubscribedToImageEmbeddingModelUpdates();
 
+  int GetClassificationInputWidth();
+  int GetClassificationInputHeight();
+  int GetImageEmbeddingInputWidth();
+  int GetImageEmbeddingInputHeight();
+
  private:
   static const int kInitialClientModelFetchDelayMs;
 
@@ -208,6 +213,11 @@ class ClientSidePhishingModel
   // to the debugging metadata so that we can understand what version has been
   // sent to the renderer.
   std::optional<int> trigger_model_version_;
+
+  std::optional<int> classification_input_width_;
+  std::optional<int> classification_input_height_;
+  std::optional<int> img_embedding_input_width_;
+  std::optional<int> img_embedding_input_height_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
