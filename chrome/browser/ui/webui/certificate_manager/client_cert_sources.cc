@@ -204,14 +204,10 @@ std::unique_ptr<ClientCertStoreLoader> CreateProvisionedClientCertLoader(
   }
 
   client_certificates::CertificateProvisioningService*
-      browser_provisioning_service = nullptr;
-  if (client_certificates::features::
-          IsManagedBrowserClientCertificateEnabled()) {
-    browser_provisioning_service =
-        g_browser_process->browser_policy_connector()
-            ->chrome_browser_cloud_management_controller()
-            ->GetCertificateProvisioningService();
-  }
+      browser_provisioning_service =
+          g_browser_process->browser_policy_connector()
+              ->chrome_browser_cloud_management_controller()
+              ->GetCertificateProvisioningService();
 
   if (!profile_provisioning_service && !browser_provisioning_service) {
     return nullptr;
