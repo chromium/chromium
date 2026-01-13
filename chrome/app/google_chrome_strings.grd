@@ -2937,7 +2937,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Glic Strings -->
-      <if expr="enable_glic">
+      <if expr="enable_glic or enable_glic_android">
         <message name="IDS_GLIC_PROMO_TITLE" desc="Gemini promo title.">
           Try Gemini in Google Chrome
         </message>
