@@ -1178,10 +1178,7 @@ public class NewTabPageLayout extends LinearLayout
 
         if (mPreviousLensButtonVisible == null
                 || isLensButtonVisible != mPreviousLensButtonVisible) {
-            // The lens button will be shown either in the fake search box or the composeplate view.
-            LensMetrics.recordShown(
-                    LensEntryPoint.NEW_TAB_PAGE,
-                    isLensButtonVisible || isComposeplateButtonVisible);
+            LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, isLensButtonVisible);
         }
 
         ComposeplateMetricsUtils.recordFakeSearchBoxImpression2();
