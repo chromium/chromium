@@ -89,6 +89,10 @@ cr-composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
 
+cr-composebox[searchbox-layout-mode="TallBottomContext"]::part(voice-icon) {
+  bottom: 6px;
+}
+
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
   left: unset;
   right: 12px;
