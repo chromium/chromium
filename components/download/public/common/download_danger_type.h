@@ -109,6 +109,10 @@ enum DownloadDangerType {
   // to GDrive if safe browsing extension is installed.
   DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE = 24,
 
+  // Download deep scanning identified sensitive content, will force download
+  // to OneDrive if safe browsing extension is installed.
+  DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE = 25,
+
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX

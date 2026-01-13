@@ -30,6 +30,7 @@ enum DangerType {
   kDeepScannedOpenedDangerous,
   kBlockedScanFailed,
   kForcedSaveToGdrive,
+  kForcedSaveToOnedrive,
 };
 
 // This corresponds to DownloadUIModel::TailoredWarningType.

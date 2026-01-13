@@ -99,6 +99,8 @@ downloads::mojom::DangerType GetDangerType(
       return downloads::mojom::DangerType::kSensitiveContentWarning;
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
       return downloads::mojom::DangerType::kForcedSaveToGdrive;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
+      return downloads::mojom::DangerType::kForcedSaveToOnedrive;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return downloads::mojom::DangerType::kSensitiveContentBlock;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:

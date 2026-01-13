@@ -365,6 +365,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
       return false;
   }
   NOTREACHED();
@@ -964,6 +965,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return DangerUiPattern::kSuspicious;
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
@@ -1066,6 +1068,7 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return true;
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:

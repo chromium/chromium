@@ -257,6 +257,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DangerType.kDeepScannedOpenedDangerous:
       case DangerType.kBlockedScanFailed:
       case DangerType.kForcedSaveToGdrive:
+      case DangerType.kForcedSaveToOnedrive:
         return true;
       default:
         assertNotReached('Unhandled DangerType encountered');
@@ -293,6 +294,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DangerType.kDeepScannedOpenedDangerous:
       case DangerType.kBlockedScanFailed:
       case DangerType.kForcedSaveToGdrive:
+      case DangerType.kForcedSaveToOnedrive:
         return true;
       default:
         assertNotReached('Unhandled DangerType encountered');
@@ -371,6 +373,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DangerType.kDeepScannedOpenedDangerous:
       case DangerType.kBlockedScanFailed:
       case DangerType.kForcedSaveToGdrive:
+      case DangerType.kForcedSaveToOnedrive:
         return false;
       default:
         assertNotReached('Unhandled DangerType encountered');
@@ -439,6 +442,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DangerType.kBlockedTooLarge:
       case DangerType.kSensitiveContentBlock:
       case DangerType.kForcedSaveToGdrive:
+      case DangerType.kForcedSaveToOnedrive:
         return DisplayType.ERROR;
       default:
         assertNotReached('Unhandled DangerType encountered');
@@ -518,6 +522,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
           case DangerType.kDeepScannedSafe:
           case DangerType.kBlockedScanFailed:
           case DangerType.kForcedSaveToGdrive:
+          case DangerType.kForcedSaveToOnedrive:
             return '';
           default:
             assertNotReached('Unhandled DangerType encountered');
@@ -573,6 +578,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
           case DangerType.kDeepScannedOpenedDangerous:
           case DangerType.kBlockedScanFailed:
           case DangerType.kForcedSaveToGdrive:
+          case DangerType.kForcedSaveToOnedrive:
             return '';
           default:
             assertNotReached('Unhandled DangerType encountered');
@@ -607,7 +613,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
             return '';
           case DangerType.kSensitiveContentBlock:
             return loadTimeData.getString('sensitiveContentBlockedDesc');
+          case DangerType.kForcedSaveToOnedrive:
           case DangerType.kForcedSaveToGdrive:
+            // TODO(crbug.com/458033434) rename forcedSaveToGdriveDesc to be
+            // more generic, since it's used for both OneDrive and Google Drive.
             return loadTimeData.getString('forcedSaveToGdriveDesc');
           case DangerType.kDeepScannedFailed:
           case DangerType.kDeepScannedSafe:
@@ -696,6 +705,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         case DangerType.kBlockedTooLarge:
         case DangerType.kBlockedPasswordProtected:
         case DangerType.kForcedSaveToGdrive:
+        case DangerType.kForcedSaveToOnedrive:
           return 'cr:error';
         case DangerType.kNoApplicableDangerType:
         case DangerType.kDangerousFile:
@@ -926,6 +936,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DangerType.kDeepScannedOpenedDangerous:
       case DangerType.kBlockedScanFailed:
       case DangerType.kForcedSaveToGdrive:
+      case DangerType.kForcedSaveToOnedrive:
         return false;
       default:
         assertNotReached('Unhandled DangerType encountered');

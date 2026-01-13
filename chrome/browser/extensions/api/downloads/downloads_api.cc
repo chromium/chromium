@@ -177,6 +177,8 @@ extensions::api::downloads::DangerType ConvertDangerType(
       return extensions::api::downloads::DangerType::kSensitiveContentWarning;
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
       return extensions::api::downloads::DangerType::kForceSaveToGdrive;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
+      return extensions::api::downloads::DangerType::kForceSaveToOnedrive;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return extensions::api::downloads::DangerType::kSensitiveContentBlock;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:

@@ -51,6 +51,7 @@ std::string GetDangerTypeMetricSuffix(
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
       return ".Others";
   }
 }
