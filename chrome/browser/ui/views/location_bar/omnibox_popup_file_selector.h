@@ -71,6 +71,7 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   std::optional<lens::ImageEncodingOptions> image_encoding_options_;
   gfx::NativeWindow owning_window_;
   bool was_ai_mode_open_ = false;
+  bool is_image_ = false;
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };
