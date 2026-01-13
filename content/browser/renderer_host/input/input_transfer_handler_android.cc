@@ -242,6 +242,9 @@ void InputTransferHandlerAndroid::OnDetachedFromWindow() {
 
 void InputTransferHandlerAndroid::RequestInputBack(
     RequestInputBackReason reason) {
+  if (requested_input_back_ || !IsTouchSequencePotentiallyActiveOnViz()) {
+    return;
+  }
   requested_input_back_ = true;
   requested_input_back_reason_ = reason;
   GetHostFrameSinkManager()->RequestInputBack();
