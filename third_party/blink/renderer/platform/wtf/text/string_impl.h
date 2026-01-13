@@ -217,10 +217,6 @@ class WTF_EXPORT StringImpl {
   // The character content is always copied.
   std::u16string ToU16String() const;
 
-  // Use Span instead.
-  template <typename CharType>
-  UNSAFE_BUFFER_USAGE ALWAYS_INLINE const CharType* GetCharacters() const;
-
   template <typename CharType>
   ALWAYS_INLINE base::span<CharType> Span() const;
 
@@ -652,16 +648,6 @@ class WTF_EXPORT StringImpl {
   const unsigned length_;
   mutable std::atomic<uint32_t> hash_and_flags_;
 };
-
-template <>
-ALWAYS_INLINE const LChar* StringImpl::GetCharacters<LChar>() const {
-  return Characters8();
-}
-
-template <>
-ALWAYS_INLINE const UChar* StringImpl::GetCharacters<UChar>() const {
-  return Characters16();
-}
 
 template <>
 ALWAYS_INLINE base::span<LChar> StringImpl::Span<LChar>() const {
