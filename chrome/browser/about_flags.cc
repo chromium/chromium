@@ -10449,11 +10449,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAloudDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReadAloud)},
 
-    {"read-aloud-background-playback",
-     flag_descriptions::kReadAloudBackgroundPlaybackName,
-     flag_descriptions::kReadAloudBackgroundPlaybackDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kReadAloudBackgroundPlayback)},
-
     {"read-aloud-in-cct", flag_descriptions::kReadAloudInCCTName,
      flag_descriptions::kReadAloudInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReadAloudInOverflowMenuInCCT)},

@@ -8005,14 +8005,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "read-aloud-background-playback",
-    "owners": [
-      "basiaz@google.com",
-      "iwells@google.com"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "read-aloud-in-cct",
     "owners": [
       "basiaz@google.com",

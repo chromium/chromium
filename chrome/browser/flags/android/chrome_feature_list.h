@@ -220,7 +220,6 @@ BASE_DECLARE_FEATURE(kReadAloud);
 BASE_DECLARE_FEATURE(kReadAloudAudioOverviews);
 BASE_DECLARE_FEATURE(kReadAloudAudioOverviewsFeedback);
 BASE_DECLARE_FEATURE(kReadAloudAudioOverviewsSkipDisclaimerWhenPossible);
-BASE_DECLARE_FEATURE(kReadAloudBackgroundPlayback);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
 BASE_DECLARE_FEATURE(kReadAloudInMultiWindow);
 BASE_DECLARE_FEATURE(kReadAloudInOverflowMenuInCCT);

@@ -1191,8 +1191,7 @@ public class ReadAloudController
         }
 
         // If there is a background playback from another instance, stop it.
-        stopExternalBackgroundPlayback(
-                /* shouldSave= */ ReadAloudFeatures.isBackgroundPlaybackEnabled());
+        stopExternalBackgroundPlayback(/* shouldSave= */ true);
         // Stop ongoing playback in this activity.
         resetCurrentPlayback(ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         mActivePlaybackTabSupplier.set(tab);
@@ -1983,7 +1982,7 @@ public class ReadAloudController
     public void onApplicationStateChange(@ApplicationState int newState) {
         boolean isScreenOnAndUnlocked =
                 DeviceConditions.isCurrentlyScreenOnAndUnlocked(mActivity.getApplicationContext());
-        if (ReadAloudFeatures.isBackgroundPlaybackEnabled() && mPlayerCoordinator != null) {
+        if (mPlayerCoordinator != null) {
             if (mIsScreenOnAndUnlocked != isScreenOnAndUnlocked) {
                 mPlayerCoordinator.onScreenStatusChanged(
                         /* isScreenLocked= */ !isScreenOnAndUnlocked);
