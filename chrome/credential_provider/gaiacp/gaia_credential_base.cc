@@ -1076,6 +1076,11 @@ HRESULT CGaiaCredentialBase::GetBaseGlsCommandline(
   // language.
   command_line->AppendSwitchNative("lang", GetSelectedLanguage());
 
+  // Enable logging and set verbosity, log file is created as
+  // C:\Users\gaia\AppData\Local\Google\Chrome\User Data\chrome_debug.log
+  command_line->AppendSwitch("enable-logging");
+  command_line->AppendSwitchASCII("v", "1");
+
   return S_OK;
 }
 
