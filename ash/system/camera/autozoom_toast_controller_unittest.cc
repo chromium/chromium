@@ -70,8 +70,8 @@ class AutozoomToastControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    controller_ = nullptr;
     delegate_ = nullptr;
+    controller_.reset();
     AshTestBase::TearDown();
   }
 
@@ -86,7 +86,7 @@ class AutozoomToastControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<AutozoomToastController> controller_;
-  raw_ptr<TestDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<TestDelegate> delegate_;
 };
 
 TEST_F(AutozoomToastControllerTest, ShowToastWhenCameraActive) {
