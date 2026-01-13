@@ -211,7 +211,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchConfig(GURL(kTestConfigUrl), rp_mode, kTestBrandIconIdealSize,
+    manager->FetchConfig(GURL(kTestConfigUrl), kTestBrandIconIdealSize,
                          kTestBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
 

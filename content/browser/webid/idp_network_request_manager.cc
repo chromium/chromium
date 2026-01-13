@@ -481,7 +481,6 @@ void OnWellKnownParsed(
 }
 
 void OnConfigParsed(const GURL& provider,
-                    blink::mojom::RpMode rp_mode,
                     int idp_brand_icon_ideal_size,
                     int idp_brand_icon_minimum_size,
                     IdpNetworkRequestManager::FetchConfigCallback callback,
@@ -1089,7 +1088,6 @@ void IdpNetworkRequestManager::FetchWellKnown(const GURL& provider,
 }
 
 void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
-                                           blink::mojom::RpMode rp_mode,
                                            int idp_brand_icon_ideal_size,
                                            int idp_brand_icon_minimum_size,
                                            FetchConfigCallback callback) {
@@ -1099,9 +1097,8 @@ void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/std::nullopt,
-      base::BindOnce(&OnConfigParsed, provider, rp_mode,
-                     idp_brand_icon_ideal_size, idp_brand_icon_minimum_size,
-                     std::move(callback)));
+      base::BindOnce(&OnConfigParsed, provider, idp_brand_icon_ideal_size,
+                     idp_brand_icon_minimum_size, std::move(callback)));
 }
 
 bool IdpNetworkRequestManager::SendAccountsRequest(

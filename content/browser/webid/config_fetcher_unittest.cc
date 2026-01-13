@@ -38,7 +38,7 @@ TEST_F(ConfigFetcherTest, FailedToFetchWellKnown) {
   ConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -67,7 +67,6 @@ TEST_F(ConfigFetcherTest, FailedToFetchWellKnown) {
   fetcher.Start(
       {{GURL("https://idp.example/fedcm.json"),
         /*force_skip_well_known_enforcement=*/false}},
-      blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting([&loop](std::vector<ConfigFetcher::FetchResult>
@@ -92,7 +91,7 @@ TEST_F(ConfigFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
   ConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -120,7 +119,6 @@ TEST_F(ConfigFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
   // Asserts that we get no error in the result.
   fetcher.Start({{GURL("https://idp.example/fedcm.json"),
                   /*force_skip_well_known_enforcement=*/false}},
-                blink::mojom::RpMode::kPassive,
                 /*icon_ideal_size=*/0,
                 /*icon_minimum_size=*/0,
                 base::BindLambdaForTesting(
@@ -143,7 +141,7 @@ TEST_F(ConfigFetcherTest, FailedToFetchConfig) {
 
   // Returns a 404 for the fetch of the config file.
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             std::move(callback).Run(
                 {ParseStatus::kHttpNotFoundError, net::HTTP_NOT_FOUND},
@@ -165,7 +163,6 @@ TEST_F(ConfigFetcherTest, FailedToFetchConfig) {
   fetcher.Start(
       {{GURL("https://idp.example/fedcm.json"),
         /*force_skip_well_known_enforcement=*/false}},
-      blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -188,7 +185,7 @@ TEST_F(ConfigFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
                                     /*endpoints=*/{}, /*metadata=*/{});
@@ -209,7 +206,6 @@ TEST_F(ConfigFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
   fetcher.Start(
       {{GURL("https://idp.example/fedcm.json"),
         /*force_skip_well_known_enforcement=*/false}},
-      blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting([&loop](std::vector<ConfigFetcher::FetchResult>
@@ -232,7 +228,7 @@ TEST_F(ConfigFetcherTest, SuccessfullAndValidResponse) {
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -259,7 +255,6 @@ TEST_F(ConfigFetcherTest, SuccessfullAndValidResponse) {
   // Asserts that we get a kConfigHttpNotFound.
   fetcher.Start({{GURL("https://idp.example/fedcm.json"),
                   /*force_skip_well_known_enforcement=*/false}},
-                blink::mojom::RpMode::kPassive,
                 /*icon_ideal_size=*/0,
                 /*icon_minimum_size=*/0,
                 base::BindLambdaForTesting(
@@ -280,7 +275,7 @@ TEST_F(ConfigFetcherTest,
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -310,7 +305,6 @@ TEST_F(ConfigFetcherTest,
   fetcher.Start(
       {{GURL("https://idp.example/fedcm.json"),
         /*force_skip_well_known_enforcement=*/false}},
-      blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -333,7 +327,7 @@ TEST_F(ConfigFetcherTest, ProvidersUrlsIgnoredWhenAccountEndpointsMatch) {
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -363,7 +357,6 @@ TEST_F(ConfigFetcherTest, ProvidersUrlsIgnoredWhenAccountEndpointsMatch) {
   // Asserts that we get no error in the result.
   fetcher.Start({{GURL("https://idp.example/fedcm.json"),
                   /*force_skip_well_known_enforcement=*/false}},
-                blink::mojom::RpMode::kPassive,
                 /*icon_ideal_size=*/0,
                 /*icon_minimum_size=*/0,
                 base::BindLambdaForTesting(
@@ -383,7 +376,7 @@ TEST_F(ConfigFetcherTest, ProvidersUrlsCanbeEmptyWhenAccountEndpointsMatch) {
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -412,7 +405,6 @@ TEST_F(ConfigFetcherTest, ProvidersUrlsCanbeEmptyWhenAccountEndpointsMatch) {
   // Asserts that we get no error in the result.
   fetcher.Start({{GURL("https://idp.example/fedcm.json"),
                   /*force_skip_well_known_enforcement=*/false}},
-                blink::mojom::RpMode::kPassive,
                 /*icon_ideal_size=*/0,
                 /*icon_minimum_size=*/0,
                 base::BindLambdaForTesting(
@@ -859,7 +851,7 @@ TEST_F(ConfigFetcherTest, RegisteredIdpSkipsWellKnownCheck) {
   ConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   EXPECT_CALL(*network_manager, FetchConfig)
-      .WillOnce(WithArg<4>(
+      .WillOnce(WithArg<3>(
           [](IdpNetworkRequestManager::FetchConfigCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.token = GURL("https://idp.example/token.php");
@@ -887,7 +879,6 @@ TEST_F(ConfigFetcherTest, RegisteredIdpSkipsWellKnownCheck) {
   // Asserts that we get success despite well-known failing.
   fetcher.Start({{GURL("https://idp.example/fedcm.json"),
                   /*force_skip_well_known_enforcement=*/true}},
-                blink::mojom::RpMode::kPassive,
                 /*icon_ideal_size=*/0,
                 /*icon_minimum_size=*/0,
                 base::BindLambdaForTesting(

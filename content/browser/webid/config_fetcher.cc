@@ -57,7 +57,6 @@ ConfigFetcher::ConfigFetcher(RenderFrameHost& render_frame_host,
 ConfigFetcher::~ConfigFetcher() = default;
 
 void ConfigFetcher::Start(const std::vector<FetchRequest>& requested_providers,
-                          blink::mojom::RpMode rp_mode,
                           int icon_ideal_size,
                           int icon_minimum_size,
                           RequesterCallback callback) {
@@ -83,7 +82,7 @@ void ConfigFetcher::Start(const std::vector<FetchRequest>& requested_providers,
         base::BindOnce(&ConfigFetcher::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
     network_manager_->FetchConfig(
-        fetch_result.identity_provider_config_url, rp_mode, icon_ideal_size,
+        fetch_result.identity_provider_config_url, icon_ideal_size,
         icon_minimum_size,
         base::BindOnce(&ConfigFetcher::OnConfigFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));

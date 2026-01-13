@@ -123,7 +123,7 @@ void AccountsFetcher::FetchEndpointsForIdps(
   config_fetcher_ =
       std::make_unique<ConfigFetcher>(*render_frame_host_, network_manager_);
   config_fetcher_->Start(
-      idps, params_.rp_mode, params_.icon_ideal_size, params_.icon_minimum_size,
+      idps, params_.icon_ideal_size, params_.icon_minimum_size,
       base::BindOnce(&AccountsFetcher::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }

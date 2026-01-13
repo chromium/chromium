@@ -169,7 +169,7 @@ void UserInfoRequest::SetCallbackAndStart(
   // case.
   config_fetcher_->Start(
       {{idp_config_url_, webid::IsIdPRegistrationEnabled()}},
-      blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
+      /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(&UserInfoRequest::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));

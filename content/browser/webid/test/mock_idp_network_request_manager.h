@@ -29,11 +29,10 @@ class MockIdpNetworkRequestManager : public webid::IdpNetworkRequestManager {
               FetchWellKnown,
               (const GURL&, FetchWellKnownCallback),
               (override));
-  MOCK_METHOD(
-      void,
-      FetchConfig,
-      (const GURL&, blink::mojom::RpMode, int, int, FetchConfigCallback),
-      (override));
+  MOCK_METHOD(void,
+              FetchConfig,
+              (const GURL&, int, int, FetchConfigCallback),
+              (override));
   MOCK_METHOD(
       void,
       FetchClientMetadata,
