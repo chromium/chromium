@@ -71,7 +71,7 @@ luci.realm(
         ),
         # Allow everyone to view Turbo CI workflows
         luci.binding(
-            roles = "role/turboci.graph.reader",
+            roles = "role/turboci.nodeReaderExternal",
             groups = "all",
         ),
         # Other roles are inherited from @root which grants them to group:all.
@@ -83,7 +83,7 @@ luci.realm(
     bindings = [
         # Allow everyone to view Turbo CI workflows
         luci.binding(
-            roles = "role/turboci.graph.reader",
+            roles = "role/turboci.nodeReaderExternal",
             groups = "all",
         ),
     ],
