@@ -8387,11 +8387,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "safety-check-notifications",
-    "owners": ["bwwilliams@google.com", "thegreenfrog@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "safety-check-unused-site-permissions",
     "owners": ["sideyilmaz@chromium.org"],
     "expiry_milestone": 136
