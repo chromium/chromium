@@ -383,7 +383,7 @@
                 "abridged": false
             },
             "blink_perf.bindings": {
-                "end": 50,
+                "end": 51,
                 "abridged": false
             },
             "speedometer2": {
@@ -423,7 +423,7 @@
                 "pageset_repeat": 2
             },
             "blink_perf.bindings": {
-                "begin": 50,
+                "begin": 51,
                 "abridged": false
             },
             "blink_perf.css": {
@@ -486,7 +486,7 @@
                 "abridged": false
             },
             "blink_perf.parser": {
-                "end": 25,
+                "end": 26,
                 "abridged": false
             },
             "speedometer2": {
@@ -526,7 +526,7 @@
                 "pageset_repeat": 2
             },
             "blink_perf.parser": {
-                "begin": 25,
+                "begin": 26,
                 "abridged": false
             },
             "blink_perf.shadow_dom": {
@@ -610,10 +610,6 @@
             "jetstream2-minorms": {
                 "abridged": false
             },
-            "media.desktop": {
-                "end": 2,
-                "abridged": false
-            },
             "speedometer2": {
                 "abridged": false,
                 "pageset_repeat": 2
@@ -655,7 +651,6 @@
                 "pageset_repeat": 2
             },
             "media.desktop": {
-                "begin": 2,
                 "abridged": false
             },
             "memory.desktop": {
@@ -1205,7 +1200,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1333,
+        "num_stories": 1338,
         "predicted_min_shard_time": 2032.0,
         "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 2697.0,
@@ -1218,12 +1213,12 @@
         "shard #5": 2333.0,
         "shard #6": 2395.0,
         "shard #7": 2395.0,
-        "shard #8": 2339.0,
-        "shard #9": 2343.0,
-        "shard #10": 2340.0,
-        "shard #11": 2334.0,
+        "shard #8": 2342.0,
+        "shard #9": 2340.0,
+        "shard #10": 2346.0,
+        "shard #11": 2328.0,
         "shard #12": 2349.0,
-        "shard #13": 2319.0,
+        "shard #13": 2369.0,
         "shard #14": 2326.0,
         "shard #15": 2338.0,
         "shard #16": 2348.0,
