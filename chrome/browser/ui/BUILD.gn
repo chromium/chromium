@@ -4420,8 +4420,6 @@ static_library("ui") {
       "views/tabs/groups/manage_sharing_row.h",
       "views/tabs/new_tab_button.cc",
       "views/tabs/new_tab_button.h",
-      "views/tabs/overflow_view.cc",
-      "views/tabs/overflow_view.h",
       "views/tabs/recent_activity_bubble_dialog_view.cc",
       "views/tabs/recent_activity_bubble_dialog_view.h",
       "views/tabs/tab.cc",
