@@ -4,11 +4,11 @@
 
 #include "services/network/cors/cors_url_loader.h"
 
+#include <algorithm>
 #include <optional>
 #include <sstream>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
@@ -459,7 +459,8 @@ void CorsURLLoader::FollowRedirect(
 
   if (GetSecSharedStorageWritableHeader(modified_headers)) {
     request_.shared_storage_writable_eligible = true;
-  } else if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
+  } else if (std::ranges::contains(removed_headers,
+                                   kSecSharedStorageWritableHeader)) {
     request_.shared_storage_writable_eligible = false;
   }
 
@@ -848,7 +849,8 @@ void CorsURLLoader::StartRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartRequest",
               net::NetLogWithSourceToFlow(net_log_));
   if (fetch_cors_flag_ && !skip_cors_enabled_scheme_check_ &&
-      !base::Contains(url::GetCorsEnabledSchemes(), request_.url.GetScheme())) {
+      !std::ranges::contains(url::GetCorsEnabledSchemes(),
+                             request_.url.GetScheme())) {
     HandleComplete(URLLoaderCompletionStatus(
         CorsErrorStatus(mojom::CorsError::kCorsDisabledScheme)));
     return;

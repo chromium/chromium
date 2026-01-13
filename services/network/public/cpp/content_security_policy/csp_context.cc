@@ -4,7 +4,8 @@
 
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/notreached.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "url/url_util.h"
@@ -66,7 +67,7 @@ bool CSPContext::SchemeShouldBypassCSP(std::string_view scheme) {
   // TODO(arthursonzogni): url::GetBypassingCSPScheme() is used instead of the
   // blink::SchemeRegistry. It contains 1) but not 2).
   const auto& bypassing_schemes = url::GetCSPBypassingSchemes();
-  return base::Contains(bypassing_schemes, scheme);
+  return std::ranges::contains(bypassing_schemes, scheme);
 }
 
 void CSPContext::SanitizeDataForUseInCspViolation(

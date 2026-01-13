@@ -4,11 +4,11 @@
 
 #include "services/network/public/cpp/parsed_headers.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
@@ -125,13 +125,14 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   network::mojom::SupportsLoadingModePtr result =
       network::ParseSupportsLoadingMode(*headers);
   if (!result.is_null()) {
-    if (base::Contains(result->supported_modes,
-                       network::mojom::LoadingMode::kCredentialedPrerender)) {
+    if (std::ranges::contains(
+            result->supported_modes,
+            network::mojom::LoadingMode::kCredentialedPrerender)) {
       parsed_headers->supports_loading_mode.push_back(
           network::mojom::LoadingMode::kCredentialedPrerender);
     }
 
-    if (base::Contains(
+    if (std::ranges::contains(
             result->supported_modes,
             network::mojom::LoadingMode::kPrerenderCrossOriginFrames)) {
       parsed_headers->supports_loading_mode.push_back(

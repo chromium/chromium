@@ -4,11 +4,11 @@
 
 #include "services/webnn/webnn_graph_impl.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -2103,7 +2103,7 @@ class ElementWiseUnaryDataTypeFixture
     const bool expected =
         (inputDataType == outputDataType ||
          kOperatorsWithDissimilarDatatypeSupport.contains(kind)) &&
-        base::Contains(operator_trait.second, inputDataType);
+        std::ranges::contains(operator_trait.second, inputDataType);
 
     ElementWiseUnaryTester{
         .kind = kind,

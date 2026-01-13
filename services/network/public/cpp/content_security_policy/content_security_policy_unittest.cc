@@ -4,7 +4,8 @@
 
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -107,7 +108,7 @@ class CSPContextTest : public CSPContext {
   }
 
   bool SchemeShouldBypassCSP(std::string_view scheme) override {
-    return base::Contains(scheme_to_bypass_, scheme);
+    return std::ranges::contains(scheme_to_bypass_, scheme);
   }
 
  private:

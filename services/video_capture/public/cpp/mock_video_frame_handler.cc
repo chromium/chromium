@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -36,7 +35,7 @@ void MockVideoFrameHandler::ReleaseAccessedFrames() {
 void MockVideoFrameHandler::OnNewBuffer(
     int32_t buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
-  CHECK(!base::Contains(known_buffer_ids_, buffer_id));
+  CHECK(!std::ranges::contains(known_buffer_ids_, buffer_id));
   known_buffer_ids_.push_back(buffer_id);
   DoOnNewBuffer(buffer_id, &buffer_handle);
 }

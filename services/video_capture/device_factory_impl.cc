@@ -4,10 +4,10 @@
 
 #include "services/video_capture/device_factory_impl.h"
 
+#include <algorithm>
 #include <sstream>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #if BUILDFLAG(IS_CHROMEOS)
@@ -50,8 +50,8 @@ static void TranslateDeviceInfos(
       }
       translated_format.frame_size = format.frame_size;
       translated_format.frame_rate = format.frame_rate;
-      if (base::Contains(translated_device_info.supported_formats,
-                         translated_format)) {
+      if (std::ranges::contains(translated_device_info.supported_formats,
+                                translated_format)) {
         continue;
       }
       translated_device_info.supported_formats.push_back(translated_format);

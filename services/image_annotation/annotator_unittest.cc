@@ -4,12 +4,12 @@
 
 #include "services/image_annotation/annotator.h"
 
+#include <algorithm>
 #include <array>
 #include <cstring>
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -2446,7 +2446,7 @@ TEST(AnnotatorTest, FetchServerLanguages) {
 
   // Assert that initially server_languages_ doesn't contain the made-up
   // language code zz.
-  EXPECT_FALSE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_FALSE(std::ranges::contains(annotator.server_languages_, "zz"));
 
   test_url_factory.ExpectRequestAndSimulateResponse(
       "langs", {} /* expected headers */, "" /* body */,
@@ -2462,7 +2462,7 @@ TEST(AnnotatorTest, FetchServerLanguages) {
       net::HTTP_OK);
   test_task_env.RunUntilIdle();
 
-  EXPECT_TRUE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_TRUE(std::ranges::contains(annotator.server_languages_, "zz"));
 }
 
 // If the server langs don't contain English, they're ignored.
@@ -2480,7 +2480,7 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
 
   // Assert that initially server_languages_ does contain "en" but
   // doesn't contain the made-up language code zz.
-  EXPECT_FALSE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_FALSE(std::ranges::contains(annotator.server_languages_, "zz"));
 
   // The server response doesn't include "en", so we should ignore it.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -2497,8 +2497,8 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
 
   // We shouldn't have updated our languages because the response didn't
   // include "en".
-  EXPECT_TRUE(base::Contains(annotator.server_languages_, "en"));
-  EXPECT_FALSE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_TRUE(std::ranges::contains(annotator.server_languages_, "en"));
+  EXPECT_FALSE(std::ranges::contains(annotator.server_languages_, "zz"));
 }
 
 // Alternative Routing Tests.

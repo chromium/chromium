@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -560,7 +559,7 @@ void OutputController::StartSnooping(Snooper* snooper) {
 
   // The list will only update on this thread, and only be read on the realtime
   // audio thread.
-  DCHECK(!base::Contains(snoopers_, snooper));
+  DCHECK(!std::ranges::contains(snoopers_, snooper));
   base::AutoLock lock(snooper_lock_);
   snoopers_.push_back(snooper);
 }

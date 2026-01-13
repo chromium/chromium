@@ -4,8 +4,9 @@
 
 #include "services/resource_coordinator/memory_instrumentation/graph.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_tokenizer.h"
@@ -268,7 +269,7 @@ Node* PostOrderIterator::next() {
 
     // If the node is not at the front, it should also certainly not be
     // anywhere else in the path. If it is, there is a cycle in the graph.
-    DCHECK(!base::Contains(path_, node));
+    DCHECK(!std::ranges::contains(path_, node));
     path_.push_back(node);
 
     // Add this node back to the queue of nodes to visit.

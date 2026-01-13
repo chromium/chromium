@@ -6,11 +6,11 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -308,7 +308,7 @@ void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
                                       desired_pids, std::move(callback));
 #else
   for (const auto& client_info : clients) {
-    if (base::Contains(desired_pids, client_info.pid)) {
+    if (std::ranges::contains(desired_pids, client_info.pid)) {
       mojom::ClientProcess* client = client_info.client;
       request->pending_responses.insert(client_info.pid);
       request->responses[client_info.pid].process_id = client_info.pid;

@@ -4,7 +4,8 @@
 
 #include "services/network/trust_tokens/expiry_inspecting_record_expiry_delegate.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -40,8 +41,9 @@ bool ExpiryInspectingRecordExpiryDelegate::IsRecordExpired(
   // Treat the RR as expired if its associated token-issuance verification key
   // (|token_verification_key|) is no longer present in its issuer's key
   // commitment.
-  if (!base::Contains(key_commitments->keys, record.token_verification_key(),
-                      &mojom::TrustTokenVerificationKey::body)) {
+  if (!std::ranges::contains(key_commitments->keys,
+                             record.token_verification_key(),
+                             &mojom::TrustTokenVerificationKey::body)) {
     return true;
   }
 

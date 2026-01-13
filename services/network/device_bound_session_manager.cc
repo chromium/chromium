@@ -4,6 +4,8 @@
 
 #include "services/network/device_bound_session_manager.h"
 
+#include <algorithm>
+
 #include "base/barrier_callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
@@ -68,13 +70,13 @@ void DeviceBoundSessionManager::DeleteAllSessions(
         // TODO(crbug.com/384437667): Consolidate ClearDataFilter matching logic
         [](const mojom::ClearDataFilter& filter, const url::Origin& origin,
            const net::SchemefulSite& site) {
-          bool is_match = base::Contains(filter.origins, origin);
+          bool is_match = std::ranges::contains(filter.origins, origin);
           if (!is_match && !filter.domains.empty()) {
             const std::string etld1_for_origin =
                 net::registry_controlled_domains::GetDomainAndRegistry(
                     site.GetURL(), net::registry_controlled_domains::
                                        INCLUDE_PRIVATE_REGISTRIES);
-            is_match = base::Contains(filter.domains, etld1_for_origin);
+            is_match = std::ranges::contains(filter.domains, etld1_for_origin);
           }
 
           switch (filter.type) {
