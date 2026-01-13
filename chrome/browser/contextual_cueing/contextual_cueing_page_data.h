@@ -6,13 +6,17 @@
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_PAGE_DATA_H_
 
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/page_user_data.h"
 #include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
 #include "pdf/mojom/pdf.mojom.h"
+#endif
 
 namespace contextual_cueing {
 

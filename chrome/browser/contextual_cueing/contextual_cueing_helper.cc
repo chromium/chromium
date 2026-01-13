@@ -14,13 +14,10 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -41,10 +38,19 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
+
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #endif
 
@@ -101,6 +107,7 @@ ContextualCueingHelper::ContextualCueingHelper(
 ContextualCueingHelper::~ContextualCueingHelper() = default;
 
 tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
+#if !BUILDFLAG(IS_ANDROID)
   if (!IsContextualCueingEnabled()) {
     return nullptr;
   }
@@ -110,6 +117,9 @@ tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
     return nullptr;
   }
   return browser->browser_window_features()->glic_nudge_controller();
+#else  // NEEDS_ANDROID_IMPL
+  return nullptr;
+#endif
 }
 
 void ContextualCueingHelper::PrimaryPageChanged(content::Page& page) {
@@ -298,13 +308,16 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     return false;
   }
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   if (user_education_interface->IsFeaturePromoActive(
           feature_engagement::kIPHGlicPromoFeature)) {
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownIPH);
     return true;
   }
+#endif
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+  // NEEDS_ANDROID_IMPL
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 

@@ -29,12 +29,14 @@ class ContextualCueingPageDataTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+#if BUILDFLAG(ENABLE_PDF)
   void InvokePdfPageCountReceived(size_t page_count) {
     auto* page_data =
         ContextualCueingPageData::GetForPage(web_contents_->GetPrimaryPage());
     page_data->OnPdfPageCountReceived(
         pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess, {}, page_count);
   }
+#endif
 
  protected:
   std::unique_ptr<content::WebContents> web_contents_;
@@ -104,6 +106,7 @@ TEST_F(ContextualCueingPageDataTest, NonPdfPageFails) {
             contextual_cueing::NudgeDecision::kClientConditionsUnmet);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 TEST_F(ContextualCueingPageDataTest, PdfPageCountFails) {
   content::WebContentsTester::For(web_contents_.get())
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
@@ -189,6 +192,7 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
   EXPECT_EQ("basic label", future.Get().value().cue_label);
   EXPECT_FALSE(future.Get().value().is_dynamic);
 }
+#endif
 
 class ContextualCueingPageDataTestDynamicCue
     : public ContextualCueingPageDataTest {
