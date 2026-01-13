@@ -20,6 +20,7 @@ class PageStabilityMonitor;
 }  // namespace actor
 namespace blink {
 class LowPrecisionTimer;
+class PaintTiming;
 class ScriptedIdleTaskController;
 class TimerBase;
 class TimerBasedTickProvider;
@@ -71,6 +72,7 @@ class PostDelayedTaskPassKey {
   friend class base::DeadlineTimer;
   friend class base::MetronomeTimer;
   friend class blink::LowPrecisionTimer;
+  friend class blink::PaintTiming;
   friend class blink::ScriptedIdleTaskController;
   friend class blink::TimerBase;
   friend class blink::TimerBasedTickProvider;
