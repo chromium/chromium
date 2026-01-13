@@ -33,6 +33,7 @@ async def default_user_agent(context_id, get_navigator_user_agent):
 
 @pytest.fixture
 def get_navigator_user_agent(websocket):
+
     async def get_navigator_user_agent(context_id):
         """
         Returns browsing context's current user agent accessed via navigator.
@@ -57,6 +58,7 @@ def get_navigator_user_agent(websocket):
 @pytest.fixture
 def assert_network_user_agent(websocket, get_url_echo):
     """ Assert the `User-Agent` header is set during navigation and during fetch. """
+
     async def assert_network_user_agent(context_id, expected_user_agent,
                                         same_origin):
         # First navigate to the echo page.
@@ -103,6 +105,7 @@ def assert_network_user_agent(websocket, get_url_echo):
 @pytest.fixture
 def assert_navigator_user_agent(get_navigator_user_agent):
     """ Assert the `window.navigator.userAgent` returns the expected value. """
+
     async def assert_navigator_user_agent(context_id, expected_user_agent):
         assert await get_navigator_user_agent(context_id
                                               ) == expected_user_agent
@@ -113,6 +116,7 @@ def assert_navigator_user_agent(get_navigator_user_agent):
 @pytest.fixture
 def assert_user_agent(assert_navigator_user_agent, assert_network_user_agent):
     """ Assert the user agent is emulated properly both in DOM and in network. """
+
     async def assert_user_agent(context_id,
                                 expected_user_agent,
                                 same_origin=True):

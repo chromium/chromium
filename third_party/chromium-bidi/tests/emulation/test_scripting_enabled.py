@@ -22,6 +22,7 @@ SOME_STRING = "SOME STRING"
 
 @pytest_asyncio.fixture
 async def is_scripting_enabled(websocket):
+
     async def is_scripting_enabled(target_context_id):
         resp = await execute_command(
             websocket, {
@@ -145,8 +146,8 @@ async def test_script_disable_per_user_context(websocket, user_context_id,
     assert await is_scripting_enabled(browsing_context_id_1) is False
     assert await is_scripting_enabled(await create_context()) is False
     assert await is_scripting_enabled(browsing_context_id_2) is True
-    assert await is_scripting_enabled(await create_context(user_context_id)
-                                      ) is True
+    assert await is_scripting_enabled(await
+                                      create_context(user_context_id)) is True
 
     await execute_command(
         websocket, {
@@ -159,8 +160,8 @@ async def test_script_disable_per_user_context(websocket, user_context_id,
     assert await is_scripting_enabled(browsing_context_id_1) is False
     assert await is_scripting_enabled(await create_context()) is False
     assert await is_scripting_enabled(browsing_context_id_2) is False
-    assert await is_scripting_enabled(await create_context(user_context_id)
-                                      ) is False
+    assert await is_scripting_enabled(await
+                                      create_context(user_context_id)) is False
 
     await execute_command(
         websocket, {
@@ -173,8 +174,8 @@ async def test_script_disable_per_user_context(websocket, user_context_id,
     assert await is_scripting_enabled(browsing_context_id_1) is True
     assert await is_scripting_enabled(await create_context()) is True
     assert await is_scripting_enabled(browsing_context_id_2) is False
-    assert await is_scripting_enabled(await create_context(user_context_id)
-                                      ) is False
+    assert await is_scripting_enabled(await
+                                      create_context(user_context_id)) is False
 
     await execute_command(
         websocket, {
@@ -187,8 +188,8 @@ async def test_script_disable_per_user_context(websocket, user_context_id,
     assert await is_scripting_enabled(browsing_context_id_1) is True
     assert await is_scripting_enabled(await create_context()) is True
     assert await is_scripting_enabled(browsing_context_id_2) is True
-    assert await is_scripting_enabled(await create_context(user_context_id)
-                                      ) is True
+    assert await is_scripting_enabled(await
+                                      create_context(user_context_id)) is True
 
 
 @pytest.mark.asyncio

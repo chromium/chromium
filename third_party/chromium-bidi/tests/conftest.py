@@ -131,6 +131,7 @@ async def current_test_name(request):
 @pytest_asyncio.fixture
 async def websocket(test_headless_mode, capabilities, current_test_name):
     """Connects to endpoint, creates a session and returns a websocket connection."""
+
     async def create_session(connection):
         """
         Creates a new session on the given connection. It can time out due to
@@ -283,6 +284,7 @@ async def another_context_id(create_context):
 @pytest_asyncio.fixture
 def create_context(websocket):
     """Return a browsing context factory."""
+
     async def create_context(user_context_id=None, context_type='tab'):
         result = await execute_command(
             websocket, {
@@ -414,6 +416,7 @@ def url_cacheable(local_server_http):
 
 @pytest.fixture
 def get_url_echo(local_server_http, local_server_http_another_host):
+
     def get_url_echo(same_origin=True):
         if same_origin:
             return local_server_http.url_echo()
@@ -448,6 +451,7 @@ def read_messages(websocket, read_all_messages):
     is determined by the key and the order in which unique values for that key
     are encountered.
     """
+
     async def read_messages(message_count,
                             filter_lambda: Callable[[dict],
                                                     bool] = lambda _: True,
@@ -488,6 +492,7 @@ def read_messages(websocket, read_all_messages):
 
 @pytest.fixture
 def read_all_messages(websocket):
+
     async def read_all_messages(
             filter_lambda: Callable[[dict], bool] = lambda _: True):
         messages = []
@@ -534,6 +539,7 @@ def read_all_messages(websocket):
 @pytest.fixture
 def assert_no_more_messages(read_all_messages):
     """Assert that there are no more messages on the websocket."""
+
     async def assert_no_more_messages():
         assert await read_all_messages() == [], "No more messages are expected"
 
@@ -544,6 +550,7 @@ def assert_no_more_messages(read_all_messages):
 @pytest.fixture
 def assert_no_event_in_queue(websocket):
     """Assert that there are no more events of the given type on the websocket within the given timeout."""
+
     async def assert_no_event_in_queue(event_method: str,
                                        timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
@@ -556,6 +563,7 @@ def assert_no_event_in_queue(websocket):
 @pytest.fixture
 def assert_no_events_in_queue(websocket):
     """Assert that there are no more events of the given types on the websocket within the given timeout."""
+
     async def assert_no_events_in_queue(event_methods: list[str],
                                         timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
@@ -568,6 +576,7 @@ def assert_no_events_in_queue(websocket):
 @pytest.fixture
 def get_cdp_session_id(websocket):
     """Return the CDP session ID from the given context."""
+
     async def get_cdp_session_id(context_id: str) -> str:
         result = await execute_command(websocket, {
             "method": "goog:cdp.getSession",
@@ -584,6 +593,7 @@ def get_cdp_session_id(websocket):
 def query_selector(websocket, context_id):
     """ Return an element matching the given selector in the default or provided
     browsing context. """
+
     async def query_selector(selector: str, context_id=context_id) -> str:
         result = await execute_command(
             websocket, {
@@ -607,6 +617,7 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
     """
     Activates the tab for the default or given browsing context.
     """
+
     async def get_top_level_context_id(context_id_):
         """ Returns the top-level context id for the given context id."""
 
@@ -648,6 +659,7 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 @pytest.fixture
 def url_download(local_server_http):
     """Return a URL that triggers a download."""
+
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
             content,
@@ -671,6 +683,7 @@ def url_hang_forever_download(local_server_http):
 @pytest.fixture
 def html(local_server_http, local_server_http_another_host):
     """Return a factory for URL with the given content."""
+
     def html(content="",
              same_origin=True,
              headers: dict[str, str] | None = None):
@@ -686,6 +699,7 @@ def html(local_server_http, local_server_http_another_host):
 @pytest.fixture
 def iframe():
     """Return a factory for <iframe> with the given src."""
+
     def iframe(src=""):
         # Geolocation is required for Geolocation testing in iframes.
         return f'<iframe allow="geolocation *" src="{src}" />'
@@ -711,6 +725,7 @@ async def iframe_id(websocket, context_id, html, iframe):
 
 @pytest_asyncio.fixture
 async def create_user_context(websocket):
+
     async def create_user_context(params={}):
         """Create a new user context and return its id."""
         result = await execute_command(websocket, {
@@ -738,6 +753,7 @@ def unpacked_extension_location(tmp_path):
         The absolute path (as string) to the folder containing the extension
         files.
     """
+
     def extension(files_dict):
         for name, content in files_dict.items():
             file = tmp_path / name

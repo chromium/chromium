@@ -129,6 +129,7 @@ class LocalHttpServer:
 
     def _setup_routes(self) -> None:
         """Defines all the Flask routes for the server."""
+
         @self.__app.route(self.__path_base)
         def base_route():
             return FlaskResponse(self.__html_doc("I prevent CORS"),
@@ -205,6 +206,7 @@ class LocalHttpServer:
 
         @self.__app.route(self.__path_hang_forever_download)
         def hang_forever_download():
+
             def content_stream():
                 """
                 Returns a part of the content, waits for the

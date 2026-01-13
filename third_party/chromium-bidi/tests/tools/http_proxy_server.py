@@ -19,6 +19,7 @@ from subprocess import PIPE, Popen
 class HttpProxyServer():
     """A wrapper of `tools/http-proxy.mjs` to simplify the usage. Sets
     up common use cases and provides url for them."""
+
     def __init__(self) -> None:
         self._url = ""
 

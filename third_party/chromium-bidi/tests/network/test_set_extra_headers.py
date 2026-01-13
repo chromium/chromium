@@ -29,6 +29,7 @@ REFERER_HEADER_VALUE = "http://google.com/"
 
 @pytest_asyncio.fixture
 async def setup(websocket, url_base):
+
     async def _setup(context_id):
         await execute_command(
             websocket, {
@@ -45,6 +46,7 @@ async def setup(websocket, url_base):
 
 @pytest_asyncio.fixture
 async def get_headers(websocket, get_url_echo):
+
     async def _get_headers(context_id, same_origin):
         response = await execute_command(
             websocket, {
@@ -66,6 +68,7 @@ async def get_headers(websocket, get_url_echo):
 
 @pytest_asyncio.fixture
 async def assert_headers(get_headers):
+
     async def _assert_headers(context_id,
                               expected_headers={},
                               same_origin=True):

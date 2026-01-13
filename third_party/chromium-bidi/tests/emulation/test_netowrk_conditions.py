@@ -20,6 +20,7 @@ from test_helpers import execute_command, goto_url
 
 @pytest.fixture
 def get_url(url_example):
+
     def get_url():
         return f"{url_example}?{uuid4()}"
 
@@ -28,6 +29,7 @@ def get_url(url_example):
 
 @pytest.fixture
 def get_navigator_online(websocket):
+
     async def get_navigator_online(context_id):
         resp = await execute_command(
             websocket, {
@@ -48,6 +50,7 @@ def get_navigator_online(websocket):
 
 @pytest.fixture
 def get_can_navigate(websocket, get_url):
+
     async def can_navigate(context_id):
         try:
             await execute_command(
@@ -73,6 +76,7 @@ def get_can_navigate(websocket, get_url):
 
 @pytest.fixture
 def get_can_fetch(websocket, url_echo):
+
     async def get_can_fetch(context_id):
         resp = await execute_command(
             websocket, {
@@ -92,6 +96,7 @@ def get_can_fetch(websocket, url_echo):
 
 @pytest.fixture
 def assert_status(get_navigator_online, get_can_fetch):
+
     async def assert_status(context_id, expected_status):
         assert expected_status == await get_navigator_online(
             context_id), f"navigator.onLine should be {expected_status}"
@@ -108,6 +113,7 @@ def prepare_contexts(websocket, get_url):
     Chrome considers the `about:blank` page an offline, so the initial page has
     to be navigated.
     """
+
     async def prepare_contexts(*context_ids):
         for context_id in context_ids:
             await goto_url(websocket, context_id, get_url())

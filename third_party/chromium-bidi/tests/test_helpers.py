@@ -105,6 +105,7 @@ async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:
 async def wait_for_command(websocket,
                            command_id: int,
                            timeout: int = 5) -> dict:
+
     def _filter(resp):
         return "id" in resp and resp["id"] == command_id
 
@@ -117,6 +118,7 @@ async def wait_for_command(websocket,
 async def wait_for_message(websocket,
                            filter_lambda: Callable[[dict], bool],
                            timeout: int = 5):
+
     async def future():
         while True:
             # Wait for the command to be finished.
@@ -208,6 +210,7 @@ async def wait_for_events(websocket, event_methods: list[str]) -> dict:
 async def wait_for_filtered_event(
         websocket, filter_lambda: Callable[[dict], bool]) -> dict:
     """Wait and return any of the given event satisfying filter. Ignores """
+
     def filter_lambda_wrapper(resp):
         if 'type' in resp and resp['type'] == 'event':
             return filter_lambda(resp)

@@ -23,7 +23,7 @@
 default_stages: [pre-push, manual]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-docstring-first
       - id: check-executables-have-shebangs
@@ -40,49 +40,49 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.2.0
+    rev: v4.3.0
     hooks:
       # Most common ones: [build, chore, ci, docs, feat, fix, refactor, test]
       # https://conventionalcommits.org
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: 7.1.0
+    rev: 7.3.0
     hooks:
       - id: flake8
   - repo: https://github.com/google/yapf
     # Use v0.31.0 to match the version in Chromium depot_tools: https://chromium.googlesource.com/chromium/tools/depot_tools.git
     # XXX: Upgrade to v0.32.0 when upstream is addressed: https://bugs.chromium.org/p/chromium/issues/detail?id=1420681
     # Otherwise formatting is inconsistent, e.g. https://github.com/GoogleChromeLabs/chromium-bidi/issues/889
-    rev: v0.31.0
+    rev: v0.43.0
     hooks:
       - id: yapf
         args: [--in-place, --parallel]
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 7.0.0
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
+    rev: v1.19.1
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.16.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.9
+    rev: 1.9.2
     hooks:
       - id: bandit
         args: [--ini, .bandit]
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: v0.11.0.1
     hooks:
       - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
+    rev: v2.4.1
     hooks:
       - id: codespell
         # skip false positives
@@ -95,7 +95,7 @@ repos:
           ]
         exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
-    rev: v0.4.0
+    rev: v0.7.1
     hooks:
       - id: keep-sorted
   - repo: local

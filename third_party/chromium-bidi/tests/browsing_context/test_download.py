@@ -34,6 +34,7 @@ async def content():
 
 @pytest_asyncio.fixture
 async def prepare_context(websocket, html, downloadable_url):
+
     async def prepare_context(target_context_id, url=downloadable_url):
         page_url = html(
             f"""<a id="download_link" href="{url}" download="{FILE_NAME}">Download</a>"""
@@ -49,6 +50,7 @@ async def prepare_context(websocket, html, downloadable_url):
 
 @pytest_asyncio.fixture
 async def trigger_download(websocket):
+
     async def trigger_download(target_context_id):
         await send_JSON_command(
             websocket, {
@@ -95,6 +97,7 @@ def downloadable_url(url_download, request, content):
 @pytest_asyncio.fixture
 async def assert_success_download_events(websocket, prepare_context, content,
                                          trigger_download, downloadable_url):
+
     async def assert_success_download_events(context_id):
         await prepare_context(context_id)
         await trigger_download(context_id)
@@ -140,6 +143,7 @@ async def assert_success_download_events(websocket, prepare_context, content,
 @pytest_asyncio.fixture
 async def assert_denied_download_events(websocket, prepare_context,
                                         trigger_download, downloadable_url):
+
     async def assert_denied_download_events(context_id):
         await prepare_context(context_id)
         await trigger_download(context_id)

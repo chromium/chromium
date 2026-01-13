@@ -27,6 +27,7 @@ MAX_TOTAL_COLLECTED_SIZE = 200_000_000  # Default CDP limit.
 
 @pytest.fixture
 def get_url(local_server_http):
+
     def get_url(content):
         return local_server_http.url_200(
             content,
@@ -38,6 +39,7 @@ def get_url(local_server_http):
 
 @pytest_asyncio.fixture
 async def init_response(websocket, read_messages, get_url):
+
     async def init_response(context_id, content):
         await subscribe(websocket, NETWORK_RESPONSE_STARTED_EVENT, context_id)
         command_id = await send_JSON_command(
@@ -80,6 +82,7 @@ async def init_response(websocket, read_messages, get_url):
 
 @pytest_asyncio.fixture
 async def init_post_request(websocket, read_messages, url_echo):
+
     async def init_post_request(context_id, post_content):
         await subscribe(websocket, NETWORK_RESPONSE_STARTED_EVENT, context_id)
         command_id = await send_JSON_command(
