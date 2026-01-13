@@ -114,6 +114,18 @@ public class PreferenceParserTest {
                 processedFragments.contains(FRAGMENT_MAIN));
     }
 
+    @Test
+    public void testParsePreferences_skipsTextMessagePreference() throws Exception {
+        List<Bundle> parsedMetadata =
+                PreferenceParser.parsePreferences(mContext, R.xml.test_search_root_prefs);
+
+        Bundle textMessageBundle = findBundleByKey(parsedMetadata, "ignored_text_message");
+        assertNull(
+                "TextMessagePreference 'ignored_text_message' should be ignored/eliminated by the"
+                        + " parser.",
+                textMessageBundle);
+    }
+
     @Nullable
     private Bundle findBundleByKey(List<Bundle> metadata, String key) {
         for (Bundle bundle : metadata) {

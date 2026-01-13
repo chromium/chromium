@@ -17,6 +17,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ public class PreferenceParser {
 
     private static final String TAG = "PreferenceParser";
     private static final String ID_DELIMITER = "#";
+    private static final String TEXT_MESSAGE_PREFERENCE_CLASS =
+            TextMessagePreference.class.getName();
 
     /**
      * Parses a {@link androidx.preference.PreferenceScreen} XML resource to extract key attributes
@@ -70,7 +73,9 @@ public class PreferenceParser {
         String header = null;
         while (eventType != XmlPullParser.END_DOCUMENT) {
             String tagName = parser.getName();
-            if (eventType == XmlPullParser.START_TAG && !"PreferenceScreen".equals(tagName)) {
+            if (eventType == XmlPullParser.START_TAG
+                    && !"PreferenceScreen".equals(tagName)
+                    && !tagName.equals(TEXT_MESSAGE_PREFERENCE_CLASS)) {
                 AttributeSet attrs = Xml.asAttributeSet(parser);
                 int[] androidAttrIds =
                         new int[] {
