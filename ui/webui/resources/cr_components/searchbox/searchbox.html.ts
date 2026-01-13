@@ -54,6 +54,16 @@ export function getHtml(this: SearchboxElement) {
   <cr-searchbox-icon id="icon" .match="${this.selectedMatch_}"
       default-icon="${this.searchboxIcon_}" in-searchbox>
   </cr-searchbox-icon>
+  ${this.showThumbnail ? html`
+    <div id="thumbnailContainer">
+      <cr-searchbox-thumbnail id="thumbnail" thumbnail-url_="${this.thumbnailUrl_}"
+          ?is-deletable_="${this.isThumbnailDeletable_}"
+          @remove-thumbnail-click="${this.onRemoveThumbnailClick_}"
+          role="button" aria-label="${this.i18n('searchboxThumbnailLabel')}"
+          tabindex="${this.getThumbnailTabindex_()}">
+      </cr-searchbox-thumbnail>
+    </div>
+  ` : nothing}
   ${this.multiLineEnabled ? html`
     <textarea id="input" autocomplete="off"
         part="searchbox-input"
@@ -81,17 +91,7 @@ export function getHtml(this: SearchboxElement) {
         @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMouseDown_}"
         @paste="${this.onInputPaste_}">
     </input>
-  `}
-    ${this.showThumbnail ? html`
-      <div id="thumbnailContainer">
-        <cr-searchbox-thumbnail id="thumbnail" thumbnail-url_="${this.thumbnailUrl_}"
-            ?is-deletable_="${this.isThumbnailDeletable_}"
-            @remove-thumbnail-click="${this.onRemoveThumbnailClick_}"
-            role="button" aria-label="${this.i18n('searchboxThumbnailLabel')}"
-            tabindex="${this.getThumbnailTabindex_()}">
-        </cr-searchbox-thumbnail>
-      </div>
-    ` : nothing}`;
+  `}`;
 
   const voiceSearchButton = html`
     ${this.searchboxVoiceSearchEnabled_ ? html`
