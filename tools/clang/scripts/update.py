@@ -43,6 +43,7 @@ CLANG_REVISION = 'llvmorg-22-init-20115-g2a8be8bd'
 CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
+# TODO(crbug.com/475255730): Bump to 23 in next Clang roll.
 RELEASE_VERSION = '22'
 
 CDS_URL = os.environ.get('CDS_CLANG_BUCKET_OVERRIDE',
@@ -375,6 +376,11 @@ def main():
                       'directory will be preserved when syncing. Useful for'
                       'local development.')
   args = parser.parse_args()
+
+  # TODO(crbug.com/475255730): Remove in next Clang roll.
+  if args.llvm_force_head_revision:
+    global RELEASE_VERSION
+    RELEASE_VERSION = '23'
 
   if args.print_clang_version:
     print(RELEASE_VERSION)
