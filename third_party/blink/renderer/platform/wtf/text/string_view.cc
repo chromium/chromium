@@ -41,6 +41,26 @@ class StackStringViewAllocator {
  private:
   StringView::StackBackingStore& backing_store_;
 };
+
+Vector<StringView> SplitInternal(StringView input,
+                                 UChar separator,
+                                 bool allow_empty_entries) {
+  Vector<StringView> result;
+
+  unsigned start_pos = 0;
+  wtf_size_t end_pos;
+  while ((end_pos = input.find(separator, start_pos)) != kNotFound) {
+    if (allow_empty_entries || start_pos != end_pos) {
+      result.push_back(StringView(input, start_pos, end_pos - start_pos));
+    }
+    start_pos = end_pos + 1;
+  }
+  if (allow_empty_entries || start_pos != input.length()) {
+    result.push_back(StringView(input, start_pos));
+  }
+  return result;
+}
+
 }  // namespace
 
 StringView::StringView(const UChar* chars)
@@ -384,6 +404,14 @@ StringView StringView::StripWhiteSpace(
     }
     return StringView(chars.subspan(start, len));
   });
+}
+
+Vector<StringView> StringView::Split(UChar separator) const {
+  return SplitInternal(*this, separator, /* allow_empty_entries */ true);
+}
+
+Vector<StringView> StringView::SplitSkippingEmpty(UChar separator) const {
+  return SplitInternal(*this, separator, /* allow_empty_entries */ false);
 }
 
 std::ostream& operator<<(std::ostream& out, const StringView& string) {

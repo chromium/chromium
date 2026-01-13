@@ -307,6 +307,19 @@ class WTF_EXPORT StringView {
   [[nodiscard]] StringView StripWhiteSpace(
       IsWhiteSpaceFunctionPtr predicate) const;
 
+  // Returns a list of substrings of `this`, separated by `separator`.
+  //
+  // `StringView("a,,b").Split(',')` produces ["a", "", "b"], and
+  // `StringView("").Split(',')` produces [""].
+  Vector<StringView> Split(UChar separator) const;
+
+  // Returns a list of substrings of `this`, separated by `separator`.
+  // This doesn't produce empty substrings.
+  //
+  // `StringView(" a  b").Split(' ')` produces ["a", "b"], and
+  // `StringView("").Split(',')` produces an empty list.
+  Vector<StringView> SplitSkippingEmpty(UChar separator) const;
+
  private:
   void Set(const StringImpl&, unsigned offset, unsigned length);
 

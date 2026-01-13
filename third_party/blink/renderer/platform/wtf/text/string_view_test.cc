@@ -733,4 +733,24 @@ TEST(StringViewTest, StripWhiteSpaceWithPredicate) {
   EXPECT_EQ(StringView(u"\u3000"), StringView(u"\u3000").StripWhiteSpace(p));
 }
 
+TEST(StringViewTest, SplitByChar) {
+  auto result = StringView("").SplitSkippingEmpty(' ');
+  EXPECT_EQ(0u, result.size());
+
+  result = StringView("  foo  bar").SplitSkippingEmpty(' ');
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("bar", result[1]);
+
+  result = StringView("").Split(',');
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ("", result[0]);
+
+  result = StringView("foo,,bar").Split(',');
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("", result[1]);
+  EXPECT_EQ("bar", result[2]);
+}
+
 }  // namespace blink

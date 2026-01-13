@@ -255,6 +255,30 @@ TEST(WTF, SimplifyWhiteSpace) {
                                                    kDoNotStripWhiteSpace));
 }
 
+TEST(StringTest, SplitByChar) {
+  Vector<String> result;
+  String("").Split(' ', result);
+  EXPECT_EQ(0u, result.size());
+  result.clear();
+
+  String("  foo  bar").Split(' ', result);
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("bar", result[1]);
+  result.clear();
+
+  String("").Split(',', true, result);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ("", result[0]);
+  result.clear();
+
+  String("foo,,bar").Split(',', true, result);
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("", result[1]);
+  EXPECT_EQ("bar", result[2]);
+}
+
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {
   // [U+017F U+212A i a] starts with "sk".
   EXPECT_TRUE(String::FromUTF8("\xC5\xBF\xE2\x84\xAAia")

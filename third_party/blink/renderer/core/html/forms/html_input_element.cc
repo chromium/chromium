@@ -1633,7 +1633,7 @@ static inline bool IsRFC2616TokenCharacter(UChar ch) {
          (ch < '[' || ch > ']') && ch != '{' && ch != '}' && ch != 0x7f;
 }
 
-static bool IsValidMIMEType(const String& type) {
+static bool IsValidMIMEType(const StringView& type) {
   size_t slash_position = type.find('/');
   if (slash_position == kNotFound || !slash_position ||
       slash_position == type.length() - 1)
@@ -1645,27 +1645,27 @@ static bool IsValidMIMEType(const String& type) {
   return true;
 }
 
-static bool IsValidFileExtension(const String& type) {
+static bool IsValidFileExtension(const StringView& type) {
   if (type.length() < 2)
     return false;
   return type[0] == '.';
 }
 
-static Vector<String> ParseAcceptAttribute(const String& accept_string,
-                                           bool (*predicate)(const String&)) {
+static Vector<String> ParseAcceptAttribute(
+    const String& accept_string,
+    bool (*predicate)(const StringView&)) {
   Vector<String> types;
   if (accept_string.empty())
     return types;
 
-  Vector<String> split_types;
-  accept_string.Split(',', false, split_types);
-  for (const String& split_type : split_types) {
-    String trimmed_type = StripLeadingAndTrailingHTMLSpaces(split_type);
+  Vector<StringView> split_types = StringView(accept_string).Split(',');
+  for (const StringView& split_type : split_types) {
+    StringView trimmed_type = split_type.StripWhiteSpace(IsHTMLSpace);
     if (trimmed_type.empty())
       continue;
     if (!predicate(trimmed_type))
       continue;
-    types.push_back(trimmed_type.DeprecatedLower());
+    types.push_back(trimmed_type.ToString().DeprecatedLower());
   }
 
   return types;
@@ -1929,10 +1929,9 @@ HTMLInputElement::FilteredDataListOptions() const {
 
   String editor_value = InnerEditorValue();
   if (Multiple() && FormControlType() == FormControlType::kInputEmail) {
-    Vector<String> emails;
-    editor_value.Split(',', true, emails);
+    auto emails = StringView(editor_value).SplitSkippingEmpty(',');
     if (!emails.empty())
-      editor_value = emails.back().StripWhiteSpace();
+      editor_value = emails.back().StripWhiteSpace().ToString();
   }
 
   HTMLDataListOptionsCollection* options = data_list->options();
