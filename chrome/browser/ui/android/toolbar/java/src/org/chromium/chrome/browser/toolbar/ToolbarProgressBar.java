@@ -134,7 +134,9 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                                         getDrawable().getBounds().right
                                                 - getDrawable().getBounds().left);
                         mAnimatingView.update(getProgress() * width);
-                        if (shouldAnimateCompositedLayer()) {
+
+                        if (shouldAnimateCompositedLayer()
+                                && getDesiredAndroidVisibility() == VISIBLE) {
                             mAnimatingView.setVisibility(VISIBLE);
                         }
                         mAnimatingView.startAnimation();
