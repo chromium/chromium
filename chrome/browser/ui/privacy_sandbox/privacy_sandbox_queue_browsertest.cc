@@ -447,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueNoticeWithEsbNoticeBrowserTest,
 }
 
 // The tailored security notice should show after the privacy sandbox notice.
-// TODO(crbug.com/466923026): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/466923026): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_EsbNoticeShowsAfterPS DISABLED_EsbNoticeShowsAfterPS
 #else
 #define MAYBE_EsbNoticeShowsAfterPS EsbNoticeShowsAfterPS
