@@ -98,8 +98,6 @@ enum VideoCaptureTransportType {
 
 enum VideoCaptureBufferType {
   kSharedMemory,
-  kSharedMemoryViaRawFileDescriptor_DEPRECATED,  // DEPRECATED, DO NOT USE
-  kMailboxHolder,
   kGpuMemoryBuffer,
   kSharedImage
 };

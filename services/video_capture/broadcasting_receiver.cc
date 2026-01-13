@@ -136,9 +136,6 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
   }
 
   switch (target_buffer_type) {
-    case media::VideoCaptureBufferType::kMailboxHolder:
-      NOTREACHED() << "Cannot convert buffer type to kMailboxHolder from "
-                      "handle type other than mailbox handles.";
     case media::VideoCaptureBufferType::kSharedMemory:
       if (buffer_handle_->is_unsafe_shmem_region()) {
         return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(

@@ -60,7 +60,6 @@ static constexpr media::VideoPixelFormat kCapturePixelFormats[] = {
 
 static constexpr media::VideoCaptureBufferType kVideoCaptureBufferTypes[] = {
     media::VideoCaptureBufferType::kSharedMemory,
-    media::VideoCaptureBufferType::kMailboxHolder,
     media::VideoCaptureBufferType::kGpuMemoryBuffer};
 
 static constexpr int kTestBufferPoolSize = 3;
