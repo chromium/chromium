@@ -654,6 +654,14 @@ void ManifestToWebAppInstallInfoJob::FetchIconsInternal(
     std::optional<base::FunctionRef<void(IconUrlSizeSet&)>>
         icon_url_modifications,
     IconUrlExtractionOptions icon_url_options) {
+  debug_data_->Set(
+      "icon_url_options",
+      base::DictValue()
+          .Set("product_icons", icon_url_options.product_icons)
+          .Set("shortcut_menu_item_icons",
+               icon_url_options.shortcut_menu_item_icons)
+          .Set("file_handling_icons", icon_url_options.file_handling_icons)
+          .Set("home_tab_icons", icon_url_options.home_tab_icons));
   IconUrlSizeSet icon_urls_to_download =
       GetValidIconUrlsToDownload(install_info(), icon_url_options);
   if (icon_url_modifications.has_value()) {

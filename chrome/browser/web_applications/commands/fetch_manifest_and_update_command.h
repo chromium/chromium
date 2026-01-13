@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
+#include "chrome/browser/web_applications/jobs/manifest_update_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -29,7 +29,6 @@ enum class WebAppUrlLoaderResult;
 namespace web_app {
 
 class WebAppDataRetriever;
-struct WebAppInstallInfo;
 
 // This command will fetch the given install url with the shared web contents,
 // and perform a manifest update, assuming that the loaded manifest's id matches
@@ -56,12 +55,8 @@ class FetchManifestAndUpdateCommand
   void OnManifestRetrieved(
       const base::expected<blink::mojom::ManifestPtr,
                            blink::mojom::RequestManifestErrorPtr>& result);
-  void OnAppLockAcquired();
-  void OnWebAppInfoCreatedFromManifest(
-      std::unique_ptr<WebAppInstallInfo> install_info);
-  void OnIconsFetched();
-  void OnUpdateFinalized(const webapps::AppId& app_id,
-                         webapps::InstallResultCode code);
+  void OnAppLockAcquired(blink::mojom::ManifestPtr manifest);
+  void OnUpdateJobCompleted(ManifestUpdateJobResultWithTimestamp result_info);
 
   const GURL install_url_;
   const webapps::ManifestId expected_manifest_id_;
@@ -70,9 +65,8 @@ class FetchManifestAndUpdateCommand
   std::unique_ptr<SharedWebContentsWithAppLock> app_lock_;
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<WebAppInstallInfo> install_info_;
 
-  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  std::unique_ptr<ManifestUpdateJob> manifest_update_job_;
 
   base::WeakPtrFactory<FetchManifestAndUpdateCommand> weak_factory_{this};
 };

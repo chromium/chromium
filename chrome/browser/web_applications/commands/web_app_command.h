@@ -190,9 +190,13 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
         << internal::CommandBase::GetMutableDebugValue().DebugString();
     metadata->Set("command_result",
                   result == CommandResult::kSuccess ? "kSuccess" : "kFailure");
-    metadata->Set(
-        "!result",
-        base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
+    if constexpr (sizeof...(CallbackArgs) == 1) {
+      metadata->Set("!result", base::ToString(args_for_callback...));
+    } else if constexpr (sizeof...(CallbackArgs) > 1) {
+      metadata->Set(
+          "!result",
+          base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
+    }
     metadata->Set("completion_location", base::ToString(location));
     if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
       metadata->Set("completed_at", base::TimeFormatTimeOfDayWithMilliseconds(

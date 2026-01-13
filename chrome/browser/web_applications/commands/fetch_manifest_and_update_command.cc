@@ -10,19 +10,18 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
-#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
+#include "chrome/browser/web_applications/jobs/manifest_update_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
-#include "chrome/browser/web_applications/model/web_app_comparison.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -109,24 +108,24 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
   }
   CHECK(result.value());
 
-  const blink::mojom::Manifest& manifest = *result.value();
-  if (blink::IsEmptyManifest(manifest)) {
+  blink::mojom::ManifestPtr manifest = result.value()->Clone();
+  if (blink::IsEmptyManifest(*manifest)) {
     GetMutableDebugValue().Set("manifest_error", "empty");
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kInvalidManifest);
     return;
   }
 
-  if (manifest.id != expected_manifest_id_) {
+  if (manifest->id != expected_manifest_id_) {
     GetMutableDebugValue().Set("foundmanifest_id",
-                               manifest.id.possibly_invalid_spec());
+                               manifest->id.possibly_invalid_spec());
     GetMutableDebugValue().Set("manifest_error", "manifest_id_mismatch");
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kInvalidManifest);
     return;
   }
 
-  if (!manifest.has_valid_specified_start_url) {
+  if (!manifest->has_valid_specified_start_url) {
     GetMutableDebugValue().Set("manifest_error", "no_specified_start_url");
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kInvalidManifest);
@@ -134,7 +133,7 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
   }
 
   bool has_any_icon = false;
-  for (const auto& icon : manifest.icons) {
+  for (const auto& icon : manifest->icons) {
     if (base::Contains(icon.purpose,
                        blink::mojom::ManifestImageResource_Purpose::ANY)) {
       has_any_icon = true;
@@ -148,41 +147,16 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     return;
   }
 
-  manifest_to_install_info_job_ =
-      ManifestToWebAppInstallInfoJob::CreateAndStart(
-          manifest, *data_retriever_,
-          /*background_installation=*/false,
-          webapps::WebappInstallSource::MENU_BROWSER_TAB,
-          web_contents_lock_->shared_web_contents().GetWeakPtr(),
-          [](IconUrlSizeSet&) {}, *GetMutableDebugValue().EnsureDict("job"),
-          base::BindOnce(
-              &FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest,
-              weak_factory_.GetWeakPtr()),
-          {.bypass_icon_generation_if_no_url = true,
-           .fail_all_if_any_fail = true,
-           .defer_icon_fetching = true,
-           .use_manifest_icons_as_trusted = true});
-}
-
-void FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest(
-    std::unique_ptr<WebAppInstallInfo> install_info) {
-  if (!install_info) {
-    CompleteAndSelfDestruct(
-        CommandResult::kSuccess,
-        FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed);
-    return;
-  }
-  install_info_ = std::move(install_info);
-
   app_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(web_contents_lock_), *app_lock_,
       {GenerateAppIdFromManifestId(expected_manifest_id_)},
       base::BindOnce(&FetchManifestAndUpdateCommand::OnAppLockAcquired,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(manifest)));
 }
 
-void FetchManifestAndUpdateCommand::OnAppLockAcquired() {
+void FetchManifestAndUpdateCommand::OnAppLockAcquired(
+    blink::mojom::ManifestPtr manifest) {
   if (!app_lock_->registrar().AppMatches(
           GenerateAppIdFromManifestId(expected_manifest_id_),
           WebAppFilter::InstalledInChrome())) {
@@ -191,68 +165,78 @@ void FetchManifestAndUpdateCommand::OnAppLockAcquired() {
     return;
   }
 
-  const WebApp* app = app_lock_->registrar().GetAppById(
-      GenerateAppIdFromManifestId(expected_manifest_id_));
-  CHECK(app);
+  ManifestUpdateJob::Options options;
+  options.force_silent_update_identity = true;
+  options.bypass_icon_generation_if_no_url = true;
+  options.fail_if_any_icon_download_fails = true;
+  options.use_manifest_icons_as_trusted = true;
 
-  if (WebAppComparison::CompareWebApps(*app, *install_info_)
-          .ExistingAppWithoutPendingEqualsNewUpdate()) {
-    CompleteAndSelfDestruct(
-        CommandResult::kSuccess,
-        FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
-    return;
-  }
-
-  manifest_to_install_info_job_->FetchIcons(
-      *install_info_, app_lock_->shared_web_contents(),
-      base::BindOnce(&FetchManifestAndUpdateCommand::OnIconsFetched,
-                     weak_factory_.GetWeakPtr()));
+  manifest_update_job_ = ManifestUpdateJob::CreateAndStart(
+      app_lock_.get(), &app_lock_->shared_web_contents(),
+      GetMutableDebugValue().EnsureDict("manifest_update_job"),
+      std::move(manifest), data_retriever_.get(), &app_lock_->clock(),
+      base::BindOnce(&FetchManifestAndUpdateCommand::OnUpdateJobCompleted,
+                     weak_factory_.GetWeakPtr()),
+      std::move(options));
 }
 
-void FetchManifestAndUpdateCommand::OnIconsFetched() {
-  switch (manifest_to_install_info_job_->icon_download_result()) {
-    case IconsDownloadedResult::kCompleted:
+void FetchManifestAndUpdateCommand::OnUpdateJobCompleted(
+    ManifestUpdateJobResultWithTimestamp result_info) {
+  FetchManifestAndUpdateResult result;
+  CommandResult command_result = CommandResult::kSuccess;
+  switch (result_info.result()) {
+    case ManifestUpdateJobResult::kNoUpdateNeeded:
+      result = FetchManifestAndUpdateResult::kSuccessNoUpdateDetected;
+      command_result = CommandResult::kSuccess;
       break;
-    case IconsDownloadedResult::kPrimaryPageChanged:
-      CompleteAndSelfDestruct(
-          CommandResult::kSuccess,
-          FetchManifestAndUpdateResult::kPrimaryPageChanged);
-      return;
-    case IconsDownloadedResult::kAbortedDueToFailure:
-      CompleteAndSelfDestruct(CommandResult::kSuccess,
-                              FetchManifestAndUpdateResult::kIconDownloadError);
-      return;
+    case ManifestUpdateJobResult::kSilentlyUpdated:
+      result = FetchManifestAndUpdateResult::kSuccess;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestUpdateJobResult::
+        kPendingUpdateRecorded_AppOnlyHasSecurityUpdate:
+    case ManifestUpdateJobResult::
+        kPendingUpdateRecorded_AppHasSecurityUpdateDueToThrottle:
+    case ManifestUpdateJobResult::
+        kPendingUpdateRecorded_AppHasNonSecurityAndSecurityChanges:
+      // These results should not be possible as `force_silent_update_identity`
+      // was set to true.
+      NOTREACHED();
+    case ManifestUpdateJobResult::kIconDownloadFailed:
+      result = FetchManifestAndUpdateResult::kIconDownloadError;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestUpdateJobResult::kIconReadFromDiskFailed:
+      result = FetchManifestAndUpdateResult::kIconDownloadError;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestUpdateJobResult::kManifestConversionFailed:
+      result = FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestUpdateJobResult::kInstallFinalizeFailed:
+      result = FetchManifestAndUpdateResult::kInstallationError;
+      command_result = CommandResult::kFailure;
+      break;
+    case ManifestUpdateJobResult::kAppNotAllowedToUpdate:
+      result = FetchManifestAndUpdateResult::kAppNotInstalled;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestUpdateJobResult::kUserNavigated:
+      result = FetchManifestAndUpdateResult::kPrimaryPageChanged;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestUpdateJobResult::kWebContentsDestroyed:
+      result = FetchManifestAndUpdateResult::kManifestRetrievalError;
+      command_result = CommandResult::kFailure;
+      break;
+    case ManifestUpdateJobResult::kIconWriteToDiskFailed:
+      result = FetchManifestAndUpdateResult::kIconDownloadError;
+      command_result = CommandResult::kFailure;
+      break;
   }
 
-  app_lock_->install_finalizer().FinalizeUpdate(
-      *install_info_,
-      base::BindOnce(&FetchManifestAndUpdateCommand::OnUpdateFinalized,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void FetchManifestAndUpdateCommand::OnUpdateFinalized(
-    const webapps::AppId& app_id,
-    webapps::InstallResultCode code) {
-  if (code != webapps::InstallResultCode::kSuccessAlreadyInstalled) {
-    CompleteAndSelfDestruct(CommandResult::kFailure,
-                            FetchManifestAndUpdateResult::kInstallationError);
-    return;
-  }
-
-  const WebApp* app = app_lock_->registrar().GetAppById(app_id);
-  CHECK(app);
-  if (app->pending_update_info().has_value()) {
-    {
-      ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
-      update->UpdateApp(app_id)->SetPendingUpdateInfo(std::nullopt);
-    }
-    app_lock_->registrar().NotifyPendingUpdateInfoChanged(
-        app_id, /*pending_update_available=*/false,
-        base::PassKey<FetchManifestAndUpdateCommand>());
-  }
-
-  CompleteAndSelfDestruct(CommandResult::kSuccess,
-                          FetchManifestAndUpdateResult::kSuccess);
+  CompleteAndSelfDestruct(command_result, result);
 }
 
 }  // namespace web_app

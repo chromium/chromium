@@ -44,6 +44,7 @@ class WebAppInstallManager;
 class WebAppProvider;
 class ApplyPendingManifestUpdateCommand;
 class ManifestSilentUpdateCommand;
+class ManifestUpdateJob;
 
 using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
@@ -255,7 +256,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
 
   class DeletePendingPassKey {
     friend class ApplyPendingManifestUpdateCommand;
-    friend class ManifestSilentUpdateCommand;
+    friend class ManifestUpdateJob;
     DeletePendingPassKey() = default;
   };
   using DeletePendingIconDataCallback = base::OnceCallback<void(bool success)>;

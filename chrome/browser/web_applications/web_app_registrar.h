@@ -71,6 +71,7 @@ class WebAppProvider;
 class WebAppRegistrarObserver;
 class WebAppScope;
 class ManifestSilentUpdateCommand;
+class ManifestUpdateJob;
 class FetchManifestAndUpdateCommand;
 class ApplyPendingManifestUpdateCommand;
 class ResolveWebAppPendingMigrationInfoCommand;
@@ -596,8 +597,7 @@ class WebAppRegistrar {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   using PendingUpdateInfoChangePassKey =
-      base::PassKey<ManifestSilentUpdateCommand,
-                    FetchManifestAndUpdateCommand,
+      base::PassKey<ManifestUpdateJob,
                     ApplyPendingManifestUpdateCommand,
                     WebAppCommandScheduler>;
 
