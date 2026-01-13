@@ -10,8 +10,13 @@
 
 class BrowserWindowInterface;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace contextual_search {
 class ContextualSearchSessionHandle;
+class ContextualSearchService;
 }  // namespace contextual_search
 
 namespace contextual_tasks {
@@ -25,6 +30,19 @@ contextual_search::ContextualSearchSessionHandle* FindSessionForTask(
     ContextualTasksService* contextual_tasks_service,
     BrowserWindowInterface* browser_window,
     ContextualTasksSidePanelCoordinator* side_panel_coordinator = nullptr);
+
+// Helper method to set task ID and session handle on the
+// ContextualSearchWebContentsHelper associated with the given `web_contents`.
+// Must be invoked whenever a the thread associated with the `web_contents`.
+// changes. Finds an existing session open in browser if possible. If not
+// found, creates a new session.
+void UpdateContextualSearchWebContentsHelperForTask(
+    contextual_search::ContextualSearchService* contextual_search_service,
+    BrowserWindowInterface* browser_window,
+    ContextualTasksService* contextual_tasks_service,
+    ContextualTasksSidePanelCoordinator* side_panel_coordinator,
+    content::WebContents* web_contents,
+    const base::Uuid& task_id);
 
 }  // namespace contextual_tasks
 

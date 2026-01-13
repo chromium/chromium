@@ -120,6 +120,7 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
   MOCK_METHOD(void, OnSidePanelStateUpdated, (), (override));
+  MOCK_METHOD(void, OnFullTabStateUpdated, (), (override));
   MOCK_METHOD(void, SetSessionHandleGetter, (SessionHandleGetter), (override));
 };
 

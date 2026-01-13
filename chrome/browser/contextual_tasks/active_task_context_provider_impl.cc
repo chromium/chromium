@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -85,6 +86,10 @@ void ActiveTaskContextProviderImpl::AddObserver(
 void ActiveTaskContextProviderImpl::RemoveObserver(
     ActiveTaskContextProvider::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ActiveTaskContextProviderImpl::OnFullTabStateUpdated() {
+  RefreshContext();
 }
 
 void ActiveTaskContextProviderImpl::SetSessionHandleGetter(

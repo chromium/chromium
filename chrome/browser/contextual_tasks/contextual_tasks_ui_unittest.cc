@@ -182,9 +182,10 @@ TEST_F(ContextualTasksUiTest, ContextualTasksServiceUpdatedOnUrlChange) {
   updated_url =
       net::AppendQueryParameter(updated_url, "mtid", thread_id.value());
 
-  EXPECT_CALL(*contextual_tasks_service_,
-              UpdateThreadForTask(task_id.value(), _, thread_id.value(),
-                                  Optional(turn_id), Optional(title)))
+  EXPECT_CALL(
+      *contextual_tasks_service_,
+      UpdateThreadForTask(task_id.value(), _, thread_id.value(),
+                          Optional(turn_id), Optional(std::string("test"))))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
 
@@ -286,7 +287,7 @@ TEST_F(ContextualTasksUiTest,
 
   EXPECT_CALL(*contextual_tasks_service_,
               UpdateThreadForTask(task_id.value(), _, thread_id.value(), _,
-                                  Optional(title)))
+                                  Optional(std::string("test"))))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
 
@@ -416,9 +417,10 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, thread_id))
       .Times(1);
   EXPECT_CALL(*contextual_tasks_service_,
-              UpdateThreadForTask(task_id, _, thread_id, _, Optional(title)))
+              UpdateThreadForTask(task_id, _, thread_id, _,
+                                  Optional(std::string("koalas"))))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
