@@ -600,10 +600,13 @@ cr-searchbox-dropdown::part(dropdown-content) {
   opacity: 0;
 }
 
-#recentTabChipContainer {
+:host([searchbox-layout-mode='Compact'][dropdown-is-visible]) .dropdownContainer {
   padding-bottom: 10px;
+}
+
+#recentTabChipContainer {
+  padding-block: 6px;
   padding-inline: 16px;
-  padding-top: 6px;
 }
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact'])
