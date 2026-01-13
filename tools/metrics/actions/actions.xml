@@ -4560,6 +4560,13 @@ should be able to be added at any place in this file.
   <description>User navigated to the native Android history page.</description>
 </action>
 
+<action name="Android.Hub.PaneSwiped">
+  <owner>madhavpruthi@google.com</owner>
+  <description>
+    The user switched to another pane using swipe gesture in the Hub.
+  </description>
+</action>
+
 <action name="Android.LauncherShortcut.NewIncognitoTab">
   <owner>twellington@chromium.org</owner>
   <description>
