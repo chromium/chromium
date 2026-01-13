@@ -2999,9 +2999,16 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandGlicSwitchToRecentConversation:
       // These are handled by GlicTabSubMenuModel.
       break;
-    case CommandGlicUnshare:
-      // TODO (crbug.com/469768350): Implement unsharing.
+    case CommandGlicUnshare: {
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      std::vector<tabs::TabHandle> tab_handles;
+      tab_handles.reserve(indices.size());
+      std::transform(
+          indices.begin(), indices.end(), std::back_inserter(tab_handles),
+          [this](int index) { return GetTabAtIndex(index)->GetHandle(); });
+      delegate_->GlicUnpinTabsFromAllConversations(tab_handles);
       break;
+    }
 #endif
 
     case CommandAddToNewComparisonTable: {

@@ -229,6 +229,10 @@ class TabStripModelDelegate {
 
   // Opens the Glic window if not already open.
   virtual void OpenGlicWindowFromSharedTab() = 0;
+
+  // Unpins the specified tabs from all Glic conversations.
+  virtual void GlicUnpinTabsFromAllConversations(
+      base::span<const tabs::TabHandle> tab_handles);
 #endif
 };
 

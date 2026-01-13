@@ -29,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -7026,3 +7027,14 @@ TEST_F(TabStripModelCallbackTest, MoveTabToGroupThenDeleteGroup) {
   EXPECT_EQ(tabstrip()->group_model()->ListTabGroups().size(), 0u);
   tabstrip()->CloseAllTabs();
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+TEST_P(TabStripModelTest, CommandGlicUnshare) {
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(1), true);
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandGlicUnshare));
+
+  // This should not crash (it CHECKs the delegate returns true).
+  tabstrip()->ExecuteContextMenuCommand(0, TabStripModel::CommandGlicUnshare);
+}
+#endif

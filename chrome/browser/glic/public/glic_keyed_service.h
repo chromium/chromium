@@ -153,6 +153,12 @@ class GlicKeyedService : public KeyedService,
 #endif
   GlicSharingManager& sharing_manager() override;
 
+  bool IsTabPinnedToAnyInstance(const tabs::TabHandle& tab_handle) const;
+
+  // Unpins the specified tabs from all instances.
+  void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
+                                 GlicUnpinTrigger trigger);
+
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
 

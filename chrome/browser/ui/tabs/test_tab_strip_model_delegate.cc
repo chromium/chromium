@@ -162,4 +162,7 @@ bool TestTabStripModelDelegate::GlicUnpinTabs(
 }
 
 void TestTabStripModelDelegate::OpenGlicWindowFromSharedTab() {}
+
+void TestTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
+    base::span<const tabs::TabHandle> tab_handles) {}
 #endif

@@ -321,7 +321,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
         tab_strip->profile());
     CHECK(service);
     if (std::ranges::any_of(indices, [&](int index) {
-          return service->sharing_manager().IsTabPinned(
+          return service->IsTabPinnedToAnyInstance(
               tab_strip->GetTabAtIndex(index)->GetHandle());
         })) {
       AddItem(TabStripModel::CommandGlicUnshare,

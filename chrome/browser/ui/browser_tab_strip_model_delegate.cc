@@ -101,6 +101,14 @@ void BrowserTabStripModelDelegate::OpenGlicWindowFromSharedTab() {
                       glic::mojom::InvocationSource::kSharedTab);
   }
 }
+
+void BrowserTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
+    base::span<const tabs::TabHandle> tab_handles) {
+  auto* service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->profile());
+  service->UnpinTabsFromAllInstances(tab_handles,
+                                     glic::GlicUnpinTrigger::kContextMenu);
+}
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
