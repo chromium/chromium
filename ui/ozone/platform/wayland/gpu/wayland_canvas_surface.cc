@@ -125,9 +125,9 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
           static_cast<size_t>(i.rect().width() * i.rect().height() *
                               SkColorTypeBytesPerPixel(kN32_SkColorType)));
 
-      UNSAFE_TODO(buffer->sk_surface_->readPixels(
+      buffer->sk_surface_->readPixels(
           SkImageInfo::MakeN32Premul(i.rect().width(), i.rect().height()),
-          dst_subspan.data(), stride, i.rect().x(), i.rect().y()));
+          dst_subspan.data(), stride, i.rect().x(), i.rect().y());
     }
     dirty_region_.setEmpty();
   }
