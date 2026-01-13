@@ -1154,7 +1154,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.ClassManagementEnabled" enum="ClassManagementEnabled"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>zifanzhang@google.com</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>
@@ -1604,7 +1604,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.{Method}Result"
-    enum="FirmwareUpdateMethodResult" expires_after="2026-05-10">
+    enum="FirmwareUpdateMethodResult" expires_after="2026-07-12">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

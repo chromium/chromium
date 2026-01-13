@@ -1531,7 +1531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V4" units="domains"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2689,7 +2689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsLegacy" units="visits"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2702,7 +2702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsNotRemapped" units="visits"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2715,7 +2715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableFrom" units="visits"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2728,7 +2728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableOpener" units="visits"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -3195,7 +3195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyHostCount" units="hosts"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>

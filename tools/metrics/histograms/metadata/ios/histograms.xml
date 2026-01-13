@@ -1174,7 +1174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.CredentialProviderExtension.TurnOnPromptOutcome.{PromptSource}"
-    enum="Boolean" expires_after="2026-05-10">
+    enum="Boolean" expires_after="2026-07-12">
   <owner>noemies@google.com</owner>
   <owner>tmartino@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -1419,7 +1419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserVideoPromo.PersistedDuration" units="ms"
-    expires_after="2026-05-09">
+    expires_after="2026-07-12">
   <owner>gujen@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1767,7 +1767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.SelectedAction" enum="IOSEditMenuActions"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.MainFrame2" units="ms"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>danieltwhite@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2281,7 +2281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Fullscreen.TimeSpentScrollingToTheBottom" units="ms"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>alionadangla@chromium.org</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -2605,7 +2605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.Gallery.CollectionInfoFetchError"
-    enum="IOSNtpBackgroundServiceErrorType" expires_after="2026-05-10">
+    enum="IOSNtpBackgroundServiceErrorType" expires_after="2026-07-12">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2717,7 +2717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Background.RecentlyUsed.ClickCount"
-    units="count" expires_after="2026-05-10">
+    units="count" expires_after="2026-07-12">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2858,7 +2858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Incognito.GridStatus" enum="IOSIncognitoGridStatus"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>ddac@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -3239,7 +3239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.OnNTP"
-    enum="IOSMagicStackModuleType" expires_after="2026-05-10">
+    enum="IOSMagicStackModuleType" expires_after="2026-07-12">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3808,7 +3808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Minimap.AddressValidation.Outcome"
-    enum="IOSAddressValidationOutcome" expires_after="2026-05-10">
+    enum="IOSAddressValidationOutcome" expires_after="2026-07-12">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -4170,7 +4170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Omnibox.Copy" enum="IOSOmniboxCopyType"
-    expires_after="2026-04-09">
+    expires_after="2026-07-12">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records copy event in the omnibox with the type of copy.</summary>
@@ -7159,7 +7159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Web.FileInput.EventDropped" enum="Boolean"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>
   <summary>

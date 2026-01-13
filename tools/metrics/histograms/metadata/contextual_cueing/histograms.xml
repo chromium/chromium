@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-07-12">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ContextualCueing.GlicSuggestions.PageContextIneligibilityReason{EngagementType}"
     enum="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType"
-    expires_after="2026-03-22">
+    expires_after="2026-07-12">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualCueing.NudgeDecision.{ContextualCueingOptimizationType}"
-    enum="ContextualCueingNudgeDecision" expires_after="2026-05-10">
+    enum="ContextualCueingNudgeDecision" expires_after="2026-07-12">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualCueing.NudgeInteraction{CueType}"
-    enum="ContextualCueingNudgeInteraction" expires_after="2026-05-10">
+    enum="ContextualCueingNudgeInteraction" expires_after="2026-07-12">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>

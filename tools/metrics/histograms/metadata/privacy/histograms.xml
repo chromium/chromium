@@ -223,7 +223,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.ClearBrowsingData.TabsEnabled" enum="BooleanEnabled"
-    expires_after="2026-05-09">
+    expires_after="2026-07-12">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -421,7 +421,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.Database.Operation.{DIPSDatabaseOperation}Time"
-    units="ms" expires_after="2026-03-22">
+    units="ms" expires_after="2026-07-12">
   <owner>etienneb@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
@@ -705,7 +705,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2026-05-07">
+    expires_after="2026-07-12">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -760,7 +760,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.TypeReceived"
-    enum="PrivacySandboxStorageActivityType" expires_after="2026-05-07">
+    enum="PrivacySandboxStorageActivityType" expires_after="2026-07-12">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1363,7 +1363,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
 
 <histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
-    enum="PrivacySandboxNoticeAction" expires_after="2026-05-07">
+    enum="PrivacySandboxNoticeAction" expires_after="2026-07-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1384,7 +1384,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.NoticeEvent.{PSNotice}"
-    enum="PrivacySandboxNoticeEvent" expires_after="2026-05-07">
+    enum="PrivacySandboxNoticeEvent" expires_after="2026-07-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1396,7 +1396,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
 
 <histogram name="PrivacySandbox.Notice.NoticeShown.{PSNotice}" enum="Boolean"
-    expires_after="2026-05-07">
+    expires_after="2026-07-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>Records if a notice {PSNotice} was shown to a profile.</summary>
@@ -1404,7 +1404,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.NoticeShownForFirstTime.{PSNotice}"
-    enum="Boolean" expires_after="2026-05-07">
+    enum="Boolean" expires_after="2026-07-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1415,7 +1415,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.Startup.LastRecordedEvent.{PSNotice}"
-    enum="PrivacySandboxNoticeEvent" expires_after="2026-05-07">
+    enum="PrivacySandboxNoticeEvent" expires_after="2026-07-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1834,7 +1834,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.SentimentSurvey.Status"
-    enum="PrivacySandboxSentimentSurveyStatus" expires_after="2026-05-07">
+    enum="PrivacySandboxSentimentSurveyStatus" expires_after="2026-07-12">
   <owner>alvingo@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

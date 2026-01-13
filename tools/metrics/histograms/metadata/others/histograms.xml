@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Discovery.AddSinkResult.Remembered"
-    enum="AccessCodeCastAddSinkResult" expires_after="2026-05-10">
+    enum="AccessCodeCastAddSinkResult" expires_after="2026-07-12">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -5296,7 +5296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteQueuePendingMessages2" units="count"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>pasko@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <summary>
@@ -6853,7 +6853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.OfflineVersionDisplayed" enum="Boolean"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Whether the displayed version is the offline one.</summary>
@@ -7151,7 +7151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sanitize.SanitizeEvent" enum="SanitizeEvent"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>behnoodm@chromium.org</owner>
   <owner>cryptohome-core@google.com</owner>
   <summary>
@@ -8165,7 +8165,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubscriptionEligibility.AiSubscriptionTierStatus"
     enum="SubscriptionEligibilityAiSubscriptionTierStatus"
-    expires_after="2026-03-31">
+    expires_after="2026-07-12">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -8695,7 +8695,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Uptime.ChromeExecToLoginPromptVisibleAfterLogout" units="ms"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>hidehiko@chromium.org</owner>
   <owner>junis@google.com</owner>
   <owner>cros-oac@google.com</owner>

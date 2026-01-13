@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-07-12">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

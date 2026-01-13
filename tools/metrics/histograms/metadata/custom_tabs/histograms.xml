@@ -1084,7 +1084,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedWebActivity.Startup.TimeToFirstCommitNavigation2.{suffix}"
-    units="ms" expires_after="2026-05-13">
+    units="ms" expires_after="2026-07-12">
   <owner>hattorij@google.com</owner>
   <owner>ishitatsuyuki@google.com</owner>
   <owner>cros-virt-devices-guests@google.com</owner>
