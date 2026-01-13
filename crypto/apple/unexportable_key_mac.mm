@@ -24,7 +24,6 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
@@ -351,7 +350,8 @@ std::optional<SignatureVerifier::SignatureAlgorithm>
 UnexportableKeyProviderMac::SelectAlgorithm(
     base::span<const SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms) {
-  return base::Contains(acceptable_algorithms, SignatureVerifier::ECDSA_SHA256)
+  return std::ranges::contains(acceptable_algorithms,
+                               SignatureVerifier::ECDSA_SHA256)
              ? std::make_optional(SignatureVerifier::ECDSA_SHA256)
              : std::nullopt;
 }
