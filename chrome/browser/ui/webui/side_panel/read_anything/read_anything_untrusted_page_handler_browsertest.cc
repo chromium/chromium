@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                        Destructor_LogsLineFocus) {
   base::HistogramTester histogram_tester;
   const read_anything::mojom::LineFocus kLineFocus =
-      read_anything::mojom::LineFocus::kWindow1;
+      read_anything::mojom::LineFocus::kSmallCursorWindow;
   handler_ = CreateHandler();
   handler_->OnLineFocusChanged(kLineFocus);
 
@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                        OnLineFocusChanged) {
   const read_anything::mojom::LineFocus kLineFocus1 =
-      read_anything::mojom::LineFocus::kWindow1;
+      read_anything::mojom::LineFocus::kSmallCursorWindow;
   const read_anything::mojom::LineFocus kLineFocus2 =
       read_anything::mojom::LineFocus::kOff;
   handler_ = CreateHandler();

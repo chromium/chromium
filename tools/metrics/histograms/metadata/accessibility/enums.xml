@@ -2227,11 +2227,17 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="ReadAnythingLineFocus">
   <int value="0" label="Off"/>
-  <int value="1" label="One Line Window"/>
-  <int value="2" label="Three Line Window"/>
-  <int value="3" label="Five Line Window"/>
+  <int value="1" label="One Line Window (Deprecated)"/>
+  <int value="2" label="Three Line Window (Deprecated)"/>
+  <int value="3" label="Five Line Window (Deprecated)"/>
   <int value="4" label="Static Line"/>
   <int value="5" label="Cursor Line"/>
+  <int value="6" label="Small Static Window"/>
+  <int value="7" label="Medium Static Window"/>
+  <int value="8" label="Large Static Window"/>
+  <int value="9" label="Small Cursor Window"/>
+  <int value="10" label="Medium Cursor Window"/>
+  <int value="11" label="Large Cursor Window"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LineFocus) -->

@@ -170,7 +170,7 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   bool links_enabled = false;
   bool images_enabled = true;
   auto color = read_anything::mojom::Colors::kDark;
-  auto line_focus = read_anything::mojom::LineFocus::kWindow3;
+  auto line_focus = read_anything::mojom::LineFocus::kMediumCursorWindow;
 
   model().OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
                                       font_size, links_enabled, images_enabled,

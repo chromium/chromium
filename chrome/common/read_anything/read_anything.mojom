@@ -131,13 +131,23 @@ enum HighlightGranularity {
 // numeric values should never be reused.
 enum LineFocus {
   [Default]kOff = 0,
-  // Line focus window modes of different line heights. i.e. a window of size
-  // one line, three lines, or 5 lines.
-  kWindow1 = 1,
-  kWindow3 = 2,
-  kWindow5 = 3,
+  // These values are removed and replaced with the static and cursor window
+  // options below.
+  // kWindow1 = 1,
+  // kWindow3 = 2,
+  // kWindow5 = 3,
   kLineStatic = 4,
   kLineCursor = 5,
+  // Line focus window modes of different line heights that stay static in the
+  // center of the page.
+  [MinVersion=3] kSmallStaticWindow = 6,
+  [MinVersion=3] kMediumStaticWindow = 7,
+  [MinVersion=3] kLargeStaticWindow = 8,
+  // Line focus window modes of different line heights that move with the
+  // cursor.
+  [MinVersion=3] kSmallCursorWindow = 9,
+  [MinVersion=3] kMediumCursorWindow = 10,
+  [MinVersion=3] kLargeCursorWindow = 11,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLineFocus)
 

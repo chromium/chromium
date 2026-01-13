@@ -1541,27 +1541,33 @@ int ReadAnythingAppController::LineFocusOff() const {
 }
 
 int ReadAnythingAppController::LineFocusSmallStaticWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow1);
+  return std::to_underlying(
+      read_anything::mojom::LineFocus::kSmallStaticWindow);
 }
 
 int ReadAnythingAppController::LineFocusMediumStaticWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow3);
+  return std::to_underlying(
+      read_anything::mojom::LineFocus::kMediumStaticWindow);
 }
 
 int ReadAnythingAppController::LineFocusLargeStaticWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow5);
+  return std::to_underlying(
+      read_anything::mojom::LineFocus::kLargeStaticWindow);
 }
 
 int ReadAnythingAppController::LineFocusSmallCursorWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow1);
+  return std::to_underlying(
+      read_anything::mojom::LineFocus::kSmallCursorWindow);
 }
 
 int ReadAnythingAppController::LineFocusMediumCursorWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow3);
+  return std::to_underlying(
+      read_anything::mojom::LineFocus::kMediumCursorWindow);
 }
 
 int ReadAnythingAppController::LineFocusLargeCursorWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow5);
+  return std::to_underlying(
+      read_anything::mojom::LineFocus::kLargeCursorWindow);
 }
 
 int ReadAnythingAppController::LineFocusStaticLine() const {

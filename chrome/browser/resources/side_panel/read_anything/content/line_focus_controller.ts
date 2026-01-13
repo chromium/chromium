@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {assert} from '//resources/js/assert.js';
 
-import {LineFocus, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
+import {getLineFocusValues, LineFocus, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
 import {currentReadHighlightClass, PARENT_OF_HIGHLIGHT_CLASS} from '../read_aloud/movement.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
@@ -135,6 +135,15 @@ export class LineFocusController {
     }
   }
 
+  restoreFromPrefs(value: number, container: HTMLElement, height: number) {
+    const lineFocusValues = getLineFocusValues();
+    const lineFocus = lineFocusValues[value];
+    if (lineFocus) {
+      this.setStyleAndMovement_(
+          lineFocus.style, lineFocus.movement, container, height);
+    }
+  }
+
   onLineFocusChange(
       lineFocusEnumValue: number, container: HTMLElement, height: number) {
     const lineFocus = LineFocus.fromEnumValue(lineFocusEnumValue);
@@ -160,6 +169,7 @@ export class LineFocusController {
     const wasEnabled = this.isEnabled();
     this.model_.setCurrentLineFocusStyle(style);
     this.model_.setCurrentLineFocusMovement(movement);
+    this.propagateLineFocus_(style, movement);
     const isOff = style === LineFocusStyle.OFF;
     if (!isOff) {
       this.model_.setLastEnabledLineFocusStyle(style);
@@ -208,6 +218,30 @@ export class LineFocusController {
         this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
       }
     }
+  }
+
+  private propagateLineFocus_(
+      style: LineFocusStyle, movement: LineFocusMovement) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+    const lineFocusValue = this.lineFocusToEnumValue_(style, movement);
+    if (lineFocusValue !== null) {
+      chrome.readingMode.onLineFocusChanged(lineFocusValue);
+    }
+  }
+
+  private lineFocusToEnumValue_(
+      style: LineFocusStyle, movement: LineFocusMovement): number|null {
+    if (style === LineFocusStyle.OFF) {
+      return chrome.readingMode.lineFocusOff;
+    }
+    const lineFocusValues = getLineFocusValues();
+    const key = Object.keys(lineFocusValues).find(key => {
+      const lineFocus = lineFocusValues[Number(key)];
+      return lineFocus?.style === style && lineFocus?.movement === movement;
+    });
+    return key ? Number(key) : null;
   }
 
   snapToNextLine(isForward: boolean) {
