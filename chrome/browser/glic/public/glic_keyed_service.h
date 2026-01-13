@@ -15,7 +15,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
@@ -32,6 +31,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_task_delegate.h"
+#endif
 
 class BrowserWindowInterface;
 class Profile;
@@ -62,7 +65,6 @@ class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicWindowController;
 class HostManager;
-class GlicActorTaskManager;
 class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
@@ -78,6 +80,10 @@ enum class GlicPrewarmingFreSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingFreSource)
 
+#if !BUILDFLAG(IS_ANDROID)
+class GlicActorTaskManager;
+#endif
+
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless
 // of whether the profile is enabled or disabled at runtime (currently
@@ -86,7 +92,9 @@ enum class GlicPrewarmingFreSource {
 // preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
+#if !BUILDFLAG(IS_ANDROID)
                          public Host::InstanceDelegate,
+#endif
                          public base::MemoryPressureListener
 #if !BUILDFLAG(IS_ANDROID)
     ,
@@ -206,7 +214,16 @@ class GlicKeyedService : public KeyedService,
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
-      glic::mojom::WebClientHandler::CreateTabCallback callback) override;
+      glic::mojom::WebClientHandler::CreateTabCallback callback)
+#if !BUILDFLAG(IS_ANDROID)
+      override;
+#else
+      ;  // multi instance doesn't use keyed service as an
+         // instance delegate, so it doesn't need the override keyword.
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)  // multi instance doesn't use keyed service as an
+                            // instance delegate
   void CreateTask(
       base::WeakPtr<actor::ActorTaskDelegate> delegate,
       actor::webui::mojom::TaskOptionsPtr options,
@@ -255,6 +272,7 @@ class GlicKeyedService : public KeyedService,
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
   glic::GlicInstanceMetrics* instance_metrics() override;
   bool IsActive() override;
+#endif
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 
@@ -415,7 +433,9 @@ class GlicKeyedService : public KeyedService,
       zero_state_suggestions_manager_;
 #endif
   base::OnceCallback<void()> preload_callback_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
+#endif
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
   std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 

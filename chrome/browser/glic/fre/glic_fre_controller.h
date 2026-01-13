@@ -24,7 +24,6 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-class Browser;
 class Profile;
 
 namespace content {
@@ -111,7 +110,7 @@ class GlicFreController {
   // Returns whether the FRE dialog can be shown. This function also checks
   // `TabInterface::CanShowModalUI`, which is a mandatory precondition to
   // showing the dialog.
-  bool CanShowFreDialog(Browser* browser);
+  bool CanShowFreDialog(BrowserWindowInterface* bwi);
 
   // Open the new tab page in the browser and show the FRE in that tab if
   // possible.
@@ -120,10 +119,11 @@ class GlicFreController {
 
   // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`
   // and `CanShowFreDialog` are both satisfied.
-  void ShowFreDialog(Browser* browser, mojom::InvocationSource source);
+  void ShowFreDialog(BrowserWindowInterface* browser,
+                     mojom::InvocationSource source);
 
   // Closes the FRE dialog if it is open on the active tab of `browser`.
-  void DismissFreIfOpenOnActiveTab(Browser* browser);
+  void DismissFreIfOpenOnActiveTab(BrowserWindowInterface* browser);
 #endif
 
   // Closes the FRE dialog and immediately opens a glic window attached to
@@ -207,7 +207,7 @@ class GlicFreController {
 #if !BUILDFLAG(IS_ANDROID)
   // Used when the native window is closed directly.
   void CloseWithReason(views::Widget::ClosedReason reason);
-  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
+  void ShowFreDialogAfterAuthCheck(BrowserWindowInterface* browser,
                                    mojom::InvocationSource source);
 #endif
 
@@ -232,7 +232,7 @@ class GlicFreController {
 
 #if !BUILDFLAG(IS_ANDROID)
   // The invocation source browser.
-  raw_ptr<Browser> source_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> source_browser_ = nullptr;
 #endif
 
   // Tracks the tab that the FRE dialog is shown on.

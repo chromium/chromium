@@ -9,6 +9,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -268,7 +269,11 @@ GlicSharingManager& Host::sharing_manager() {
 }
 
 Host::InstanceDelegate& Host::instance_delegate() {
+#if !BUILDFLAG(IS_ANDROID)
   return instance_delegate_ ? *instance_delegate_ : glic_service();
+#else
+  return *instance_delegate_;
+#endif
 }
 
 GlicPageHandler* Host::page_handler() const {
@@ -711,6 +716,7 @@ Host* HostManager::GetOrCreateHostForTab(content::WebContents* web_contents) {
     return nullptr;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // For backwards compatibility, tab hosts are tied to the window controller.
   // In multi-instance mode, no instance is used for now. We should consider
   // just creating new instances for these hosts.
@@ -724,6 +730,10 @@ Host* HostManager::GetOrCreateHostForTab(content::WebContents* web_contents) {
   Host* new_host = tab_hosts_.back().get();
   new_host->SetDelegate(empty_embedder_delegate_.get());
   return new_host;
+#else  // NEEDS_ANDROID_IMPL
+  NOTIMPLEMENTED() << "Tab hosts are not yet supported on Android";
+  return nullptr;
+#endif
 }
 
 bool HostManager::IsGlicWebUi(content::WebContents* contents) {

@@ -25,8 +25,6 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"

@@ -74,6 +74,15 @@ inline bool IsDeleteScheduled(BrowserWindowInterface* browser_window) {
 #endif
 }
 
+inline tabs::TabInterface* GetActiveTabInterface(
+    BrowserWindowInterface* browser_window) {
+#if !BUILDFLAG(IS_ANDROID)
+  return browser_window ? browser_window->GetActiveTabInterface() : nullptr;
+#else
+  return nullptr;
+#endif
+}
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_COMMON_FUTURE_BROWSER_FEATURES_H_
