@@ -5883,6 +5883,9 @@ if (!is_android) {
     if (is_linux || is_mac) {
       sources += [ "../browser/ui/views/first_run_dialog_browsertest.cc" ]
     }
+    if (is_linux) {
+      sources += [ "../browser/ui/views/eula_dialog_linux_browsertest.cc" ]
+    }
     if (!is_posix || is_chromeos) {
       sources -= [ "../common/time_format_browsertest.cc" ]
     }
@@ -8628,6 +8631,7 @@ test("unit_tests") {
     }
 
     if (is_linux) {
+      sources += [ "../browser/ui/views/eula_dialog_linux_unittest.cc" ]
       deps += [ "//ui/linux:linux_ui_factory" ]
     }
     if (use_ozone) {

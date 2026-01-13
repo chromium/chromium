@@ -320,6 +320,20 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Welcome to Chromium
         </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_TERMS_DIALOG_ACCEPT" desc="The button label to accept the terms of service">
+          Accept
+        </message>
+        <message name="IDS_TERMS_DIALOG_CANCEL" desc="The button label to decline the terms of service">
+          Cancel
+        </message>
+        <message name="IDS_TERMS_DIALOG_TITLE" desc="Window title for the Terms of Service dialog">
+          Chromium Additional Terms of Service
+        </message>
+        <message name="IDS_TERMS_DIALOG_ACCESSIBILITY_LABEL" desc="Accessibility label for the Terms of Service in the dialog. The actual terms text is just a placeholder for branded builds.">
+          Chromium Additional Terms of Service
+        </message>
+      </if>
       <if expr="is_chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
           ChromiumOS

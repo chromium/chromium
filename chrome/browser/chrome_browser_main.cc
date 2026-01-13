@@ -1643,6 +1643,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   InitializeWinParentalControls();
 #endif
 
+  // Should be done before starting metrics recording.
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, the EULA dialog requires Views, so it is shown here rather than
+  // when applying the first-run prefs.
+  if (first_run::IsChromeFirstRun() && master_prefs_->eula_required &&
+      !headless::IsHeadlessMode() && !first_run::ShowEulaDialog()) {
+    return CHROME_RESULT_CODE_EULA_REFUSED;
+  }
+#endif
+
   // Now that the file thread has been started, start metrics.
   StartMetricsRecording();
 

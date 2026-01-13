@@ -3380,6 +3380,8 @@ static_library("ui") {
   if (is_linux) {
     sources += [
       "views/apps/chrome_app_window_client_views_aura.cc",
+      "views/eula_dialog_linux.cc",
+      "views/eula_dialog_linux.h",
       "views/frame/browser_desktop_window_tree_host.h",
       "views/frame/browser_desktop_window_tree_host_linux.cc",
       "views/frame/browser_desktop_window_tree_host_linux.h",

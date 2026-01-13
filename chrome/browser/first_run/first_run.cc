@@ -318,6 +318,11 @@ void SetupInitialPrefsFromInstallPrefs(
   if (install_prefs.GetBool(prefs::kConfirmToQuitEnabled, &value) && value)
     out_prefs->confirm_to_quit = true;
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+  install_prefs.GetBool(installer::initial_preferences::kRequireEula,
+                        &out_prefs->eula_required);
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 // -- Platform-specific functions --
@@ -426,6 +431,8 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
   if (initial_prefs.get()) {
     // Don't show EULA when running in headless mode since this would
     // effectively block the UI because there is no one to accept it.
+    // On Linux, the EULA dialog is shown in ShowEulaDialog after
+    // UI is initialized.
     if (!headless::IsHeadlessMode() &&
         !internal::ShowPostInstallEULAIfNeeded(initial_prefs.get())) {
       return EULA_EXIT_NOW;
@@ -460,6 +467,12 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
 
   return FIRST_RUN_PROCEED;
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool ShowEulaDialog() {
+  return internal::ShowEulaDialog();
+}
+#endif
 
 void AutoImport(
     Profile* profile,

@@ -91,7 +91,7 @@ void DoPostImportPlatformSpecificTasks() {
 }
 
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {
-  // The EULA is only handled on Windows.
+  // The EULA is only handled on Windows and Linux.
   return true;
 }
 

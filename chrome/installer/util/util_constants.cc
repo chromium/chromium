@@ -189,7 +189,12 @@ const wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
 const wchar_t kCmdStoreDMToken[] = L"store-dmtoken";
 const wchar_t kCmdDeleteDMToken[] = L"delete-dmtoken";
 const wchar_t kCmdInstallPEH[] = L"install-peh";
+
+// LINT.IfChange(kEulaSentinelFile)
 const wchar_t kEulaSentinelFile[] = L"EULA Accepted";
+// LINT.ThenChange(//chrome/browser/first_run/first_run_internal_linux.cc:kEulaSentinelFile,
+// //chrome/browser/ui/views/eula_dialog_linux_unittest.cc:kEulaSentinelFile)
+
 const wchar_t kInstallBinaryDir[] = L"Application";
 const wchar_t kInstallerDir[] = L"Installer";
 const wchar_t kInstallTempDir[] = L"Temp";

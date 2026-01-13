@@ -73,6 +73,9 @@ struct MasterPrefs {
 #if BUILDFLAG(IS_MAC)
   bool confirm_to_quit;
 #endif
+#if BUILDFLAG(IS_LINUX)
+  bool eula_required = false;
+#endif
 };
 
 void RegisterProfilePrefs(
@@ -141,6 +144,13 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
     const base::FilePath& user_data_dir,
     std::unique_ptr<installer::InitialPreferences> initial_prefs,
     MasterPrefs* out_prefs);
+
+#if BUILDFLAG(IS_LINUX)
+// Shows the EULA dialog if required. Returns true if the EULA is accepted
+// or not required. Returns false if the EULA has not been accepted. If the EULA
+// has not been accepted, the caller should exit promptly.
+bool ShowEulaDialog();
+#endif
 
 }  // namespace first_run
 
