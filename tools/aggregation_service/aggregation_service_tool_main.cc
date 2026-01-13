@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,7 +151,7 @@ int main(int argc, char* argv[]) {
       kSwitchApiVersion,
       kSwitchApi};
   for (const auto& provided_switch : command_line.GetSwitches()) {
-    if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
+    if (!std::ranges::contains(kAllowedSwitches, provided_switch.first)) {
       LOG(ERROR) << "aggregation_service_tool did not expect "
                  << provided_switch.first << " to be specified.";
       PrintHelp();
