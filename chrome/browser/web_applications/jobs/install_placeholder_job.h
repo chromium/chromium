@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 
 class Profile;
 
@@ -49,12 +50,19 @@ class InstallPlaceholderJob {
 
   void SetDataRetrieverForTesting(
       std::unique_ptr<WebAppDataRetriever> data_retriever);
+  void SetUrlLoaderForTesting(
+      std::unique_ptr<webapps::WebAppUrlLoader> url_loader);
 
  private:
   void Abort(webapps::InstallResultCode code);
   void FetchCustomIcon(const GURL& url, int retries_left);
+  void MaybeRetryFetchCustomIcon(const GURL& url, int retries_left);
 
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult load_url_result);
+  void OnIconNavigationCompleted(
+      const GURL& url,
+      int retries_left,
+      webapps::WebAppUrlLoaderResult load_url_result);
   void OnCustomIconFetched(const GURL& image_url,
                            int retries_left,
                            IconsDownloadedResult result,
