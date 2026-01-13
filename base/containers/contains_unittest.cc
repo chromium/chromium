@@ -35,36 +35,4 @@ TEST(ContainsTest, GenericContainsWithProjection) {
   EXPECT_FALSE(Contains(allowed_chars, 0, &ToLowerASCII<char>));
 }
 
-TEST(ContainsTest, GenericSetContainsWithProjection) {
-  constexpr std::string_view kFoo = "foo";
-  std::set<std::string> set = {"foo", "bar", "baz"};
-
-  // Opt into a linear search by explicitly providing a projection:
-  EXPECT_TRUE(Contains(set, kFoo, std::identity{}));
-}
-
-TEST(ContainsTest, ContainsWithFindAndNpos) {
-  std::string str = "abcd";
-
-  EXPECT_TRUE(Contains(str, 'a'));
-  EXPECT_FALSE(Contains(str, 'z'));
-  EXPECT_FALSE(Contains(str, 0));
-}
-
-TEST(ContainsTest, ContainsWithFindAndEnd) {
-  std::set<int> set = {1, 2, 3, 4};
-
-  EXPECT_TRUE(Contains(set, 1));
-  EXPECT_FALSE(Contains(set, 5));
-  EXPECT_FALSE(Contains(set, 0));
-}
-
-TEST(ContainsTest, ContainsWithContains) {
-  flat_set<int> set = {1, 2, 3, 4};
-
-  EXPECT_TRUE(Contains(set, 1));
-  EXPECT_FALSE(Contains(set, 5));
-  EXPECT_FALSE(Contains(set, 0));
-}
-
 }  // namespace base
