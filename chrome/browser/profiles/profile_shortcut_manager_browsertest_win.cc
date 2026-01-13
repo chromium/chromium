@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
       IdentityManagerFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(identity_manager);
   signin::MakePrimaryAccountAvailable(identity_manager, "foo@gmail.com",
-                                      signin::ConsentLevel::kSync);
+                                      signin::ConsentLevel::kSignin);
   // Standard size of a Gaia account picture.
   const int kGaiaPictureSize = 256;
   gfx::Image gaia_image(
