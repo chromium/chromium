@@ -28,8 +28,6 @@ import {AppManagementBrowserProxy} from '../app_management/browser_proxy.js';
 
 import {getTemplate} from './app_language_selection_dialog.html.js';
 
-// Keep this in sync with tools/metrics/histograms/metadata/arc/histograms.xml
-// Arc.AppLanguageSwitch.{SettingsPage}.TargetLanguage.
 export enum AppLanguageSelectionDialogEntryPoint {
   APPS_MANAGEMENT_PAGE = 'AppsManagementPage',
   LANGUAGES_PAGE = 'LanguagesPage',
@@ -92,9 +90,6 @@ export class AppLanguageSelectionDialogElement extends
         this.app.id,
         this.selectedLanguage_!.localeTag,
     );
-    chrome.metricsPrivate.recordSparseValueWithHashMetricName(
-        `Arc.AppLanguageSwitch.${this.entryPoint}.TargetLanguage`,
-        this.selectedLanguage_!.localeTag);
     this.$.dialog.close();
   }
 
