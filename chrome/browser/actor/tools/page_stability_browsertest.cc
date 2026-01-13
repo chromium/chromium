@@ -71,7 +71,8 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
     auto event_dispatcher = ui::NewUiEventDispatcher(
         actor_keyed_service()->GetActorUiStateManager());
     auto actor_task = std::make_unique<ActorTask>(
-        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
+        GetProfile(), std::move(execution_engine), std::move(event_dispatcher),
+        /*options=*/nullptr);
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(actor_task));
     ActorKeyedService::Get(browser()->profile())

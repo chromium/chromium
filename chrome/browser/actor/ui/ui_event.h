@@ -9,7 +9,7 @@
 #include <variant>
 
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/shared_types.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
@@ -96,10 +96,12 @@ struct MouseMove {
 // STATUS: Dispatched pre-tool invocation.
 struct MouseClick {
   tabs::TabInterface::Handle tab_handle;
-  MouseClickType click_type;
-  MouseClickCount click_count;
+  actor::mojom::ClickType click_type;
+  actor::mojom::ClickCount click_count;
 
-  MouseClick(tabs::TabInterface::Handle, MouseClickType, MouseClickCount);
+  MouseClick(tabs::TabInterface::Handle,
+             actor::mojom::ClickType,
+             actor::mojom::ClickCount);
   MouseClick(const MouseClick&);
   ~MouseClick();
 };

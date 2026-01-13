@@ -6,22 +6,10 @@
 
 #include <sstream>
 
-#include "chrome/common/actor.mojom.h"
+#include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
-
-std::string DebugString(const MouseClickType& t) {
-  std::ostringstream ss;
-  ss << t;
-  return ss.str();
-}
-
-std::string DebugString(const MouseClickCount& c) {
-  std::ostringstream ss;
-  ss << c;
-  return ss.str();
-}
 
 std::string DebugString(const PageTarget& t) {
   if (std::holds_alternative<gfx::Point>(t)) {

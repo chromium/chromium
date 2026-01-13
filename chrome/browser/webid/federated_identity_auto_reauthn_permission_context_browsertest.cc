@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
       std::make_unique<actor::ActorTask>(
           browser()->profile(), std::move(execution_engine),
           actor::ui::NewUiEventDispatcher(
-              actor_service->GetActorUiStateManager()));
+              actor_service->GetActorUiStateManager()),
+          /*options=*/nullptr);
   actor_task->SetState(actor::ActorTask::State::kActing);
 
   base::RunLoop loop;

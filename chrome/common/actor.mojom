@@ -27,21 +27,22 @@ struct ObservedToolTarget {
   blink.mojom.AIPageContentAttributes node_attribute;
 };
 
+// Corresponds to ClickAction.ClickType
+enum ClickType {
+  kLeft = 1,
+  kRight = 2,
+};
+
+// Corresponds to ClickAction.ClickCount
+enum ClickCount {
+  kSingle = 1,
+  kDouble = 2,
+};
+
 // Information specific to a click action.
 struct ClickAction {
-  // Corresponds to ClickAction.ClickType
-  enum Type {
-    kLeft = 1,
-    kRight = 2,
-  };
-
-  // Corresponds to ClickAction.ClickCount
-  enum Count {
-    kSingle = 1,
-    kDouble = 2,
-  };
-  Type type;
-  Count count;
+  ClickType type;
+  ClickCount count;
 };
 
 // Information specific to a mouse move action.

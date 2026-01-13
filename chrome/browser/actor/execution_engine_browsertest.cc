@@ -190,7 +190,8 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     auto event_dispatcher = ui::NewUiEventDispatcher(
         actor_keyed_service()->GetActorUiStateManager());
     auto task = std::make_unique<ActorTask>(
-        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
+        GetProfile(), std::move(execution_engine), std::move(event_dispatcher),
+        /*options=*/nullptr);
     raw_execution_engine->SetOwner(task.get());
     task_id_ = actor_keyed_service()->AddActiveTask(std::move(task));
   }

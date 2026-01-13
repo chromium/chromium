@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/ui/ui_event.h"
 
+#include "chrome/common/actor.mojom-shared.h"
+
 namespace actor::ui {
 
 StartTask::StartTask(actor::TaskId id) : task_id(id) {}
@@ -40,8 +42,8 @@ StoppedActingOnTab::~StoppedActingOnTab() = default;
 StoppedActingOnTab::StoppedActingOnTab(const StoppedActingOnTab&) = default;
 
 MouseClick::MouseClick(tabs::TabInterface::Handle th,
-                       MouseClickType ct,
-                       MouseClickCount cc)
+                       actor::mojom::ClickType ct,
+                       actor::mojom::ClickCount cc)
     : tab_handle(th), click_type(ct), click_count(cc) {}
 MouseClick::~MouseClick() = default;
 MouseClick::MouseClick(const MouseClick&) = default;

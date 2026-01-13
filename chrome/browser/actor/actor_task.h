@@ -65,7 +65,7 @@ class ActorTask {
   ActorTask(Profile* profile,
             std::unique_ptr<ExecutionEngine> execution_engine,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-            webui::mojom::TaskOptionsPtr options = nullptr,
+            webui::mojom::TaskOptionsPtr options,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;

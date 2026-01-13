@@ -9,6 +9,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/shared_types.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
@@ -51,8 +52,8 @@ constexpr absl::Overload UiEventToDebugStringFn{
     },
     [](const MouseClick& e) -> std::string {
       return absl::StrFormat("MouseClick[type=%s, count=%s]",
-                             actor::DebugString(e.click_type),
-                             actor::DebugString(e.click_count));
+                             absl::FormatStreamed(e.click_type),
+                             absl::FormatStreamed(e.click_count));
     },
     [](const MouseMove& e) -> std::string {
       return absl::StrFormat(

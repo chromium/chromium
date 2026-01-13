@@ -12,7 +12,6 @@
 
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
 

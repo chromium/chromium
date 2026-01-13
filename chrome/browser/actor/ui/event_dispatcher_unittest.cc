@@ -21,6 +21,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/ui_event.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -158,7 +159,7 @@ TEST_F(EventDispatcherTest, TwoUiEvents) {
         std::move(callback).Run(MakeOkResult());
       }));
   ClickToolRequest tr(tabs::TabHandle(867), PageTarget(gfx::Point(10, 50)),
-                      MouseClickType::kLeft, MouseClickCount::kSingle);
+                      mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
   TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_TRUE(IsOk(*result.Get()));
@@ -174,7 +175,7 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
   EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseClick>(_), _))
       .Times(0);
   ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
-                      MouseClickType::kLeft, MouseClickCount::kSingle);
+                      mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
   TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code,
@@ -201,7 +202,7 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithSecondOneFailing) {
             MakeResult(actor::mojom::ActionResultCode::kActorUiError));
       }));
   ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
-                      MouseClickType::kLeft, MouseClickCount::kSingle);
+                      mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
   TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code,
@@ -246,9 +247,9 @@ TEST_F(EventDispatcherTest, AllUiEventsLogDurationHistograms) {
         .WillOnce(WithArgs<1>([](UiCompleteCallback callback) {
           std::move(callback).Run(MakeOkResult());
         }));
-    ClickToolRequest click_tr(tabs::TabHandle(867),
-                              PageTarget(gfx::Point(10, 50)),
-                              MouseClickType::kLeft, MouseClickCount::kSingle);
+    ClickToolRequest click_tr(
+        tabs::TabHandle(867), PageTarget(gfx::Point(10, 50)),
+        mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
     TestFuture<ActionResultPtr> click_result;
     dispatcher_->OnPreTool(click_tr, click_result.GetCallback());
     ASSERT_TRUE(click_result.Get());

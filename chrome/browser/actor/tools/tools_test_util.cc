@@ -199,7 +199,8 @@ TaskId ActorToolsTest::CreateNewTask() {
       ActorKeyedService::Get(browser()->profile())->GetActorUiStateManager());
   auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
                                                 std::move(execution_engine),
-                                                std::move(event_dispatcher));
+                                                std::move(event_dispatcher),
+                                                /*options=*/nullptr);
   return ActorKeyedService::Get(browser()->profile())
       ->AddActiveTask(std::move(actor_task));
 }

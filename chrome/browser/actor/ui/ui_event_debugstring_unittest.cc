@@ -70,12 +70,13 @@ TEST_F(UiEventDebugStringTest, MouseMove) {
 }
 
 TEST_F(UiEventDebugStringTest, MouseClick) {
-  EXPECT_EQ(DebugString(UiEvent(MouseClick(Handle(), MouseClickType::kLeft,
-                                           MouseClickCount::kSingle))),
+  EXPECT_EQ(DebugString(UiEvent(MouseClick(Handle(), mojom::ClickType::kLeft,
+                                           mojom::ClickCount::kSingle))),
             "MouseClick[type=kLeft, count=kSingle]");
-  EXPECT_EQ(DebugString(AsyncUiEvent(MouseClick(
-                Handle(), MouseClickType::kRight, MouseClickCount::kDouble))),
-            "MouseClick[type=kRight, count=kDouble]");
+  EXPECT_EQ(
+      DebugString(AsyncUiEvent(MouseClick(Handle(), mojom::ClickType::kRight,
+                                          mojom::ClickCount::kDouble))),
+      "MouseClick[type=kRight, count=kDouble]");
 }
 
 }  // namespace

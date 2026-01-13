@@ -434,14 +434,14 @@ std::unique_ptr<ToolRequest> MakeClickRequest(content::RenderFrameHost& rfh,
                                               int content_node_id) {
   return std::make_unique<ClickToolRequest>(
       GetTabHandleForFrame(rfh), MakeTarget(rfh, content_node_id),
-      MouseClickType::kLeft, MouseClickCount::kSingle);
+      mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
 }
 
 std::unique_ptr<ToolRequest> MakeClickRequest(TabInterface& tab,
                                               const gfx::Point& click_point) {
   return std::make_unique<ClickToolRequest>(
-      tab.GetHandle(), MakeTarget(click_point), MouseClickType::kLeft,
-      MouseClickCount::kSingle);
+      tab.GetHandle(), MakeTarget(click_point), mojom::ClickType::kLeft,
+      mojom::ClickCount::kSingle);
 }
 
 std::unique_ptr<ToolRequest> MakeHistoryBackRequest(TabInterface& tab) {

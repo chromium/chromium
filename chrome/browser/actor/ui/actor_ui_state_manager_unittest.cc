@@ -344,8 +344,8 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
       .tab_indicator = TabIndicatorStatus::kDynamic,
       .border_glow_visible = true,
   };
-  VerifyUiEvent(MouseClick{mock_tab().GetHandle(), MouseClickType::kLeft,
-                           MouseClickCount::kSingle},
+  VerifyUiEvent(MouseClick{mock_tab().GetHandle(), mojom::ClickType::kLeft,
+                           mojom::ClickCount::kSingle},
                 expected_ui_tab_state);
 }
 

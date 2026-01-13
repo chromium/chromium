@@ -1661,7 +1661,8 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
         std::make_unique<actor::ActorTask>(
             browser()->profile(), std::move(execution_engine),
             actor::ui::NewUiEventDispatcher(
-                actor_service->GetActorUiStateManager()));
+                actor_service->GetActorUiStateManager()),
+            /*options=*/nullptr);
     actor_task->SetState(actor::ActorTask::State::kActing);
 
     base::RunLoop loop;

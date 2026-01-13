@@ -278,8 +278,8 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
                          .document_identifier = document_identifier});
       std::unique_ptr<ToolRequest> request =
           std::make_unique<actor::ClickToolRequest>(
-              GetTab()->GetHandle(), target, MouseClickType::kLeft,
-              MouseClickCount::kSingle);
+              GetTab()->GetHandle(), target, mojom::ClickType::kLeft,
+              mojom::ClickCount::kSingle);
       return request;
     });
   }

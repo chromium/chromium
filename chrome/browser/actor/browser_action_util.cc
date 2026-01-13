@@ -46,6 +46,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
@@ -146,13 +147,13 @@ std::unique_ptr<ToolRequest> CreateClickRequest(const ClickAction& action) {
     return nullptr;
   }
 
-  MouseClickCount count;
+  mojom::ClickCount count;
   switch (action.click_count()) {
     case apc::ClickAction_ClickCount_SINGLE:
-      count = MouseClickCount::kSingle;
+      count = mojom::ClickCount::kSingle;
       break;
     case apc::ClickAction_ClickCount_DOUBLE:
-      count = MouseClickCount::kDouble;
+      count = mojom::ClickCount::kDouble;
       break;
     case apc::ClickAction_ClickCount_UNKNOWN_CLICK_COUNT:
     case apc::
@@ -160,17 +161,17 @@ std::unique_ptr<ToolRequest> CreateClickRequest(const ClickAction& action) {
     case apc::
         ClickAction_ClickCount_ClickAction_ClickCount_INT_MAX_SENTINEL_DO_NOT_USE_:
       // TODO(crbug.com/412700289): Revert once this is set.
-      count = MouseClickCount::kSingle;
+      count = mojom::ClickCount::kSingle;
       break;
   }
 
-  MouseClickType type;
+  mojom::ClickType type;
   switch (action.click_type()) {
     case apc::ClickAction_ClickType_LEFT:
-      type = MouseClickType::kLeft;
+      type = mojom::ClickType::kLeft;
       break;
     case apc::ClickAction_ClickType_RIGHT:
-      type = MouseClickType::kRight;
+      type = mojom::ClickType::kRight;
       break;
     case apc::
         ClickAction_ClickType_ClickAction_ClickType_INT_MIN_SENTINEL_DO_NOT_USE_:
@@ -178,7 +179,7 @@ std::unique_ptr<ToolRequest> CreateClickRequest(const ClickAction& action) {
         ClickAction_ClickType_ClickAction_ClickType_INT_MAX_SENTINEL_DO_NOT_USE_:
     case apc::ClickAction_ClickType_UNKNOWN_CLICK_TYPE:
       // TODO(crbug.com/412700289): Revert once this is set.
-      type = MouseClickType::kLeft;
+      type = mojom::ClickType::kLeft;
       break;
   }
 

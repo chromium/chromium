@@ -240,12 +240,12 @@ source_set("types") {
   ]
   public_deps = [
     "//base",
+    "//chrome/common:actor_webui_mojom",
     "//chrome/common:mojo_bindings",
     "//ui/gfx/geometry",
   ]
   deps = [
     "//chrome/common",
-    "//chrome/common:actor_webui_mojom",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:public",

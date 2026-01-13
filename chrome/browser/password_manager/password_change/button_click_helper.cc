@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 
 #include "base/strings/to_string.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -42,8 +43,8 @@ ButtonClickHelper::ButtonClickHelper(
     : callback_(std::move(callback)), client_(client) {
   auto invocation = actor::mojom::ToolInvocation::New();
   auto click = actor::mojom::ClickAction::New();
-  click->type = actor::mojom::ClickAction::Type::kLeft;
-  click->count = actor::mojom::ClickAction::Count::kSingle;
+  click->type = actor::mojom::ClickType::kLeft;
+  click->count = actor::mojom::ClickCount::kSingle;
   invocation->action = actor::mojom::ToolAction::NewClick(std::move(click));
   invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
 
