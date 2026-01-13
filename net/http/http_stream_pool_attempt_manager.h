@@ -275,10 +275,13 @@ class HttpStreamPool::AttemptManager
   enum class CanAttemptResult {
     kAttempt,
     kNoPendingJob,
-    kBlockedTcpBasedAttempt,
+    kTcpWaitingOnUdp,
     kThrottledForSpdy,
     kReachedGroupLimit,
     kReachedPoolLimit,
+    kTcpNotAllowed,
+    kUdpSucceeded,
+    kShuttingDown,
   };
 
   // The state of TCP/TLS connection attempts.
@@ -346,8 +349,7 @@ class HttpStreamPool::AttemptManager
   void MaybeAttemptTcpBased();
 
   // Creates and starts a TCP based attempt.
-  void CreateAndStartTcpBasedAttempt(bool using_tls,
-                                     IPEndPoint ip_endpoint,
+  void CreateAndStartTcpBasedAttempt(IPEndPoint ip_endpoint,
                                      TcpBasedAttemptSlot* slot);
 
   // Finds or allocates a TcpBasedAttemptSlot for `ip_endpoint`. If under the
@@ -518,7 +520,7 @@ class HttpStreamPool::AttemptManager
   // Called when `tcp_based_attempt_delay_timer_` is fired.
   void OnTcpBasedAttemptDelayPassed();
 
-  bool CanUseTcpBasedProtocols();
+  bool CanUseTcpBasedProtocols() const;
 
   bool CanUseQuic() const;
 

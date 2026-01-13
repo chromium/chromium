@@ -108,12 +108,18 @@ std::string_view HttpStreamPool::AttemptManager::CanAttemptResultToString(
       return "ReachedPoolLimit";
     case CanAttemptResult::kNoPendingJob:
       return "NoPendingJob";
-    case CanAttemptResult::kBlockedTcpBasedAttempt:
-      return "BlockedTcpBasedAttempt";
+    case CanAttemptResult::kTcpWaitingOnUdp:
+      return "TcpWaitingOnUdp";
     case CanAttemptResult::kThrottledForSpdy:
       return "ThrottledForSpdy";
     case CanAttemptResult::kReachedGroupLimit:
       return "ReachedGroupLimit";
+    case CanAttemptResult::kTcpNotAllowed:
+      return "TcpNotAllowed";
+    case CanAttemptResult::kUdpSucceeded:
+      return "UdpSucceeded";
+    case CanAttemptResult::kShuttingDown:
+      return "ShuttingDown";
   }
 }
 
@@ -699,9 +705,12 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     case CanAttemptResult::kReachedPoolLimit:
       return true;
     case CanAttemptResult::kNoPendingJob:
-    case CanAttemptResult::kBlockedTcpBasedAttempt:
+    case CanAttemptResult::kTcpWaitingOnUdp:
     case CanAttemptResult::kThrottledForSpdy:
     case CanAttemptResult::kReachedGroupLimit:
+    case CanAttemptResult::kTcpNotAllowed:
+    case CanAttemptResult::kUdpSucceeded:
+    case CanAttemptResult::kShuttingDown:
       return false;
   }
 }
@@ -1314,22 +1323,15 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 }
 
 void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased() {
-  if (is_shutting_down()) {
-    return;
-  }
+  // Do not put logic here. Instead, checks for anything that can prevent making
+  // a TCP connection should go in CanAttemptConnection(), so that
+  // IsStalledByPoolLimit() returning true guarantees that
+  // MaybeAttemptTcpBased() would create a socket, if there were a socket
+  // available. Otherwise, trying to hand out idle socket slots could result in
+  // an infinite loop, trying to pass idle socket slots to an AttemptManager
+  // that keeps claiming it needs them, but then doesn't use them when given the
+  // opportunity to do so.
 
-  if (!CanUseTcpBasedProtocols()) {
-    return;
-  }
-
-  if (CanUseQuic() && quic_attempt_result_.has_value() &&
-      *quic_attempt_result_ == OK) {
-    return;
-  }
-
-  // There might be multiple pending jobs. Make attempts as much as needed
-  // and allowed.
-  const bool using_tls = is_using_tls_;
   while (IsTcpBasedAttemptReady()) {
     // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
     // implementation.
@@ -1358,12 +1360,11 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased() {
       return;
     }
 
-    CreateAndStartTcpBasedAttempt(using_tls, *ip_endpoint, slot);
+    CreateAndStartTcpBasedAttempt(*ip_endpoint, slot);
   }
 }
 
 void HttpStreamPool::AttemptManager::CreateAndStartTcpBasedAttempt(
-    bool using_tls,
     IPEndPoint ip_endpoint,
     TcpBasedAttemptSlot* slot) {
   if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted) {
@@ -1438,7 +1439,7 @@ bool HttpStreamPool::AttemptManager::IsTcpBasedAttemptReady() {
       return true;
     case CanAttemptResult::kNoPendingJob:
       return false;
-    case CanAttemptResult::kBlockedTcpBasedAttempt:
+    case CanAttemptResult::kTcpWaitingOnUdp:
       return false;
     case CanAttemptResult::kThrottledForSpdy:
       // TODO(crbug.com/346835898): Consider throttling less aggressively (e.g.
@@ -1472,6 +1473,12 @@ bool HttpStreamPool::AttemptManager::IsTcpBasedAttemptReady() {
         return false;
       }
       return true;
+    case CanAttemptResult::kTcpNotAllowed:
+      return false;
+    case CanAttemptResult::kUdpSucceeded:
+      return false;
+    case CanAttemptResult::kShuttingDown:
+      return false;
   }
 }
 
@@ -1499,6 +1506,19 @@ size_t HttpStreamPool::AttemptManager::NonSlowTcpBasedAttemptCount() const {
 
 HttpStreamPool::AttemptManager::CanAttemptResult
 HttpStreamPool::AttemptManager::CanAttemptConnection() const {
+  if (is_shutting_down()) {
+    return CanAttemptResult::kShuttingDown;
+  }
+
+  if (!CanUseTcpBasedProtocols()) {
+    return CanAttemptResult::kTcpNotAllowed;
+  }
+
+  if (CanUseQuic() && quic_attempt_result_.has_value() &&
+      *quic_attempt_result_ == OK) {
+    return CanAttemptResult::kUdpSucceeded;
+  }
+
   const size_t required_attempt_count = std::max(
       request_jobs_.size(), CalculateRequiredTcpBasedAttemptForPreconnect());
   if (required_attempt_count <= NonSlowTcpBasedAttemptCount()) {
@@ -1510,7 +1530,7 @@ HttpStreamPool::AttemptManager::CanAttemptConnection() const {
   }
 
   if (should_block_tcp_based_attempt_) {
-    return CanAttemptResult::kBlockedTcpBasedAttempt;
+    return CanAttemptResult::kTcpWaitingOnUdp;
   }
 
   if (ShouldRespectLimits()) {
@@ -2122,7 +2142,7 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptDelayPassed() {
   MaybeAttemptTcpBased();
 }
 
-bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() {
+bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() const {
   return allowed_alpns_.HasAny(kTcpBasedProtocols);
 }
 
