@@ -18,13 +18,13 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 
 #if defined(ANDROID)
@@ -1070,7 +1070,8 @@ class EqualityStressTest {
     // arg_value.tests[]. In most cases, the current value of "mismatched"
     // would fit this requirement. But on the off-chance that it happens
     // to collide, we double-check.
-    while (base::Contains(arg_value.tests, mismatched, &Tests::k_value)) {
+    while (
+        std::ranges::contains(arg_value.tests, mismatched, &Tests::k_value)) {
       ++mismatched;
     }
     // Now verify that we see the expected return value from system calls,
