@@ -609,6 +609,13 @@ public final class ProductionSupportedFlagList {
                 "Enables an audio input optimization that uses shared memory instead of"
                         + " socket messages for audio IPC read confirmations."),
         Flag.baseFeature("UseRustJsonParser"),
+        Flag.baseFeature(
+                "UpdateScrollPredictorInputMapping",
+                "Updates the scroll predictor's input mapping and behavior. When enabled: 1. It"
+                    + " uses `sample_time` (VSync time - 5ms) as the boundary for a frame's events"
+                    + " and `looks ahead` at the next event to improve prediction. 2. It generates"
+                    + " a synthetic scroll event if the queue is empty, keeping scrolling smooth"
+                    + " even if input events are missed."),
         Flag.baseFeature("V8BaselineBatchCompilation"),
         Flag.baseFeature("V8ConcurrentSparkplug"),
         Flag.baseFeature("V8Flag_incremental_marking_always_user_visible"),
