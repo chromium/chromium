@@ -802,10 +802,8 @@ bool ProxyMain::IsDeferringCommits() const {
 
 bool ProxyMain::CommitRequested() const {
   DCHECK(IsMainThread());
-  // TODO(skyostil): Split this into something like CommitRequested() and
-  // CommitInProgress().
   return current_pipeline_stage_ != NO_PIPELINE_STAGE ||
-         max_requested_pipeline_stage_ >= COMMIT_PIPELINE_STAGE;
+         max_requested_pipeline_stage_ == COMMIT_PIPELINE_STAGE;
 }
 
 void ProxyMain::Start() {
