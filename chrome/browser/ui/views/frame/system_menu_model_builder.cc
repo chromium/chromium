@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -112,6 +113,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 
   if (auto* controller =
           tabs::VerticalTabStripStateController::From(browser())) {
+    // TODO(crbug.com/475222200): When in immersive, swapping between tab
+    // strip types create duplicate tab strips. Until that is resolved, disable
+    // the ability to swap between tab strips while in immersive.
+    if (ImmersiveModeController::From(browser())->IsEnabled()) {
+      return;
+    }
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     if (controller->ShouldDisplayVerticalTabs()) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
