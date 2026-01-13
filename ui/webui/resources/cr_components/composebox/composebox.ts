@@ -774,6 +774,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected async onVoiceSearchFinalResult_(e: CustomEvent<string>) {
     e.stopPropagation();
     this.voiceSearchEndCleanup_();
+    // For contextual tasks composebox voice metrics.
+    this.fire('composebox-voice-search-transcription-success');
     if (this.autoSubmitVoiceSearch) {
       this.fire(
           'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
@@ -797,12 +799,30 @@ export class ComposeboxElement extends I18nMixinLit
     this.inVoiceSearchMode_ = true;
     this.animationState = GlowAnimationState.LISTENING;
     this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
+    // For contextual tasks composebox voice metrics.
+    this.fire('composebox-voice-search-start');
     this.$.voiceSearch.start();
   }
 
-  protected onVoiceSearchClose_() {
+  protected onVoiceSearchClose_(e: CustomEvent<boolean>) {
+    // If closing was the user canceling voice search:
+    if (e.detail) {
+      // For contextual tasks composebox voice metrics.
+      this.fire('composebox-voice-search-user-canceled');
+    }
     this.voiceSearchEndCleanup_();
     this.receivedSpeech_ = false;
+  }
+
+  protected onVoiceSearchError_(e: CustomEvent<boolean>) {
+    // For contextual tasks composebox voice metrics:
+    if (e.detail) {
+      // An error that canceled voice search.
+      this.fire('composebox-voice-search-error-and-canceled');
+    } else {
+      // An error that did not cancel voice search.
+      this.fire('composebox-voice-search-error');
+    }
   }
 
   protected onCancelClick_() {

@@ -378,6 +378,9 @@ suite('Composebox voice search', () => {
     await microtasksFinished();
     await showPromise;
 
+    const [callback] = await windowProxy.whenCalled('setTimeout');
+    callback();
+
     const voiceSearchElement = composeboxElement.$.voiceSearch;
     const errorContainer =
         voiceSearchElement.shadowRoot.querySelector<HTMLElement>(

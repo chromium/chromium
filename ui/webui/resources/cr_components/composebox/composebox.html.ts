@@ -154,6 +154,7 @@ export function getHtml(this: ComposeboxElement) {
   <cr-composebox-voice-search id="voiceSearch"
       @voice-search-cancel="${this.onVoiceSearchClose_}"
       @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
+      @voice-search-error="${this.onVoiceSearchError_}"
       @transcript-update="${this.onTranscriptUpdate_}"
       @speech-received="${this.onSpeechReceived_}"
       exportparts="voice-close-button">
