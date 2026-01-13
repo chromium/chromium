@@ -1,6 +1,6 @@
 {
-  "version": "80.17",
-  "log_list_timestamp": "2026-01-05T12:52:53Z",
+  "version": "81.7",
+  "log_list_timestamp": "2026-01-13T12:53:25Z",
   "operators": [
     {
       "name": "Google",
@@ -63,8 +63,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2027h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-18T00:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-28T00:30:00Z"
             }
           },
           "temporal_interval": {
@@ -127,8 +127,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2027h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-18T00:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-28T00:30:00Z"
             }
           },
           "temporal_interval": {
@@ -1003,8 +1003,8 @@
           "url": "https://hetu2027.trustasia.com/hetu2027/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-18T00:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-28T00:30:00Z"
             }
           },
           "temporal_interval": {
@@ -1210,8 +1210,8 @@
           "monitoring_url": "https://halloumi2026h2a.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-22T07:30:00Z"
+            "usable": {
+              "timestamp": "2026-01-01T07:30:00Z"
             }
           },
           "temporal_interval": {
