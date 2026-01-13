@@ -1009,18 +1009,6 @@ bool PrerenderHostRegistry::CancelHost(PrerenderHostId prerender_host_id,
                     PrerenderCancellationReason(final_status));
 }
 
-bool PrerenderHostRegistry::CancelHost(FrameTreeNodeId frame_tree_node_id,
-                                       PrerenderFinalStatus final_status) {
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!frame_tree_node) {
-    return false;
-  }
-  PrerenderHostId prerender_host_id =
-      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
-  return CancelHost(prerender_host_id,
-                    PrerenderCancellationReason(final_status));
-}
-
 bool PrerenderHostRegistry::CancelHost(
     PrerenderHostId prerender_host_id,
     const PrerenderCancellationReason& reason) {

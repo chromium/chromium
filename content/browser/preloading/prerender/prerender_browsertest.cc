@@ -6351,13 +6351,14 @@ class TestPrerenderCancellerSubframeNavigationThrottle
     FrameTreeNode* frame_tree_node = navigation_request_->frame_tree_node();
     if (frame_tree_node->frame_tree().is_prerendering() &&
         !frame_tree_node->IsMainFrame()) {
+      PrerenderHost& prerender_host =
+          PrerenderHost::GetFromFrameTreeNode(*frame_tree_node);
       PrerenderHostRegistry* prerender_host_registry =
-          frame_tree_node->current_frame_host()
+          prerender_host.GetPrerenderedMainFrameHost()
               ->delegate()
               ->GetPrerenderHostRegistry();
-      prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree().root()->frame_tree_node_id(),
-          PrerenderFinalStatus::kMaxValue);
+      prerender_host_registry->CancelHost(prerender_host.prerender_host_id(),
+                                          PrerenderFinalStatus::kMaxValue);
     }
     return PROCEED;
   }

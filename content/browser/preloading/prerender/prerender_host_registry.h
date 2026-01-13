@@ -162,9 +162,6 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // Returns true if a cancelation has occurred.
   bool CancelHost(PrerenderHostId prerender_host_id,
                   PrerenderFinalStatus final_status);
-  // Deprecated: Cancels the host registered for FrameTreeNodeId
-  bool CancelHost(FrameTreeNodeId frame_tree_node_id,
-                  PrerenderFinalStatus final_status);
   // Same as CancelHost, but can pass a detailed reason for recording if given.
   bool CancelHost(PrerenderHostId prerender_host_id,
                   const PrerenderCancellationReason& reason);
