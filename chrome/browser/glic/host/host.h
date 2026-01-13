@@ -385,6 +385,8 @@ class Host : public GlicSharingManagerProvider {
   // frame.
   bool IsWebContentPresentAndMatches(content::RenderFrameHost* rfh);
 
+  void NotifyActorTaskListRowClicked(int32_t task_id);
+
  private:
   friend class HostManager;
 

@@ -820,6 +820,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyActorTaskListRowClicked: {
+    request: {
+      taskId: number,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientTabDataChanged: {
     request: {
       // If not present, the tab no longer exists and no more updates will be

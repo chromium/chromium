@@ -424,6 +424,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.onboardingCompleted.assignAndSignal(payload.completed);
   }
 
+  glicWebClientNotifyActorTaskListRowClicked(payload: {taskId: number}): void {
+    this.host.actorTaskListRowClickedSubject.next(payload.taskId);
+  }
+
   async glicWebClientRequestToShowAutofillSuggestionsDialog(payload: {
     request: SelectAutofillSuggestionsDialogRequestPrivate,
   }): Promise<{response: SelectAutofillSuggestionsDialogResponsePrivate}> {
@@ -536,6 +540,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   readonly navigationConfirmationRequestSubject =
       new Subject<NavigationConfirmationRequest>();
+  readonly actorTaskListRowClickedSubject = new Subject<number>();
   actOnWebCapabilityValue = ObservableValueImpl.withNoValue<boolean>();
 
   readonly selectAutofillSuggestionsDialogRequestSubject =
@@ -655,6 +660,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.uninterruptActorTask = undefined;
       this.getActOnWebCapability = undefined;
       this.createActorTab = undefined;
+      this.actorTaskListRowClicked = undefined;
     }
 
     if (state.alwaysDetachedMode) {
@@ -1340,6 +1346,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   isOnboardingCompleted?(): ObservableValue<boolean> {
     return this.onboardingCompleted;
+  }
+
+  actorTaskListRowClicked?(): Observable<number> {
+    return this.actorTaskListRowClickedSubject;
   }
 }
 

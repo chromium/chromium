@@ -140,6 +140,9 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
       glic_service->ToggleUI(browser_, /*prevent_close=*/true,
                              glic::mojom::InvocationSource::kActorTaskIcon);
+      if (auto* instance = glic_service->GetInstanceForTab(last_tab)) {
+        instance->host().NotifyActorTaskListRowClicked(task_id.value());
+      }
     }
   }
   // Regardless of tab navigation, process the row and close the bubble when

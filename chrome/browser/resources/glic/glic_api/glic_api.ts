@@ -985,6 +985,13 @@ export declare interface GlicBrowserHost {
    * allow coordination between multiple Glic instances.
    */
   isOnboardingCompleted?(): ObservableValue<boolean>;
+
+  /**
+   * Returns an observable that emits when a user interacts with the actor task
+   * list bubble and clicks on a task row (the observable emits the
+   * corresponding task id).
+   */
+  actorTaskListRowClicked?(): Observable<number>;
 }
 
 /** Information about a conversation. */

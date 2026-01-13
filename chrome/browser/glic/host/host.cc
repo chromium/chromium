@@ -111,6 +111,12 @@ bool Host::IsWebContentPresentAndMatches(
   return false;
 }
 
+void Host::NotifyActorTaskListRowClicked(int32_t task_id) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->NotifyActorTaskListRowClicked(task_id);
+  }
+}
+
 void Host::Close() {
   delegate_->ClosePanel();
 }

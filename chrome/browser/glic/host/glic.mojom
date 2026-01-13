@@ -1486,6 +1486,10 @@ interface WebClient {
 
   // The onboarding completed state has changed.
   NotifyOnboardingCompletedChanged(bool completed);
+
+  // Notifies the client that the user has clicked on a row in the actor task
+  // list bubble.
+  NotifyActorTaskListRowClicked(int32 task_id);
 };
 
 // Information extracted from a tab.

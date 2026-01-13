@@ -334,6 +334,11 @@ export class WebClientImpl implements WebClientInterface {
         'glicWebClientOnboardingCompletedChanged', {completed});
   }
 
+  notifyActorTaskListRowClicked(taskId: number): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyActorTaskListRowClicked', {taskId});
+  }
+
   async requestToShowAutofillSuggestionsDialog(
       request: SelectAutofillSuggestionsDialogRequestMojo):
       Promise<{response: SelectAutofillSuggestionsDialogResponseMojo}> {

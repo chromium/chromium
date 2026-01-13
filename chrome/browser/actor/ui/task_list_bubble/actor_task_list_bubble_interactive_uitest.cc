@@ -30,6 +30,7 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
@@ -117,5 +118,78 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
   EXPECT_FALSE(tab_two->IsActivated());
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Actor.Ui.TaskListBubble.Row.Click"));
+}
+
+// Unlike the other tests in this file, this test suite uses the Glic actor test
+// fixture in order to test interactions with Glic instances / web clients.
+class GlicActorTaskListBubbleInteractiveUiTest
+    : public glic::test::GlicActorUiTest {
+ public:
+  GlicActorTaskListBubbleInteractiveUiTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActorUi, {{features::kGlicActorUiTaskIconName, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskListBubbleInteractiveUiTest,
+                       NotificationReceivedAfterClickingOnTaskInBubble) {
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const char kFirstTaskItem[] = "FirstTaskItem";
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      // Pause the task.
+      PauseActorTask(),
+      // Wait for bubble.
+      InAnyContext(WaitForShow(kActorTaskListBubbleView)),
+      // Check bubble content.
+      CheckView(
+          kActorTaskListBubbleView,
+          [](views::View* view) { return view->children().size() == 1u; }),
+      InSameContext(NameDescendantViewByType<RichHoverButton>(
+          kActorTaskListBubbleView, kFirstTaskItem, 0)),
+      CheckViewProperty(
+          kFirstTaskItem, &RichHoverButton::GetSubtitleText,
+          l10n_util::GetStringUTF16(
+              IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
+      // Set up a promise to listen for the row clicked event.
+      ExecuteInGlic(base::BindLambdaForTesting(
+          [](content::WebContents* glic_web_contents) {
+            ASSERT_TRUE(content::ExecJs(glic_web_contents, R"js(
+              (() => {
+                window.buttonClickedPromise = new Promise(resolve => {
+                  client.browser.actorTaskListRowClicked().subscribe(resolve);
+                });
+              })();
+            )js"));
+          })),
+      // Click the row item.
+      PressButton(kFirstTaskItem),
+      // Wait for bubble hide.
+      InAnyContext(WaitForHide(kActorTaskListBubbleView)),
+      // Verify kNewActorTabId is still active.
+      Check([this]() {
+        return browser()->tab_strip_model()->IsTabInForeground(
+            browser()->tab_strip_model()->GetIndexOfWebContents(
+                tab_handle_.Get()->GetContents()));
+      }),
+      // Verify the row clicked event was received by the web client.
+      ExecuteInGlic(base::BindLambdaForTesting(
+          [this](content::WebContents* glic_web_contents) {
+            EXPECT_EQ(content::EvalJs(glic_web_contents, R"js(
+              window.buttonClickedPromise
+            )js")
+                          .ExtractInt(),
+                      task_id_.value());
+          })));
 }
 #endif

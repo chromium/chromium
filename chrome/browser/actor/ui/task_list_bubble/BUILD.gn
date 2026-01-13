@@ -117,6 +117,7 @@ source_set("interactive_ui_tests") {
   ]
   if (enable_glic) {
     deps += [
+      "//chrome/browser/glic:interactive_ui_tests",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui/tabs:glic",
     ]
