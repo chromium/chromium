@@ -1853,7 +1853,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7927711904086083099">Seçili değil</translation>
 <translation id="7927902634113905831">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILESIZE" />) dosyasını kaydetmek için kullanmak istediğiniz hesabı seçin</translation>
 <translation id="7930998711684428189">Şifreleriniz veri ihlali nedeniyle ifşa olursa sizi uyarır.</translation>
-<translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> üzerinde arayın</translation>
+<translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> ile arayın</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Tarama Verilerini Silme</translation>
 <translation id="7941578031639087549">{count,plural, =1{Sayfa, {email} hesabınızdaki Okuma Listenize eklendi}other{{count} sayfa, hesabınızdaki ({email}) okuma listenize eklendi}}</translation>
