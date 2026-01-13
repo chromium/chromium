@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -104,6 +105,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
@@ -721,6 +723,19 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     if (parent_object) {
       parent = parent_object->GetNode();
     }
+  }
+
+  // Targets of toggle-overscroll actions are reparented under their
+  // corresponding ::-internal-overscroll-area on their overscroll container.
+  Element* element = DynamicTo<Element>(node);
+  if (Element* container = element ? element->OverscrollContainer() : nullptr) {
+    wtf_size_t index =
+        container->GetOverscrollAreaTracker()->DOMSortedElements().Find(
+            element);
+    PseudoElement* pseudo_element =
+        container->GetOverscrollAreaParentPseudoElements()->at(index);
+    CHECK(pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent);
+    return pseudo_element;
   }
 
   // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.

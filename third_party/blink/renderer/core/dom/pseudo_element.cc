@@ -644,6 +644,7 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdScrollButtonInlineStart:
     case kPseudoIdScrollButtonInlineEnd:
     case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdOverscrollAreaParent:
       return true;
     default:
       return false;

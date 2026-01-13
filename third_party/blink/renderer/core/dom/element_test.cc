@@ -1629,9 +1629,7 @@ TEST_F(ElementTest, OverscrollPseudoElementStyles) {
             overscroll_parent_foo->GetComputedStyle()->BackfaceVisibility());
 }
 
-// TODO(crbug.com/463729080): Enable this when the layout objects are properly
-// created.
-TEST_F(ElementTest, DISABLED_OverscrollContainerWithElement) {
+TEST_F(ElementTest, OverscrollContainerWithElement) {
   ScopedOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="container" overscrollcontainer>
@@ -1646,7 +1644,7 @@ TEST_F(ElementTest, DISABLED_OverscrollContainerWithElement) {
   Element* container = GetElementById("container");
   ASSERT_TRUE(container);
   PseudoElement* overscroll_area_parent =
-      container->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+      container->GetOverscrollAreaParentPseudoElements()->at(0);
   Element* menu = GetElementById("menu");
   Element* content = GetElementById("content");
   ASSERT_TRUE(overscroll_area_parent);
@@ -1660,7 +1658,7 @@ TEST_F(ElementTest, DISABLED_OverscrollContainerWithElement) {
   //   content
   EXPECT_EQ(menu->GetLayoutObject()->Parent(),
             overscroll_area_parent->GetLayoutObject());
-  EXPECT_EQ(overscroll_area_parent->GetLayoutObject(),
+  EXPECT_EQ(overscroll_area_parent->GetLayoutObject()->Parent(),
             container->GetLayoutObject());
   EXPECT_EQ(content->GetLayoutObject()->Parent(), container->GetLayoutObject());
 }

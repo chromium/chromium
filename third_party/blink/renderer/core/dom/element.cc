@@ -4538,6 +4538,38 @@ void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc() ||
          GetDocument().GetStyleEngine().InScrollMarkersAttachment());
 
+  // Elements that are the targets of toggle-overscroll buttons are added
+  // as direct children of the ::-internal-overscroll-area-parent
+  // pseudo-element generated for them. E.g.
+  // <div id=container overscrollcontainer>
+  //   <div id=menu></div>
+  //   <button id=button command=toggle-overscroll commandfor=menu></button>
+  // </div>
+  // Generates the following layout structure:
+  // - #container
+  //   - ::-internal-overscroll-area-parent
+  //     - #menu
+  //   - #button
+  if (Element* container = OverscrollContainer()) {
+    if (!context.parent->IsPseudo(kPseudoIdOverscrollAreaParent)) {
+      AttachContext overscroll_area_context(context);
+      wtf_size_t index =
+          container->GetOverscrollAreaTracker()->DOMSortedElements().Find(this);
+      PseudoElement* pseudo_element =
+          container->GetOverscrollAreaParentPseudoElements()->at(index);
+      CHECK(pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent);
+      overscroll_area_context.parent = pseudo_element->GetLayoutObject();
+      overscroll_area_context.previous_in_flow = nullptr;
+      overscroll_area_context.next_sibling = nullptr;
+      overscroll_area_context.next_sibling_valid = true;
+      AttachLayoutTree(overscroll_area_context);
+      return;
+    } else {
+      CHECK(To<PseudoElement>(context.parent->GetNode())
+                ->UltimateOriginatingElement() == container);
+    }
+  }
+
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
 
   const ComputedStyle* style = GetComputedStyle();

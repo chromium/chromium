@@ -31,10 +31,12 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 
@@ -46,7 +48,8 @@ inline static bool HasDisplayContentsStyle(const Node& node) {
 }
 
 static bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
-  return layout_object->IsInTopOrViewTransitionLayer();
+  return layout_object->IsInTopOrViewTransitionLayer() ||
+         layout_object->Style()->IsInternalOverscrollPositionAuto();
 }
 
 static Node* PreviousLayoutSiblingOfElement(Element& element) {
@@ -559,6 +562,14 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
     return first;
+  if (current_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+    const IndexedPseudoElement* pseudo_element =
+        To<IndexedPseudoElement>(current_element);
+    return pseudo_element->UltimateOriginatingElement()
+        .GetOverscrollAreaTracker()
+        ->DOMSortedElements()
+        .at(pseudo_element->Index());
+  }
   if (Node* first = FlatTreeTraversal::FirstChild(node))
     return first;
   if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {

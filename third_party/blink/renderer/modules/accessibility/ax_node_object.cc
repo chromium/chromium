@@ -6327,6 +6327,12 @@ void AXNodeObject::AddNodeChildImpl(Node* node) {
   // Should not have another parent unless owned.
   if (AXObjectCache().IsAriaOwned(ax_child))
     return;  // Do not add owned children to their natural parent.
+  if (Element* element = DynamicTo<Element>(node);
+      element && element->OverscrollContainer()) {
+    // Targets of toggle-overscroll actions have an overscroll container
+    // with a ::-internal-overscroll-area-parent which owns them.
+    return;
+  }
 
   AXObject* ax_cached_parent =
       ax_child ? ax_child->ParentObjectIfPresent() : nullptr;
