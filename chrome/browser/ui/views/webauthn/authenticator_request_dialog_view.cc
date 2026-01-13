@@ -129,8 +129,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
                  sheet_->model()->GetAcceptButtonLabel());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  sheet_->model()->GetCancelButtonLabel());
-  if (model_->step() == Step::kTrustThisComputerAssertion ||
-      model_->step() == Step::kTrustThisComputerCreation ||
+  if (model_->step() == Step::kGPMTrustThisComputerAssertion ||
+      model_->step() == Step::kGPMTrustThisComputerCreation ||
       model_->step() == Step::kGPMCreatePasskey ||
       model_->step() == Step::kGPMEnterPin ||
       model_->step() == Step::kGPMEnterArbitraryPin ||

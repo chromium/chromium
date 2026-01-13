@@ -350,12 +350,12 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               dialog_model,
               AuthenticatorGpmPinSheetModelBase::Mode::kPinEntry));
       break;
-    case Step::kTrustThisComputerAssertion:
+    case Step::kGPMTrustThisComputerAssertion:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<AuthenticatorTrustThisComputerAssertionSheetModel>(
               dialog_model));
       break;
-    case Step::kTrustThisComputerCreation:
+    case Step::kGPMTrustThisComputerCreation:
       sheet_view = std::make_unique<AuthenticatorCreateUserSheetView>(
           std::make_unique<AuthenticatorTrustThisComputerCreationSheetModel>(
               dialog_model));
@@ -392,7 +392,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kPasskeyAutofill:
     case Step::kPasskeyUpgrade:
     case Step::kClosed:
-    case Step::kRecoverSecurityDomain:
+    case Step::kGPMRecoverSecurityDomain:
     case Step::kGPMReauthForPinReset:
     case Step::kPasswordOsAuth:
     case Step::kPlatformAuthenticator:

@@ -55,7 +55,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kPlatformAuthenticator:
       return StepUIType::NONE;
 
-    case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
+    case AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain:
     case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
       return StepUIType::WINDOW;
 
@@ -309,9 +309,9 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kChromeProfileCreatePasskey, "kChromeProfileCreatePasskey"},
       {Step::kGPMError, "kGPMError"},
       {Step::kGPMConnecting, "kGPMConnecting"},
-      {Step::kRecoverSecurityDomain, "kRecoverSecurityDomain"},
-      {Step::kTrustThisComputerAssertion, "kTrustThisComputerAssertion"},
-      {Step::kTrustThisComputerCreation, "kTrustThisComputerCreation"},
+      {Step::kGPMRecoverSecurityDomain, "kGPMRecoverSecurityDomain"},
+      {Step::kGPMTrustThisComputerAssertion, "kGPMTrustThisComputerAssertion"},
+      {Step::kGPMTrustThisComputerCreation, "kGPMTrustThisComputerCreation"},
       {Step::kGPMReauthForPinReset, "kGPMReauthForPinReset"},
       {Step::kGPMLockedPin, "kGPMLockedPin"},
       {Step::kErrorFetchingChallenge, "kErrorFetchingChallenge"},

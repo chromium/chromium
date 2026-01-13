@@ -212,7 +212,7 @@ class AuthenticatorRequestWindow
 
     GURL url;
     switch (step_) {
-      case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
+      case AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain:
         url = GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url();
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
         webauthn::user_actions::RecordRecoveryShown(model_->request_type);

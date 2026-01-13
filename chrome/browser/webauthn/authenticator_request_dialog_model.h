@@ -278,9 +278,9 @@ struct AuthenticatorRequestDialogModel
     kGPMError,
     kGPMConnecting,
     // Device bootstrap to use GPM passkeys.
-    kRecoverSecurityDomain,
-    kTrustThisComputerAssertion,
-    kTrustThisComputerCreation,
+    kGPMRecoverSecurityDomain,
+    kGPMTrustThisComputerAssertion,
+    kGPMTrustThisComputerCreation,
     // Changing GPM PIN.
     kGPMReauthForPinReset,
     kGPMLockedPin,

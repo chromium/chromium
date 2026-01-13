@@ -715,10 +715,11 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
       };
     } else if (name == "trust_this_computer_assertion") {
       controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+          AuthenticatorRequestDialogModel::Step::
+              kGPMTrustThisComputerAssertion);
     } else if (name == "trust_this_computer_creation") {
       controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+          AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
     } else if (name == "gpm_create_passkey") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
@@ -1030,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, RecoverSecurityDomain) {
   // by this test class, will immediately return keys, which will cause the
   // browser to exit.
   model_->SetStep(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
 
   RunUntilBrowserProcessQuits();
 }
@@ -1076,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
   // Test that closing the window (e.g. due to a timeout) doesn't cause any
   // issues.
   model_->SetStep(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
   model_->SetStep(AuthenticatorRequestDialogModel::Step::kNotStarted);
 }
 

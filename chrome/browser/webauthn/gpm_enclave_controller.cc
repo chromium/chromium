@@ -556,7 +556,7 @@ void GPMEnclaveController::ShowSecurityDomainRecoveryUI() {
   // The acquired lock indicates that the explicit key retrieval flow is being
   // used.
   store_keys_lock_ = enclave_manager_->GetStoreKeysLock();
-  model_->SetStep(Step::kRecoverSecurityDomain);
+  model_->SetStep(Step::kGPMRecoverSecurityDomain);
 }
 
 GPMEnclaveController::AccountState
@@ -762,7 +762,7 @@ void GPMEnclaveController::OnKeysStored() {
     // iCloud keychain recovery.
     device::enclave::RecordEvent(
         device::enclave::Event::kICloudRecoverySuccessful);
-  } else if (model_->step() == Step::kRecoverSecurityDomain) {
+  } else if (model_->step() == Step::kGPMRecoverSecurityDomain) {
     // MagicArch recovery.
     webauthn::user_actions::RecordRecoverySucceeded();
     device::enclave::RecordEvent(device::enclave::Event::kRecoverySuccessful);
@@ -1086,7 +1086,7 @@ void GPMEnclaveController::OnGPMCreationSelected() {
     case AccountState::kRecoverable:
     case AccountState::kIrrecoverable:
       device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
-      model_->SetStep(Step::kTrustThisComputerCreation);
+      model_->SetStep(Step::kGPMTrustThisComputerCreation);
       break;
 
     case AccountState::kLoading:
@@ -1157,7 +1157,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
     case AccountState::kRecoverable:
     case AccountState::kIrrecoverable:
       device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
-      model_->SetStep(Step::kTrustThisComputerAssertion);
+      model_->SetStep(Step::kGPMTrustThisComputerAssertion);
       break;
 
     case AccountState::kLoading:
@@ -1182,8 +1182,8 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 }
 
 void GPMEnclaveController::OnGPMTrustThisComputer() {
-  CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
-        model_->step() == Step::kTrustThisComputerCreation);
+  CHECK(model_->step() == Step::kGPMTrustThisComputerAssertion ||
+        model_->step() == Step::kGPMTrustThisComputerCreation);
   device::enclave::RecordEvent(device::enclave::Event::kOnboardingAccepted);
   // Clicking through the bootstrapping dialog resets the count even if it
   // doesn't end up being successful.
@@ -1376,7 +1376,7 @@ bool GPMEnclaveController::BrowserIsApp() const {
 }
 
 void GPMEnclaveController::OnGPMPasskeysReset(bool success) {
-  CHECK(model_->step() == Step::kRecoverSecurityDomain);
+  CHECK(model_->step() == Step::kGPMRecoverSecurityDomain);
   if (!success ||
       model_->request_type != device::FidoRequestType::kMakeCredential) {
     model_->CancelAuthenticatorRequest();

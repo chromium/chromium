@@ -505,9 +505,9 @@ void AuthenticatorRequestDialogController::StartOver() {
       Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
           ->GetOriginalProfile()
           ->GetPrefs();
-  if (model_->step() == Step::kTrustThisComputerCreation ||
-      model_->step() == Step::kTrustThisComputerAssertion ||
-      model_->step() == Step::kRecoverSecurityDomain) {
+  if (model_->step() == Step::kGPMTrustThisComputerCreation ||
+      model_->step() == Step::kGPMTrustThisComputerAssertion ||
+      model_->step() == Step::kGPMRecoverSecurityDomain) {
     device::enclave::RecordEvent(device::enclave::Event::kOnboardingRejected);
     int current_gpm_decline_count = pref_service->GetInteger(
         webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);
@@ -548,7 +548,7 @@ void AuthenticatorRequestDialogController::OnGPMRecoverSecurityDomainClosed() {
   // such as hybrid.
   if (transport_availability_.request_type == FidoRequestType::kGetAssertion &&
       IsModalRequest(ui_presentation()) &&
-      model_->step() == Step::kRecoverSecurityDomain) {
+      model_->step() == Step::kGPMRecoverSecurityDomain) {
     model_->StartOver();
     return;
   }
