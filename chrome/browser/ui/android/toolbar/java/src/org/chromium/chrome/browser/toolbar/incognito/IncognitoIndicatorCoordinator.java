@@ -231,26 +231,31 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         context,
                         listItems,
                         delegate,
+                        R.drawable.popup_menu_bg_no_horizontal_padding,
                         R.color.toolbar_text_box_background_incognito,
                         null);
 
         mMenuWindow =
-                new AnchoredPopupWindow(
-                        context,
-                        mIncognitoIndicator,
-                        new ColorDrawable(Color.TRANSPARENT),
-                        menu.getContentView(),
-                        new ViewRectProvider(mIncognitoIndicator));
-        mMenuWindow.setDismissOnTouchInteraction(true);
-        mMenuWindow.setDismissOnScreenSizeChange(true);
-        mMenuWindow.setFocusable(true);
-        mMenuWindow.setHorizontalOverlapAnchor(true);
-        mMenuWindow.setVerticalOverlapAnchor(false);
-        mMenuWindow.setPreferredHorizontalOrientation(
-                AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE);
-        mMenuWindow.setMaxWidth(
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.incognito_indicator_menu_max_width));
+                new AnchoredPopupWindow.Builder(
+                                context,
+                                mIncognitoIndicator,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                menu::getContentView,
+                                new ViewRectProvider(mIncognitoIndicator))
+                        .setAnimateFromAnchor(true)
+                        .setDismissOnScreenSizeChange(true)
+                        .setDismissOnTouchInteraction(true)
+                        .setFocusable(true)
+                        .setTouchModal(true)
+                        .setMaxWidth(
+                                context.getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.incognito_indicator_menu_max_width))
+                        .setHorizontalOverlapAnchor(true)
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE)
+                        .setVerticalOverlapAnchor(false)
+                        .build();
 
         mMenuWindow.show();
     }

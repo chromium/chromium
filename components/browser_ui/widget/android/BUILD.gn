@@ -274,6 +274,7 @@ android_resources("java_resources") {
     "java/res/drawable/oval_shape.xml",
     "java/res/drawable/oval_surface_0.xml",
     "java/res/drawable/oval_surface_1.xml",
+    "java/res/drawable/popup_menu_bg_no_horizontal_padding.xml",
     "java/res/drawable/query_tile_overlay.xml",
     "java/res/drawable/reader_mode_bottom_sheet_background.xml",
     "java/res/drawable/rich_radio_button_background.xml",
