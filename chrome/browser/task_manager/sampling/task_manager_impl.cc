@@ -609,16 +609,20 @@ void TaskManagerImpl::OnReceivedMemoryDump(
   // global dump was successful; usually because of a missing process or OS
   // dumps. There may still be useful information for other processes in the
   // global dump when `outcome` is not `kSuccess`.
-  if (!dump) {
-    return;
-  }
-  for (const auto& pmd : dump->process_dumps()) {
-    auto it = task_groups_by_proc_id_.find(pmd.pid());
-    if (it == task_groups_by_proc_id_.end()) {
-      continue;
+  if (dump) {
+    for (const auto& pmd : dump->process_dumps()) {
+      auto it = task_groups_by_proc_id_.find(pmd.pid());
+      if (it == task_groups_by_proc_id_.end()) {
+        continue;
+      }
+      it->second->set_footprint(base::KiBU(pmd.os_dump().private_footprint_kb));
     }
-    it->second->set_footprint(base::KiBU(pmd.os_dump().private_footprint_kb));
   }
+
+  // Notify that background calculations are done. This is necessary because
+  // `TaskGroup` doesn't manage memory footprint, so it won't trigger the
+  // notification if memory is the only or the last background task.
+  OnTaskGroupBackgroundCalculationsDone();
 }
 
 void TaskManagerImpl::Refresh() {
@@ -715,6 +719,12 @@ Task* TaskManagerImpl::GetTaskByTaskId(TaskId task_id) const {
 }
 
 void TaskManagerImpl::OnTaskGroupBackgroundCalculationsDone() {
+  // If we are still waiting for memory dump, we shouldn't notify yet.
+  // `OnReceivedMemoryDump` will call this method again when it's done.
+  if (waiting_for_memory_dump_) {
+    return;
+  }
+
   for (const auto& groups_itr : task_groups_by_proc_id_) {
     if (!groups_itr.second->AreBackgroundCalculationsDone())
       return;

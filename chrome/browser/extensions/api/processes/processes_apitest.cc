@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/processes/processes_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -9,6 +10,7 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/common/extensions/api/processes.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -126,4 +128,22 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, OnUpdatedWithMemoryRefreshTypes) {
 IN_PROC_BROWSER_TEST_F(ProcessesApiTest, MAYBE_CannotTerminateBrowserProcess) {
   ASSERT_TRUE(RunExtensionTest("processes/terminate-browser-process"))
       << message_;
+}
+
+// Ensures that `GetProcessInfo` works even when memory is the only active
+// background task (which prevents `TaskGroup` from triggering the completion
+// signal). Regression test for https://crbug.com/474044030.
+IN_PROC_BROWSER_TEST_F(ProcessesApiTest, GetProcessInfoWithMemory) {
+  scoped_refptr<extensions::ProcessesGetProcessInfoFunction> function =
+      base::MakeRefCounted<extensions::ProcessesGetProcessInfoFunction>();
+
+  base::Value::List args;
+  base::Value::List process_ids;
+  process_ids.Append(base::checked_cast<int>(base::GetCurrentProcId()));
+  args.Append(std::move(process_ids));
+  args.Append(true);  // includeMemory.
+
+  auto result = extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+      function.get(), std::move(args), profile());
+  ASSERT_TRUE(result);
 }
