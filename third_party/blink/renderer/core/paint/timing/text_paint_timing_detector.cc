@@ -33,14 +33,6 @@ TextPaintTimingDetector::TextPaintTimingDetector(
       paint_timing_detector_(paint_timing_detector),
       ltp_manager_(frame_view) {}
 
-std::pair<TextRecord*, bool> TextPaintTimingDetector::UpdateMetricsCandidate() {
-  CHECK(paint_timing_detector_);
-  LargestContentfulPaintCalculator* lcp_calculator =
-      paint_timing_detector_->GetLargestContentfulPaintCalculator();
-  CHECK(lcp_calculator);
-  return lcp_calculator->NotifyMetricsIfLargestTextPaintChanged();
-}
-
 OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
   if (!added_entry_in_latest_frame_)
     return std::nullopt;

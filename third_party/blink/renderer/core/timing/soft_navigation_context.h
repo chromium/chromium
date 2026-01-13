@@ -51,6 +51,7 @@ class CORE_EXPORT SoftNavigationContext
                                const AtomicString& id,
                                const String& url,
                                Element* element) override;
+  void OnLcpMetricsForReportingChanged() override;
   bool IsHardNavigation() const override { return false; }
   void Trace(Visitor* visitor) const override;
 
@@ -112,7 +113,7 @@ class CORE_EXPORT SoftNavigationContext
   // Used to check if it is worthwhile to call `SatisfiesSoftNavPaintCriteria`.
   bool OnPaintFinished();
   void OnInputOrScroll();
-  bool TryUpdateLcpCandidate();
+  void TryUpdateLcpCandidate();
   const LargestContentfulPaintDetails& LatestLcpDetailsForUkm();
 
   bool SatisfiesSoftNavNonPaintCriteria() const;

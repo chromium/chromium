@@ -107,8 +107,6 @@ class CORE_EXPORT TextPaintTimingDetector final
     return recording_largest_text_paint_;
   }
 
-  std::pair<TextRecord*, bool> UpdateMetricsCandidate();
-
   void ReportLargestIgnoredText();
   void Trace(Visitor*) const;
 

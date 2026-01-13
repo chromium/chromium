@@ -89,6 +89,7 @@ class CORE_EXPORT PaintTimingDetector
                                const AtomicString& id,
                                const String& url,
                                Element* element) override;
+  void OnLcpMetricsForReportingChanged() override;
   bool IsHardNavigation() const override { return true; }
   void Trace(Visitor* visitor) const override;
 
@@ -144,8 +145,6 @@ class CORE_EXPORT PaintTimingDetector
 
   // Method called to stop recording the Largest Contentful Paint.
   void OnInputOrScroll();
-
-  void UpdateMetricsLcp();
 
   LocalDOMWindow* DomWindow() const;
 

@@ -133,6 +133,7 @@ class CORE_EXPORT SoftNavigationHeuristics
       base::FunctionRef<void(InteractionEffectsMonitor&)>);
 
   void OnContextDisposed(SoftNavigationContext*);
+  void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
 
  private:
   void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
@@ -158,7 +159,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // this is called, and it must not have already been emitted.
   void EmitSoftNavigationEntry(SoftNavigationContext*);
 
-  void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type);
   uint64_t CalculateRequiredPaintArea() const;

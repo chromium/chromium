@@ -92,17 +92,6 @@ ImagePaintTimingDetector::ImagePaintTimingDetector(LocalFrameView* frame_view)
       records_manager_(frame_view),
       frame_view_(frame_view) {}
 
-std::pair<ImageRecord*, bool>
-ImagePaintTimingDetector::UpdateMetricsCandidate() {
-  // Calling NotifyMetricsIfLargestImagePaintChanged only has an impact on
-  // PageLoadMetrics, and not on the web exposed metrics.
-  //
-  // Two different candidates are rare to have the same time and size.
-  // So when they are unchanged, the candidate is considered unchanged.
-  return GetLargestContentfulPaintCalculator()
-      ->NotifyMetricsIfLargestImagePaintChanged();
-}
-
 OptionalPaintTimingCallback
 ImagePaintTimingDetector::TakePaintTimingCallback() {
   viewport_size_ = std::nullopt;

@@ -159,22 +159,13 @@ void SoftNavigationContext::OnInputOrScroll() {
 // frames/paints. We do buffer the most recent candidate and emit that if and
 // when the soft navigation entry is emitted, but we might want to consider
 // buffering and emitting more candidates.
-bool SoftNavigationContext::TryUpdateLcpCandidate() {
+void SoftNavigationContext::TryUpdateLcpCandidate() {
   // TODO(crbug.com/454082773): Input should not invalidate pending presentation
   // feedback, but this can happen due to scheduling races.
   if (!IsRecordingLargestContentfulPaint()) {
-    return false;
+    return;
   }
-
-  std::pair<TextRecord*, bool> text_result =
-      lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged();
-  std::pair<ImageRecord*, bool> image_result =
-      lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged();
-
-  lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      text_result.first, image_result.first);
-
-  return text_result.second || image_result.second;
+  lcp_calculator_->MaybeFlushCandidates();
 }
 
 const LargestContentfulPaintDetails&
@@ -296,6 +287,10 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
   } else {
     latest_unemitted_icp_entry_ = entry;
   }
+}
+
+void SoftNavigationContext::OnLcpMetricsForReportingChanged() {
+  window_->GetSoftNavigationHeuristics()->UpdateSoftLcpMetricsForContext(this);
 }
 
 }  // namespace blink

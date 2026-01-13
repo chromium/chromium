@@ -42,6 +42,10 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
         const String& url,
         Element* element) = 0;
 
+    // Called when the `LatestLcpDetails()` have changed. The `Delegate` is
+    // responsible for pushing the updated metrics to UKM.
+    virtual void OnLcpMetricsForReportingChanged() = 0;
+
     // Returns true iff the calculator is associated with a hard navigation.
     //
     // TODO(crbug.com/454082771): This exists because there are some differences
@@ -59,19 +63,17 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintCalculator& operator=(
       const LargestContentfulPaintCalculator&) = delete;
 
-  void UpdateWebExposedLargestContentfulPaintIfNeeded(
-      const TextRecord* largest_text,
-      const ImageRecord* largest_image);
-
-  std::pair<ImageRecord*, bool> NotifyMetricsIfLargestImagePaintChanged();
-  std::pair<TextRecord*, bool> NotifyMetricsIfLargestTextPaintChanged();
-
   const LargestContentfulPaintDetails& LatestLcpDetails() const {
     return latest_lcp_details_;
   }
 
   void MaybeRecordRemovedCandidateUseCounter(const ImageRecord&);
   void MaybeRecordRemovedCandidateUseCounter(const TextRecord&);
+
+  // Flushes the pending largest text and largest image candidates to metrics
+  // and performance timeline and invokes the relevant `Delegate` callbacks, if
+  // needed.
+  void MaybeFlushCandidates();
 
   // Updates the largest text candidate if the given `TextRecord` is larger.
   // Candidates are not emitted to the performance timeline until
@@ -112,6 +114,10 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
+  bool UpdateMetricsIfLargestImagePaintChanged();
+  bool UpdateMetricsIfLargestTextPaintChanged();
+
+  void UpdateWebExposedLargestContentfulPaintIfNeeded();
   void UpdateWebExposedLargestContentfulImage(const ImageRecord& largest_image);
   void UpdateWebExposedLargestContentfulText(const TextRecord& largest_text);
 

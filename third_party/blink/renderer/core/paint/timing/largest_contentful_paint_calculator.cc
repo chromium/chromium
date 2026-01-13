@@ -80,19 +80,28 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
   CHECK(delegate_);
 }
 
+void LargestContentfulPaintCalculator::MaybeFlushCandidates() {
+  bool did_update_metrics = false;
+  did_update_metrics |= UpdateMetricsIfLargestImagePaintChanged();
+  did_update_metrics |= UpdateMetricsIfLargestTextPaintChanged();
+  if (did_update_metrics) {
+    delegate_->OnLcpMetricsForReportingChanged();
+  }
+  UpdateWebExposedLargestContentfulPaintIfNeeded();
+}
+
 void LargestContentfulPaintCalculator::
-    UpdateWebExposedLargestContentfulPaintIfNeeded(
-        const TextRecord* largest_text,
-        const ImageRecord* largest_image) {
-  uint64_t text_size = largest_text ? largest_text->RecordedSize() : 0u;
+    UpdateWebExposedLargestContentfulPaintIfNeeded() {
+  ImageRecord* largest_image = LargestPaintedOrPendingImage();
+  uint64_t text_size = largest_text_ ? largest_text_->RecordedSize() : 0u;
   uint64_t image_size = largest_image ? largest_image->RecordedSize() : 0u;
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ && largest_image->HasPaintTime()) {
       UpdateWebExposedLargestContentfulImage(*largest_image);
     }
   } else {
-    if (text_size > largest_reported_size_ && largest_text->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulText(*largest_text);
+    if (text_size > largest_reported_size_ && largest_text_->HasPaintTime()) {
+      UpdateWebExposedLargestContentfulText(*largest_text_.Get());
     }
   }
 }
@@ -203,11 +212,11 @@ bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
          largest_text_paint_size != latest_lcp_details_.largest_text_paint_size;
 }
 
-std::pair<ImageRecord*, bool>
-LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged() {
+bool LargestContentfulPaintCalculator::
+    UpdateMetricsIfLargestImagePaintChanged() {
   ImageRecord* largest_image = LargestPaintedOrPendingImage();
   if (!largest_image) {
-    return {nullptr, false};
+    return false;
   }
   const ImageRecord& image_record = *largest_image;
 
@@ -221,12 +230,12 @@ LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged() {
   // TODO(crbug.com/449779010): This should change to match hard navs once
   // largest pending image is supported.
   if (!delegate_->IsHardNavigation() && image_paint_time.is_null()) {
-    return {largest_image, false};
+    return false;
   }
 
   if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
                                              image_record.RecordedSize())) {
-    return {largest_image, false};
+    return false;
   }
 
   latest_lcp_details_.largest_contentful_paint_type =
@@ -298,13 +307,13 @@ LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged() {
     }
   }
 
-  return {largest_image, true};
+  return true;
 }
 
-std::pair<TextRecord*, bool>
-LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged() {
+bool LargestContentfulPaintCalculator::
+    UpdateMetricsIfLargestTextPaintChanged() {
   if (!largest_text_) {
-    return {nullptr, false};
+    return false;
   }
   // For hard navs, `largest_text_` is updated during the presentation callback,
   // so we always have paint time. But soft navs updates this during paint, so
@@ -312,13 +321,13 @@ LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged() {
   // TODO(crbug.com/449779010): Unify soft and hard nav behavior.
   if (!largest_text_->HasPaintTime()) {
     CHECK(!delegate_->IsHardNavigation());
-    return {largest_text_.Get(), false};
+    return false;
   }
 
   const TextRecord& text_record = *largest_text_.Get();
   if (!HasLargestTextPaintChangedForMetrics(text_record.PaintTime(),
                                             text_record.RecordedSize())) {
-    return {largest_text_.Get(), false};
+    return false;
   }
 
   DCHECK(text_record.HasPaintTime());
@@ -330,7 +339,7 @@ LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged() {
     ReportMetricsCandidateToTrace(text_record);
   }
 
-  return {largest_text_.Get(), true};
+  return true;
 }
 
 void LargestContentfulPaintCalculator::UpdateLatestLcpDetailsTypeIfNeeded() {
@@ -347,7 +356,7 @@ void LargestContentfulPaintCalculator::UpdateLatestLcpDetailsTypeIfNeeded() {
   // track the LCP type of the largest image only. When the largest image gets
   // updated, the latest_lcp_details_.largest_contentful_paint_type_ gets
   // reset and updated accordingly in the
-  // NotifyMetricsIfLargestImagePaintChanged() method. If the LCP element
+  // UpdateMetricsIfLargestImagePaintChanged() method. If the LCP element
   // turns out to be the largest text, we simply set the
   // latest_lcp_details_.largest_contentful_paint_type_ to be kText here. This
   // is possible because currently text elements have only 1 LCP type kText.

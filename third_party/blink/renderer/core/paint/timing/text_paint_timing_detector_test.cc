@@ -124,19 +124,15 @@ class TextPaintTimingDetectorTest : public testing::Test {
   void InvokeCallback() {
     DCHECK_GT(mock_callback_manager_->CountCallbacks(), 0u);
     InvokePresentationTimeCallback(mock_callback_manager_);
-    // Outside the tests, this is invoked by
-    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    if (GetTextPaintTimingDetector()->IsRecordingLargestTextPaint()) {
-      GetTextPaintTimingDetector()->UpdateMetricsCandidate();
-    }
+    // Outside the tests, this is invoked by PaintTimingMixin.
+    GetPaintTimingDetector().UpdateLcpCandidate();
   }
 
   void ChildFramePresentationTimeCallBack() {
     DCHECK_GT(child_frame_mock_callback_manager_->CountCallbacks(), 0u);
     InvokePresentationTimeCallback(child_frame_mock_callback_manager_);
-    // Outside the tests, this is invoked by
-    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    GetChildFrameTextPaintTimingDetector().UpdateMetricsCandidate();
+    // Outside the tests, this is invoked by PaintTimingMixin.
+    return GetChildFrameView().GetPaintTimingDetector().UpdateLcpCandidate();
   }
 
   void InvokePresentationTimeCallback(

@@ -457,15 +457,7 @@ void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
   // TODO(crbug.com/434151263): Consider emitting ICP entries for all committed
   // `SoftNavigationContext`s, not just the `context_for_current_url_`.
   for (const auto& context : potential_soft_navigations_) {
-    if (context->TryUpdateLcpCandidate()) {
-      // LCP candidate information is updated before emitting the soft nav entry
-      // to buffer the most recent ICP candidate, in order to capture
-      // information at the relevant time. But we don't want to update metrics
-      // until the `context` is considered a soft nav.
-      if (context == context_for_current_url_ && context->WasEmitted()) {
-        UpdateSoftLcpMetricsForContext(context);
-      }
-    }
+    context->TryUpdateLcpCandidate();
   }
 
   // If we're waiting on FCP presentation feedback to emit entries, check if we
@@ -487,7 +479,14 @@ void SoftNavigationHeuristics::UpdateSoftLcpMetricsForContext(
   if (context != context_for_current_url_) {
     return;
   }
-  CHECK(context->WasEmitted());
+
+  // LCP candidate information is updated before emitting the soft nav entry to
+  // buffer the most recent ICP candidate, in order to capture information at
+  // the relevant time. But we don't want to update metrics until the `context`
+  // is considered a soft nav.
+  if (!context->WasEmitted()) {
+    return;
+  }
 
   LocalFrame* frame = window_->GetFrame();
   // We should not be running paint timing callbacks for detached frames.
