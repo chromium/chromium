@@ -219,10 +219,8 @@ bool FrameResources::Initialize(VideoPixelFormat format,
       // 1-copy import into WebGL.
       // Unusually for such SharedImages, they are also *written* via raster for
       // WebGL and WebRTC use cases in which RGBA textures are imported into the
-      // VideoFrames (this is what "renderable" means in this context). Hence,
-      // GLES2_WRITE is required for raster-over-GLES.
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      // VideoFrames (this is what "renderable" means in this context).
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
