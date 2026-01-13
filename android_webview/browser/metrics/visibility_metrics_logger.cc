@@ -5,7 +5,6 @@
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"

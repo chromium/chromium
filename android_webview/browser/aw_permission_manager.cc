@@ -15,7 +15,6 @@
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/common/aw_features.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"

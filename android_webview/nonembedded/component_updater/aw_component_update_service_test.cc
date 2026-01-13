@@ -15,7 +15,6 @@
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "base/android/path_utils.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"

@@ -5,7 +5,6 @@
 #include "android_webview/browser/icon_helper.h"
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"

@@ -9,7 +9,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwContentsLifecycleNotifier_jni.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::android::AttachCurrentThread;

@@ -55,7 +55,6 @@
 #include "base/base_paths_android.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
