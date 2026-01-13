@@ -548,6 +548,57 @@ class WrappedMemoryCompoundImageRepresentation
   std::unique_ptr<MemoryImageRepresentation> wrapped_;
 };
 
+class WrappedVideoCompoundImageRepresentation
+    : public VideoImageRepresentation {
+ public:
+  WrappedVideoCompoundImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<VideoImageRepresentation> wrapped)
+      : VideoImageRepresentation(manager, backing, tracker),
+        wrapped_(std::move(wrapped)) {
+    CHECK(wrapped_);
+  }
+
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
+  }
+
+  bool BeginWriteAccess() override {
+    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
+                                          AccessMode::kWrite);
+    return wrapped_->BeginWriteAccess();
+  }
+  void EndWriteAccess() override {
+    wrapped_->EndWriteAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(),
+                                        AccessMode::kWrite);
+  }
+  bool BeginReadAccess() override {
+    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
+                                          AccessMode::kRead);
+    return wrapped_->BeginReadAccess();
+  }
+  void EndReadAccess() override {
+    wrapped_->EndReadAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
+  }
+#if BUILDFLAG(IS_WIN)
+  D3D11TextureAndArrayIndex GetD3D11Texture() const override {
+    return wrapped_->GetD3D11Texture();
+  }
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  AHardwareBuffer* GetAHardwareBuffer() const override {
+    return wrapped_->GetAHardwareBuffer();
+  }
+#endif
+
+ private:
+  std::unique_ptr<VideoImageRepresentation> wrapped_;
+};
+
 // static
 bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
     const gfx::Size& size,
@@ -1228,6 +1279,24 @@ std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
   }
 
   return std::make_unique<WrappedMemoryCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
+}
+
+std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VideoDevice device) {
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = backing->ProduceVideo(manager, tracker, device);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedVideoCompoundImageRepresentation>(
       manager, this, tracker, std::move(real_rep));
 }
 
