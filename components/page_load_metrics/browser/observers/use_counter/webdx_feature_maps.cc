@@ -466,6 +466,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kTranslator_TranslateStreaming,
            WebDXFeature::kTranslationApi},
           {WebFeature::kLanguageDetector_Detect, WebDXFeature::kTranslationApi},
+          {WebFeature::kPartitionedCookies, WebDXFeature::kPartitionedCookies},
           // Add new features above this line.
       }};
 

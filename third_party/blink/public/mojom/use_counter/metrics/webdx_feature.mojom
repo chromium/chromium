@@ -478,6 +478,7 @@ enum WebDXFeature {
   kTranslationApi = 416,
   kDRAFT_MetaTextScale = 417,
   kJpegxl = 418,
+  kPartitionedCookies = 419,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
