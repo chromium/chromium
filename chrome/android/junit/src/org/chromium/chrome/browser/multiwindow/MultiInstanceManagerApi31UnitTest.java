@@ -146,7 +146,6 @@ import java.util.stream.Collectors;
 @Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
-    ChromeFeatureList.INSTANCE_SWITCHER_V2,
     ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
 })
 @DisableFeatures({

@@ -5620,11 +5620,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "instance-switcher-v2",
-    "owners": [ "aishwaryarj@google.com", "rathomas@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 146
-  },
-  {
     "name": "instant-hotspot-on-nearby",
     "owners": [ "joeantonetti@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 146

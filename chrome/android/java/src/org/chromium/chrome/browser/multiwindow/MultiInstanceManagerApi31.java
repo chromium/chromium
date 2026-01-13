@@ -278,9 +278,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
                 instanceType,
-                UiUtils.isInstanceSwitcherV2Enabled()
-                        ? R.string.menu_move_tab_to_other_window
-                        : R.string.menu_move_to_other_window);
+                R.string.menu_move_tab_to_other_window);
     }
 
     /**
@@ -391,9 +389,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
                 instanceType,
-                UiUtils.isInstanceSwitcherV2Enabled()
-                        ? R.string.menu_move_group_to_other_window
-                        : R.string.menu_move_to_other_window);
+                R.string.menu_move_group_to_other_window);
     }
 
     @Override

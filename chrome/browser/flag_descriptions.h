@@ -2489,12 +2489,6 @@ inline constexpr char kIncognitoThemeOverlayTestingName[] =
 inline constexpr char kIncognitoThemeOverlayTestingDescription[] =
     "Enables incognito theme overlay for testing on the current window.";
 
-inline constexpr char kInstanceSwitcherV2Name[] = "Instance switcher v2";
-inline constexpr char kInstanceSwitcherV2Description[] =
-    "Enables the updated instance switcher dialog, that uses a new layout and "
-    "displays additional instance information like last access time and "
-    "active/inactive status.";
-
 inline constexpr char kInProductHelpDemoModeChoiceName[] =
     "In-Product Help Demo Mode";
 inline constexpr char kInProductHelpDemoModeChoiceDescription[] =

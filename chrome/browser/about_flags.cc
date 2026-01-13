@@ -12106,10 +12106,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAdaptiveFrameRateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kUseFrameIntervalDeciderAdaptiveFrameRate)},
 
-    {"instance-switcher-v2", flag_descriptions::kInstanceSwitcherV2Name,
-     flag_descriptions::kInstanceSwitcherV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kInstanceSwitcherV2)},
-
     {"robust-window-management", flag_descriptions::kRobustWindowManagementName,
      flag_descriptions::kRobustWindowManagementDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRobustWindowManagement,
