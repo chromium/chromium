@@ -34,8 +34,7 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
 
  protected:
   void BuildAndInitFeatureList() {
-    scoped_feature_list_.InitWithFeatures({features::kDesktopPWAsRunOnOsLogin,
-                                           features::kDesktopPWAsPreventClose},
+    scoped_feature_list_.InitWithFeatures({features::kDesktopPWAsPreventClose},
                                           {});
   }
 

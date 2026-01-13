@@ -36,8 +36,7 @@ class ManagementUIPWATest : public web_app::WebAppBrowserTestBase {
  public:
   ManagementUIPWATest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsRunOnOsLogin,
-         // This has the side effect of delaying the first refresh after
+        {// This has the side effect of delaying the first refresh after
          // starting the test, since it's posted with a BEST_EFFORT task.
          // Because it's user-visible, chrome://management should show installed
          // apps immediately despite this delay.

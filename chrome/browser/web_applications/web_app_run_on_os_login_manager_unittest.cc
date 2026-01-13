@@ -119,8 +119,6 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::vector<apps::AppLaunchParams> launched_apps_;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsRunOnOsLogin};
 };
 
 class WebAppRunOnOsLoginManagerParameterizedTest

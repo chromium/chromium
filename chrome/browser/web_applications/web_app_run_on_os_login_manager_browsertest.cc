@@ -179,8 +179,6 @@ class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
   raw_ptr<WebAppProvider> provider_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
   std::unique_ptr<base::test::TestFuture<void>> completed_future_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsRunOnOsLogin};
   IsolatedWebAppTestUpdateServer iwa_test_server_;
 };
 

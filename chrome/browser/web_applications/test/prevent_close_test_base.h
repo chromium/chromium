@@ -51,8 +51,6 @@ class PreventCloseTestBase : public policy::PolicyTest {
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsRunOnOsLogin};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 

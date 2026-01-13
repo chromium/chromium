@@ -46,10 +46,6 @@ void WebAppRunOnOsLoginManager::Start() {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    return;
-  }
-
   network::mojom::ConnectionType connection_type;
   // `GetConnectionType` will execute either synchronously (and return true and
   // store the value in the `connection_type`) or asynchronously (and return

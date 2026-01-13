@@ -374,9 +374,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
 
   const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
   // Only show the Run on OS Login menu item for locally installed web apps
-  app_info->may_show_run_on_os_login_mode =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
-      is_locally_installed;
+  app_info->may_show_run_on_os_login_mode = is_locally_installed;
   app_info->may_toggle_run_on_os_login_mode = login_mode.user_controllable;
   app_info->run_on_os_login_mode = login_mode.value;
 
@@ -751,10 +749,6 @@ void AppHomePageHandler::LaunchApp(const std::string& app_id,
 void AppHomePageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    return;
-  }
-
   if (run_on_os_login_mode != web_app::RunOnOsLoginMode::kNotRun &&
       run_on_os_login_mode != web_app::RunOnOsLoginMode::kWindowed) {
     return;  // Other login mode is not supported;

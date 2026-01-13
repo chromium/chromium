@@ -53,8 +53,7 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
     launch_source = apps::LaunchSource::kFromFileManager;
   }
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
-      command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
+  if (command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
     launch_source = apps::LaunchSource::kFromOsLogin;
   } else if (protocol_handler_launch_url.has_value()) {
     launch_source = apps::LaunchSource::kFromProtocolHandler;
