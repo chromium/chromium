@@ -164,6 +164,57 @@ TabSharingInfoBar::TabSharingInfoBar(
   // TODO(crbug.com/378107817): It seems like link_ isn't always needed, but
   // it's added regardless. See about only adding when necessary.
   link_ = AddContentChildView(CreateLink(delegate_ptr->GetLinkText()));
+
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    // With FlexLayout, the order of buttons is determined by the order they
+    // are added as children. To ensure the button order matches the platform
+    // style , we may need to re-order the buttons in the content view.
+    std::vector<views::View*> order_of_buttons;
+    if (stop_button_) {
+      order_of_buttons.push_back(stop_button_);
+    }
+    if (share_this_tab_instead_button_) {
+      order_of_buttons.push_back(share_this_tab_instead_button_);
+    }
+    if (quick_nav_button_) {
+      order_of_buttons.push_back(quick_nav_button_);
+    }
+    if (csc_indicator_button_) {
+      order_of_buttons.push_back(csc_indicator_button_);
+    }
+
+    if (order_of_buttons.empty()) {
+    } else if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
+      std::ranges::reverse(order_of_buttons);
+    }
+
+    if (!order_of_buttons.empty()) {
+      views::View* first_button_in_layout = nullptr;
+      if (stop_button_) {
+        first_button_in_layout = stop_button_;
+      } else if (share_this_tab_instead_button_) {
+        first_button_in_layout = share_this_tab_instead_button_;
+      } else if (quick_nav_button_) {
+        first_button_in_layout = quick_nav_button_;
+      } else if (csc_indicator_button_) {
+        first_button_in_layout = csc_indicator_button_;
+      }
+
+      if (first_button_in_layout) {
+        views::View* button_parent = first_button_in_layout->parent();
+        const auto& children = button_parent->children();
+        auto it =
+            std::find(children.begin(), children.end(), first_button_in_layout);
+        if (it != children.end()) {
+          int first_button_index = std::distance(children.begin(), it);
+          for (size_t i = 0; i < order_of_buttons.size(); ++i) {
+            button_parent->ReorderChildView(order_of_buttons[i],
+                                            first_button_index + i);
+          }
+        }
+      }
+    }
+  }
 }
 
 TabSharingInfoBar::~TabSharingInfoBar() = default;

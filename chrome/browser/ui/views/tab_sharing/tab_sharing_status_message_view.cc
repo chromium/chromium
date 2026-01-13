@@ -25,6 +25,7 @@ using MessageInfo = ::TabSharingStatusMessageView::MessageInfo;
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
 constexpr auto kButtonInsets = gfx::Insets::VH(2, 8);
+constexpr auto kRefreshButtonInsets = gfx::Insets::VH(4, 8);
 constexpr auto kRefreshSeparatorInsets = gfx::Insets::TLBR(12, 12, 12, 0);
 constexpr auto kSeparatorInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 std::vector<std::u16string> EndpointInfosToStrings(
@@ -344,7 +345,7 @@ void TabSharingStatusMessageView::AddButton(
   button->SetStyle(ui::ButtonStyle::kTonal);
 
   if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-    button->SetCustomPadding(gfx::Insets::VH(4, 12));
+    button->SetCustomPadding(kRefreshButtonInsets);
     button->SetProperty(views::kCrossAxisAlignmentKey,
                         views::LayoutAlignment::kCenter);
     button->SetBgColorIdOverride(ui::kColorSysBaseContainerElevated);
