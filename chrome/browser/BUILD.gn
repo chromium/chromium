@@ -8404,10 +8404,6 @@ static_library("browser") {
     deps += [ "//chrome/browser/chrome_for_testing" ]
   }
 
-  if (enable_reporting) {
-    deps += [ "//components/tpcd/enterprise_reporting" ]
-  }
-
   if (enable_builtin_search_provider_assets) {
     deps += [
       "//third_party/search_engines_data:search_engines_scaled_resources_grit",

@@ -5475,10 +5475,6 @@ static_library("ui") {
     }
   }
 
-  if (enable_reporting) {
-    deps += [ "//components/tpcd/enterprise_reporting" ]
-  }
-
   if (enable_webui_generate_code_cache) {
     deps += [
       "//chrome/browser/resources:code_cache_resources",

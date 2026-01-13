@@ -17,7 +17,6 @@ import("//components/safe_browsing/buildflags.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
-import("//net/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
@@ -917,10 +916,6 @@ test("components_unittests") {
       "//components/remote_cocoa/app_shim:unit_tests",
       "//components/remote_cocoa/common:unit_tests",
     ]
-  }
-
-  if (enable_reporting) {
-    deps += [ "//components/tpcd/enterprise_reporting:unit_tests" ]
   }
 
   if (enable_on_device_translation) {
