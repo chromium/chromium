@@ -72,6 +72,12 @@ struct SessionMetrics {
   int num_query_submissions = 0;
   // The number of times a tab is added as context to the session.
   int tab_context_added_count = 0;
+  // The number of times a tab is added as context to the session via the tab
+  // suggestion chip.
+  int tab_context_added_from_tab_suggestion_chip_count = 0;
+  // The number of time a tab is added as context to the session via the plus
+  // button (i.e. not via the tab suggestion chip).
+  int tab_context_added_from_plus_button_count = 0;
   // The number of times a tab with a duplicate title is added as context to the
   // session.
   int tab_with_duplicate_title_clicked_count = 0;
@@ -113,8 +119,9 @@ class ContextualSearchMetricsRecorder {
                                 lens::MimeType file_type,
                                 FileUploadStatus file_status);
 
-  void RecordTabClickedMetrics(bool has_duplicate_title,
-                               std::optional<int> recency_ranking);
+  void RecordTabAddedMetrics(bool has_duplicate_title,
+                               std::optional<int> recency_ranking,
+                               bool is_tab_suggestion_chip);
 
   // If `duplicate_title_count` < 0 then it won't be recorded.
   void RecordTabContextMenuMetrics(int total_tab_count,

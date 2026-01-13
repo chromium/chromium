@@ -201,6 +201,10 @@ class ContextualSearchboxHandler
   contextual_search::ContextualSearchSessionHandle*
   GetContextualSessionHandle();
 
+  // Records metrics for when a tab is added to the composebox.
+  void RecordTabAddedMetric(tabs::TabInterface* const tab,
+                            bool is_tab_suggestion_chip);
+
  private:
   // Helper to get the correct number of tab suggestions. Virtual so it
   // can be overridden for specific implementations.
@@ -234,8 +238,6 @@ class ContextualSearchboxHandler
                          const SkBitmap& preview_bitmap);
 
   std::optional<base::Uuid> GetTaskId();
-
-  void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
   std::optional<std::pair<base::UnguessableToken,
                           std::unique_ptr<lens::ContextualInputData>>>

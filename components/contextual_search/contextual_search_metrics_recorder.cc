@@ -178,10 +178,16 @@ void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
       success);
 }
 
-void ContextualSearchMetricsRecorder::RecordTabClickedMetrics(
+void ContextualSearchMetricsRecorder::RecordTabAddedMetrics(
     bool has_duplicate_title,
-    std::optional<int> recency_ranking) {
+    std::optional<int> recency_ranking,
+    bool is_tab_suggestion_chip) {
   session_metrics_->tab_context_added_count++;
+  if (is_tab_suggestion_chip) {
+    session_metrics_->tab_context_added_from_tab_suggestion_chip_count++;
+  } else {
+    session_metrics_->tab_context_added_from_plus_button_count++;
+  }
   if (has_duplicate_title) {
     session_metrics_->tab_with_duplicate_title_clicked_count++;
   }
@@ -290,6 +296,13 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
   base::UmaHistogramCounts100(
       "ContextualSearch.TabContextAdded.V2." + metrics_suffix_,
       session_metrics_->tab_context_added_count);
+  base::UmaHistogramCounts100(
+      "ContextualSearch.TabContextAddedFromTabSuggestionChip." +
+          metrics_suffix_,
+      session_metrics_->tab_context_added_from_tab_suggestion_chip_count);
+  base::UmaHistogramCounts100(
+      "ContextualSearch.TabContextAddedFromPlusButton." + metrics_suffix_,
+      session_metrics_->tab_context_added_from_plus_button_count);
   base::UmaHistogramCounts100(
       "ContextualSearch.TabWithDuplicateTitleClicked.V2." + metrics_suffix_,
       session_metrics_->tab_with_duplicate_title_clicked_count);

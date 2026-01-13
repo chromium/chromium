@@ -462,6 +462,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.TabContextAddedFromPlusButton.{ContextualSearchSource}"
+    units="count" expires_after="2027-01-20">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of times a tab is added as context through the plus
+    button in the composebox context menu. This metric is recorded regardless of
+    whether or not a query was issued with the tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.TabContextAddedFromTabSuggestionChip.{ContextualSearchSource}"
+    units="count" expires_after="2027-01-20">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of times a tab is added as context through the tab
+    suggestion chip in the composebox. This metric is recorded regardless of
+    whether or not a query was issued with the tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.TabWithDuplicateTitleClicked.V2.{ContextualSearchSource}"
     units="count" expires_after="2026-06-10">
   <owner>hujasonx@google.com</owner>

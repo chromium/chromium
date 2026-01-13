@@ -758,6 +758,15 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   // superclass method that contextualizes immediately and caches the tab
   // context for uploading in UploadSnapshotTabContextIfPresent.
   if (delay_upload) {
+    // Because the superclass method is not called if delay_upload is true,
+    // RecordTabAddedMetric() needs to be called here explicitly.
+    const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+    tabs::TabInterface* const tab = handle.Get();
+    if (tab) {
+      RecordTabAddedMetric(tab, /*is_tab_suggestion_chip=*/true);
+    }
+
+    // Create a new token for the tab and add it to the delayed_tabs_ map.
     base::UnguessableToken token = base::UnguessableToken::Create();
     delayed_tabs_[token] = tab_id;
     std::move(callback).Run(token);
