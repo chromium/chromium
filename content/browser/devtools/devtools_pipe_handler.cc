@@ -360,8 +360,7 @@ class PipeReaderCBOR : public PipeReaderBase {
 
  private:
   static uint32_t UInt32FromCBOR(base::span<const uint8_t> buf) {
-    return UNSAFE_TODO((buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) +
-                       buf[3]);
+    return (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
   }
 
   void ReadLoopInternal() override {
