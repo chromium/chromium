@@ -88,7 +88,7 @@ const char kEmptyOutputLanguageWarning[] =
     "to output safety. Please specify a supported output language code: [%s]";
 
 // Eagerly initializes other downloadable APIs when any session type is created.
-BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
