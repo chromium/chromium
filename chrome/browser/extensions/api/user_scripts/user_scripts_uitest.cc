@@ -157,7 +157,16 @@ IN_PROC_BROWSER_TEST_P(UserScriptsUITest, ToggleControls_UserScriptsAPIUsage) {
                  : ToggleDevModeInUI(kTab, /*enabled=*/true),
       WaitForState(kApiAvailability, "available"),
 
+      // Stop polling to avoid race condition with `RegisterUserScript`, which
+      // also uses the background script result channel.
+      StopObservingState(kApiAvailability),
+
       RegisterUserScript(extension->id()),
+
+      PollState(kApiAvailability,
+                [this, &extension]() {
+                  return CheckUserScriptsAPIAvailability(extension->id());
+                }),
 
       // Navigate tab to a webpage where the user script should inject a <div>.
       NavigateWebContents(
