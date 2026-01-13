@@ -314,7 +314,7 @@ public object BuildCompat {
     @JvmStatic
     public fun isAtLeastB_1(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA &&
-            Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES.BAKLAVA * 100000 + 1;
+            Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
 
     /**
      * Experimental feature set for pre-release SDK checks.
