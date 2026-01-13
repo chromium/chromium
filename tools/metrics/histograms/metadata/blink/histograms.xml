@@ -4689,6 +4689,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4713,6 +4714,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4736,6 +4738,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4760,6 +4763,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4785,6 +4789,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4808,6 +4813,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4831,6 +4837,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4854,6 +4861,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4878,6 +4886,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4903,6 +4912,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4926,6 +4936,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4949,6 +4960,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
     the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
@@ -4974,6 +4986,7 @@ chromium-metrics-reviews@google.com.
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The duration of a single user interaction:
     https://web.dev/better-responsiveness-metric/#group-events-into-interactions
@@ -5006,6 +5019,7 @@ chromium-metrics-reviews@google.com.
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Blink.ScanAndPreloadTime2 is the newer one of this histogram, which records
     the time with microseconds.
@@ -5031,6 +5045,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-06-21">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time it takes to {Task} for a document in a {FrameType}. Logged
     every time the {IsInitial} preload scan is performed.
@@ -5066,6 +5081,7 @@ chromium-metrics-reviews@google.com.
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Record when async scripts or dynamically inserted scripts run. Measures the
     duration between when a script is ready to run, to when the script is about
@@ -5102,6 +5118,7 @@ chromium-metrics-reviews@google.com.
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Record when the LowPriorityAsyncScriptExecution behavior is applied to async
     scripts. Measures the duration between when a script is ready to run, to
@@ -5115,6 +5132,7 @@ chromium-metrics-reviews@google.com.
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Record when the LowPriorityAsyncScriptExecution behavior is applied to async
     scripts, and {RaceTaskPriority} task was eventually run. Measures the
@@ -5147,6 +5165,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-27">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time spent generating the source text for a script resource. Logged when
     the source text is accessed for the first time. Emitted at most once per
@@ -5348,6 +5367,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-06-29">
   <owner>jbroman@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/speculation_rules/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The amount of time between when a fetch of speculation rules is started and
     when it is finished. Recorded each time such a fetch occurs.
@@ -5916,6 +5936,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-07-05">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time it takes to perform a {CookieOperation} operation from the
     CookieJar. Logged on every operation from the CookieJar.
@@ -5931,6 +5952,7 @@ chromium-metrics-reviews@google.com.
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent executing a script task that draws content to a {Context} context
     of a {Host}.
