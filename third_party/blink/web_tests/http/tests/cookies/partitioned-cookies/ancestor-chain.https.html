@@ -19,7 +19,7 @@ document.body.onload = function main() {
   test(() => {
     assert_equals(document.cookie, "");
 
-    // Valid Partitioned cookie: __Host- prefix and no SameParty attribute.
+    // Valid Partitioned cookie: __Host- prefix.
     const sameSiteCookie = "__Host-same=site";
     // Include Partitioned attribute to make sure we don't introduce a site for
     // cookies regression.

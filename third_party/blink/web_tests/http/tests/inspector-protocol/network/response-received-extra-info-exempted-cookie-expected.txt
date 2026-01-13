@@ -10,7 +10,6 @@ Number of exempted cookies: 1
         name : foo
         path : /
         priority : Medium
-        sameParty : false
         sameSite : None
         secure : true
         session : true

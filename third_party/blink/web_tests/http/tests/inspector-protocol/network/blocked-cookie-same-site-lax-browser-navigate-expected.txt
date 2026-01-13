@@ -11,7 +11,6 @@ Browser initiated navigation blocked cookies: [
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : false
             sameSite : Lax
             secure : false
             session : true
@@ -34,7 +33,6 @@ Javascript initiated navigation blocked cookies: [
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : false
             sameSite : Lax
             secure : false
             session : true
@@ -58,7 +56,6 @@ Javascript initiated subresource blocked cookies: [
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : false
             sameSite : Lax
             secure : false
             session : true

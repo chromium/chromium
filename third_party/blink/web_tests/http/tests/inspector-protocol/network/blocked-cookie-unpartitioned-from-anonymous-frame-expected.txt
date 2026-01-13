@@ -12,7 +12,6 @@ requestWillBeSentExtraInfo associated cookies: [
             name : unpartitioned
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : false
             secure : false
             session : true
             size : 18
@@ -33,7 +32,6 @@ requestWillBeSentExtraInfo associated cookies: [
             partitionKeyOpaque : false
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : false
             secure : false
             session : true
             size : 11

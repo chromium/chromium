@@ -212,7 +212,6 @@ std::unique_ptr<Network::Cookie> BuildCookie(
           .SetSecure(cookie.SecureAttribute())
           .SetSession(!cookie.IsPersistent())
           .SetPriority(BuildCookiePriority(cookie.Priority()))
-          .SetSameParty(false)
           .SetSourceScheme(BuildCookieSourceScheme(cookie.SourceScheme()))
           .SetSourcePort(cookie.SourcePort())
           .Build();
@@ -2362,7 +2361,6 @@ void NetworkHandler::SetCookie(
     std::optional<std::string> same_site,
     std::optional<double> expires,
     std::optional<std::string> priority,
-    std::optional<bool> same_party,
     std::optional<std::string> source_scheme,
     std::optional<int> source_port,
     std::unique_ptr<Network::CookiePartitionKey> partition_key,
