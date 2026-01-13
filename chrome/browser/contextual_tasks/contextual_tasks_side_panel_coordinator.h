@@ -8,8 +8,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-// #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -46,6 +46,7 @@ class ContextualTasksWebView;
 class ActiveTaskContextProvider;
 
 class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
+                                            public SidePanelEntryObserver,
                                             content::WebContentsObserver {
  public:
   // A data structure to hold the cache and state of the side panel per thread.
@@ -132,6 +133,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Returns the tab handle of the auto suggested tab if the auto suggested tab
   // chip is shown in the compose box.
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle();
+
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryHidden(SidePanelEntry* entry) override;
 
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
