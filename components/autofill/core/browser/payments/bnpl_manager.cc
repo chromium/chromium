@@ -196,8 +196,6 @@ void BnplManager::NotifyOfSuggestionGeneration(
 void BnplManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   if (base::Contains(suggestions, SuggestionType::kBnplEntry,
                      &Suggestion::type) &&
       base::FeatureList::IsEnabled(
@@ -206,8 +204,7 @@ void BnplManager::OnSuggestionsShown(
         .GetPaymentsDataManager()
         .SetAutofillHasSeenBnpl();
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+
   if (!update_suggestions_barrier_callback_.has_value()) {
     return;
   }
