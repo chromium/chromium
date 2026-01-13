@@ -4,10 +4,10 @@ rootWebArea
 ++++++button name='Show Menu'
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
-++++++group ispopup=auto
-++++++++menuItem name='Copy'
+++++++group setSize=2 ispopup=auto
+++++++++menuItem name='Copy' setSize=2 posInSet=1
 ++++++++++staticText name='Copy'
 ++++++++++++inlineTextBox name='Copy'
-++++++++menuItem name='Paste'
+++++++++menuItem name='Paste' setSize=2 posInSet=2
 ++++++++++staticText name='Paste'
 ++++++++++++inlineTextBox name='Paste'
