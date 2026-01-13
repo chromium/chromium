@@ -64,8 +64,13 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   ReadAnythingControllerBrowserTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kImmersiveReadAnything,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+         features::kWasmTtsEngineAutoInstallDisabled
+#endif
+        },
+        {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -117,6 +122,13 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
     ReadAnythingImmersiveWebView* web_view =
         static_cast<ReadAnythingImmersiveWebView*>(overlay_view->children()[0]);
     web_view->ShowUI();
+  }
+
+  void WaitForOverlayVisibility(bool visible) {
+    views::View* overlay_view = GetImmersiveOverlay();
+    ASSERT_TRUE(overlay_view);
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return visible == overlay_view->GetVisible(); }));
   }
 
   void AssertOverlayVisibility(bool visible) {
@@ -843,7 +855,49 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(overlay_view->children().empty());
 }
 
-// TODO(crbug.com/473567370): Add tests for the immersive overlay.
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       UnresponsiveRenderer_ClosesImmersive) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  WaitForOverlayVisibility(true);
+  AssertOverlayVisibility(true);
+  content::WaitForLoadStop(GetImmersiveWebContents());
+
+  content::SimulateUnresponsiveRenderer(
+      GetImmersiveWebContents(),
+      GetImmersiveWebContents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+  WaitForOverlayVisibility(false);
+  AssertOverlayVisibility(false);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ShowImmersive_AfterUnresponsiveRenderer_DoesNotCrash) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  WaitForOverlayVisibility(true);
+  AssertOverlayVisibility(true);
+  content::WebContents* starting_contents = GetImmersiveWebContents();
+  content::WaitForLoadStop(starting_contents);
+
+  content::SimulateUnresponsiveRenderer(
+      starting_contents,
+      starting_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  WaitForOverlayVisibility(false);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  WaitForOverlayVisibility(true);
+  AssertOverlayVisibility(true);
+  // The web contents would be the same if it was not recreated.
+  EXPECT_NE(GetImmersiveWebContents(), starting_contents);
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        UnresponsiveRenderer_ClosesSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
