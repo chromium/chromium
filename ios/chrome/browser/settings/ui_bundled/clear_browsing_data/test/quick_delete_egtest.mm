@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -281,6 +282,16 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+
+  if ([self isRunningTest:@selector
+            (testButtonColorWhenThePasswordRemovalFeatureIsEnabled)]) {
+    config.features_enabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
+  }
+  if ([self isRunningTest:@selector
+            (testButtonColorWhenThePasswordRemovalFeatureIsDisabled)]) {
+    config.features_disabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
+  }
+
   return config;
 }
 
@@ -1803,6 +1814,26 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // second window.
   [[EarlGrey selectElementWithMatcher:BrowsingDataSummaryWithCache()]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that the "Delete data" button is blue when the
+// `kPasswordRemovalFromDeleteBrowsingData` feature flag is turned on.
+- (void)testButtonColorWhenThePasswordRemovalFeatureIsEnabled {
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataButton()]
+      assertWithMatcher:chrome_test_util::ButtonWithPrimaryColor()];
+}
+
+// Tests that the "Delete data" button isn't blue when the
+// `kPasswordRemovalFromDeleteBrowsingData` feature flag is turned off.
+- (void)testButtonColorWhenThePasswordRemovalFeatureIsDisabled {
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataButton()]
+      assertWithMatcher:grey_not(chrome_test_util::ButtonWithPrimaryColor())];
 }
 
 @end

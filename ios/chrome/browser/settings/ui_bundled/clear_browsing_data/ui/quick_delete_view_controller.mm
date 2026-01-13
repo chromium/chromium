@@ -146,7 +146,10 @@ CGFloat TrashIconSize() {
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_BUTTON);
   self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CANCEL);
-  self.configuration.primaryButtonStyle = ChromeButtonStylePrimaryDestructive;
+  self.configuration.primaryButtonStyle =
+      IsPasswordRemovalFromDeleteBrowsingDataEnabled()
+          ? ChromeButtonStylePrimary
+          : ChromeButtonStylePrimaryDestructive;
 
   self.underTitleView = _tableView;
 
