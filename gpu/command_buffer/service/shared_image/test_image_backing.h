@@ -66,6 +66,7 @@ class TestImageBacking : public SharedImageBacking {
     in_use_by_window_server_ = in_use_by_window_server;
   }
   bool in_use_by_window_server() const { return in_use_by_window_server_; }
+  void MarkBackingInUse(bool in_use) { in_use_by_window_server_ = in_use; }
 #endif  // BUILDFLAG(IS_APPLE)
 
  protected:
