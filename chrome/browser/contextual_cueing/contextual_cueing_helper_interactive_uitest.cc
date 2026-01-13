@@ -51,13 +51,15 @@ class FakeGlicNudgeDelegate : public GlicNudgeDelegate {
   void OnTriggerGlicNudgeUI(std::string label) override {
     last_nudge_label_ = label;
     if (!last_nudge_label_.empty()) {
+      is_showing_nudge_ = true;
       future_.SetValue();
     }
   }
-  void OnHideGlicNudgeUI() override { last_nudge_label_ = ""; }
-  bool GetIsShowingGlicNudge() override { return !last_nudge_label_.empty(); }
+  void OnHideGlicNudgeUI() override { is_showing_nudge_ = false; }
+  bool GetIsShowingGlicNudge() override { return is_showing_nudge_; }
   void WaitUntilValidNudge() { future_.Get(); }
   std::string last_nudge_label_;
+  bool is_showing_nudge_ = false;
   base::test::TestFuture<void> future_;
 };
 
@@ -166,6 +168,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   // Simulate reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   EXPECT_EQ("test label", nudge_delegate.last_nudge_label_);
+
+  // Simulate new navigation. Should clear nudge.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.disabled.com")));
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -182,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.NudgeDecision.GlicContextualCueing", 0);
 
@@ -203,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
       https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_EQ("", nudge_delegate.last_nudge_label_);
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
@@ -243,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_EQ("", nudge_delegate.last_nudge_label_);
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
@@ -288,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_EQ("", nudge_delegate.last_nudge_label_);
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
@@ -319,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       browser(), GURL("https://disabled.com/"),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -335,11 +342,12 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("test label", nudge_delegate.last_nudge_label_);
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   // Make sure it's cleared on error page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("chrome://eeerrrooorrrpage")));
-  EXPECT_EQ("", nudge_delegate.last_nudge_label_);
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -355,18 +363,19 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("test label", nudge_delegate.last_nudge_label_);
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://disabled.com/"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   browser()->tab_strip_model()->ActivateTabAt(2);
-  EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -383,6 +392,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
@@ -410,6 +420,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
@@ -433,6 +444,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
@@ -447,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   histogram_tester_2.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
       contextual_cueing::NudgeInteraction::kIgnoredTabChange, 1);
@@ -485,6 +497,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ("cue label", nudge_delegate.last_nudge_label_);
+  EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
@@ -571,6 +584,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
         https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
     histogram_tester.ExpectUniqueSample(
         "ContextualCueing.NudgeInteraction",
@@ -590,6 +604,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
         contextual_cueing::NudgeInteraction::
             kIgnoredOpenedContextualTasksSidePanel,
         1);
+    EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   }
 }
 

@@ -70,7 +70,11 @@ void GlicNudgeController::UpdateNudgeLabel(
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
     if (delegate_) {
-      delegate_->OnTriggerGlicNudgeUI(nudge_label);
+      if (nudge_label.empty() && delegate_->GetIsShowingGlicNudge()) {
+        delegate_->OnHideGlicNudgeUI();
+      } else {
+        delegate_->OnTriggerGlicNudgeUI(nudge_label);
+      }
     }
   }
 
