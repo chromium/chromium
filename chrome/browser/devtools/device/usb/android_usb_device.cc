@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
@@ -176,7 +175,7 @@ void OpenAndroidDevices(crypto::keypair::PrivateKey rsa_key,
       base::BindOnce(&OnProbeFinished, std::move(callback), devices));
 
   for (const auto& device_info : device_info_list) {
-    if (base::Contains(GetOpenDevices(), device_info.guid)) {
+    if (std::ranges::contains(GetOpenDevices(), device_info.guid)) {
       // This device is already open, do not make parallel attempts to connect
       // to it.
       barrier.Run();

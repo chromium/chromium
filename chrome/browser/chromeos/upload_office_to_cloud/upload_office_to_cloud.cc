@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,7 +64,7 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile) {
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
     return chromeos::features::
                IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
-           base::Contains(
+           std::ranges::contains(
                std::vector<Mount>{Mount::kAllowed, Mount::kAutomated},
                chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile));
   }

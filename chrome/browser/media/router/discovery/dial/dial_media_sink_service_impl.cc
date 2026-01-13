@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -51,7 +50,7 @@ std::string EnumToString(DialRegistry::DialErrorCode code) {
 // |model_name|: device model name.
 bool IsDiscoveryOnly(const std::string& model_name) {
   std::string lower_model_name = base::ToLowerASCII(model_name);
-  return base::Contains(kDiscoveryOnlyModelNames, lower_model_name);
+  return std::ranges::contains(kDiscoveryOnlyModelNames, lower_model_name);
 }
 
 SinkAppStatus GetSinkAppStatusFromResponse(const DialAppInfoResult& result) {
@@ -240,7 +239,7 @@ void DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable(
     const DialDeviceData& device_data,
     const ParsedDialDeviceDescription& description_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::Contains(current_devices_, device_data)) {
+  if (!std::ranges::contains(current_devices_, device_data)) {
     return;
   }
 

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/extensions/extension_management.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -543,9 +543,9 @@ TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
   const std::vector<Manifest::Type>& allowed_types =
       *ReadGlobalSettings()->allowed_types;
   EXPECT_EQ(allowed_types.size(), 2u);
-  EXPECT_FALSE(base::Contains(allowed_types, Manifest::TYPE_EXTENSION));
-  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_THEME));
-  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
+  EXPECT_FALSE(std::ranges::contains(allowed_types, Manifest::TYPE_EXTENSION));
+  EXPECT_TRUE(std::ranges::contains(allowed_types, Manifest::TYPE_THEME));
+  EXPECT_TRUE(std::ranges::contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
 }
 
 // Verify that preference controlled by legacy ExtensionInstallBlocklist policy
@@ -793,8 +793,8 @@ TEST_F(ExtensionManagementServiceTest, PreferenceParsing) {
   const std::vector<Manifest::Type>& allowed_types =
       *ReadGlobalSettings()->allowed_types;
   EXPECT_EQ(allowed_types.size(), 2u);
-  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_THEME));
-  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
+  EXPECT_TRUE(std::ranges::contains(allowed_types, Manifest::TYPE_THEME));
+  EXPECT_TRUE(std::ranges::contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
 
   // Verifies blocked permission allowlist settings.
   APIPermissionSet api_permission_set;

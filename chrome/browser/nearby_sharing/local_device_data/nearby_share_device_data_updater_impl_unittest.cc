@@ -4,12 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -82,9 +82,9 @@ void VerifyRequest(
             field_mask.size());
 
   EXPECT_EQ(expected_contacts.has_value(),
-            base::Contains(field_mask, "contacts"));
+            std::ranges::contains(field_mask, "contacts"));
   EXPECT_EQ(expected_certificates.has_value(),
-            base::Contains(field_mask, "public_certificates"));
+            std::ranges::contains(field_mask, "public_certificates"));
 
   EXPECT_EQ(std::string(kDeviceIdPrefix) + kTestDeviceId,
             request.device().name());

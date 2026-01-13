@@ -4,11 +4,11 @@
 
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
@@ -164,12 +164,12 @@ IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyWebAppBrowserTest,
   std::vector<CannotDiscardReason> reasons_vec;
   EXPECT_EQ(kProtected,
             CanDiscard(page_node.get(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(base::Contains(reasons_vec, CannotDiscardReason::kWebApp));
+  EXPECT_TRUE(std::ranges::contains(reasons_vec, CannotDiscardReason::kWebApp));
 
   reasons_vec.clear();
   EXPECT_EQ(kProtected, CanDiscard(page_node.get(), DiscardReason::PROACTIVE,
                                    &reasons_vec));
-  EXPECT_TRUE(base::Contains(reasons_vec, CannotDiscardReason::kWebApp));
+  EXPECT_TRUE(std::ranges::contains(reasons_vec, CannotDiscardReason::kWebApp));
 
   reasons_vec.clear();
   EXPECT_EQ(kEligible,

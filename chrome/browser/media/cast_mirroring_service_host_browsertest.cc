@@ -4,7 +4,8 @@
 
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -444,8 +445,8 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
 
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!base::Contains(GetTabAlertStatesForContents(contents),
-                         tabs::TabAlert::kTabCapturing)) {
+  while (!std::ranges::contains(GetTabAlertStatesForContents(contents),
+                                tabs::TabAlert::kTabCapturing)) {
     if (base::TimeTicks::Now() - start_time >
         TestTimeouts::action_max_timeout()) {
       EXPECT_THAT(GetTabAlertStatesForContents(contents),

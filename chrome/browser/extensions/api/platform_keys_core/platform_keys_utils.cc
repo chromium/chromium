@@ -4,7 +4,8 @@
 
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -43,7 +44,7 @@ bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
   const base::Value::List& list =
       profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
   base::Value value(extension->id());
-  return base::Contains(list, value);
+  return std::ranges::contains(list, value);
 }
 
 }  // namespace extensions::platform_keys

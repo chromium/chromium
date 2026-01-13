@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -14,7 +15,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -354,7 +354,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
         if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
           std::string normalized_locale =
               l10n_util::NormalizeLocale(*current_locale);
-          if (base::Contains(browser_locales, normalized_locale)) {
+          if (std::ranges::contains(browser_locales, normalized_locale)) {
             locale_supported = true;
             break;
           }

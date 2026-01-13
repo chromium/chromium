@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/os_color_mode_policy_handler.h"
+
+#include <algorithm>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -43,7 +45,7 @@ bool OsColorModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
   }
 
-  if (!base::Contains(kAllowedValues, value->GetString())) {
+  if (!std::ranges::contains(kAllowedValues, value->GetString())) {
     errors->AddError(key::kOsColorMode, IDS_POLICY_OUT_OF_RANGE_ERROR,
                      value->GetString());
     return false;

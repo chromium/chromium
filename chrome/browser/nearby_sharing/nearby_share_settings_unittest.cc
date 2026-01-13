@@ -4,9 +4,9 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -332,11 +332,11 @@ TEST_F(NearbyShareSettingsTest, GetAndSetAllowedContacts) {
   settings()->SetAllowedContacts({id1});
   FlushMojoMessages();
   EXPECT_EQ(1u, observer_.allowed_contacts_.size());
-  EXPECT_TRUE(base::Contains(observer_.allowed_contacts_, id1));
+  EXPECT_TRUE(std::ranges::contains(observer_.allowed_contacts_, id1));
 
   settings_waiter()->GetAllowedContacts(&allowed_contacts);
   EXPECT_EQ(1u, allowed_contacts.size());
-  EXPECT_TRUE(base::Contains(allowed_contacts, id1));
+  EXPECT_TRUE(std::ranges::contains(allowed_contacts, id1));
 
   settings()->SetAllowedContacts({});
   FlushMojoMessages();

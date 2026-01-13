@@ -4,12 +4,12 @@
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
@@ -215,7 +215,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
         // from |kLoading| to |kLoadedBusy|, so no change is necessary when it
         // transitions back to |kLoading|.
         DCHECK(page_nodes_loading_.contains(page_node));
-        DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+        DCHECK(!std::ranges::contains(page_nodes_load_initiated_, page_node));
         DCHECK(!FindPageNodeToLoadData(page_node));
         return;
       }
@@ -249,7 +249,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
       // The PageNode should have been added to |page_nodes_loading_| when it
       // transitioned to |kLoading|.
       DCHECK(page_nodes_loading_.contains(page_node));
-      DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+      DCHECK(!std::ranges::contains(page_nodes_load_initiated_, page_node));
       DCHECK(!FindPageNodeToLoadData(page_node));
       return;
     }
@@ -280,7 +280,7 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
 
     DCHECK_EQ(page_node->GetType(), PageType::kTab);
     DCHECK(!FindPageNodeToLoadData(page_node));
-    DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+    DCHECK(!std::ranges::contains(page_nodes_load_initiated_, page_node));
 
     // Setting main frame restored state ensures that the notification
     // permission status and background title/favicon update properties are set
@@ -372,7 +372,7 @@ struct BackgroundTabLoadingPolicy::ScoredTabComparator {
 base::Value::Dict BackgroundTabLoadingPolicy::DescribePageNodeData(
     const PageNode* node) const {
   base::Value::Dict dict;
-  if (base::Contains(page_nodes_load_initiated_, node)) {
+  if (std::ranges::contains(page_nodes_load_initiated_, node)) {
     // Transient state between InitiateLoad() and OnLoadingStateChanged(),
     // shouldn't be sticking around for long.
     dict.Set("page_load_initiated", true);
@@ -548,7 +548,7 @@ void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
     // Extra page nodes that weren't passed to ScheduleLoadForRestoredTabs() may
     // already be loading.
     if (to_load != page_node && page_nodes_loading_.contains(to_load)) {
-      DCHECK(!base::Contains(page_nodes_load_initiated_, to_load));
+      DCHECK(!std::ranges::contains(page_nodes_load_initiated_, to_load));
       continue;
     }
     InitiateSinglePageLoad(to_load);
@@ -558,7 +558,7 @@ void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
 void BackgroundTabLoadingPolicy::InitiateSinglePageLoad(
     const PageNode* page_node) {
   // The page shouldn't already be loading.
-  DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+  DCHECK(!std::ranges::contains(page_nodes_load_initiated_, page_node));
   DCHECK(!page_nodes_loading_.contains(page_node));
   DCHECK_EQ(tabs_scored_, page_nodes_to_load_.size());
 

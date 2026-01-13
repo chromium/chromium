@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -416,7 +417,7 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
 
     for (const auto& histogram_name : kAllHistogramNames) {
       // If the histogram is not in the allowed set, ensure its count is 0
-      if (!base::Contains(updated_histograms, histogram_name)) {
+      if (!std::ranges::contains(updated_histograms, histogram_name)) {
         histogram_tester_.ExpectTotalCount(histogram_name, 0);
       }
     }

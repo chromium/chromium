@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -515,8 +515,9 @@ TEST_F(ExtensionMetricsProviderInstallsTest,
   ASSERT_EQ(2u, installs.size());
   // One should be the extension, and the other should be the app. We don't
   // check the specifics of the proto, since that's tested above.
-  EXPECT_TRUE(base::Contains(installs, ExtensionInstallProto::EXTENSION,
-                             &ExtensionInstallProto::type));
-  EXPECT_TRUE(base::Contains(installs, ExtensionInstallProto::PLATFORM_APP,
-                             &ExtensionInstallProto::type));
+  EXPECT_TRUE(std::ranges::contains(installs, ExtensionInstallProto::EXTENSION,
+                                    &ExtensionInstallProto::type));
+  EXPECT_TRUE(std::ranges::contains(installs,
+                                    ExtensionInstallProto::PLATFORM_APP,
+                                    &ExtensionInstallProto::type));
 }

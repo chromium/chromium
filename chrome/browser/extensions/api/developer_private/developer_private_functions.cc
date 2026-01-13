@@ -84,7 +84,6 @@
 #include "extensions/browser/extension_function.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -246,8 +245,8 @@ void AddSiteToSiteGroups(
   if (inserted) {
     it->second.etld_plus_one = etld_plus_one;
     it->second.sites.push_back(CreateSiteInfo(site, site_set));
-  } else if (!base::Contains(it->second.sites, site,
-                             &developer::SiteInfo::site)) {
+  } else if (!std::ranges::contains(it->second.sites, site,
+                                    &developer::SiteInfo::site)) {
     it->second.sites.push_back(CreateSiteInfo(site, site_set));
   }
 }

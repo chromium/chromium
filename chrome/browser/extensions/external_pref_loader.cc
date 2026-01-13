@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,8 +71,8 @@ bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
       "pjkljhegncpnkpknbcohdijeoejaedia.json",  // Gmail file name.
   };
 
-  return base::Contains(kIdsNotToBeInstalledOnTabletFormFactor,
-                        file_path.BaseName().value());
+  return std::ranges::contains(kIdsNotToBeInstalledOnTabletFormFactor,
+                               file_path.BaseName().value());
 #else
   return false;
 #endif

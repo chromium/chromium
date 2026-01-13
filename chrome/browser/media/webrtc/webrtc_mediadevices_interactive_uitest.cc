@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -147,8 +148,8 @@ class WebRtcMediaDevicesInteractiveUITest : public WebRtcTestBase {
       const std::vector<MediaDeviceInfo>& devices,
       const std::vector<MediaDeviceInfo>& devices2) {
     for (auto& device : devices) {
-      bool found = base::Contains(devices2, device.device_id,
-                                  &MediaDeviceInfo::device_id);
+      bool found = std::ranges::contains(devices2, device.device_id,
+                                         &MediaDeviceInfo::device_id);
       if (device.device_id == media::AudioDeviceDescription::kDefaultDeviceId ||
           device.device_id ==
               media::AudioDeviceDescription::kCommunicationsDeviceId) {
@@ -157,8 +158,8 @@ class WebRtcMediaDevicesInteractiveUITest : public WebRtcTestBase {
         EXPECT_FALSE(found);
       }
 
-      EXPECT_FALSE(base::Contains(devices2, device.group_id,
-                                  &MediaDeviceInfo::group_id));
+      EXPECT_FALSE(std::ranges::contains(devices2, device.group_id,
+                                         &MediaDeviceInfo::group_id));
     }
   }
 
@@ -279,11 +280,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   EXPECT_NE(tab1, tab2);
   EXPECT_EQ(devices.size(), devices2.size());
   for (auto& device : devices) {
-    EXPECT_TRUE(base::Contains(devices2, device.device_id,
-                               &MediaDeviceInfo::device_id));
+    EXPECT_TRUE(std::ranges::contains(devices2, device.device_id,
+                                      &MediaDeviceInfo::device_id));
 
-    EXPECT_FALSE(
-        base::Contains(devices2, device.group_id, &MediaDeviceInfo::group_id));
+    EXPECT_FALSE(std::ranges::contains(devices2, device.group_id,
+                                       &MediaDeviceInfo::group_id));
   }
 }
 

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -759,7 +760,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
   std::vector<UrlAndId> url_and_ids;
   urls.reserve(nodes.size());
   for (const bookmarks::BookmarkNode* node : nodes) {
-    if (!base::Contains(urls, node->url())) {
+    if (!std::ranges::contains(urls, node->url())) {
       continue;  // The URL was filtered out; ignore this node.
     }
     UrlAndId url_and_id;

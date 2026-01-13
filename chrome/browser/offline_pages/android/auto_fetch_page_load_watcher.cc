@@ -4,10 +4,10 @@
 
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -57,7 +57,7 @@ std::map<int, TabInfo> AndroidTabFinder::FindAndroidTabs(
 
     for (int index = 0; index < model->GetTabCount(); ++index) {
       TabAndroid* tab = model->GetTabAt(index);
-      if (base::Contains(android_tab_ids, tab->GetAndroidId())) {
+      if (std::ranges::contains(android_tab_ids, tab->GetAndroidId())) {
         result[tab->GetAndroidId()] = AnroidTabInfo(*tab);
       }
     }

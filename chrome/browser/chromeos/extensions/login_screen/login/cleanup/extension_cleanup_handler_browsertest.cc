@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -239,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCleanupHandlerTest,
       extension_observers;
   for (const auto& extension : all_installed_extensions) {
     // Don't observe exempt and user installed extensions.
-    if (base::Contains(kExemptExtensions, extension->id())) {
+    if (std::ranges::contains(kExemptExtensions, extension->id())) {
       continue;
     }
     if (extension->id() == kExemptExtensionId ||

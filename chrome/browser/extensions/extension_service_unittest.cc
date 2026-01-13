@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -277,7 +276,7 @@ bool HasExternalInstallErrors(Profile* profile) {
 }
 
 bool HasExternalInstallBubble(Profile* profile) {
-  return base::Contains(
+  return std::ranges::contains(
       ExternalInstallManager::Get(profile)->GetErrorsForTesting(),
       ExternalInstallError::BUBBLE_ALERT, &ExternalInstallError::alert_type);
 }

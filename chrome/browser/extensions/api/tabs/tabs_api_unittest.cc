@@ -4,12 +4,12 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -447,11 +447,11 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
 
     std::optional<int> first_tab_id = first_tab_info.GetDict().FindInt("id");
     ASSERT_TRUE(first_tab_id);
-    EXPECT_TRUE(base::Contains(expected_tabs_ids, *first_tab_id));
+    EXPECT_TRUE(std::ranges::contains(expected_tabs_ids, *first_tab_id));
 
     std::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
     ASSERT_TRUE(third_tab_id);
-    EXPECT_TRUE(base::Contains(expected_tabs_ids, *third_tab_id));
+    EXPECT_TRUE(std::ranges::contains(expected_tabs_ids, *third_tab_id));
   }
 }
 

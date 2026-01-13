@@ -4,11 +4,11 @@
 
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 
+#include <algorithm>
 #include <cstring>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -76,7 +76,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
-  return !base::Contains(list, base::Value(extension_id));
+  return !std::ranges::contains(list, base::Value(extension_id));
 }
 
 }  // namespace

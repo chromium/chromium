@@ -4,11 +4,11 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -471,9 +471,9 @@ bool HidChooserContext::HasDevicePermission(
     const device::mojom::HidDeviceInfo& device,
     const std::optional<url::Origin>& embedding_origin_of_web_view) {
   if (device.is_excluded_by_blocklist) {
-    bool is_device_protected_due_to_fido =
-        base::Contains(device.collections, device::mojom::kPageFido,
-                       [](const auto& c) { return c->usage->usage_page; });
+    bool is_device_protected_due_to_fido = std::ranges::contains(
+        device.collections, device::mojom::kPageFido,
+        [](const auto& c) { return c->usage->usage_page; });
     if (base::FeatureList::IsEnabled(
             features::kSecurityKeyHidInterfacesAreFido) &&
         IsKnownSecurityKey(device)) {

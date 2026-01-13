@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -512,7 +512,7 @@ void ExtensionService::DisableUserExtensionsExcept(
       continue;
     }
     const std::string& id = extension->id();
-    if (!base::Contains(except_ids, id)) {
+    if (!std::ranges::contains(except_ids, id)) {
       extension_registrar_->DisableExtension(
           id, {disable_reason::DISABLE_USER_ACTION});
     }

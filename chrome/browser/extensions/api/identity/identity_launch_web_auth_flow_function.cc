@@ -241,7 +241,7 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowFailure(
 
 void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
     const GURL& redirect_url) {
-  if (!base::Contains(final_url_domains_, redirect_url.Resolve("/"))) {
+  if (!std::ranges::contains(final_url_domains_, redirect_url.Resolve("/"))) {
     return;
   }
   RecordHistogramFunctionResult(

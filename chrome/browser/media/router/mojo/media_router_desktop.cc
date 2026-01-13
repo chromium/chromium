@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -900,7 +899,8 @@ MediaRouterDesktop::GetProviderIdForPresentation(
     DCHECK_LE(std::ranges::count(routes, presentation_id,
                                  &MediaRoute::presentation_id),
               1);
-    if (base::Contains(routes, presentation_id, &MediaRoute::presentation_id)) {
+    if (std::ranges::contains(routes, presentation_id,
+                              &MediaRoute::presentation_id)) {
       return provider_id;
     }
   }
@@ -913,7 +913,7 @@ MediaRouterDesktop::GetProviderIdForRoute(const MediaRoute::Id& route_id) {
   for (const auto& provider_to_routes : routes_query_.providers_to_routes()) {
     const mojom::MediaRouteProviderId provider_id = provider_to_routes.first;
     const std::vector<MediaRoute>& routes = provider_to_routes.second;
-    if (base::Contains(routes, route_id, &MediaRoute::media_route_id)) {
+    if (std::ranges::contains(routes, route_id, &MediaRoute::media_route_id)) {
       return provider_id;
     }
   }
@@ -1085,8 +1085,8 @@ bool MediaRouterDesktop::MediaRoutesQuery::AddRouteForProvider(
     mojom::MediaRouteProviderId provider_id,
     const MediaRoute& route) {
   std::vector<MediaRoute>& routes = providers_to_routes_[provider_id];
-  if (!base::Contains(routes, route.media_route_id(),
-                      &MediaRoute::media_route_id)) {
+  if (!std::ranges::contains(routes, route.media_route_id(),
+                             &MediaRoute::media_route_id)) {
     routes.push_back(route);
     UpdateCachedRouteList();
     return true;

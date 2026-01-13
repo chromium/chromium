@@ -4,9 +4,9 @@
 
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
@@ -50,7 +50,7 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
   }
   const GURL& url = web_contents->GetLastCommittedURL();
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
-         base::Contains(*kUrlAllowList, url);
+         std::ranges::contains(*kUrlAllowList, url);
 }
 
 GlicPinEvent GetEmptyPinEvent() {

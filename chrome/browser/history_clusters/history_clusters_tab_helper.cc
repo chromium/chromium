@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #else  // BUILDFLAG(IS_ANDROID)
-#include "base/containers/contains.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -419,9 +419,9 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
           ->GetPrefs();
   ntp_tiles::CustomLinksStore custom_link_store(pref_service);
   incomplete_visit_context_annotations.context_annotations.is_ntp_custom_link =
-      base::Contains(custom_link_store.RetrieveLinks(),
-                     incomplete_visit_context_annotations.url_row.url(),
-                     [](const auto& link) { return link.url; });
+      std::ranges::contains(custom_link_store.RetrieveLinks(),
+                            incomplete_visit_context_annotations.url_row.url(),
+                            [](const auto& link) { return link.url; });
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   incomplete_visit_context_annotations.status.navigation_end_signals = true;

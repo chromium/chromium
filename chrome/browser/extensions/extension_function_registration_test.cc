@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/one_shot_event.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -61,8 +62,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
       }
       // Some undocumented, unlaunched APIs may also use UNKNOWN if it's unclear
       // (or unlikely) if they will ever launch.
-      if (base::Contains(kAllowedUnknownHistogramEntries,
-                         std::string(entry.function_name_))) {
+      if (std::ranges::contains(kAllowedUnknownHistogramEntries,
+                                std::string(entry.function_name_))) {
         continue;
       }
       ADD_FAILURE() << "Un-allowlisted API found using UNKNOWN histogram entry."

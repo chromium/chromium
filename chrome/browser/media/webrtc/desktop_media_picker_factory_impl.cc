@@ -4,7 +4,8 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
@@ -100,8 +101,8 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
   // If we're supposed to include Tabs, but aren't including Windows (either
   // directly or indirectly), then we need to add Chrome App Windows back in.
   const bool add_chrome_app_windows =
-      !base::Contains(types, DesktopMediaList::Type::kWindow) &&
-      base::Contains(types, DesktopMediaList::Type::kWebContents);
+      !std::ranges::contains(types, DesktopMediaList::Type::kWindow) &&
+      std::ranges::contains(types, DesktopMediaList::Type::kWebContents);
   // Keep same order as the input |sources| and avoid duplicates.
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
   bool have_screen_list = false;

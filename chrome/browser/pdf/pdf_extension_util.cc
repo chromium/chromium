@@ -4,11 +4,11 @@
 
 #include "chrome/browser/pdf/pdf_extension_util.h"
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -357,7 +357,7 @@ std::vector<webui::ResourcePath> GetResources(PdfViewerContext context) {
   std::vector<webui::ResourcePath> resources;
   resources.reserve(std::size(kPdfResources));
   for (const webui::ResourcePath& resource : kPdfResources) {
-    if (base::Contains(exclusions, resource.path)) {
+    if (std::ranges::contains(exclusions, resource.path)) {
       continue;
     }
     resources.push_back(resource);

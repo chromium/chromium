@@ -176,7 +176,7 @@ void GlicZeroStateSuggestionsManager::
                                : nullptr;
   std::vector<content::WebContents*> contents_for_request = pinned_tab_data;
   if (active_web_contents &&
-      !Contains(contents_for_request, active_web_contents)) {
+      !std::ranges::contains(contents_for_request, active_web_contents)) {
     contents_for_request.push_back(active_web_contents);
   }
   FilterTabs(contents_for_request);

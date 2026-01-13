@@ -4,9 +4,9 @@
 
 #include "chrome/browser/policy/drive_file_sync_available_policy_handler.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -40,7 +40,7 @@ bool DriveFileSyncAvailablePolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  if (!base::Contains(kAllowedValues, value->GetString())) {
+  if (!std::ranges::contains(kAllowedValues, value->GetString())) {
     errors->AddError(key::kDriveFileSyncAvailable,
                      IDS_POLICY_OUT_OF_RANGE_ERROR, value->GetString());
     return false;

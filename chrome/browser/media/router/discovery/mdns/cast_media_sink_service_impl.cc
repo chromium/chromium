@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
@@ -792,7 +791,7 @@ void CastMediaSinkServiceImpl::DisconnectAndRemoveSink(
 
 bool CastMediaSinkServiceImpl::HasSinkWithIPAddress(
     const net::IPAddress& ip_address) const {
-  return base::Contains(GetSinks(), ip_address, [](const auto& sink) {
+  return std::ranges::contains(GetSinks(), ip_address, [](const auto& sink) {
     return sink.second.cast_data().ip_endpoint.address();
   });
 }

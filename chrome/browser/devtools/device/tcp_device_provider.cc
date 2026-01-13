@@ -4,9 +4,9 @@
 
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -119,7 +119,7 @@ void TCPDeviceProvider::QueryDevices(SerialsCallback callback) {
     const std::pair<std::string,
                     AndroidDeviceManager::DeviceInfo::ConnectedState>
         host = {target.host(), AndroidDeviceManager::DeviceInfo::kUnknown};
-    if (base::Contains(result, host)) {
+    if (std::ranges::contains(result, host)) {
       continue;
     }
     result.push_back(host);

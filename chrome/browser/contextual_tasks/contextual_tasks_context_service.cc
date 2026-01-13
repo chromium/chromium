@@ -4,9 +4,9 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -423,8 +423,8 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
       relevant_tabs.push_back(tab_signals.web_contents);
     }
 
-    tab_context->set_was_explicitly_chosen(
-        base::Contains(explicit_urls, web_contents->GetLastCommittedURL()));
+    tab_context->set_was_explicitly_chosen(std::ranges::contains(
+        explicit_urls, web_contents->GetLastCommittedURL()));
 
     base::UmaHistogramSparse("ContextualTasks.Context.TabScore",
                              static_cast<int>(std::min(100 * score, 100.0)));

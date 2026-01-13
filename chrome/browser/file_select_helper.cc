@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -359,7 +360,7 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
   // files, block the entire folder and update `result` to reflect the block
   // verdict for all files scanned.
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
-    if (base::Contains(result.paths_results, false)) {
+    if (std::ranges::contains(result.paths_results, false)) {
       list.clear();
       for (size_t index = 0; index < data.paths.size(); ++index) {
         result.paths_results[index] = false;

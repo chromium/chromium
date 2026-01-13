@@ -4,6 +4,7 @@
 
 #include "extensions/browser/process_map.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -492,7 +493,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
                    << (extension ? extension->name() : "<no extension>")
                    << ", Debug String: " << debug_string);
       bool expected_to_be_allowed =
-          base::Contains(allowed_contexts, context_type);
+          std::ranges::contains(allowed_contexts, context_type);
       EXPECT_EQ(expected_to_be_allowed,
                 process_map()->CanProcessHostContextType(extension, process,
                                                          context_type));

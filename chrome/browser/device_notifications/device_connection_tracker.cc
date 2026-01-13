@@ -4,9 +4,9 @@
 
 #include "chrome/browser/device_notifications/device_connection_tracker.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
@@ -53,7 +53,7 @@ DeviceConnectionTracker::~DeviceConnectionTracker() {
 
 void DeviceConnectionTracker::IncrementConnectionCount(
     const url::Origin& origin) {
-  if (base::Contains(whitelisted_origins_, origin)) {
+  if (std::ranges::contains(whitelisted_origins_, origin)) {
     return;
   }
   bool to_stage_profile = origins_.empty();
@@ -80,7 +80,7 @@ void DeviceConnectionTracker::IncrementConnectionCount(
 
 void DeviceConnectionTracker::DecrementConnectionCount(
     const url::Origin& origin) {
-  if (base::Contains(whitelisted_origins_, origin)) {
+  if (std::ranges::contains(whitelisted_origins_, origin)) {
     return;
   }
   auto it = origins_.find(origin);

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -13,7 +14,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -385,15 +385,16 @@ class QuickUnlockPrivateUnitTest
     EXPECT_EQ(HasFlag(expected_outcome, PIN_GOOD),
               errors.empty() && warnings.empty());
     EXPECT_EQ(HasFlag(expected_outcome, PIN_TOO_SHORT),
-              base::Contains(errors, CredentialProblem::kTooShort));
+              std::ranges::contains(errors, CredentialProblem::kTooShort));
     EXPECT_EQ(HasFlag(expected_outcome, PIN_TOO_LONG),
-              base::Contains(errors, CredentialProblem::kTooLong));
+              std::ranges::contains(errors, CredentialProblem::kTooLong));
     EXPECT_EQ(HasFlag(expected_outcome, PIN_WEAK_WARNING),
-              base::Contains(warnings, CredentialProblem::kTooWeak));
+              std::ranges::contains(warnings, CredentialProblem::kTooWeak));
     EXPECT_EQ(HasFlag(expected_outcome, PIN_WEAK_ERROR),
-              base::Contains(errors, CredentialProblem::kTooWeak));
-    EXPECT_EQ(HasFlag(expected_outcome, PIN_CONTAINS_NONDIGIT),
-              base::Contains(errors, CredentialProblem::kContainsNondigit));
+              std::ranges::contains(errors, CredentialProblem::kTooWeak));
+    EXPECT_EQ(
+        HasFlag(expected_outcome, PIN_CONTAINS_NONDIGIT),
+        std::ranges::contains(errors, CredentialProblem::kContainsNondigit));
   }
 
   CredentialCheck CheckCredentialUsingPin(const std::string& pin) {

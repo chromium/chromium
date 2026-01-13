@@ -4,12 +4,12 @@
 
 #include "chrome/browser/extensions/extension_management.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -364,7 +364,7 @@ bool ExtensionManagement::IsAllowedManifestType(
     return true;
   const std::vector<Manifest::Type>& allowed_types =
       *global_settings_->allowed_types;
-  return base::Contains(allowed_types, manifest_type);
+  return std::ranges::contains(allowed_types, manifest_type);
 }
 
 bool ExtensionManagement::IsAllowedManifestVersion(
@@ -963,7 +963,7 @@ void ExtensionManagement::LoadDeferredExtensionSetting(
 
     auto extension_ids = base::SplitStringPiece(
         iter.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (base::Contains(extension_ids, extension_id)) {
+    if (std::ranges::contains(extension_ids, extension_id)) {
       // Found our settings. After parsing, continue looking for more entries.
       ParseById(extension_id, *subdict);
       found = true;
