@@ -320,13 +320,20 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
   // frame->timestamp().
   if (base::FeatureList::IsEnabled(features::kWebRtcUseCaptureBeginTimestamp) &&
       frame->metadata().capture_begin_time) {
-    presentation_timestamp = webrtc::Timestamp::Micros(
-        frame->metadata().capture_begin_time->ToInternalValue());
+    int64_t capture_begin_time_us =
+        frame->metadata().capture_begin_time->ToInternalValue();
+    DCHECK_GE(capture_begin_time_us, 0)
+        << "The capture begin timestamp is an illegal negative value: "
+        << capture_begin_time_us;
+    presentation_timestamp = webrtc::Timestamp::Micros(capture_begin_time_us);
   } else if (!frame->timestamp().is_inf()) {
     // Use only when frame->timestamp() is a valid value (infinite values are
     // invalid).
-    presentation_timestamp =
-        webrtc::Timestamp::Micros(frame->timestamp().InMicroseconds());
+    int64_t frame_timestamp_us = frame->timestamp().InMicroseconds();
+    DCHECK_GE(frame_timestamp_us, 0)
+        << "The frame timestamp is an illegal negative value: "
+        << frame_timestamp_us;
+    presentation_timestamp = webrtc::Timestamp::Micros(frame_timestamp_us);
   }
 
   std::optional<base::TimeTicks> reference_time_media =
@@ -334,8 +341,12 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
 
   std::optional<webrtc::Timestamp> reference_time;
   if (reference_time_media.has_value()) {
-    reference_time = webrtc::Timestamp::Micros(
-        (*reference_time_media - base::TimeTicks()).InMicroseconds());
+    int64_t reference_time_us =
+        (*reference_time_media - base::TimeTicks()).InMicroseconds();
+    DCHECK_GE(reference_time_us, 0)
+        << "The reference timestamp is an illegal negative value: "
+        << reference_time_us;
+    reference_time = webrtc::Timestamp::Micros(reference_time_us);
   }
 
   // Translate the |crop_*| values output by AdaptFrame() from natural size to
