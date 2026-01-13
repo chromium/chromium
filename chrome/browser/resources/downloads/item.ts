@@ -615,9 +615,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
             return loadTimeData.getString('sensitiveContentBlockedDesc');
           case DangerType.kForcedSaveToOnedrive:
           case DangerType.kForcedSaveToGdrive:
-            // TODO(crbug.com/458033434) rename forcedSaveToGdriveDesc to be
-            // more generic, since it's used for both OneDrive and Google Drive.
-            return loadTimeData.getString('forcedSaveToGdriveDesc');
+            return loadTimeData.getString('forcedSaveToCloudDesc');
           case DangerType.kDeepScannedFailed:
           case DangerType.kDeepScannedSafe:
           case DangerType.kDeepScannedOpenedDangerous:

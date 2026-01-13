@@ -2277,7 +2277,7 @@ are declared in tools/grit/grit_args.gni.
         desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to block the file">
         Your organization's policies aren't met
       </message>
-      <message name="IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_GDRIVE"
+      <message name="IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_CLOUD"
         desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to block the file">
         Failed - Local download blocked
       </message>
@@ -2335,7 +2335,7 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_SENSITIVE_CONTENT_BLOCKED_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this download is blocked because it contains sensitive content">
         Your organization's policies aren't met
       </message>
-      <message name="IDS_FORCED_SAVE_TO_GDRIVE_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this local download is blocked because it contains sensitive content and download will proceed to GDrive">
+      <message name="IDS_FORCED_SAVE_TO_CLOUD_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this local download is blocked because it contains sensitive content and download will proceed to Cloud Storage">
         Your organization's policies aren't met
       </message>
       <message name="IDS_BLOCKED_TOO_LARGE_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this download is blocked because it is too large for deep scanning">

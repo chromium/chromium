@@ -105,7 +105,7 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
        IDS_BLOCK_REASON_SENSITIVE_CONTENT_WARNING},
       {"sensitiveContentBlockedDesc",
        IDS_SENSITIVE_CONTENT_BLOCKED_DESCRIPTION},
-      {"forcedSaveToGdriveDesc", IDS_FORCED_SAVE_TO_GDRIVE_DESCRIPTION},
+      {"forcedSaveToCloudDesc", IDS_FORCED_SAVE_TO_CLOUD_DESCRIPTION},
       {"blockedTooLargeDesc", IDS_BLOCKED_TOO_LARGE_DESCRIPTION},
       {"blockedPasswordProtectedDesc",
        IDS_BLOCKED_PASSWORD_PROTECTED_DESCRIPTION},

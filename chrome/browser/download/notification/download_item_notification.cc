@@ -1001,11 +1001,8 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
     }
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
-      // TODO(crbug.com/458033434) rename
-      // IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_GDRIVE to remove mention of gdrive
-      // and to make it more generic.
       return l10n_util::GetStringUTF16(
-          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_GDRIVE);
+          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_CLOUD);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
       return l10n_util::GetStringUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED);

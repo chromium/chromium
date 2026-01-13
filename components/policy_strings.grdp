@@ -79,7 +79,7 @@
   <message name="IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION" desc="Text to be shown to the user to inform them that an action they initiated was blocked by the organization.">
     Blocked by your organization
   </message>
-  <message name="IDS_POLICY_ACTION_FORCED_SAVE_TO_GDRIVE" desc="Text to be shown to the user to inform them that a local download they initiated was blocked and will proceed to GDrive">
+  <message name="IDS_POLICY_ACTION_FORCED_SAVE_TO_CLOUD" desc="Text to be shown to the user to inform them that a local download they initiated was blocked and will proceed to Cloud">
     Local download blocked
   </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
