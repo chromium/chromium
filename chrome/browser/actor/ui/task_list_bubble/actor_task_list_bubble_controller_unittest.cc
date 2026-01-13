@@ -145,47 +145,6 @@ class ActorTaskListBubbleControllerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
-  if (ActorTaskListBubbleControllerTest::GetParam()) {
-    GTEST_SKIP() << "Not relevant to the GlobalTaskIndicator";
-  }
-#if BUILDFLAG(ENABLE_GLIC)
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(profile_.get());
-  tabs::GlicActorTaskIconManager* manager =
-      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
-  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
-  actor::TaskId task_id = actor_service->CreateTask();
-  actor_service->GetTask(task_id)->Pause(true);
-  manager->UpdateTaskIconComponents(task_id);
-  actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView());
-
-  EXPECT_TRUE(
-      actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());
-
-  views::View* content_view = GetContentViewInActorTaskListBubble(
-      actor_task_list_bubble_controller_->GetBubbleWidget());
-
-  EXPECT_EQ(1u, manager->actor_task_list_bubble_rows().size());
-  EXPECT_EQ(1u, content_view->children().size());
-
-  RichHoverButton* button =
-      static_cast<RichHoverButton*>(content_view->children().front());
-  Click(button);
-  // Wait for bubble to be closed and removed from the view.
-  base::RunLoop().RunUntilIdle();
-
-  // Bubble should be reset after click.
-  EXPECT_EQ(nullptr, actor_task_list_bubble_controller_->GetBubbleWidget());
-  EXPECT_EQ(0u, manager->actor_task_list_bubble_rows().size());
-
-  actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView());
-  EXPECT_EQ(nullptr, actor_task_list_bubble_controller_->GetBubbleWidget());
-#endif
-}
-
 TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
 #if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedService* actor_service =

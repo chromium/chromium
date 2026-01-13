@@ -27,9 +27,17 @@ class ActorTaskListBubbleRowButton : public RichHoverButton {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
+  // HoverButton
+  void StateChanged(ButtonState old_state) override;
+
  private:
+  // Update row to reflect an unclickable state.
+  void MaybeSetDisabledRowUi();
+
   // Whether the task in this row has an existing tab or not.
   bool has_tab_;
+  // Whether the row has been processed (clicked) or not yet.
+  bool requires_processing_;
 };
 
 #endif  // CHROME_BROWSER_ACTOR_UI_TASK_LIST_BUBBLE_ACTOR_TASK_LIST_BUBBLE_ROW_BUTTON_H_
