@@ -6,6 +6,9 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "skill_local_data.proto" ]
+  sources = [
+    "skill.proto",
+    "skill_local_data.proto",
+  ]
   deps = [ "//components/sync/protocol" ]
 }
