@@ -1767,8 +1767,16 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (BOOL)canBecomeKeyView {
-  if ([self hostIsDisconnected])
+  if ([self hostIsDisconnected]) {
     return NO;
+  }
+
+  if (_responderDelegate &&
+      [_responderDelegate
+          respondsToSelector:@selector(shouldRefuseBecomingKeyView)] &&
+      [_responderDelegate shouldRefuseBecomingKeyView]) {
+    return NO;
+  }
 
   return _canBeKeyView;
 }

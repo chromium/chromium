@@ -26,3 +26,13 @@ bool IsTopChromeUntrustedWebUIURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIUntrustedScheme) &&
          url.DomainIs(chrome::kChromeUITopChromeDomain);
 }
+
+bool ShouldRefuseBecomingKeyViewForTopChromeWebUI(const GURL& url) {
+  // List of specific Top Chrome hosts that should not accept key view status.
+  if (IsTopChromeWebUIURL(url) &&
+      url.host() == chrome::kChromeUIWebUIToolbarHost) {
+    return true;
+  }
+
+  return false;
+}

@@ -16,4 +16,7 @@ bool IsTopChromeWebUIURL(const GURL& url);
 // "chrome-untrusted://*.top-chrome".
 bool IsTopChromeUntrustedWebUIURL(const GURL& url);
 
+// Returns true if the Top Chrome WebUI at `url` should not become the key view.
+bool ShouldRefuseBecomingKeyViewForTopChromeWebUI(const GURL& url);
+
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_URL_UTILS_H_

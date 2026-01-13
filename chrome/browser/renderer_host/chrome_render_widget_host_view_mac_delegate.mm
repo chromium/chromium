@@ -96,6 +96,16 @@
   return content::WebContents::FromRenderViewHost(renderViewHost);
 }
 
+- (BOOL)shouldRefuseBecomingKeyView {
+  content::WebContents* webContents = self.webContents;
+  if (webContents && ShouldRefuseBecomingKeyViewForTopChromeWebUI(
+                         webContents->GetLastCommittedURL())) {
+    return YES;
+  }
+
+  return NO;
+}
+
 - (NSView*)nsView {
   content::RenderWidgetHost* renderWidgetHost =
       content::RenderWidgetHost::FromID(_widgetProcessId, _widgetRoutingId);

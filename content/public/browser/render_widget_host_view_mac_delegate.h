@@ -87,6 +87,16 @@ enum class AcceptTooltipEvents {
 // By default, only the key window accepts tooltips events. The content embedder
 // may override this method to override the default behavior.
 - (AcceptTooltipEvents)acceptsTooltipEvents;
+
+// By default, the view is eligible to become the key view.
+// The content embedder may use this to override the result of
+// `-canBecomeKeyView` in `render_widget_host_view_cocoa.mm`. Refusing to be the
+// key view prevents the operating system from automatically focusing the NSView
+// (which can happen on initial show, or when the Application does not handle
+// the Tab key). Note that this does not disable focus, but purely excludes the
+// NSView from the operating system's key view search.
+- (BOOL)shouldRefuseBecomingKeyView;
+
 @end
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_MAC_DELEGATE_H_
