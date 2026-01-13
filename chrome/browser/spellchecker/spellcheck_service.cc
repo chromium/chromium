@@ -43,6 +43,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -191,7 +192,7 @@ void SpellcheckService::GetDictionaries(
     content::BrowserContext* browser_context,
     std::vector<Dictionary>* dictionaries) {
   PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
-  std::set<std::string> spellcheck_dictionaries;
+  absl::flat_hash_set<std::string> spellcheck_dictionaries;
   for (const auto& value :
        prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)) {
     const std::string* dictionary = value.GetIfString();
@@ -226,7 +227,7 @@ void SpellcheckService::GetDictionaries(
       continue;
 
     dictionary.used_for_spellcheck =
-        spellcheck_dictionaries.count(dictionary.language) > 0;
+        spellcheck_dictionaries.contains(dictionary.language);
     dictionaries->push_back(dictionary);
   }
 }
@@ -442,7 +443,8 @@ void SpellcheckService::LoadDictionaries() {
   // Build a lookup of blocked dictionaries to skip loading them.
   const base::Value::List& blocked_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
-  std::unordered_set<std::string> blocked_dictionaries_lookup;
+  absl::flat_hash_set<std::string_view> blocked_dictionaries_lookup;
+  blocked_dictionaries_lookup.reserve(blocked_dictionaries.size());
   for (const auto& blocked_dict : blocked_dictionaries) {
     blocked_dictionaries_lookup.insert(blocked_dict.GetString());
   }
@@ -450,15 +452,15 @@ void SpellcheckService::LoadDictionaries() {
   // Merge both lists of dictionaries. Use a set to avoid duplicates.
   std::set<std::string> dictionaries;
   for (const auto& dictionary_value : user_dictionaries) {
-    if (blocked_dictionaries_lookup.find(dictionary_value.GetString()) ==
-        blocked_dictionaries_lookup.end())
+    if (!blocked_dictionaries_lookup.contains(dictionary_value.GetString())) {
       dictionaries.insert(dictionary_value.GetString());
+    }
   }
   for (const auto& dictionary_value : forced_dictionaries) {
     dictionaries.insert(dictionary_value.GetString());
   }
 
-  for (const auto& dictionary : dictionaries) {
+  for (const std::string& dictionary : dictionaries) {
     // The spellcheck language passed to platform APIs may differ from the
     // accept language.
     std::string platform_spellcheck_language;
