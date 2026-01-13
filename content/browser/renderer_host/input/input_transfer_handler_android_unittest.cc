@@ -390,14 +390,16 @@ TEST_F(InputTransferHandlerTest, EmitsTransferInputToVizResultHistogram) {
 TEST_F(InputTransferHandlerTest, RetryTransfer) {
   const std::vector<TransferInputToVizResult> browser_handling_cases = {
       TransferInputToVizResult::kSelectionHandlesActive,
-      TransferInputToVizResult::kImeIsActive,
-      TransferInputToVizResult::kRequestedByEmbedder,
-      TransferInputToVizResult::kMultipleBrowserWindowsOpen};
+      TransferInputToVizResult::kImeIsActive};
   base::TimeTicks event_time =
       base::TimeTicks::Now() - base::Milliseconds(1000);
   for (int transfer_result = 0;
        transfer_result <= static_cast<int>(TransferInputToVizResult::kMaxValue);
        transfer_result++) {
+    if (static_cast<TransferInputToVizResult>(transfer_result) ==
+        TransferInputToVizResult::kMultipleBrowserWindowsOpen) {
+      continue;
+    }
     event_time += base::Milliseconds(8);
     base::TimeTicks down_time = event_time;
     auto down_event = GetMotionEventAndroid(
@@ -459,6 +461,21 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
     testing::Mock::VerifyAndClearExpectations(
         input_transfer_handler_client_.get());
   }
+}
+
+TEST_F(InputTransferHandlerTest, DoNotRetryTransferMultipleBrowserWindowsOpen) {
+  base::TimeTicks event_time =
+      base::TimeTicks::Now() - base::Milliseconds(1000);
+  // Touch sequence is active.
+  transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
+  base::TimeTicks down_time = event_time;
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+      .WillOnce(Return(static_cast<int>(
+          TransferInputToVizResult::kMultipleBrowserWindowsOpen)));
+  EXPECT_CALL(*mock_, TransferInputToViz(_)).Times(0);
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
 }
 
 TEST_F(InputTransferHandlerTest,
@@ -555,9 +572,7 @@ TEST_F(InputTransferHandlerTest,
 TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
   const std::vector<TransferInputToVizResult> browser_handling_cases = {
       TransferInputToVizResult::kSelectionHandlesActive,
-      TransferInputToVizResult::kImeIsActive,
-      TransferInputToVizResult::kRequestedByEmbedder,
-      TransferInputToVizResult::kMultipleBrowserWindowsOpen};
+      TransferInputToVizResult::kImeIsActive};
   // Use large enough offset(2000ms) here such that the event times don't go in
   // future, as more events are synthesized in loop below. Event time gets
   // incremented by 8ms below, every time an event is synthesized.

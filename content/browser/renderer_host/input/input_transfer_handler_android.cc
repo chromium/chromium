@@ -189,16 +189,20 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return true;
   }
 
+  if (transfer_result ==
+      TransferInputToVizResult::kMultipleBrowserWindowsOpen) {
+    // `kMultipleBrowserWindowsOpen` implies Viz token is null, don't attempt to
+    // retransfer touch sequence.
+    return false;
+  }
+
   if (!IsTouchSequencePotentiallyActiveOnViz()) {
     return false;
   }
 
   const bool browser_would_have_handled =
       (transfer_result == TransferInputToVizResult::kSelectionHandlesActive) ||
-      (transfer_result == TransferInputToVizResult::kImeIsActive) ||
-      (transfer_result == TransferInputToVizResult::kRequestedByEmbedder) ||
-      (transfer_result ==
-       TransferInputToVizResult::kMultipleBrowserWindowsOpen);
+      (transfer_result == TransferInputToVizResult::kImeIsActive);
   if (browser_would_have_handled) {
     // Forcefully transfer the touch sequence to Viz it could be pointer down,
     // in which case Viz should continue to handle the sequence.
