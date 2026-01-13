@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "chrome/utility/safe_browsing/zip_writer_delegate.h"
 #include "third_party/unrar/google/unrar_delegates.h"
@@ -58,8 +59,8 @@ class ZipWriterDelegate : public zip::FileWriterDelegate,
     return success;
   }
 
-  bool WriteBytes(const char* data, int num_bytes) override {
-    bool success = zip::FileWriterDelegate::WriteBytes(data, num_bytes);
+  bool WriteBytes(base::span<const uint8_t> data) override {
+    const bool success = zip::FileWriterDelegate::WriteBytes(data);
     has_disk_error_ |= !success;
     return success;
   }

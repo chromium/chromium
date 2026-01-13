@@ -5,6 +5,7 @@
 #include "chrome/services/file_util/obfuscated_archive_analysis_delegate.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -64,24 +65,14 @@ class ObfuscatedZipWriterDelegate : public zip::FileWriterDelegate,
     return success;
   }
 
-  bool WriteBytes(const char* data, int num_bytes) override {
-    // SAFETY: zlib guarantees `data` points to at least `num_bytes` valid
-    // bytes.
-    auto bytes = base::as_bytes(base::span(UNSAFE_BUFFERS(
-        base::span(data, base::checked_cast<size_t>(num_bytes)))));
-    auto result = obfuscator_.ObfuscateChunk(bytes,
-                                             /*is_last_chunk=*/false);
-
+  bool WriteBytes(base::span<const uint8_t> data) override {
+    auto result = obfuscator_.ObfuscateChunk(data, /*is_last_chunk=*/false);
     if (!result.has_value()) {
       has_disk_error_ = true;
       return false;
     }
 
-    auto buffer = base::as_chars(base::span(*result));
-    bool success = zip::FileWriterDelegate::WriteBytes(buffer.data(),
-                                                       buffer.size());
-
-    if (!success) {
+    if (!zip::FileWriterDelegate::WriteBytes(*result)) {
       has_disk_error_ = true;
       return false;
     }
@@ -100,9 +91,7 @@ class ObfuscatedZipWriterDelegate : public zip::FileWriterDelegate,
       auto result = obfuscator_.ObfuscateChunk({}, /*is_last_chunk=*/true);
       has_disk_error_ |= !result.has_value();
       if (result.has_value()) {
-        auto buffer = base::as_chars(base::span(result.value()));
-        bool success = zip::FileWriterDelegate::WriteBytes(buffer.data(),
-                                                           buffer.size_bytes());
+        bool success = zip::FileWriterDelegate::WriteBytes(*result);
         has_disk_error_ |= !success;
       }
     }
