@@ -327,7 +327,8 @@ void GlicActorTaskManager::CancelActions(
     return;
   }
 
-  bool success = task->CancelOngoingActions();
+  bool success = task->CancelOngoingActions(
+      actor::mojom::ActionResultCode::kActionsCancelled);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 success ? mojom::CancelActionsResult::kSuccess
