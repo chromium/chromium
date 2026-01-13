@@ -15182,46 +15182,6 @@
             ]
         }
     ],
-    "LCPPFontURLPredictor": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "lcpp_font_prefetch_threshold": "1.1",
-                        "lcpp_font_url_frequency_threshold": "0.1",
-                        "lcpp_max_font_url_count_per_origin": "5",
-                        "lcpp_max_font_url_length": "1024",
-                        "lcpp_max_font_url_to_preload": "1"
-                    },
-                    "enable_features": [
-                        "LCPPFontURLPredictor"
-                    ]
-                },
-                {
-                    "name": "WithPrefetch",
-                    "params": {
-                        "lcpp_enable_font_prefetch": "true",
-                        "lcpp_font_prefetch_threshold": "1.1",
-                        "lcpp_font_url_frequency_threshold": "0.1",
-                        "lcpp_max_font_url_count_per_origin": "5",
-                        "lcpp_max_font_url_length": "1024",
-                        "lcpp_max_font_url_to_preload": "1"
-                    },
-                    "enable_features": [
-                        "LCPPFontURLPredictor"
-                    ]
-                }
-            ]
-        }
-    ],
     "LCPPImageLoadingPriority": [
         {
             "platforms": [
