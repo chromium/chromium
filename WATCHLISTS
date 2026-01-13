@@ -2422,7 +2422,8 @@
                   '|third_party/wayland-protocols/',
     },
     'web_applications': {
-      'filepath': 'chrome/browser/web_applications'\
+      'filepath': 'components/webapps'\
+                  '|chrome/browser/web_applications'\
                   '|chrome/browser/ui/web_applications',
     },
     'web_package': {
@@ -3413,10 +3414,12 @@
     'wallpapers': ['croissant-eng+reviews@chromium.org'],
     'wayland': ['max+watch-wayland@igalia.com',
                 'nickdiego+watch-chromium@igalia.com'],
-    'web_applications': ['dibyapal+watch-webapps@chromium.org',
+    'web_applications': ['aixba+watch-webapps@chromium.org',
+                         'dibyapal+watch-webapps@chromium.org',
                          'dmurph+watching-webapps@chromium.org',
                          'kuragin+web-applications-cls@chromium.org',
                          'loyso+watch@chromium.org',
+                         'japhet+webapps@chromium.org',
                          'mgiuca+watch@chromium.org',
                          'phillis+watch@chromium.org',
                          'webappwatch@microsoft.com',
