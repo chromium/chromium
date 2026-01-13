@@ -149167,6 +149167,279 @@
           {}
          ]
         ],
+        "grid-lanes-contain-intrinsic-size-001.html": [
+         "63ca0091148f97a0ef59768f95c7cd63d84253fb",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-001-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-002.html": [
+         "1a2f9941039248b3275944536a04656eeb5bc7f8",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-003.html": [
+         "51d11b5c5996326538e35553492ab32b7a2f7703",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-004.html": [
+         "433bcbfb76bfacbe5ee3af934a9d4a5e897ef904",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-004-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-005.html": [
+         "d192870c99bab63e281386e8ea0825b8626a7770",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-005-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-006.html": [
+         "6583710b2a37a72e889821bac00e896a037937d9",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-006-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-007.html": [
+         "b434c3dfd13f548d6bcfc7fbe11d7495c431bd26",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-007-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-008.html": [
+         "927b3933a0579d4e8bcb047eab0c37748cc39630",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-008-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-010.html": [
+         "afeac9e8556000eba65f8933c509137d1477ee50",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-012-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-011.html": [
+         "bbf7adfe3e4a3856ea1e21344f4cfefe3ffe8ca5",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-013-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-012.html": [
+         "464829fa472bc007133dc9fba1c2bd40c8dad2ad",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-018-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-013.html": [
+         "4bfe85767d38412a002f4637ca6b62a9ac4f8b69",
+         [
+          null,
+          [
+           [
+            "/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-019-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-014.html": [
+         "677d5bf63212e675a513c527e9d8c70883993d8d",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-014-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-015.html": [
+         "313dab1b45e73979b67a769b742e35717e82dd02",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-015-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-column-001.html": [
+         "841d771aea0811a217d31d375d23530eba75049d",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-column-001-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-column-002.html": [
+         "76ef1b2b9148fc015b5b011bd03a43f6ee88ab8a",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-column-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-column-003.html": [
+         "08664fbd0e3c7c3eca1bffbe8e687c5384fbbd9e",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-column-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-logical-001.html": [
+         "3971a0dd3fc5a29355fe0884cf3e030b92d1f73d",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square-only.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-row-001.html": [
+         "72dd85ffc81194b94e780d91c7eb0655bd40e248",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-row-001-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-row-002.html": [
+         "bb802eb853f7c041559e71aebeb7881a7a11d88e",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-row-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-contain-intrinsic-size-row-003.html": [
+         "a9538fe3cb03822fd88279a594556470e7b71649",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-contain-intrinsic-size-row-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "grid-lanes-intrinsic-sizing-cols-001-auto.html": [
          "ec9a5b4dc766bfa1c4d45b6f929b870463c253bd",
          [
@@ -149729,7 +150002,7 @@
          ]
         ],
         "column-reverse-001.html": [
-         "938d316adbd7a6fe04a8d037ee492b9b9e5d4c60",
+         "4b945b933fc4501d82537fa8b59e0edbfa42a28c",
          [
           null,
           [
@@ -149742,7 +150015,7 @@
          ]
         ],
         "column-reverse-002.html": [
-         "a12937ff7f2fa5166c53d57757ea3724316f8bbe",
+         "166f57a14de02314ad686462763f9252d8b61b6b",
          [
           null,
           [
@@ -149755,7 +150028,7 @@
          ]
         ],
         "column-reverse-003.html": [
-         "216de6aecfaaea55b1411a416a42abdb49bb44b6",
+         "76fa8d84c47bc13285033fb5e5443513f01e0ae7",
          [
           null,
           [
@@ -149768,7 +150041,7 @@
          ]
         ],
         "column-reverse-dense-packing-001.html": [
-         "e8357adff88e2c4e87e1ce7923574396c4b55902",
+         "991a29ff8c444411bd27af89cfc6ce7507c6af34",
          [
           null,
           [
@@ -149781,7 +150054,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-001.html": [
-         "fc95920dbc968ac8068af04f44f9f9dfd97f6caf",
+         "e059b306ac4ad5fc05b54ed184a02c77cbfc9564",
          [
           null,
           [
@@ -149794,7 +150067,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-002.html": [
-         "884a1416867778d5dd078844cf43a965e05c6e91",
+         "09c43bc7cf9a504be84789939f8b63df51ece596",
          [
           null,
           [
@@ -149807,7 +150080,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-003.html": [
-         "fd7b54763e6a2bd21afe354e22577f78088864a1",
+         "0aa6b7e939c615d6e97a27370496c3c3729426d0",
          [
           null,
           [
@@ -149820,7 +150093,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-004.html": [
-         "b667b0510cca2cf77f46ee5092ce868ef75bded8",
+         "e328f0443b3687ce7533c515af215553ba0c7a7b",
          [
           null,
           [
@@ -149833,7 +150106,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-005.html": [
-         "4594323b679a5177a9a6ba98e3a16434911279da",
+         "0ff794b1c5f9e8318219000c6386db8381260c86",
          [
           null,
           [
@@ -149846,7 +150119,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-006.html": [
-         "8b428cf6fe79d4c6ba44cf22962f950aa6135fcf",
+         "b03d2d576e4902719834e11218898db6b5107eb4",
          [
           null,
           [
@@ -150565,7 +150838,7 @@
          ]
         ],
         "row-reverse-001.html": [
-         "c986d47364057b5f078f6d858042ebdad4d053c8",
+         "04e9743e30c8700730ffd682d06aed56e826b9b3",
          [
           null,
           [
@@ -150578,7 +150851,7 @@
          ]
         ],
         "row-reverse-002.html": [
-         "6b0e38de976ce6a0db29786c486c33ec8c893b2e",
+         "70c01373d9cd74e7213bfc7817be9c940be151fc",
          [
           null,
           [
@@ -150591,7 +150864,7 @@
          ]
         ],
         "row-reverse-003.html": [
-         "c7c0f6b31e75b29262da5b309f8f10ae8a54d0ac",
+         "a19ee3ae45d2c544c98588369196f9fc0b29eaa9",
          [
           null,
           [
@@ -150604,7 +150877,7 @@
          ]
         ],
         "row-reverse-dense-packing-001.html": [
-         "a07a7ff5250fdf850b3ee6d7cc91bffa3e1073ad",
+         "633d70b06919ede2c28bba0f382ab57fe90b5c7b",
          [
           null,
           [
@@ -150617,7 +150890,7 @@
          ]
         ],
         "row-reverse-dense-packing-002.html": [
-         "dcdb494197451e50328c81ee1dfc91e574cee96d",
+         "f31937c3ab28cf264b4c17f83494ebd4af9fe295",
          [
           null,
           [
@@ -150630,7 +150903,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-001.html": [
-         "e55dc56fddffe26a49756ead3b2967d625129f5d",
+         "9f54d331f4ea7fa98f22f2bcc580c3a255725f70",
          [
           null,
           [
@@ -150643,7 +150916,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-002.html": [
-         "cd481e84b683db12691549c09e6d8ee5e972c292",
+         "9b6189764f7a024333cd44a286d6c9bdf17ba1a1",
          [
           null,
           [
@@ -150656,7 +150929,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-003.html": [
-         "36dc9402feb48f906503a6183284963b388a4f39",
+         "853d7146625ab43e9371e83940f17fb05c004d64",
          [
           null,
           [
@@ -150669,7 +150942,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-004.html": [
-         "57733dafa5099ed31415fef0a115ff1718ac29e6",
+         "a9fa2a22d9de5bd6e317208cb73b3d2402bf7149",
          [
           null,
           [
@@ -150682,7 +150955,7 @@
          ]
         ],
         "row-reverse-dense-packing-multi-span-005.html": [
-         "6efbfb84caa1ed947ef50792c1cddeacb1faf6b0",
+         "3dfa3e5fde20f5049f4cb768a2e6e450b089fc1b",
          [
           null,
           [
@@ -373681,6 +373954,38 @@
          "35c2f968bab40a3201ff4cb596fda90567cf39a3",
          []
         ],
+        "grid-lanes-contain-intrinsic-size-014-ref.html": [
+         "7ccbd90fc971fe88f531c81a88a42811db824c35",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-015-ref.html": [
+         "8a2eb6d4b9ee585fa36aaf089466bb40f743532b",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-column-001-ref.html": [
+         "91de33c465e31d29f2f8b208e2d658925c3bd203",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-column-002-ref.html": [
+         "94b80e01b15c79f69cce33b5f057649302d79832",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-column-003-ref.html": [
+         "1df51c5d1e2e287588ff7215fcc098ec39e17613",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-row-001-ref.html": [
+         "de20135ce128c44649cbfad15cee197a29dbbb90",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-row-002-ref.html": [
+         "df1f5e7da021d0115e3d76d7e003670b1efab4ad",
+         []
+        ],
+        "grid-lanes-contain-intrinsic-size-row-003-ref.html": [
+         "0310deb505caf70f306986a10bf04bc9f256850d",
+         []
+        ],
         "grid-lanes-intrinsic-sizing-cols-001-auto-ref.html": [
          "764da6e0d803ecc3eccbedef49a3221b3e49569a",
          []
@@ -402147,7 +402452,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "93f203076f3aea7fa794a15c6f02452a2d647af4",
+      "f717ef1666bd39affe833526e630bcad69e31809",
       []
      ],
      "add-background-attachment-fixed-during-smooth-scroll-ref.html": [
@@ -402190,6 +402495,12 @@
       "82671651dde3a1bbe5fda62d22d44c8080bd40fe",
       []
      ],
+     "parsing": {
+      "WEB_FEATURES.yml": [
+       "4bd7aefdf0ece7dd9bfa34b8a5c1651dbc6d5043",
+       []
+      ]
+     },
      "resources": {
       "elementsFromPoint.js": [
        "ba986ef3f568d4971eb4e84c4faaeae6e276b975",
@@ -412634,22 +412945,6 @@
      ],
      "WEB_FEATURES.yml": [
       "53874dc9082007e6b3bd417a568b29f4b8bd9d88",
-      []
-     ],
-     "processing.any-expected.txt": [
-      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
-      []
-     ],
-     "processing.any.serviceworker-expected.txt": [
-      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
-      []
-     ],
-     "processing.any.sharedworker-expected.txt": [
-      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
-      []
-     ],
-     "processing.any.worker-expected.txt": [
-      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
       []
      ],
      "resources": {
@@ -438338,10 +438633,6 @@
       "885c5d0359201ba13d49c43d311ed914bda760b3",
       []
      ],
-     "5_frames_numbered.jxl": [
-      "7a600e0d17714174c03e5eff0f2fe038cacbc4a7",
-      []
-     ],
      "generate_resources.sh": [
       "359b2afd9ea77f2d524eb0b422b9d923ca7f5cf0",
       []
@@ -440628,10 +440919,14 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "71c0a9e91edfd9b298280e8903d2130f99186e2d",
+     "9c36d434f62d46070571ed4101e6ea9cbe31e911",
      []
     ],
     "dedicated-worker": {
+     "WEB_FEATURES.yml": [
+      "71c0a9e91edfd9b298280e8903d2130f99186e2d",
+      []
+     ],
      "mediasource-message-util.js": [
       "c62eb8e3f7dc9ab4f00977db2e52ba98dd02d6ee",
       []
@@ -440830,6 +441125,10 @@
      ]
     },
     "mse-for-webcodecs": {
+     "WEB_FEATURES.yml": [
+      "71c0a9e91edfd9b298280e8903d2130f99186e2d",
+      []
+     ],
      "tentative": {
       "media-source-webcodecs-util.js": [
        "f581da77b213eb9257f6441966f6a1bdbf7d8637",
@@ -447892,7 +448191,7 @@
      []
     ],
     "utils-bbk.js": [
-     "45f7db1d9e3f7439fcbaeadf03b4a4e95ab993b0",
+     "aaf577443b5ec211f0fe1165f19faafc69452977",
      []
     ],
     "utils.sub.js": [
@@ -540700,6 +540999,15 @@
          {}
         ]
        ],
+       "intrinsic-sizing": {
+        "grid-lanes-contain-intrinsic-size-009.html": [
+         "7c61df35e4f3be2f9711ebd7d04b126a6d761c99",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "items": {
         "column-automatic-minimum-for-auto.html": [
          "b2664c533534796e751064f28eef90a6c14480d1",
@@ -540837,49 +541145,49 @@
          ]
         ],
         "grid-lanes-direction-computed.html": [
-         "4ca144558ef72665d8077bcda86e8c0ba6035a66",
+         "0b50297b45c529de58088935fa70c5894f44a64f",
          [
           null,
           {}
          ]
         ],
         "grid-lanes-direction-invalid.html": [
-         "e8e562190dc3bfaffd87b71e4da7760bb3e676e2",
+         "5fa5b4a3919c288c99d1a89f7b19d3c533b49980",
          [
           null,
           {}
          ]
         ],
         "grid-lanes-direction-valid.html": [
-         "63a1bfc2939e6bc55e66cb302ad82ac4693a353f",
+         "3eb39e6d3b6b7ac8a7d683a72e9bb90f6d930aa5",
          [
           null,
           {}
          ]
         ],
         "grid-lanes-shorthand-computed.html": [
-         "36e994d3f367371e931f4d7b39def6d71a8a2896",
+         "61a6e89bdcf3eac2159b537ac4b15971f43132ba",
          [
           null,
           {}
          ]
         ],
         "grid-lanes-shorthand-invalid.html": [
-         "a772662e80dad05184cf1908bcde9935451ed78e",
+         "2f5fc338ba77bc0a1e69aef341394fd467b2fd22",
          [
           null,
           {}
          ]
         ],
         "grid-lanes-shorthand-serialization.html": [
-         "b6864e24b2215242663da78adb2de1aaea795498",
+         "12a8eddbf42112b4406e4c655cc3a24a4fc98421",
          [
           null,
           {}
          ]
         ],
         "grid-lanes-shorthand-valid.html": [
-         "7545eb59e67d608e0f929d69f31fab5653e25237",
+         "3b1a2e90534f77ffb8fb9a39ee3659d609efe860",
          [
           null,
           {}

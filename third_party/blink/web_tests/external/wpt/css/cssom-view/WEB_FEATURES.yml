@@ -35,3 +35,6 @@ features:
   files:
   - mouseEvent-offsetXY-svg.html
   - mouseEvent.html
+- name: scroll-behavior
+  files:
+  - scroll-behavior-*
