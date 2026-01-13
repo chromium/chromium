@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/phonehub/feature_setup_connection_operation.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 
 namespace ash::phonehub {
 
@@ -24,7 +24,7 @@ constexpr std::array<FeatureSetupConnectionOperation::Status, 3>
 
 // static
 bool FeatureSetupConnectionOperation::IsFinalStatus(Status status) {
-  return base::Contains(kOperationFinishedStatus, status);
+  return std::ranges::contains(kOperationFinishedStatus, status);
 }
 
 FeatureSetupConnectionOperation::FeatureSetupConnectionOperation(

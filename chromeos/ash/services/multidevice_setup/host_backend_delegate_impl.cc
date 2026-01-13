@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -199,7 +198,7 @@ HostBackendDelegateImpl::GetMultiDeviceHostFromBackend() const {
 
 bool HostBackendDelegateImpl::IsHostEligible(
     const multidevice::RemoteDeviceRef& provided_host) {
-  return base::Contains(
+  return std::ranges::contains(
       eligible_host_devices_provider_->GetEligibleHostDevices(), provided_host);
 }
 

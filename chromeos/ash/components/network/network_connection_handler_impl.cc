@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -199,7 +198,7 @@ bool IsVpnProhibited() {
       NetworkHandler::Get()
           ->prohibited_technologies_handler()
           ->GetCurrentlyProhibitedTechnologies();
-  return base::Contains(prohibited_technologies, shill::kTypeVPN);
+  return std::ranges::contains(prohibited_technologies, shill::kTypeVPN);
 }
 
 bool IsBuiltInVpnType(const std::string& vpn_type) {
@@ -768,8 +767,8 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       return;
     }
     if (network_state_handler_->OnlyManagedWifiNetworksAllowed() ||
-        base::Contains(managed_configuration_handler_->GetBlockedHexSSIDs(),
-                       *hex_ssid)) {
+        std::ranges::contains(
+            managed_configuration_handler_->GetBlockedHexSSIDs(), *hex_ssid)) {
       ErrorCallbackForPendingRequest(service_path, kErrorBlockedByPolicy);
       return;
     }

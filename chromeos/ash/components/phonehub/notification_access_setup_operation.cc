@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/phonehub/notification_access_setup_operation.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash::phonehub {
@@ -35,7 +35,7 @@ constexpr base::TimeDelta kSetupDurationHistogramMaxTime = base::Minutes(10);
 
 // static
 bool NotificationAccessSetupOperation::IsFinalStatus(Status status) {
-  return base::Contains(kOperationFinishedStatus, status);
+  return std::ranges::contains(kOperationFinishedStatus, status);
 }
 
 NotificationAccessSetupOperation::NotificationAccessSetupOperation(

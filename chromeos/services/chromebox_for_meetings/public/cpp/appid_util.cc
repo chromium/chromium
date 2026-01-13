@@ -4,7 +4,7 @@
 
 #include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
 
 namespace chromeos {
 namespace cfm {
@@ -31,12 +31,12 @@ constexpr char const* kExternalHotrodHashedAppIds[] = {
 
 // Returns true if the ID provided matches a valid internal hotrod appid.
 bool IsInternalHotrodHashedAppId(const std::string& app_id) {
-  return base::Contains(kInternalHotrodHashedAppIds, app_id);
+  return std::ranges::contains(kInternalHotrodHashedAppIds, app_id);
 }
 
 // Returns true if the ID provided matches a valid external hotrod appid.
 bool IsExternalHotrodHashedAppId(const std::string& app_id) {
-  return base::Contains(kExternalHotrodHashedAppIds, app_id);
+  return std::ranges::contains(kExternalHotrodHashedAppIds, app_id);
 }
 
 }  // namespace

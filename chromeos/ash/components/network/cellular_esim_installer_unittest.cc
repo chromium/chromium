@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -230,7 +230,7 @@ class CellularESimInstallerTest : public testing::Test {
         kInstallViaQrCodeHistogram, expected_hermes_status, expected_count);
 
     if (expected_hermes_status == HermesResponseStatus::kSuccess ||
-        !base::Contains(kHermesUserErrorCodes, expected_hermes_status)) {
+        !std::ranges::contains(kHermesUserErrorCodes, expected_hermes_status)) {
       histogram_tester()->ExpectBucketCount(kESimInstallNonUserErrorSuccessRate,
                                             expected_hermes_status,
                                             expected_count);

@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/tether/network_host_scan_cache.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -87,8 +87,8 @@ class NetworkHostScanCacheTest : public testing::Test {
   }
 
   bool HasConnectedToHost(const std::string& tether_network_guid) {
-    return base::Contains(has_connected_to_host_device_ids_,
-                          tether_network_guid);
+    return std::ranges::contains(has_connected_to_host_device_ids_,
+                                 tether_network_guid);
   }
 
   // Verifies that the information present in |expected_cache_| and

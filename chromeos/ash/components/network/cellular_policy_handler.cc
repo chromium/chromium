@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
@@ -572,7 +572,7 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   const bool was_installed = profile_path.has_value();
 
   if (has_error && !was_installed) {
-    if (!base::Contains(kHermesUserErrorCodes, status)) {
+    if (!std::ranges::contains(kHermesUserErrorCodes, status)) {
       NET_LOG(ERROR)
           << "Failed to install the policy eSIM profile due to a non-user "
           << "error: " << status << ". Scheduling another attempt: "
@@ -682,10 +682,10 @@ bool CellularPolicyHandler::HasNonCellularInternetConnectivity() {
 CellularPolicyHandler::InstallRetryReason
 CellularPolicyHandler::HermesResponseStatusToRetryReason(
     HermesResponseStatus status) const {
-  if (base::Contains(kHermesInternalErrorCodes, status)) {
+  if (std::ranges::contains(kHermesInternalErrorCodes, status)) {
     return CellularPolicyHandler::InstallRetryReason::kInternalError;
   }
-  if (base::Contains(kHermesUserErrorCodes, status)) {
+  if (std::ranges::contains(kHermesUserErrorCodes, status)) {
     return CellularPolicyHandler::InstallRetryReason::kUserError;
   }
   return CellularPolicyHandler::InstallRetryReason::kOther;

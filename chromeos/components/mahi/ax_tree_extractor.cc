@@ -4,11 +4,11 @@
 
 #include "chromeos/components/mahi/ax_tree_extractor.h"
 
+#include <algorithm>
 #include <memory>
 #include <queue>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/i18n/break_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -51,11 +51,11 @@ static const ax::mojom::Role kRolesToSkip[]{
 // tree.
 void AddContentNodesToVector(const ui::AXNode* node,
                              std::vector<ui::AXNodeID>* content_node_ids) {
-  if (base::Contains(kContentRoles, node->GetRole())) {
+  if (std::ranges::contains(kContentRoles, node->GetRole())) {
     content_node_ids->emplace_back(node->id());
     return;
   }
-  if (base::Contains(kRolesToSkip, node->GetRole())) {
+  if (std::ranges::contains(kRolesToSkip, node->GetRole())) {
     return;
   }
   // The node's role not in either kContentRoles or kRolesToSkip. Check its
@@ -75,7 +75,7 @@ void GetContents(const ui::AXNode* root,
   }
 
   // If a content node is found, add its content to the result and early return.
-  if (base::Contains(content_node_ids, root->id())) {
+  if (std::ranges::contains(content_node_ids, root->id())) {
     if (!contents->empty()) {
       contents->append(u"\n\n");
     }
@@ -274,7 +274,8 @@ void AXTreeExtractor::OnGetScreen2xResult(
     const std::vector<ui::AXNodeID>& content_node_ids_screen2x) {
   // Merges the results of algorithm and screen2x.
   for (ui::AXNodeID content_node_id_screen2x : content_node_ids_screen2x) {
-    if (!base::Contains(content_node_ids_algorithm, content_node_id_screen2x)) {
+    if (!std::ranges::contains(content_node_ids_algorithm,
+                               content_node_id_screen2x)) {
       content_node_ids_algorithm.push_back(content_node_id_screen2x);
     }
   }

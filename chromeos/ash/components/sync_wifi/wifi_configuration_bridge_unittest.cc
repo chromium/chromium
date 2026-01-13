@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -308,8 +307,8 @@ TEST_F(WifiConfigurationBridgeTest, InitWithTwoNetworksFromServer) {
 
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(2u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
-  EXPECT_TRUE(base::Contains(ids, woof_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, woof_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -335,8 +334,8 @@ TEST_F(WifiConfigurationBridgeTest,
   EXPECT_FALSE(error);
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(2u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
-  EXPECT_TRUE(base::Contains(ids, woof_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, woof_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -361,7 +360,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplyIncrementalSyncChangesOneAdd) {
       std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -388,7 +387,7 @@ TEST_F(WifiConfigurationBridgeTest,
                                         std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -427,7 +426,7 @@ TEST_F(WifiConfigurationBridgeTest,
                                         std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();

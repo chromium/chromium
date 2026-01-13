@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "chromeos/ash/services/bluetooth_config/device_conversion_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
@@ -237,7 +236,7 @@ bool DeviceCacheImpl::RemoveFromPairedDeviceList(
 
 bool DeviceCacheImpl::AttemptUpdatePairedDeviceMetadata(
     device::BluetoothDevice* device) {
-  bool device_found = base::Contains(
+  bool device_found = std::ranges::contains(
       paired_devices_, device->GetIdentifier(), [](const auto& paired_device) {
         return paired_device->device_properties->id;
       });

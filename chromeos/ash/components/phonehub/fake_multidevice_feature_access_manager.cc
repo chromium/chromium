@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 
 namespace ash::phonehub {
@@ -66,7 +67,7 @@ void FakeMultideviceFeatureAccessManager::SetFeatureReadyForAccess(
 
 bool FakeMultideviceFeatureAccessManager::IsAccessRequestAllowed(
     multidevice_setup::mojom::Feature feature) {
-  return base::Contains(ready_for_access_features_, feature);
+  return std::ranges::contains(ready_for_access_features_, feature);
 }
 
 MultideviceFeatureAccessManager::AccessStatus

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -428,7 +429,7 @@ void AuthFactorConfig::IsEditableWithContext(
 
         for (const auto* pref_list : pref_lists) {
           for (const auto& pref_list_value : pref_list_values) {
-            if (base::Contains(*pref_list, pref_list_value)) {
+            if (std::ranges::contains(*pref_list, pref_list_value)) {
               std::move(callback).Run(true);
               return;
             }

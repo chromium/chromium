@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -14,7 +15,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -2645,8 +2645,8 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   NetworkStateHandler::NetworkStateList active_networks;
   network_state_handler_->GetActiveNetworkListByType(
       NetworkTypePattern::Default(), &active_networks);
-  EXPECT_FALSE(base::Contains(active_networks, kShillManagerClientStubWifi2,
-                              &NetworkState::path));
+  EXPECT_FALSE(std::ranges::contains(
+      active_networks, kShillManagerClientStubWifi2, &NetworkState::path));
 
   // Set |connect_requested_| for wifi2 and verify that it is connecting and
   // in the active list.
@@ -2656,8 +2656,8 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   EXPECT_TRUE(wifi2->IsConnectingState());
   network_state_handler_->GetActiveNetworkListByType(
       NetworkTypePattern::Default(), &active_networks);
-  EXPECT_TRUE(base::Contains(active_networks, kShillManagerClientStubWifi2,
-                             &NetworkState::path));
+  EXPECT_TRUE(std::ranges::contains(
+      active_networks, kShillManagerClientStubWifi2, &NetworkState::path));
 
   // Clear |connect_requested_| for wifi2 and verify that it is not connecting
   // or in the active list.
@@ -2667,8 +2667,8 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   EXPECT_FALSE(wifi2->IsConnectingState());
   network_state_handler_->GetActiveNetworkListByType(
       NetworkTypePattern::Default(), &active_networks);
-  EXPECT_FALSE(base::Contains(active_networks, kShillManagerClientStubWifi2,
-                              &NetworkState::path));
+  EXPECT_FALSE(std::ranges::contains(
+      active_networks, kShillManagerClientStubWifi2, &NetworkState::path));
 }
 
 TEST_F(NetworkStateHandlerTest, Hostname) {

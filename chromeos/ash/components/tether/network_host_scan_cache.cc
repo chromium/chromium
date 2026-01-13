@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/components/tether/network_host_scan_cache.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/notimplemented.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -120,7 +121,7 @@ bool NetworkHostScanCache::HasConnectedToHost(
           tether_network_guid);
   std::vector<std::string> connected_device_ids =
       tether_host_response_recorder_->GetPreviouslyConnectedHostIds();
-  return base::Contains(connected_device_ids, device_id);
+  return std::ranges::contains(connected_device_ids, device_id);
 }
 
 }  // namespace tether

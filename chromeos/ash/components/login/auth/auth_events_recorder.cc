@@ -4,12 +4,12 @@
 
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 
+#include <algorithm>
 #include <numeric>
 #include <optional>
 #include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -438,7 +438,7 @@ void AuthEventsRecorder::RecordSessionAuthFactors(
     }
 
     base::UmaHistogramBoolean(GetConfiguredAuthFactorsHistogramName(factor),
-                              base::Contains(factor_types, factor));
+                              std::ranges::contains(factor_types, factor));
   }
 
   base::UmaHistogramBoolean(kPasswordlessLoginHistogram, passwordless);

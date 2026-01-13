@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 
@@ -63,8 +62,8 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
     std::string iccid = network->iccid();
 
     // Stub network which corresponds to a removed stub ICCID; remove.
-    if (!base::Contains(stub_iccid_and_eid_pairs_, iccid,
-                        &IccidEidPair::first)) {
+    if (!std::ranges::contains(stub_iccid_and_eid_pairs_, iccid,
+                               &IccidEidPair::first)) {
       changed = true;
       network_list_it = network_list.erase(network_list_it);
       continue;
@@ -93,7 +92,8 @@ bool FakeStubCellularNetworksProvider::GetStubNetworkMetadata(
     const DeviceState* cellular_device,
     std::string* service_path_out,
     std::string* guid_out) {
-  if (!base::Contains(stub_iccid_and_eid_pairs_, iccid, &IccidEidPair::first))
+  if (!std::ranges::contains(stub_iccid_and_eid_pairs_, iccid,
+                             &IccidEidPair::first))
     return false;
 
   *service_path_out = cellular_utils::GenerateStubCellularServicePath(iccid);
@@ -120,10 +120,10 @@ FakeStubCellularNetworksProvider::GetStubsNotBackedByShill(
   for (const IccidEidPair& pair : stub_iccid_and_eid_pairs_) {
     // Only need to add a stub network if the stub ICCID does not match the
     // ICCID of a Shill-backed network.
-    if (!base::Contains(network_list, pair.first,
-                        [](const std::unique_ptr<ManagedState>& state) {
-                          return state->AsNetworkState()->iccid();
-                        })) {
+    if (!std::ranges::contains(network_list, pair.first,
+                               [](const std::unique_ptr<ManagedState>& state) {
+                                 return state->AsNetworkState()->iccid();
+                               })) {
       not_backed_by_shill.push_back(pair);
     }
   }

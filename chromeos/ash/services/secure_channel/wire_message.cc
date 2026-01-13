@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
@@ -210,7 +210,7 @@ std::string WireMessage::Serialize() const {
   }
 
   bool use_v3_encoding = body_.empty() || feature_.empty() ||
-                         base::Contains(kV3Features, feature_);
+                         std::ranges::contains(kV3Features, feature_);
 
   size_t body_size = json_body.size();
   if (use_v3_encoding && body_size > std::numeric_limits<uint16_t>::max()) {

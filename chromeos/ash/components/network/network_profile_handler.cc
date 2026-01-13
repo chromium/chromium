@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -105,7 +104,7 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
   std::vector<std::string> removed_profile_paths;
   for (ProfileList::const_iterator it = profiles_.begin();
        it != profiles_.end(); ++it) {
-    if (!base::Contains(new_profile_paths, it->path)) {
+    if (!std::ranges::contains(new_profile_paths, it->path)) {
       removed_profile_paths.push_back(it->path);
     }
   }

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -77,7 +77,7 @@ std::string GetStringValue(const base::Value::Dict& dict, const char* key) {
 
 // Returns whether added.
 bool AppendIfNotPresent(base::Value::List& list, base::Value value) {
-  if (base::Contains(list, value)) {
+  if (std::ranges::contains(list, value)) {
     return false;
   }
   list.Append(std::move(value));

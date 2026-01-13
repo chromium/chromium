@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
@@ -401,7 +400,8 @@ bool IsVpnProhibited() {
         NetworkHandler::Get()
             ->prohibited_technologies_handler()
             ->GetCurrentlyProhibitedTechnologies();
-    vpn_prohibited = base::Contains(prohibited_technologies, shill::kTypeVPN);
+    vpn_prohibited =
+        std::ranges::contains(prohibited_technologies, shill::kTypeVPN);
   }
   return vpn_prohibited;
 }

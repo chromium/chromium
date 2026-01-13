@@ -4,12 +4,12 @@
 
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -75,7 +75,7 @@ std::string GetSecurityClass(const base::Value::Dict& service_properties) {
   static const std::array<std::string, 6> psk_securities = {
       shill::kSecurityWpa,  shill::kSecurityWpaWpa2,  shill::kSecurityWpaAll,
       shill::kSecurityWpa2, shill::kSecurityWpa2Wpa3, shill::kSecurityWpa3};
-  if (base::Contains(psk_securities, *security)) {
+  if (std::ranges::contains(psk_securities, *security)) {
     return shill::kSecurityClassPsk;
   }
 
@@ -83,7 +83,7 @@ std::string GetSecurityClass(const base::Value::Dict& service_properties) {
       shill::kSecurityWpaEnterprise,      shill::kSecurityWpaWpa2Enterprise,
       shill::kSecurityWpaAllEnterprise,   shill::kSecurityWpa2Enterprise,
       shill::kSecurityWpa2Wpa3Enterprise, shill::kSecurityWpa3Enterprise};
-  if (base::Contains(eap_securities, *security)) {
+  if (std::ranges::contains(eap_securities, *security)) {
     return shill::kSecurityClass8021x;
   }
 

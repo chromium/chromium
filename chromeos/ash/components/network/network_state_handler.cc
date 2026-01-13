@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -1141,7 +1141,7 @@ bool NetworkStateHandler::UpdateBlockedByPolicy(NetworkState* network) const {
     blocked_by_policy =
         !network->IsManagedByPolicy() &&
         (OnlyManagedWifiNetworksAllowed() ||
-         base::Contains(blocked_hex_ssids_, network->GetHexSsid()));
+         std::ranges::contains(blocked_hex_ssids_, network->GetHexSsid()));
   } else {
     blocked_by_policy = !network->IsManagedByPolicy() &&
                         allow_only_policy_cellular_networks_to_connect_;

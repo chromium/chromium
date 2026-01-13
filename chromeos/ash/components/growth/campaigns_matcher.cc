@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -13,7 +14,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/logging.h"
@@ -85,7 +85,7 @@ bool MatchPref(const base::Value::List* criterias,
 
   // String list targeting.
   if (criterias) {
-    return Contains(*criterias, value);
+    return std::ranges::contains(*criterias, value);
   }
 
   return false;
@@ -179,7 +179,7 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
 bool HasOverlapEntries(const base::Value::List& pref_values,
                        const base::Value::List& target_values) {
   for (auto& value : target_values) {
-    if (base::Contains(pref_values, value)) {
+    if (std::ranges::contains(pref_values, value)) {
       return true;
     }
   }
@@ -239,7 +239,7 @@ bool MatchUserPref(const PrefService& pref_service,
 
   // If the user pref is not a list, match if any entry in target values is the
   // pref value.
-  return base::Contains(*target_values, *pref_value);
+  return std::ranges::contains(*target_values, *pref_value);
 }
 
 // TODO: b/354060160 - Add more data type to pref targeting.

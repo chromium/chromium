@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
@@ -68,7 +68,7 @@ bool OncCertificatePattern::Matches(
     return false;
   }
   if (!pem_encoded_issuer_cas_.empty() &&
-      !base::Contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
+      !std::ranges::contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
     return false;
   }
   return true;

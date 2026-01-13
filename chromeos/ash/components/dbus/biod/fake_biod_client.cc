@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -191,7 +191,7 @@ void FakeBiodClient::SendAuthScanDone(const std::string& fingerprint,
     // have more than five entries.
     for (const auto& entry : records_) {
       const FakeRecord& record = entry.second;
-      if (base::Contains(record.fake_fingerprint, fingerprint)) {
+      if (std::ranges::contains(record.fake_fingerprint, fingerprint)) {
         const std::string& user_id = record.user_id;
         matches[user_id].push_back(entry.first);
       }

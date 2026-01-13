@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -623,7 +622,7 @@ void FakeDriveFs::LocateFilesByItemIds(
       const auto& stored_metadata =
           metadata_[base::FilePath("/").Append(relative_path)];
       if (!stored_metadata.doc_id.empty() &&
-          base::Contains(item_ids, stored_metadata.doc_id)) {
+          std::ranges::contains(item_ids, stored_metadata.doc_id)) {
         results[stored_metadata.doc_id] = relative_path;
       }
       path = enumerator.Next();

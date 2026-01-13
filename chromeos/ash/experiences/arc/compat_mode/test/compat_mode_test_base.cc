@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/experiences/arc/compat_mode/test/compat_mode_test_base.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_window_property_util.h"
@@ -39,7 +41,7 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
   }
 
   bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
-    return base::Contains(confirmation_needed_app_ids_, app_id);
+    return std::ranges::contains(confirmation_needed_app_ids_, app_id);
   }
   void SetResizeLockNeedsConfirmation(const std::string& app_id,
                                       bool is_needed) override {

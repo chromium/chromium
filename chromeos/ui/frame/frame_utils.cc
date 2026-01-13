@@ -4,6 +4,8 @@
 
 #include "chromeos/ui/frame/frame_utils.h"
 
+#include <algorithm>
+
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/display_util.h"
@@ -128,12 +130,14 @@ bool ShouldShowResizeBorder(const aura::Window* window) {
   const auto window_state_type =
       window->GetProperty(chromeos::kWindowStateTypeKey);
   if (in_tablet_mode) {
-    return !base::Contains(blocklist_clamshell_states, window_state_type) &&
-           !base::Contains(additional_blocklist_tablet_states,
-                           window_state_type);
+    return !std::ranges::contains(blocklist_clamshell_states,
+                                  window_state_type) &&
+           !std::ranges::contains(additional_blocklist_tablet_states,
+                                  window_state_type);
 
   } else {
-    return !base::Contains(blocklist_clamshell_states, window_state_type);
+    return !std::ranges::contains(blocklist_clamshell_states,
+                                  window_state_type);
   }
 }
 

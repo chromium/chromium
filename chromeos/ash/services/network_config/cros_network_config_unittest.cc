@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 
+#include <algorithm>
 #include <tuple>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -1848,7 +1848,7 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServices) {
       NetworkHandler::Get()
           ->prohibited_technologies_handler()
           ->GetCurrentlyProhibitedTechnologies();
-  ASSERT_FALSE(base::Contains(prohibited_technologies, shill::kTypeVPN));
+  ASSERT_FALSE(std::ranges::contains(prohibited_technologies, shill::kTypeVPN));
 
   EXPECT_FALSE(ContainsVpnDeviceState(GetDeviceStateList()));
 }

@@ -20,7 +20,6 @@
 #include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -2301,8 +2300,8 @@ TEST_F(ArcVmClientAdapterTest, ArcVmBlockApexDiskExists) {
   set_block_apex_path(base::FilePath(path));
   StartMiniArc();
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(base::Contains(request.disks(), path,
-                             [](const auto& p) { return p.path(); }));
+  EXPECT_TRUE(std::ranges::contains(request.disks(), path,
+                                    [](const auto& p) { return p.path(); }));
 }
 
 // Test that the block apex disk path isn't included when it doesn't exist.
@@ -2310,8 +2309,8 @@ TEST_F(ArcVmClientAdapterTest, ArcVmNoBlockApexDisk) {
   constexpr const char path[] = "/opt/google/vms/android/apex/payload.img";
   StartMiniArc();
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(base::Contains(request.disks(), path,
-                              [](const auto& p) { return p.path(); }));
+  EXPECT_FALSE(std::ranges::contains(request.disks(), path,
+                                     [](const auto& p) { return p.path(); }));
 }
 
 // Tests that OnConnectionReady() calls the ArcVmCompleteBoot call D-Bus method.
