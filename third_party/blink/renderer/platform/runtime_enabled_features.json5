@@ -686,6 +686,11 @@
       name: "AvoidForcedLayoutOnInvisibleDocumentClose",
       status: "test",
     },
+    {
+      // Fix for https://crbug.com/471876082
+      name: "AvoidMergingStyledSpanWithSiblings",
+      status: "stable",
+    },
     { // If the start and end positions are the same in MoveParagraph,
       // there is no need to collapse the whitespace between them.
       // https://crbug.com/406053617
