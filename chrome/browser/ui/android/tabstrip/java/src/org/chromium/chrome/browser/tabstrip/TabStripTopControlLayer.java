@@ -242,7 +242,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
     private void prepForTransitionRequested(
             int newHeight, boolean applyScrimOverlay, Runnable onHeightTransitionStartCallback) {
-        if (mTabStrip == null) return;
+        if (mTabStrip == null && !canTransitionWithoutTabStrip()) return;
 
         if (mTransitionState != null) {
             notifyTransitionFinished(false);
@@ -269,7 +269,11 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         if (!isInTransition()) return;
 
         // Once transition is finished, put the offset tags back so layers can scroll as intended.
-        assertNonNull(mTabStrip).updateOffsetTagsInfo(mOffsetTagsInfo);
+        if (mTabStrip != null) {
+            mTabStrip.updateOffsetTagsInfo(mOffsetTagsInfo);
+        } else {
+            assert canTransitionWithoutTabStrip() : "Transition started when mTabStrip == null.";
+        }
 
         notifyTransitionFinished(true);
         mTransitionState = null;
@@ -307,13 +311,21 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         mTransitionState.transitionStartedCallback.run();
         mControlContainer.onHeightChanged(
                 mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
-        assertNonNull(mTabStrip)
-                .onHeightChanged(mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
+        if (mTabStrip != null) {
+            mTabStrip.onHeightChanged(
+                    mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
+        } else {
+            assert canTransitionWithoutTabStrip() : "Transition started when mTabStrip == null.";
+        }
     }
 
     private void notifyTransitionFinished(boolean success) {
         mControlContainer.onHeightTransitionFinished(success);
-        assertNonNull(mTabStrip).onHeightTransitionFinished(success);
+        if (mTabStrip != null) {
+            mTabStrip.onHeightTransitionFinished(success);
+        } else {
+            assert canTransitionWithoutTabStrip() : "Transition finished when mTabStrip == null.";
+        }
 
         recordTabStripTransitionFinished(success);
         if (!success) {
@@ -324,5 +336,10 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
     private void recordTabStripTransitionFinished(boolean finished) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.DynamicTopChrome.TabStripTransition.Finished", finished);
+    }
+
+    private boolean canTransitionWithoutTabStrip() {
+        return BrowserControlsUtils.isForceTopChromeHeightAdjustmentOnStartupEnabled(
+                mControlContainer.getView().getContext());
     }
 }

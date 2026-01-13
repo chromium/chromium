@@ -12,6 +12,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.view.View;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -33,6 +36,7 @@ public class TabStripTopControlLayerUnitTest {
     @Mock private ControlContainer mControlContainer;
     @Mock private TabStripSceneLayerHolder mTabStripSceneLayerHolder;
     @Mock private BrowserControlsStateProvider mBrowserControls;
+    @Mock private View mControlContainerView;
 
     private TabStripTopControlLayer mTabStripTopControlLayer;
     private final CallbackHelper mOnTransitionStartedCallback = new CallbackHelper();
@@ -41,6 +45,7 @@ public class TabStripTopControlLayerUnitTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         doReturn(true).when(mTopControlsStacker).isLayerAtTop(TopControlType.TABSTRIP);
+        doReturn(mControlContainerView).when(mControlContainer).getView();
         mTabStripTopControlLayer =
                 new TabStripTopControlLayer(
                         0, mTopControlsStacker, mBrowserControls, mControlContainer);
@@ -142,6 +147,27 @@ public class TabStripTopControlLayerUnitTest {
     public void testDestroy() {
         mTabStripTopControlLayer.destroy();
         verify(mTopControlsStacker).removeControl(mTabStripTopControlLayer);
+    }
+
+    @Test
+    public void testTransitionWithoutTabStrip() {
+        BrowserControlsUtils.setsSyncMinHeightWithTotalHeightForTesting(true);
+
+        // Recreate the layer without setting the tab strip (without calling initializeWithNative).
+        mTabStripTopControlLayer =
+                new TabStripTopControlLayer(
+                        100, mTopControlsStacker, mBrowserControls, mControlContainer);
+        requestTransition(120, true);
+
+        // Assume another offset dispatched, which should result in transition started.
+        mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(0, true);
+        assertEquals(
+                "mOnTransitionStartedCallback is not called.",
+                1,
+                mOnTransitionStartedCallback.getCallCount());
+        verify(mControlContainer).onHeightChanged(120, true);
+        // The TabStripSceneLayerHolder should not be updated since it's not initialized.
+        verify(mTabStripSceneLayerHolder, times(0)).onLayerYOffsetChanged(anyInt(), anyInt());
     }
 
     private void requestTransition(int newHeight, boolean applyScrimOverlay) {

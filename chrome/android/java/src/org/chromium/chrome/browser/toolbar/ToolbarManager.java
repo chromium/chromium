@@ -173,6 +173,7 @@ import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
@@ -1192,6 +1193,7 @@ public class ToolbarManager
                         progressBar,
                         historyDelegate,
                         topControlsStacker,
+                        mTabStripTopControlLayer,
                         homeButtonDisplay);
         mActionModeController =
                 new ActionModeController(
@@ -1990,8 +1992,9 @@ public class ToolbarManager
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
-            NavigationPopup.HistoryDelegate historyDelegate,
+            HistoryDelegate historyDelegate,
             TopControlsStacker topControlsStacker,
+            TabStripTopControlLayer tabStripTopControlLayer,
             @Nullable HomeButtonDisplay homeButtonDisplay) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
@@ -2020,6 +2023,7 @@ public class ToolbarManager
                         mTabObscuringHandler,
                         mDesktopWindowStateManager,
                         mTabStripTransitionDelegateSupplier,
+                        tabStripTopControlLayer,
                         onLongClickListener,
                         progressBar,
                         mActivityTabProvider.asObservable(),
@@ -2447,7 +2451,15 @@ public class ToolbarManager
                 mToolbarProgressBarLayer::onProgressBarInfoUpdate,
                 mCaptureResourceIdSupplier,
                 mTabStripTopControlLayer);
-        mTabStripTopControlLayer.set(mToolbar.getTabStripHeight());
+
+        // This call is mainly to ensure the tab strip height stays the same as the internal value
+        // from TabStripTransitionCoordinator. When canForceTopChromeHeightAdjustmentOnStartup()
+        // returns true, TabStripTopControlLayer is already adjusted to this internal height at an
+        // earlier timing, so this call can be skipped.
+        // TODO(crbug.com/450970998): This call can be remove once feature launch.
+        if (!BrowserControlsUtils.isForceTopChromeHeightAdjustmentOnStartupEnabled(mActivity)) {
+            mTabStripTopControlLayer.set(mToolbar.getTabStripHeight());
+        }
 
         mAttachStateChangeListener =
                 new OnAttachStateChangeListener() {
