@@ -94,6 +94,10 @@ cr-composebox[searchbox-layout-mode="TallBottomContext"]::part(voice-icon) {
   bottom: 6px;
 }
 
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode="TallBottomContext"]:not([show-dropdown_])::part(submit) {
+    bottom: 6px;
+}
+
 cr-composebox[searchbox-layout-mode="TallTopContext"] {
   --cr-composebox-submit-button-margin-inline-start: 0;
 }
