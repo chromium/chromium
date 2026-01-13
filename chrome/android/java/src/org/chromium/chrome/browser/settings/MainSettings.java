@@ -939,8 +939,16 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
-                    if (!shouldShowManageSyncPref(profile)) {
+                    SyncService syncService = SyncServiceFactory.getForProfile(profile);
+                    if (!shouldShowManageSyncPref(profile)
+                            || (syncService != null
+                                    && syncService.isSyncDisabledByEnterprisePolicy())) {
                         indexData.removeEntry(getUniqueId(PREF_MANAGE_SYNC));
+                    } else {
+                        String frag = MainSettings.class.getName();
+                        String targetFrag = ManageSyncSettings.class.getName();
+                        indexData.updateEntryForKey(
+                                frag, PREF_MANAGE_SYNC, R.string.sync_category_title, targetFrag);
                     }
                     indexData.removeEntry(getUniqueId(PREF_SETTINGS_PROMO_CARD));
                     if (!shouldAddPlusAddressesPref()) {

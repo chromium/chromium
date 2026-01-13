@@ -341,7 +341,11 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                 mActivity, mIndexData, providerMap, processedFragments);
 
         for (SearchIndexProvider provider : providers) {
-            provider.initPreferenceXml(mActivity, mIndexData, providerMap);
+            if (provider instanceof ChromeBaseSearchIndexProvider chromeProvider) {
+                chromeProvider.initPreferenceXml(mActivity, mProfile, mIndexData, providerMap);
+            } else {
+                provider.initPreferenceXml(mActivity, mIndexData, providerMap);
+            }
         }
 
         // Allow providers to make runtime modifications (e.g., hide preferences). Sometimes we also

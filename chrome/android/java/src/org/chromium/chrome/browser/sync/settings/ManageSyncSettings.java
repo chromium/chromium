@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.sync.settings;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -73,6 +74,7 @@ import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -271,7 +273,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         setHasOptionsMenu(true);
 
-        mShouldReplaceSyncSettingsWithAccountSettings = !mSyncService.hasSyncConsent();
+        mShouldReplaceSyncSettingsWithAccountSettings = shouldShowAccountSettings(getProfile());
         if (mShouldReplaceSyncSettingsWithAccountSettings) {
             setupAccountSettings(profile);
         } else {
@@ -287,6 +289,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
+    }
+
+    private static boolean shouldShowAccountSettings(Profile profile) {
+        return !assumeNonNull(SyncServiceFactory.getForProfile(profile)).hasSyncConsent();
     }
 
     @Override
@@ -499,7 +505,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 UserSelectableType.BOOKMARKS,
                 findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
 
-        if (shouldShowExtensionsItem()) {
+        if (shouldShowExtensionsItem(getProfile())) {
             mSyncTypeSwitchPreferencesMap.put(
                     UserSelectableType.EXTENSIONS,
                     findPreference(PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE));
@@ -566,7 +572,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private void setupSignOutPreference(Profile profile) {
         mSignOutPreference = (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
-        if (profile.isChild()) {
+        if (!shouldShowSignOutPref(profile)) {
             mSignOutPreference.setVisible(false);
         } else {
             mSignOutPreference.initialize(
@@ -576,6 +582,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
         }
         mSignOutPreference.setSnackbarManagerSupplier(assumeNonNull(mSnackbarManagerSupplier));
+    }
+
+    private static boolean shouldShowSignOutPref(Profile profile) {
+        return !profile.isChild();
     }
 
     @Initializer
@@ -642,7 +652,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
         mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
-        if (shouldShowExtensionsItem()) {
+        if (shouldShowExtensionsItem(getProfile())) {
             mSyncTypeCheckBoxPreferencesMap.put(
                     UserSelectableType.EXTENSIONS, findPreference(PREF_SYNC_EXTENSIONS));
         } else {
@@ -661,7 +671,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
+        if (shouldShowSyncAppsPref()) {
             mSyncTypeCheckBoxPreferencesMap.put(
                     UserSelectableType.APPS, findPreference(PREF_SYNC_APPS));
         } else {
@@ -676,6 +686,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncTypeCheckBoxPreferencesMap
                 .values()
                 .forEach(pref -> pref.setOnPreferenceChangeListener(this));
+    }
+
+    private static boolean shouldShowSyncAppsPref() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND);
     }
 
     private void setupUrlKeyedAnonymizedDataPreference(Profile profile) {
@@ -1267,8 +1281,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     /** Returns whether the extensions sync item should be shown. */
-    private boolean shouldShowExtensionsItem() {
-        return ExtensionUi.isEnabled(getProfile());
+    private static boolean shouldShowExtensionsItem(Profile profile) {
+        return ExtensionUi.isEnabled(profile);
     }
 
     private IdentityManager getIdentityManager(Profile profile) {
@@ -1287,9 +1301,41 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         return assumeNonNull(getFragmentManager()).beginTransaction();
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
-    // Deal with the different XMLs used by this pref.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(
-                    ManageSyncSettings.class.getName(), R.xml.manage_sync_preferences);
+            new ChromeBaseSearchIndexProvider(ManageSyncSettings.class.getName(), 0) {
+
+                @Override
+                public int getXmlRes(Profile profile) {
+                    return shouldShowAccountSettings(profile)
+                            ? R.xml.unified_account_settings_preferences
+                            : R.xml.manage_sync_preferences;
+                }
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    var frag = ManageSyncSettings.class.getName();
+                    if (shouldShowAccountSettings(profile)) {
+                        if (!shouldShowExtensionsItem(profile)) {
+                            indexData.removeEntryForKey(
+                                    frag, PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE);
+                        }
+                        if (!shouldShowSignOutPref(profile)) {
+                            indexData.removeEntryForKey(frag, PREF_SIGN_OUT);
+                        }
+                    } else {
+                        if (!shouldShowExtensionsItem(profile)) {
+                            indexData.removeEntryForKey(frag, PREF_SYNC_EXTENSIONS);
+                        }
+                        if (!shouldShowSignOutPref(profile)) {
+                            // turn_off_sync vs. sign_out_and_turn_off_sync by default
+                            indexData.updateEntryForKey(
+                                    frag, PREF_TURN_OFF_SYNC, R.string.turn_off_sync);
+                        }
+                        if (!shouldShowSyncAppsPref()) {
+                            indexData.removeEntryForKey(frag, PREF_SYNC_APPS);
+                        }
+                    }
+                }
+            };
 }

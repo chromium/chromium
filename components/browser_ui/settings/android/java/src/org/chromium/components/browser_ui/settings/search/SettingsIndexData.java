@@ -398,6 +398,10 @@ public class SettingsIndexData {
     public void updateEntry(String id, Entry updatedEntry) {
         assert PreferenceParser.isId(id) : "Use getUniqueId(key) to pass a unique id.";
         mEntries.put(id, updatedEntry);
+
+        if (!TextUtils.isEmpty(updatedEntry.fragment)) {
+            addChildParentLink(updatedEntry.fragment, id);
+        }
     }
 
     /**
@@ -409,11 +413,27 @@ public class SettingsIndexData {
      * @throws IllegalStateException If a preference with the same key does not exist in the index.
      */
     public void updateEntryForKey(String prefFragment, String key, int titleId) {
+        updateEntryForKey(prefFragment, key, titleId, null);
+    }
+
+    /**
+     * Replaces an existing entry with a new one.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     * @throws IllegalStateException If a preference with the same key does not exist in the index.
+     */
+    public void updateEntryForKey(
+            String prefFragment, String key, int titleId, @Nullable String targetFragment) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
         String title = ContextUtils.getApplicationContext().getString(titleId);
         Entry entry = getEntry(id);
         if (entry != null) {
-            updateEntry(id, new Entry.Builder(entry).setTitle(title).build());
+            var builder = new Entry.Builder(entry).setTitle(title);
+            if (targetFragment != null) builder.setFragment(targetFragment);
+            updateEntry(id, builder.build());
         } else {
             throw new IllegalStateException("Existing ID cannot be found: " + id);
         }
@@ -424,8 +444,8 @@ public class SettingsIndexData {
      *
      * @param prefFragment Full class name of the Fragment where the entry belongs.
      * @param key The name of the key for the preference entry.
-     * @param summaryId String resource ID of the summary. * @throws IllegalStateException If a
-     *     preference with the same key does not exist in the index.
+     * @param summaryId String resource ID of the summary.
+     * @throws IllegalStateException If a preference with the same key does not exist in the index.
      */
     public void updateEntrySummaryForKey(String prefFragment, String key, int summaryId) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
