@@ -67,6 +67,10 @@
   flex-wrap: nowrap;
 }
 
+.context-menu-container:has(.contextual-chip) {
+  padding-bottom: var(--contextual-entrypoint-and-carousel-contextual-chip-padding-bottom);
+}
+
 :host([inputs-disabled_]) .upload-button {
   color: var(--color-composebox-upload-button-disabled);
 }
