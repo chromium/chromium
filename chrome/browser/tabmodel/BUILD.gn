@@ -36,6 +36,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/PassthroughTabUngrouper.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ReadOnlyIterator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/StubTabGroupModelFilterImpl.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/SupportedProfileType.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/SupportsTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCloseType.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosingSource.java",
