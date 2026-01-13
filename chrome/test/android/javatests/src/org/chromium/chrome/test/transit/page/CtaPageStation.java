@@ -107,6 +107,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
     public RegularNewTabPageStation openNewTabFast() {
+        assert !mIsIncognito || !IncognitoUtils.shouldOpenIncognitoAsWindow()
+                : "Regular tabs can only be opened in regular (non-incognito) windows.";
         return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_tab_menu_id, this)
                 .arriveAt(RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
