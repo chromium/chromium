@@ -36,10 +36,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
       const std::vector<std::string>& four_digit_combinations_in_dom,
-      const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
       bool should_show_scan_credit_card,
       CreditCardSuggestionSummary& summary,
-      bool is_card_number_field_empty,
       bool is_complete_form,
       const payments::AmountExtractionStatus& amount_extraction_status);
   ~CreditCardSuggestionGenerator() override;
@@ -92,11 +90,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
 
  private:
   raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
-  raw_ref<const std::u16string>
-      autofilled_last_four_digits_in_form_for_filtering_;
   bool should_show_scan_credit_card_;
   raw_ref<CreditCardSuggestionSummary> summary_;
-  bool is_card_number_field_empty_;
   bool is_complete_form_;
   raw_ref<const payments::AmountExtractionStatus> amount_extraction_status_;
   base::WeakPtrFactory<CreditCardSuggestionGenerator> weak_ptr_factory_{this};

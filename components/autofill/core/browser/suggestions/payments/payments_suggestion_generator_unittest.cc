@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -2423,6 +2424,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2431,8 +2433,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2466,6 +2467,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2474,8 +2476,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2498,6 +2499,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2506,8 +2508,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   ASSERT_GE(suggestions.size(), 0ul);
 }
@@ -2531,6 +2532,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2539,8 +2541,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0],
@@ -2565,6 +2566,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2574,8 +2576,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2599,6 +2600,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2607,8 +2609,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2630,8 +2631,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2659,6 +2659,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2667,8 +2668,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2696,6 +2696,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
+  trigger_field.set_value(u"411");
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(HeuristicSource::kRegexes,
                                             CREDIT_CARD_NUMBER);
@@ -2704,8 +2705,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       autofill_client(), summary, /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(
       suggestions,
@@ -3659,8 +3659,7 @@ TEST_F(
       autofill_client(), summary, /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(
       suggestions,
@@ -4059,8 +4058,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(), summary, /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
       IsCvcSavingSupported()) {
@@ -4089,19 +4087,25 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
        GetSuggestionsForCreditCards_NormalCreditCardForm) {
   CreditCardSuggestionSummary summary;
-  FormData form;
+
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
+                                     .value = u"4111111111111111",
+                                     .autocomplete_attribute = "cc-number",
+                                     .is_autofilled = true}}});
+
   FormFieldData trigger_field;
   AutofillField trigger_autofill_field(trigger_field);
   trigger_autofill_field.set_heuristic_type(
       HeuristicSource::kRegexes, FieldType::CREDIT_CARD_VERIFICATION_CODE);
+
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
       autofill_client(), summary,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1113"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"1111",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
   if (!IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
     return;
@@ -4135,8 +4139,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4158,8 +4161,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4187,8 +4189,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -4225,8 +4226,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(), summary, /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus());
 
   EXPECT_THAT(
       suggestions,

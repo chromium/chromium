@@ -24,13 +24,6 @@ namespace autofill {
 // `summary` contains metadata about the returned suggestions.
 // `is_complete_form` indicates whether a credit card form is considered
 // complete for the purposes of "Save and Fill".
-// `autofilled_last_four_digits_in_form_for_filtering` are the last four digits
-// of a card number that will be used for suggestion filtering. This is used to
-// avoid showing suggestions that is unrelated to the cards that have already
-// been autofilled in the form. Can be empty if no filtering should happen.
-// `is_card_number_field_empty` indicates whether the card number field is empty
-// after the value inside of it is sanitized. This is used to decide whether the
-// BNPL suggestion should be appended together with the credit card suggestions.
 // TODO(crbug.com/448688721): Consolidate the input parameters.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormData& form,
@@ -42,8 +35,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool is_complete_form,
     bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
-    bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status);
 
 // Helper function, that implements "Fetch" phase of the
@@ -51,19 +42,24 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 std::pair<SuggestionGenerator::SuggestionDataSource,
           std::vector<SuggestionGenerator::SuggestionData>>
 FetchCreditCardSuggestionDataSync(
-    AutofillClient& client,
+    const FormData& form,
     const FormFieldData& trigger_field,
+    const FormStructure& form_structure,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering);
+    const std::vector<std::string>& four_digit_combinations_in_dom);
 
 // Helper function, that implements "Generate" phase of the
 // GetSuggestionsForCreditCards function.
 std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
-    AutofillClient& client,
+    const FormData& form,
     const FormFieldData& trigger_field,
+    const FormStructure& form_structure,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
     bool should_show_scan_credit_card,
@@ -71,7 +67,6 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     const base::flat_map<SuggestionGenerator::SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>&
         suggestion_data,
-    bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status);
 
 // Fetches SuggestionData, used for credit card or cvc field suggestion

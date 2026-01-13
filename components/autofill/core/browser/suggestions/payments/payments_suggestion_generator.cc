@@ -8,6 +8,7 @@
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
@@ -239,13 +240,42 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
 
 std::pair<SuggestionDataSource, std::vector<SuggestionData>>
 FetchCreditCardSuggestionDataSync(
-    AutofillClient& client,
+    const FormData& form,
     const FormFieldData& trigger_field,
+    const FormStructure& form_structure,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
+    const std::vector<std::string>& four_digit_combinations_in_dom) {
+  std::u16string card_number_field_value = u"";
+  bool is_card_number_autofilled = false;
+
+  // Preprocess the form to extract info about card number field.
+  for (const FormFieldData& field : form.fields()) {
+    if (const AutofillField* autofill_field =
+            form_structure.GetFieldById(field.global_id());
+        autofill_field &&
+        autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
+      card_number_field_value += SanitizeCreditCardFieldValue(field.value());
+      is_card_number_autofilled |= field.is_autofilled();
+    }
+  }
+
+  // Offer suggestion for expiration date field if the card number field is
+  // empty or the card number field is autofilled.
+  auto ShouldOfferSuggestionsForExpirationTypeField = [&] {
+    return SanitizedFieldIsEmpty(card_number_field_value) ||
+           is_card_number_autofilled;
+  };
+
+  if (data_util::IsCreditCardExpirationType(
+          autofill_trigger_field.Type().GetCreditCardType()) &&
+      !ShouldOfferSuggestionsForExpirationTypeField()) {
+    return {SuggestionDataSource::kCreditCard, {}};
+  }
+
   if (IsInAutofillSuggestionsDisabledExperiment()) {
     return {SuggestionDataSource::kCreditCard, {}};
   }
@@ -275,6 +305,10 @@ FetchCreditCardSuggestionDataSync(
         client, trigger_field, summary.metadata_logging_context);
   }
 
+  const std::u16string autofilled_last_four_digits_in_form_for_filtering =
+      is_card_number_autofilled && card_number_field_value.size() >= 4
+          ? card_number_field_value.substr(card_number_field_value.size() - 4)
+          : u"";
   // If no virtual cards available for standalone CVC field, fall back to
   // regular credit card suggestions.
   return FetchCreditCardOrCvcFieldSuggestionDataSync(
@@ -283,15 +317,17 @@ FetchCreditCardSuggestionDataSync(
 }
 
 std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
-    AutofillClient& client,
+    const FormData& form,
     const FormFieldData& trigger_field,
+    const FormStructure& form_structure,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
     bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         suggestion_data,
-    bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status) {
   if (suggestion_data.contains(SuggestionDataSource::kSaveAndFillPromo)) {
     std::vector<Suggestion> suggestions;
@@ -324,6 +360,19 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
         suggestion_data, amount_extraction_status);
   }
 
+  std::u16string card_number_field_value = u"";
+  // Preprocess the form to extract info about card number field.
+  for (const FormFieldData& field : form.fields()) {
+    if (const AutofillField* autofill_field =
+            form_structure.GetFieldById(field.global_id());
+        autofill_field &&
+        autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
+      card_number_field_value += SanitizeCreditCardFieldValue(field.value());
+    }
+  }
+
+  bool is_card_number_field_empty = card_number_field_value.empty();
+
   return GenerateCreditCardOrCvcFieldSuggestionsSync(
       client, trigger_field, trigger_field_type, should_show_scan_credit_card,
       summary, is_card_number_field_empty, suggestion_data,
@@ -340,14 +389,10 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool is_complete_form,
     bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
-    bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionGenerator credit_card_suggestion_generator(
-      four_digit_combinations_in_dom,
-      autofilled_last_four_digits_in_form_for_filtering,
-      should_show_scan_credit_card, summary, is_card_number_field_empty,
+      four_digit_combinations_in_dom, should_show_scan_credit_card, summary,
       is_complete_form, amount_extraction_status);
 
   auto on_suggestions_generated =

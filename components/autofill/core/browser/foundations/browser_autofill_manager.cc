@@ -3047,33 +3047,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
       metrics_->signin_state_for_metrics);
 
-  std::u16string card_number_field_value = u"";
-  bool is_card_number_autofilled = false;
-
-  // Preprocess the form to extract info about card number field.
-  for (const FormFieldData& field : form.fields()) {
-    if (const AutofillField* autofill_field =
-            form_structure.GetFieldById(field.global_id());
-        autofill_field &&
-        autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
-      card_number_field_value += SanitizeCreditCardFieldValue(field.value());
-      is_card_number_autofilled |= field.is_autofilled();
-    }
-  }
-
-  // Offer suggestion for expiration date field if the card number field is
-  // empty or the card number field is autofilled.
-  auto ShouldOfferSuggestionsForExpirationTypeField = [&] {
-    return SanitizedFieldIsEmpty(card_number_field_value) ||
-           is_card_number_autofilled;
-  };
-
-  if (data_util::IsCreditCardExpirationType(
-          autofill_trigger_field.Type().GetCreditCardType()) &&
-      !ShouldOfferSuggestionsForExpirationTypeField()) {
-    return {};
-  }
-
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, form_structure, trigger_field, autofill_trigger_field, client(),
@@ -3083,11 +3056,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
               kCompleteCreditCardFormIncludingCvcAndName),
       ShouldShowScanCreditCard(form_structure, autofill_trigger_field),
       four_digit_combinations_in_dom_,
-      /*autofilled_last_four_digits_in_form_for_filtering=*/
-      is_card_number_autofilled && card_number_field_value.size() >= 4
-          ? card_number_field_value.substr(card_number_field_value.size() - 4)
-          : u"",
-      card_number_field_value.empty(),
       payments::AmountExtractionStatus{
           .has_timed_out_for_page_load =
               GetAmountExtractionManager().HasTimedOutForPageLoad(),
