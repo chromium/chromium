@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
@@ -577,11 +578,8 @@ bool ShareOperation::PutShareContentInDataPackage(SharedFiles files,
                 // No additional work is needed when the write has been
                 // completed, but a callback is created to hold a reference
                 // to the |operation| until the operation has completed.
-                operation->WriteStream(
-                    stream,
-                    base::BindOnce(
-                        [](scoped_refptr<OutputStreamWriteOperation>) {},
-                        operation));
+                operation->WriteStream(stream,
+                                       base::DoNothingWithBoundArgs(operation));
                 return S_OK;
               });
       // The Callback function may return null in the E_OUTOFMEMORY case

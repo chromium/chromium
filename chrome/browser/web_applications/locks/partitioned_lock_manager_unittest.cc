@@ -43,7 +43,7 @@ class BarrierBuilder {
   BarrierBuilder& operator=(const BarrierBuilder&) = delete;
 
   base::OnceClosure AddClosure() {
-    return base::BindOnce([](scoped_refptr<ContinuationRef>) {}, continuation_);
+    return base::DoNothingWithBoundArgs(continuation_);
   }
 
  private:

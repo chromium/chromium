@@ -621,9 +621,9 @@ void ActorFormFillingServiceImpl::FillSuggestions(
   // reached.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce([](auto) {}, std::make_unique<ActorFillingObserver>(
-                                      autofill_manager.client(), all_field_ids,
-                                      std::move(callback_with_metrics))),
+      base::DoNothingWithBoundArgs(std::make_unique<ActorFillingObserver>(
+          autofill_manager.client(), all_field_ids,
+          std::move(callback_with_metrics))),
       ActorFillingObserver::GetMaximumTimeout());
 
   // Fill.

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
@@ -100,9 +101,7 @@ ComponentFiles::~ComponentFiles() {
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          [](base::flat_map<base::FilePath, base::File> model_files) {},
-          std::move(model_files_)));
+      base::DoNothingWithBoundArgs(std::move(model_files_)));
 }
 
 std::unique_ptr<ComponentFiles> ComponentFiles::Load(
