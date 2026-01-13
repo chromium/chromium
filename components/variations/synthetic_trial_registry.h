@@ -102,6 +102,12 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, NotifyObserver);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
 
+  // Result of parsing an external experiment from the allowlist.
+  struct ExternalExperiment {
+    std::string_view study_name;
+    std::string_view group_name;
+  };
+
   // Internal implementation of RegisterExternalExperiments().
   void RegisterExternalExperimentsInternal(
       const std::vector<int>& experiment_ids,
@@ -128,11 +134,25 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   // RegisterExternalExperiments().
   void RegisterSyntheticFieldTrial(const SyntheticTrialGroup& trial_group);
 
-  // Returns the study name corresponding to |experiment_id| from the allowlist
-  // contained in |params|. An empty string view is returned when the
-  // experiment is not in the allowlist.
-  std::string_view GetStudyNameForExpId(const base::FieldTrialParams& params,
-                                        const std::string& experiment_id);
+  // Returns the study and group name corresponding to |experiment_id| from the
+  // allowlist contained in |params|.
+  //
+  // The format of the value in |params| should be "StudyName,GroupName".
+  // - The study name is the part before the first comma.
+  // - The group name is the part after the first comma and before the second
+  //   comma (if any).
+  // - Any text after the second comma is ignored.
+  //
+  // If the group name is empty (e.g., "StudyName" or "StudyName,"), the
+  // |experiment_id| is used as the group name.
+  //
+  // Examples for experiment_id "100":
+  // - "StudyName" -> Study: "StudyName", Group: "100"
+  // - "StudyName,GroupName" -> Study: "StudyName", Group: "GroupName"
+  // - "StudyName,GroupName,Param" -> Study: "StudyName", Group: "GroupName"
+  // - "StudyName," -> Study: "StudyName", Group: "100"
+  ExternalExperiment GetExternalExperiment(const base::FieldTrialParams& params,
+                                           const std::string& experiment_id);
 
   // Returns a list of synthetic field trials that are either (1) older than
   // |time|, or (2) specify |kCurrentLog| as |annotation_mode|. The trial and
