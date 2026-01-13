@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -204,14 +204,14 @@ suite('AppReceivesToolbarChanges', () => {
     assertTrue(!!lineFocus);
 
     emitEvent(
-        app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: chrome.readingMode.lineFocusCursorLine}});
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
     assertEquals('block', window.getComputedStyle(lineFocus).display);
 
     emitEvent(
-        app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: chrome.readingMode.lineFocusOff}});
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.OFF}});
     await microtasksFinished();
     assertEquals('none', window.getComputedStyle(lineFocus).display);
   });
@@ -223,8 +223,8 @@ suite('AppReceivesToolbarChanges', () => {
     assertTrue(!!lineFocus);
 
     emitEvent(
-        app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: chrome.readingMode.lineFocusCursorLine}});
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
     assertEquals(
         '',
@@ -235,8 +235,8 @@ suite('AppReceivesToolbarChanges', () => {
   test('font size change updates line focus line height', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     emitEvent(
-        app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: chrome.readingMode.lineFocusCursorLine}});
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
     const startingHeight = app.style.getPropertyValue('--line-focus-height');
 
@@ -253,8 +253,8 @@ suite('AppReceivesToolbarChanges', () => {
       'font size change does not change line focus window height', async () => {
         chrome.readingMode.isLineFocusEnabled = true;
         emitEvent(
-            app, ToolbarEvent.LINE_FOCUS,
-            {detail: {data: chrome.readingMode.lineFocusSmallCursorWindow}});
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.SMALL_WINDOW}});
         await microtasksFinished();
         const startingHeight =
             app.style.getPropertyValue('--line-focus-height');

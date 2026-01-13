@@ -47,7 +47,8 @@ export function getHtml(this: AppElement) {
         @toolbar-overflow="${this.onToolbarOverflow_}"
         @language-menu-open="${this.onLanguageMenuOpen_}"
         @language-menu-close="${this.onLanguageMenuClose_}"
-        @line-focus-change="${this.onLineFocusChange_}"
+        @line-focus-style-change="${this.onLineFocusStyleChange_}"
+        @line-focus-movement-change="${this.onLineFocusMovementChange_}"
         @close-all-menus="${this.onAllMenusClose_}"
         id="toolbar">
     </read-anything-toolbar>

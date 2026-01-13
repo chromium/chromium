@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {type LineFocus, LineFocusMovement, LineFocusStyle} from './read_anything_types.js';
+import {LineFocusMovement, LineFocusStyle} from './read_anything_types.js';
 
 export class LineFocusModel {
   // The min y position allowed for the line focus element.
@@ -28,13 +28,11 @@ export class LineFocusModel {
   private defaultWindowHeight_: number = 0;
 
   // The current line focus mode.
-  private currentLineFocus_?: LineFocus;
   private currentLineFocusStyle_: LineFocusStyle = LineFocusStyle.OFF;
   private currentLineFocusMovement_: LineFocusMovement =
       LineFocusMovement.STATIC;
   // The last line focus mode that was used when it was on. Used for toggling on
   // line focus with the last used line focus mode.
-  private lastEnabledLineFocus_?: LineFocus;
   private lastEnabledLineFocusStyle_: LineFocusStyle =
       LineFocusStyle.defaultValue();
 
@@ -93,22 +91,6 @@ export class LineFocusModel {
 
   setDefaultWindowHeight(height: number): void {
     this.defaultWindowHeight_ = height;
-  }
-
-  getCurrentLineFocus(): LineFocus|null {
-    return this.currentLineFocus_ || null;
-  }
-
-  setCurrentLineFocus(lineFocus: LineFocus): void {
-    this.currentLineFocus_ = lineFocus;
-  }
-
-  getLastEnabledLineFocus(): LineFocus|null {
-    return this.lastEnabledLineFocus_ || null;
-  }
-
-  setLastEnabledLineFocus(lineFocus: LineFocus): void {
-    this.lastEnabledLineFocus_ = lineFocus;
   }
 
   getCurrentLineFocusStyle(): LineFocusStyle {

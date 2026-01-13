@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {assert} from '//resources/js/assert.js';
 
-import {getLineFocusValues, LineFocus, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
+import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
 import {currentReadHighlightClass, PARENT_OF_HIGHLIGHT_CLASS} from '../read_aloud/movement.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
@@ -39,9 +39,7 @@ export class LineFocusController {
   }
 
   getCurrentLineFocusType(): LineFocusType {
-    const currentLineFocus = this.model_.getCurrentLineFocus();
-    return currentLineFocus ? currentLineFocus.type :
-                              this.getCurrentLineFocusStyle().type;
+    return this.getCurrentLineFocusStyle().type;
   }
 
   getCurrentLineFocusStyle(): LineFocusStyle {
@@ -67,13 +65,10 @@ export class LineFocusController {
       return;
     }
 
-    const lastLineFocus =
-        this.model_.getLastEnabledLineFocus() || LineFocus.defaultValue();
-    const newLineFocus = this.isEnabled() ? LineFocus.OFF : lastLineFocus;
-    if (newLineFocus) {
-      this.setLineFocus_(newLineFocus, container, height);
-      chrome.readingMode.onLineFocusChanged(newLineFocus.enumValue());
-    }
+    const lastStyle = this.model_.getLastEnabledLineFocusStyle();
+    const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
+    this.setStyleAndMovement_(
+        newStyle, this.getCurrentLineFocusMovement(), container, height);
   }
 
   onScrollEnd(newScrollTop: number) {
@@ -144,14 +139,6 @@ export class LineFocusController {
     }
   }
 
-  onLineFocusChange(
-      lineFocusEnumValue: number, container: HTMLElement, height: number) {
-    const lineFocus = LineFocus.fromEnumValue(lineFocusEnumValue);
-    if (lineFocus) {
-      this.setLineFocus_(lineFocus, container, height);
-    }
-  }
-
   onStyleChange(style: LineFocusStyle, container: HTMLElement, height: number) {
     this.setStyleAndMovement_(
         style, this.getCurrentLineFocusMovement(), container, height);
@@ -173,20 +160,6 @@ export class LineFocusController {
     const isOff = style === LineFocusStyle.OFF;
     if (!isOff) {
       this.model_.setLastEnabledLineFocusStyle(style);
-    }
-    this.updateLineFocus_(isOff, wasEnabled, container, height);
-  }
-
-  private setLineFocus_(
-      lineFocus: LineFocus, container: HTMLElement, height: number) {
-    const wasEnabled = this.isEnabled();
-    this.model_.setCurrentLineFocus(lineFocus);
-    const isOff = lineFocus === LineFocus.OFF;
-    if (!isOff) {
-      // TODO(crbug.com/447427066): Store this in prefs too so if the user
-      // toggles off line focus before closing RM, we can still toggle back on
-      // their last used line focus mode.
-      this.model_.setLastEnabledLineFocus(lineFocus);
     }
     this.updateLineFocus_(isOff, wasEnabled, container, height);
   }
@@ -304,9 +277,7 @@ export class LineFocusController {
   }
 
   private getCurrentLineFocusLines_(): number {
-    return this.model_.getCurrentLineFocus() ?
-        this.model_.getCurrentLineFocus()!.lines :
-        0;
+    return this.getCurrentLineFocusStyle().lines;
   }
 
   // If line focus is a window of > 1 line, the bottom of the window should not
@@ -318,10 +289,7 @@ export class LineFocusController {
   }
 
   private isStatic_(): boolean {
-    const lineFocus = this.model_.getCurrentLineFocus();
-    return lineFocus ?
-        lineFocus === LineFocus.STATIC_LINE :
-        this.getCurrentLineFocusMovement() === LineFocusMovement.STATIC;
+    return this.getCurrentLineFocusMovement() === LineFocusMovement.STATIC;
   }
 
   // When the current line focus mode is static, scroll the content instead of
@@ -363,10 +331,8 @@ export class LineFocusController {
     // If the line focus is a window being controlled with discrete keyboard
     // presses, then use the calculated line locations to set the top and height
     // of the window.
-    const currentLineFocus = this.model_.getCurrentLineFocus();
-    const lines = currentLineFocus ? currentLineFocus.lines :
-                                     this.getCurrentLineFocusStyle().lines;
-    const topIndex = currentLineIndex - lines;
+    const currentLineFocus = this.getCurrentLineFocusStyle();
+    const topIndex = currentLineIndex - currentLineFocus.lines;
     const index = Math.max(
         0, Math.min(this.model_.getTextLineBottoms().length - 1, topIndex));
     const shouldUseMinY = topIndex < 0 ||
@@ -381,8 +347,7 @@ export class LineFocusController {
   }
 
   private calculateNewPositions_(container: HTMLElement, height: number) {
-    const currentLineFocus =
-        this.model_.getCurrentLineFocus() || this.getCurrentLineFocusStyle();
+    const currentLineFocus = this.getCurrentLineFocusStyle();
     assert(!!currentLineFocus);
     this.model_.setMinY(container.offsetTop);
     this.model_.setMaxY(this.model_.getMinY() + height);
@@ -494,7 +459,13 @@ export class LineFocusController {
   }
 
   private setCenterY_() {
-    this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
+    let centerY = (this.model_.getMinY() + this.model_.getMaxY() / 2);
+    if (this.getCurrentLineFocusType() === LineFocusType.WINDOW) {
+      this.calculateHeight_();
+      const windowHeight = this.getHeight();
+      centerY += windowHeight ? windowHeight / 2 : 0;
+    }
+    this.setY_(centerY);
   }
 
   static getInstance(): LineFocusController {

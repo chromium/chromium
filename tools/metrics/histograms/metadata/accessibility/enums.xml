@@ -2304,7 +2304,9 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Letter spacing change"/>
   <int value="5" label="Links enabled change"/>
   <int value="6" label="Images enabled change"/>
-  <int value="7" label="Line focus change"/>
+  <int value="7" label="Line focus change (Deprecated)"/>
+  <int value="8" label="Line focus style change"/>
+  <int value="9" label="Line focus movement change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
