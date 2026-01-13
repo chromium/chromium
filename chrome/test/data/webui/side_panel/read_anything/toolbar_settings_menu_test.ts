@@ -156,4 +156,34 @@ suite('Toolbar Settings Menu', () => {
     assertTrue(actionMenu.open);
     assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
   });
+
+  test('clicking on language menu does not close settings menu', async () => {
+    // Open the voice selection menu
+    const targetItem = getMenuItem(SettingsOption.VOICE_SELECTION);
+    assertTrue(!!targetItem);
+    targetItem.click();
+    assertTrue(toolbar.$.voiceSelectionMenu.$.voiceSelectionMenu.get().open);
+
+    // Open the language menu
+    const languageMenuButton =
+        toolbar.$.voiceSelectionMenu.shadowRoot.querySelector<HTMLElement>(
+            '.language-menu-button');
+    assertTrue(!!languageMenuButton);
+    languageMenuButton.click();
+    await microtasksFinished();
+
+    const languageMenu =
+        toolbar.$.voiceSelectionMenu.shadowRoot.querySelector('language-menu');
+    assertTrue(!!languageMenu);
+    const dialog = languageMenu.$.languageMenu;
+
+    dialog.dispatchEvent(new PointerEvent('click', {
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+      view: window,
+    }));
+
+    assertTrue(settingsMenu.$.lazyMenu.get().open);
+  });
 });
