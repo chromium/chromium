@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -174,15 +175,37 @@ public class StatusProperties {
         public static final int INNER_ICON_DP = 20;
 
         private final boolean mIsIncognito;
+        private final @StringRes int mContentDescriptionRes;
 
         PermissionIconResource(@Nullable Drawable drawable, boolean isIncognito) {
             super(drawable);
             mIsIncognito = isIncognito;
+            mContentDescriptionRes = 0;
+        }
+
+        PermissionIconResource(
+                @Nullable Drawable drawable,
+                boolean isIncognito,
+                @StringRes int contentDescriptionRes) {
+            super(drawable);
+            mIsIncognito = isIncognito;
+            mContentDescriptionRes = contentDescriptionRes;
         }
 
         PermissionIconResource(Drawable drawable, boolean isIncognito, String iconIdentifier) {
             super(drawable, iconIdentifier);
             mIsIncognito = isIncognito;
+            mContentDescriptionRes = 0;
+        }
+
+        /**
+         * Returns the resource ID for the accessibility description string associated with the
+         * current permission icon. This is used by screen readers to announce the permission status
+         * to the user. Can be 0 (unset).
+         */
+        @StringRes
+        int getContentDescriptionRes() {
+            return mContentDescriptionRes;
         }
 
         /** Returns a {@link Drawable} for this StatusIconResource. */

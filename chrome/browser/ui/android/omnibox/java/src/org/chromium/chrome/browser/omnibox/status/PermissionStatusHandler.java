@@ -45,7 +45,6 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
     private final Handler mHandler;
 
     private @ContentSettingsType.EnumType int mLastPermission = ContentSettingsType.DEFAULT;
-    private @StringRes int mAccessibilityDescriptionRes;
     private boolean mIsQuietClapperUi;
     private @Nullable WebContents mWebContents;
     private @Nullable Runnable mOnIconShownCallbackForTesting;
@@ -63,9 +62,8 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
          * Displays a permission-related icon in the omnibox.
          *
          * @param icon The {@link PermissionIconResource} to display.
-         * @param descriptionRes The accessibility description for the icon.
          */
-        void showPermissionIcon(PermissionIconResource icon, @StringRes int descriptionRes);
+        void showPermissionIcon(PermissionIconResource icon);
 
         /**
          * Updates the main location bar icon, potentially with a transition.
@@ -187,8 +185,15 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
         Drawable permissionDrawable =
                 ContentSettingsResources.getIconForOmnibox(
                         mContext, mLastPermission, contentSetting, isIncognitoBranded);
+
+        @StringRes
+        int accessibilityDescriptionRes =
+                ContentSettingsResources.getPermissionResultAnnouncementForScreenReader(
+                        mLastPermission, contentSetting);
+
         PermissionIconResource permissionIconResource =
-                new PermissionIconResource(permissionDrawable, isIncognitoBranded);
+                new PermissionIconResource(
+                        permissionDrawable, isIncognitoBranded, accessibilityDescriptionRes);
         permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
 
         // We only want to notify the IPH controller after the icon transition is finished.
@@ -198,11 +203,7 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
         // Set the timer to switch the icon back afterwards.
         mHandler.removeCallbacksAndMessages(null);
 
-        mAccessibilityDescriptionRes =
-                ContentSettingsResources.getPermissionResultAnnouncementForScreenReader(
-                        mLastPermission, contentSetting);
-
-        mStatusDelegate.showPermissionIcon(permissionIconResource, mAccessibilityDescriptionRes);
+        mStatusDelegate.showPermissionIcon(permissionIconResource);
 
         if (mOnIconShownCallbackForTesting != null) {
             mOnIconShownCallbackForTesting.run();
@@ -372,14 +373,5 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
 
     boolean isClapperQuietIconShowing() {
         return mIsQuietClapperUi;
-    }
-
-    /**
-     * Returns the resource ID for the accessibility description string associated with the current
-     * permission icon. This is used by screen readers to announce the permission status to the
-     * user.
-     */
-    int getAccessibilityDescriptionRes() {
-        return mAccessibilityDescriptionRes;
     }
 }
