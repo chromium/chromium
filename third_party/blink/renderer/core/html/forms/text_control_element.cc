@@ -96,8 +96,7 @@ void AppendWrappedNode(const Element& container,
                        Position& break_position,
                        StringBuilder& result) {
   if (IsA<HTMLBRElement>(node)) {
-    if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
-        !TextControlElement::IsPlaceholderBreakElement(&node)) {
+    if (!TextControlElement::IsPlaceholderBreakElement(&node)) {
       result.Append(uchar::kLineFeed);
     } else {
       DCHECK_EQ(&node, container.lastChild());
@@ -939,17 +938,12 @@ bool TextControlElement::LastChangeWasUserEdit() const {
 
 Node* TextControlElement::CreatePlaceholderBreakElement() const {
   auto* element = MakeGarbageCollected<HTMLBRElement>(GetDocument());
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    element->setAttribute(html_names::kIdAttr,
-                          shadow_element_names::kIdPlaceholderBreak);
-  }
+  element->setAttribute(html_names::kIdAttr,
+                        shadow_element_names::kIdPlaceholderBreak);
   return element;
 }
 
 bool TextControlElement::IsPlaceholderBreakElement(const Node* node) {
-  if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    return IsA<HTMLBRElement>(node);
-  }
   return IsA<HTMLBRElement>(node) &&
          To<Element>(node)->GetIdAttribute() ==
              shadow_element_names::kIdPlaceholderBreak;
@@ -973,8 +967,7 @@ void TextControlElement::AdjustPlaceholderBreakElement() {
     text_last_child->remove();
   }
 
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
-      IsA<HTMLBRElement>(last_child)) {
+  if (IsA<HTMLBRElement>(last_child)) {
     if (!IsPlaceholderBreakElement(last_child)) {
       inner_editor->AppendChild(CreatePlaceholderBreakElement());
     } else if (IsPlaceholderBreakElement(last_child->previousSibling())) {
@@ -1013,8 +1006,7 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   // We don't use setTextContent.  It triggers unnecessary paint.
   if (value.empty()) {
     inner_editor->RemoveChildren();
-  } else if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() ||
-             IsA<HTMLInputElement>(this)) {
+  } else if (IsA<HTMLInputElement>(this)) {
     inner_editor->RemoveChildren();
     AppendText(value, 0, value.length(), *inner_editor);
   } else {
@@ -1074,29 +1066,8 @@ String TextControlElement::SerializeInnerEditorValue() const {
     return g_empty_string;
   }
 
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    auto [length, is_8bit] = AnalyzeInnerEditorValue(nullptr);
-    return SerializeInnerEditorValueInternal(length, is_8bit);
-  }
-
-  StringBuilder result;
-  for (Node& node : NodeTraversal::InclusiveDescendantsOf(*inner_editor)) {
-    if (IsA<HTMLBRElement>(node)) {
-      if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-        if (!IsPlaceholderBreakElement(&node)) {
-          result.Append(uchar::kLineFeed);
-        }
-      } else {
-        DCHECK_EQ(&node, inner_editor->lastChild());
-        if (&node != inner_editor->lastChild()) {
-          result.Append(uchar::kLineFeed);
-        }
-      }
-    } else if (auto* text_node = DynamicTo<Text>(node)) {
-      result.Append(text_node->data());
-    }
-  }
-  return result.ToString();
+  auto [length, is_8bit] = AnalyzeInnerEditorValue(nullptr);
+  return SerializeInnerEditorValueInternal(length, is_8bit);
 }
 
 std::pair<wtf_size_t, bool> TextControlElement::AnalyzeInnerEditorValue(

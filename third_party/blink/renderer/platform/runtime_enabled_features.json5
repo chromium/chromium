@@ -5270,11 +5270,6 @@
       status: "stable",
     },
     {
-      // crbug.com/414858401
-      name: "TextareaLineEndingsAsBr",
-      status: "stable",
-    },
-    {
       // crbug.com/461332428
       name: "TextCombineNoSideways",
       status: "stable",

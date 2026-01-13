@@ -97,11 +97,7 @@ TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   inner_editor->appendChild(Text::Create(doc, "90"));
   inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
   RunDocumentLifecycle();
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    EXPECT_EQ("1234\n5678\n90\n", textarea.ValueWithHardLineBreaks());
-  } else {
-    EXPECT_EQ("1234\n5678\n90", textarea.ValueWithHardLineBreaks());
-  }
+  EXPECT_EQ("1234\n5678\n90\n", textarea.ValueWithHardLineBreaks());
 }
 
 TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {

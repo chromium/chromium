@@ -318,18 +318,11 @@ TEST_F(ReplaceSelectionCommandTest, InsertLineFeedsToTextArea) {
       InputEvent::InputType::kNone);
 
   EXPECT_TRUE(command.Apply());
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    EXPECT_EQ(
-        "<textarea><div><br>foo|<br>"
-        "<br id=\"textarea-placeholder-break\"></div></textarea>",
-        GetSelectionTextInFlatTreeFromBody(
-            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
-  } else {
-    EXPECT_EQ(
-        "<textarea><div>\nfoo|\n<br></div></textarea>",
-        GetSelectionTextInFlatTreeFromBody(
-            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
-  }
+  EXPECT_EQ(
+      "<textarea><div><br>foo|<br>"
+      "<br id=\"textarea-placeholder-break\"></div></textarea>",
+      GetSelectionTextInFlatTreeFromBody(
+          Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
 }
 
 TEST_F(ReplaceSelectionCommandTest, TrivialFragmentTextDataForInputEvent) {

@@ -24,17 +24,9 @@ TEST_F(InsertLineBreakCommandTest, InsertToTextArea) {
   auto& command = *MakeGarbageCollected<InsertLineBreakCommand>(GetDocument());
 
   EXPECT_TRUE(command.Apply());
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    EXPECT_EQ(
-        "<textarea><div>foo<br>|bar</div></textarea>",
-        GetSelectionTextInFlatTreeFromBody(
-            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
-  } else {
-    EXPECT_EQ(
-        "<textarea><div>foo\n|bar</div></textarea>",
-        GetSelectionTextInFlatTreeFromBody(
-            Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
-  }
+  EXPECT_EQ("<textarea><div>foo<br>|bar</div></textarea>",
+            GetSelectionTextInFlatTreeFromBody(
+                Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
 }
 
 }  // namespace blink

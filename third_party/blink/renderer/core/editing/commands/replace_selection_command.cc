@@ -292,9 +292,6 @@ ReplacementFragment::ReplacementFragment(Document* document,
 }
 
 void ReplacementFragment::UpdateFragmentForTextArea() {
-  if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    return;
-  }
   DocumentFragment* new_fragment = nullptr;
   Node* next = nullptr;
   for (Node* node = fragment_->firstChild(); node; node = next) {
