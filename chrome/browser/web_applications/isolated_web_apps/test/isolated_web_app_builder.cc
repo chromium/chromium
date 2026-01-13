@@ -19,6 +19,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -317,7 +319,7 @@ ManifestBuilder& ManifestBuilder::SetLaunchHandlerClientMode(
 }
 
 ManifestBuilder& ManifestBuilder::SetDisplayModeOverride(
-    std::vector<blink::mojom::DisplayMode> display_mode_override) {
+    std::vector<web_app::DisplayOverride> display_mode_override) {
   display_mode_override_ = std::move(display_mode_override);
   return *this;
 }
@@ -395,7 +397,7 @@ std::string ManifestBuilder::ToJson() const {
                   .Set("display", blink::DisplayModeToString(display_mode_))
                   .Set("display_override",
                        base::ToValueList(display_mode_override_,
-                                         &blink::DisplayModeToString));
+                                         &DisplayOverride::ToDebugValue));
   if (update_manifest_url_) {
     json.Set("update_manifest_url", update_manifest_url_->spec());
   }
@@ -494,9 +496,16 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     manifest->update_manifest_url = update_manifest_url_;
   }
   manifest->display = display_mode_;
-  for (const auto& display_mode : display_mode_override_) {
+  for (const auto& item : display_mode_override_) {
+    if (!item.url_patterns().empty()) {
+      CHECK_EQ(item.display_mode(), blink::mojom::DisplayMode::kBorderless)
+          << "Only the 'unframed' display override can have URL patterns.";
+    }
     manifest->display_override.push_back(
-        blink::Manifest::DisplayOverride::Create(display_mode));
+        item.display_mode() == blink::mojom::DisplayMode::kBorderless
+            ? blink::Manifest::DisplayOverride::CreateUnframed(
+                  item.url_patterns())
+            : blink::Manifest::DisplayOverride::Create(item.display_mode()));
   }
   if (launch_handler_client_mode_) {
     manifest->launch_handler =

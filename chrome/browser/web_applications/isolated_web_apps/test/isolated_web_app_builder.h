@@ -24,6 +24,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
@@ -116,7 +117,7 @@ class ManifestBuilder {
   // blocked, it falls back to the mode set through SetDisplayMode; see:
   // https://github.com/WICG/display-override/blob/main/explainer.md#part-1-display_override
   ManifestBuilder& SetDisplayModeOverride(
-      std::vector<blink::mojom::DisplayMode> display_mode_override);
+      std::vector<web_app::DisplayOverride> display_mode_override);
   ManifestBuilder& AddIcon(std::string_view resource_path,
                            gfx::Size size,
                            std::string_view content_type);
@@ -151,7 +152,7 @@ class ManifestBuilder {
   std::optional<GURL> update_manifest_url_;
   blink::mojom::DisplayMode display_mode_ =
       blink::mojom::DisplayMode::kStandalone;
-  std::vector<blink::mojom::DisplayMode> display_mode_override_;
+  std::vector<web_app::DisplayOverride> display_mode_override_;
   std::optional<ClientMode> launch_handler_client_mode_;
   std::vector<IconMetadata> icons_;
   std::map<network::mojom::PermissionsPolicyFeature, PermissionsPolicy>

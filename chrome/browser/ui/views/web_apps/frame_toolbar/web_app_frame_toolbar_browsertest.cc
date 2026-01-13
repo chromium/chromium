@@ -106,6 +106,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/widget/constants.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
@@ -722,8 +723,8 @@ class BorderlessIsolatedWebAppBrowserTest
         uses_borderless
             ? web_app::IsolatedWebAppBuilder(
                   web_app::ManifestBuilder()
-                      .SetDisplayModeOverride(
-                          {blink::mojom::DisplayMode::kBorderless})
+                      .SetDisplayModeOverride({web_app::DisplayOverride::Create(
+                          blink::mojom::DisplayMode::kBorderless)})
                       .AddPermissionsPolicy(
                           network::mojom::PermissionsPolicyFeature::
                               kWindowManagement,

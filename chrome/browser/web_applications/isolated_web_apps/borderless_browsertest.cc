@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -76,8 +77,8 @@ IsolatedWebAppBuilder CreateBorderlessIwaBuilder() {
   return IsolatedWebAppBuilder(
              ManifestBuilder()
                  .SetDisplayMode(blink::mojom::DisplayMode::kStandalone)
-                 .SetDisplayModeOverride(
-                     {blink::mojom::DisplayMode::kBorderless})
+                 .SetDisplayModeOverride({web_app::DisplayOverride::Create(
+                     blink::mojom::DisplayMode::kBorderless)})
                  .AddBorderlessUrlPattern(
                      UrlPatternForPath(kBorderlessPagePath))
                  .AddPermissionsPolicy(
