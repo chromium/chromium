@@ -283,11 +283,6 @@ public class StartupMetricsTracker {
         return ".WebApk";
     }
 
-    private void recordExperimentalHistogram(String name, long ms) {
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
-    }
-
     private void recordBinderMetricsCold(String variant) {
         BinderCallsListener binderListener = BinderCallsListener.getInstance();
         if (!binderListener.isInstalled()) {
@@ -309,7 +304,6 @@ public class StartupMetricsTracker {
                             + activityTypeToSuffix(mHistogramSuffix),
                     firstCommitMs);
             if (mHistogramSuffix == ActivityType.TABBED) {
-                recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
                 recordFirstSafeBrowsingResponseTime();
                 recordTimeToFirstVisibleContent(firstCommitMs);
             }
@@ -319,7 +313,6 @@ public class StartupMetricsTracker {
     private void recordFcpMetrics(long firstFcpMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
             recordTimeToStartupFcpOrPaintPreview(firstFcpMs);
