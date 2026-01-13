@@ -202,7 +202,7 @@ public class AutoplayMutedNotificationTest {
         DOMUtils.pauseMedia(tab.getWebContents(), VIDEO_ID);
 
         // Restart the video with a gesture: no longer "muted autoplay".
-        DOMUtils.clickNode(tab.getWebContents(), PLAY_BUTTON_ID);
+        DOMUtils.clickNodeWithJavaScript(tab.getWebContents(), PLAY_BUTTON_ID);
         DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
 
         // Audio focus was not taken and no notification is visible.
@@ -231,7 +231,7 @@ public class AutoplayMutedNotificationTest {
         Thread.sleep(AUDIO_FOCUS_CHANGE_TIMEOUT);
 
         // Restart the video with a gesture: no longer "muted autoplay".
-        DOMUtils.clickNode(tab.getWebContents(), UNMUTE_BUTTON_ID);
+        DOMUtils.clickNodeWithJavaScript(tab.getWebContents(), UNMUTE_BUTTON_ID);
         Assert.assertFalse(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
 
         Thread.sleep(AUDIO_FOCUS_CHANGE_TIMEOUT);
