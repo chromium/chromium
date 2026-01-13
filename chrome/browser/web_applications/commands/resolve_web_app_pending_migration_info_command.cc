@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/to_value_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
@@ -66,37 +65,29 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     for (const WebApp& app : lock_->registrar().GetAppsIncludingStubs()) {
       webapps::ManifestId manifest_id = app.manifest_id();
-      std::vector<proto::PendingMigrationInfo> new_infos;
+      std::optional<proto::PendingMigrationInfo> new_info;
       auto it = pending_migrations.find(manifest_id);
-      if (it != pending_migrations.end()) {
-        new_infos = std::move(it->second);
+      if (it != pending_migrations.end() && !it->second.empty()) {
+        std::vector<proto::PendingMigrationInfo>& infos = it->second;
+        // If there are multiple possible migration targets for one app, we just
+        // pick an arbitrary one.
+        new_info = std::move(infos[0]);
       }
 
-      // Sort to ensure deterministic comparison and storage.
-      auto sorter = [](const proto::PendingMigrationInfo& a,
-                       const proto::PendingMigrationInfo& b) {
-        return a.manifest_id() < b.manifest_id();
-      };
-      std::sort(new_infos.begin(), new_infos.end(), sorter);
-
-      std::vector<proto::PendingMigrationInfo> current_infos =
+      std::optional<proto::PendingMigrationInfo> current_info =
           app.pending_migration_info();
-      std::sort(current_infos.begin(), current_infos.end(), sorter);
 
-      if (new_infos != current_infos) {
+      if (new_info != current_info) {
         debug_updates->Set(
             app.app_id(),
             base::Value::Dict()
-                .Set("old", base::ToValueList(app.pending_migration_info(),
-                                              [](const auto& info) {
-                                                return proto::ToValue(info);
-                                              }))
-                .Set("new", base::ToValueList(new_infos, [](const auto& info) {
-                       return proto::ToValue(info);
-                     })));
+                .Set("old", current_info ? proto::ToValue(*current_info)
+                                         : base::Value())
+                .Set("new",
+                     new_info ? proto::ToValue(*new_info) : base::Value()));
 
         WebApp* mutable_app = update->UpdateApp(app.app_id());
-        mutable_app->SetPendingMigrationInfo(std::move(new_infos));
+        mutable_app->SetPendingMigrationInfo(std::move(new_info));
         apps_to_notify.push_back(app.app_id());
       }
     }
@@ -108,7 +99,7 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
     // but good to check.
     if (app) {
       lock_->registrar().NotifyWebAppPendingMigrationInfoChanged(
-          app_id, !app->pending_migration_info().empty(),
+          app_id, app->pending_migration_info().has_value(),
           base::PassKey<ResolveWebAppPendingMigrationInfoCommand>());
     }
   }

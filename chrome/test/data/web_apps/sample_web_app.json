@@ -263,10 +263,10 @@
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "https://example.com/scope1234/new_note1308772041",
    "parent_app_id": null,
-   "pending_migration_info": [ {
+   "pending_migration_info": {
       "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
-      "manifest_id": "https://example.com/manifest_id_2892618850"
-   } ],
+      "manifest_id": "https://example.com/manifest_id_1830320160"
+   },
    "pending_update_info": {
       "downloaded_manifest_icons": [ {
          "icon_sizes": [ 512 ],

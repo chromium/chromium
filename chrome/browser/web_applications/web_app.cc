@@ -920,9 +920,9 @@ void WebApp::SetValidatedMigrationSources(
 }
 
 void WebApp::SetPendingMigrationInfo(
-    std::vector<proto::PendingMigrationInfo> info) {
-  for (const auto& entry : info) {
-    GURL manifest_id(entry.manifest_id());
+    std::optional<proto::PendingMigrationInfo> info) {
+  if (info.has_value()) {
+    GURL manifest_id(info->manifest_id());
     CHECK(manifest_id.is_valid());
     CHECK(!url::Origin::Create(manifest_id).opaque());
   }
@@ -1346,11 +1346,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
                              [](const proto::WebAppMigrationSource& source) {
                                return proto::ToValue(source);
                              }));
-  root.Set("pending_migration_info",
-           base::ToValueList(pending_migration_info_,
-                             [](const proto::PendingMigrationInfo& info) {
-                               return proto::ToValue(info);
-                             }));
+  proto::MaybeToValue(pending_migration_info_, "pending_migration_info", root);
 
   base::Value::Dict stored_trusted_icon_sizes_json;
   for (IconPurpose purpose : kIconPurposes) {

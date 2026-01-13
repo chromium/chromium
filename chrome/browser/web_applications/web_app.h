@@ -575,7 +575,7 @@ class WebApp {
       const {
     return validated_migration_sources_;
   }
-  const std::vector<proto::PendingMigrationInfo>& pending_migration_info()
+  const std::optional<proto::PendingMigrationInfo>& pending_migration_info()
       const {
     return pending_migration_info_;
   }
@@ -584,7 +584,7 @@ class WebApp {
       std::vector<proto::WebAppMigrationSource> sources);
   void SetValidatedMigrationSources(
       std::vector<proto::WebAppMigrationSource> sources);
-  void SetPendingMigrationInfo(std::vector<proto::PendingMigrationInfo> info);
+  void SetPendingMigrationInfo(std::optional<proto::PendingMigrationInfo> info);
 
   void SetInstalledBy(InstalledByPassKey,
                       std::deque<AppInstalledBy> installed_by);
@@ -721,7 +721,7 @@ class WebApp {
 
   std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources_;
   std::vector<proto::WebAppMigrationSource> validated_migration_sources_;
-  std::vector<proto::PendingMigrationInfo> pending_migration_info_;
+  std::optional<proto::PendingMigrationInfo> pending_migration_info_;
   // LINT.ThenChange(//chrome/browser/web_applications/proto/web_app.proto)
 
   // New fields must be added to:

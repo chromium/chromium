@@ -570,10 +570,9 @@ message WebApp {
 
   // List of apps that this app can migrate to. This is populated by checking
   // the validated_migration_sources of other installed apps.
-  repeated PendingMigrationInfo pending_migration_info = 81;
+  optional PendingMigrationInfo pending_migration_info = 81;
 
   // A list of display mode overrides specified in app manifest.
   repeated DisplayOverrideItem display_overrides = 82;
-
   // LINT.ThenChange(//chrome/browser/web_applications/web_app.h)
 }

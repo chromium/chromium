@@ -1554,17 +1554,16 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   }
   web_app->SetValidatedMigrationSources(std::move(validated_migration_sources));
 
-  std::vector<proto::PendingMigrationInfo> pending_migration_info;
-  for (const auto& info_proto : proto.pending_migration_info()) {
+  if (proto.has_pending_migration_info()) {
+    const auto& info_proto = proto.pending_migration_info();
     if (!info_proto.has_manifest_id() || !info_proto.has_behavior() ||
         url::Origin::Create(GURL(info_proto.manifest_id())).opaque()) {
       RecordProtoParseResult(ProtoParseResult::kInvalidPendingMigrationInfo);
       DLOG(ERROR) << "WebApp proto PendingMigrationInfo parse error";
       return nullptr;
     }
-    pending_migration_info.push_back(info_proto);
+    web_app->SetPendingMigrationInfo(info_proto);
   }
-  web_app->SetPendingMigrationInfo(std::move(pending_migration_info));
 
   RecordProtoParseResult(ProtoParseResult::kSuccess);
   return web_app;
@@ -2133,8 +2132,9 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     *local_data->add_validated_migration_sources() = source;
   }
 
-  for (const auto& info : web_app.pending_migration_info()) {
-    *local_data->add_pending_migration_info() = info;
+  if (web_app.pending_migration_info().has_value()) {
+    *local_data->mutable_pending_migration_info() =
+        *web_app.pending_migration_info();
   }
 
   return local_data;

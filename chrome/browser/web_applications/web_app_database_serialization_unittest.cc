@@ -1288,7 +1288,7 @@ TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_Valid) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
-  auto* info = proto.add_pending_migration_info();
+  auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("https://example.com/app");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
@@ -1299,7 +1299,7 @@ TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_MissingManifestId) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
-  auto* info = proto.add_pending_migration_info();
+  auto* info = proto.mutable_pending_migration_info();
   // info->set_manifest_id("https://example.com/app");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
@@ -1310,7 +1310,7 @@ TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_MissingBehavior) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
-  auto* info = proto.add_pending_migration_info();
+  auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("https://example.com/app");
   // info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
@@ -1321,7 +1321,7 @@ TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_InvalidManifestId) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
-  auto* info = proto.add_pending_migration_info();
+  auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("invalid-url");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
@@ -1332,7 +1332,7 @@ TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_OpaqueManifestIdOrigin) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
-  auto* info = proto.add_pending_migration_info();
+  auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("data:text/html,Hello");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 

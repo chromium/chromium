@@ -77,11 +77,11 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
 
   const WebApp* app_source =
       provider()->registrar_unsafe().GetAppById(app_id_source);
-  ASSERT_EQ(1u, app_source->pending_migration_info().size());
+  ASSERT_TRUE(app_source->pending_migration_info().has_value());
   EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(GURL(kTargetAppUrl)).spec(),
-            app_source->pending_migration_info()[0].manifest_id());
+            app_source->pending_migration_info()->manifest_id());
   EXPECT_EQ(proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE,
-            app_source->pending_migration_info()[0].behavior());
+            app_source->pending_migration_info()->behavior());
 }
 
 TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, CleanupOldMigration) {
@@ -93,20 +93,17 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, CleanupOldMigration) {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
     WebApp* app_source = update->UpdateApp(app_id_source);
-    std::vector<proto::PendingMigrationInfo> infos;
     proto::PendingMigrationInfo info;
-    info.set_manifest_id(
-        GenerateManifestIdFromStartUrlOnly(GURL(kTargetAppUrl)).spec());
+    info.set_manifest_id("https://old-target.com/");
     info.set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-    infos.push_back(info);
-    app_source->SetPendingMigrationInfo(infos);
+    app_source->SetPendingMigrationInfo(info);
   }
 
   RunCommand();
 
   const WebApp* app_source =
       provider()->registrar_unsafe().GetAppById(app_id_source);
-  EXPECT_TRUE(app_source->pending_migration_info().empty());
+  EXPECT_FALSE(app_source->pending_migration_info().has_value());
 }
 
 }  // namespace web_app

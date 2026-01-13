@@ -716,20 +716,18 @@ std::vector<proto::WebAppMigrationSource> CreateRandomMigrationSources(
   return sources;
 }
 
-std::vector<proto::PendingMigrationInfo> CreateRandomPendingMigrationInfos(
+std::optional<proto::PendingMigrationInfo> CreateRandomPendingMigrationInfos(
     RandomHelper& random) {
-  std::vector<proto::PendingMigrationInfo> infos;
-  int num_infos = random.next_uint(3);
-  for (int i = 0; i < num_infos; ++i) {
-    proto::PendingMigrationInfo info;
-    info.set_manifest_id("https://example.com/manifest_id_" +
-                         base::NumberToString(random.next_uint()));
-    info.set_behavior(random.next_bool()
-                          ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
-                          : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-    infos.push_back(std::move(info));
+  if (!random.next_bool()) {
+    return std::nullopt;
   }
-  return infos;
+  proto::PendingMigrationInfo info;
+  info.set_manifest_id("https://example.com/manifest_id_" +
+                       base::NumberToString(random.next_uint()));
+  info.set_behavior(random.next_bool()
+                        ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
+                        : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  return info;
 }
 
 }  // namespace
