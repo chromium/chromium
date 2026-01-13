@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -54,7 +54,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m145"
               },
               "run_tests_serially": true
             }
@@ -63,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -83,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m145"
               },
               "run_tests_serially": true
             }
@@ -94,19 +94,19 @@
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m145"
         },
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/dawn-win10-x64-deps-rel/targets"

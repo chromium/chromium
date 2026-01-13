@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac15-x64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -55,7 +55,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m145"
               }
             }
           }
@@ -65,7 +65,7 @@
         {
           "bucket": "ci",
           "builder": "mac15-x64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -75,10 +75,6 @@
         },
         {
           "builder": "mac15-x64-rel-tests",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_compile_rel_ng",
           "group": "tryserver.chromium.mac"
         }
       ],
@@ -95,10 +91,10 @@
   },
   "builder_group": "chromium.mac",
   "gardener_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

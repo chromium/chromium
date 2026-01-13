@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-dbg",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "chromeos-amd64-generic-dbg",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/chromeos-amd64-generic-dbg/targets"

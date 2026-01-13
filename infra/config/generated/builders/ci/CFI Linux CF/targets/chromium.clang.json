@@ -1,7 +1,0 @@
-{
-  "CFI Linux CF": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  }
-}

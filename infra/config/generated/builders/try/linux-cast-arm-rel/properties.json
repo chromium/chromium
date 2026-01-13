@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-cast-arm-rel",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.linux",
@@ -39,7 +39,7 @@
         {
           "bucket": "ci",
           "builder": "linux-cast-arm-rel",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/linux-cast-arm-rel/targets"

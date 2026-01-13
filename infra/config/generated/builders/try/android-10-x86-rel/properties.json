@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-10-x86-rel",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -44,7 +44,7 @@
         {
           "bucket": "ci",
           "builder": "android-10-x86-rel",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/android-10-x86-rel/targets"

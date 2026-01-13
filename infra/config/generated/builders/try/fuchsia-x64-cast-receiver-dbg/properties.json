@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-x64-cast-receiver-dbg",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.fuchsia",
@@ -38,7 +38,7 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-x64-cast-receiver-dbg",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/fuchsia-x64-cast-receiver-dbg/targets"

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-desktop-arm64-compile-dbg",
-              "project": "chromium"
+              "project": "chromium-m145"
             },
             "builder_spec": {
               "builder_group": "chromium.android.desktop",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "android-desktop-arm64-compile-dbg",
-          "project": "chromium"
+          "project": "chromium-m145"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -75,5 +75,11 @@
     ]
   },
   "builder_group": "chromium.android.desktop",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chrome_browser_release"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }
