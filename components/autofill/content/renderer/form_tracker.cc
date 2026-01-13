@@ -308,9 +308,9 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
     return;
   }
   if (blink::WebFormElement form_element = element.GetOwningFormForAutofill()) {
-    UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
+    UpdateLastInteractedElement(form_element);
   } else {
-    UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
+    UpdateLastInteractedElement(element);
   }
   submission_triggering_events_.tracked_element_autofilled = true;
   TrackElement(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
@@ -332,8 +332,11 @@ void FormTracker::TrackAutofilledElement(
             features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
       TrackAutofilledElement(
           form_util::GetFormControlByRendererId(filled_field_id));
+    } else if (WebFormElement form =
+                   form_util::GetFormByRendererId(filled_form_id)) {
+      UpdateLastInteractedElement(form);
     } else {
-      UpdateLastInteractedElement(filled_form_id);
+      NOTREACHED();
     }
   } else {
     for (const auto& [filled_field_id, filled_form_id] :
@@ -345,8 +348,7 @@ void FormTracker::TrackAutofilledElement(
               features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
         TrackAutofilledElement(control_element);
       } else {
-        UpdateLastInteractedElement(
-            form_util::GetFieldRendererId(control_element));
+        UpdateLastInteractedElement(control_element);
       }
     }
   }
@@ -400,28 +402,22 @@ void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
   if (!form_util::IsOwnedByFrame(element, unsafe_render_frame())) {
     return;
   }
-  FormRendererId form_id =
-      form_util::GetFormRendererId(element.GetOwningFormForAutofill());
-
-  // Since this function can be called asynchronously, it can be the case that
-  // the owning form element was disconnected from the DOM, which is why we make
-  // sure it isn't the case by performing the FormElement -> DomNodeId ->
-  // FormElement conversion.
-  // TODO(crbug.com/376628389): Revisit after removing the underlying
-  // asynchronicity.
-  if (form_util::GetFormByRendererId(form_id)) {
-    UpdateLastInteractedElement(form_id);
+  WebFormElement form = element.GetOwningFormForAutofill();
+  if (form) {
+    UpdateLastInteractedElement(form);
   } else {
-    UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
+    UpdateLastInteractedElement(element);
   }
   switch (change_source) {
     case SaveFormReason::kTextFieldChanged:
       autofill_agent_->OnTextFieldValueChanged(
-          element, SynchronousFormCache(form_id, provisionally_saved_form()));
+          element, SynchronousFormCache(form_util::GetFormRendererId(form),
+                                        provisionally_saved_form()));
       break;
     case SaveFormReason::kSelectChanged:
       autofill_agent_->OnSelectControlSelectionChanged(
-          element, SynchronousFormCache(form_id, provisionally_saved_form()));
+          element, SynchronousFormCache(form_util::GetFormRendererId(form),
+                                        provisionally_saved_form()));
       break;
   }
 }
@@ -487,7 +483,7 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   CHECK(form);
   // TODO(crbug.com/40281981): Figure out if this is still needed, and document
   // the reason, otherwise remove.
-  UpdateLastInteractedElement(form_util::GetFormRendererId(form));
+  UpdateLastInteractedElement(form);
   // TODO(crbug.com/40281981): Figure out if this is still needed, and
   // document the reason, otherwise remove.
   password_autofill_agent_->InformBrowserAboutUserInput(
@@ -742,30 +738,27 @@ std::optional<FormData> FormTracker::GetSubmittedForm(
 }
 
 void FormTracker::UpdateLastInteractedElement(
-    std::variant<FormRendererId, FieldRendererId> element_id) {
+    std::variant<WebFormElement, WebFormControlElement> element) {
   ResetLastInteractedElements();
 
-  // `document` is the WebDocument of `element_id`'s element. It is not
+  // `document` is the WebDocument of `element`'s element. It is not
   // necessarily the same as the current frame's document.
   //
-  // `form_element` is null if `element_id` is a FieldRendererId.
+  // `form_element` is null if `element` is a FieldRendererId.
   auto [document, form_element] = std::visit(
       absl::Overload{
-          [this](FormRendererId form_id) {
-            CHECK(form_id);
-            WebFormElement form = form_util::GetFormByRendererId(form_id);
+          [this](WebFormElement form) {
+            CHECK(form);
             last_interacted_.form = FormRef(form);
             return std::pair(form.GetDocument(), form);
           },
-          [this](FieldRendererId field_id) {
-            CHECK(field_id);
-            WebFormControlElement form_control =
-                form_util::GetFormControlByRendererId(field_id);
+          [this](WebFormControlElement form_control) {
+            CHECK(form_control);
             last_interacted_.formless_element = FieldRef(form_control);
             return std::pair(form_control.GetDocument(), WebFormElement());
           },
       },
-      element_id);
+      element);
   CHECK(document);
 
   // We use the element's `document`, not the current frame's document, because

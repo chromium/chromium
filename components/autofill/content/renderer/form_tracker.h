@@ -121,7 +121,8 @@ class FormTracker : public content::RenderFrameObserver,
   // A form_id means that the user last interacted with a FormElement.
   // A field_id means that the user last interacted with a formless control.
   void UpdateLastInteractedElement(
-      std::variant<FormRendererId, FieldRendererId> element_id);
+      std::variant<blink::WebFormElement, blink::WebFormControlElement>
+          element);
   void ResetLastInteractedElements();
 
   // Set whether a user gesture is required to accept text changes. If
