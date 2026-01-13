@@ -26,6 +26,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -34,6 +35,7 @@
 #include "media/media_buildflags.h"
 #include "skia/ext/cicp.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_decoder_factory.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -84,7 +86,8 @@ cc::ImageType FileExtensionToImageType(String image_extension) {
   }
 #endif
 #if BUILDFLAG(ENABLE_JXL_DECODER)
-  if (image_extension == "jxl") {
+  if (base::FeatureList::IsEnabled(features::kJXLImageFormat) &&
+      image_extension == "jxl") {
     return cc::ImageType::kJXL;
   }
 #endif
@@ -218,7 +221,8 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
   }
 #endif
 #if BUILDFLAG(ENABLE_JXL_DECODER)
-  if (JXLImageDecoder::MatchesJXLSignature(fast_reader)) {
+  if (base::FeatureList::IsEnabled(features::kJXLImageFormat) &&
+      JXLImageDecoder::MatchesJXLSignature(fast_reader)) {
     return "image/jxl";
   }
 #endif
@@ -334,7 +338,8 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
         max_decoded_bytes, animation_option);
 #endif
 #if BUILDFLAG(ENABLE_JXL_DECODER)
-  } else if (mime_type == "image/jxl") {
+  } else if (mime_type == "image/jxl" &&
+             base::FeatureList::IsEnabled(features::kJXLImageFormat)) {
     decoder = std::make_unique<JXLImageDecoder>(
         alpha_option, high_bit_depth_decoding_option, color_behavior, aux_image,
         max_decoded_bytes, animation_option);
