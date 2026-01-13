@@ -390,8 +390,6 @@ cr-searchbox-icon,
   --cr-searchbox-voice-lens-size: 36px;
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
   --text-input-inline-start-spacing: 16px;
-  height: auto;
-  min-height: var(--cr-searchbox-height);
 }
 
 cr-searchbox-dropdown::part(dropdown-content) {
@@ -521,8 +519,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-searchbox-dropdown-padding-top: 60px;
   --cr-searchbox-height: 108px;
   --cr-searchbox-input-padding-top_: 18px;
-  height: auto;
-  min-height: var(--cr-searchbox-height);
 }
 
 @media (forced-colors: active) {
