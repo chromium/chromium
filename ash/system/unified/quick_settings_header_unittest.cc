@@ -63,6 +63,7 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
     widget_.reset();
     controller_.reset();
     model_.reset();
+    test_shell_delegate_ = nullptr;
     NoSessionAshTestBase::TearDown();
   }
 
@@ -95,7 +96,7 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
     return header_->GetSupervisedButtonLabelForTest();
   }
 
-  raw_ptr<TestShellDelegate, DanglingUntriaged> test_shell_delegate_ = nullptr;
+  raw_ptr<TestShellDelegate> test_shell_delegate_ = nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
