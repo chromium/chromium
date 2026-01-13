@@ -330,7 +330,8 @@ void AlertIndicatorButton::UpdateSpinnerTheme() {
   if (!color_provider) {
     return;
   }
-  if (alert_state_.value() != tabs::TabAlert::kActorAccessing) {
+  if (!alert_state_.has_value() ||
+      alert_state_.value() != tabs::TabAlert::kActorAccessing) {
     return;
   }
 
