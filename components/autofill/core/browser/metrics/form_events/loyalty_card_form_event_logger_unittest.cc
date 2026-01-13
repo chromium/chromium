@@ -667,7 +667,8 @@ TEST_P(AffiliationTypeKeyMetricsEditTest, Affiliated) {
       /*program_name=*/"CVS Extra",
       /*program_logo=*/GURL(""),
       /*loyalty_card_number=*/"987654321987654321",
-      {GURL("https://affiliated.com")});
+      /*merchant_domains=*/{GURL("https://affiliated.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   test_api(valuables_data_manager()).SetLoyaltyCards({card1});
 
   FillAndSubmitForm(/*selected_suggestion=*/0);
@@ -703,7 +704,8 @@ TEST_P(AffiliationTypeKeyMetricsEditTest, NonAffiliated) {
       /*program_name=*/"CVS Extra",
       /*program_logo=*/GURL(""),
       /*loyalty_card_number=*/"987654321987654321",
-      {GURL("https://affiliated.com")});
+      /*merchant_domains=*/{GURL("https://affiliated.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   test_api(valuables_data_manager()).SetLoyaltyCards({card1});
 
   FillAndSubmitForm(/*selected_suggestion=*/0);
@@ -738,13 +740,17 @@ TEST_P(AffiliationTypeKeyMetricsEditTest, MixedAvailabilityAffiliatedSelected) {
       /*merchant_name=*/"CVS Pharmacy",
       /*program_name=*/"CVS Extra",
       /*program_logo=*/GURL(""),
-      /*loyalty_card_number=*/"98765432198", {GURL("https://affiliated.com")});
+      /*loyalty_card_number=*/"98765432198",
+      /*merchant_domains=*/{GURL("https://affiliated.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   const LoyaltyCard card2 = LoyaltyCard(
       /*loyalty_card_id=*/ValuableId("2"),
       /*merchant_name=*/"Walgreens",
       /*program_name=*/"CustomerCard",
       /*program_logo=*/GURL(""),
-      /*loyalty_card_number=*/"998766823", {GURL("https://example.com")});
+      /*loyalty_card_number=*/"998766823",
+      /*merchant_domains=*/{GURL("https://example.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   test_api(valuables_data_manager()).SetLoyaltyCards({card1, card2});
 
   // Selects the affiliated card.
@@ -783,13 +789,16 @@ TEST_P(AffiliationTypeKeyMetricsEditTest,
       /*program_name=*/"CVS Extra",
       /*program_logo=*/GURL(""),
       /*loyalty_card_number=*/"987654321987654321",
-      {GURL("https://affiliated.com")});
+      /*merchant_domains=*/{GURL("https://affiliated.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   const LoyaltyCard card2 = LoyaltyCard(
       /*loyalty_card_id=*/ValuableId("2"),
       /*merchant_name=*/"Walgreens",
       /*program_name=*/"CustomerCard",
       /*program_logo=*/GURL(""),
-      /*loyalty_card_number=*/"998766823", {GURL("https://example.com")});
+      /*loyalty_card_number=*/"998766823",
+      /*merchant_domains=*/{GURL("https://example.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   test_api(valuables_data_manager()).SetLoyaltyCards({card1, card2});
 
   // Selects the non-affiliated card.

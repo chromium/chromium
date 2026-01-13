@@ -91,22 +91,28 @@ class ValuableSuggestionGeneratorTest : public testing::Test {
             /*program_name=*/"CVS Extra",
             /*program_logo=*/GURL("https://empty.url.com"),
             /*loyalty_card_number=*/"987654321987654321",
+            /*merchant_domains=*/
             {GURL("https://domain1.example"),
-             GURL("https://common-domain.example")}),
+             GURL("https://common-domain.example")},
+            /*use_date=*/{}, /*use_count=*/0),
         LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
                     /*merchant_name=*/"Walgreens",
                     /*program_name=*/"CustomerCard",
                     /*program_logo=*/GURL("https://empty.url.com"),
                     /*loyalty_card_number=*/"998766823",
+                    /*merchant_domains=*/
                     {GURL("https://domain2.example"),
-                     GURL("https://common-domain.example")}),
+                     GURL("https://common-domain.example")},
+                    /*use_date=*/{}, /*use_count=*/0),
         LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
                     /*merchant_name=*/"Ticket Maester",
                     /*program_name=*/"TourLoyal",
                     /*program_logo=*/GURL("https://empty.url.com"),
                     /*loyalty_card_number=*/"37262999281",
+                    /*merchant_domains=*/
                     {GURL("https://domain2.example"),
-                     GURL("https://common-domain.example")})};
+                     GURL("https://common-domain.example")},
+                    /*use_date=*/{}, /*use_count=*/0)};
     test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
     ON_CALL(autofill_client_, GetValuablesDataManager())
         .WillByDefault(testing::Return(&valuables_data_manager_));
@@ -269,7 +275,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
           /*program_name=*/"CVS Extra",
           /*program_logo=*/program_logo,
           /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example")}));
+          {GURL("https://domain1.example")},
+          /*use_date=*/{}, /*use_count=*/0));
   valuables_data_manager().CacheImage(program_logo, fake_image);
   test_api(valuables_data_manager()).NotifyObservers();
   test_autofill_client().set_last_committed_primary_main_frame_url(
@@ -299,21 +306,24 @@ TEST_F(ValuableSuggestionGeneratorTest,
           /*program_logo=*/GURL("https://empty.url.com"),
           /*loyalty_card_number=*/"987654321987654321",
           {GURL("https://domain1.example"),
-           GURL("https://common-matching-domain.example")}),
+           GURL("https://common-matching-domain.example")},
+          /*use_date=*/{}, /*use_count=*/0),
       LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
                   /*merchant_name=*/"Ticket Maester",
                   /*program_name=*/"TourLoyal",
                   /*program_logo=*/GURL("https://empty.url.com"),
                   /*loyalty_card_number=*/"37262999281",
                   {GURL("https://domain2.example"),
-                   GURL("https://common-matching-domain.example")}),
+                   GURL("https://common-matching-domain.example")},
+                  /*use_date=*/{}, /*use_count=*/0),
       LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
                   /*merchant_name=*/"Walgreens",
                   /*program_name=*/"CustomerCard",
                   /*program_logo=*/GURL("https://empty.url.com"),
                   /*loyalty_card_number=*/"998766823",
                   {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
+                   GURL("https://common-domain.example")},
+                  /*use_date=*/{}, /*use_count=*/0)};
   test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
   std::vector<Suggestion> email_suggestions = {
       Suggestion(u"test-email1@domain1.example", SuggestionType::kAddressEntry),
@@ -416,21 +426,24 @@ TEST_F(ValuableSuggestionGeneratorTest,
           /*program_logo=*/GURL("https://empty.url.com"),
           /*loyalty_card_number=*/"987654321987654321",
           {GURL("https://domain1.example"),
-           GURL("https://common-matching-domain.example")}),
+           GURL("https://common-matching-domain.example")},
+          /*use_date=*/{}, /*use_count=*/0),
       LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
                   /*merchant_name=*/"Ticket Maester",
                   /*program_name=*/"TourLoyal",
                   /*program_logo=*/GURL("https://empty.url.com"),
                   /*loyalty_card_number=*/"37262999281",
                   {GURL("https://domain2.example"),
-                   GURL("https://common-matching-domain.example")}),
+                   GURL("https://common-matching-domain.example")},
+                  /*use_date=*/{}, /*use_count=*/0),
       LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
                   /*merchant_name=*/"Walgreens",
                   /*program_name=*/"CustomerCard",
                   /*program_logo=*/GURL("https://empty.url.com"),
                   /*loyalty_card_number=*/"998766823",
                   {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
+                   GURL("https://common-domain.example")},
+                  /*use_date=*/{}, /*use_count=*/0)};
   test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
 
   std::vector<Suggestion> email_suggestions = {
@@ -512,7 +525,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
           /*program_name=*/"CVS Extra",
           /*program_logo=*/GURL("https://empty.url.com"),
           /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example")}));
+          {GURL("https://domain1.example")},
+          /*use_date=*/{}, /*use_count=*/0));
 
   raw_ptr<const base::Feature> kIphFeature =
       &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature;
@@ -540,7 +554,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
           /*program_name=*/"CVS Extra",
           /*program_logo=*/GURL("https://empty.url.com"),
           /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example")}));
+          {GURL("https://domain1.example")},
+          /*use_date=*/{}, /*use_count=*/0));
 
   raw_ptr<const base::Feature> kIphFeature =
       &feature_engagement::kIPHAutofillAiValuablesFeature;

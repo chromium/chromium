@@ -413,7 +413,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* programName= */ "Loyalty program",
                     /* programLogo= */ new GURL("https://site.com/icon.png"),
                     /* loyaltyCardNumber= */ "1234",
-                    /* merchantDomains= */ Collections.emptyList());
+                    /* merchantDomains= */ Collections.emptyList(),
+                    /* useDate= */ 0,
+                    /* useCount= */ 0);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
                     /* issuerId= */ "affirm",

@@ -15,7 +15,8 @@ namespace autofill {
 LoyaltyCard TestLoyaltyCard(std::string_view id) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
                      "program_name", GURL("http://foobar.com/logo.png"),
-                     "80974934820245", {GURL("https://domain.example")});
+                     "80974934820245", {GURL("https://domain.example")},
+                     /*use_date=*/{}, /*use_count=*/0);
 }
 
 sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(

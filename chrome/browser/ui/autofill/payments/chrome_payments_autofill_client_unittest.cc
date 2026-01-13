@@ -675,14 +675,17 @@ TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillAffiliatedLoyaltyCard) {
       /*merchant_name=*/"Walgreens",
       /*program_name=*/"CustomerCard",
       /*program_logo=*/GURL(""),
-      /*loyalty_card_number=*/"998766823", {GURL("https://example.com")});
-  const LoyaltyCard affiliated_card_2 =
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("id_3"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL(""),
-                  /*loyalty_card_number=*/"37262999281",
-                  {GURL("https://affiliated.example.com")});
+      /*loyalty_card_number=*/"998766823",
+      /*merchant_domains=*/{GURL("https://example.com")},
+      /*use_date=*/{}, /*use_count=*/0);
+  const LoyaltyCard affiliated_card_2 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("id_3"),
+      /*merchant_name=*/"Ticket Maester",
+      /*program_name=*/"TourLoyal",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"37262999281",
+      /*merchant_domains=*/{GURL("https://affiliated.example.com")},
+      /*use_date=*/{}, /*use_count=*/0);
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://example.com"));
 

@@ -1540,6 +1540,7 @@ source_set("unit_tests") {
     "data_model/payments/payment_instrument_unittest.cc",
     "data_model/transliterator_unittest.cc",
     "data_model/usage_history_information_unittest.cc",
+    "data_model/valuables/loyalty_card_unittest.cc",
     "data_model/valuables/valuable_types_unittest.cc",
     "data_quality/addresses/address_normalization_manager_unittest.cc",
     "data_quality/addresses/address_normalizer_impl_unittest.cc",

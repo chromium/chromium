@@ -369,6 +369,22 @@ robolectric_library("payments_autofill_junit_tests") {
   ]
 }
 
+robolectric_library("main_autofill_junit_tests") {
+  resources_package = "org.chromium.components.autofill"
+
+  sources =
+      [ "javatests/src/org/chromium/components/autofill/LoyaltyCardTest.java" ]
+  deps = [
+    ":main_autofill_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//url:url_java",
+  ]
+}
+
 generate_jni("payments_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",

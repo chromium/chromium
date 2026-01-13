@@ -199,7 +199,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* programName= */ "Loyalty program",
                     /* programLogo= */ new GURL("https://site.com/icon.png"),
                     /* loyaltyCardNumber= */ "1234",
-                    /* merchantDomains= */ Collections.emptyList());
+                    /* merchantDomains= */ Collections.emptyList(),
+                    /* useDate= */ 0,
+                    /* useCount= */ 0);
     private static final LoyaltyCard DB_LOYALTY_CARD =
             new LoyaltyCard(
                     /* loyaltyCardId= */ "db",
@@ -207,7 +209,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* programName= */ "Loyalty program",
                     /* programLogo= */ new GURL("https://db.com/icon.png"),
                     /* loyaltyCardNumber= */ "4321",
-                    /* merchantDomains= */ Collections.emptyList());
+                    /* merchantDomains= */ Collections.emptyList(),
+                    /* useDate= */ 0,
+                    /* useCount= */ 0);
 
     private static final AutofillSuggestion VISA_SUGGESTION =
             createCreditCardSuggestion(

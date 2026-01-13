@@ -308,7 +308,8 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
 TEST_F(ValuableSyncBridgeTest, LoyaltyCardsWithNoProgramLogo) {
   const LoyaltyCard remote1 = LoyaltyCard(
       ValuableId(std::string("no_logo")), "merchant_name", "program_name",
-      GURL(), "card_number", {GURL("https://domain.example")});
+      GURL(), "card_number", {GURL("https://domain.example")},
+      /*use_date=*/{}, /*use_count=*/0);
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(mock_processor(), Delete).Times(0);

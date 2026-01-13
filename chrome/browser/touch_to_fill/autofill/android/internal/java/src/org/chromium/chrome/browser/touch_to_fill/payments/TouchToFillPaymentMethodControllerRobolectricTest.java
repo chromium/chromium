@@ -284,7 +284,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* programName= */ "Loyalty program",
                     /* programLogo= */ new GURL("https://site.com/icon.png"),
                     /* loyaltyCardNumber= */ "1234",
-                    /* merchantDomains= */ Collections.emptyList());
+                    /* merchantDomains= */ Collections.emptyList(),
+                    /* useDate= */ 0,
+                    /* useCount= */ 0);
 
     private static final LoyaltyCard LOYALTY_CARD_2 =
             new LoyaltyCard(
@@ -293,7 +295,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* programName= */ "Coffee pro",
                     /* programLogo= */ new GURL("https://coffee.com/logo.png"),
                     /* loyaltyCardNumber= */ "4321",
-                    /* merchantDomains= */ Collections.emptyList());
+                    /* merchantDomains= */ Collections.emptyList(),
+                    /* useDate= */ 0,
+                    /* useCount= */ 0);
 
     private static final AutofillSuggestion VISA_SUGGESTION =
             createCreditCardSuggestion(

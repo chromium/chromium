@@ -15,7 +15,9 @@ LoyaltyCard CreateLoyaltyCard() {
       /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
       /*merchant_name=*/"Deutsche Bahn", /*program_name=*/"BahnBonus",
       /*program_logo=*/GURL("https://empty.url.com"),
-      /*loyalty_card_number=*/"1234", {GURL("https://domain.example")});
+      /*loyalty_card_number=*/"1234",
+      /*merchant_domains=*/{GURL("https://domain.example")},
+      /*use_date=*/{}, /*use_count=*/0);
 }
 
 LoyaltyCard CreateLoyaltyCard2() {
@@ -23,7 +25,8 @@ LoyaltyCard CreateLoyaltyCard2() {
                      /*merchant_name=*/"Lidl", /*program_name=*/"CustomerCard",
                      /*program_logo=*/GURL("https://empty.url.com"),
                      /*loyalty_card_number=*/"4321",
-                     {GURL("https://domain.example")});
+                     /*merchant_domains=*/{GURL("https://domain.example")},
+                     /*use_date=*/{}, /*use_count=*/0);
 }
 
 }  // namespace autofill::test

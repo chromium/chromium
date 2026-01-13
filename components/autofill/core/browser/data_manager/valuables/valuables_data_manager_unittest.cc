@@ -108,19 +108,22 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCardsToSuggest) {
       /*merchant_name=*/"CVS Pharmacy",
       /*program_name=*/"CVS Extra",
       /*program_logo=*/GURL("https://empty.url.com"),
-      /*loyalty_card_number=*/"987654321987654321", {});
+      /*loyalty_card_number=*/"987654321987654321",
+      /*merchant_domains=*/{}, /*use_date=*/{}, /*use_count=*/0);
   const LoyaltyCard card2 = LoyaltyCard(
       /*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
       /*merchant_name=*/"Walgreens",
       /*program_name=*/"CustomerCard",
       /*program_logo=*/GURL("https://empty.url.com"),
-      /*loyalty_card_number=*/"998766823", {});
-  const LoyaltyCard card3 =
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"37262999281", {});
+      /*loyalty_card_number=*/"998766823",
+      /*merchant_domains=*/{}, /*use_date=*/{}, /*use_count=*/0);
+  const LoyaltyCard card3 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
+      /*merchant_name=*/"Ticket Maester",
+      /*program_name=*/"TourLoyal",
+      /*program_logo=*/GURL("https://empty.url.com"),
+      /*loyalty_card_number=*/"37262999281",
+      /*merchant_domains=*/{}, /*use_date=*/{}, /*use_count=*/0);
 
   valuables_table().SetLoyaltyCards({card1, card2, card3});
 

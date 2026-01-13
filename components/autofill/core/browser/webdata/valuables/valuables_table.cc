@@ -87,6 +87,12 @@ std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
                                                     sql::Statement& s) {
   ValuableId loyalty_card_id = ValuableId(s.ColumnString(0));
 
+  std::optional<ValuableMetadata> metadata =
+      GetValuableMetadataFromDb(db, loyalty_card_id);
+
+  const base::Time use_date = metadata ? metadata->use_date : base::Time();
+  const int64_t use_count = metadata ? metadata->use_count : 0;
+
   LoyaltyCard card(
       /*loyalty_card_id=*/loyalty_card_id,
       /*merchant_name=*/s.ColumnString(1),
@@ -94,12 +100,9 @@ std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
       /*program_logo=*/GURL(s.ColumnStringView(3)),
       /*loyalty_card_number=*/s.ColumnString(4),
       /*merchant_domains=*/
-      GetMerchantDomainsForLoyaltyCardId(db, loyalty_card_id));
-
-  if (std::optional<ValuableMetadata> valuable_metadata =
-          GetValuableMetadataFromDb(db, loyalty_card_id)) {
-    card.set_metadata(std::move(*valuable_metadata));
-  }
+      GetMerchantDomainsForLoyaltyCardId(db, loyalty_card_id),
+      /*use_date=*/use_date,
+      /*use_count=*/use_count);
 
   // Ignore invalid loyalty cards, for more information see
   // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,

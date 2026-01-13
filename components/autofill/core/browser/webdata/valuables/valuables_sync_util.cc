@@ -39,7 +39,8 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
       ValuableId(specifics.id()), specifics.loyalty_card().merchant_name(),
       specifics.loyalty_card().program_name(),
       GURL(specifics.loyalty_card().program_logo()),
-      specifics.loyalty_card().loyalty_card_number(), std::move(domains));
+      specifics.loyalty_card().loyalty_card_number(), std::move(domains),
+      /*use_date=*/{}, /*use_count=*/0);
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
