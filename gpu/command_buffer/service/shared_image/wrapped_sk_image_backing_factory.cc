@@ -27,9 +27,6 @@
 
 namespace gpu {
 namespace {
-// NOTE: WrappedSkImage cannot be used with raster-over-GLES2 as it doesn't
-// support GLES2 usage, and hence it doesn't support RASTER_OVER_GLES2_ONLY
-// usage.
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
