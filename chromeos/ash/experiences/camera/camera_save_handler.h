@@ -15,6 +15,10 @@
 #include "base/supports_user_data.h"
 #include "ui/gfx/image/image.h"
 
+namespace ash {
+class CameraSaveHandlerTest;
+}
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -118,6 +122,8 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
                   base::OnceCallback<void(bool)> callback);
 
  private:
+  friend class ash::CameraSaveHandlerTest;
+
   // Data to track upload progress per file.
   struct Upload {
     Upload(base::OnceCallback<void(bool)> done_callback, int64_t file_size);
@@ -151,7 +157,6 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
   // Creates, modifies or resets the progress notification based on current
   // upload progress.
   void UpdateProgressNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
-  // TODO(crbug.com/454152412): Add unit tests for cancel upload dialog.
   // Shows a dialog to confirm cancellation of ongoing uploads.
   void ShowCancelDialog();
   // Handles user action on the cancel upload confirmation dialog.
@@ -171,8 +176,6 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
   void OnUploadErrorRetake();
 
   std::unique_ptr<Delegate> delegate_;
-  // TODO(crbug.com/454152412) Add unit tests for progress notification and
-  // upload tracking.
   std::unique_ptr<CameraUploadNotification> progress_notification_;
   // Map from file base name to its upload tracking data.
   std::map<base::FilePath, std::unique_ptr<Upload>> uploads_

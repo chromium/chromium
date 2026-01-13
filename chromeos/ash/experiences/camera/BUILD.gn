@@ -44,3 +44,19 @@ source_set("camera_save_handler") {
     "//ui/views",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "camera_save_handler_unittest.cc" ]
+
+  deps = [
+    ":camera_save_handler",
+    "//ash:test_support",
+    "//base/test:test_support",
+    "//components/constrained_window",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/message_center",
+  ]
+}

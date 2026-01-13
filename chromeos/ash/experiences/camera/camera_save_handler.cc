@@ -262,8 +262,6 @@ void CameraSaveHandler::OnUploadDone(const base::FilePath& upload_from_path,
   UntrackUpload(upload_from_path, success);
   auto uploaded_file_path = GetFinalPath().Append(upload_from_path.BaseName());
   DCHECK(delegate_);
-  // TODO(crbug.com/454152412): Add unit tests for upload done handling and
-  // notifications.
   if (success) {
     CreateUploadDoneNotification(
         delegate_->GetDestination() == FileSaveDestination::kOneDrive,

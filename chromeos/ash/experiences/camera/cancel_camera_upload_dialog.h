@@ -6,11 +6,16 @@
 #define CHROMEOS_ASH_EXPERIENCES_CAMERA_CANCEL_CAMERA_UPLOAD_DIALOG_H_
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace ash {
+FORWARD_DECLARE_TEST(CameraSaveHandlerTest, CancelUpload);
+}
 
 namespace ui {
 class DialogModelDelegate;
@@ -26,6 +31,8 @@ class CancelCameraUploadDialog {
   ~CancelCameraUploadDialog();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ash::CameraSaveHandlerTest, CancelUpload);
+
   void OnCancelClicked(ui::DialogModelDelegate*);
   void OnCloseClicked(ui::DialogModelDelegate*);
 
