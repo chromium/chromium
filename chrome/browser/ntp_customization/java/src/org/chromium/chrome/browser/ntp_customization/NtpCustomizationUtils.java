@@ -33,6 +33,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -83,6 +84,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -1349,6 +1352,50 @@ public class NtpCustomizationUtils {
                 ? TemplateUrlServiceFactory.getForProfile(profile).doesDefaultSearchEngineHaveLogo()
                 : ChromeSharedPreferences.getInstance()
                         .readBoolean(APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
+    }
+
+    /**
+     * Determines if the app is running in a narrow layout (e.g., split-screen) on a tablet.
+     *
+     * <p>A tablet is considered to be in a narrow window if its horizontal display style is less
+     * than {@link HorizontalDisplayStyle#WIDE}.
+     *
+     * @param isTablet Whether the device is a tablet.
+     * @param uiConfig The {@link UiConfig} providing the current display style.
+     * @return True if the device is a tablet but the current window width is restricted.
+     */
+    public static boolean isInNarrowWindowOnTablet(boolean isTablet, UiConfig uiConfig) {
+        return isTablet
+                && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
+    }
+
+    /**
+     * Calculates the total horizontal margin (sum of start and end margins) for the search box.
+     *
+     * <p>The margin scales based on the device type and available window width:
+     *
+     * <ul>
+     *   <li>Tablets in narrow/split-screen: Uses narrow-window specific margins.
+     *   <li>Tablets in full/wide view: Uses wide-window specific margins.
+     *   <li>Phones: Uses the standard Most Visited Tiles (MVT) container margin.
+     * </ul>
+     *
+     * @param resource The {@link Resources} to retrieve dimension pixel sizes.
+     * @param uiConfig The {@link UiConfig} to check the current display style.
+     * @param isTablet Whether the device is a tablet.
+     * @return The combined left and right margins in pixels.
+     */
+    public static int getSearchBoxTwoSideMargin(
+            Resources resource, UiConfig uiConfig, boolean isTablet) {
+        if (isInNarrowWindowOnTablet(isTablet, uiConfig)) {
+            return resource.getDimensionPixelSize(
+                            R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet)
+                    * 2;
+        } else if (isTablet) {
+            return resource.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet) * 2;
+        } else {
+            return resource.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin) * 2;
+        }
     }
 
     public static void resetSharedPreferenceForTesting() {

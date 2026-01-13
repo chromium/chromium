@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
@@ -61,16 +62,16 @@ public class NewTabPageUtilUnitTest {
         assertFalse(
                 "It isn't a narrow window on tablet when displayStyleWide =="
                         + " HorizontalDisplayStyle.WIDE.",
-                NewTabPageLayout.isInNarrowWindowOnTablet(true, uiConfig));
+                NtpCustomizationUtils.isInNarrowWindowOnTablet(true, uiConfig));
 
         UiConfig.DisplayStyle displayStyleRegular =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(uiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
         assertFalse(
                 "It isn't a narrow window on tablet when |isTablet| is false.",
-                NewTabPageLayout.isInNarrowWindowOnTablet(false, uiConfig));
+                NtpCustomizationUtils.isInNarrowWindowOnTablet(false, uiConfig));
 
-        assertTrue(NewTabPageLayout.isInNarrowWindowOnTablet(true, uiConfig));
+        assertTrue(NtpCustomizationUtils.isInNarrowWindowOnTablet(true, uiConfig));
     }
 
     @Test

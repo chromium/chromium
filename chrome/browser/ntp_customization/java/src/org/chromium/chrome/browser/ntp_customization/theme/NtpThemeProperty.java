@@ -70,6 +70,14 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableObjectPropertyKey<Rect> SIDE_AND_BOTTOM_INSETS =
             new PropertyModel.WritableObjectPropertyKey<>();
 
+    // The width of the search box in pixels.
+    public static final PropertyModel.WritableIntPropertyKey SEARCH_BOX_WIDTH =
+            new PropertyModel.WritableIntPropertyKey();
+
+    // The height of the search box in pixels.
+    public static final PropertyModel.WritableIntPropertyKey SEARCH_BOX_HEIGHT =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] THEME_KEYS =
             new PropertyKey[] {
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
@@ -88,6 +96,8 @@ public class NtpThemeProperty {
                 LOGO_PARAMS,
                 TOP_INSETS,
                 BOTTOM_INSETS,
-                SIDE_AND_BOTTOM_INSETS
+                SIDE_AND_BOTTOM_INSETS,
+                SEARCH_BOX_WIDTH,
+                SEARCH_BOX_HEIGHT
             };
 }

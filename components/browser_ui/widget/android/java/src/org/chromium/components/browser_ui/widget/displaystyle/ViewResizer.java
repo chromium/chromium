@@ -98,9 +98,11 @@ public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeLis
 
     /** Computes the lateral padding to be applied to the associated view. */
     protected int computePadding() {
-        if (!mUiConfig.getCurrentDisplayStyle().isWide()) return mDefaultPaddingPixels;
-        return ViewResizerUtil.computePaddingForWideDisplay(
-                mUiConfig.getContext(), mView, mMinWidePaddingPixels);
+        // Any changes to the padding calculation logic should be implemented within
+        // ViewResizerUtil#computePadding. This utility logic is utilized by various
+        // components across the codebase, not just by ViewResizer and its children.
+        return ViewResizerUtil.computePadding(
+                mView, mUiConfig, mDefaultPaddingPixels, mMinWidePaddingPixels);
     }
 
     protected int getMinWidePaddingPixels() {

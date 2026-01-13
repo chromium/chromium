@@ -10,6 +10,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 @NullMarked
 public class UploadImagePreviewLayout extends ConstraintLayout {
     private ImageView mLogoView;
+    private View mSearchBoxView;
     private Guideline mGuidelineTop;
     private int mDefaultLogoTopMarginPx;
 
@@ -36,6 +39,7 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
         super.onFinishInflate();
         mLogoView = findViewById(R.id.default_search_engine_logo);
         mGuidelineTop = findViewById(R.id.guideline_top);
+        mSearchBoxView = findViewById(R.id.search_box);
     }
 
     void setLogo(@Nullable Bitmap logoBitmap) {
@@ -72,5 +76,23 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
      */
     void setSideAndBottomInsets(Rect insets) {
         setPadding(insets.left, getPaddingTop(), insets.right, insets.bottom);
+    }
+
+    void setSearchBoxWidth(int width) {
+        if (mSearchBoxView == null) return;
+
+        mSearchBoxView.setVisibility(View.VISIBLE);
+        ViewGroup.LayoutParams params = mSearchBoxView.getLayoutParams();
+        params.width = width;
+        mSearchBoxView.setLayoutParams(params);
+    }
+
+    void setSearchBoxHeight(int height) {
+        if (mSearchBoxView == null) return;
+
+        mSearchBoxView.setVisibility(View.VISIBLE);
+        ViewGroup.LayoutParams params = mSearchBoxView.getLayoutParams();
+        params.height = height;
+        mSearchBoxView.setLayoutParams(params);
     }
 }

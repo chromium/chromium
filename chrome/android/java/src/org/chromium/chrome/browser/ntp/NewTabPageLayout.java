@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
-import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -163,7 +162,6 @@ public class NewTabPageLayout extends LinearLayout
     private float mTransitionEndOffset;
     private boolean mIsTablet;
     private Supplier<Integer> mTabStripHeightSupplier;
-    private boolean mIsInNarrowWindowOnTablet;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
     private Callback<Logo> mOnLogoAvailableCallback;
@@ -331,7 +329,7 @@ public class NewTabPageLayout extends LinearLayout
                                 .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
 
-        updateSearchBoxWidth();
+        updateSearchBoxTwoSideMargin();
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(
                 mProfile, lifecycleDispatcher, tileGroupDelegate, touchEnabledDelegate);
@@ -1311,11 +1309,9 @@ public class NewTabPageLayout extends LinearLayout
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         if (!mIsTablet) return;
 
-        mIsInNarrowWindowOnTablet = isInNarrowWindowOnTablet(mIsTablet, mUiConfig);
-
         updateDoodleOnTablet();
         updateMvtOnTablet();
-        updateSearchBoxWidth();
+        updateSearchBoxTwoSideMargin();
     }
 
     /**
@@ -1356,7 +1352,7 @@ public class NewTabPageLayout extends LinearLayout
                         : ViewGroup.LayoutParams.MATCH_PARENT;
 
         int lateralPaddingId =
-                mIsInNarrowWindowOnTablet
+                NtpCustomizationUtils.isInNarrowWindowOnTablet(mIsTablet, mUiConfig)
                         ? R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet
                         : R.dimen.mvt_container_lateral_margin;
         int lateralPaddingsForNtp = getResources().getDimensionPixelSize(lateralPaddingId);
@@ -1364,31 +1360,10 @@ public class NewTabPageLayout extends LinearLayout
         marginLayoutParams.rightMargin = lateralPaddingsForNtp;
     }
 
-    private void updateSearchBoxWidth() {
-        if (mIsInNarrowWindowOnTablet) {
-            mSearchBoxTwoSideMargin =
-                    getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen
-                                                    .ntp_search_box_lateral_margin_narrow_window_tablet)
-                            * 2;
-        } else if (mIsTablet) {
-            mSearchBoxTwoSideMargin =
-                    getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.ntp_search_box_lateral_margin_tablet)
-                            * 2;
-        } else {
-            mSearchBoxTwoSideMargin =
-                    getResources().getDimensionPixelSize(R.dimen.mvt_container_lateral_margin) * 2;
-        }
-    }
-
-    /** Returns whether the current window is a narrow one on tablet. */
-    @VisibleForTesting
-    public static boolean isInNarrowWindowOnTablet(boolean isTablet, UiConfig uiConfig) {
-        return isTablet
-                && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
+    private void updateSearchBoxTwoSideMargin() {
+        mSearchBoxTwoSideMargin =
+                NtpCustomizationUtils.getSearchBoxTwoSideMargin(
+                        getResources(), mUiConfig, mIsTablet);
     }
 
     /**

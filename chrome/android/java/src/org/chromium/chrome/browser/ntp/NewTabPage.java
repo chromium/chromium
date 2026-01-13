@@ -1602,7 +1602,7 @@ public class NewTabPage
     public int getStartMargin() {
         boolean isInNarrowWindowOnTablet =
                 mIsTablet
-                        && NewTabPageLayout.isInNarrowWindowOnTablet(
+                        && NtpCustomizationUtils.isInNarrowWindowOnTablet(
                                 mIsTablet, mFeedSurfaceProvider.getUiConfig());
         int marginResourceId =
                 isInNarrowWindowOnTablet

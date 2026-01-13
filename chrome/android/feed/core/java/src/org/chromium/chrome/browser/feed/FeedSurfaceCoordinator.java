@@ -763,12 +763,10 @@ public class FeedSurfaceCoordinator
             return;
         }
 
-        // Apply negative margins to the NTP header in order to compensate the containment paddings
-        // applied to the whole NTP for non-wide display. This is to allow all the elements in the
-        // NTP header to keep using their existing margins/paddings settings.
-        int feed_containment_margin =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.feed_containment_margin);
-        int margin = mUiConfig.getCurrentDisplayStyle().isWide() ? 0 : -feed_containment_margin;
+        int margin =
+                FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(
+                        mRootView.getResources(), mUiConfig);
+
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
