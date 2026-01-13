@@ -55,6 +55,13 @@ class ClipboardHistoryTest : public AshTestBase {
         ash::Shell::GetPrimaryRootWindow());
   }
 
+  // AshTestBase:
+  void TearDown() override {
+    event_generator_.reset();
+    clipboard_history_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   const std::list<ClipboardHistoryItem>& GetClipboardHistoryItems() {
     return clipboard_history_->GetItems();
   }
@@ -159,7 +166,7 @@ class ClipboardHistoryTest : public AshTestBase {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
-  raw_ptr<ClipboardHistory, DanglingUntriaged> clipboard_history_ = nullptr;
+  raw_ptr<ClipboardHistory> clipboard_history_ = nullptr;
 };
 
 // Tests that with nothing copied, nothing is shown.
