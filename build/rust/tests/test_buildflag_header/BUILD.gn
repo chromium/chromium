@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("test_buildflag_header") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "lib.rs"
+  sources = [ "lib.rs" ]
+  deps = [ "//testing/rust_gtest_interop" ]
+  configs += [ ":buildflags_rust_cfg" ]
+}
+
+_is_1_eq_1 = 1 == 1
+_is_1_eq_2 = 1 == 2
+_is_true = true
+_is_false = false
+_string_value = "foo"
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "IS_1_EQ_1_FOR_TESTING=$_is_1_eq_1",
+    "IS_1_EQ_2_FOR_TESTING=$_is_1_eq_2",
+    "IS_TRUE_FOR_TESTING=$_is_true",
+    "IS_FALSE_FOR_TESTING=$_is_false",
+    "STRING_VALUE_FOR_TESTING=$_string_value",
+  ]
+  visibility = [ ":*" ]
+}

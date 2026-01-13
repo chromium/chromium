@@ -20,12 +20,33 @@
 # define that generates C++ value of true or false for use in code. If you
 # REALLY need this, you can also use the string "(true)" and "(false)" to
 # prevent the rewriting.
-
-# To check the value of the flag in C code:
 #
-#   #include "path/to/here/header_file.h"
 #
-#   #if BUILDFLAG(ENABLE_FOO)
+# Example
+# =======
+#
+#   buildflag_header("foo_buildflags") {
+#     header = "foo_buildflags.h"
+#
+#     flags = [
+#       # This uses the GN build flag enable_doom_melon as the definition.
+#       "ENABLE_DOOM_MELON=$enable_doom_melon",
+#
+#       # This force-enables the flag.
+#       "ENABLE_SPACE_LASER=true",
+#
+#       # This will expand to the quoted C string when used in source code.
+#       "SPAM_SERVER_URL=\"http://www.example.com/\"",
+#     ]
+#   }
+#
+#
+# Checking the value of the flag in C/C++ code
+# ============================================
+#
+#   #include "path/to/target/foo_buildflags.h"
+#
+#   #if BUILDFLAG(ENABLE_SPACE_LASER)
 #   ...
 #   #endif
 #
@@ -35,7 +56,28 @@
 # that in an ifdef it will always be negative.
 #
 #
+# Checking the value of the flag in Rust code
+# ============================================
+#
+#   In `BUILD.gn`:
+#
+#       rust_static_library("allocator") {
+#           # ...
+#           configs += [ ":foo_buildflags_rust_cfg" ]
+#           # ...
+#       }
+#
+#   In `.rs`:
+#
+#       #[cfg(ENABLE_SPACE_LASER)]
+#       fn foo() { todo!() }
+#
+#   Note that Rust only supports boolean configuration flags - builds flags with
+#   arbitrary string values (e.g. `SPAM_SERVER_URL` above) are ignored.
+#
+#
 # Template parameters
+# ===================
 #
 #   flags [required, list of strings]
 #       Flag values as described above.
@@ -58,6 +100,7 @@
 #
 #
 # Grit defines
+# ============
 #
 # If one .grd file uses a flag, just add to the grit target:
 #
@@ -75,24 +118,6 @@
 # and those resources won't be compiled. You'll know because the resource
 # #define won't be generated and any code that uses it won't compile. If you
 # see a missing IDS_* string, this is probably the reason.
-#
-#
-# Example
-#
-#   buildflag_header("foo_buildflags") {
-#     header = "foo_buildflags.h"
-#
-#     flags = [
-#       # This uses the GN build flag enable_doom_melon as the definition.
-#       "ENABLE_DOOM_MELON=$enable_doom_melon",
-#
-#       # This force-enables the flag.
-#       "ENABLE_SPACE_LASER=true",
-#
-#       # This will expand to the quoted C string when used in source code.
-#       "SPAM_SERVER_URL=\"http://www.example.com/\"",
-#     ]
-#   }
 template("buildflag_header") {
   action(target_name) {
     script = "//build/write_buildflag_header.py"
@@ -133,5 +158,26 @@ template("buildflag_header") {
                            ])
 
     public_deps = [ "//build:buildflag_header_h" ]
+  }
+
+  config("${target_name}_rust_cfg") {
+    rustflags = []
+    if (defined(invoker.flags)) {
+      foreach(flag, invoker.flags) {
+        _split = []
+        _split = string_split(flag, "=")
+        _name = _split[0]
+        _value = _split[1]
+        if (_value == "true" || _value == "1") {
+          rustflags += [ "--cfg=$_name" ]
+        } else {
+          not_needed([ "_name" ])
+        }
+
+        # TODO(https://crbug.com/448742518): Consider adding:
+        # `rustflags += [ "--check-cfg=cfg($_name)" ]` and removing
+        # the `not_needed` call above.
+      }
+    }
   }
 }

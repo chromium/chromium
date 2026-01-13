@@ -2812,6 +2812,7 @@ buildflag_header("sanitizer_buildflags") {
   header_dir = "base"
 
   flags = [
+    "IS_ASAN=$is_asan",
     "IS_HWASAN=$is_hwasan",
     "IS_UBSAN=$is_ubsan",
     "IS_UBSAN_SECURITY=$is_ubsan_security",

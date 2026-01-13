@@ -25,7 +25,5 @@ rust_static_library("rs") {
   sources = [ "src/lib.rs" ]
   cxx_bindings = [ "src/lib.rs" ]
   allow_unsafe = true
-  if (is_asan) {
-    features = [ "rust_crash_asan_enabled" ]
-  }
+  configs += [ "//base:sanitizer_buildflags_rust_cfg" ]
 }

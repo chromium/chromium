@@ -39,6 +39,7 @@ buildflag_header("buildflags") {
   flags = [
     "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
     "RUST_ALLOCATOR_USES_ALIGNED_MALLOC=$rust_allocator_uses_aligned_malloc",
+    "RUST_ALLOCATOR_USES_ALLOCATOR_IMPLS_H=$rust_allocator_uses_allocator_impls_h",
   ]
   visibility = [ ":*" ]
 }
@@ -52,15 +53,10 @@ if (toolchain_has_rust) {
     sources = [ "lib.rs" ]
     crate_root = "lib.rs"
 
-    rustflags = []
-    if (!rustc_nightly_capability) {
-      rustflags += [ "--cfg=rust_allocator_no_nightly_capability" ]
-    }
-
+    configs += [ ":buildflags_rust_cfg" ]
     deps = [ ":alloc_error_handler_impl_ffi" ]
     if (rust_allocator_uses_allocator_impls_h) {
       deps += [ ":allocator_impls_ffi" ]
-      rustflags += [ "--cfg=rust_allocator_uses_allocator_impls_h" ]
     }
 
     # Avoid cyclic dependencies:

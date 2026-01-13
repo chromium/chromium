@@ -9,11 +9,13 @@
 mod ffi {
     extern "Rust" {
         fn crash_in_rust(); // step 1 of main crash trigger. We bounce back to C++
-        // then back to Rust to ensure crossing the language
-        // boundary in both directions is represented in crash
-        // dumps.
+                            // then back to Rust to ensure crossing the language
+                            // boundary in both directions is represented in crash
+                            // dumps.
         fn reenter_rust(); // step 3
 
+        // TODO(https://crbug.com/436606652): Ideally we would just say something
+        // like `#[cfg(IS_ASAN)]` here...
         fn crash_in_rust_with_overflow(); // separate crash trigger
     }
 
@@ -46,7 +48,7 @@ mod some_mod {
 }
 
 /// Code that's only enabled if we're doing an ASAN build.
-#[cfg(feature = "rust_crash_asan_enabled")]
+#[cfg(IS_ASAN)]
 #[inline(never)]
 fn crash_in_rust_with_overflow() {
     let mut some_array = Box::new([1usize, 2usize, 3usize, 4usize]);
@@ -57,7 +59,10 @@ fn crash_in_rust_with_overflow() {
     }
 }
 
-#[cfg(not(feature = "rust_crash_asan_enabled"))]
+// TODO(https://crbug.com/436606652): Ideally we wouldn't need to define a no-op
+// function below - this requires the ability to suppress generation of FFI
+// bindings in the `cxx::bridge` above - see another TODO comment over there.
+#[cfg(not(IS_ASAN))]
 fn crash_in_rust_with_overflow() {
     unreachable!()
 }
