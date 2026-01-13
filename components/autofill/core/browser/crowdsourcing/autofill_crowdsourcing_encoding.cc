@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -1070,7 +1071,8 @@ void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    LogManager* log_manager) {
+    LogManager* log_manager,
+    bool ignore_small_forms) {
   AutofillMetrics::LogServerQueryMetric(
       AutofillMetrics::QUERY_RESPONSE_RECEIVED);
 
@@ -1090,14 +1092,16 @@ void ParseServerPredictionsQueryResponse(
            << response;
 
   ProcessServerPredictionsQueryResponse(std::move(response), forms,
-                                        queried_form_signatures, log_manager);
+                                        queried_form_signatures, log_manager,
+                                        ignore_small_forms);
 }
 
 void ProcessServerPredictionsQueryResponse(
     AutofillQueryResponse response,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    LogManager* log_manager) {
+    LogManager* log_manager,
+    bool ignore_small_forms) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   LOG_AF(log_manager) << LoggingScope::kParsing
                       << LogMessage::kProcessingServerData;
@@ -1105,7 +1109,8 @@ void ProcessServerPredictionsQueryResponse(
   // Suppress crowdsourced suggestions for small forms if the form does
   // not contain non-address fields (meaning it is an address-only
   // form).
-  if (base::FeatureList::IsEnabled(
+  if (ignore_small_forms &&
+      base::FeatureList::IsEnabled(
           features::kAutofillMoveSmallFormLogicToClient)) {
     for (AutofillQueryResponse::FormSuggestion& form_suggestion :
          *response.mutable_form_suggestions()) {

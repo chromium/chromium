@@ -2339,8 +2339,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  ParseServerPredictionsQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, /*ignore_small_forms=*/true);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(true, 2)));
@@ -2362,8 +2363,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, OneFormNoServerData) {
                            form_suggestion);
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  ParseServerPredictionsQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, /*ignore_small_forms=*/true);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(false, 1), Bucket(true, 1)));
@@ -2383,8 +2385,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  ParseServerPredictionsQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, /*ignore_small_forms=*/true);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(false, 2)));
@@ -2407,8 +2410,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, PartialNoServerData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  ParseServerPredictionsQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, /*ignore_small_forms=*/true);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(true, 2)));

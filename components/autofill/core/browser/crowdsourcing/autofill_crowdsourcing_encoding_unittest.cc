@@ -271,7 +271,7 @@ void ParseRationalizeAndSection(FormStructure& form) {
       /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
-                                    nullptr);
+                                    /*log_manager=*/nullptr);
 }
 
 class AutofillCrowdsourcingEncoding : public testing::Test {
@@ -2454,9 +2454,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ParseRationalizeAndSection(form);
 
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the type predictions.
@@ -2515,9 +2515,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
@@ -2563,9 +2563,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 4U);
 
   // Validate the heuristic and server predictions.
@@ -2610,9 +2610,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the heuristic and server predictions.
@@ -2657,9 +2657,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the heuristic and server predictions.
@@ -2708,7 +2708,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+      response_string, forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -2734,7 +2735,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   std::vector<raw_ref<FormStructure>> empty_forms = {raw_ref(empty_form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), empty_forms,
                                       test::GetEncodedSignatures(empty_forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
   ASSERT_EQ(empty_form.field_count(), 0U);
 }
 
@@ -2765,9 +2767,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -2855,7 +2857,9 @@ TEST_P(AutofillCrowdsourcingEncodingPredictionPrecedenceTest,
 
   // Serialize API response.
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
-                                      encoded_signatures, nullptr);
+                                      encoded_signatures,
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms.front()->field_count(), 1U);
   EXPECT_EQ(forms.front()->field(0)->server_type(), GetParam().expected_type);
@@ -2942,7 +2946,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      encoded_signatures, nullptr);
+                                      encoded_signatures,
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 1U);
 
   // Validate field 0.
@@ -3025,7 +3031,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   }
 
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
-                                      encoded_signatures, nullptr);
+                                      encoded_signatures,
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   // Check expected field types.
   ASSERT_GE(forms[0]->field_count(), 6U);
@@ -3079,7 +3087,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   AddFieldPredictionToForm(form2.fields()[1], NO_SERVER_DATA, form_suggestion);
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   // Verify that the form fields are properly filled with data retrieved from
   // the query.
@@ -3146,7 +3155,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3202,7 +3212,8 @@ TEST_F(
   AutofillQueryResponse api_response;
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3278,7 +3289,8 @@ TEST_F(
 
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 3u);
 
@@ -3351,7 +3363,8 @@ TEST_F(
 
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 4u);
 
@@ -3419,7 +3432,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   ParseServerPredictionsQueryResponse(
       SerializeAndEncode(api_response), forms,
-      test::GetEncodedAlternativeSignatures(forms), nullptr);
+      test::GetEncodedAlternativeSignatures(forms), /*log_manager=*/nullptr,
+      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3479,7 +3493,8 @@ TEST_F(
 
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3533,7 +3548,8 @@ TEST_F(
 
   ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
                                       test::GetEncodedSignatures(forms),
-                                      nullptr);
+                                      /*log_manager=*/nullptr,
+                                      /*ignore_small_forms=*/true);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3563,9 +3579,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   std::string response_string = "invalid string that cannot be parsed";
-  ParseServerPredictionsQueryResponse(std::move(response_string), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      std::move(response_string), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   // Verify that the form fields remain intact because
   // ParseServerPredictionsQueryResponse could not parse the server's response
@@ -3604,13 +3620,56 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
 
   ParseServerPredictionsQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+      response_string, forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   // Verify that the form fields remain intact because
   // ParseServerPredictionsQueryResponse could not parse the server's response
   // that was badly encoded.
   ASSERT_GE(forms[0]->field_count(), 1U);
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
+}
+
+// Tests that `ParseServerPredictionsQueryResponse` does not remove predictions
+// from address fields when ignoring small forms is disabled.
+TEST_F(AutofillCrowdsourcingEncoding,
+       ParseServerPredictionsQueryResponse_DontIgnoreSmallForms) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillMoveSmallFormLogicToClient};
+
+  FormData form;
+  form.set_url(GURL("http://foo.com"));
+  form.set_fields(
+      {CreateTestFormField("Address line 1", "address-line-1", "",
+                           FormControlType::kInputText, "address-line1"),
+       CreateTestFormField("Address line 2", "address-line-2", "",
+                           FormControlType::kInputPassword, "address-line2")});
+  FormStructure form_structure(form);
+  ParseRationalizeAndSection(form_structure);
+
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
+
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldPredictionToForm(form.fields()[0], ADDRESS_HOME_LINE1,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields()[1], ADDRESS_HOME_LINE2,
+                           form_suggestion);
+
+  // The small forms are not ignored - the Autofill on tab is in actor mode.
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/false);
+
+  // Verify that the form fields remain intact.
+  ASSERT_GE(forms[0]->field_count(), 2U);
+  // Server type is parsed from the response and is the end result type.
+  EXPECT_EQ(forms[0]->field(0)->server_type(), ADDRESS_HOME_LINE1);
+  EXPECT_THAT(forms[0]->field(0)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(forms[0]->field(1)->server_type(), ADDRESS_HOME_LINE2);
+  EXPECT_THAT(forms[0]->field(1)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_LINE2));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
@@ -3632,9 +3691,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
   AddFieldPredictionToForm(form.fields()[1], ACCOUNT_CREATION_PASSWORD,
                            form_suggestion);
 
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   // Server type is parsed from the response and is the end result type.
@@ -3677,9 +3736,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Will call RationalizeFieldTypePredictions
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3723,9 +3782,9 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
 
   // Will call RationalizeFieldTypePredictions
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3773,9 +3832,9 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
 
   // Will call RationalizeFieldTypePredictions
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3823,9 +3882,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
@@ -3862,9 +3921,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
@@ -3888,7 +3947,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseRunAutofillAiModel) {
   EXPECT_FALSE(form_structure.may_run_autofill_ai_model());
   ParseServerPredictionsQueryResponse(
       SerializeAndEncode(response), {raw_ref(form_structure)},
-      test::GetEncodedSignatures({raw_ref(form_structure)}), nullptr);
+      test::GetEncodedSignatures({raw_ref(form_structure)}),
+      /*log_manager=*/nullptr,
+      /*ignore_small_forms=*/true);
   EXPECT_TRUE(form_structure.may_run_autofill_ai_model());
 }
 
@@ -3935,9 +3996,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseFormatString) {
 
   // Parse the response.
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_THAT(form.field(1)->Type().GetTypes(),
@@ -3976,9 +4037,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   AddFieldPredictionToForm(form.fields()[1], ADDRESS_HOME_LINE2,
                            form_suggestion);
 
-  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
-                                      test::GetEncodedSignatures(forms),
-                                      nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   // Verify that the form fields remain intact.
   ASSERT_GE(forms[0]->field_count(), 2U);

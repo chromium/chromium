@@ -155,12 +155,15 @@ std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(const std::vector<FormData>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
-// `ProcessServerPredictionsQueryResponse`.
+// `ProcessServerPredictionsQueryResponse`. `ignore_small_forms` determines
+// whether forms with less than `kSmallFormThreshold` fields (all of
+// which are address related), should have server predictions cleared.
 void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    LogManager* log_manager);
+    LogManager* log_manager,
+    bool ignore_small_forms);
 
 // Parses the field types from the server query response. `forms` must be the
 // same as the one passed to `EncodeAutofillPageQueryRequest()` when
@@ -169,7 +172,8 @@ void ProcessServerPredictionsQueryResponse(
     AutofillQueryResponse response,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    LogManager* log_manager);
+    LogManager* log_manager,
+    bool ignore_small_forms);
 
 void ClearSmallAddressFormPredictionsForTesting(
     AutofillQueryResponse::FormSuggestion& form_suggestion);

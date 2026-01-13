@@ -148,7 +148,8 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   }
   ParseServerPredictionsQueryResponse(
       response_string, {raw_ref(*form_structure)},
-      test::GetEncodedSignatures({raw_ref(*form_structure)}), nullptr);
+      test::GetEncodedSignatures({raw_ref(*form_structure)}), nullptr,
+      /*ignore_small_forms=*/true);
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
   return form_structure;

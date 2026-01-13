@@ -38,9 +38,9 @@ void AddField(const std::string& label,
 // those two hardcoded forms vectors, so it can be changed if needed.
 DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
   std::vector<raw_ref<FormStructure>> forms;
-  ProcessServerPredictionsQueryResponse(response, forms,
-                                        test::GetEncodedSignatures(forms),
-                                        /*log_manager=*/nullptr);
+  ProcessServerPredictionsQueryResponse(
+      response, forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
   FormData form_data;
   AddField("username", "username", FormControlType::kInputText, &form_data);
@@ -48,9 +48,9 @@ DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
 
   FormStructure form(form_data);
   forms.emplace_back(form);
-  ProcessServerPredictionsQueryResponse(response, forms,
-                                        test::GetEncodedSignatures(forms),
-                                        /*log_manager=*/nullptr);
+  ProcessServerPredictionsQueryResponse(
+      response, forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 }
 
 }  // namespace

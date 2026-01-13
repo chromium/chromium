@@ -867,7 +867,8 @@ void AutofillManager::OnLoadedServerPredictions(
   // Parse and store the server predictions.
   ParseServerPredictionsQueryResponse(
       std::move(response->response), queried_forms,
-      response->queried_form_signatures, log_manager());
+      response->queried_form_signatures, log_manager(),
+      /*ignore_small_forms=*/!client().IsTabInActorMode());
 
   OnLoadedServerPredictionsImpl(queried_forms);
   if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
