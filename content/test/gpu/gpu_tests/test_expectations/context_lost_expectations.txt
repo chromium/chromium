@@ -205,6 +205,8 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 # Very flaky on Pixel 2 and Samsung A13 Android bots
 crbug.com/444480419 [ android android-pixel-2 no-clang-coverage ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
 crbug.com/444480419 [ android android-sm-a137f ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
+# Suspect tab switch is too slow on older devices
+crbug.com/443295355 [ android android-pixel-4 ] ContextLost_WebGLContextLostInHiddenTab [ Slow ]
 
 # Fails with Graphite on Windows and Mac
 crbug.com/329145823 [ win release amd ] GpuCrash_InfoForHardwareGpu [ Failure ]
