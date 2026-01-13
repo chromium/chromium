@@ -613,6 +613,47 @@ chromium-metrics-reviews@google.com.
     Records the value at index {Index} of the output tensor when executing the
     {SegmentationModel} segmentation model.
 
+    TODO(crbug.com/384798365): Remove this histogram after .Raw and .Scaled100
+    are established.
+
+    Recorded every time a {SegmentationModel} segmentation model is successfully
+    executed.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+  <token key="Index" variants="Index"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}.Raw"
+    units="score" expires_after="2026-05-12">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the raw value at index {Index} of the output tensor when executing
+    the {SegmentationModel} segmentation model. This records the integer part of
+    the result (static_cast&lt;int&gt;(result)).
+
+    Recorded every time a {SegmentationModel} segmentation model is successfully
+    executed.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+  <token key="Index" variants="Index"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}.Scaled100"
+    units="score" expires_after="2026-05-12">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the value at index {Index} of the output tensor multiplied by 100
+    when executing the {SegmentationModel} segmentation model. This is useful
+    for models returning a probability score between 0 and 1.
+
     Recorded every time a {SegmentationModel} segmentation model is successfully
     executed.
   </summary>

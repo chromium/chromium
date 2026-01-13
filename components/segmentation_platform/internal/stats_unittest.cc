@@ -302,13 +302,42 @@ TEST_F(StatsTest, RecordModelExecutionResultForMultiOutput) {
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.Result.0.AdaptiveToolbar", 40));
   EXPECT_EQ(
+      1, tester.GetBucketCount(
+             "SegmentationPlatform.ModelExecution.Result.0.AdaptiveToolbar.Raw",
+             0));
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.ModelExecution.Result.0.AdaptiveToolbar."
+                "Scaled100",
+                40));
+
+  EXPECT_EQ(
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.Result.1.AdaptiveToolbar", 90));
   EXPECT_EQ(
+      1, tester.GetBucketCount(
+             "SegmentationPlatform.ModelExecution.Result.1.AdaptiveToolbar.Raw",
+             1));
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.ModelExecution.Result.1.AdaptiveToolbar."
+                "Scaled100",
+                90));
+
+  EXPECT_EQ(
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.Result.2.AdaptiveToolbar", 15));
+  EXPECT_EQ(
+      1, tester.GetBucketCount(
+             "SegmentationPlatform.ModelExecution.Result.2.AdaptiveToolbar.Raw",
+             0));
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.ModelExecution.Result.2.AdaptiveToolbar."
+                "Scaled100",
+                15));
 
   // Binned classifier is recorded as is.
   proto::SegmentationModelMetadata model_metadata;
@@ -321,6 +350,20 @@ TEST_F(StatsTest, RecordModelExecutionResultForMultiOutput) {
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.Result.0.PowerUserSegment", 5));
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result.0.PowerUserSegment.Raw",
+          5));
+
+  // Binned classifiers output integers > 1, causing the .Scaled100 metric to
+  // overflow. This is expected; for these models, we rely on the .Raw metric
+  // instead.
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.ModelExecution.Result.0.PowerUserSegment."
+                "Scaled100",
+                500));
 }
 
 TEST_F(StatsTest, SegmentIdToHistogramVariant) {
