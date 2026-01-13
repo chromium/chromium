@@ -392,9 +392,14 @@ message MediaControlAction {
   reserved 1;
 }
 
+// Loads the given URLs and extracts content from them.
+message LoadAndExtractContentAction {
+  repeated string urls = 1;
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 23
+// Next ID: 24
 message Action {
 
   oneof action {
@@ -441,6 +446,8 @@ message Action {
     MediaControlAction media_control = 21;
 
     AttemptFormFillingAction attempt_form_filling = 22;
+
+    LoadAndExtractContentAction load_and_extract_content = 23;
   }
 }
 

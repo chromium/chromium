@@ -57,6 +57,8 @@ std::optional<std::string> ActuationActionCaseToToolName(
       return "MediaControlTool";
     case Action::kAttemptFormFilling:
       return "AttemptFormFillingTool";
+    case Action::kLoadAndExtractContent:
+      return "LoadAndExtractContentTool";
     case Action::ACTION_NOT_SET:
       return std::nullopt;
   }
