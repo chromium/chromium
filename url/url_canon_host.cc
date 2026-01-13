@@ -22,7 +22,7 @@ namespace {
 // https://crbug.com/1416013 for details.
 const unsigned char kEsc = 0xff;
 // clang-format off
-const unsigned char kHostCharLookup[0x80] = {
+constexpr std::array<unsigned char, 0x80> kHostCharLookup = {
 // 00-1f: all are invalid
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -47,7 +47,7 @@ const uint8_t kForbiddenHost = 0x1;
 // be probably done after https://crbug.com/1416013 is resolved.
 //
 // This table is currently only used for an opaque-host in non-special URLs.
-const uint8_t kHostCharacterTable[128] = {
+constexpr std::array<uint8_t, 128> kHostCharacterTable = {
     kForbiddenHost,  // 0x00 (NUL)
     0,               // 0x01
     0,               // 0x02
@@ -180,7 +180,7 @@ const uint8_t kHostCharacterTable[128] = {
 // clang-format on
 
 bool IsForbiddenHostCodePoint(uint8_t ch) {
-  return ch <= 0x7F && (UNSAFE_TODO(kHostCharacterTable[ch]) & kForbiddenHost);
+  return ch <= 0x7F && (kHostCharacterTable[ch] & kForbiddenHost);
 }
 
 // RFC1034 maximum FQDN length.
@@ -261,7 +261,7 @@ bool DoSimpleHost(std::basic_string_view<INCHAR> host,
 
     if (source < 0x80) {
       // We have ASCII input, we can use our lookup table.
-      unsigned char replacement = UNSAFE_TODO(kHostCharLookup[source]);
+      unsigned char replacement = kHostCharLookup[source];
       if (!replacement) {
         // Invalid character, add it as percent-escaped and mark as failed.
         AppendEscapedChar(source, output);

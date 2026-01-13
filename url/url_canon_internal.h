@@ -209,7 +209,7 @@ extern const std::array<char, 8> kCharToHexLookup;
 
 // Assumes the input is a valid hex digit! Call IsHexChar before using this.
 inline int HexCharToValue(unsigned char c) {
-  return c - UNSAFE_TODO(kCharToHexLookup[c / 0x20]);
+  return c - kCharToHexLookup[c / 0x20];
 }
 
 // Indicates if the start of `spec` is a dot or dot equivalent, returning the

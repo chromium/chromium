@@ -51,7 +51,7 @@ enum CharacterFlags {
 // bit.
 //
 // clang-format off
-const unsigned char kPathCharLookup[0x100] = {
+constexpr std::array<unsigned char, 0x100> kPathCharLookup = {
 //   NULL     control chars...
      ESCAPE , ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
 //   control chars...
@@ -201,7 +201,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
     } else {
       // Normal ASCII character or 8-bit input, use the lookup table.
       unsigned char out_ch = static_cast<unsigned char>(uch);
-      unsigned char flags = UNSAFE_TODO(kPathCharLookup[out_ch]);
+      unsigned char flags = kPathCharLookup[out_ch];
       if (flags & SPECIAL) {
         // Needs special handling of some sort.
         size_t dotlen;
