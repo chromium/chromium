@@ -165,8 +165,8 @@ if (is_android) {
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
-  public_android_sdk_platform_version = "36"
-  public_android_sdk_build_tools_version = "36.0.0"
+  public_android_sdk_platform_version = "36.1"
+  public_android_sdk_build_tools_version = "36.1.0"
   if (android_sdk_release == "b") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_platform_version = public_android_sdk_platform_version
@@ -358,7 +358,7 @@ if (is_android) {
     # to read our manifest. Once 37 is the default public SDK that check can go
     # away.
     enable_javaless_renderers =
-        !is_component_build && android_sdk_platform_version != "36"
+        !is_component_build && android_sdk_platform_version != "36.1"
 
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that

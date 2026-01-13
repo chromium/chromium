@@ -1,13 +1,11 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Defines a set of constants shared by test runners and other scripts."""
 
 # TODO(jbudorick): Split these constants into coherent modules.
 
 # pylint: disable=W0212
-
 
 import glob
 import logging
@@ -18,13 +16,13 @@ from devil.android.constants import chrome
 from devil.android.sdk import version_codes
 from devil.constants import exit_codes
 
-
 keyevent = devil.android.sdk.keyevent
 
-
-DIR_SOURCE_ROOT = os.environ.get('CHECKOUT_SOURCE_ROOT',
-    os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                 os.pardir, os.pardir, os.pardir, os.pardir)))
+DIR_SOURCE_ROOT = os.environ.get(
+    'CHECKOUT_SOURCE_ROOT',
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
+                     os.pardir)))
 JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 
 PACKAGE_INFO = dict(chrome.PACKAGE_INFO)
@@ -81,7 +79,6 @@ PACKAGE_INFO.update({
                        'webview-command-line', None),
 })
 
-
 # Ports arrangement for various test servers used in Chrome for Android.
 # Lighttpd server will attempt to use 9000 as default port, if unavailable it
 # will find a free port from 8001 - 8999.
@@ -91,7 +88,6 @@ LIGHTTPD_RANDOM_PORT_LAST = 8999
 TEST_SYNC_SERVER_PORT = 9031
 TEST_SEARCH_BY_IMAGE_SERVER_PORT = 9041
 TEST_POLICY_SERVER_PORT = 9051
-
 
 TEST_EXECUTABLE_DIR = '/data/local/tmp'
 # Directories for common java libraries for SDK build.
@@ -104,16 +100,16 @@ ADB_KEYS_FILE = '/data/misc/adb/adb_keys'
 
 PERF_OUTPUT_DIR = os.path.join(DIR_SOURCE_ROOT, 'out', 'step_results')
 # The directory on the device where perf test output gets saved to.
-DEVICE_PERF_OUTPUT_DIR = (
-    '/data/data/' + PACKAGE_INFO['chrome'].package + '/files')
+DEVICE_PERF_OUTPUT_DIR = ('/data/data/' + PACKAGE_INFO['chrome'].package +
+                          '/files')
 
 SCREENSHOTS_DIR = os.path.join(DIR_SOURCE_ROOT, 'out_screenshots')
 
-ANDROID_SDK_BUILD_TOOLS_VERSION = '36.0.0'
+ANDROID_SDK_BUILD_TOOLS_VERSION = '36.1.0'
 ANDROID_SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
                                 'public')
-ANDROID_SDK_TOOLS = os.path.join(ANDROID_SDK_ROOT,
-                                 'build-tools', ANDROID_SDK_BUILD_TOOLS_VERSION)
+ANDROID_SDK_TOOLS = os.path.join(ANDROID_SDK_ROOT, 'build-tools',
+                                 ANDROID_SDK_BUILD_TOOLS_VERSION)
 ANDROID_NDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party',
                                 'android_toolchain', 'ndk')
 
@@ -131,9 +127,8 @@ DEVICE_LOCAL_PROPERTIES_PATH = '/data/local.prop'
 # interfere with the breakpad and sandbox tests.
 # This value is duplicated in
 # base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java
-UBSAN_OPTIONS = (
-    'print_stacktrace=1 stack_trace_format=\'#%n pc %o %m\' '
-    'handle_segv=0 handle_sigbus=0 handle_sigfpe=0')
+UBSAN_OPTIONS = ('print_stacktrace=1 stack_trace_format=\'#%n pc %o %m\' '
+                 'handle_segv=0 handle_sigbus=0 handle_sigfpe=0')
 
 # TODO(jbudorick): Rework this into testing/buildbot/
 PYTHON_UNIT_TEST_SUITES = {
@@ -161,8 +156,10 @@ PYTHON_UNIT_TEST_SUITES = {
 
 LOCAL_MACHINE_TESTS = ['hostside', 'junit', 'python']
 VALID_ENVIRONMENTS = ['local']
-VALID_TEST_TYPES = ['gtest', 'hostside', 'instrumentation', 'junit', 'linker',
-                    'monkey', 'perf', 'python']
+VALID_TEST_TYPES = [
+    'gtest', 'hostside', 'instrumentation', 'junit', 'linker', 'monkey', 'perf',
+    'python'
+]
 VALID_DEVICE_TYPES = ['Android', 'iOS']
 
 
@@ -218,16 +215,16 @@ def GetOutDirectory():
       with the optional CHROMIUM_OUT_DIR env variable.
   """
   if 'CHROMIUM_OUTPUT_DIR' in os.environ:
-    return os.path.abspath(os.path.join(
-        DIR_SOURCE_ROOT, os.environ.get('CHROMIUM_OUTPUT_DIR')))
+    return os.path.abspath(
+        os.path.join(DIR_SOURCE_ROOT, os.environ.get('CHROMIUM_OUTPUT_DIR')))
 
   build_type = os.environ.get('BUILDTYPE')
   if not build_type:
     raise EnvironmentError(_MISSING_OUTPUT_DIR_MESSAGE)
 
-  return os.path.abspath(os.path.join(
-      DIR_SOURCE_ROOT, os.environ.get('CHROMIUM_OUT_DIR', 'out'),
-      build_type))
+  return os.path.abspath(
+      os.path.join(DIR_SOURCE_ROOT, os.environ.get('CHROMIUM_OUT_DIR', 'out'),
+                   build_type))
 
 
 def CheckOutputDirectory():
