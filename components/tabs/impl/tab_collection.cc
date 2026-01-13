@@ -125,11 +125,10 @@ void TabCollection::TabIterator::Next() {
   }
 }
 
-TabCollection::TabCollection(
-    Type type,
-    std::unordered_set<Type> supported_child_collections,
-    bool supports_tabs,
-    bool send_notifications_immediately)
+TabCollection::TabCollection(Type type,
+                             TypeEnumSet supported_child_collections,
+                             bool supports_tabs,
+                             bool send_notifications_immediately)
     : type_(type),
       supported_child_collections_(supported_child_collections),
       supports_tabs_{supports_tabs},
