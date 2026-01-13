@@ -311,11 +311,11 @@ struct PasskeyUnlockManagerHistogramTestParams {
   GpmPinStatus gpm_pin_status;
   // The number of passkeys to add to the passkey model.
   int num_passkeys_to_add = 0;
-  bool trigger_passkey_model_ready_later = false;
-  bool expect_ui_change_notification = false;
-  std::optional<int> expected_passkey_count;
-  std::optional<bool> expected_passkey_readiness;
-  std::optional<GpmPinStatus> expected_gpm_pin_status;
+  // If true, the passkey model used for testing will become ready, simulating
+  // that the model has finished loading state from disk and is ready to sync.
+  // Only when passkey model is ready, the passkey count histogram is logged.
+  bool trigger_passkey_model_ready = false;
+  bool expected_passkey_readiness;
 };
 
 class PasskeyUnlockManagerHistogramTest
@@ -328,81 +328,69 @@ TEST_P(PasskeyUnlockManagerHistogramTest, LogsHistograms) {
   ConfigureProfileAndSyncService(
       param.enclave_status, param.passkey_model_status, param.gpm_pin_status);
 
-  testing::StrictMock<MockPasskeyUnlockManagerObserver> observer;
-  base::ScopedObservation<PasskeyUnlockManager, PasskeyUnlockManager::Observer>
-      observation(&observer);
-  observation.Observe(passkey_unlock_manager());
-  if (param.expect_ui_change_notification) {
-    EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
-  }
-
   for (int i = 0; i < param.num_passkeys_to_add; ++i) {
     passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   }
 
   base::HistogramTester histogram_tester;
 
-  if (param.trigger_passkey_model_ready_later) {
-    passkey_model()->SetReady(true);
-  }
+  passkey_model()->SetReady(param.trigger_passkey_model_ready);
 
   AdvanceClock(base::Seconds(31));
 
-  if (param.expected_passkey_count.has_value()) {
-    histogram_tester.ExpectUniqueSample("WebAuthentication.PasskeyCount",
-                                        *param.expected_passkey_count, 1);
-  }
-  if (param.expected_passkey_readiness.has_value()) {
-    histogram_tester.ExpectBucketCount("WebAuthentication.PasskeyReadiness",
-                                       *param.expected_passkey_readiness, 1);
-  }
-  if (param.expected_gpm_pin_status.has_value()) {
-    histogram_tester.ExpectUniqueSample("WebAuthentication.GpmPinStatus",
-                                        *param.expected_gpm_pin_status, 1);
-  }
+  histogram_tester.ExpectUniqueSample("WebAuthentication.PasskeyCount",
+                                      param.num_passkeys_to_add, 1);
+  histogram_tester.ExpectBucketCount("WebAuthentication.PasskeyReadiness",
+                                     param.expected_passkey_readiness, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.GpmPinStatus",
+                                      param.gpm_pin_status, 1);
 }
 
 const PasskeyUnlockManagerHistogramTestParams kHistogramTestParams[] = {
     {"PasskeyCount_NoPasskeys", EnclaveManagerStatus::kEnclaveNotReady,
      PasskeyModelStatus::kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
      /*num_passkeys_to_add=*/0,
-     /*trigger_passkey_model_ready_later=*/false,
-     /*expect_ui_change_notification=*/false,
-     /*expected_passkey_count=*/0},
+     /*trigger_passkey_model_ready=*/false,
+     /*expected_passkey_readiness=*/false},
     {"PasskeyCount_WithPasskeys", EnclaveManagerStatus::kEnclaveNotReady,
      PasskeyModelStatus::kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
      /*num_passkeys_to_add=*/1,
-     /*trigger_passkey_model_ready_later=*/false,
-     /*expect_ui_change_notification=*/true,
-     /*expected_passkey_count=*/1},
+     /*trigger_passkey_model_ready=*/false,
+     /*expected_passkey_readiness=*/false},
     {"PasskeyReadiness_Ready", EnclaveManagerStatus::kEnclaveReady,
      PasskeyModelStatus::kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
      /*num_passkeys_to_add=*/0,
-     /*trigger_passkey_model_ready_later=*/false,
-     /*expect_ui_change_notification=*/false,
-     /*expected_passkey_count=*/std::nullopt,
+     /*trigger_passkey_model_ready=*/false,
      /*expected_passkey_readiness=*/true},
     {"PasskeyReadiness_Locked", EnclaveManagerStatus::kEnclaveNotReady,
      PasskeyModelStatus::kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
      /*num_passkeys_to_add=*/0,
-     /*trigger_passkey_model_ready_later=*/false,
-     /*expect_ui_change_notification=*/false,
-     /*expected_passkey_count=*/std::nullopt,
+     /*trigger_passkey_model_ready=*/false,
      /*expected_passkey_readiness=*/false},
     {"PasskeyCount_ModelBecomesReady", EnclaveManagerStatus::kEnclaveNotReady,
      PasskeyModelStatus::kPasskeyModelNotReady, GpmPinStatus::kGpmPinUnset,
      /*num_passkeys_to_add=*/1,
-     /*trigger_passkey_model_ready_later=*/true,
-     /*expect_ui_change_notification=*/true,
-     /*expected_passkey_count=*/1},
+     /*trigger_passkey_model_ready=*/true,
+     // The passkey readiness was already recorded as not ready at the time of
+     // startup, so if the model becomes ready later it doesn't get recorded
+     // again.
+     /*expected_passkey_readiness=*/false},
     {"GpmPinStatus_Unset", EnclaveManagerStatus::kEnclaveNotReady,
-     PasskeyModelStatus::kPasskeyModelNotReady, GpmPinStatus::kGpmPinUnset,
+     PasskeyModelStatus::kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
      /*num_passkeys_to_add=*/0,
-     /*trigger_passkey_model_ready_later=*/false,
-     /*expect_ui_change_notification=*/false,
-     /*expected_passkey_count=*/std::nullopt,
-     /*expected_passkey_readiness=*/std::nullopt,
-     /*expected_gpm_pin_status=*/GpmPinStatus::kGpmPinUnset},
+     /*trigger_passkey_model_ready=*/false,
+     /*expected_passkey_readiness=*/false},
+    {"GpmPinStatus_SetAndUsable", EnclaveManagerStatus::kEnclaveNotReady,
+     PasskeyModelStatus::kPasskeyModelReady, GpmPinStatus::kGpmPinSetAndUsable,
+     /*num_passkeys_to_add=*/0,
+     /*trigger_passkey_model_ready=*/false,
+     /*expected_passkey_readiness=*/false},
+    {"GpmPinStatus_SetAndNotUsable", EnclaveManagerStatus::kEnclaveNotReady,
+     PasskeyModelStatus::kPasskeyModelReady,
+     GpmPinStatus::kGpmPinSetButNotUsable,
+     /*num_passkeys_to_add=*/0,
+     /*trigger_passkey_model_ready=*/false,
+     /*expected_passkey_readiness=*/false},
 };
 
 INSTANTIATE_TEST_SUITE_P(
