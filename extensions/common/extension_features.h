@@ -296,6 +296,12 @@ BASE_DECLARE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport);
 // Chrome Enterprise on CWS.
 BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
 
+// When enabled, web searches with a newly-installed search engine-changing
+// extension will be blocked behind a new explicit-choice dialog. The dialog
+// must be used to confirm the choice of using the new search engine, or
+// returning to the previous provider.
+BASE_DECLARE_FEATURE(kSearchEngineExplicitChoiceDialog);
+
 // When enabled, all search extensions will unconditionally get the search
 // engine override dialog.
 BASE_DECLARE_FEATURE(kSearchEngineUnconditionalDialog);

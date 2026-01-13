@@ -179,6 +179,9 @@ BASE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport,
 
 BASE_FEATURE(kEnableShouldShowPromotion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSearchEngineExplicitChoiceDialog,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSearchEngineUnconditionalDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
