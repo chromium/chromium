@@ -1643,12 +1643,12 @@
   {
     "name": "collaboration-entreprise-v2",
     "owners": ["haileywang@google.com", "//components/collaboration/OWNERS"],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "collaboration-messaging",
     "owners": [ "//components/collaboration/OWNERS", "nyquist@chromium.org", "shaktisahu@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 160
   },
   {
     "name": "collaboration-shared-tab-group-account-data",
@@ -1656,7 +1656,7 @@
       "mickeyburks@chromium.org",
       "shaktisahu@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "compose-selection-nudge",
@@ -2049,7 +2049,7 @@
   {
     "name": "data-sharing",
     "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "data-sharing-debug-logs",
@@ -2057,17 +2057,17 @@
       "dtrainor@google.com",
       "chrome-tab-group-eng@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "data-sharing-join-only",
     "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "data-sharing-non-production-environment",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "dbd-revamp-desktop",
