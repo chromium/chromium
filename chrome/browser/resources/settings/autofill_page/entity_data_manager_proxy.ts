@@ -61,6 +61,12 @@ export interface EntityDataManagerProxy {
       listener: EntityInstancesChangedListener): void;
 
   /**
+   * Authenticates the user before viewing entity data. Returns true if
+   * authentication was successful or if no authentication was required.
+   */
+  authenticateUserBeforeViewingEntityData(): Promise<boolean>;
+
+  /**
    * Gets the opt-in status for AutofillAi for the current user.
    */
   getOptInStatus(): Promise<boolean>;
@@ -116,6 +122,10 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
   removeEntityInstancesChangedListener(
       listener: EntityInstancesChangedListener) {
     chrome.autofillPrivate.onEntityInstancesChanged.removeListener(listener);
+  }
+
+  authenticateUserBeforeViewingEntityData() {
+    return chrome.autofillPrivate.authenticateUserBeforeViewingEntityData();
   }
 
   getOptInStatus() {

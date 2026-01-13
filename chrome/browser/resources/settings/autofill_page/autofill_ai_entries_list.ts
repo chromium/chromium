@@ -315,8 +315,15 @@ export class SettingsAutofillAiEntriesListElement extends
   /**
    * Handles tapping on the "Edit" entity instance button in the action menu.
    */
-  private onMenuEditEntityInstanceClick_(e: Event) {
+  private async onMenuEditEntityInstanceClick_(e: Event) {
     e.preventDefault();
+
+    const success =
+        await this.entityDataManager_.authenticateUserBeforeViewingEntityData();
+    if (!success) {
+      return;
+    }
+
     assert(this.activeEntityInstance_);
     this.addOrEditEntityInstanceDialogTitle_ =
         this.activeEntityInstance_.type.editEntityTypeString;

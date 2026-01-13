@@ -59,6 +59,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -1198,6 +1199,51 @@ AutofillPrivateSetWalletablePassDetectionOptInStatusFunction::Run() {
           autofill_client()->GetVariationConfigCountryCode().value()),
       params->opted_in);
   return RespondNow(WithArguments(success));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction
+
+AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
+    AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction() = default;
+
+AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
+    ~AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::Run() {
+  if (!autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+          autofill_client()->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiReauthRequired)) {
+    return RespondNow(WithArguments(true));
+  }
+
+  autofill::ContentAutofillClient* client = autofill_client();
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  authenticator_ = client->GetDeviceAuthenticator();
+  if (!authenticator_ ||
+      !authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
+    return RespondNow(WithArguments(true));
+  }
+
+  authenticator_->AuthenticateWithMessage(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VIEWING_REAUTH),
+      base::BindOnce(
+          &AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
+              OnReauthCompleted,
+          this));
+  return RespondLater();
+}
+
+void AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
+    OnReauthCompleted(bool auth_succeeded) {
+  authenticator_.reset();
+
+  Respond(WithArguments(auth_succeeded));
 }
 
 }  // namespace extensions

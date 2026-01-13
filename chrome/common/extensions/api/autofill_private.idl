@@ -475,6 +475,7 @@ namespace autofillPrivate {
   callback GetWalletablePassDetectionOptInStatusCallback = void(boolean optedIn);
   callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
+  callback AuthenticateUserBeforeViewingEntityDataCallback = void(boolean success);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -570,6 +571,11 @@ namespace autofillPrivate {
     // Authenticates the user via device authentication and if successful, it
     // will then flip the mandatory auth toggle.
     static void authenticateUserAndFlipMandatoryAuthToggle();
+
+    // Authenticates the user before viewing entity data. Returns true if
+    // authentication was successful or if no authentication was required.
+    static void authenticateUserBeforeViewingEntityData(
+        AuthenticateUserBeforeViewingEntityDataCallback callback);
 
     // Returns the local card based on the `guid` provided. The user could
     // also be challenged with a reauth if that is enabled. For a successful

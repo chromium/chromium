@@ -191,6 +191,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[autofill::prefs::kAutofillPaymentMethodsMandatoryReauth] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[autofill::prefs::kAutofillAiReauthBeforeViewingSensitiveData] =
+      settings_api::PrefType::kBoolean;
 #endif
   (*s_allowlist)[autofill::prefs::kAutofillPaymentCvcStorage] =
       settings_api::PrefType::kBoolean;

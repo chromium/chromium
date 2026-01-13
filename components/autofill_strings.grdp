@@ -16,8 +16,13 @@
   <message name="IDS_AUTOFILL_WARNING_MIXED_FORM" desc="Warning text shown when autofill is disabled due to a form on a secure site being submitted over an insecure connection.">
     This form is not secure. Autofill has been turned off.
   </message>
+  <!-- TODO(crbug.com/468236777): Mark as translateable once the final strings are defined. -->
   <message name="IDS_AUTOFILL_AI_FILLING_REAUTH" desc="Message shown to the user when they need to authenticate to fill an Autofill AI form." translateable="false">
     Chrome browser is trying to fill your information
+  </message>
+  <!-- TODO(crbug.com/468236777): Mark as translateable once the final strings are defined. -->
+  <message name="IDS_AUTOFILL_AI_VIEWING_REAUTH" desc="Message shown to the user when they need to authenticate to view Autofill AI data." translateable="false">
+    Chrome browser is trying to open your information
   </message>
   <if expr="_google_chrome">
     <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY" desc="Text in a dialog to confirm that the user wants to delete an autocomplete form history suggestion.">

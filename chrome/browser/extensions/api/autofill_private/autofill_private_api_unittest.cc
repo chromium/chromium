@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -42,6 +44,7 @@
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api_test_utils.h"
 
 namespace {
 
@@ -490,5 +493,126 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       RunAutofillSubtest("verifyUserOptedOutOfWalletablePassDetection"));
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+class AutofillPrivateApiWithReauthTest
+    : public AutofillPrivateApiUnitTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AutofillPrivateApiWithReauthTest() {
+    if (IsFeatureEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          autofill::features::kAutofillAiReauthRequired);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          autofill::features::kAutofillAiReauthRequired);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    AutofillPrivateApiUnitTest::SetUpOnMainThread();
+
+    autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
+        autofill_client()->GetPrefs(), IsPrefEnabled());
+  }
+
+  bool IsPrefEnabled() const { return std::get<0>(GetParam()); }
+  bool IsFeatureEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests the AuthenticateUserBeforeViewingEntityData function under different
+// pref and feature flag combinations.
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiWithReauthTest,
+                       AuthenticateUserBeforeViewingEntityData) {
+  const bool should_attempt_auth = IsPrefEnabled() && IsFeatureEnabled();
+
+  if (should_attempt_auth) {
+    // Authentication Successful
+    {
+      auto authenticator =
+          std::make_unique<device_reauth::MockDeviceAuthenticator>();
+      EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+          .WillOnce(testing::Return(true));
+      EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+          .WillOnce(base::test::RunOnceCallback<1>(true));
+      autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+
+      auto function = base::MakeRefCounted<
+          extensions::
+              AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction>();
+      function->SetRenderFrameHost(
+          GetActiveWebContents()->GetPrimaryMainFrame());
+
+      std::optional<base::Value> result =
+          extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+              function.get(), "[]", profile());
+      ASSERT_TRUE(result);
+      EXPECT_TRUE(result->GetBool()) << "Auth should succeed";
+    }
+
+    //  Authentication Failed
+    {
+      auto authenticator =
+          std::make_unique<device_reauth::MockDeviceAuthenticator>();
+      EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+          .WillOnce(testing::Return(true));
+      EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+          .WillOnce(base::test::RunOnceCallback<1>(false));
+      autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+
+      auto function = base::MakeRefCounted<
+          extensions::
+              AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction>();
+      function->SetRenderFrameHost(
+          GetActiveWebContents()->GetPrimaryMainFrame());
+
+      std::optional<base::Value> result =
+          extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+              function.get(), "[]", profile());
+      ASSERT_TRUE(result);
+      EXPECT_FALSE(result->GetBool()) << "Auth should fail";
+    }
+  } else {
+    // Authentication should be SKIPPED, either because the feature or the pref
+    // are off.
+    auto authenticator =
+        std::make_unique<device_reauth::MockDeviceAuthenticator>();
+    EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+        .Times(0);
+    EXPECT_CALL(*authenticator, AuthenticateWithMessage).Times(0);
+    autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+
+    auto function = base::MakeRefCounted<
+        extensions::
+            AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction>();
+    function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+    std::optional<base::Value> result =
+        extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+            function.get(), "[]", profile());
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->GetBool())
+        << "Result should be true as auth is skipped";
+  }
+}
+
+// Instantiate the test suite with all combinations of the boolean parameters.
+// The first boolean is for the preference, the second for the feature flag.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillPrivateApiWithReauthTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return std::string(std::get<0>(info.param)
+                             ? "AuthenticationRequired_PrefOn_"
+                             : "AuthenticationRequired_PreOff_") +
+             std::string(std::get<1>(info.param) ? "FeatureOn" : "FeatureOff");
+    });
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

@@ -15,6 +15,10 @@ class ContentAutofillClient;
 class PaymentsDataManager;
 }  // namespace autofill
 
+namespace device_reauth {
+class DeviceAuthenticator;
+}  // namespace device_reauth
+
 namespace extensions {
 
 // A small helper class that exposes getters for Autofill's data managers.
@@ -632,6 +636,32 @@ class AutofillPrivateSetWalletablePassDetectionOptInStatusFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+};
+
+class AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction();
+  AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction(
+      const AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction&) =
+      delete;
+  AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction& operator=(
+      const AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction&) =
+      delete;
+  DECLARE_EXTENSION_FUNCTION(
+      "autofillPrivate.authenticateUserBeforeViewingEntityData",
+      AUTOFILLPRIVATE_AUTHENTICATEUSERBEFOREVIEWINGENTITYDATA)
+
+ protected:
+  ~AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnReauthCompleted(bool auth_succeeded);
+
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 };
 
 }  // namespace extensions
