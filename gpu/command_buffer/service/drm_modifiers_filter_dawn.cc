@@ -35,9 +35,7 @@ base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>>
 GetDawnModifierMap(wgpu::Adapter adapter) {
   base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>> modifier_map;
 
-  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
-    gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
-    auto si_format = viz::GetSharedImageFormat(buffer_format);
+  for (auto si_format : ui::kDrmSharedImageFormats) {
     auto wgpu_format = ToDawnFormat(si_format);
     if (wgpu_format == wgpu::TextureFormat::Undefined) {
       modifier_map.emplace(si_format, std::vector<uint64_t>());

@@ -38,9 +38,7 @@ void PopulateVkDrmFormatsAndModifiers(
     base::flat_map<uint32_t, std::vector<uint64_t>>&
         drm_formats_and_modifiers) {
 #if BUILDFLAG(IS_CHROMEOS)
-  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
-    viz::SharedImageFormat si_format =
-        viz::GetSharedImageFormat(static_cast<gfx::BufferFormat>(i));
+  for (auto si_format : ui::kDrmSharedImageFormats) {
     VkFormat vulkan_format = ToTextureVkFormat(si_format);
     int fourcc_format = ui::GetFourCCFormatFromSharedImageFormat(si_format);
     if (vulkan_format == VK_FORMAT_UNDEFINED || fourcc_format == 0) {

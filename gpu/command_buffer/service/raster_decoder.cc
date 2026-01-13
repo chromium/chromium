@@ -1232,7 +1232,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
                                           caps.drm_formats_and_modifiers);
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
   else if (shared_context_state_->IsGraphiteDawnVulkan()) {
     auto adapter = shared_context_state_->dawn_context_provider()
                        ->GetDevice()
