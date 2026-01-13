@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 
-#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -15,16 +14,6 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
 namespace blink {
-
-namespace {
-
-// When enabled, text aggregator nodes are marked as needing repaint in the
-// `TextPaintTimingDetector` when the `SoftNavigationContext` associated with
-// the node changes.
-BASE_FEATURE(kMarkTextNodesForRepaintOnContextChange,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 SoftNavigationPaintAttributionTracker::SoftNavigationPaintAttributionTracker(
     TextPaintTimingDetector* detector)
@@ -181,9 +170,6 @@ SoftNavigationPaintAttributionTracker::UpdateOnPrePaint(
 
 void SoftNavigationPaintAttributionTracker::
     NotifyPaintTimingDetectorOnContextChanged(const LayoutObject& object) {
-  if (!base::FeatureList::IsEnabled(kMarkTextNodesForRepaintOnContextChange)) {
-    return;
-  }
   if (paint_timing::IsImageType(object)) {
     return;
   }
