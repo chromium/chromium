@@ -160,6 +160,9 @@ BASE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching,
 BASE_FEATURE(kOptimizationGuideBypassFormsClassificationAuth,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOptimizationGuideBypassPasswordChangeAuth,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enforce a timeout for subframe page content extraction.
 // If enabled, defaults to 1 second. If disabled, wait indefinitely for all
 // subframes to respond.

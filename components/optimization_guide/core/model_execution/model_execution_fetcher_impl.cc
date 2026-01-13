@@ -382,7 +382,6 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kBlingPrototyping:
-    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
@@ -394,6 +393,9 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
           features::kOptimizationGuideBypassFormsClassificationAuth);
     case ModelBasedCapabilityKey::kScamDetection:
       return false;
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return !base::FeatureList::IsEnabled(
+          features::kOptimizationGuideBypassPasswordChangeAuth);
   }
 }
 
