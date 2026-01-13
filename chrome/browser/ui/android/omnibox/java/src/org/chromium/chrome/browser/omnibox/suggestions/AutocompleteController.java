@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
+import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -130,6 +131,9 @@ public class AutocompleteController {
      */
     public void startPrefetch(AutocompleteInput input, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
+        if (PreloadingFeatureMap.getInstance().shouldPrewarmOnZeroSuggest()) {
+            AutocompleteControllerJni.get().startPrewarm(mNativeController, webContents);
+        }
         AutocompleteControllerJni.get()
                 .startPrefetch(
                         mNativeController,
@@ -493,6 +497,10 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 @Px int dropdownHeightWithKeyboardActive,
                 @Px int suggestionHeight);
+
+        // Start prewarming a tab.
+        void startPrewarm(
+                long nativeAutocompleteControllerAndroid, @Nullable WebContents webContents);
 
         /** Acquire an instance of AutocompleteController associated with the supplied profile. */
         AutocompleteController getForProfile(@JniType("Profile*") Profile profile);
