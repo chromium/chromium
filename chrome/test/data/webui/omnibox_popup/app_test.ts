@@ -242,6 +242,7 @@ suite('AppTest', function() {
       localApp.remove();
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
+      testProxy.page.autocompleteResultChanged(createAutocompleteResult());
       await microtasksFinished();
 
       testProxy.page.onShowAiModePrefChanged(true);

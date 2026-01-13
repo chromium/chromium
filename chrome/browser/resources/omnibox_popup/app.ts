@@ -313,9 +313,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
     }
     return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
-        (input?.length === 0 || recentTabForChip?.showInPreviousTabChip ||
+        (input?.length === 0 ||
          input ===
-             recentTabForChip?.url.url.replace(/^https?:\/\/(?:www\.)?/, ''));
+             recentTabForChip?.url.url.replace(/^https?:\/\/(?:www\.)?/, '')
+                 .replace(/\/$/, ''));
   }
 }
 
