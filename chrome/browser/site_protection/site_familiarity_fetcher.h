@@ -19,8 +19,13 @@ class Profile;
 
 namespace site_protection {
 
-// Calculates the site familiarity based on information in chrome://history and
-// the safe-browsing-high-confidence-allowlist.
+// The minimum site engagement score that a site must have in order to be
+// considered familiar.
+inline constexpr int kMinSiteEngagementScoreForFamiliarity = 10;
+
+// Calculates the site familiarity based on information from the
+// SiteEngagementService, chrome://history and the
+// safe-browsing-high-confidence-allowlist.
 class SiteFamiliarityFetcher {
  public:
   enum class Verdict {
@@ -81,6 +86,10 @@ class SiteFamiliarityFetcher {
 
   // Whether `fetch_url_` is on the safe-browsing high-confidence-allowlist.
   bool is_on_sb_list_ = false;
+
+  // Whether the site engagement score for `fetch_url_` is higher than
+  // `kMinSiteEngagementScoreForFamiliarity`.
+  bool has_engagement_score_higher_than_threshold_ = false;
 
   // Callback passed to Start().
   Callback callback_;

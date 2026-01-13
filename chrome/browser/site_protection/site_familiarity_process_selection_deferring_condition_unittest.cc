@@ -4,6 +4,7 @@
 
 #include "chrome/browser/site_protection/site_familiarity_process_selection_deferring_condition.h"
 
+#include <memory>
 #include <queue>
 
 #include "base/functional/callback.h"
@@ -11,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
@@ -19,7 +21,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -54,6 +59,11 @@ class TestSafeBrowsingDatabaseManager : public MockSafeBrowsingDatabaseManager {
   GURL url_on_high_confidence_allowlist_;
 };
 
+std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
+    content::BrowserContext* context) {
+  return std::make_unique<site_engagement::SiteEngagementService>(context);
+}
+
 }  // anonymous namespace
 
 // Test for SiteFamiliarityProcessSelectionDeferringCondition.
@@ -78,7 +88,10 @@ class SiteFamiliarityProcessSelectionDeferringConditionTest
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{HistoryServiceFactory::GetInstance(),
-                                           GetHistoryTestingFactory()}};
+                                           GetHistoryTestingFactory()},
+            TestingProfile::TestingFactory{
+                site_engagement::SiteEngagementServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildTestSiteEngagementService)}};
   }
 
   void TearDown() override {
@@ -91,6 +104,11 @@ class SiteFamiliarityProcessSelectionDeferringConditionTest
   void AddPageVisitedYesterday(const GURL& url) {
     history_service()->AddPage(url, (base::Time::Now() - base::Hours(25)),
                                history::SOURCE_BROWSED);
+  }
+
+  void SetSiteEngagementScore(const GURL& url, double score) {
+    site_engagement::SiteEngagementService::Get(profile())
+        ->ResetBaseScoreForURL(url, score);
   }
 
   void BuildAndWaitForConditionToRunCallback(
@@ -236,16 +254,45 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
   CheckSiteFamiliar(navigation_handle);
 }
 
-// Test that an origin is considered unfamiliar if it is neither on the
-// safe-browsing-high-confidence-allowlist nor chrome://history has an entry
-// for the origin older than a day.
+// Test that if a site has an engagement score equal to the threshold, then it
+// is considered familiar.
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_EngagementScoreEqualToThreshold) {
+  GURL kTestUrl("https://www.example.com");
+
+  SetSiteEngagementScore(kTestUrl, kMinSiteEngagementScoreForFamiliarity);
+
+  content::MockNavigationHandle navigation_handle(kTestUrl, main_rfh());
+  BuildAndWaitForConditionToRunCallback(navigation_handle);
+
+  CheckSiteFamiliar(navigation_handle);
+}
+
+// Test that if a site has an engagement score above the threshold, then it is
+// considered familiar.
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_EngagementScoreAboveThreshold) {
+  GURL kTestUrl("https://www.example.com");
+
+  SetSiteEngagementScore(kTestUrl, kMinSiteEngagementScoreForFamiliarity + 1);
+
+  content::MockNavigationHandle navigation_handle(kTestUrl, main_rfh());
+  BuildAndWaitForConditionToRunCallback(navigation_handle);
+
+  CheckSiteFamiliar(navigation_handle);
+}
+
+// Test that an origin is considered unfamiliar if it is not on the
+// safe-browsing-high-confidence-allowlist, chrome://history does not have an
+// entry for the origin older than a day, and the site's engagement score is
+// below the familiarity threshold.
 TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
        FamiliarityHeuristic_Unfamiliar) {
   GURL kTestUrl("https://www.example.com");
   url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
   history_service()->AddPage(kTestUrl, (base::Time::Now() - base::Hours(1)),
                              history::SOURCE_BROWSED);
-
+  SetSiteEngagementScore(kTestUrl, kMinSiteEngagementScoreForFamiliarity - 1);
   content::MockNavigationHandle navigation_handle(kTestUrl, main_rfh());
   BuildAndWaitForConditionToRunCallback(navigation_handle);
   CheckSiteUnfamiliar(navigation_handle);
