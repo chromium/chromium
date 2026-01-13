@@ -1011,7 +1011,8 @@ class LocationBarMediator
         //
         // This call is permitted to happen before anyone else is activated, and
         // must be called before everyone else cleans up.
-        mAutocompleteCoordinator.onUrlFocusChange(hasFocus);
+        var fuseboxSession = mUrlHasFocus ? new FuseboxSessionState() : null;
+        mAutocompleteCoordinator.setSessionState(fuseboxSession);
 
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
             listener.onUrlFocusChange(hasFocus);

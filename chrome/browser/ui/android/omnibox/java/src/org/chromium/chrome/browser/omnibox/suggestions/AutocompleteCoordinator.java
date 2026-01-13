@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -251,8 +252,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         };
     }
 
-    public void onUrlFocusChange(boolean hasFocus) {
-        mMediator.onOmniboxSessionStateChange(hasFocus);
+    public void setSessionState(@Nullable FuseboxSessionState state) {
+        mMediator.setSessionState(state);
     }
 
     public void onUrlAnimationFinished(boolean hasFocus) {
