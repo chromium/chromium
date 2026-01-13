@@ -3267,7 +3267,6 @@ target(_test_target_type, "net_unittests") {
       "reporting/mock_persistent_reporting_store_unittest.cc",
       "reporting/reporting_browsing_data_remover_unittest.cc",
       "reporting/reporting_cache_unittest.cc",
-      "reporting/reporting_context_unittest.cc",
       "reporting/reporting_delivery_agent_unittest.cc",
       "reporting/reporting_endpoint_manager_unittest.cc",
       "reporting/reporting_garbage_collector_unittest.cc",
