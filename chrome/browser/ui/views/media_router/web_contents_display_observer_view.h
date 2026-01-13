@@ -7,16 +7,19 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/widget_observer.h"
 
+class ProfileBrowserCollection;
+
 namespace media_router {
 
 class WebContentsDisplayObserverView : public WebContentsDisplayObserver,
-                                       public BrowserListObserver,
+                                       public BrowserCollectionObserver,
                                        public views::WidgetObserver,
                                        public content::WebContentsObserver {
  public:
@@ -25,8 +28,8 @@ class WebContentsDisplayObserverView : public WebContentsDisplayObserver,
 
   ~WebContentsDisplayObserverView() override;
 
-  // BrowserListObserver overrides:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver overrides:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // views::WidgetObserver overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -56,6 +59,9 @@ class WebContentsDisplayObserverView : public WebContentsDisplayObserver,
 
   // Called when the display that |web_contents_| is on changes.
   base::RepeatingClosure callback_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace media_router
