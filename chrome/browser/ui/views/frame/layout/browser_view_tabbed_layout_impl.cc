@@ -288,6 +288,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
 
   // Lay out vertical tab strip if visible.
   int collapsed_vertical_tab_strip_adjustment = 0;
+  bool vertical_tabstrip_collapsed = false;
   if (IsParentedTo(views().vertical_tab_strip_region_view,
                    views().browser_view)) {
     gfx::Rect vertical_tab_strip_bounds;
@@ -295,7 +296,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       int vertical_tab_strip_relative_top = 0;
       int vertical_tab_strip_width =
           views().vertical_tab_strip_region_view->GetPreferredSize().width();
-      if (delegate().IsVerticalTabStripCollapsed()) {
+      vertical_tabstrip_collapsed = delegate().IsVerticalTabStripCollapsed();
+      if (vertical_tabstrip_collapsed) {
         // Collapsed tabstrip sits underneath caption buttons when present.
         vertical_tab_strip_relative_top =
             GetCollapsedVerticalTabStripRelativeTop(params);
@@ -349,9 +351,29 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       IsParentedTo(views().top_container, views().browser_view)) {
     auto& top_container_layout =
         layout.AddChild(views().top_container, gfx::Rect());
+
+    // Calculate the params for laying out the top container.
+    auto top_container_params =
+        params.InLocalCoordinates(params.visual_client_area);
+
+    // In vertical tabs mode, extra space is allocated next to the top element
+    // to serve as a grab handle, either on the trailing edge, or on the leading
+    // edge if the tabstrip isn't collapsed.
+    if (tab_strip_type == TabStripType::kVertical) {
+      constexpr int kVerticalTabsGrabHandleSize = 54;
+      if (!top_container_params.trailing_exclusion.IsEmpty()) {
+        top_container_params.trailing_exclusion.horizontal_padding =
+            std::max(top_container_params.trailing_exclusion.horizontal_padding,
+                     float{kVerticalTabsGrabHandleSize});
+      } else if (vertical_tabstrip_collapsed &&
+                 !top_container_params.leading_exclusion.IsEmpty()) {
+        top_container_params.leading_exclusion.horizontal_padding =
+            std::max(top_container_params.leading_exclusion.horizontal_padding,
+                     float{kVerticalTabsGrabHandleSize});
+      }
+    }
     const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
-        top_container_layout,
-        params.InLocalCoordinates(params.visual_client_area), needs_exclusion);
+        top_container_layout, top_container_params, needs_exclusion);
     top_container_layout.bounds =
         GetTopContainerBoundsInParent(top_container_local_bounds, params);
     params.SetTop(top_container_layout.bounds.bottom());

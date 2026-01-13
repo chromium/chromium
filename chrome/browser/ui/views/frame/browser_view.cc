@@ -4954,6 +4954,12 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
           return HTCAPTION;
         }
         return HTCLIENT;
+      } else {
+        gfx::Point test_point2(point);
+        if (ConvertedHitTest(parent(), top_container_, &test_point2) &&
+            top_container_->IsPositionInWindowCaption(test_point2)) {
+          return HTCAPTION;
+        }
       }
     } else {
       // See if the mouse pointer is within the bounds of the

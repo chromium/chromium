@@ -45,6 +45,16 @@ void TopContainerView::OnImmersiveRevealUpdated() {
   }
 }
 
+bool TopContainerView::IsPositionInWindowCaption(
+    const gfx::Point& test_point) const {
+  for (auto& child : children()) {
+    if (child->bounds().Contains(test_point)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
 // For ChromeOS, we don't need to manually call
 // `BrowserFrameViewChromeOS::Paint` here since it will be triggered by
