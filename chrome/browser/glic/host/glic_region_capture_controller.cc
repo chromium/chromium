@@ -6,14 +6,18 @@
 
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/widget/widget.h"
+#endif
 
 namespace glic {
 
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/452944608): Add additional metrics for the CaptureRegion API.
 
 GlicRegionCaptureController::GlicRegionCaptureController() = default;
@@ -127,5 +131,12 @@ void GlicRegionCaptureController::OnCaptureRegionObserverDisconnected() {
 bool GlicRegionCaptureController::IsCaptureRegionInProgressForTesting() const {
   return !!lens_region_search_controller_;
 }
+#else
+void GlicRegionCaptureController::CaptureRegion(
+    content::WebContents* web_contents,
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
+  NOTREACHED();
+}
+#endif
 
 }  // namespace glic

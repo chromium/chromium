@@ -68,7 +68,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -409,8 +408,9 @@ class DebouncerDeduper {
   glic::mojom::FocusedTabDataPtr next_data_candidate_;
 };
 
+// NEEDS_ANDROID_IMPL: Temporary to make glic build on Android.
+#if !BUILDFLAG(IS_ANDROID)
 const char kGlicActorJournalLog[] = "glic-actor-journal";
-
 // Class that encapsulates interacting with the actor journal.
 class JournalHandler {
  public:
@@ -595,6 +595,7 @@ class JournalHandler {
       file_journal_serializer_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 };
+#endif
 
 }  // namespace
 
@@ -627,8 +628,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         browser_is_open_calculator_(profile_, this),
         receiver_(this, std::move(receiver)),
         annotation_manager_(
-            std::make_unique<GlicAnnotationManager>(glic_service_)),
-        journal_handler_(profile_) {
+            std::make_unique<GlicAnnotationManager>(glic_service_))
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+        ,
+        journal_handler_(profile_)
+#endif
+  {
     active_state_calculator_.AddObserver(this);
   }
 
@@ -676,7 +681,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     params.opened_by_another_window = true;
     params.window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
-    Navigate(&params);
+    DoNavigate(&params);
   }
 
   void WebClientCreated(
@@ -771,6 +776,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             &GlicWebClientHandler::OnOsPermissionSettingChanged,
             base::Unretained(this)));
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
       if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
         actor_task_state_changed_subscription_ =
@@ -788,6 +794,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                     base::Unretained(this)));
       }
     }
+#endif
 
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
@@ -892,11 +899,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->enable_capture_region =
         base::FeatureList::IsEnabled(features::kGlicCaptureRegion);
     state->can_act_on_web = false;
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
       if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
         state->can_act_on_web = actor_service->GetPolicyChecker().CanActOnWeb();
       }
     }
+#endif
     state->enable_activate_tab = base::FeatureList::IsEnabled(
         glic::mojom::features::kGlicActivateTabApi);
     state->enable_get_tab_by_id =
@@ -1488,38 +1497,58 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                           int32_t task_id,
                           const std::string& event,
                           const std::string& details) override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     journal_handler_.LogBeginAsyncEvent(event_async_id, task_id, event,
                                         details);
+#endif
   }
 
   void LogEndAsyncEvent(uint64_t event_async_id,
                         const std::string& details) override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     journal_handler_.LogEndAsyncEvent(glic_service_->metrics()->current_model(),
                                       event_async_id, details);
+#endif
   }
 
   void LogInstantEvent(int32_t task_id,
                        const std::string& event,
                        const std::string& details) override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     journal_handler_.LogInstantEvent(task_id, event, details);
+#endif
   }
 
-  void JournalClear() override { journal_handler_.Clear(); }
+  void JournalClear() override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+    journal_handler_.Clear();
+#endif
+  }
 
   void JournalSnapshot(bool clear_journal,
                        JournalSnapshotCallback callback) override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     journal_handler_.Snapshot(clear_journal, std::move(callback));
+#endif
   }
 
   void JournalStart(uint64_t max_bytes, bool capture_screenshots) override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     journal_handler_.Start(max_bytes, capture_screenshots);
+#endif
   }
 
-  void JournalStop() override { journal_handler_.Stop(); }
+  void JournalStop() override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+    journal_handler_.Stop();
+#endif
+  }
 
   void JournalRecordFeedback(bool positive,
                              const std::string& reason) override {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     journal_handler_.RecordFeedback(positive, reason);
+#endif
   }
 
   // TODO(crbug.com/450026474): Remove call to GlicMetrics once
@@ -1678,9 +1707,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     pref_service_->SetInteger(prefs::kGlicCompletedFre,
                               static_cast<int>(prefs::FreStatus::kCompleted));
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
 
-#if !BUILDFLAG(IS_ANDROID)
     Browser* browser = chrome::FindTabbedBrowser(profile_, false);
     if (auto* interface = BrowserUserEducationInterface::From(browser)) {
       interface->NotifyAdditionalConditionEvent(
@@ -2117,7 +2146,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   const std::unique_ptr<GlicAnnotationManager> annotation_manager_;
   std::unique_ptr<system_permission_settings::ScopedObservation>
       system_permission_settings_observation_;
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   JournalHandler journal_handler_;
+#endif
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
   bool floating_panel_can_attach_ = false;
@@ -2228,7 +2259,7 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
                         disabled_by_admin_link_url,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  DoNavigate(&params);
   host().ClosePanel(this);
   base::RecordAction(
       base::UserMetricsAction("Glic.DisabledByAdminPanelLinkClicked"));

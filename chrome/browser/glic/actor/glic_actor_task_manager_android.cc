@@ -32,6 +32,12 @@ void GlicActorTaskManager::PerformActions(
       base::unexpected(mojom::PerformActionsErrorReason::kMissingTaskId));
 }
 
+void GlicActorTaskManager::CancelActions(
+    actor::TaskId task_id,
+    mojom::WebClientHandler::CancelActionsCallback callback) {
+  std::move(callback).Run(mojom::CancelActionsResult::kTaskNotFound);
+}
+
 void GlicActorTaskManager::StopActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskStopReason stop_reason) {}

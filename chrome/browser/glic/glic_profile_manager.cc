@@ -35,6 +35,11 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#endif
+
 namespace {
 bool g_prewarming_enabled_for_testing_ = true;
 std::optional<Profile*> g_forced_profile_for_launch_;

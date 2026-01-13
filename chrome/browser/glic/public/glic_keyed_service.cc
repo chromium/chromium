@@ -526,7 +526,7 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
-      Navigate(&params);
+      DoNavigate(&params);
   if (!navigation_handle.get()) {
     std::move(callback).Run(nullptr);
     return nullptr;

@@ -11,6 +11,8 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//components/tabs:public",
   ]
 
@@ -27,7 +29,6 @@ source_set("common") {
       "glic_tab_observer_impl.h",
     ]
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",

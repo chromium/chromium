@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
@@ -41,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"  // nogncheck
@@ -253,9 +253,9 @@ void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
 
+#if !BUILDFLAG(IS_ANDROID)
   GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Dismiss the FRE window and then show the Glic panel, but store source
   // browser before it is cleared.
   BrowserWindowInterface* source_browser = source_browser_;

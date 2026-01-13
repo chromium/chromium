@@ -11,17 +11,18 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
-#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -34,12 +35,10 @@
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -50,29 +49,36 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/context/glic_empty_pinned_tab_manager.h"
 #include "chrome/browser/glic/widget/glic_floating_ui_android.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui_android.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 #else
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 namespace glic {
 
 BASE_FEATURE(kGlicBindOnlyForDaisyChainingFromFloatingUi,
              base::FEATURE_ENABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kGlicActorDaisyChainingFromFloatingUiDoesntClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 BASE_FEATURE(kGlicBindOnPinFromFloatingUiDoesntShowSidePanel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicRemoveBlankInstancesOnClose,
@@ -184,8 +190,14 @@ GlicInstanceImpl::GlicInstanceImpl(
                        coordinator_delegate,
                        metrics,
                        contextual_cueing_service,
+#if !BUILDFLAG(IS_ANDROID)
                        new GlicFocusedBrowserManager(this, profile),
-                       new GlicFocusedBrowserManager(this, profile)) {}
+                       new GlicFocusedBrowserManager(this, profile)
+#else
+                       false
+#endif
+      ) {
+}
 
 GlicInstanceImpl::GlicInstanceImpl(
     Profile* profile,
@@ -193,15 +205,26 @@ GlicInstanceImpl::GlicInstanceImpl(
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
     GlicMetrics* metrics,
     contextual_cueing::ContextualCueingService* contextual_cueing_service,
+#if !BUILDFLAG(IS_ANDROID)
     GlicFocusedBrowserManager* detached_mode_focused_browser_manager,
-    GlicFocusedBrowserManager* live_mode_focused_browser_manager)
+    GlicFocusedBrowserManager* live_mode_focused_browser_manager
+#else
+    bool ignored
+#endif
+    )
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
       id_(instance_id),
       host_(profile_, this, this, this),
       pinned_tab_manager_(
-          std::make_unique<GlicPinnedTabManagerImpl>(profile, this, metrics)),
+#if !BUILDFLAG(IS_ANDROID)
+          std::make_unique<GlicPinnedTabManagerImpl>(profile, this, metrics)
+#else
+          std::make_unique<GlicEmptyPinnedTabManager>()
+#endif
+              ),
+#if !BUILDFLAG(IS_ANDROID)
       detached_mode_sharing_manager_(
           std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
               &sharing_manager_,
@@ -218,6 +241,7 @@ GlicInstanceImpl::GlicInstanceImpl(
                                  pinned_tab_manager_.get(),
                                  profile,
                                  metrics),
+#endif
       attached_mode_sharing_manager_(
           std::make_unique<GlicActivePinnedFocusedTabManager>(
               profile,
@@ -230,9 +254,12 @@ GlicInstanceImpl::GlicInstanceImpl(
       instance_metrics_(&sharing_manager_),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
+#if !BUILDFLAG(IS_ANDROID)
               &sharing_manager_,
               this,
-              contextual_cueing_service)),
+              contextual_cueing_service
+#endif
+              )),
       actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
       last_activation_timestamp_(base::Time::Now()),
       last_deactivation_timestamp_(base::TimeTicks::Now()) {
@@ -578,13 +605,16 @@ void GlicInstanceImpl::UpdateSharingManagerDelegate() {
     sharing_manager_.SetDelegate(&attached_mode_sharing_manager_);
     return;
   }
-
+#if !BUILDFLAG(IS_ANDROID)
   if (interaction_mode_ == mojom::WebClientMode::kAudio) {
     sharing_manager_.SetDelegate(&live_mode_sharing_manager_);
     return;
   }
 
   sharing_manager_.SetDelegate(&detached_mode_sharing_manager_);
+#else
+  NOTREACHED() << "Android only has attached mode";
+#endif
 }
 
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
@@ -718,7 +748,7 @@ void GlicInstanceImpl::OnBrowserActivated(BrowserWindowInterface* browser) {
   if (!ShouldDoAutomaticActivation()) {
     return;
   }
-  tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+  tabs::TabInterface* active_tab = GetActiveTabInterface(browser);
   if (!active_tab) {
     return;
   }
@@ -839,6 +869,7 @@ void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   Browser* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
@@ -856,6 +887,7 @@ void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
 
   BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
       std::move(params));
+#endif
 }
 
 void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
@@ -865,6 +897,7 @@ void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   Browser* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
@@ -882,6 +915,7 @@ void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
 
   BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
       std::move(params));
+#endif
 }
 
 void GlicInstanceImpl::MaybeShowHostUi(
@@ -1262,6 +1296,7 @@ views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
 void GlicInstanceImpl::OnTabAddedToTask(
     actor::TaskId task_id,
     const tabs::TabInterface::Handle& tab_handle) {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: actor not yet ported
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !task_id) {
     instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
@@ -1284,6 +1319,7 @@ void GlicInstanceImpl::OnTabAddedToTask(
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                  /*success=*/true, tab);
+#endif
 }
 
 void GlicInstanceImpl::RequestToShowCredentialSelectionDialog(

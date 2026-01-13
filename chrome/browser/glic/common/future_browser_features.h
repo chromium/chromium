@@ -8,11 +8,14 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #endif
 
 // The intent is to remove functions from this file as things become available
@@ -87,6 +90,15 @@ inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
     BrowserWindowInterface* browser_window) {
 #if !BUILDFLAG(IS_ANDROID)
   return browser_window ? browser_window->GetWeakPtr() : nullptr;
+#else
+  return nullptr;
+#endif
+}
+
+inline base::WeakPtr<content::NavigationHandle> DoNavigate(
+    NavigateParams* params) {
+#if !BUILDFLAG(IS_ANDROID)
+  return Navigate(params);
 #else
   return nullptr;
 #endif

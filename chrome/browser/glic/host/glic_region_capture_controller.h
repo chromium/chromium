@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -23,6 +24,7 @@ class LensRegionSearchController;
 
 namespace glic {
 
+#if !BUILDFLAG(IS_ANDROID)
 class GlicRegionCaptureController {
  public:
   GlicRegionCaptureController();
@@ -56,6 +58,16 @@ class GlicRegionCaptureController {
 
   base::WeakPtrFactory<GlicRegionCaptureController> weak_factory_{this};
 };
+#else
+// TODO(b/470059315): NEEDS_ANDROID_IMPL
+class GlicRegionCaptureController {
+ public:
+  void CaptureRegion(
+      content::WebContents* web_contents,
+      mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+  void CancelCaptureRegion() {}
+};
+#endif
 
 }  // namespace glic
 

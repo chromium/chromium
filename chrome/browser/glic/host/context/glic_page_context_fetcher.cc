@@ -7,13 +7,12 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "components/content_extraction/content/browser/inner_text.h"
@@ -23,6 +22,11 @@
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/glic/media/glic_media_integration.h"
+#endif
 
 namespace glic {
 
@@ -159,6 +163,7 @@ void FetchPageContext(
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry;
   std::unique_ptr<page_content_annotations::FetchPageProgressListener>
       progress_listener;
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   if (auto* actor_keyed_service =
           actor::ActorKeyedService::Get(web_contents->GetBrowserContext())) {
     const GURL& url = web_contents->GetLastCommittedURL();
@@ -168,6 +173,7 @@ void FetchPageContext(
     progress_listener = actor::CreateActorJournalFetchPageProgressListener(
         actor_keyed_service->GetJournal().GetSafeRef(), url, actor::TaskId());
   }
+#endif
 
   page_content_annotations::FetchPageContextOptions options;
   if (tab_context_options.include_inner_text) {
@@ -200,11 +206,13 @@ void FetchPageContext(
   }
 
   std::unique_ptr<optimization_guide::proto::ContentNode> media_root_node;
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   if (auto* media_integration = GlicMediaIntegration::GetFor(web_contents)) {
     media_root_node =
         std::make_unique<optimization_guide::proto::ContentNode>();
     media_integration->AppendContext(web_contents, media_root_node.get());
   }
+#endif
 
   page_content_annotations::FetchPageContext(
       *web_contents, options, std::move(progress_listener),

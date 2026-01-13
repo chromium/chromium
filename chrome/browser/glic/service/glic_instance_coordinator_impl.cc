@@ -36,21 +36,10 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
-#include "chrome/browser/glic/widget/glic_side_panel_ui.h"
-#include "chrome/browser/glic/widget/glic_view.h"
-#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
-#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -58,11 +47,22 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"
-#include "ui/views/controls/webview/webview.h"
-#include "ui/views/widget/widget_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/widget/glic_side_panel_ui.h"
+#include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
+#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/widget/widget_observer.h"
 #endif
 namespace glic {
 
@@ -357,7 +357,7 @@ bool GlicInstanceCoordinatorImpl::IsDetached() const {
 bool GlicInstanceCoordinatorImpl::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
   if (const auto* instance = GetInstanceForTab(
-          const_cast<BrowserWindowInterface&>(bwi).GetActiveTabInterface())) {
+          GetActiveTabInterface(const_cast<BrowserWindowInterface*>(&bwi)))) {
     return instance->IsShowing();
   }
   return false;
@@ -538,7 +538,7 @@ void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
     side_panel_options.pin_trigger = pin_trigger;
     ShowOptions show_opts(side_panel_options);
     show_opts.focus_on_show =
-        tab->GetBrowserWindowInterface()->IsActive() && tab->IsActivated();
+        IsActive(tab->GetBrowserWindowInterface()) && tab->IsActivated();
     instance->Show(show_opts);
   }
 }
@@ -573,7 +573,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     bool prevent_close,
     glic::mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion) {
-  auto* tab = browser->GetActiveTabInterface();
+  auto* tab = GetActiveTabInterface(browser);
   if (!tab) {
     return;
   }

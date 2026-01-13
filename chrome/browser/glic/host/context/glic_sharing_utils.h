@@ -42,6 +42,7 @@ GlicPinnedTabUsage GetEmptyPinnedTabUsage();
 // Returns an empty unpin event.
 GlicUnpinEvent GetEmptyUnpinEvent();
 
+#if !BUILDFLAG(IS_ANDROID)
 // Shared util for monitoring changes to "active tab" for a given profile.
 class GlicActiveTabForProfileTracker : public BrowserCollectionObserver {
  public:
@@ -95,6 +96,25 @@ class GlicActiveTabForProfileTracker : public BrowserCollectionObserver {
 
   raw_ptr<Profile> profile_;
 };
+#else
+// NEEDS_ANDROID_IMPL: this is a temporary stub.
+
+class GlicActiveTabForProfileTracker {
+ public:
+  explicit GlicActiveTabForProfileTracker(Profile* profile);
+  ~GlicActiveTabForProfileTracker();
+
+  base::CallbackListSubscription AddActiveTabChangedCallback(
+      base::RepeatingCallback<void(tabs::TabInterface* tab)> callback) {
+    return active_tab_changed_callback_list_.Add(std::move(callback));
+  }
+  tabs::TabInterface* GetActiveTab() const { return nullptr; }
+
+ private:
+  base::RepeatingCallbackList<void(tabs::TabInterface* tab)>
+      active_tab_changed_callback_list_;
+};
+#endif
 
 }  // namespace glic
 

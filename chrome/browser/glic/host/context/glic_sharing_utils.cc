@@ -149,4 +149,10 @@ void GlicActiveTabForProfileTracker::NotifyActiveTabChanged(
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(
+    Profile* profile) {}
+GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() = default;
+#endif
+
 }  // namespace glic
