@@ -35,6 +35,7 @@ class PageContext;
 @class BWGLinkOpeningHandler;
 @class BWGPageStateChangeHandler;
 @class BWGSessionHandler;
+@class GeminiCameraHandler;
 @class GeminiPageContext;
 @class GeminiViewStateChangeHandler;
 @class GeminiSuggestionHandler;
@@ -172,11 +173,14 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Handler for the BWG sessions.
   __strong BWGSessionHandler* bwg_session_handler_ = nullptr;
 
-  // Delegate implementation for BWGSessionHandler.
-  __strong GeminiViewStateChangeHandler* gemini_view_state_handler_ = nullptr;
+  // Handler for Gemini camera.
+  __strong GeminiCameraHandler* gemini_camera_handler_ = nullptr;
 
   // Handler for Gemini suggestion chips.
   __strong GeminiSuggestionHandler* gemini_suggestion_handler_ = nullptr;
+
+  // Delegate implementation for BWGSessionHandler.
+  __strong GeminiViewStateChangeHandler* gemini_view_state_handler_ = nullptr;
 
   // Reference to fullscreen controller. Used to observe fullscreen progress
   // updates related to the Gemini overlay.

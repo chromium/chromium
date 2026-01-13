@@ -9,6 +9,7 @@
 
 @protocol BWGLinkOpeningDelegate;
 @protocol BWGPageStateChangeDelegate;
+@protocol GeminiCameraDelegate;
 @protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
 
@@ -21,6 +22,10 @@
     pageStateChangeHandler;
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
+
+// TODO(crbug.com/455905539): Remove optional when internal is implemented.
+@optional
+@property(nonatomic, weak) id<GeminiCameraDelegate> cameraHandler;
 
 @end
 
