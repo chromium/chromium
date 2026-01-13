@@ -144,4 +144,7 @@
 // Supports VCN.
 #define IOS_WEB_VIEW_SUPPORTS_VCN 1
 
+// Supports risk based authentication.
+#define IOS_WEB_VIEW_SUPPORTS_RISK_BASED_AUTHENTICATION 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

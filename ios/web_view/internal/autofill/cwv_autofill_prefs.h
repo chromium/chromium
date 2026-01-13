@@ -26,6 +26,9 @@ inline constexpr char kUseImageFetcherEnabled[] =
 inline constexpr char kUseCardCustomImageEnabled[] =
     "cwv.autofill.use_card_custom_image_enabled";
 
+inline constexpr char kRiskBasedAuthenticationEnabled[] =
+    "cwv.autofill.risk_based_authentication_enabled";
+
 // Registers the CWVAutofill preferences for this `pref_registry`.
 void RegisterCWVAutofillPrefs(user_prefs::PrefRegistrySyncable* pref_registry);
 
@@ -44,6 +47,10 @@ bool IsUseImageFetcherEnabled(const PrefService* prefs);
 void SetUseCardCustomImageEnabled(PrefService* prefs, bool value);
 
 bool IsUseCardCustomImagerEnabled(const PrefService* prefs);
+
+void SetRiskBasedAuthenticationEnabled(PrefService* prefs, bool value);
+
+bool IsRiskBasedAuthenticationEnabled(const PrefService* prefs);
 
 }  // namespace ios_web_view
 

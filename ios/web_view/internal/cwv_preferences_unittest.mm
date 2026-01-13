@@ -65,6 +65,8 @@ class CWVPreferencesTest : public PlatformTest {
                                        false);
     pref_registry->RegisterBooleanPref(ios_web_view::kUseCardCustomImageEnabled,
                                        false);
+    pref_registry->RegisterBooleanPref(
+        ios_web_view::kRiskBasedAuthenticationEnabled, false);
 
     base::FilePath temp_dir_path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir_path));
