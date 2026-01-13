@@ -8,9 +8,11 @@ import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 export interface MenuStateItem<T> {
   data: T;         // The value that is propagated when this item is selected.
   title: string;   // The visible text for this item.
+  selected?: boolean;  // Whether this item is currently selected.
   icon?: string;   // An optional icon that is displayed next to the title.
   style?: string;  // An optional string for styling each item.
   header?: string; // Optional text for a header that should go above this item.
+  eventName?: string;  // Optional event name for this item if needed per-item.
 }
 
 // Defines the contract for any menu that appears in the Toolbar.

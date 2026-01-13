@@ -77,12 +77,13 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
         Number.parseInt(currentTarget.dataset['index']!);
     const menuItem = this.menuItems[this.currentSelectedIndex];
     assert(menuItem);
-    this.fire(this.eventName, {data: menuItem.data});
+    const eventName = menuItem.eventName || this.eventName;
+    this.fire(eventName, {data: menuItem.data});
     this.$.lazyMenu.get().close();
   }
 
-  protected isItemSelected_(index: number): boolean {
-    return index === this.currentSelectedIndex;
+  protected isItemSelected_(index: number, item: MenuStateItem<any>): boolean {
+    return item.selected || index === this.currentSelectedIndex;
   }
 
   protected doesItemHaveIcon_(item: MenuStateItem<any>): boolean {

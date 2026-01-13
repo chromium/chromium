@@ -207,6 +207,11 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, FontSelect) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, SimpleActionMenu) {
+  RunSidePanelTest("side_panel/read_anything/simple_action_menu_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ColorMenu) {
   RunSidePanelTest("side_panel/read_anything/color_menu_test.js",
                    "mocha.run()");

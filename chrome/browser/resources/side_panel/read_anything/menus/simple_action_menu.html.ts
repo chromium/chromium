@@ -26,7 +26,7 @@ export function getHtml(this: SimpleActionMenuElement) {
           @click="${this.onClick_}"
           data-index="${index}">
         <cr-icon
-            class="button-image check-mark check-mark-showing-${this.isItemSelected_(index)}"
+            class="button-image check-mark check-mark-showing-${this.isItemSelected_(index, item)}"
             icon="read-anything-20:check-mark"
             aria-label="$i18n{selected}">
         </cr-icon>
