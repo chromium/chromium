@@ -65,12 +65,14 @@ export class FakeReadingMode {
 
   // Enum values for line focus modes.
   lineFocusOff: number = 50;
-  lineFocusSmallCursorWindow: number = 51;
-  lineFocusMediumCursorWindow: number = 52;
-  lineFocusLargeCursorWindow: number = 53;
-  lineFocusStaticLine: number = 54;
-  lineFocusCursorLine: number = 55;
-
+  lineFocusSmallStaticWindow: number = 51;
+  lineFocusMediumStaticWindow: number = 52;
+  lineFocusLargeStaticWindow: number = 53;
+  lineFocusSmallCursorWindow: number = 54;
+  lineFocusMediumCursorWindow: number = 55;
+  lineFocusLargeCursorWindow: number = 56;
+  lineFocusStaticLine: number = 57;
+  lineFocusCursorLine: number = 58;
   // Enum values for presentation states.
   inSidePanelPresentationState: number = 2;
   inImmersiveOverlayPresentationState: number = 3;

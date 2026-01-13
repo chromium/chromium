@@ -229,6 +229,9 @@ class ReadAnythingAppController
   int ContentFinishedStopSource() const;
   int UnexpectedUpdateContentStopSource() const;
   int LineFocusOff() const;
+  int LineFocusSmallStaticWindow() const;
+  int LineFocusMediumStaticWindow() const;
+  int LineFocusLargeStaticWindow() const;
   int LineFocusSmallCursorWindow() const;
   int LineFocusMediumCursorWindow() const;
   int LineFocusLargeCursorWindow() const;
