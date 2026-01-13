@@ -497,14 +497,13 @@ public class StatusMediator
      */
     @Override
     public void updateLocationBarIcon(@IconTransitionType int transitionType) {
+        // Reset the permission icon.
+        mPermissionStatusHandler.reset();
         // Reset the store icon status.
         mIsStoreIconShowing = false;
 
         // No need to proceed further if we've already updated it for the search engine icon.
-        if (maybeUpdateStatusIconForSearchEngineIcon()) {
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
-            return;
-        }
+        if (maybeUpdateStatusIconForSearchEngineIcon()) return;
 
         int icon = 0;
         int tint = 0;
@@ -515,7 +514,6 @@ public class StatusMediator
 
         if (mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
                 == PageClassification.ANDROID_HUB_VALUE) {
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             // Show the status icon primarily for incognito since it is defaulted off there.
             setStatusIconShown(/* show= */ true);
             icon = R.drawable.ic_arrow_back_24dp;
@@ -525,7 +523,6 @@ public class StatusMediator
                     mModel.get(StatusProperties.SHOW_STATUS_ICON),
                     mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
         } else if (mUrlHasFocus) {
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             if (mShowStatusIconWhenUrlFocused) {
                 icon =
                         mUrlBarTextIsSearch
@@ -533,8 +530,6 @@ public class StatusMediator
                                 : R.drawable.ic_globe_24dp;
                 tint = mNavigationIconTintRes;
             }
-        } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
-            return;
         } else if (mSecurityIconRes != 0) {
             mIsSecurityViewShown = true;
             icon = mSecurityIconRes;
@@ -751,21 +746,16 @@ public class StatusMediator
     @VisibleForTesting
     @Override
     public void resetCustomIconsStatus() {
-        mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
-        resetEmbeddedIconHandlers();
+        mPermissionStatusHandler.reset();
+        mStoreIconHandler.removeCallbacksAndMessages(null);
+        mIconTaskHandler.removeCallbacksAndMessages(null);
+        mIsStoreIconShowing = false;
     }
 
     /** Notifies that the page info was opened. */
     void onPageInfoOpened() {
-        mPermissionStatusHandler.onPageInfoOpened();
-        resetEmbeddedIconHandlers();
+        resetCustomIconsStatus();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    private void resetEmbeddedIconHandlers() {
-        mStoreIconHandler.removeCallbacksAndMessages(null);
-        mIconTaskHandler.removeCallbacksAndMessages(null);
-        mIsStoreIconShowing = false;
     }
 
     boolean isStoreIconShowing() {
