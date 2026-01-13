@@ -9,7 +9,6 @@ import '//resources/cr_elements/icons.html.js';
 import './color_data.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrContainerShadowMixinLit} from 'chrome://resources/cr_elements/cr_container_shadow_mixin_lit.js';
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -28,11 +27,7 @@ export interface ColorPipelineInternalsAppElement {
 const CSS_PREFIX: string = '--color-sys-';
 const CC_PREFIX: string = 'kColorSys';
 
-const ColorPipelineInternalsAppElementBase =
-    CrContainerShadowMixinLit(CrLitElement);
-
-export class ColorPipelineInternalsAppElement extends
-    ColorPipelineInternalsAppElementBase {
+export class ColorPipelineInternalsAppElement extends CrLitElement {
   static get is() {
     return 'color-pipeline-internals-app';
   }
