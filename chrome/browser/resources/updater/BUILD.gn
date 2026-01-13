@@ -48,6 +48,8 @@ build_webui("build") {
     "i18n_setup.ts",
     "icons.html.ts",
     "known_apps.ts",
+    "scope_icon.html.ts",
+    "scope_icon.ts",
   ]
   css_files = [
     "app.css",

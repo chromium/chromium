@@ -28,8 +28,8 @@ export function getHtml(this: EventListItemElement) {
       </span>
       <div class="event-scope-column">
         ${this.scope ? html`
-          <cr-icon icon="${this.scopeIcon}" title="${this.scopeLabel}">
-          </cr-icon>
+          <scope-icon .scope="${this.scope}"></scope-icon>
+          </scope-icon>
         ` : ''}
       </div>
       <div class="event-type-column">

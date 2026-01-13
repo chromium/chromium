@@ -6,6 +6,7 @@ import './raw_event_details.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '../scope_icon.js';
 import '../icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -13,7 +14,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {PolicySet, Scope, UpdaterProcessMap} from '../event_history.js';
-import {getAppId, isMergedHistoryEvent, localizeScope} from '../event_history.js';
+import {getAppId, isMergedHistoryEvent} from '../event_history.js';
 import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHistoryEvent, MergedInstallEvent, MergedQualifyEvent, MergedUninstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {getKnownAppNamesById} from '../known_apps.js';
@@ -110,16 +111,6 @@ export class EventListItemElement extends CrLitElement {
 
   protected onExpandedChanged(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;
-  }
-
-  protected get scopeIcon(): string {
-    assert(this.scope !== undefined);
-    return this.scope === 'SYSTEM' ? 'cr:computer' : 'cr:person';
-  }
-
-  protected get scopeLabel(): string {
-    assert(this.scope !== undefined);
-    return localizeScope(this.scope);
   }
 
   /**
