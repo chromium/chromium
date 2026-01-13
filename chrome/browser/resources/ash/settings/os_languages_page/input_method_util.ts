@@ -713,20 +713,20 @@ export function getOptionMenuItems(option: OptionType|UiOptionType):
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
       return [
         {
-          value: JapanesePunctuationStyle.KUTEN_TOUTEN,
-          name: 'inputMethodOptionsJapanesePunctuationStyleKutenTouten',
+          value: JapanesePunctuationStyle.TOUTEN_KUTEN,
+          name: 'inputMethodOptionsJapanesePunctuationStyleToutenKuten',
         },
         {
           value: JapanesePunctuationStyle.COMMA_PERIOD,
           name: 'inputMethodOptionsJapanesePunctuationStyleCommaPeriod',
         },
         {
-          value: JapanesePunctuationStyle.KUTEN_PERIOD,
-          name: 'inputMethodOptionsJapanesePunctuationStyleKutenPeriod',
+          value: JapanesePunctuationStyle.TOUTEN_PERIOD,
+          name: 'inputMethodOptionsJapanesePunctuationStyleToutenPeriod',
         },
         {
-          value: JapanesePunctuationStyle.COMMA_TOUTEN,
-          name: 'inputMethodOptionsJapanesePunctuationStyleCommaTouten',
+          value: JapanesePunctuationStyle.COMMA_KUTEN,
+          name: 'inputMethodOptionsJapanesePunctuationStyleCommaKuten',
         },
       ];
     case OptionType.JAPANESE_SYMBOL_STYLE:

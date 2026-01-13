@@ -31,7 +31,7 @@ export const OPTION_DEFAULT = {
   [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
   [OptionType.JAPANESE_INPUT_MODE]: JapaneseInputMode.ROMAJI,
   [OptionType.JAPANESE_PUNCTUATION_STYLE]:
-      JapanesePunctuationStyle.KUTEN_TOUTEN,
+      JapanesePunctuationStyle.TOUTEN_KUTEN,
   [OptionType.JAPANESE_SYMBOL_STYLE]:
       JapaneseSymbolStyle.CORNER_BRACKET_MIDDLE_DOT,
   [OptionType.JAPANESE_SPACE_INPUT_STYLE]: JapaneseSpaceInputStyle.INPUT_MODE,

@@ -107,14 +107,28 @@ inline constexpr std::string_view kVnPrefTelexShowUnderline =
 // LINT.IfChange(JpOptionValues)
 inline constexpr std::string_view kJpPrefInputModeKana = "Kana";
 inline constexpr std::string_view kJpPrefInputModeRomaji = "Romaji";
-inline constexpr std::string_view kJpPrefPunctuationStyleKutenTouten =
+
+// "KutenTouten" string value is a misnomer originating from Japanese IME Mozc
+// lib (where it's now been fixed), but this string is persisted in CrOS Prefs
+// storage so must NOT be adapted unless user data are migrated first.
+inline constexpr std::string_view kJpPrefPunctuationStyleToutenKuten =
     "KutenTouten";
+
 inline constexpr std::string_view kJpPrefPunctuationStyleCommaPeriod =
     "CommaPeriod";
-inline constexpr std::string_view kJpPrefPunctuationStyleKutenPeriod =
+
+// "KutenPeriod" string value is a misnomer originating from Japanese IME Mozc
+// lib (where it's now been fixed), but this string is persisted in CrOS Prefs
+// storage so must NOT be adapted unless user data are migrated first.
+inline constexpr std::string_view kJpPrefPunctuationStyleToutenPeriod =
     "KutenPeriod";
-inline constexpr std::string_view kJpPrefPunctuationStyleCommaTouten =
+
+// "CommaTouten" string value is a misnomer originating from Japanese IME Mozc
+// lib (where it's now been fixed), but this string is persisted in CrOS Prefs
+// storage so must NOT be adapted unless user data are migrated first.
+inline constexpr std::string_view kJpPrefPunctuationStyleCommaKuten =
     "CommaTouten";
+
 inline constexpr std::string_view kJpPrefSymbolStyleCornerBracketMiddleDot =
     "CornerBracketMiddleDot";
 inline constexpr std::string_view kJpPrefSymbolStyleSquareBracketSlash =

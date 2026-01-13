@@ -153,10 +153,22 @@ export enum JapaneseInputMode {
  * Values persisted in OptionType.JAPANESE_PUNCTUATION_STYLE CrOS-Prefs entry.
  */
 export enum JapanesePunctuationStyle {
-  KUTEN_TOUTEN = 'KutenTouten',
+  // "KutenTouten" string value is a misnomer originating from Japanese IME Mozc
+  // lib (where it's now been fixed), but this string is persisted in CrOS Prefs
+  // storage so must NOT be adapted unless user data are migrated first.
+  TOUTEN_KUTEN = 'KutenTouten',
+
   COMMA_PERIOD = 'CommaPeriod',
-  KUTEN_PERIOD = 'KutenPeriod',
-  COMMA_TOUTEN = 'CommaTouten',
+
+  // "KutenPeriod" string value is a misnomer originating from Japanese IME Mozc
+  // lib (where it's now been fixed), but this string is persisted in CrOS Prefs
+  // storage so must NOT be adapted unless user data are migrated first.
+  TOUTEN_PERIOD = 'KutenPeriod',
+
+  // "CommaTouten" string value is a misnomer originating from Japanese IME Mozc
+  // lib (where it's now been fixed), but this string is persisted in CrOS Prefs
+  // storage so must NOT be adapted unless user data are migrated first.
+  COMMA_KUTEN = 'CommaTouten',
 }
 
 /**
