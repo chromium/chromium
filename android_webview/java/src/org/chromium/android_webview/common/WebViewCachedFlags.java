@@ -76,10 +76,7 @@ public class WebViewCachedFlags {
      */
     public static void init(SharedPreferences prefs) {
         synchronized (sLock) {
-            if (sInstance != null) {
-                throw new IllegalStateException(
-                        "Cannot call WebViewCachedFlags.init more than once.");
-            }
+            assert sInstance == null : "Cannot call WebViewCachedFlags.init more than once.";
             sInstance =
                     new WebViewCachedFlags(
                             prefs,
