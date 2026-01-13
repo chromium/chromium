@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "content/public/browser/prerender_host_id.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -203,10 +204,10 @@ class WebContentsTester {
   // SetPageFrozen().
   virtual bool IsPageFrozen() = 0;
 
-  // Starts prerendering a page with |url|, and returns the root frame tree node
-  // id of the page. The page has a pending navigation in the root frame tree
-  // node when this method returns.
-  virtual FrameTreeNodeId AddPrerender(const GURL& url) = 0;
+  // Starts prerendering a page with |url|, and returns the PrerenderHostId of
+  // the page. The page has a pending navigation in the root frame tree node
+  // when this method returns.
+  virtual PrerenderHostId AddPrerender(const GURL& url) = 0;
   // Starts prerendering a page, simulates a navigation to |url| in the main
   // frame and returns the main frame of the page after the navigation is
   // complete.
