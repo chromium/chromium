@@ -56,6 +56,13 @@
   --thumbnail-chip-overlay-width: 100%;
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
+  /* Toolbar colors */
+  --toolbar-background-color: var(--search-background-color);
+  --toolbar-text-color: rgb(31, 31, 31);
+  --toolbar-button-icon-color: rgb(31, 31, 31);
+  --toolbar-divider-color: rgb(211,227,253);
+  --toolbar-menu-background-color: rgb(255, 255, 255);
+
 
   background-color: var(--search-background-color);
   display: grid;
@@ -125,7 +132,6 @@
   --color-menu-background: var(--cr-menu-background-color);
   --color-composebox-context-entrypoint-text-disabled: rgba(105, 105, 105, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
-  --cr-fallback-color-surface: var(--search-background-color-dark);
   --color-composebox-submit-button-background: rgba(10, 80, 209, 1);
   --cr-composebox-submit-button-hover-color: rgba(62, 63, 67, 0.1);
   --cr-icon-button-fill-color: rgba(0, 0, 0, 1);
@@ -138,6 +144,12 @@
   --remove-button-fill-color: rgba(255, 255, 255, 1);
   --search-background-color: rgba(16, 18, 23, 1);
   --search-background-color-rgb: 16, 18, 23;
+
+  /* Toolbar colors - Dark mode */
+  --toolbar-text-color: rgb(227,227,227);
+  --toolbar-button-icon-color: rgb(154,160,166);
+  --toolbar-divider-color: rgb(94,94,94);
+  --toolbar-menu-background-color: rgb(31, 31, 31);
 }
 
 [hidden] {

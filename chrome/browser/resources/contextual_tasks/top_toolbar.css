@@ -16,8 +16,8 @@
   --mwb-secondary-text-font-size: 11px;
 
   align-items: center;
-  background-color: var(--cr-fallback-color-surface);
-  color: var(--cr-fallback-color-on-surface);
+  background-color: var(--toolbar-background-color);
+  color: var(--toolbar-text-color);
   display: flex;
   height: 20px;
   padding: 7px 12px;
@@ -83,11 +83,19 @@ button > cr-icon {
 cr-icon-button {
   --cr-icon-button-margin-start: 12px;
   --cr-icon-button-icon-size: 20px;
-  color: var(--color-sys-on-surface-subtle);
+  --cr-icon-button-fill-color: var(--toolbar-button-icon-color);
 }
 
 cr-icon-button[hidden] {
   display: none;
+}
+
+cr-action-menu {
+  --cr-menu-background-color: var(--toolbar-menu-background-color);
+}
+
+.dropdown-item {
+  color: var(--toolbar-text-color);
 }
 
 .dropdown-item cr-icon {
@@ -95,7 +103,7 @@ cr-icon-button[hidden] {
 }
 
 .dropdown-divider {
-  background-color: var(--cr-fallback-color-divider);
+  background-color: var(--toolbar-divider-color);
   height: 1px;
   width: 100%;
 }
@@ -103,6 +111,7 @@ cr-icon-button[hidden] {
 <if expr="_google_chrome">
 .google-g-icon {
   --cr-icon-image: url(chrome://resources/cr_components/searchbox/icons/google_g_cr23.svg);
+  --cr-icon-color: var(--toolbar-text-color);
 
   width: 20px;
   height: 20px;
