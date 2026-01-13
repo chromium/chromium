@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/common_apis.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/WebContentsState_jni.h"
@@ -49,15 +50,7 @@ using content::WebContents;
 namespace {
 
 ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, int size) {
-  ScopedJavaLocalRef<jclass> clazz =
-      base::android::GetClass(env, "java/nio/ByteBuffer");
-  jmethodID method = MethodID::Get<MethodID::TYPE_STATIC>(
-      env, clazz.obj(), "allocateDirect", "(I)Ljava/nio/ByteBuffer;");
-  jobject ret = env->CallStaticObjectMethod(clazz.obj(), method, size);
-  if (base::android::ClearException(env)) {
-    return {};
-  }
-  return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, ret);
+  return jni_zero::ByteBufferAllocateDirect(env, size);
 }
 
 void WriteStateHeaderToPickle(bool off_the_record,

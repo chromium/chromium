@@ -13,6 +13,7 @@
 #include "third_party/jni_zero/system_jni/Long_jni.h"
 #include "third_party/jni_zero/system_jni/Map_jni.h"
 #include "third_party/jni_zero/system_jni/Process_jni.h"
+#include "third_party/jni_zero/system_jni_unchecked_exceptions/ByteBuffer_jni.h"
 
 namespace jni_zero {
 
@@ -151,6 +152,17 @@ ScopedJavaLocalRef<jobject> ToJavaLong(JNIEnv* env, int64_t val) {
 
 bool ProcessIsIsolated(JNIEnv* env) {
   return JNI_Process::Java_Process_isIsolated(env);
+}
+
+//
+// java.nio.ByteBuffer
+//
+
+ScopedJavaLocalRef<jobject> ByteBufferAllocateDirect(JNIEnv* env, int size) {
+  ScopedJavaLocalRef<jobject> ret =
+      JNI_ByteBuffer::Java_ByteBuffer_allocateDirect(env, size);
+  ClearException(env);
+  return ret;
 }
 
 }  // namespace jni_zero

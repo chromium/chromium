@@ -148,6 +148,14 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaLong(
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT bool ProcessIsIsolated(JNIEnv* env);
 
+//
+// java.nio.ByteBuffer
+//
+
+// This returns nullptr in the case of an exception.
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
+ByteBufferAllocateDirect(JNIEnv* env, int size);
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_COMMON_APIS_H_

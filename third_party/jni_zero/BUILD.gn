@@ -33,6 +33,12 @@ generate_jar_jni("system_jni") {
   visibility = [ ":*" ]
 }
 
+generate_jar_jni("system_jni_unchecked_exceptions") {
+  classes = [ "java/nio/ByteBuffer.class" ]
+  visibility = [ ":*" ]
+  unchecked_exceptions = true
+}
+
 # This is the public target that we intend others to use.
 component("jni_zero") {
   public = [
@@ -78,6 +84,7 @@ component("jni_zero") {
   deps = [
     ":generate_jni($default_toolchain)",
     ":system_jni($default_toolchain)",
+    ":system_jni_unchecked_exceptions($default_toolchain)",
   ]
 }
 
