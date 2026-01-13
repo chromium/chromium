@@ -40,6 +40,7 @@ buildflag_header("buildflags") {
     "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
     "RUST_ALLOCATOR_USES_ALIGNED_MALLOC=$rust_allocator_uses_aligned_malloc",
     "RUST_ALLOCATOR_USES_ALLOCATOR_IMPLS_H=$rust_allocator_uses_allocator_impls_h",
+    "RUST_ALLOCATOR_NO_NIGHTLY_CAPABILITY=$rustc_nightly_capability",
   ]
   visibility = [ ":*" ]
 }
