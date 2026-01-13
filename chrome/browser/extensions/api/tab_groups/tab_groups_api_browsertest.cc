@@ -501,8 +501,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSavedTab) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that moving a group to the right results in the correct tab order.
-// TODO(crbug.com/405219902): Enable on desktop Android when the JNI for
-// TabListInterface::GetTabGroupTabIndices() is implemented.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveRight) {
   ASSERT_TRUE(SupportsTabGroups());
 
@@ -637,7 +635,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveLeft) {
   EXPECT_EQ(group, tab_list->GetTab(2)->GetGroup().value());
 }
 
-// TODO(crbug.com/405219902): Port to desktop Android.
+// TODO(crbug.com/405219902): Port to desktop Android when moving to windows
+// is supported.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that moving a group to another window works as expected.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
@@ -693,22 +692,23 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
   tab_strip_model->CloseAllTabs();
   tab_strip_model2->CloseAllTabs();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that a group is cannot be moved into the pinned tabs region.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveToPinnedError) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabListInterface* tab_list = GetTabListInterface();
 
   // Pin the first 3 tabs.
-  tab_strip_model->SetTabPinned(0, /*pinned=*/true);
-  tab_strip_model->SetTabPinned(1, /*pinned=*/true);
-  tab_strip_model->SetTabPinned(2, /*pinned=*/true);
+  tab_list->PinTab(tab_list->GetTab(0)->GetHandle());
+  tab_list->PinTab(tab_list->GetTab(1)->GetHandle());
+  tab_list->PinTab(tab_list->GetTab(2)->GetHandle());
 
   // Create a group with an unpinned tab.
-  TabGroupId group = tab_strip_model->AddToNewGroup({4});
+  TabGroupId group = CreateTabGroup({4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Try to move the group to index 1 and expect an error.
@@ -726,15 +726,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveToPinnedError) {
 // Test that a group cannot be moved into the middle of another group.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
                        TabGroupsMoveToOtherGroupError) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
   // Create two tab groups, one with multiple tabs and the other to move.
-  tab_strip_model->AddToNewGroup({0, 1, 2});
-  TabGroupId group = tab_strip_model->AddToNewGroup({4});
+  CreateTabGroup({0, 1, 2});
+  TabGroupId group = CreateTabGroup({4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Try to move the second group to index 1 and expect an error.
@@ -750,6 +748,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
       error);
 }
 
+// TODO(crbug.com/405219902): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that tab groups aren't edited while dragging.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
