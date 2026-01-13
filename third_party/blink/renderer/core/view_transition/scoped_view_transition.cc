@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
 
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 
 namespace blink {
 
@@ -36,6 +38,14 @@ DOMViewTransition* ScopedViewTransition::startViewTransition(
     ExceptionState& exception_state) {
   return ViewTransitionSupplement::StartViewTransitionForElement(
       script_state, &element, nullptr, std::nullopt, exception_state);
+}
+
+DOMViewTransition* ScopedViewTransition::activeViewTransition(
+    Element& element) {
+  if (auto* transition = ViewTransitionUtils::GetTransition(element)) {
+    return transition->GetScriptDelegate();
+  }
+  return nullptr;
 }
 
 }  // namespace blink

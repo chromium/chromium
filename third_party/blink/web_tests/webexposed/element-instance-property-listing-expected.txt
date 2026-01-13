@@ -25,6 +25,7 @@ namespace http://www.w3.org/1999/xhtml
     property TEXT_NODE
     property accessKey
     property accessKeyLabel
+    property activeViewTransition
     property addEventListener
     property after
     property anchorElement
@@ -1363,6 +1364,7 @@ namespace http://www.w3.org/2000/svg
     property NOTATION_NODE
     property PROCESSING_INSTRUCTION_NODE
     property TEXT_NODE
+    property activeViewTransition
     property addEventListener
     property after
     property anchorElement

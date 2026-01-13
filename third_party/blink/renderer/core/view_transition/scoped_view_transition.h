@@ -30,6 +30,8 @@ class CORE_EXPORT ScopedViewTransition {
   static DOMViewTransition* startViewTransition(ScriptState*,
                                                 Element&,
                                                 ExceptionState&);
+
+  static DOMViewTransition* activeViewTransition(Element&);
 };
 
 }  // namespace blink

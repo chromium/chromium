@@ -2442,6 +2442,7 @@ interface EditContext : EventTarget
 interface Element : Node
     attribute @@toStringTag
     attribute @@unscopables
+    getter activeViewTransition
     getter anchorElement
     getter ariaActiveDescendantElement
     getter ariaAtomic
