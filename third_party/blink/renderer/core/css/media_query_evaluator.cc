@@ -456,8 +456,8 @@ static bool ResizableMediaFeatureEval(const MediaQueryExpValue& value,
 static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator,
                                         const MediaValues& media_values) {
-  int width = *media_values.Width();
-  int height = *media_values.Height();
+  double width = *media_values.Width();
+  double height = *media_values.Height();
 
   if (value.IsId()) {
     if (width > height) {  // Square viewport is portrait.
