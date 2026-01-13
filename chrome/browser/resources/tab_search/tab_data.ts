@@ -125,6 +125,8 @@ export function getDisplayHostnameForUrl(url: URL): string {
     return loadTimeData.getString('fileUrlSource');
   } else if (url.protocol === 'about:' && url.pathname === 'blank') {
     return 'about:blank';
+  } else if (url.protocol === 'view-source:') {
+    return loadTimeData.getString('viewSourceSource');
   } else {
     return url.hostname;
   }

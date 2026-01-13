@@ -291,6 +291,8 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else if (domain_url.SchemeIsBlob()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
+  } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
   } else if (tab_data.should_display_url) {
     domain = url_formatter::FormatUrl(
         domain_url,

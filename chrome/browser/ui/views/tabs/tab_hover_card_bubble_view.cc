@@ -552,31 +552,31 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   if (domain_url.SchemeIsFile()) {
     is_filename = true;
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
+  } else if (domain_url.SchemeIsBlob()) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
+  } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
   } else {
-    if (domain_url.SchemeIsBlob()) {
-      domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
-    } else {
-      if (tab_data.should_display_url) {
-        // Hide the domain when necessary. This leaves an empty space in the
-        // card, but this scenario is very rare. Also, shrinking the card to
-        // remove the space would result in visual noise, so we keep it simple.
-        domain = url_formatter::FormatUrl(
-            domain_url,
-            url_formatter::kFormatUrlOmitDefaults |
-                url_formatter::kFormatUrlOmitHTTPS |
-                url_formatter::kFormatUrlOmitTrivialSubdomains |
-                url_formatter::kFormatUrlTrimAfterHost,
-            base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
-      }
+    if (tab_data.should_display_url) {
+      // Hide the domain when necessary. This leaves an empty space in the
+      // card, but this scenario is very rare. Also, shrinking the card to
+      // remove the space would result in visual noise, so we keep it simple.
+      domain = url_formatter::FormatUrl(
+          domain_url,
+          url_formatter::kFormatUrlOmitDefaults |
+              url_formatter::kFormatUrlOmitHTTPS |
+              url_formatter::kFormatUrlOmitTrivialSubdomains |
+              url_formatter::kFormatUrlTrimAfterHost,
+          base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+    }
 
-      // Most of the time we want our standard (tail-elided) formatting for web
-      // pages, but when viewing an image in the browser, many users want to
-      // view the image dimensions (see crbug.com/1222984) so for titles that
-      // "look" like images (i.e. that end with a dimension) we instead switch
-      // to middle-elide.
-      if (FilenameElider::FindImageDimensions(title) != std::u16string::npos) {
-        is_filename = true;
-      }
+    // Most of the time we want our standard (tail-elided) formatting for web
+    // pages, but when viewing an image in the browser, many users want to
+    // view the image dimensions (see crbug.com/1222984) so for titles that
+    // "look" like images (i.e. that end with a dimension) we instead switch
+    // to middle-elide.
+    if (FilenameElider::FindImageDimensions(title) != std::u16string::npos) {
+      is_filename = true;
     }
   }
 

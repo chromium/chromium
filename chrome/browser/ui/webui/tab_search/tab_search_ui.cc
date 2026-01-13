@@ -98,6 +98,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
+      {"viewSourceSource", IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE},
       // Auto tab groups UI strings
       {"a11yTabExcludedFromGroup", IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED},
       {"clearAriaLabel", IDS_TAB_ORGANIZATION_CLEAR_ARIA_LABEL},
