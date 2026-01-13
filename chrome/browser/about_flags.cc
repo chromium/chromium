@@ -890,6 +890,12 @@ const FeatureEntry::FeatureParam
         {"ShowRecentTabChip", "false"},
         {"ShowLensSearchChip", "false"},
 };
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonInlineNoContextualChips[] = {
+        {"AddContextButtonVariant", "inline"},
+        {"ShowRecentTabChip", "false"},
+        {"ShowLensSearchChip", "false"},
+};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- \"Add Context\" Button below results (Variant 1)",
@@ -905,6 +911,10 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
      kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips,
      std::size(
          kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips),
+     nullptr},
+    {"- \"Add Context\" Button inline (Variant 3) [No contextual chips]",
+     kWebUIOmniboxAimPopupAddContextButtonInlineNoContextualChips,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonInlineNoContextualChips),
      nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
