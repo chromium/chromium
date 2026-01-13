@@ -1,7 +1,7 @@
 Name: prost-derive
 URL: https://crates.io/crates/prost-derive
-Version: 0.14.1
-Revision: 9965a988a7f95d55c106b933a82a3e657dce02c2
+Version: 0.14.3
+Revision: fafa97f3e05b9ffd84769c7c606499243a6fa614
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/prost-derive-v0_14/LICENSE

@@ -21,15 +21,11 @@ impl Field {
             if attr.path().is_ident("oneof") {
                 let t = match *attr {
                     Meta::NameValue(MetaNameValue {
-                        value:
-                            Expr::Lit(ExprLit {
-                                lit: Lit::Str(ref lit),
-                                ..
-                            }),
+                        value: Expr::Lit(ExprLit { lit: Lit::Str(ref lit), .. }),
                         ..
                     }) => parse_str::<Path>(&lit.value())?,
                     Meta::List(ref list) => list.parse_args::<Ident>()?.into(),
-                    _ => bail!("invalid oneof attribute: {:?}", attr),
+                    _ => bail!("invalid oneof attribute: {attr:?}"),
                 };
                 set_option(&mut ty, t, "duplicate oneof attribute")?;
             } else if let Some(t) = tags_attr(attr)? {
@@ -68,7 +64,8 @@ impl Field {
         }
     }
 
-    /// Returns an expression which evaluates to the result of decoding the oneof field.
+    /// Returns an expression which evaluates to the result of decoding the
+    /// oneof field.
     pub fn merge(&self, ident: TokenStream) -> TokenStream {
         let ty = &self.ty;
         quote! {
@@ -76,7 +73,8 @@ impl Field {
         }
     }
 
-    /// Returns an expression which evaluates to the encoded length of the oneof field.
+    /// Returns an expression which evaluates to the encoded length of the oneof
+    /// field.
     pub fn encoded_len(&self, ident: TokenStream) -> TokenStream {
         let ty = &self.ty;
         quote! {
