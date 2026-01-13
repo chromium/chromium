@@ -413,13 +413,7 @@ void ContextualTasksServiceImpl::AssociateTabWithTask(const base::Uuid& task_id,
   }
 
   std::optional<ContextualTask> current_task = GetContextualTaskForTab(tab_id);
-  if (current_task) {
-    if (current_task->GetTaskId() == task_id) {
-      // The tab is already associated with this exact task.
-      // Return early to prevent unnecessary disassociation (which could delete
-      // the task).
-      return;
-    }
+  if (current_task && current_task->GetTaskId() != task_id) {
     DisassociateTabFromTask(current_task->GetTaskId(), tab_id);
   }
 
