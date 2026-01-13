@@ -544,10 +544,19 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   }
 
   // Check the management policy before the installation process begins.
-  ExtensionInstallStatus install_status = GetWebstoreExtensionInstallStatus(
-      id, profile_, dummy_extension_->manifest()->type(),
+  GetWebstoreExtensionInstallStatus(
+      id, profile_, dummy_extension_->version(),
+      dummy_extension_->manifest()->type(),
       PermissionsParser::GetRequiredPermissions(dummy_extension_.get()),
-      dummy_extension_->manifest_version());
+      dummy_extension_->manifest_version(),
+      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                         OnInstallStatusCheckDone,
+                     this));
+}
+
+void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
+    ExtensionInstallStatus install_status) {
+  content::WebContents* web_contents = GetSenderWebContents();
   if (install_status == kBlockedByPolicy) {
     ShowBlockedByPolicyDialog(
         dummy_extension_.get(), icon_, web_contents,
@@ -1360,10 +1369,18 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
     return;
   }
 
-  ExtensionInstallStatus status = GetWebstoreExtensionInstallStatus(
-      extension_id, profile, dummy_extension->GetType(),
+  GetWebstoreExtensionInstallStatus(
+      extension_id, profile, dummy_extension->version(),
+      dummy_extension->GetType(),
       PermissionsParser::GetRequiredPermissions(dummy_extension.get()),
-      dummy_extension->manifest_version());
+      dummy_extension->manifest_version(),
+      base::BindOnce(
+          &WebstorePrivateGetExtensionStatusFunction::OnInstallStatusCheckDone,
+          this));
+}
+
+void WebstorePrivateGetExtensionStatusFunction::OnInstallStatusCheckDone(
+    ExtensionInstallStatus status) {
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);
   Respond(ArgumentList(GetExtensionStatus::Results::Create(api_status)));

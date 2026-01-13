@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/extensions/webstore_installer.h"
@@ -39,7 +40,7 @@ class Profile;
 namespace content {
 class GpuFeatureChecker;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -105,6 +106,10 @@ class WebstorePrivateBeginInstallWithManifest3Function
   void OnWebstoreParseFailure(const std::string& id,
                               InstallHelperResultCode result,
                               const std::string& error_message) override;
+
+  // Handles the result of GetWebstoreExtensionInstallStatus.
+  void OnInstallStatusCheckDone(
+      extensions::ExtensionInstallStatus install_status);
 
   void RequestExtensionApproval(content::WebContents* web_contents);
 
@@ -365,6 +370,7 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
       const ExtensionId& extension_id);
   void OnManifestParsed(const ExtensionId& extension_id,
                         data_decoder::DataDecoder::ValueOrError result);
+  void OnInstallStatusCheckDone(ExtensionInstallStatus status);
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
