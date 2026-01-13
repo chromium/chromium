@@ -57,4 +57,16 @@ public interface PaymentAppFactoryDelegate {
 
     /** Records that an Opt Out experience will be offered to the user in the current UI flow. */
     default void setOptOutOffered() {}
+
+    /**
+     * Returns true if an internal payment app factory has been registered.
+     *
+     * <p>Note that this is not part of {@link PaymentAppFactoryParams} because the layer that
+     * provides that information does not know if an internal factory has been registered.
+     *
+     * <p>TODO(crbug.com/400531531): Stop special-casing internal payment apps in Chrome.
+     */
+    default boolean internalPaymentAppFactoryPresent() {
+        return false;
+    }
 }

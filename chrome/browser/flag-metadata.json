@@ -3763,6 +3763,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-payment-request-deduplicate-native-payment-apps",
+    "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "enable-perfetto-system-tracing",
     "owners": [ "woa-performance@google.com" ],
     // This flag is used for recording system traces on Chrome for Android.

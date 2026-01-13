@@ -3412,6 +3412,14 @@ inline constexpr char kPasswordManualFallbackAvailableName[] =
 inline constexpr char kPasswordManualFallbackAvailableDescription[] =
     "Enables triggering password suggestions through the context menu";
 
+inline constexpr char kDeduplicateNativePaymentAppsName[] =
+    "Enables de-duplication of Payment Request native payment apps";
+inline constexpr char kDeduplicateNativePaymentAppsDescription[] =
+    "When enabled, Payment Request will de-duplicate native payment apps "
+    "that are known to have 'internal' apps, such as Google Pay. This avoids "
+    "multiple factories (internal and external) processing the same underlying "
+    "app.";
+
 inline constexpr char kPdfXfaFormsName[] = "PDF XFA support";
 inline constexpr char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "

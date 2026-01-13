@@ -24,4 +24,9 @@ public interface PaymentAppFactoryInterface {
      * apps.
      */
     void create(PaymentAppFactoryDelegate delegate);
+
+    /** Returns true if this factory creates internal payment apps. */
+    default boolean isInternal() {
+        return false;
+    }
 }

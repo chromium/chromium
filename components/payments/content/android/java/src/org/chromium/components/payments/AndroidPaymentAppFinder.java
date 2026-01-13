@@ -338,6 +338,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 Log.i(TAG, "App store method \"%s\".", method);
                 continue;
             }
+            if (methodHandledByInternalFactory(method)) {
+                Log.i(TAG, "Skipping method \"%s\" to be handled by internal factory.", method);
+                continue;
+            }
+
             if (UrlUtil.isValidUrlBasedPaymentMethodIdentifier(url)) {
                 Log.i(TAG, "PaymentRequest API supportedMethods: \"%s\".", method);
                 mMerchantRequestedUrlPaymentMethods.add(url);
@@ -986,5 +991,28 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     public void addAppStoreForTest(String packageName, GURL paymentMethod) {
         assert paymentMethod.isValid();
         mAppStores.put(packageName, paymentMethod);
+    }
+
+    /**
+     * Determine whether this factory should yield to the internal factory to handle a given method.
+     *
+     * <p>TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+     */
+    private boolean methodHandledByInternalFactory(String method) {
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.DEDUPLICATE_NATIVE_PAYMENT_APPS)) {
+            return false;
+        }
+
+        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                PaymentFeatureList.GOOGLE_PAY_VIA_ANDROID_INTENTS)) {
+            return false;
+        }
+
+        if (!mFactoryDelegate.internalPaymentAppFactoryPresent()) {
+            return false;
+        }
+
+        return method.equals(MethodStrings.GOOGLE_PAY)
+                || method.equals(MethodStrings.GOOGLE_PAY_AUTHENTICATION);
     }
 }

@@ -16,6 +16,12 @@ namespace android {
 // to Android payment apps.
 BASE_DECLARE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters);
 
+// If enabled, then the Android intent payment app factory will 'yield' to an
+// internal factory if present for the following payment methods:
+// - https://google.com/pay
+// - https://pay.google.com/authentication.
+BASE_DECLARE_FEATURE(kDeduplicateNativePaymentApps);
+
 // If enabled, use Android intents for the following payment methods:
 // - https://google.com/pay
 // - https://pay.google.com/authentication.

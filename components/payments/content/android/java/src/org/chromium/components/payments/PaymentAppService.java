@@ -83,10 +83,19 @@ public class PaymentAppService {
         /** Whether at least one payment app factory has calculated canMakePayment to be true. */
         private boolean mCanMakePayment;
 
+        private boolean mHasInternalFactory;
+
         private Collector(
                 Set<PaymentAppFactoryInterface> pendingTasks, PaymentAppServiceDelegate delegate) {
             mPendingFactories = pendingTasks;
             mDelegate = delegate;
+
+            for (PaymentAppFactoryInterface factory : mPendingFactories) {
+                if (factory.isInternal()) {
+                    mHasInternalFactory = true;
+                    break;
+                }
+            }
         }
 
         @Override
@@ -142,6 +151,11 @@ public class PaymentAppService {
         @Override
         public void setOptOutOffered() {
             mDelegate.setOptOutOffered();
+        }
+
+        @Override
+        public boolean internalPaymentAppFactoryPresent() {
+            return mHasInternalFactory;
         }
     }
 
