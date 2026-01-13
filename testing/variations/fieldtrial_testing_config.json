@@ -8116,7 +8116,7 @@
                     "name": "EnabledWithRPHReuse",
                     "params": {
                         "reuse_search_host": "true",
-                        "url": "https://www.google.com/warmup.html",
+                        "url": "https://www.google.com/search/warmup.html",
                         "zero_suggest_trigger": "true"
                     },
                     "enable_features": [
