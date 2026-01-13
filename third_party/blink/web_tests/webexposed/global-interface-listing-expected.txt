@@ -5902,6 +5902,24 @@ interface LanguageModelParams
     getter maxTemperature
     getter maxTopK
     method constructor
+interface LanguageModelToolCall
+    attribute @@toStringTag
+    getter arguments
+    getter callID
+    getter name
+    method constructor
+interface LanguageModelToolError
+    attribute @@toStringTag
+    getter callID
+    getter errorMessage
+    getter name
+    method constructor
+interface LanguageModelToolSuccess
+    attribute @@toStringTag
+    getter callID
+    getter name
+    getter result
+    method constructor
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element

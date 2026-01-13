@@ -399,10 +399,6 @@ mojom::blink::AILanguageModelPromptRole LanguageModel::ConvertRoleToMojo(
       return mojom::blink::AILanguageModelPromptRole::kUser;
     case V8LanguageModelMessageRole::Enum::kAssistant:
       return mojom::blink::AILanguageModelPromptRole::kAssistant;
-    case V8LanguageModelMessageRole::Enum::kToolCall:
-      return mojom::blink::AILanguageModelPromptRole::kToolCall;
-    case V8LanguageModelMessageRole::Enum::kToolResponse:
-      return mojom::blink::AILanguageModelPromptRole::kToolResponse;
   }
   NOTREACHED();
 }
