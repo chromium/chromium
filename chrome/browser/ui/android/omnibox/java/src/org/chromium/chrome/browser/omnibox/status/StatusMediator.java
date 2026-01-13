@@ -474,9 +474,9 @@ public class StatusMediator
     }
 
     @Override
-    public void showPermissionIcon(PermissionIconResource icon) {
+    public void showPermissionIcon(PermissionIconResource icon, @StringRes int descriptionRes) {
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, icon);
-        mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, icon.getContentDescriptionRes());
+        mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, descriptionRes);
     }
 
     /**
