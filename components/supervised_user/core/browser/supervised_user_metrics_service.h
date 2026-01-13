@@ -32,8 +32,7 @@ class SupervisedUserURLFilter;
 // Service to initialize and control metric recorders of supervised users.
 // Records metrics daily, or when the SupervisedUserService changes.
 class SupervisedUserMetricsService : public KeyedService,
-                                     public SupervisedUserServiceObserver,
-                                     public DeviceParentalControls::Observer {
+                                     public SupervisedUserServiceObserver {
  public:
   // Delegate for recording metrics relating to extensions for supervised users
   // such as metrics that should be recorded daily.
@@ -70,9 +69,8 @@ class SupervisedUserMetricsService : public KeyedService,
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
 
-  // DeviceParentalControls::Observer:
-  void OnAndroidParentalControlsSearchContentFiltersChanged() override;
-  void OnAndroidParentalControlsBrowserContentFiltersChanged() override;
+  // DeviceParentalControls subscription handlers.
+  void OnDeviceParentalControlsChanged(std::string_view filter_name);
 
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
@@ -92,7 +90,7 @@ class SupervisedUserMetricsService : public KeyedService,
   const raw_ptr<PrefService> pref_service_;
   raw_ref<SupervisedUserService> supervised_user_service_;
   raw_ref<const SupervisedUserUrlFilteringService> url_filtering_service_;
-  raw_ref<const DeviceParentalControls> device_parental_controls_;
+  raw_ref<DeviceParentalControls> device_parental_controls_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate_;
   std::unique_ptr<SynteticFieldTrialDelegate> synthetic_field_trial_delegate_;
@@ -108,9 +106,7 @@ class SupervisedUserMetricsService : public KeyedService,
 
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
       supervised_user_service_observation_{this};
-  base::ScopedObservation<DeviceParentalControls,
-                          DeviceParentalControls::Observer>
-      device_parental_controls_observation_{this};
+  base::CallbackListSubscription device_parental_controls_subscription_;
 };
 
 }  // namespace supervised_user

@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "base/observer_list.h"
+#include "base/callback_list.h"
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
@@ -22,19 +22,15 @@ namespace supervised_user {
 // ApplicationContext::GetDeviceParentalControls() in iOS.
 class DeviceParentalControls {
  public:
-  class Observer {
-   public:
-    // Note: this is intermediate state of migrating away the Supervised User
-    // stack from the pref interface for url filtering. In the target layout,
-    // AndroidParentalControls will notify about change of browser
-    // feature (such as incognito mode, safe search or web filtering) rather
-    // than about change of the underlying parental control setting. Currently,
-    // the existing interface is just duplicated.
-    // TODO(crbug.com/470298260): replace low-level OS signals with high-level
-    // browser feature states.
-    virtual void OnAndroidParentalControlsSearchContentFiltersChanged() {}
-    virtual void OnAndroidParentalControlsBrowserContentFiltersChanged() {}
-  };
+  // Temporary migration-time interface to support Android-specific parental
+  // controls knobs. The first parameter is the setting name.
+  using Callback = base::RepeatingCallback<void(std::string_view)>;
+
+  DeviceParentalControls();
+  virtual ~DeviceParentalControls();
+  DeviceParentalControls(const DeviceParentalControls&) = delete;
+  const DeviceParentalControls& operator=(const DeviceParentalControls&) =
+      delete;
 
   // Any initialization that cannot be done at construction time but is required
   // to make instances of this class functional should be performed in here.
@@ -60,22 +56,17 @@ class DeviceParentalControls {
   virtual void SetBrowserContentFiltersEnabledForTesting(bool enabled) {}
   virtual void SetSearchContentFiltersEnabledForTesting(bool enabled) {}
 
-  // Add and remove observers.
-  void AddObserver(Observer* observer) const;
-  void RemoveObserver(Observer* observer) const;
-
-  DeviceParentalControls();
-  virtual ~DeviceParentalControls();
-  DeviceParentalControls(const DeviceParentalControls&) = delete;
-  const DeviceParentalControls& operator=(const DeviceParentalControls&) =
-      delete;
+  // Subscribes to parental controls state changes. True implementations should
+  // immediately call the callback with the current state; fakes do nothing.
+  virtual base::CallbackListSubscription Subscribe(Callback callback);
 
  protected:
-  void NotifySearchContentFiltersChanged() const;
-  void NotifyBrowserContentFiltersChanged() const;
+  base::RepeatingCallbackList<Callback::RunType>& subscriber_list() {
+    return subscriber_list_;
+  }
 
  private:
-  mutable base::ObserverList<Observer>::Unchecked observer_list_;
+  base::RepeatingCallbackList<Callback::RunType> subscriber_list_;
 };
 
 }  // namespace supervised_user

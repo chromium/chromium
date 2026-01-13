@@ -162,7 +162,7 @@ SupervisedUserService::SupervisedUserService(
     syncer::SyncService* sync_service,
     std::unique_ptr<SupervisedUserURLFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
-    const DeviceParentalControls& device_parental_controls)
+    DeviceParentalControls& device_parental_controls)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
       content_filters_service_(content_filters_service),
@@ -177,17 +177,10 @@ SupervisedUserService::SupervisedUserService(
       << "Settings service is initialized as part of the PrefService, which is "
          "a dependency of this service.";
 
-#if BUILDFLAG(IS_ANDROID)
-  device_parental_controls_observation_.Observe(&*device_parental_controls_);
-  if (device_parental_controls_->IsBrowserContentFiltersEnabled()) {
-    // No-op if Family Link parental controls are already enabled.
-    OnBrowserContentFiltersEnabled();
-  }
-  if (device_parental_controls_->IsSearchContentFiltersEnabled()) {
-    // No-op if Family Link parental controls are already enabled.
-    OnSearchContentFiltersEnabled();
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
+  device_parental_controls_subscription_ =
+      device_parental_controls_->Subscribe(base::BindRepeating(
+          &SupervisedUserService::OnDeviceParentalControlsChanged,
+          base::Unretained(this)));
 
   main_pref_change_registrar_.Init(&user_prefs_.get());
   main_pref_change_registrar_.Add(
@@ -377,12 +370,22 @@ bool IsEligibleForContentFilters(const PrefService& user_prefs) {
 }
 }  // namespace
 
-void SupervisedUserService::
-    OnAndroidParentalControlsSearchContentFiltersChanged() {
-  if (device_parental_controls_->IsSearchContentFiltersEnabled()) {
-    OnSearchContentFiltersEnabled();
+void SupervisedUserService::OnDeviceParentalControlsChanged(
+    std::string_view filter_name) {
+  if (filter_name == kBrowserContentFiltersSettingName) {
+    if (device_parental_controls_->IsBrowserContentFiltersEnabled()) {
+      OnBrowserContentFiltersEnabled();
+    } else {
+      OnBrowserContentFiltersDisabled();
+    }
   } else {
-    OnSearchContentFiltersDisabled();
+    CHECK_EQ(filter_name, kSearchContentFiltersSettingName)
+        << "Unexpected setting name: " << filter_name;
+    if (device_parental_controls_->IsSearchContentFiltersEnabled()) {
+      OnSearchContentFiltersEnabled();
+    } else {
+      OnSearchContentFiltersDisabled();
+    }
   }
 }
 
@@ -399,15 +402,6 @@ void SupervisedUserService::OnSearchContentFiltersEnabled() {
 }
 void SupervisedUserService::OnSearchContentFiltersDisabled() {
   content_filters_service_->SetSearchFiltersEnabled(false);
-}
-
-void SupervisedUserService::
-    OnAndroidParentalControlsBrowserContentFiltersChanged() {
-  if (device_parental_controls_->IsBrowserContentFiltersEnabled()) {
-    OnBrowserContentFiltersEnabled();
-  } else {
-    OnBrowserContentFiltersDisabled();
-  }
 }
 
 void SupervisedUserService::OnBrowserContentFiltersEnabled() {

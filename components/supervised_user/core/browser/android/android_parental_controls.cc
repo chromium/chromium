@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -45,14 +46,7 @@ bool AndroidParentalControls::IsEnabled() const {
 
 void AndroidParentalControls::OnContentFiltersObserverChanged(
     std::string_view setting_name) {
-  if (setting_name == browser_content_filters_observer_.GetSettingName()) {
-    NotifyBrowserContentFiltersChanged();
-  } else if (setting_name ==
-             search_content_filters_observer_.GetSettingName()) {
-    NotifySearchContentFiltersChanged();
-  } else {
-    NOTREACHED() << "Unexpected setting name: " << setting_name;
-  }
+  subscriber_list().Notify(setting_name);
 }
 
 bool AndroidParentalControls::IsBrowserContentFiltersEnabled() const {
@@ -71,6 +65,13 @@ void AndroidParentalControls::SetBrowserContentFiltersEnabledForTesting(
 void AndroidParentalControls::SetSearchContentFiltersEnabledForTesting(
     bool enabled) {
   search_content_filters_observer_.SetEnabledForTesting(enabled);
+}
+
+base::CallbackListSubscription AndroidParentalControls::Subscribe(
+    Callback callback) {
+  callback.Run(kBrowserContentFiltersSettingName);
+  callback.Run(kSearchContentFiltersSettingName);
+  return DeviceParentalControls::Subscribe(std::move(callback));
 }
 
 bool AreAndroidParentalControlsEffectiveForTesting(

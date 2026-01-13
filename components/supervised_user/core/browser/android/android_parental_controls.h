@@ -37,6 +37,7 @@ class AndroidParentalControls : public DeviceParentalControls,
   bool IsSearchContentFiltersEnabled() const override;
   void SetBrowserContentFiltersEnabledForTesting(bool enabled) override;
   void SetSearchContentFiltersEnabledForTesting(bool enabled) override;
+  base::CallbackListSubscription Subscribe(Callback callback) override;
 
  private:
   // ContentFiltersObserverBridge::Observer:

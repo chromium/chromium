@@ -121,9 +121,10 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
   // register synthetic field trials.
   CHECK(synthetic_field_trial_delegate_)
       << "Synthetic field trial delegate must exist on Android";
-  device_parental_controls_observation_.Observe(&device_parental_controls);
-  OnAndroidParentalControlsBrowserContentFiltersChanged();
-  OnAndroidParentalControlsSearchContentFiltersChanged();
+  device_parental_controls_subscription_ =
+      device_parental_controls_->Subscribe(base::BindRepeating(
+          &SupervisedUserMetricsService::OnDeviceParentalControlsChanged,
+          base::Unretained(this)));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -160,20 +161,19 @@ void SupervisedUserMetricsService::RecordCurrentDay() {
                             GetDayId(base::Time::Now()));
 }
 
-void SupervisedUserMetricsService::
-    OnAndroidParentalControlsBrowserContentFiltersChanged() {
-  synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
-      kDeviceBrowserContentFiltersSyntheticFieldTrialName,
-      GetDeviceFiltersSynthenticFieldTrialGroupName(
-          device_parental_controls_->IsBrowserContentFiltersEnabled()));
-}
-
-void SupervisedUserMetricsService::
-    OnAndroidParentalControlsSearchContentFiltersChanged() {
-  synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
-      kDeviceSearchContentFiltersSyntheticFieldTrialName,
-      GetDeviceFiltersSynthenticFieldTrialGroupName(
-          device_parental_controls_->IsSearchContentFiltersEnabled()));
+void SupervisedUserMetricsService::OnDeviceParentalControlsChanged(
+    std::string_view filter_name) {
+  if (filter_name == kBrowserContentFiltersSettingName) {
+    synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
+        kDeviceBrowserContentFiltersSyntheticFieldTrialName,
+        GetDeviceFiltersSynthenticFieldTrialGroupName(
+            device_parental_controls_->IsBrowserContentFiltersEnabled()));
+  } else if (filter_name == kSearchContentFiltersSettingName) {
+    synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
+        kDeviceSearchContentFiltersSyntheticFieldTrialName,
+        GetDeviceFiltersSynthenticFieldTrialGroupName(
+            device_parental_controls_->IsSearchContentFiltersEnabled()));
+  }
 }
 
 void SupervisedUserMetricsService::OnURLFilterChanged() {
