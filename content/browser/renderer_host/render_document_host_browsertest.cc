@@ -167,10 +167,16 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_EQ("bar_2", EvalJs(new_contents, "window.foo;"));
 }
 
+// TODO(crbug.com/458460875): Test has flaked regularly since 2025-11-04.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SubframeScriptableNavigate DISABLED_SubframeScriptableNavigate
+#else
+#define MAYBE_SubframeScriptableNavigate SubframeScriptableNavigate
+#endif
 // Two frames are scriptable with each other. Test it works appropriately after
 // one of them doing a same-origin navigation.
 IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest,
-                       SubframeScriptableNavigate) {
+                       MAYBE_SubframeScriptableNavigate) {
   GURL url_1(embedded_test_server()->GetURL("/page_with_iframe.html"));
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
   GURL url_3(embedded_test_server()->GetURL("/title3.html"));
