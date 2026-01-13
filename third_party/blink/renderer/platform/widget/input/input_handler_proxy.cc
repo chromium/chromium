@@ -1762,6 +1762,14 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
     compositor_event_queue_->DidFinishDispatch();
   }
 
+  // If the queue is not empty (e.g. events are in the future), we need to
+  // ensure the scheduler requests another frame to process them. This is
+  // applied when kUpdateScrollPredictorInputMapping is enabled, as it causes
+  // events to be deferred.
+  if (update_scroll_predictor_ && !compositor_event_queue_->empty()) {
+    input_handler_->SetNeedsAnimateInput();
+  }
+
   if (!queue_flushed_callback_.is_null()) {
     std::move(queue_flushed_callback_).Run();
   }
