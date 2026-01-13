@@ -10485,6 +10485,30 @@
             ]
         }
     ],
+    "ExtensionBrowserNamespaceAlternative": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionBrowserNamespaceAlternative"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ExtensionBrowserNamespaceAlternative"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionManifestV2Deprecation": [
         {
             "platforms": [
@@ -21768,6 +21792,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RunDefaultStatusCheck"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RuntimeOnMessageWebExtensionPolyfillSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RuntimeOnMessageWebExtensionPolyfillSupport"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "RuntimeOnMessageWebExtensionPolyfillSupport"
                     ]
                 }
             ]
