@@ -83,6 +83,15 @@ inline tabs::TabInterface* GetActiveTabInterface(
 #endif
 }
 
+inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
+    BrowserWindowInterface* browser_window) {
+#if !BUILDFLAG(IS_ANDROID)
+  return browser_window ? browser_window->GetWeakPtr() : nullptr;
+#else
+  return nullptr;
+#endif
+}
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_COMMON_FUTURE_BROWSER_FEATURES_H_

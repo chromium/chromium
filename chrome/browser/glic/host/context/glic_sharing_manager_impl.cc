@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
@@ -21,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #endif
 
@@ -177,8 +179,8 @@ class FocusedBrowserChangedWatcher {
   explicit FocusedBrowserChangedWatcher(
       BrowserWindowInterface* focused_browser,
       GlicSharingManagerImpl::FocusedBrowserChangedCallback callback)
-      : last_focused_browser_(focused_browser ? focused_browser->GetWeakPtr()
-                                              : nullptr),
+      : last_focused_browser_(
+            GetBrowserWindowInterfaceWeakPtr(focused_browser)),
         callback_(std::move(callback)) {}
 
   void OnFocusedBrowserChanged(BrowserWindowInterface* candidate_browser,
@@ -187,8 +189,7 @@ class FocusedBrowserChangedWatcher {
         last_focused_browser_.WasInvalidated()) {
       callback_.Run(focused_browser);
     }
-    last_focused_browser_ =
-        focused_browser ? focused_browser->GetWeakPtr() : nullptr;
+    last_focused_browser_ = GetBrowserWindowInterfaceWeakPtr(focused_browser);
   }
 
  private:
