@@ -24,12 +24,15 @@ class Profile;
 
 namespace legion {
 
+class Client;
+
 // The `TokenService` is a KeyedService responsible for managing authentication
 // tokens for the Legion feature. It observes the user's sign-in state and, when
 // a primary account is available, it can fetch OAuth2 access tokens. These
 // access tokens are then used by the underlying `phosphor::TokenManager` and
 // `phosphor::TokenFetcher` to acquire and manage authentication tokens for
-// Legion.
+// Legion. This service also creates and provides the `legion::Client`, which
+// serves as the primary interface for interacting with the Legion feature.
 class TokenService : public KeyedService,
                      public phosphor::TokenFetcherImpl::Delegate,
                      public signin::IdentityManager::Observer {
@@ -47,12 +50,14 @@ class TokenService : public KeyedService,
   // Returns `nullptr` if `TokenService` is shutting down.
   phosphor::TokenManager* GetTokenManager();
 
+  Client* GetClient();
+
   // phosphor::TokenFetcherImpl::Delegate override:
   bool IsTokenFetchEnabled() override;
   void RequestOAuthToken(RequestOAuthTokenCallback callback) override;
 
  private:
-  void TryInitTokenFetcherAndManager();
+  void InitializeServicesIfNeeded();
 
   void OnRequestOAuthTokenCompleted(
       std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
@@ -73,6 +78,8 @@ class TokenService : public KeyedService,
   std::unique_ptr<phosphor::TokenManager> token_manager_;
   // Owned by `token_manager_`.
   raw_ptr<phosphor::TokenFetcherImpl> token_fetcher_;
+
+  std::unique_ptr<Client> client_;
 
   bool is_shutting_down_ = false;
 

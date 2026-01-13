@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/legion/features.h"
 #include "components/legion/phosphor/data_types.h"
 #include "components/legion/phosphor/mock_blind_sign_auth.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
@@ -36,6 +38,11 @@ class TestTokenService : public TokenService {
                    Profile* profile)
       : TokenService(identity_manager, pref_service, profile) {}
 
+  ~TestTokenService() override = default;
+
+  // KeyedService override:
+  void Shutdown() override { TokenService::Shutdown(); }
+
   // phosphor::TokenFetcherImpl::Delegate override:
   std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -58,7 +65,9 @@ class TokenServiceTest : public testing::Test {
   TokenServiceTest()
       : token_service_(identity_test_env_.identity_manager(),
                        profile_.GetPrefs(),
-                       &profile_) {}
+                       &profile_) {
+    feature_list_.InitAndEnableFeature(legion::kLegion);
+  }
 
   ~TokenServiceTest() override { token_service_.Shutdown(); }
 
@@ -69,6 +78,9 @@ class TokenServiceTest : public testing::Test {
   TestingProfile profile_;
 
   TestTokenService token_service_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TokenServiceTest, RequestOAuthTokenSuccess) {

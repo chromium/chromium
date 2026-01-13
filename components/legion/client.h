@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/legion/error_code.h"
 #include "components/legion/legion_common.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "url/gurl.h"
 
@@ -44,9 +45,11 @@ class Client {
   static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
   static std::unique_ptr<Client> Create(
+      phosphor::TokenManager* token_manager,
       network::mojom::NetworkContext* network_context);
 
   static std::unique_ptr<Client> CreateWithUrl(
+      phosphor::TokenManager* token_manager,
       const GURL& url,
       network::mojom::NetworkContext* network_context);
 

@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/legion/client.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_fetcher_impl.h"
 #include "components/legion/phosphor/token_manager_impl.h"
@@ -47,13 +48,13 @@ void TokenService::Shutdown() {
 // TODO(b:469400476): Move into ctor. Currently some tests will fail because
 // vtable is not matching the expectation that
 // `TestTokenService::CreateBlindSignAuth()` will be called.
-void TokenService::TryInitTokenFetcherAndManager() {
+void TokenService::InitializeServicesIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_shutting_down_) {
     return;
   }
-  if (token_manager_) {
+  if (token_manager_ && client_) {
     return;
   }
 
@@ -64,14 +65,25 @@ void TokenService::TryInitTokenFetcherAndManager() {
   token_fetcher_ = token_fetcher.get();
   token_manager_ =
       std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
+  client_ = legion::Client::Create(
+      token_manager_.get(),
+      profile_->GetDefaultStoragePartition()->GetNetworkContext());
 }
 
 phosphor::TokenManager* TokenService::GetTokenManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TryInitTokenFetcherAndManager();
+  InitializeServicesIfNeeded();
 
   return token_manager_.get();
+}
+
+Client* TokenService::GetClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  InitializeServicesIfNeeded();
+
+  return client_.get();
 }
 
 bool TokenService::IsTokenFetchEnabled() {
@@ -128,7 +140,7 @@ void TokenService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TryInitTokenFetcherAndManager();
+  InitializeServicesIfNeeded();
 
   if (token_fetcher_) {
     bool account_available =

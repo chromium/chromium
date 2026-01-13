@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -92,6 +93,8 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
+#include "chrome/browser/legion/token_service.h"
+#include "chrome/browser/legion/token_service_factory.h"
 #include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "components/legion/client.h"    // nogncheck
@@ -137,19 +140,34 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
  public:
   ~FetcherDelegate() override = default;
 
-  explicit FetcherDelegate(std::unique_ptr<legion::Client> client)
-      : client_(std::move(client)) {
-    CHECK(client_);
+  // Takes a BrowserContext instead of a legion::Client directly to avoid a
+  // dangling pointer. The KeyedService dependency (DependsOn) ensures that
+  // the TokenService outlives this service during normal shutdown. However,
+  // in tests, the TokenService can be replaced with a test factory after this
+  // service has been created, immediately destroying the original TokenService
+  // and its Client. Holding a BrowserContext allows for fetching the
+  // correct, current TokenService instance at execution time.
+  explicit FetcherDelegate(content::BrowserContext* browser_context)
+      : browser_context_(browser_context) {
+    CHECK(browser_context_);
   }
 
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
   CreateLegionFetcher() override {
-    return std::make_unique<optimization_guide::LegionModelExecutionFetcher>(
-        client_.get());
+    legion::TokenService* token_service =
+        legion::TokenServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(browser_context_));
+    if (token_service) {
+      if (legion::Client* client = token_service->GetClient()) {
+        return std::make_unique<
+            optimization_guide::LegionModelExecutionFetcher>(client);
+      }
+    }
+    return nullptr;
   }
 
  private:
-  std::unique_ptr<legion::Client> client_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 #endif
 
@@ -359,9 +377,7 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(legion::kLegion)) {
-    auto client = legion::Client::Create(
-        profile->GetDefaultStoragePartition()->GetNetworkContext());
-    delegate = std::make_unique<FetcherDelegate>(std::move(client));
+    delegate = std::make_unique<FetcherDelegate>(browser_context_);
   }
 #endif
 

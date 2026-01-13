@@ -73,6 +73,14 @@ class TokenServiceBrowserTest : public InProcessBrowserTest {
       content::BrowserContext* context) override {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    TokenServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<TestTokenService>(
+              IdentityManagerFactory::GetForProfile(profile),
+              profile->GetPrefs(), profile);
+        }));
   }
 
   void SetUpOnMainThread() override {
@@ -81,15 +89,6 @@ class TokenServiceBrowserTest : public InProcessBrowserTest {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
-
-    TokenServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<TestTokenService>(
-              IdentityManagerFactory::GetForProfile(profile),
-              profile->GetPrefs(), profile);
-        }));
   }
 
   void TearDownOnMainThread() override {

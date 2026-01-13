@@ -11,17 +11,22 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
 #include "components/legion/client.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 LegionInternalsPageHandler::LegionInternalsPageHandler(
+    legion::phosphor::TokenManager* token_manager,
     network::mojom::NetworkContext* network_context,
     mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
         receiver)
-    : network_context_(network_context), receiver_(this, std::move(receiver)) {}
+    : token_manager_(token_manager),
+      network_context_(network_context),
+      receiver_(this, std::move(receiver)) {}
 
 LegionInternalsPageHandler::~LegionInternalsPageHandler() = default;
 
@@ -29,7 +34,8 @@ void LegionInternalsPageHandler::Connect(const std::string& url,
                                          const std::string& api_key,
                                          ConnectCallback callback) {
   GURL api_url = legion::Client::FormatUrl(url, api_key);
-  client_ = legion::Client::CreateWithUrl(api_url, network_context_);
+  client_ =
+      legion::Client::CreateWithUrl(token_manager_, api_url, network_context_);
   std::move(callback).Run();
 }
 
