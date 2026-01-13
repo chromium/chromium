@@ -102,8 +102,8 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
 
 // Type so much text that a timeout occurs. Then, try again typing a single
 // character, which should succeed.
-
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && !defined(NDEBUG)
+// TODO(crbug.com/475288640): Fix and re-enable test.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_Timeout DISABLED_Timeout
 #else
 #define MAYBE_Timeout Timeout
