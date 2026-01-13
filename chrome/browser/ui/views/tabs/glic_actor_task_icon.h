@@ -47,10 +47,19 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   // Updates the background painter to match the current border insets.
   void RefreshBackground();
 
+  // Defines how the button calculates its width during animation.
+  enum class AnimationMode {
+    kEntry,  // Animating from 0 width -> icon width
+    kNudge   // Animating from icon width -> full nudge width
+  };
+
+  void SetAnimationMode(AnimationMode mode);
+  AnimationMode GetAnimationMode() const { return animation_mode_; }
+
  private:
-  // views::LabelButton:
   void NotifyClick(const ui::Event& event) override;
 
+  AnimationMode animation_mode_ = AnimationMode::kEntry;
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
 };

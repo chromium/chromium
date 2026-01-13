@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -79,6 +80,7 @@ constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+using TaskIconAnimationMode = glic::GlicActorTaskIcon::AnimationMode;
 }  // namespace
 
 TabStripActionContainer::TabStripNudgeAnimationSession::
@@ -467,12 +469,12 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
         gfx::Insets().set_left_right(0, kOutsideBorderAroundGlicButtons);
     const gfx::Insets left_icon_border = gfx::Insets().set_left_right(
         kOutsideBorderAroundGlicButtons, kInsideBorderAroundGlicButtons);
-      task_icon_border = right_icon_border + border_insets;
-      glic_border = left_icon_border + border_insets;
+    task_icon_border = right_icon_border + border_insets;
+    glic_border = left_icon_border + border_insets;
     glic_actor_task_icon_->SetBorder(
         views::CreateEmptyBorder(task_icon_border));
-      // Force a background repaint to account for the new border insets.
-      glic_actor_task_icon_->RefreshBackground();
+    // Force a background repaint to account for the new border insets.
+    glic_actor_task_icon_->RefreshBackground();
   } else {
     // Reset GlicButton border if Task Icon is hidden.
     glic_border = gfx::Insets().set_left_right(border_insets.top(),
@@ -480,8 +482,8 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
                   border_insets;
   }
   glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
-    // Force a background repaint to account for the new border insets.
-    glic_button_->RefreshBackground();
+  // Force a background repaint to account for the new border insets.
+  glic_button_->RefreshBackground();
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -695,22 +697,40 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
   CHECK(glic_actor_button_container_);
   CHECK(glic_button_);
-  // If the nudge is showing (ex: previous state was CheckTasks), hide the nudge
-  // and reset the icon
+  // If the nudge is showing (ex: previous state was CheckTasks), hide the
+  // nudge.
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
     HideTabStripNudge(glic_actor_task_icon_);
-    glic_actor_task_icon_->SetTaskIconToDefault();
+    return;
   }
-
   glic_button_ = glic_actor_button_container_->InsertGlicButton(glic_button_);
   glic_actor_task_icon_->SetVisible(true);
-
   glic_actor_button_container_->SetVisible(true);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     glic_button_->Collapse();
     glic_button_->SetSplitButtonCornerStyling();
   }
   UpdateGlicActorButtonContainerBorders();
+
+  // If in entry mode, attempt to animate the icon's appearance. If the tab
+  // strip is blocked (e.g. by another nudge), skip the entrance animation and
+  // jump straight to the nudge state to ensure the icon is visible.
+  if (glic_actor_task_icon_->GetAnimationMode() ==
+      TaskIconAnimationMode::kEntry) {
+    if (browser_window_interface_->GetTabStripModel()->CanShowModalUI()) {
+      scoped_tab_strip_modal_ui_ =
+          browser_window_interface_->GetTabStripModel()->ShowModalUI();
+      animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
+          glic_actor_task_icon_, this,
+          TabStripNudgeAnimationSession::AnimationSessionType::kShow,
+          base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
+                         base::Unretained(this)),
+          /*is_opacity_animated=*/false);
+      animation_session_->Start();
+    } else {
+      glic_actor_task_icon_->SetAnimationMode(TaskIconAnimationMode::kNudge);
+    }
+  }
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -723,12 +743,17 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
   CHECK(glic_actor_task_icon_);
 
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
-    HideTabStripNudge(glic_actor_task_icon_);
+    if (animation_session_ &&
+        animation_session_->button() == glic_actor_task_icon_) {
+      animation_session_.reset();
+    }
+    glic_actor_task_icon_->SetIsShowingNudge(false);
     // Once we hide the nudge we want to bring the glic button default label
     // back.
     // TODO(mjenn): Remove  when GlicActorUiGlobalTaskIndicator is launched.
     glic_button_->Expand();
   }
+  glic_actor_task_icon_->SetVisible(false);
   glic_actor_task_icon_->SetTaskIconToDefault();
   glic_button_ = AddChildView(std::move(glic_button_));
   glic_actor_button_container_->SetVisible(false);
@@ -736,6 +761,8 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
     glic_button_->Expand();
     glic_button_->ResetSplitButtonCornerStyling();
   }
+  // Reset the animation mode for the next time the icon is shown.
+  glic_actor_task_icon_->SetAnimationMode(TaskIconAnimationMode::kEntry);
   UpdateGlicActorButtonContainerBorders();
 #if !BUILDFLAG(IS_MAC)
   // Re-add the separator so it's ordered after the GlicButton.
@@ -780,15 +807,31 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
     return;
   }
 
-  // If the tab strip already has a modal UI showing, that is not for the same
-  // button being hidden, exit early. If the tab strip has modal UI for the same
-  // button being hidden, then continue to reset the animation and start a show
-  // animation.
-  if (!browser_window_interface_->GetTabStripModel()->CanShowModalUI() &&
-      !(animation_session_ &&
-        animation_session_->session_type() ==
-            TabStripNudgeAnimationSession::AnimationSessionType::kHide &&
-        animation_session_->button() == button)) {
+  bool can_show_modal_ui =
+      browser_window_interface_->GetTabStripModel()->CanShowModalUI();
+  // The tab strip might currently be animating a hide for this button. If we
+  // receive a show request during this time, we allow it to interrupt the hide
+  // animation so the button can re-expand immediately.
+  if (!can_show_modal_ui && animation_session_ &&
+      animation_session_->session_type() ==
+          TabStripNudgeAnimationSession::AnimationSessionType::kHide &&
+      animation_session_->button() == button) {
+    can_show_modal_ui = true;
+  }
+#if BUILDFLAG(ENABLE_GLIC)
+  // The glic actor icon might currently be running its entrance animation. If
+  // we receive a nudge request during this time, we allow it to interrupt the
+  // entrance animation so the text can appear immediately alongside the icon.
+  if (!can_show_modal_ui && animation_session_ &&
+      animation_session_->button() == glic_actor_task_icon_ &&
+      animation_session_->session_type() ==
+          TabStripNudgeAnimationSession::AnimationSessionType::kShow &&
+      glic_actor_task_icon_->GetAnimationMode() ==
+          TaskIconAnimationMode::kEntry) {
+    can_show_modal_ui = true;
+  }
+#endif
+  if (!can_show_modal_ui) {
     return;
   }
 
@@ -839,15 +882,29 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   if (!button->GetVisible()) {
     return;
   }
+#if BUILDFLAG(ENABLE_GLIC)
   // Since the glic button is still visible in it's hidden state we need to have
   // a special case to query if it's in its Hide state.
-#if BUILDFLAG(ENABLE_GLIC)
   if (button == glic_button_ && button->GetWidthFactor() == 0.0 &&
       !ButtonOwnsAnimation(button)) {
     return;
   }
+  const bool is_actor_nudge_mode = (button == glic_actor_task_icon_ &&
+                                    glic_actor_task_icon_->GetAnimationMode() ==
+                                        TaskIconAnimationMode::kNudge);
+  // For actor icon in nudge mode, only animate if the nudge text is actually
+  // showing.
+  if (is_actor_nudge_mode && !button->GetIsShowingNudge()) {
+    return;
+  }
+#else
+  const bool is_actor_nudge_mode = false;
 #endif  // BUILDFLAG(ENABLE_GLIC)
-  button->SetIsShowingNudge(false);
+  // The actor icon nudge must keep the text for the animation duration so it
+  // slides out visibly.
+  if (!is_actor_nudge_mode) {
+    button->SetIsShowingNudge(false);
+  }
 
   // Stop the timer since the chip might be getting hidden on user actions like
   // dismissal or click and not timeout.
@@ -938,9 +995,33 @@ void TabStripActionContainer::AnimationEnded(const gfx::Animation* animation) {
 void TabStripActionContainer::OnAnimationSessionEnded() {
   // If the button went from shown -> hidden, unblock the tab strip from
   // showing other modal UIs.
-  if (animation_session_ &&
-      animation_session_->session_type() ==
-          TabStripNudgeAnimationSession::AnimationSessionType::kHide) {
+  bool should_reset_modal_ui =
+      (animation_session_ &&
+       animation_session_->session_type() ==
+           TabStripNudgeAnimationSession::AnimationSessionType::kHide);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Handle state transitions for the actor task icon, which uses two distinct
+  // animation modes:
+  // 1. kEntry: The icon animating into existence.
+  // 2. kNudge: The label expanding/collapsing.
+  if (animation_session_->button() == glic_actor_task_icon_) {
+    const bool is_show =
+        animation_session_->session_type() ==
+        TabStripNudgeAnimationSession::AnimationSessionType::kShow;
+    if (is_show && glic_actor_task_icon_->GetAnimationMode() ==
+                       TaskIconAnimationMode::kEntry) {
+      glic_actor_task_icon_->SetAnimationMode(TaskIconAnimationMode::kNudge);
+      should_reset_modal_ui = true;
+    } else if (!is_show && glic_actor_task_icon_->GetAnimationMode() ==
+                               TaskIconAnimationMode::kNudge) {
+      // Reset button now that visual animation is done.
+      glic_actor_task_icon_->SetIsShowingNudge(false);
+      glic_actor_task_icon_->SetTaskIconToDefault();
+    }
+  }
+#endif
+  if (should_reset_modal_ui) {
     scoped_tab_strip_modal_ui_.reset();
 
     if (locked_expansion_button_) {

@@ -85,13 +85,29 @@ gfx::Size GlicActorTaskIcon::CalculatePreferredSize(
   const int height = TabStripControlButton::CalculatePreferredSize(
                          views::SizeBounds(full_width, available_size.height()))
                          .height();
-  int width = std::lerp(0, full_width, GetWidthFactor());
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
-    // Task icon should show.
-    width = std::lerp(height, full_width, GetWidthFactor());
+  int icon_only_width = height;
+  int width = 0;
+  switch (animation_mode_) {
+    case AnimationMode::kEntry:
+      width = std::lerp(0, icon_only_width, GetWidthFactor());
+      break;
+    case AnimationMode::kNudge:
+      int min_width = 0;
+      if (base::FeatureList::IsEnabled(
+              features::kGlicActorUiGlobalTaskIndicator)) {
+        min_width = icon_only_width;
+      }
+      width = std::lerp(min_width, full_width, GetWidthFactor());
+      break;
   }
-
   return gfx::Size(width, height);
+}
+
+void GlicActorTaskIcon::SetAnimationMode(AnimationMode mode) {
+  if (animation_mode_ != mode) {
+    animation_mode_ = mode;
+    PreferredSizeChanged();
+  }
 }
 
 void GlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
