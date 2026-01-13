@@ -2178,10 +2178,6 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     }
   }
 
-  base::UmaHistogramCounts1000(!form_element
-                                   ? "Autofill.ExtractFormUnowned.FieldCount2"
-                                   : "Autofill.ExtractFormOwned.FieldCount2",
-                               fields.size());
   FormData form;
   if (!form_element) {
     DCHECK(form.renderer_id().is_null());

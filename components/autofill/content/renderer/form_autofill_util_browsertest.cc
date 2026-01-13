@@ -2174,10 +2174,6 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
           ElementsAre(Property(&FormFieldData::name, u"text_input"),
                       Property(&FormFieldData::name, u"number_input"),
                       Property(&FormFieldData::name, u"select_input")))));
-  histogram_tester.ExpectTotalCount("Autofill.ExtractFormUnowned.FieldCount2",
-                                    0);
-  histogram_tester.ExpectUniqueSample("Autofill.ExtractFormOwned.FieldCount2",
-                                      3, 1);
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
@@ -2201,9 +2197,6 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
           ElementsAre(Property(&FormFieldData::name, u"text_input"),
                       Property(&FormFieldData::name, u"number_input"),
                       Property(&FormFieldData::name, u"select_input")))));
-  histogram_tester.ExpectTotalCount("Autofill.ExtractFormOwned.FieldCount2", 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ExtractFormUnowned.FieldCount2",
-                                      3, 1);
 }
 
 // Tests that GetOwnedFormControls() doesn't return disconnected elements.
