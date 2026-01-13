@@ -1,0 +1,13 @@
+Dodatočné zmluvné podmienky prehliadača Chrome a systému ChromeOS
+
+Naposledy upravené: 30. septembra 2025
+
+Používaním prehliadača Chrome alebo systému ChromeOS vyjadrujete súhlas so zmluvnými podmienkami spoločnosti Google na adrese https://policies.google.com/terms a týmito dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému ChromeOS.
+
+Tieto dodatočné zmluvné podmienky prehliadača Chrome a systému ChromeOS platia pre verziu prehliadača Chrome a systému ChromeOS so spustiteľným kódom. Väčšina zdrojových kódov pre prehliadač Chrome je k dispozícii bezplatne na základe licenčných zmlúv týkajúcich sa softvéru open source uvedených na adrese chrome://credits.
+
+Na vaše používanie určitých komponentov prehliadača Chrome a systému ChromeOS sa tiež vzťahujú nasledujúce zmluvné podmienky:
+
+AVC
+
+NA TÚTO SLUŽBU SA VZŤAHUJE LICENCIA PORTFÓLIA PATENTU AVC UMOŽŇUJÚCA OSOBNÉ a NEKOMERČNÉ POUŽITIE, PRÍPADNE INÉ POUŽITIE BEZ FINANČNEJ ODMENY PRE SPOTREBITEĽA NA TIETO ÚČELY: (i) KÓDOVANIE VIDEA V SÚLADE SO ŠTANDARDOM AVC (ĎALEJ LEN „VIDEO AVC“) ALEBO (ii) DEKÓDOVANIE VIDEA AVC, KTORÉ BOLO ZAKÓDOVANÉ ZÁKAZNÍKOM V RÁMCI OSOBNEJ ČINNOSTI ALEBO BOLO ZÍSKANÉ OD POSKYTOVATEĽA VIDEÍ S LICENCIOU NA POSKYTOVANIE VIDEÍ AVC. ŽIADNA LICENCIA SA NEUDEĽUJE NA INÉ POUŽITIE ANI TO NENAZNAČUJE. DODATOČNÉ INFORMÁCIE MÔŽETE ZÍSKAŤ OD SPOLOČNOSTI MPEG LA L.L.C. NA ADRESE HTTPS://WWW.VIA-LA.COM.

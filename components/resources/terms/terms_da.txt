@@ -1,0 +1,13 @@
+Yderligere servicevilkår for Google Chrome og ChromeOS
+
+Sidst opdateret: 30. september 2025
+
+Når du bruger Chrome eller ChromeOS, accepterer du Googles servicevilkår, som kan findes på https://policies.google.com/terms, og disse yderligere servicevilkår for Google Chrome og ChromeOS.
+
+Disse Yderligere servicevilkår for Google Chrome og ChromeOS gælder for den version af Chrome og ChromeOS med eksekverbar kode. Det meste af kildekoden til Chrome kan findes gratis i henhold til open source-softwarelicensaftaler på chrome://credits.
+
+Din brug af bestemte dele af Chrome og ChromeOS er underlagt følgende vilkår:
+
+AVC
+
+DETTE PRODUKT ER LICENSERET UNDER LICENSEN FOR AVC-PATENTPORTEFØLJEN TIL PERSONLIG BRUG AF EN FORBRUGER ELLER ANDEN BRUG, HVOR DER IKKE MODTAGES VEDERLAG FOR BRUGEN AF PRODUKTET, TIL (i) KODNING AF VIDEO I OVERENSSTEMMELSE MED AVC-STANDARDEN ("AVC-VIDEO") OG/ELLER (ii) AFKODNING AF AVC-VIDEO, SOM ER BLEVET KODET AF EN FORBRUGER I PERSONLIGT ØJEMED OG/ELLER ER ERHVERVET FRA EN VIDEOUDBYDER MED LICENS TIL AT LEVERE AVC-VIDEO. DER GIVES ELLER UNDERFORSTÅS IKKE LICENS TIL NOGEN ANDEN BRUG. FÅ YDERLIGERE OPLYSNINGER HOS MPEG LA, L.L.C. SE HTTPS://WWW.VIA-LA.COM.

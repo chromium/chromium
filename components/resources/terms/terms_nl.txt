@@ -1,0 +1,13 @@
+Aanvullende servicevoorwaarden van Google Chrome en ChromeOS
+
+Laatst gewijzigd: 30 september 2025
+
+Als u Chrome of ChromeOS gebruikt, gaat u akkoord met de Servicevoorwaarden van Google die te vinden zijn op https://policies.google.com/terms en met deze Aanvullende servicevoorwaarden van Google Chrome en ChromeOS.
+
+Deze Aanvullende servicevoorwaarden van Google Chrome en ChromeOS zijn van toepassing op de versie met uitvoerbare code van Chrome en ChromeOS. De meeste broncode van Chrome is kosteloos beschikbaar op grond van licentieovereenkomsten voor opensource-software op chrome://credits.
+
+Op uw gebruik van bepaalde componenten van Chrome en ChromeOS zijn de volgende voorwaarden van toepassing:
+
+AVC
+
+DIT PRODUCT IS IN LICENTIE GEGEVEN ONDER DE AVC PATENT PORTFOLIO-LICENTIE VOOR PERSOONLIJK GEBRUIK DOOR EEN CONSUMENT OF ANDER GEBRUIK WAARBIJ GEEN VERGOEDING WORDT ONTVANGEN OM (i) VIDEO TE CODEREN IN OVEREENSTEMMING MET DE AVC-STANDAARD ('AVC-VIDEO') EN/OF (ii) AVC-VIDEO TE DECODEREN DIE DOOR EEN CONSUMENT VOOR PERSOONLIJK GEBRUIK IS GECODEERD EN/OF IS VERKREGEN VAN EEN VIDEOPARTNER DIE BEVOEGD IS OM AVC-VIDEO AAN TE BIEDEN. VOOR AL HET OVERIGE GEBRUIK WORDT GEEN LICENTIE VERLEEND NOCH GEÏMPLICEERD. AANVULLENDE INFORMATIE IS BESCHIKBAAR VIA MPEG LA, L.L.C. GA NAAR HTTPS://WWW.VIA-LA.COM.

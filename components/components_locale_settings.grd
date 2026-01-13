@@ -318,6 +318,68 @@
           </else>
         </if>
       </if>
+      <!-- The text for the about:terms page -->
+      <if expr="is_linux">
+        <if expr="_google_chrome or _is_chrome_for_testing_branded">
+          <then>
+            <if expr="'am' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_am.txt" type="BINDATA" /></if>
+            <if expr="'ar' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ar.txt" type="BINDATA" /></if>
+            <if expr="'bg' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_bg.txt" type="BINDATA" /></if>
+            <if expr="'bn' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_bn.txt" type="BINDATA" /></if>
+            <if expr="'ca' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ca.txt" type="BINDATA" /></if>
+            <if expr="'cs' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_cs.txt" type="BINDATA" /></if>
+            <if expr="'da' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_da.txt" type="BINDATA" /></if>
+            <if expr="'de' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_de.txt" type="BINDATA" /></if>
+            <if expr="'el' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_el.txt" type="BINDATA" /></if>
+            <if expr="'en-GB' == lang"> <include name="IDS_TERMS_TXT" file="resources/terms/terms_en-GB.txt" type="BINDATA" /></if>
+            <if expr="'en' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_en.txt" type="BINDATA" /></if>
+            <if expr="'es' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_es.txt" type="BINDATA" /></if>
+            <if expr="'es-419' == lang"><include name="IDS_TERMS_TXT" file="resources/terms/terms_es-419.txt" type="BINDATA" /></if>
+            <if expr="'et' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_et.txt" type="BINDATA" /></if>
+            <if expr="'fa' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_fa.txt" type="BINDATA" /></if>
+            <if expr="'fi' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_fi.txt" type="BINDATA" /></if>
+            <if expr="'fil' == lang">   <include name="IDS_TERMS_TXT" file="resources/terms/terms_fil.txt" type="BINDATA" /></if>
+            <if expr="'fr' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_fr.txt" type="BINDATA" /></if>
+            <if expr="'gu' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_gu.txt" type="BINDATA" /></if>
+            <if expr="'he' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_he.txt" type="BINDATA" /></if>
+            <if expr="'hi' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_hi.txt" type="BINDATA" /></if>
+            <if expr="'hr' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_hr.txt" type="BINDATA" /></if>
+            <if expr="'hu' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_hu.txt" type="BINDATA" /></if>
+            <if expr="'id' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_id.txt" type="BINDATA" /></if>
+            <if expr="'it' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_it.txt" type="BINDATA" /></if>
+            <if expr="'ja' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ja.txt" type="BINDATA" /></if>
+            <if expr="'kn' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_kn.txt" type="BINDATA" /></if>
+            <if expr="'ko' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ko.txt" type="BINDATA" /></if>
+            <if expr="'lt' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_lt.txt" type="BINDATA" /></if>
+            <if expr="'lv' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_lv.txt" type="BINDATA" /></if>
+            <if expr="'ml' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ml.txt" type="BINDATA" /></if>
+            <if expr="'mr' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_mr.txt" type="BINDATA" /></if>
+            <if expr="'nl' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_nl.txt" type="BINDATA" /></if>
+            <if expr="'no' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_nb.txt" type="BINDATA" /></if>
+            <if expr="'pl' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_pl.txt" type="BINDATA" /></if>
+            <if expr="'pt-BR' == lang"> <include name="IDS_TERMS_TXT" file="resources/terms/terms_pt-BR.txt" type="BINDATA" /></if>
+            <if expr="'pt-PT' == lang"> <include name="IDS_TERMS_TXT" file="resources/terms/terms_pt-PT.txt" type="BINDATA" /></if>
+            <if expr="'ro' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ro.txt" type="BINDATA" /></if>
+            <if expr="'ru' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ru.txt" type="BINDATA" /></if>
+            <if expr="'sk' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_sk.txt" type="BINDATA" /></if>
+            <if expr="'sl' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_sl.txt" type="BINDATA" /></if>
+            <if expr="'sr' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_sr.txt" type="BINDATA" /></if>
+            <if expr="'sv' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_sv.txt" type="BINDATA" /></if>
+            <if expr="'sw' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_sw.txt" type="BINDATA" /></if>
+            <if expr="'ta' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_ta.txt" type="BINDATA" /></if>
+            <if expr="'te' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_te.txt" type="BINDATA" /></if>
+            <if expr="'th' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_th.txt" type="BINDATA" /></if>
+            <if expr="'tr' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_tr.txt" type="BINDATA" /></if>
+            <if expr="'uk' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_uk.txt" type="BINDATA" /></if>
+            <if expr="'vi' == lang">    <include name="IDS_TERMS_TXT" file="resources/terms/terms_vi.txt" type="BINDATA" /></if>
+            <if expr="'zh-CN' == lang"> <include name="IDS_TERMS_TXT" file="resources/terms/terms_zh-CN.txt" type="BINDATA" /></if>
+            <if expr="'zh-TW' == lang"> <include name="IDS_TERMS_TXT" file="resources/terms/terms_zh-TW.txt" type="BINDATA" /></if>
+          </then>
+          <else>
+            <include name="IDS_TERMS_TXT" file="resources/terms/terms_chromium.txt" type="BINDATA" />
+          </else>
+        </if>
+      </if>
     </includes>
     <messages fallback_to_english="true">
 

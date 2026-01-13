@@ -1,0 +1,13 @@
+Tilleggsvilkår for bruk av Google Chrome og ChromeOS
+
+Sist endret: 30. september 2025
+
+Ved å bruke Chrome eller ChromeOS godtar du Googles vilkår for bruk, som du finner på https://policies.google.com/terms, samt disse tilleggsvilkårene for bruk av Google Chrome og ChromeOS.
+
+Disse tilleggsvilkårene for bruk av Google Chrome og ChromeOS gjelder for versjonene av Chrome og ChromeOS med kjørbar kode. Det meste av kildekoden for Chrome er tilgjengelig gratis under lisensavtaler for programvare med åpen kildekode, på chrome://credits.
+
+Bruken din av enkelte komponenter i Chrome og ChromeOS reguleres av disse vilkårene:
+
+AVC
+
+DETTE PRODUKTET LISENSIERES UNDER AVC PATENT PORTFOLIO-LISENSEN FOR PERSONLIG BRUK ELLER ANNEN BRUK SOM IKKE MEDFØRER GODTGJØRELSE, TIL FØLGENDE FORMÅL: (i) KODING AV VIDEOER I SAMSVAR MED AVC-STANDARDEN («AVC-VIDEO») OG/ELLER (ii) DEKODING AV AVC-VIDEOER SOM ER KODET AV FORBRUKERE I FORBINDELSE MED PERSONLIG AKTIVITET OG/ELLER SOM ER ANSKAFFET FRA EN VIDEOLEVERANDØR SOM HAR LISENS FOR Å TILBY AVC-VIDEOER. INGEN LISENSER FOR ANNEN BRUK ER GITT ELLER SKAL UNDERFORSTÅS. MER INFORMASJON KAN INNHENTES FRA MPEG LA, L.L.C. SE HTTPS://WWW.VIA-LA.COM.

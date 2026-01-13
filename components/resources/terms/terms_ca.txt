@@ -1,0 +1,13 @@
+Condicions del servei addicionals de Google Chrome i ChromeOS
+
+Darrera modificació: 30 de setembre de 2025
+
+En utilitzar Chrome o ChromeOS, accepteu les Condicions del servei de Google, que podeu consultar a https://policies.google.com/terms, i aquestes Condicions del servei addicionals de Google Chrome i ChromeOS.
+
+Aquestes Condicions del servei addicionals de Google Chrome i ChromeOS s'apliquen a la versió de codi executable de Chrome i ChromeOS. La major part del codi font de Chrome està disponible sense cap càrrec d'acord amb els acords de llicència de programari lliure que es poden consultar a chrome://credits.
+
+L'ús que feu de determinats components de Chrome i ChromeOS està subjecte a les condicions següents:
+
+AVC
+
+AQUEST PRODUCTE ES CONCEDEIX SOTA UNA LLICÈNCIA DE CARTERA DE PATENTS AVC PER A L'ÚS PERSONAL PER PART D'UN CONSUMIDOR O PER A ALTRES USOS EN QUÈ NO ES REBI CAP REMUNERACIÓ PER (i) CODIFICAR VÍDEO DE CONFORMITAT AMB L'ESTÀNDARD AVC ("VÍDEO AVC") O (ii) DESCODIFICAR VÍDEO AVC CODIFICAT PER UN CONSUMIDOR COM A PART D'UNA ACTIVITAT DE CARÀCTER PERSONAL O QUE S'HAGI OBTINGUT D'UN PROVEÏDOR DE VÍDEO AMB LLICÈNCIA PER SUBMINISTRAR VÍDEO AVC. NO ES CONCEDEIX CAP LLICÈNCIA NI HI HA CAP LLICÈNCIA IMPLÍCITA PER A CAP ALTRE ÚS. PER OBTENIR INFORMACIÓ ADDICIONAL, CONSULTEU LA PÀGINA D'MPEG (HTTPS://WWW.VIA-LA.COM).

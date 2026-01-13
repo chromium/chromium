@@ -1,0 +1,13 @@
+Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS
+
+Ultima modificare: 30 septembrie 2025
+
+Dacă folosești Chrome sau ChromeOS, ești de acord cu Termenii și condițiile Google de la https://policies.google.com/terms și cu acest set de Termeni și condiții suplimentare pentru Google Chrome și ChromeOS.
+
+Acest set de Termeni și condiții suplimentare pentru Google Chrome și ChromeOS se aplică versiunii cu cod executabil a browserului Chrome și a ChromeOS. Majoritatea codului sursă pentru Chrome este disponibil gratuit, în baza acordurilor de licență pentru software open source, la chrome://credits.
+
+Folosirea anumitor componente din Chrome și ChromeOS este supusă următoarelor condiții:
+
+AVC
+
+ACEST PRODUS ESTE LICENȚIAT CONFORM LICENȚEI PENTRU PORTOFOLIUL DE BREVETE AVC PENTRU UZUL PERSONAL DE CĂTRE UN CONSUMATOR SAU PENTRU ALTE MODURI DE UTILIZARE PENTRU CARE NU ESTE REMUNERAT PENTRU (i) A CODIFICA CONȚINUT VIDEO ÎN CONFORMITATE CU STANDARDUL AVC („CONȚINUT VIDEO AVC”) ȘI/SAU PENTRU (ii) A DECODIFICA CONȚINUT VIDEO AVC CARE A FOST CODIFICAT DE UN CONSUMATOR CARE DESFĂȘOARĂ O ACTIVITATE PERSONALĂ ȘI/SAU CARE A FOST OBȚINUT DE LA UN FURNIZOR VIDEO LICENȚIAT PENTRU OFERIREA DE CONȚINUT VIDEO AVC. NU SE ACORDĂ ȘI NU SE SUGEREAZĂ ACORDAREA NICIUNEI LICENȚE ÎN NICIUN ALT SCOP. POȚI OBȚINE INFORMAȚII SUPLIMENTARE DE LA MPEG LA, L.L.C. ACCESEAZĂ HTTPS://WWW.VIA-LA.COM.

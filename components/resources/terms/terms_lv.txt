@@ -1,0 +1,13 @@
+Google Chrome un ChromeOS pakalpojumu sniegšanas papildu noteikumi
+
+Pēdējās izmaiņas: 2025. gada 30. septembris
+
+Izmantojot pārlūkprogrammu Chrome vai operētājsistēmu ChromeOS, jūs piekrītat Google pakalpojumu sniegšanas noteikumiem, kas norādīti vietnē https://policies.google.com/terms, un šiem Google Chrome un ChromeOS pakalpojumu sniegšanas papildu noteikumiem.
+
+Šie Google Chrome un ChromeOS pakalpojumu sniegšanas papildu noteikumi attiecas uz Chrome un ChromeOS izpildāmā koda versiju. Visdrošākais Chrome kods ir pieejams bez maksas saskaņā ar atklātā pirmkoda programmatūras licences līgumiem vietnē chrome://credits.
+
+Uz Chrome un ChromeOS lietošanu attiecas tālāk norādītie noteikumi.
+
+AVC
+
+ŠIS PRODUKTS IR LICENCĒTS SASKAŅĀ AR AVC PATENTU PAKETES LICENCI PATĒRĒTĀJA PERSONĪGAI LIETOŠANAI VAI CITAI LIETOŠANAI, PAR KURU LICENCES IZSNIEDZĒJS NESAŅEM SAMAKSU, LAI: i) KODĒTU VIDEO ATBILSTOŠI AVC STANDARTAM (“AVC VIDEO”); ii) DEKODĒTU AVC VIDEO, KO KODĒJIS PATĒRĒTĀJS PERSONĪGAS DARBĪBAS IETVAROS UN/VAI KAS IEGŪTS NO VIDEO PAKALPOJUMU SNIEDZĒJA, KURAM IR PIEŠĶIRTA LICENCE AVC VIDEO NODROŠINĀŠANAI. LICENCE NAV NEDZ PIEŠĶIRTA, NEDZ NETIEŠI NORĀDĪTA NEKĀDIEM CITIEM LIETOŠANAS VEIDIEM. PAPILDU INFORMĀCIJA IR PIEEJAMA NO UZŅĒMUMA MPEG LA, L.L.C. SKATIET VIETNI HTTPS://WWW.VIA-LA.COM.
