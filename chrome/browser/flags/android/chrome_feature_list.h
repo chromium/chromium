@@ -362,7 +362,7 @@ inline constexpr base::FeatureParam<int>
     kReadAloudAudioReadabilityDelayMsAfterPageLoad(
         &kReadAloud,
         "read_aloud_readability_delay_ms_after_page_load",
-        /* default_value=*/1500);
+        /* default_value=*/500);
 
 inline constexpr base::FeatureParam<bool> kTouchToSearchCalloutIph(
     &kTouchToSearchCallout,
