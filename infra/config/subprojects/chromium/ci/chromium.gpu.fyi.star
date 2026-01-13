@@ -3203,12 +3203,26 @@ ci.thin_tester(
         # should have the same test suites as "Win10 FYI x64 Release (AMD
         # RX 5500XT)".
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_amd_release_telemetry_tests",
         ],
         mixins = [
             "limited_capacity_bot",
             "win11_amd_rx_5500_xt_experimental",
         ],
+        per_test_modifications = {
+            "gl_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
+                ],
+            ),
+            "media_foundation_browser_tests": targets.remove(
+                reason = [
+                    "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
+                    "gpu bots once the Windows OS supports HW secure decryption.",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
