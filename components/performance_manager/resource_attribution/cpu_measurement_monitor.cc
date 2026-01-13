@@ -554,7 +554,7 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
 
 void CPUMeasurementMonitor::OnPriorityChanged(
     const ProcessNode* process_node,
-    base::TaskPriority previous_value) {
+    base::Process::Priority previous_value) {
   UpdateCPUMeasurements(process_node, GraphChangeUpdateProcessPriority(
                                           process_node, previous_value));
 }
@@ -1037,7 +1037,7 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
   // Determine the process priority during the measurement interval. If the
   // process' priority just changed, used the previous priority. Otherwise, use
   // the current priority.
-  base::TaskPriority process_priority;
+  base::Process::Priority process_priority;
   GraphChangeUpdateProcessPriority* priority_change =
       std::get_if<GraphChangeUpdateProcessPriority>(&graph_change);
   if (priority_change && priority_change->process_node == process_node) {
@@ -1067,7 +1067,7 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
             // `cumulative_background_cpu` accumulates CPU consumed while the
             // process' priority is `BEST_EFFORT`.
             .cumulative_background_cpu =
-                (process_priority == base::TaskPriority::BEST_EFFORT)
+                (process_priority == base::Process::Priority::kBestEffort)
                     ? cpu_delta
                     : base::TimeDelta()});
     CHECK(inserted);

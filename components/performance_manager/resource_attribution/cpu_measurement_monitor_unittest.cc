@@ -1776,8 +1776,9 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
   performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
       mock_graph(graph());
 
-  mock_graph.process->set_priority(base::TaskPriority::USER_BLOCKING);
-  mock_graph.other_process->set_priority(base::TaskPriority::USER_BLOCKING);
+  mock_graph.process->set_priority(base::Process::Priority::kUserBlocking);
+  mock_graph.other_process->set_priority(
+      base::Process::Priority::kUserBlocking);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -1794,12 +1795,12 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
 
   // Set process' priority to `BEST_EFFORT` at 1/3 of the measurement interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.process->set_priority(base::TaskPriority::BEST_EFFORT);
+  mock_graph.process->set_priority(base::Process::Priority::kBestEffort);
 
   // Set process' priority to `USER_BLOCKING` at 2/3 of the measurement
   // interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.process->set_priority(base::TaskPriority::USER_BLOCKING);
+  mock_graph.process->set_priority(base::Process::Priority::kUserBlocking);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
   UpdateAndGetCPUMeasurements();
@@ -1850,7 +1851,7 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
 
   // Set other process' priority to `BEST_EFFORT` for a full measurement
   // interval.
-  mock_graph.other_process->set_priority(base::TaskPriority::BEST_EFFORT);
+  mock_graph.other_process->set_priority(base::Process::Priority::kBestEffort);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
   UpdateAndGetCPUMeasurements();
 

@@ -32,10 +32,10 @@ const execution_context::ExecutionContext* GetExecutionContext(
 }
 
 std::optional<Vote> GetVoteFromClient(const FrameNode* client_frame_node) {
-  const base::TaskPriority client_priority =
+  const base::Process::Priority client_priority =
       client_frame_node->GetPriorityAndReason().priority();
 
-  if (client_priority == base::TaskPriority::BEST_EFFORT) {
+  if (client_priority == base::Process::Priority::kBestEffort) {
     return std::nullopt;
   }
 
@@ -44,12 +44,12 @@ std::optional<Vote> GetVoteFromClient(const FrameNode* client_frame_node) {
 }
 
 std::optional<Vote> GetVoteFromClient(const WorkerNode* client_worker_node) {
-  const base::TaskPriority client_priority =
+  const base::Process::Priority client_priority =
       client_worker_node->GetPriorityAndReason().priority();
 
   // Don't cast a vote with the default priority as it wouldn't have any effect
   // anyways, and this prevent unnecessary work in the aggregators.
-  if (client_priority == base::TaskPriority::BEST_EFFORT) {
+  if (client_priority == base::Process::Priority::kBestEffort) {
     return std::nullopt;
   }
 

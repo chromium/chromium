@@ -54,7 +54,7 @@ base::Value PriorityAndReasonToValue(
     const execution_context_priority::PriorityAndReason& priority_and_reason) {
   base::Value::Dict priority;
   priority.Set("priority",
-               base::TaskPriorityToString(priority_and_reason.priority()));
+               base::ProcessPriorityToString(priority_and_reason.priority()));
   priority.Set("reason", MaybeNullStringToValue(priority_and_reason.reason()));
   return base::Value(std::move(priority));
 }

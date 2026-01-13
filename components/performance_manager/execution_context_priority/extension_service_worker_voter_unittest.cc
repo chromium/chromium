@@ -81,7 +81,7 @@ TEST_F(ExtensionServiceWorkerVoterTest, AddExtensionServiceWorker) {
 
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(worker_node),
-                                base::TaskPriority::USER_VISIBLE,
+                                base::Process::Priority::kUserVisible,
                                 ExtensionServiceWorkerVoter::kPriorityReason));
 
   test_worker_node_factory_.DeleteWorker(worker_node);
@@ -104,7 +104,7 @@ TEST_F(ExtensionServiceWorkerVoterTest, AddNonExtensionServiceWorker) {
 
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(worker_node),
-                                base::TaskPriority::LOWEST,
+                                base::Process::Priority::kMinValue,
                                 ExtensionServiceWorkerVoter::kPriorityReason));
 
   test_worker_node_factory_.DeleteWorker(worker_node);

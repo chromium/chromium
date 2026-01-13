@@ -76,7 +76,7 @@ TEST_F(SidePanelLoadingVoterTest, IncreasePriority) {
 
   EXPECT_TRUE(
       observer().HasVote(voter_id(), GetExecutionContext(frame.get()),
-                         base::TaskPriority::USER_BLOCKING,
+                         base::Process::Priority::kUserBlocking,
                          SidePanelLoadingVoter::kSidePanelLoadingReason));
 
   // Making the page visible should invalidate the vote.

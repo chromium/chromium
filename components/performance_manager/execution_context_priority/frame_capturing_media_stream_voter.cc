@@ -21,9 +21,9 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // Returns a vote with the appropriate priority depending on if the frame is
 // capturing media.
 Vote GetVote(bool is_capturing_media_stream) {
-  base::TaskPriority priority = is_capturing_media_stream
-                                    ? base::TaskPriority::USER_BLOCKING
-                                    : base::TaskPriority::LOWEST;
+  base::Process::Priority priority =
+      is_capturing_media_stream ? base::Process::Priority::kUserBlocking
+                                : base::Process::Priority::kMinValue;
   return Vote(priority,
               FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason);
 }

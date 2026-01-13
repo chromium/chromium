@@ -13,22 +13,23 @@ namespace performance_manager {
 
 ProcessPriorityAggregatorData::ProcessPriorityAggregatorData() = default;
 
-void ProcessPriorityAggregatorData::Decrement(base::TaskPriority priority) {
+void ProcessPriorityAggregatorData::Decrement(
+    base::Process::Priority priority) {
   switch (priority) {
-    case base::TaskPriority::LOWEST:
+    case base::Process::Priority::kMinValue:
 #if DCHECK_IS_ON()
       DCHECK_LT(0u, lowest_count_);
       --lowest_count_;
 #endif
       return;
 
-    case base::TaskPriority::USER_VISIBLE: {
+    case base::Process::Priority::kUserVisible: {
       DCHECK_LT(0u, user_visible_count_);
       --user_visible_count_;
       return;
     }
 
-    case base::TaskPriority::USER_BLOCKING: {
+    case base::Process::Priority::kUserBlocking: {
       DCHECK_LT(0u, user_blocking_count_);
       --user_blocking_count_;
       return;
@@ -38,20 +39,21 @@ void ProcessPriorityAggregatorData::Decrement(base::TaskPriority priority) {
   NOTREACHED();
 }
 
-void ProcessPriorityAggregatorData::Increment(base::TaskPriority priority) {
+void ProcessPriorityAggregatorData::Increment(
+    base::Process::Priority priority) {
   switch (priority) {
-    case base::TaskPriority::LOWEST:
+    case base::Process::Priority::kMinValue:
 #if DCHECK_IS_ON()
       ++lowest_count_;
 #endif
       return;
 
-    case base::TaskPriority::USER_VISIBLE: {
+    case base::Process::Priority::kUserVisible: {
       ++user_visible_count_;
       return;
     }
 
-    case base::TaskPriority::USER_BLOCKING: {
+    case base::Process::Priority::kUserBlocking: {
       ++user_blocking_count_;
       return;
     }
@@ -69,14 +71,14 @@ bool ProcessPriorityAggregatorData::IsEmpty() const {
   return user_blocking_count_ == 0 && user_visible_count_ == 0;
 }
 
-base::TaskPriority ProcessPriorityAggregatorData::GetPriority() const {
+base::Process::Priority ProcessPriorityAggregatorData::GetPriority() const {
   if (user_blocking_count_ > 0) {
-    return base::TaskPriority::USER_BLOCKING;
+    return base::Process::Priority::kUserBlocking;
   }
   if (user_visible_count_ > 0) {
-    return base::TaskPriority::USER_VISIBLE;
+    return base::Process::Priority::kUserVisible;
   }
-  return base::TaskPriority::LOWEST;
+  return base::Process::Priority::kMinValue;
 }
 
 base::Value::Dict ProcessPriorityAggregatorData::Describe() const {

@@ -28,10 +28,10 @@ Vote GetVote(const WorkerNode* worker_node) {
   // set USER_BLOCKING on those extension service workers. But since
   // API access can change at runtime that gets fairly complicated so
   // for now set `USER_BLOCKING` so all use-cases will be covered.
-  base::TaskPriority priority =
+  base::Process::Priority priority =
       worker_node->GetOrigin().GetURL().SchemeIs("chrome-extension")
-          ? base::TaskPriority::USER_VISIBLE
-          : base::TaskPriority::LOWEST;
+          ? base::Process::Priority::kUserVisible
+          : base::Process::Priority::kMinValue;
   return Vote(priority, ExtensionServiceWorkerVoter::kPriorityReason);
 }
 

@@ -218,14 +218,14 @@ TEST_F(WorkerNodeImplTest, NestedDedicatedWorkers) {
 TEST_F(WorkerNodeImplTest, PriorityAndReason) {
   auto process = CreateNode<ProcessNodeImpl>();
   constexpr PriorityAndReason kTestPriorityAndReason(
-      base::TaskPriority::HIGHEST, "Test reason");
+      base::Process::Priority::kMaxValue, "Test reason");
 
   auto worker_impl = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kShared,
                                                 process.get());
 
   // Initially the default priority.
   EXPECT_EQ(worker_impl->GetPriorityAndReason(),
-            PriorityAndReason(base::TaskPriority::LOWEST,
+            PriorityAndReason(base::Process::Priority::kMinValue,
                               WorkerNodeImpl::kDefaultPriorityReason));
 
   worker_impl->SetPriorityAndReason(kTestPriorityAndReason);
@@ -281,7 +281,7 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker_node))
       .WillOnce(InvokeWithoutArgs([&] {
         dedicated_worker->SetPriorityAndReason(PriorityAndReason(
-            base::TaskPriority::USER_BLOCKING, "test priority"));
+            base::Process::Priority::kUserBlocking, "test priority"));
       }));
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker_node, _));
   dedicated_worker->OnFinalResponseURLDetermined(GURL("https://example.com"));
@@ -488,8 +488,8 @@ TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());
 
-  static const PriorityAndReason kPriorityAndReason(base::TaskPriority::HIGHEST,
-                                                    "this is a reason!");
+  static const PriorityAndReason kPriorityAndReason(
+      base::Process::Priority::kMaxValue, "this is a reason!");
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker.get(), _));
   worker->SetPriorityAndReason(kPriorityAndReason);
 

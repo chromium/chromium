@@ -153,7 +153,7 @@ class WorkerNodeImpl
       PriorityAndReason,
       &WorkerNodeObserver::OnPriorityAndReasonChanged>
       priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
-          PriorityAndReason(base::TaskPriority::LOWEST,
+          PriorityAndReason(base::Process::Priority::kMinValue,
                             kDefaultPriorityReason)};
 
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_

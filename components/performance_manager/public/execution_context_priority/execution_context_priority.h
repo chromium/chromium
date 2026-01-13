@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_
 
+#include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/voting/optional_voting_channel.h"
 #include "components/performance_manager/public/voting/voting.h"
 
 // Specialization of a voting system used to get votes related to the
-// TaskPriority of ExecutionContexts.
+// ProcessPriority of ExecutionContexts.
 
 namespace content {
 class WebContents;
@@ -33,13 +34,14 @@ int ReasonCompare(const char* reason1, const char* reason2);
 class PriorityAndReason {
  public:
   PriorityAndReason() = default;
-  constexpr PriorityAndReason(base::TaskPriority priority, const char* reason)
+  constexpr PriorityAndReason(base::Process::Priority priority,
+                              const char* reason)
       : priority_(priority), reason_(reason) {}
   PriorityAndReason(const PriorityAndReason&) = default;
   PriorityAndReason& operator=(const PriorityAndReason&) = default;
   ~PriorityAndReason() = default;
 
-  base::TaskPriority priority() const { return priority_; }
+  base::Process::Priority priority() const { return priority_; }
   const char* reason() const { return reason_; }
 
   friend bool operator==(const PriorityAndReason& lhs,
@@ -53,12 +55,13 @@ class PriorityAndReason {
   }
 
  private:
-  base::TaskPriority priority_ = base::TaskPriority::LOWEST;
+  base::Process::Priority priority_ = base::Process::Priority::kMinValue;
   const char* reason_ = nullptr;
 };
 
-using Vote = voting::
-    Vote<ExecutionContext, base::TaskPriority, base::TaskPriority::LOWEST>;
+using Vote = voting::Vote<ExecutionContext,
+                          base::Process::Priority,
+                          base::Process::Priority::kMinValue>;
 using VoterId = voting::VoterId<Vote>;
 using VoteObserver = voting::VoteObserver<Vote>;
 using VotingChannel = voting::VotingChannel<Vote>;

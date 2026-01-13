@@ -82,7 +82,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       BrowserProcessNodeTag tag);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       RenderProcessHostProxy proxy,
-      base::TaskPriority priority);
+      base::Process::Priority priority);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       content::ProcessType process_type,
       BrowserChildProcessHostProxy proxy);

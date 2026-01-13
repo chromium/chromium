@@ -399,7 +399,7 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnFrameVisibilityChanged(raw_frame_node, _))
       .WillOnce(InvokeWithoutArgs([&] {
         frame_node->SetPriorityAndReason(PriorityAndReason(
-            base::TaskPriority::USER_BLOCKING, "test priority"));
+            base::Process::Priority::kUserBlocking, "test priority"));
       }));
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(raw_frame_node, _));
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
@@ -636,7 +636,7 @@ TEST_F(FrameNodeImplTest, Priority) {
   MockObserver obs(graph());
 
   // By default the priority should be "lowest".
-  EXPECT_EQ(base::TaskPriority::LOWEST,
+  EXPECT_EQ(base::Process::Priority::kMinValue,
             frame_node->GetPriorityAndReason().priority());
 
   // Changed the reason only.
@@ -644,40 +644,40 @@ TEST_F(FrameNodeImplTest, Priority) {
   EXPECT_CALL(obs,
               OnPriorityAndReasonChanged(
                   frame_node.get(),
-                  PriorityAndReason(base::TaskPriority::LOWEST,
+                  PriorityAndReason(base::Process::Priority::kMinValue,
                                     FrameNodeImpl::kDefaultPriorityReason)));
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason),
+      PriorityAndReason(base::Process::Priority::kMinValue, kDummyReason));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMinValue, kDummyReason),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change the priority only.
-  EXPECT_CALL(obs,
-              OnPriorityAndReasonChanged(
-                  frame_node.get(),
-                  PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason)));
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(
+                       frame_node.get(),
+                       PriorityAndReason(base::Process::Priority::kMinValue,
+                                         kDummyReason)));
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason),
+      PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change neither.
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason),
+      PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change both the priority and the reason.
-  EXPECT_CALL(
-      obs, OnPriorityAndReasonChanged(
-               frame_node.get(),
-               PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason)));
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(
+                       frame_node.get(),
+                       PriorityAndReason(base::Process::Priority::kMaxValue,
+                                         kDummyReason)));
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::LOWEST, nullptr));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, nullptr),
+      PriorityAndReason(base::Process::Priority::kMinValue, nullptr));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMinValue, nullptr),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 }

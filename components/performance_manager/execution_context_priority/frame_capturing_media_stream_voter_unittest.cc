@@ -73,7 +73,7 @@ TEST_F(FrameCapturingMediaStreamVoterTest, CapturingMediaStreamChanged) {
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(frame_node.get()),
-      base::TaskPriority::LOWEST,
+      base::Process::Priority::kMinValue,
       FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
   // Now set the frame as capturing a media stream. This should increase the
@@ -82,7 +82,7 @@ TEST_F(FrameCapturingMediaStreamVoterTest, CapturingMediaStreamChanged) {
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(frame_node.get()),
-      base::TaskPriority::USER_BLOCKING,
+      base::Process::Priority::kUserBlocking,
       FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
   // Deleting the frame should invalidate the vote.

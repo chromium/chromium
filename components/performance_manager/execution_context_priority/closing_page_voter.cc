@@ -93,7 +93,7 @@ void ClosingPageVoter::AdjustVotesForSubtree(const FrameNode* frame_node,
   if (is_closing) {
     voting_channel_.SubmitVote(
         GetExecutionContext(frame_node),
-        Vote(base::TaskPriority::USER_BLOCKING, kPageIsClosingReason));
+        Vote(base::Process::Priority::kUserBlocking, kPageIsClosingReason));
   } else {
     voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
   }

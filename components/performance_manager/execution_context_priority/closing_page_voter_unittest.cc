@@ -75,11 +75,11 @@ TEST_F(ClosingPageVoterTest, VoteWhenClosingWithChildFrame) {
   EXPECT_EQ(observer_.GetVoteCount(), 2u);
   EXPECT_TRUE(observer_.HasVote(voter_id(),
                                 GetExecutionContext(main_frame_node),
-                                base::TaskPriority::USER_BLOCKING,
+                                base::Process::Priority::kUserBlocking,
                                 ClosingPageVoter::kPageIsClosingReason));
   EXPECT_TRUE(observer_.HasVote(voter_id(),
                                 GetExecutionContext(child_frame_node),
-                                base::TaskPriority::USER_BLOCKING,
+                                base::Process::Priority::kUserBlocking,
                                 ClosingPageVoter::kPageIsClosingReason));
 
   // Set back to not closing, expect the votes to be invalidated.

@@ -39,12 +39,12 @@ TEST(ExecutionContextPriorityTest, ReasonCompare) {
 TEST(ExecutionContextPriorityTest, PriorityAndReason) {
   // Default constructor
   PriorityAndReason par1;
-  EXPECT_EQ(base::TaskPriority::LOWEST, par1.priority());
+  EXPECT_EQ(base::Process::Priority::kMinValue, par1.priority());
   EXPECT_EQ(nullptr, par1.reason());
 
   // Explicit initialization.
-  PriorityAndReason par2(base::TaskPriority::HIGHEST, kReason1);
-  EXPECT_EQ(base::TaskPriority::HIGHEST, par2.priority());
+  PriorityAndReason par2(base::Process::Priority::kMaxValue, kReason1);
+  EXPECT_EQ(base::Process::Priority::kMaxValue, par2.priority());
   EXPECT_EQ(kReason1, par2.reason());
 
   // Identical comparison.
@@ -65,8 +65,8 @@ TEST(ExecutionContextPriorityTest, PriorityAndReason) {
 
   // Comparison with identical priorities and reasons strings, but at different
   // locations.
-  PriorityAndReason par3(base::TaskPriority::HIGHEST, kReason3);
-  EXPECT_EQ(base::TaskPriority::HIGHEST, par3.priority());
+  PriorityAndReason par3(base::Process::Priority::kMaxValue, kReason3);
+  EXPECT_EQ(base::Process::Priority::kMaxValue, par3.priority());
   EXPECT_EQ(kReason3, par3.reason());
   EXPECT_TRUE(par2 == par3);
   EXPECT_FALSE(par2 != par3);
@@ -76,7 +76,7 @@ TEST(ExecutionContextPriorityTest, PriorityAndReason) {
   EXPECT_FALSE(par2 > par3);
 
   // Comparison with identical priorities, and different reason strings.
-  PriorityAndReason par4(base::TaskPriority::LOWEST, kReason2);
+  PriorityAndReason par4(base::Process::Priority::kMinValue, kReason2);
   EXPECT_FALSE(par1 == par4);
   EXPECT_TRUE(par1 != par4);
   EXPECT_TRUE(par1 <= par4);
@@ -86,12 +86,12 @@ TEST(ExecutionContextPriorityTest, PriorityAndReason) {
 
   // Copy constructor.
   PriorityAndReason par5(par3);
-  EXPECT_EQ(base::TaskPriority::HIGHEST, par5.priority());
+  EXPECT_EQ(base::Process::Priority::kMaxValue, par5.priority());
   EXPECT_EQ(kReason3, par5.reason());
 
   // Assignment.
   par1 = par3;
-  EXPECT_EQ(base::TaskPriority::HIGHEST, par1.priority());
+  EXPECT_EQ(base::Process::Priority::kMaxValue, par1.priority());
   EXPECT_EQ(kReason3, par1.reason());
 }
 

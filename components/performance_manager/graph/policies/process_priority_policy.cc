@@ -22,17 +22,6 @@ size_t g_instance_count = 0;
 // the RenderProcessHost.
 ProcessPriorityPolicy::SetPriorityOnUiThreadCallback* g_callback = nullptr;
 
-base::Process::Priority ToProcessPriority(base::TaskPriority priority) {
-  switch (priority) {
-    case base::TaskPriority::BEST_EFFORT:
-      return base::Process::Priority::kBestEffort;
-    case base::TaskPriority::USER_VISIBLE:
-      return base::Process::Priority::kUserVisible;
-    case base::TaskPriority::USER_BLOCKING:
-      return base::Process::Priority::kUserBlocking;
-  }
-}
-
 // Dispatches a process priority change to the RenderProcessHost associated with
 // a given ProcessNode.
 void SetProcessPriority(const ProcessNode* process_node,
@@ -101,7 +90,7 @@ void ProcessPriorityPolicy::OnTakenFromGraph(Graph* graph) {
 
 void ProcessPriorityPolicy::OnProcessNodeAdded(
     const ProcessNode* process_node) {
-  CHECK_NE(process_node->GetPriority(), base::TaskPriority::USER_VISIBLE);
+  CHECK_NE(process_node->GetPriority(), base::Process::Priority::kUserVisible);
   // Set the initial process priority.
   // TODO(chrisha): Get provisional nodes working so we can make an informed
   // choice in the graph (processes launching ads-to-be, or extensions, or
@@ -110,16 +99,13 @@ void ProcessPriorityPolicy::OnProcessNodeAdded(
   // TODO(chrisha): Make process creation take a detour through the graph in
   // order to get the initial priority parameter that is set here. Currently
   // this is effectively a nop.
-  SetProcessPriority(process_node,
-                     ToProcessPriority(process_node->GetPriority()));
+  SetProcessPriority(process_node, process_node->GetPriority());
 }
 
 void ProcessPriorityPolicy::OnPriorityChanged(
     const ProcessNode* process_node,
-    base::TaskPriority previous_value) {
-  base::Process::Priority previous_priority = ToProcessPriority(previous_value);
-  base::Process::Priority current_priority =
-      ToProcessPriority(process_node->GetPriority());
+    base::Process::Priority previous_priority) {
+  base::Process::Priority current_priority = process_node->GetPriority();
 
   // Only set if the resulting process priority has changed.
   if (previous_priority != current_priority) {

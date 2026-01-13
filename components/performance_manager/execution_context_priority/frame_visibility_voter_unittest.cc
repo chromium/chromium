@@ -69,7 +69,7 @@ TEST_F(FrameVisibilityVoterTest, ChangeFrameVisibility) {
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_BLOCKING,
+                                 base::Process::Priority::kUserBlocking,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Make the frame not visible. This should lower the priority.
@@ -77,7 +77,7 @@ TEST_F(FrameVisibilityVoterTest, ChangeFrameVisibility) {
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::BEST_EFFORT,
+                                 base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Make the frame visible. This should increase the priority.
@@ -85,7 +85,7 @@ TEST_F(FrameVisibilityVoterTest, ChangeFrameVisibility) {
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_BLOCKING,
+                                 base::Process::Priority::kUserBlocking,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Deleting the frame should invalidate the vote.
@@ -110,7 +110,7 @@ TEST_F(FrameVisibilityVoterTest, UnimportantFrames) {
 
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 }
 

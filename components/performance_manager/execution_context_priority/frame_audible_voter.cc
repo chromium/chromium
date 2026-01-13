@@ -24,8 +24,9 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // Returns a vote with the appropriate priority depending on if the frame is
 // audible.
 Vote GetVote(bool is_audible) {
-  base::TaskPriority priority = is_audible ? base::TaskPriority::USER_BLOCKING
-                                           : base::TaskPriority::LOWEST;
+  base::Process::Priority priority =
+      is_audible ? base::Process::Priority::kUserBlocking
+                 : base::Process::Priority::kMinValue;
   return Vote(priority, FrameAudibleVoter::kFrameAudibleReason);
 }
 

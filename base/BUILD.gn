@@ -558,6 +558,7 @@ component("base") {
     "process/current_process_test.h",
     "process/environment_internal.cc",
     "process/environment_internal.h",
+    "process/process.cc",
     "process/process.h",
     "process/process_handle.cc",
     "process/process_handle.h",

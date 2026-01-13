@@ -80,7 +80,8 @@ class ProcessNodeImpl
   explicit ProcessNodeImpl(BrowserProcessNodeTag tag);
 
   // Constructor for a renderer process.
-  ProcessNodeImpl(RenderProcessHostProxy proxy, base::TaskPriority priority);
+  ProcessNodeImpl(RenderProcessHostProxy proxy,
+                  base::Process::Priority priority);
 
   // Constructor for a non-renderer child process.
   ProcessNodeImpl(content::ProcessType process_type,
@@ -133,7 +134,7 @@ class ProcessNodeImpl
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
       const override;
-  base::TaskPriority GetPriority() const override;
+  base::Process::Priority GetPriority() const override;
   ContentTypes GetHostedContentTypes() const override;
 
   // Private implementation properties.
@@ -170,7 +171,7 @@ class ProcessNodeImpl
   // Invoked when the worker is removed from the graph.
   void RemoveWorker(WorkerNodeImpl* worker_node);
 
-  void set_priority(base::TaskPriority priority);
+  void set_priority(base::Process::Priority priority);
 
   // Adds a new type of hosted content to the |hosted_content_types| bit field.
   void add_hosted_content_type(ContentType content_type);
@@ -202,7 +203,7 @@ class ProcessNodeImpl
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,
                   AnyChildProcessHostProxy proxy,
-                  base::TaskPriority priority);
+                  base::Process::Priority priority);
 
   // Rest of ProcessNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
@@ -261,9 +262,9 @@ class ProcessNodeImpl
   // Initially high priority until the first execution context it hosts
   // determine the right priority.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      base::TaskPriority,
+      base::Process::Priority,
       &ProcessNodeObserver::OnPriorityChanged,
-      TracedWrapper<base::TaskPriority>>
+      TracedWrapper<base::Process::Priority>>
       priority_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A bit field that indicates which type of content this process has hosted,

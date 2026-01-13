@@ -136,7 +136,7 @@ void SidePanelLoadingVoter::SubmitVoteForPage(const PageNode* page_node) {
 
   voting_channel_.SubmitVote(
       GetExecutionContext(page_node->GetMainFrameNode()),
-      Vote(base::TaskPriority::USER_BLOCKING, kSidePanelLoadingReason));
+      Vote(base::Process::Priority::kUserBlocking, kSidePanelLoadingReason));
 }
 
 }  // namespace performance_manager::execution_context_priority

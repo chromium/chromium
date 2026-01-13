@@ -67,7 +67,7 @@ void ForceForegroundVoter::AddVoteForExecutionContext(
     const execution_context::ExecutionContext* execution_context) {
   voting_channel_.SubmitVote(
       execution_context,
-      Vote(base::TaskPriority::USER_BLOCKING, kForceForegroundReason));
+      Vote(base::Process::Priority::kUserBlocking, kForceForegroundReason));
 }
 
 void ForceForegroundVoter::RemoveVoteForExecutionContext(

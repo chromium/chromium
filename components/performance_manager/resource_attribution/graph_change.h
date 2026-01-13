@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/memory/raw_ptr.h"
+#include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "url/origin.h"
 
@@ -43,11 +44,11 @@ struct GraphChangeUpdateOrigin {
 struct GraphChangeUpdateProcessPriority {
   GraphChangeUpdateProcessPriority(
       const performance_manager::ProcessNode* process_node,
-      base::TaskPriority previous_priority)
+      base::Process::Priority previous_priority)
       : process_node(process_node), previous_priority(previous_priority) {}
 
   raw_ptr<const performance_manager::ProcessNode> process_node;
-  base::TaskPriority previous_priority;
+  base::Process::Priority previous_priority;
 };
 
 using GraphChange = std::variant<NoGraphChange,

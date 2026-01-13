@@ -26,18 +26,18 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // Returns a vote with the appropriate priority depending on the frame's
 // |visibility|.
 Vote GetVote(FrameNode::Visibility visibility, bool is_important) {
-  base::TaskPriority priority;
+  base::Process::Priority priority;
   switch (visibility) {
     case FrameNode::Visibility::kUnknown:
-      priority = base::TaskPriority::USER_BLOCKING;
+      priority = base::Process::Priority::kUserBlocking;
       break;
     case FrameNode::Visibility::kVisible: {
-      priority = is_important ? base::TaskPriority::USER_BLOCKING
-                              : base::TaskPriority::USER_VISIBLE;
+      priority = is_important ? base::Process::Priority::kUserBlocking
+                              : base::Process::Priority::kUserVisible;
       break;
     }
     case FrameNode::Visibility::kNotVisible:
-      priority = base::TaskPriority::LOWEST;
+      priority = base::Process::Priority::kMinValue;
       break;
   }
   return Vote(priority, FrameVisibilityVoter::kFrameVisibilityReason);

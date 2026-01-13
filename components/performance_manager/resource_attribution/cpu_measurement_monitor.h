@@ -119,7 +119,7 @@ class CPUMeasurementMonitor
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
   void OnPriorityChanged(const ProcessNode* process_node,
-                         base::TaskPriority previous_value) override;
+                         base::Process::Priority previous_value) override;
 
   // WorkerNode::Observer:
   void OnBeforeWorkerNodeAdded(

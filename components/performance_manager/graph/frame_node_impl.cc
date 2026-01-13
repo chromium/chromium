@@ -42,7 +42,7 @@ perfetto::StaticString FrameNodeVisibilityToString(
 perfetto::StaticString PriorityAndReasonToString(
     const execution_context_priority::PriorityAndReason& priority_and_reason) {
   return perfetto::StaticString(
-      base::TaskPriorityToString(priority_and_reason.priority()));
+      ProcessPriorityToString(priority_and_reason.priority()));
 }
 
 }  // namespace
@@ -81,10 +81,10 @@ FrameNodeImpl::FrameNodeImpl(
           process_node_->tracing_track())),
       is_current_(is_current),
       is_active_(is_active),
-      priority_and_reason_(
-          PriorityAndReason(base::TaskPriority::LOWEST, kDefaultPriorityReason),
-          perfetto::NamedTrack("Priority", 0, *tracing_track_),
-          PriorityAndReasonToString),
+      priority_and_reason_(PriorityAndReason(base::Process::Priority::kMinValue,
+                                             kDefaultPriorityReason),
+                           perfetto::NamedTrack("Priority", 0, *tracing_track_),
+                           PriorityAndReasonToString),
       is_audible_(false,
                   perfetto::NamedTrack("IsAudible", 0, *tracing_track_),
                   YesNoStateToString),

@@ -56,17 +56,17 @@ TEST_F(ForceForegroundVoterTest, VoteFramesAndWorkers) {
   EXPECT_TRUE(observer_.HasVote(
       voter_id(),
       execution_context::ExecutionContext::From(mock_graph.frame.get()),
-      base::TaskPriority::USER_BLOCKING,
+      base::Process::Priority::kUserBlocking,
       ForceForegroundVoter::kForceForegroundReason));
   EXPECT_TRUE(observer_.HasVote(
       voter_id(),
       execution_context::ExecutionContext::From(mock_graph.child_frame.get()),
-      base::TaskPriority::USER_BLOCKING,
+      base::Process::Priority::kUserBlocking,
       ForceForegroundVoter::kForceForegroundReason));
   EXPECT_TRUE(observer_.HasVote(
       voter_id(),
       execution_context::ExecutionContext::From(mock_graph.worker.get()),
-      base::TaskPriority::USER_BLOCKING,
+      base::Process::Priority::kUserBlocking,
       ForceForegroundVoter::kForceForegroundReason));
 }
 

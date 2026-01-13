@@ -41,8 +41,9 @@ content::ProcessType ValidateBrowserChildProcessType(
   return process_type;
 }
 
-perfetto::StaticString PriorityToString(const base::TaskPriority& priority) {
-  return perfetto::StaticString(base::TaskPriorityToString(priority));
+perfetto::StaticString PriorityToString(
+    const base::Process::Priority& priority) {
+  return perfetto::StaticString(base::ProcessPriorityToString(priority));
 }
 
 }  // namespace
@@ -50,10 +51,10 @@ perfetto::StaticString PriorityToString(const base::TaskPriority& priority) {
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
     : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
                       AnyChildProcessHostProxy{},
-                      base::TaskPriority::HIGHEST) {}
+                      base::Process::Priority::kMaxValue) {}
 
 ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy,
-                                 base::TaskPriority priority)
+                                 base::Process::Priority priority)
     : ProcessNodeImpl(content::PROCESS_TYPE_RENDERER,
                       AnyChildProcessHostProxy(std::move(proxy)),
                       priority) {}
@@ -62,11 +63,11 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  BrowserChildProcessHostProxy proxy)
     : ProcessNodeImpl(ValidateBrowserChildProcessType(process_type),
                       AnyChildProcessHostProxy(std::move(proxy)),
-                      base::TaskPriority::HIGHEST) {}
+                      base::Process::Priority::kMaxValue) {}
 
 ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  AnyChildProcessHostProxy proxy,
-                                 base::TaskPriority priority)
+                                 base::Process::Priority priority)
     : process_type_(process_type),
       child_process_host_proxy_(std::move(proxy)),
       tracing_track_(GetTracingTrack(process_type_, child_process_host_proxy_)),
@@ -306,7 +307,7 @@ ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
   return std::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
 }
 
-base::TaskPriority ProcessNodeImpl::GetPriority() const {
+base::Process::Priority ProcessNodeImpl::GetPriority() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return priority_.value();
 }
@@ -395,7 +396,7 @@ void ProcessNodeImpl::RemoveWorker(WorkerNodeImpl* worker_node) {
   worker_nodes_.erase(worker_node);
 }
 
-void ProcessNodeImpl::set_priority(base::TaskPriority priority) {
+void ProcessNodeImpl::set_priority(base::Process::Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   priority_.SetAndMaybeNotify(this, priority);
 }

@@ -149,7 +149,7 @@ class ProcessNode : public TypedNode<ProcessNode> {
       const = 0;
 
   // Returns the current priority of the process.
-  virtual base::TaskPriority GetPriority() const = 0;
+  virtual base::Process::Priority GetPriority() const = 0;
 
   // Returns a bit field indicating what type of content this process has
   // hosted, either currently or in the past.
@@ -216,7 +216,7 @@ class ProcessNodeObserver : public base::CheckedObserver {
 
   // Invoked when the process priority changes.
   virtual void OnPriorityChanged(const ProcessNode* process_node,
-                                 base::TaskPriority previous_value) {}
+                                 base::Process::Priority previous_value) {}
 
   // Events with no property changes.
 

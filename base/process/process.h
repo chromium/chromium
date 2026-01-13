@@ -206,12 +206,12 @@ class BASE_EXPORT Process {
   void Exited(int exit_code) const;
 
   // The different priorities that a process can have.
-  // TODO(pmonette): Consider merging with base::TaskPriority when the API is
-  //                 stable.
   enum class Priority {
+    kMinValue = 0,
+
     // The process does not contribute to content that is currently important
     // to the user. Lowest priority.
-    kBestEffort,
+    kBestEffort = kMinValue,
 
     // The process contributes to content that is visible to the user, but the
     // work don't have significant performance or latency requirement, so it can
@@ -378,6 +378,9 @@ class BASE_EXPORT Process {
   std::string unique_token_;
 #endif
 };
+
+BASE_EXPORT const char* ProcessPriorityToString(
+    Process::Priority process_priority);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Exposed for testing.

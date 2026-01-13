@@ -26,22 +26,11 @@ namespace policies {
 
 namespace {
 
-base::TaskPriority ToTaskPriority(base::Process::Priority priority) {
-  switch (priority) {
-    case base::Process::Priority::kBestEffort:
-      return base::TaskPriority::BEST_EFFORT;
-    case base::Process::Priority::kUserVisible:
-      return base::TaskPriority::USER_VISIBLE;
-    case base::Process::Priority::kUserBlocking:
-      return base::TaskPriority::USER_BLOCKING;
-  }
-}
-
 void PostProcessNodePriority(content::RenderProcessHost* rph,
                              base::Process::Priority priority) {
   auto* rpud = RenderProcessUserData::GetForRenderProcessHost(rph);
   auto* process_node = rpud->process_node();
-  process_node->set_priority(ToTaskPriority(priority));
+  process_node->set_priority(priority);
 }
 
 // Tests ProcessPriorityPolicy in different threading configurations.
