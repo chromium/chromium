@@ -156,6 +156,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#if DUMP_NODE_STATISTICS
+#include "third_party/blink/renderer/core/dom/named_node_map.h"
+#endif
+
 namespace blink {
 
 using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
@@ -185,7 +189,7 @@ static_assert(sizeof(Node) <= sizeof(NotSmallerThanNode),
               "members of node should be reordered for better packing");
 
 #if DUMP_NODE_STATISTICS
-using WeakNodeSet = HeapHashSet<WeakMember<Node>>;
+using WeakNodeSet = GCedHeapHashSet<WeakMember<Node>>;
 static WeakNodeSet& LiveNodeSet() {
   DEFINE_STATIC_LOCAL(Persistent<WeakNodeSet>, set,
                       (MakeGarbageCollected<WeakNodeSet>()));
@@ -314,7 +318,7 @@ void Node::DumpStatistics() {
             << elements_with_attribute_storage << " x " << sizeof(ElementData)
             << "Bytes\n"
             << "  Number of Elements with RareData: " << elements_with_rare_data
-            << " x " << sizeof(ElementRareData) << "Bytes\n"
+            << " x " << sizeof(ElementRareDataVector) << "Bytes\n"
             << "  Number of Elements with NamedNodeMap: "
             << elements_with_named_node_map << " x " << sizeof(NamedNodeMap)
             << "Bytes";
