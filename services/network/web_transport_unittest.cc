@@ -644,12 +644,7 @@ TEST_F(WebTransportTest, SendDatagram) {
   while (client.received_datagrams().empty()) {
     base::RunLoop run_loop_for_datagram;
     bool result;
-    std::vector<uint8_t> data = {
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-    };
+    std::vector<uint8_t> data = base::RandBytesAsVector(4);
     transport_remote->SendDatagram(base::span(data),
                                    base::BindLambdaForTesting([&](bool r) {
                                      result = r;
