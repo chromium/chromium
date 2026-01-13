@@ -4,6 +4,8 @@
 
 source_set("projects") {
   sources = [
+    "projects_panel_controls_view.cc",
+    "projects_panel_controls_view.h",
     "projects_panel_view.cc",
     "projects_panel_view.h",
   ]
