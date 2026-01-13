@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_database_serialization.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,8 +36,9 @@ using ::testing::IsNull;
 using ::testing::NotNull;
 
 // Creates a protobuf web app that passes the parsing checks.
-proto::WebApp CreateWebAppProtoForTesting(const std::string& name,
-                                          const GURL& start_url) {
+std::tuple<proto::WebApp, webapps::AppId> CreateWebAppProtoForTesting(
+    const std::string& name,
+    const GURL& start_url) {
   proto::WebApp web_app;
   CHECK(start_url.is_valid());
   web_app.set_name(name);
@@ -61,7 +63,8 @@ proto::WebApp CreateWebAppProtoForTesting(const std::string& name,
 #endif
   web_app.set_install_state(
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  return web_app;
+  webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  return {web_app, app_id};
 }
 
 using WebAppDatabaseSerializationTest = WebAppTest;
@@ -77,7 +80,16 @@ TEST_F(WebAppDatabaseSerializationTest, RandomWebApps) {
     params.non_zero = i != 0;
     std::unique_ptr<WebApp> app = test::CreateRandomWebApp(params);
     std::unique_ptr<proto::WebApp> proto = WebAppToProto(*app);
-    std::unique_ptr<WebApp> parsed_app = ParseWebAppProto(*proto);
+
+    // TODO(https://crbug.com/384536509): Store parent manifest ids in the
+    // database instead of app_ids.
+    std::optional<webapps::ManifestId> parent_manifest_id;
+    if (app->parent_app_id().has_value()) {
+      parent_manifest_id = params.parent_manifest_id;
+    }
+    webapps::AppId app_id =
+        GenerateAppIdFromManifestId(app->manifest_id(), parent_manifest_id);
+    std::unique_ptr<WebApp> parsed_app = ParseWebAppProto(*proto, app_id);
     ASSERT_THAT(parsed_app, NotNull());
     ASSERT_EQ(*app, *parsed_app);
     std::unique_ptr<proto::WebApp> round_trip_proto =
@@ -90,81 +102,101 @@ TEST_F(WebAppDatabaseSerializationTest, RandomWebApps) {
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingSyncData) {
   base::HistogramTester tester;
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_sync_data();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   EXPECT_THAT(tester.GetAllSamples("WebAppProto.Parse.Result"),
               base::BucketsAre(base::Bucket(ProtoParseResult::kNoSyncData, 1)));
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingStartUrl) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.mutable_sync_data()->clear_start_url();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidStartUrl) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.mutable_sync_data()->set_start_url("invalid-url");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MissingRelativeManifestId) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   // Clear the field that should be populated by migration.
   proto.mutable_sync_data()->clear_relative_manifest_id();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingScope) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_scope();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidScope) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.set_scope("invalid-scope");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_ScopeWithQuery) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   // Set a scope with a query, which should have been removed by migration.
   proto.set_scope("https://example.com/path?query=1");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_ScopeWithRef) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   // Set a scope with a ref, which should have been removed by migration.
   proto.set_scope("https://example.com/path#ref");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MissingUserDisplayMode) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.mutable_sync_data()->clear_user_display_mode_default();
 #if BUILDFLAG(IS_CHROMEOS)
   proto.mutable_sync_data()->clear_user_display_mode_cros();
 #endif
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MissingCurrentPlatformUserDisplayMode) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 #if BUILDFLAG(IS_CHROMEOS)
   proto.mutable_sync_data()->clear_user_display_mode_cros();
@@ -175,93 +207,117 @@ TEST_F(WebAppDatabaseSerializationTest,
   proto.mutable_sync_data()->set_user_display_mode_cros(
       sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
 #endif
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingSources) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_sources();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_EmptySources) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.mutable_sources()->Clear();  // Clears all source booleans
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingName) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_name();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingInstallState) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_install_state();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InconsistentOsIntegrationStateOk) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.set_install_state(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   proto.clear_current_os_integration_states();  // Remove OS state
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   proto2.set_install_state(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   proto2.mutable_current_os_integration_states()
       ->clear_shortcut();  // Remove shortcut state specifically
-  EXPECT_THAT(ParseWebAppProto(proto2), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), NotNull());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingCrOSData) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_chromeos_data();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 #else
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_HasCrOSData) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.mutable_chromeos_data();  // Add CrOS data on non-CrOS
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidFileHandler) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* handler = proto.add_file_handlers();
   // Missing action
   handler->set_launch_type(proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT);
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* handler2 = proto2.add_file_handlers();
   handler2->set_action("https://example.com/handle");
   // Missing launch type
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 
-  proto::WebApp proto3 =
+  proto::WebApp proto3;
+  webapps::AppId app_id3;
+  std::tie(proto3, app_id3) =
       CreateWebAppProtoForTesting("Test App 3", GURL("https://example3.com/"));
   auto* handler3 = proto3.add_file_handlers();
   handler3->set_action("invalid-action");  // Invalid action URL
   handler3->set_launch_type(
       proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT);
-  EXPECT_THAT(ParseWebAppProto(proto3), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto3, app_id3), IsNull());
 
-  proto::WebApp proto4 =
+  proto::WebApp proto4;
+  webapps::AppId app_id4;
+  std::tie(proto4, app_id4) =
       CreateWebAppProtoForTesting("Test App 4", GURL("https://example4.com/"));
   auto* handler4 = proto4.add_file_handlers();
   handler4->set_action("https://example.com/handle");
@@ -270,29 +326,35 @@ TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidFileHandler) {
   auto* accept = handler4->add_accept();
   // Missing mimetype
   accept->add_file_extensions(".txt");
-  EXPECT_THAT(ParseWebAppProto(proto4), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto4, app_id4), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidShareTarget) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* target = proto.mutable_share_target();
   // Missing action
   target->set_method(proto::ShareTarget::METHOD_GET);
   target->set_enctype(proto::ShareTarget::ENCTYPE_FORM_URL_ENCODED);
   target->mutable_params();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* target2 = proto2.mutable_share_target();
   target2->set_action("invalid-action");  // Invalid action URL
   target2->set_method(proto::ShareTarget::METHOD_GET);
   target2->set_enctype(proto::ShareTarget::ENCTYPE_FORM_URL_ENCODED);
   target2->mutable_params();
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 
-  proto::WebApp proto3 =
+  proto::WebApp proto3;
+  webapps::AppId app_id3;
+  std::tie(proto3, app_id3) =
       CreateWebAppProtoForTesting("Test App 3", GURL("https://example3.com/"));
   auto* target3 = proto3.mutable_share_target();
   target3->set_action("https://example.com/share");
@@ -302,28 +364,34 @@ TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidShareTarget) {
   auto* file = params3->add_files();
   // Missing file name
   file->add_accept(".jpg");
-  EXPECT_THAT(ParseWebAppProto(proto3), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto3, app_id3), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidShortcut) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* shortcut = proto.add_shortcuts_menu_item_infos();
   // Missing name
   shortcut->set_url("https://example.com/shortcut");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* shortcut2 = proto2.add_shortcuts_menu_item_infos();
   shortcut2->set_name("Shortcut Name");
   // Missing URL
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MismatchedShortcutSizes) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* shortcut = proto.add_shortcuts_menu_item_infos();
   shortcut->set_name("Shortcut Name");
@@ -331,129 +399,157 @@ TEST_F(WebAppDatabaseSerializationTest,
   // Add one shortcut info but two downloaded size entries
   proto.add_downloaded_shortcuts_menu_icons_sizes();
   proto.add_downloaded_shortcuts_menu_icons_sizes();
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidProtocolHandler) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* handler = proto.add_protocol_handlers();
   // Missing protocol
   handler->set_url("https://example.com/handle?q=%s");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* handler2 = proto2.add_protocol_handlers();
   handler2->set_protocol("web+test");
   // Missing URL
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 
-  proto::WebApp proto3 =
+  proto::WebApp proto3;
+  webapps::AppId app_id3;
+  std::tie(proto3, app_id3) =
       CreateWebAppProtoForTesting("Test App 3", GURL("https://example3.com/"));
   auto* handler3 = proto3.add_protocol_handlers();
   handler3->set_protocol("web+test");
   handler3->set_url("invalid-url");  // Invalid URL
-  EXPECT_THAT(ParseWebAppProto(proto3), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto3, app_id3), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidScopeExtension) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* ext = proto.add_scope_extensions();
   // Missing origin
   ext->set_has_origin_wildcard(false);
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* ext2 = proto2.add_scope_extensions();
   ext2->set_origin("https://test.com");
   // Missing has_origin_wildcard
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 
-  proto::WebApp proto3 =
+  proto::WebApp proto3;
+  webapps::AppId app_id3;
+  std::tie(proto3, app_id3) =
       CreateWebAppProtoForTesting("Test App 3", GURL("https://example3.com/"));
   auto* ext3 = proto3.add_scope_extensions();
   ext3->set_origin("invalid-origin");  // Invalid origin
   ext3->set_has_origin_wildcard(false);
-  EXPECT_THAT(ParseWebAppProto(proto3), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto3, app_id3), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidValidatedScopeExtension) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* ext = proto.add_scope_extensions_validated();
   ext->set_origin("https://test.com");
   ext->set_scope("https://different.com");  // Different origin scope
   ext->set_has_origin_wildcard(false);
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidManifestUrl) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.set_manifest_url("invalid-url");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidExternalManagementConfig) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* config = proto.add_management_to_external_config_info();
   config->set_management(proto::WEB_APP_MANAGEMENT_TYPE_POLICY);
   config->set_is_placeholder(false);
   config->add_install_urls("invalid-url");  // Invalid install URL
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* config2 = proto2.add_management_to_external_config_info();
   config2->set_management(proto::WEB_APP_MANAGEMENT_TYPE_POLICY);
   config2->set_is_placeholder(false);
   config2->add_additional_policy_ids("");  // Empty policy ID
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 }
 
 // --- Tests for IsolationData ---
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_Version) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("invalid-version");  // Invalid version format
   // Set a valid location to isolate the version check
   isolation_data->mutable_proxy()->set_proxy_url("https://proxy.com");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_Location) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("1.0.0");
   // Set an invalid location (e.g., empty proxy URL)
   isolation_data->mutable_proxy()->set_proxy_url("");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
-  proto::WebApp proto2 =
+  proto::WebApp proto2;
+  webapps::AppId app_id2;
+  std::tie(proto2, app_id2) =
       CreateWebAppProtoForTesting("Test App 2", GURL("https://example2.com/"));
   auto* isolation_data2 = proto2.mutable_isolation_data();
   isolation_data2->set_version("1.0.0");
   // Set an invalid location (non-ASCII owned bundle name)
   isolation_data2->mutable_owned_bundle()->set_dir_name_ascii("日本");
-  EXPECT_THAT(ParseWebAppProto(proto2), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto2, app_id2), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_PendingLocation) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("1.0.0");
@@ -464,12 +560,14 @@ TEST_F(WebAppDatabaseSerializationTest,
   pending_info->set_version("2.0.0");
   // Set an invalid pending location
   pending_info->mutable_proxy()->set_proxy_url("invalid-url");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_MismatchedDevMode) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("1.0.0");
@@ -483,12 +581,14 @@ TEST_F(WebAppDatabaseSerializationTest,
   pending_info->mutable_owned_bundle()->set_dir_name_ascii("bundle_v2");
   pending_info->mutable_owned_bundle()->set_dev_mode(true);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_PendingVersion) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("1.0.0");
@@ -500,108 +600,126 @@ TEST_F(WebAppDatabaseSerializationTest,
   // Set a valid pending location
   pending_info->mutable_proxy()->set_proxy_url("https://proxy-v2.com");
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 // Note: Testing invalid integrity block data requires more setup/mocking.
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_UpdateManifestUrl) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("1.0.0");
   isolation_data->mutable_proxy()->set_proxy_url("https://proxy.com");
   isolation_data->set_update_manifest_url("invalid-url");  // Invalid URL
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidIsolationData_UpdateChannel) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* isolation_data = proto.mutable_isolation_data();
   isolation_data->set_version("1.0.0");
   isolation_data->mutable_proxy()->set_proxy_url("https://proxy.com");
   isolation_data->set_update_channel("");  // Invalid channel
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 // --- Tests for GeneratedIconFix ---
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidGeneratedIconFix_MissingSource) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_generated_icon_fix();
   // Missing source
   fix->set_window_start_time(syncer::TimeToProtoTime(base::Time::Now()));
   fix->set_attempt_count(1);
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidGeneratedIconFix_MissingWindowStart) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_generated_icon_fix();
   fix->set_source(
       proto::GeneratedIconFixSource::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL);
   // Missing window_start_time
   fix->set_attempt_count(1);
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidGeneratedIconFix_MissingAttemptCount) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_generated_icon_fix();
   fix->set_source(
       proto::GeneratedIconFixSource::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL);
   fix->set_window_start_time(syncer::TimeToProtoTime(base::Time::Now()));
   // Missing attempt_count
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 // --- Tests for PendingUpdateInfo ---
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_pending_update_info();
   fix->Clear();
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasPendingUpdateInfo_NewName) {
   base::HistogramTester tester;
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_pending_update_info();
   fix->set_name("Pending Update Name");
   fix->set_was_ignored(false);
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
   EXPECT_THAT(tester.GetAllSamples("WebAppProto.Parse.Result"),
               base::BucketsAre(base::Bucket(ProtoParseResult::kSuccess, 1)));
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasPendingUpdateInfo_NoIgnore) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_pending_update_info();
   fix->set_name("Pending Update Name");
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasPendingUpdateInfo_NewManifestAndTrustedIcon) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -630,13 +748,15 @@ TEST_F(WebAppDatabaseSerializationTest,
   manifest_icon_info->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingInfo_MissingTrustedIconSizeInfo) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -658,13 +778,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingInfo_MissingTrustedIconSizeInfoPurpose) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -690,13 +812,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingInfo_MissingTrustedIconSizeInfoSizes) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -725,13 +849,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingInfo_MissingManifestIconSizeInfo) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -753,13 +879,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   trusted_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingInfo_MissingManifestIconSizeInfoPurpose) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -779,13 +907,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       fix->add_downloaded_manifest_icons();
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingInfo_MissingManifestIconSizeInfoSizes) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -806,13 +936,15 @@ TEST_F(WebAppDatabaseSerializationTest,
   manifest_icon_info->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIcon) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -828,13 +960,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIcon) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -850,13 +984,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   trusted_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIconUrl) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -883,13 +1019,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIconPurpose) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -909,13 +1047,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   trusted_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_ValidPendingUpdateInfo_MissingManifestIconSizeInPx) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -942,13 +1082,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   trusted_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIconUrl) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(false);
 
@@ -975,13 +1117,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIconPurpose) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -1001,13 +1145,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_ValidPendingUpdateInfo_MissingTrustedIconSizeInPx) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
   fix->set_was_ignored(true);
 
@@ -1034,13 +1180,15 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   trusted_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasTrustedIcons_Valid) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
 
   sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1").spec());
@@ -1048,31 +1196,35 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   icon1->set_size_in_px(32);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasTrustedIcons_InvalidMissingUrl) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
 
   sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
   icon1->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   icon1->set_size_in_px(32);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasTrustedIcons_MissingPurposeANY) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
 
   sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1").spec());
   icon1->set_size_in_px(32);
-  auto web_app = ParseWebAppProto(proto);
+  auto web_app = ParseWebAppProto(proto, app_id);
 
   ASSERT_THAT(web_app, NotNull());
   ASSERT_EQ(1u, web_app->trusted_icons().size());
@@ -1082,45 +1234,51 @@ TEST_F(WebAppDatabaseSerializationTest,
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasTrustedIcons_MissingSizeValid) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
 
   sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1").spec());
   icon1->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InstalledByFieldValid) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
 
   proto::InstalledBy* installed_by = proto.add_installed_by();
   installed_by->set_install_api_call_time(
       syncer::TimeToProtoTime(base::Time::Now()));
   installed_by->set_requesting_url("https://example2.com/");
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InstalledByFieldInvalid) {
   GURL start_url("https://example.com/");
-  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) = CreateWebAppProtoForTesting("Test App", start_url);
 
   // Test case 1: Missing timestamp
   proto::InstalledBy* installed_by1 = proto.add_installed_by();
   installed_by1->set_requesting_url("https://example.com/page1");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
   // Test case 2: Missing URL
   proto.clear_installed_by();
   proto::InstalledBy* installed_by2 = proto.add_installed_by();
   installed_by2->set_install_api_call_time(
       syncer::TimeToProtoTime(base::Time::Now()));
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 
   // Test case 3: Invalid URL
   proto.clear_installed_by();
@@ -1128,12 +1286,23 @@ TEST_F(WebAppDatabaseSerializationTest,
   installed_by3->set_install_api_call_time(
       syncer::TimeToProtoTime(base::Time::Now()));
   installed_by3->set_requesting_url("not a valid url");
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_StartUrlNotInScope) {
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/app/"));
+  proto.set_scope("https://example.com/another_app/");
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_Valid) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* source = proto.add_unvalidated_migration_sources();
@@ -1145,203 +1314,239 @@ TEST_F(WebAppDatabaseSerializationTest,
   validated_source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
   validated_source->set_install_url("https://example.com/install");
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_MissingManifestId) {
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_unvalidated_migration_sources();
     // source->set_manifest_id("https://example.com/app");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_validated_migration_sources();
     // source->set_manifest_id("https://example.com/app");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_MissingBehavior) {
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_unvalidated_migration_sources();
     source->set_manifest_id("https://example.com/app");
     // source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_validated_migration_sources();
     source->set_manifest_id("https://example.com/app");
     // source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_InvalidManifestId) {
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_unvalidated_migration_sources();
     source->set_manifest_id("invalid-url");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_validated_migration_sources();
     source->set_manifest_id("invalid-url");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_OpaqueManifestIdOrigin) {
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_unvalidated_migration_sources();
     source->set_manifest_id("data:text/html,Hello");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_validated_migration_sources();
     source->set_manifest_id("data:text/html,Hello");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_InvalidInstallUrl) {
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_unvalidated_migration_sources();
     source->set_manifest_id("https://example.com/app");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
     source->set_install_url("invalid-url");
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_validated_migration_sources();
     source->set_manifest_id("https://example.com/app");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
     source->set_install_url("invalid-url");
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_MigrationSource_InstallUrlOriginMismatch) {
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_unvalidated_migration_sources();
     source->set_manifest_id("https://example.com/app");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
     source->set_install_url("https://other.com/install");
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
   {
-    proto::WebApp proto =
+    proto::WebApp proto;
+    webapps::AppId app_id;
+    std::tie(proto, app_id) =
         CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
     auto* source = proto.add_validated_migration_sources();
     source->set_manifest_id("https://example.com/app");
     source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
     source->set_install_url("https://other.com/install");
 
-    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+    EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
   }
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_Valid) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("https://example.com/app");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_MissingManifestId) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* info = proto.mutable_pending_migration_info();
   // info->set_manifest_id("https://example.com/app");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_MissingBehavior) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("https://example.com/app");
   // info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_InvalidManifestId) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("invalid-url");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_PendingMigrationInfo_OpaqueManifestIdOrigin) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* info = proto.mutable_pending_migration_info();
   info->set_manifest_id("data:text/html,Hello");
   info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(ParseWebAppProto(proto, app_id), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_DeprecatedDisplayModeOverridePresent) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   // Set the deprecated `display_mode_override` field. The new field is empty.
@@ -1350,13 +1555,15 @@ TEST_F(WebAppDatabaseSerializationTest,
   ASSERT_EQ(0, proto.display_overrides_size());
 
   // Parse should fail as migration should have cleared the deprecated field.
-  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto, app_id);
   ASSERT_THAT(web_app, IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_DisplayOverridesAndDeprecatedFieldPresent) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* override_item = proto.add_display_overrides();
@@ -1365,14 +1572,16 @@ TEST_F(WebAppDatabaseSerializationTest,
   proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
 
   // Parse should fail as migration should have cleared the deprecated field.
-  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto, app_id);
   EXPECT_THAT(web_app, IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_InvalidUrlPatternsInDisplayOverride) {
   base::HistogramTester tester;
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* override_item = proto.add_display_overrides();
@@ -1384,7 +1593,7 @@ TEST_F(WebAppDatabaseSerializationTest,
   part->set_value("*");
   part->set_modifier(proto::UrlPatternPart::MODIFIER_NONE);
 
-  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto, app_id);
   ASSERT_THAT(web_app, NotNull());
   EXPECT_EQ(0u, web_app->display_mode_override().size());
 
@@ -1397,7 +1606,9 @@ TEST_F(WebAppDatabaseSerializationTest,
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_DisplayOverridesWithUrlPatterns) {
-  proto::WebApp proto =
+  proto::WebApp proto;
+  webapps::AppId app_id;
+  std::tie(proto, app_id) =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* override_item = proto.add_display_overrides();
@@ -1408,7 +1619,7 @@ TEST_F(WebAppDatabaseSerializationTest,
   part->set_value("*");
   part->set_modifier(proto::UrlPatternPart::MODIFIER_NONE);
 
-  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto);
+  std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto, app_id);
   ASSERT_THAT(web_app, NotNull());
 
   const std::vector<DisplayOverride>& overrides =

@@ -725,7 +725,18 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title.value()));
 
-  web_app.SetStartUrl(web_app_info.start_url());
+  const GURL& start_url = web_app_info.start_url();
+  CHECK(start_url.is_valid());
+  web_app.SetStartUrl(start_url);
+  // TODO(crbug.com/384536509): Enforce this with a CHECK after verifying this
+  // doesn't happen in the codebase.
+  if (!base::StartsWith(start_url.spec(), web_app_info.scope.spec(),
+                        base::CompareCase::SENSITIVE)) {
+    web_app.SetScope(start_url.GetWithoutFilename());
+  } else {
+    web_app.SetScope(web_app_info.scope);
+  }
+  CHECK(web_app.scope().is_valid());
 
   web_app.SetDisplayMode(web_app_info.display_mode);
   web_app.SetDisplayModeOverride(web_app_info.display_override);
@@ -734,12 +745,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 
   web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description.value()));
   web_app.SetLaunchQueryParams(web_app_info.launch_query_params);
-  if (web_app_info.scope.is_valid()) {
-    web_app.SetScope(web_app_info.scope);
-  } else {
-    web_app.SetScope(web_app_info.start_url().GetWithoutFilename());
-  }
-  CHECK(!web_app.scope().is_empty());
 
   DCHECK(!web_app_info.theme_color.has_value() ||
          SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE);

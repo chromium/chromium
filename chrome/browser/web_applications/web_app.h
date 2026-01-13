@@ -60,15 +60,14 @@ class UrlPatternWithRegexMatcher;
 class WebAppScope;
 
 class InstalledByPassKey {
-  friend std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto);
+  friend std::unique_ptr<WebApp> ParseWebAppProto(
+      const proto::WebApp& proto,
+      const webapps::AppId& expected_app_id);
   InstalledByPassKey() = default;
 };
 
 class WebApp {
  public:
-  // Deprecated, use the other constructor instead.
-  explicit WebApp(const webapps::AppId& app_id);
-
   // This creates a web app object, and will CHECK-fail if the arguments are
   // invalid. To be valid, the following invariants must hold:
   // - All GURLs and the `manifest_id` must be non-empty and valid.
@@ -454,11 +453,25 @@ class WebApp {
 
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);
+
+  // Sets the start_url of the web app.  This call will CHECK-fail if the
+  // start_url is empty or not valid. If the manifest_id is not yet set, this
+  // will set the manifest_id using the start_url.
+  // TODO(): Remove this fallback as all web apps should be guaranteed to have
+  // the manifest_id set.
+  //
+  // Note: When serialized to disk, the code will CHECK-fail if the start_url is
+  // not prefixed by the scope.
   void SetStartUrl(const GURL& start_url);
-  void SetLaunchQueryParams(std::optional<std::string> launch_query_params);
-  // Sets the scope after clearing the query and fragment from the scope url, as
-  // per spec. This call will check-fail if the scope is not valid.
+
+  // The scope will have the query and fragment from the scope url, as per spec.
+  // This call will CHECK-fail if the scope is empty or not valid.
+  //
+  // Note: When serialized to disk, the code will CHECK-fail if the start_url is
+  // not prefixed by the scope.
   void SetScope(const GURL& scope);
+
+  void SetLaunchQueryParams(std::optional<std::string> launch_query_params);
   void SetThemeColor(std::optional<SkColor> theme_color);
   void SetDarkModeThemeColor(std::optional<SkColor> theme_color);
   void SetBackgroundColor(std::optional<SkColor> background_color);
@@ -603,9 +616,19 @@ class WebApp {
 
  private:
   friend class WebAppDatabase;
-  friend std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto);
+  friend std::unique_ptr<WebApp> ParseWebAppProto(
+      const proto::WebApp& proto,
+      const webapps::AppId& expected_app_id);
   friend std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app);
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
+
+  // TODO(http://crbug.com/384536509): Remove this after migrating parent_app_id
+  // in the database to parent_manifest_id.
+  WebApp(const webapps::AppId& app_id,
+         const webapps::ManifestId& manifest_id,
+         const GURL& start_url,
+         const GURL& scope,
+         std::optional<webapps::AppId> parent_app_id);
 
   // LINT.IfChange(MemberVariables)
   webapps::AppId app_id_;

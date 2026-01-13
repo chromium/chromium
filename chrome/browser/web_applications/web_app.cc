@@ -250,18 +250,12 @@ WebApp::CachedDerivedData& WebApp::CachedDerivedData::operator=(
   return *this;
 }
 
-WebApp::WebApp(const webapps::AppId& app_id)
-    : app_id_(app_id),
-      chromeos_data_(IsChromeOsDataMandatory()
-                         ? std::make_optional<WebAppChromeOsData>()
-                         : std::nullopt) {}
-
-WebApp::WebApp(const webapps::ManifestId& manifest_id,
+WebApp::WebApp(const webapps::AppId& app_id,
+               const webapps::ManifestId& manifest_id,
                const GURL& start_url,
                const GURL& scope,
-               std::optional<webapps::AppId> parent_app_id,
-               std::optional<webapps::ManifestId> parent_manifest_id)
-    : app_id_(GenerateAppIdFromManifestId(manifest_id, parent_manifest_id)),
+               std::optional<webapps::AppId> parent_app_id)
+    : app_id_(app_id),
       start_url_(start_url),
       scope_(scope),
       chromeos_data_(IsChromeOsDataMandatory()
@@ -281,12 +275,24 @@ WebApp::WebApp(const webapps::ManifestId& manifest_id,
   CHECK(base::StartsWith(start_url_.spec(), scope_.spec(),
                          base::CompareCase::SENSITIVE))
       << "Start URL " << start_url_ << " must be nested in scope " << scope_;
+  // Ensure sync proto is initialized.
+  SetSyncProto(sync_proto_);
+}
+
+WebApp::WebApp(const webapps::ManifestId& manifest_id,
+               const GURL& start_url,
+               const GURL& scope,
+               std::optional<webapps::AppId> parent_app_id,
+               std::optional<webapps::ManifestId> parent_manifest_id)
+    : WebApp(GenerateAppIdFromManifestId(manifest_id, parent_manifest_id),
+             manifest_id,
+             start_url,
+             scope,
+             parent_app_id) {
   if (parent_app_id_.has_value()) {
     CHECK(!parent_app_id_->empty());
   }
   CHECK(!!parent_app_id == !!parent_manifest_id);
-  // Ensure sync proto is initialized.
-  SetSyncProto(sync_proto_);
 }
 
 WebApp::~WebApp() = default;

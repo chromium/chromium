@@ -384,7 +384,7 @@ std::unique_ptr<WebApp> ParseWebAppProtoForTesting(  // IN-TEST
     return nullptr;
   }
 
-  auto web_app = ParseWebAppProto(proto);
+  auto web_app = ParseWebAppProto(proto, app_id);
   if (!web_app) {
     // ParseWebAppProto() already logged what went wrong here.
     return nullptr;
@@ -402,7 +402,9 @@ std::unique_ptr<WebApp> ParseWebAppProtoForTesting(  // IN-TEST
 
 // Converts a WebApp protobuf into a WebApp object. Failure and success cases
 // are measured via histograms.
-std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
+std::unique_ptr<WebApp> ParseWebAppProto(
+    const proto::WebApp& proto,
+    const webapps::AppId& expected_app_id) {
   if (!proto.has_sync_data()) {
     RecordProtoParseResult(ProtoParseResult::kNoSyncData);
     DLOG(ERROR) << "WebApp proto parse error: no sync_data field";
@@ -449,6 +451,15 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     return nullptr;
   }
 
+  // Post-migration check: The start_url must be within the scope.
+  if (!base::StartsWith(start_url.spec(), scope.spec(),
+                        base::CompareCase::SENSITIVE)) {
+    RecordProtoParseResult(ProtoParseResult::kStartUrlNotInScope);
+    DLOG(ERROR) << "WebApp proto parse error: Start URL " << start_url.spec()
+                << " must be nested in scope " << scope.spec();
+    return nullptr;
+  }
+
   if (!sync_data.has_relative_manifest_id()) {
     RecordProtoParseResult(ProtoParseResult::kNoRelativeManifestId);
     DLOG(ERROR) << "WebApp proto parse error: no relative_manifest_id field.";
@@ -464,15 +475,25 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
                 << " and start_url: " << start_url.spec();
     return nullptr;
   }
-
   webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
 
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->SetStartUrl(start_url);
-  web_app->SetManifestId(manifest_id);
+  std::unique_ptr<WebApp> web_app;
+  if (proto.has_parent_app_id()) {
+    web_app = base::WrapUnique(new WebApp(
+        expected_app_id, manifest_id, start_url, scope, proto.parent_app_id()));
+  } else {
+    if (app_id != expected_app_id) {
+      DLOG(ERROR) << "WebApp proto app_id error for " << manifest_id
+                  << ", where '" << app_id << "' does not match expected '"
+                  << expected_app_id << "'";
+      return nullptr;
+    }
+    web_app = std::make_unique<WebApp>(manifest_id, start_url, scope,
+                                       /*parent_app_id=*/std::nullopt,
+                                       /*parent_manifest_id=*/std::nullopt);
+  }
   // Set the sync proto early, as other setters might depend on it.
   web_app->SetSyncProto(sync_data);
-  web_app->SetScope(scope);
 
   if (!sync_data.has_user_display_mode_cros() &&
       !sync_data.has_user_display_mode_default()) {
@@ -1108,10 +1129,6 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     web_app->SetLaunchHandler(ProtoToLaunchHandler(proto.launch_handler()));
   }
 
-  if (proto.has_parent_app_id()) {
-    web_app->parent_app_id_ = proto.parent_app_id();
-  }
-
   if (proto.permissions_policy_size()) {
     network::ParsedPermissionsPolicy policy;
     const auto& name_to_feature_map =
@@ -1631,9 +1648,9 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
   }
 
   local_data->set_description(web_app.untranslated_description());
-  if (!web_app.scope().is_empty()) {
-    local_data->set_scope(web_app.scope().spec());
-  }
+  CHECK(web_app.scope().is_valid());
+  CHECK(base::StartsWith(web_app.start_url().spec(), web_app.scope().spec()));
+  local_data->set_scope(web_app.scope().spec());
   if (web_app.theme_color().has_value()) {
     local_data->set_theme_color(web_app.theme_color().value());
   }
