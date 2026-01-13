@@ -87,32 +87,34 @@ class VideoFrameHandleReleaserImpl final
   // mojom::MojoVideoFrameHandleReleaser implementation
   void ReleaseVideoFrame(
       const base::UnguessableToken& release_token,
-      const std::optional<gpu::SyncToken>& release_sync_token) final {
+      std::optional<gpu::SharedImageExportResult> release_export_result) final {
     DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
-    TRACE_EVENT2("media", "VideoFrameHandleReleaserImpl::ReleaseVideoFrame",
-                 "release_token", release_token.ToString(),
-                 "release_sync_token",
-                 release_sync_token
-                     ? (release_sync_token->ToDebugString() + ", has_data: " +
-                        (release_sync_token->HasData() ? "true" : "false"))
-                     : "null");
+    TRACE_EVENT2(
+        "media", "VideoFrameHandleReleaserImpl::ReleaseVideoFrame",
+        "release_token", release_token.ToString(), "release_export_result",
+        release_export_result
+            ? (release_export_result->ToDebugString() + ", has_data: " +
+               (release_export_result->HasData() ? "true" : "false"))
+            : "null");
     auto it = video_frames_.find(release_token);
     if (it == video_frames_.end()) {
       mojo::ReportBadMessage("Unknown |release_token|.");
       return;
     }
     if (it->second->HasReleaseMailboxCB()) {
-      if (!release_sync_token) {
+      if (!release_export_result) {
         mojo::ReportBadMessage(
             "A SyncToken is required to release frames that have a callback "
             "for releasing mailboxes.");
         return;
       }
-      // An empty *|release_sync_token| can be taken as a signal that the
+      // An empty |release_sync_token| can be taken as a signal that the
       // about-to-be-released VideoFrame was never used by the client.
       // Therefore, we should let that frame retain whatever SyncToken it has.
-      if (release_sync_token->HasData()) {
-        SimpleSyncTokenClient client(*release_sync_token);
+      gpu::SyncToken release_sync_token = it->second->shared_image()->EndExport(
+          std::move(*release_export_result));
+      if (release_sync_token.HasData()) {
+        SimpleSyncTokenClient client(release_sync_token);
         it->second->UpdateReleaseSyncToken(&client);
       }
     }

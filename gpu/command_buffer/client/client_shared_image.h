@@ -93,6 +93,7 @@ struct SharedImageMetadata {
 
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
  public:
+  SharedImageExportResult() = default;
   ~SharedImageExportResult() = default;
 
   // Used in FrameSinkResourceManager to facilitate creating a dummy
@@ -115,18 +116,18 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
     return IsEqualForTesting(other_result.sync_token_);
   }
 
+  bool HasData() const { return sync_token_.HasData(); }
+
+  std::string ToDebugString() const { return sync_token_.ToDebugString(); }
+
  private:
   friend class ClientSharedImage;
-
-  // Allows ReturnedResource to be default constructed.
-  friend struct viz::ReturnedResource;
 
   // Allows ReturnedResourceViz to convert SyncToken to SharedImageExportResult.
   friend struct viz::ReturnedResourceViz;
   friend struct mojo::StructTraits<gpu::mojom::SharedImageExportResultDataView,
                                    SharedImageExportResult>;
 
-  SharedImageExportResult() = default;
   explicit SharedImageExportResult(const SyncToken& sync_token);
 
   SyncToken sync_token_;

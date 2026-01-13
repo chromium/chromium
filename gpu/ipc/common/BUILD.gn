@@ -389,6 +389,11 @@ mojom("interfaces") {
           cpp = "::gpu::ExportedSharedImage"
           move_only = true
         },
+        {
+          mojom = "gpu.mojom.SharedImageExportResult"
+          cpp = "::gpu::SharedImageExportResult"
+          move_only = true
+        },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]
       traits_public_deps = [ ":mojom_traits" ]
@@ -601,6 +606,11 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
+        },
+        {
+          mojom = "gpu.mojom.SharedImageExportResult"
+          cpp = "::gpu::SharedImageExportResult"
           move_only = true
         },
       ]

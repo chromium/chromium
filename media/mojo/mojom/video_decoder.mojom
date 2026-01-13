@@ -5,6 +5,7 @@
 module media.mojom;
 
 import "gpu/ipc/common/sync_token.mojom";
+import "gpu/ipc/common/exported_shared_image.mojom";
 import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -47,17 +48,17 @@ struct OverlayInfo;
 // so that VideoFrames can outlive their VideoDecoder.
 interface VideoFrameHandleReleaser {
   // Signals that the VideoFrame identified by |release_token| should be
-  // released. |release_sync_token| indicates the last use of the VideoFrame
+  // released. |release_export_result| indicates the last use of the VideoFrame
   // (in a GPU command buffer) by the client. If the VideoDecoder outputs frames
   // that have a callback for releasing mailboxes (i.e.,
-  // VideoFrame::HasReleaseMailboxCB() returns true), the |release_sync_token|
+  // VideoFrame::HasReleaseMailboxCB() returns true), |release_export_result|
   // is required but may be empty, and in that case, implementations should let
   // the about-to-be-released VideoFrame retain whatever SyncToken it has. For
   // other frames, it's assumed that the frame can be released immediately upon
-  // calling ReleaseVideoFrame() and |release_sync_token| does not need to be
+  // calling ReleaseVideoFrame() and |release_export_result| does not need to be
   // supplied (and should be ignored by implementations if supplied).
   ReleaseVideoFrame(mojo_base.mojom.UnguessableToken release_token,
-                    gpu.mojom.SyncToken? release_sync_token);
+                    gpu.mojom.SharedImageExportResult? release_export_result);
 };
 
 // Refers to a valid CDM used for encrypted streams.

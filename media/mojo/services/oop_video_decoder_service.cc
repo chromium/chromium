@@ -33,12 +33,12 @@ class InProcessVideoFrameHandleReleaser final
   // mojom::MojoVideoFrameHandleReleaser implementation.
   void ReleaseVideoFrame(
       const base::UnguessableToken& release_token,
-      const std::optional<gpu::SyncToken>& release_sync_token) final {
+      std::optional<gpu::SharedImageExportResult> release_export_result) final {
     DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
     // Note: we don't pass a gpu::SyncToken because it's assumed that the
     // renderer client uses SynchronizationType::kGpuCommandsCompleted.
     dst_releaser_remote_->ReleaseVideoFrame(
-        release_token, /*release_sync_token=*/std::nullopt);
+        release_token, /*release_export_result=*/std::nullopt);
   }
 
  private:
