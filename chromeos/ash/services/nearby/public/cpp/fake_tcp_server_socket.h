@@ -11,8 +11,7 @@
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 // An implementation of TCPServerSocket used for unit tests. The user sets
 // expectations--via SetAcceptCallExpectations()--for the number of Accept()
@@ -54,7 +53,6 @@ class FakeTcpServerSocket : public network::mojom::TCPServerSocket {
   base::circular_deque<AcceptCallback> pending_accept_callbacks_;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SERVER_SOCKET_H_

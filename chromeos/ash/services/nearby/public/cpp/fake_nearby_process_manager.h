@@ -15,8 +15,7 @@
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 class MockNearbyConnections;
 class MockNearbySharingDecoder;
@@ -111,7 +110,6 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
   base::WeakPtrFactory<FakeNearbyProcessManager> weak_ptr_factory_{this};
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_NEARBY_PROCESS_MANAGER_H_

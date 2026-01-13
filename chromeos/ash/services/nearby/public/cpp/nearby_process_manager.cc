@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 std::ostream& operator<<(
     std::ostream& os,
@@ -27,5 +26,4 @@ std::ostream& operator<<(
   }
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

@@ -9,8 +9,7 @@
 
 #include "base/no_destructor.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 namespace {
 const char kDataMigrationUuid[] = "60c68e7e-5acc-3ac1-a505-5d3beb02fec4";
@@ -42,5 +41,4 @@ bool IsNearbyClientUuid(const device::BluetoothUUID& uuid) {
   return kAllowedUuidSet->contains(uuid);
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

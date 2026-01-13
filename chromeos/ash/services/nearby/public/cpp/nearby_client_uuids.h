@@ -9,8 +9,7 @@
 
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 // Returns a list of Bluetooth Service UUIDs corresponding to current clients
 // of Nearby Connections (e.g., Nearby Share). Callers can use this function or
@@ -22,7 +21,6 @@ const std::vector<device::BluetoothUUID>& GetNearbyClientUuids();
 // GetNearbyClientUuids().
 bool IsNearbyClientUuid(const device::BluetoothUUID& uuid);
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_CLIENT_UUIDS_H_

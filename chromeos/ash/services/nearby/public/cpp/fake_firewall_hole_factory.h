@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 // A simple implementation of ::sharing::mojom::FirewallHoleFactory used for
 // testing.
@@ -25,7 +24,6 @@ class FakeFirewallHoleFactory : public ::sharing::mojom::FirewallHoleFactory {
   bool should_succeed_ = true;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_FIREWALL_HOLE_FACTORY_H_

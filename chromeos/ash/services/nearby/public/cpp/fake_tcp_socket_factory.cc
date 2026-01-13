@@ -11,8 +11,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 FakeTcpSocketFactory::FakeTcpSocketFactory(
     const net::IPEndPoint& default_local_addr)
@@ -151,5 +150,4 @@ void FakeTcpSocketFactory::CreateTCPConnectedSocket(
   }
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

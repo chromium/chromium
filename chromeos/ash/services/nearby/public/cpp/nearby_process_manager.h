@@ -13,8 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 // Manages the life cycle of the Nearby utility process, which hosts
 // functionality for both Nearby Connections and Nearby Share.
@@ -88,7 +87,6 @@ std::ostream& operator<<(
     std::ostream& os,
     const NearbyProcessManager::NearbyProcessShutdownReason& reason);
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_

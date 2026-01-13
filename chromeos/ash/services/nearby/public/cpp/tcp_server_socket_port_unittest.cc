@@ -8,8 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 namespace {
 
 TEST(TcpServerSocketPortTest, FromInt) {
@@ -55,5 +54,4 @@ TEST(TcpServerSocketPortTest, Random) {
 }
 
 }  // namespace
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
