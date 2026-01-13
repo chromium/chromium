@@ -1,6 +1,6 @@
 [package]
 name = "zmij"
-version = "1.0.12"
+version = "1.0.13"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "A double-to-string conversion algorithm based on Schubfach and yy"
@@ -13,7 +13,7 @@ repository = "https://github.com/dtolnay/zmij"
 rust-version = "1.68"
 
 [dependencies]
-no-panic = { version = "0.1", optional = true }
+no-panic = { version = "0.1.36", optional = true }
 
 [dev-dependencies]
 num-bigint = "0.4"

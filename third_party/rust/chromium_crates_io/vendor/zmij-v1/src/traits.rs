@@ -32,6 +32,7 @@ pub trait UInt:
     + Div<Output = Self>
     + BitAnd<Output = Self>
     + BitOr<Output = Self>
+    + Shl<u8, Output = Self>
     + Shl<i32, Output = Self>
     + Shl<u32, Output = Self>
     + Shr<i32, Output = Self>
