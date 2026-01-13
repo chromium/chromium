@@ -362,7 +362,8 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       }
       break;
     case UpdateUnderlineReason::kContextualTask_TabNotInContext:
-      HideUnderline();
+      // TODO(crbug.com/467739947): Consider reenabling hide animation.
+      underline_view_->StopShowing();
       break;
   }
 }
