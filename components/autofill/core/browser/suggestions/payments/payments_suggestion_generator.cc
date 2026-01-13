@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
@@ -245,6 +246,10 @@ FetchCreditCardSuggestionDataSync(
     bool is_complete_form,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
+  if (IsInAutofillSuggestionsDisabledExperiment()) {
+    return {SuggestionDataSource::kCreditCard, {}};
+  }
+
   if (base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill) &&
       ShouldShowCreditCardSaveAndFill(client, is_complete_form,
                                       trigger_field)) {

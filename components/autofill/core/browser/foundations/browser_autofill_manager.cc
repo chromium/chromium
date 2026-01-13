@@ -3074,10 +3074,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     return {};
   }
 
-  if (IsInAutofillSuggestionsDisabledExperiment()) {
-    return {};
-  }
-
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, form_structure, trigger_field, autofill_trigger_field, client(),
