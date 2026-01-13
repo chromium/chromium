@@ -179,7 +179,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
       ConvertToJavaIdentityProviderMetadata(env, idp_data->idp_metadata,
                                             rp_mode),
       ConvertToJavaClientIdMetadata(env, idp_data->client_metadata),
-      static_cast<jint>(idp_data->rp_context),
+      static_cast<int32_t>(idp_data->rp_context),
       ConvertFieldsToJavaArray(env, idp_data->disclosure_fields),
       idp_data->has_login_status_mismatch);
 }
@@ -325,7 +325,7 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata, rp_mode);
   return Java_AccountSelectionBridge_showFailureDialog(
       env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
-      idp_for_display, idp_metadata_obj, static_cast<jint>(rp_context));
+      idp_for_display, idp_metadata_obj, static_cast<int32_t>(rp_context));
 }
 
 bool AccountSelectionViewAndroid::ShowErrorDialog(
@@ -347,7 +347,7 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata, rp_mode);
   return Java_AccountSelectionBridge_showErrorDialog(
       env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
-      idp_for_display, idp_metadata_obj, static_cast<jint>(rp_context),
+      idp_for_display, idp_metadata_obj, static_cast<int32_t>(rp_context),
       ConvertToJavaIdentityCredentialTokenError(env, error));
 }
 
@@ -366,7 +366,7 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
   JNIEnv* env = AttachCurrentThread();
   return Java_AccountSelectionBridge_showLoadingDialog(
       env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
-      idp_for_display, static_cast<jint>(rp_context));
+      idp_for_display, static_cast<int32_t>(rp_context));
 }
 
 bool AccountSelectionViewAndroid::ShowVerifyingDialog(
@@ -464,7 +464,8 @@ void AccountSelectionViewAndroid::OnAccountSelected(
   // See https://crbug.com/1393650 for details.
 }
 
-void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
+void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env,
+                                            int32_t dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
@@ -504,7 +505,7 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
       env, reinterpret_cast<intptr_t>(this),
       delegate_->GetWebContents()->GetJavaWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      static_cast<jint>(rp_mode.value_or(blink::mojom::RpMode::kPassive)));
+      static_cast<int32_t>(rp_mode.value_or(blink::mojom::RpMode::kPassive)));
 
   if (!!java_object_internal_) {
     RecordJavaObjectCreationOutcome(
@@ -526,13 +527,13 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
 int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
   return Java_AccountSelectionBridge_getBrandIconMinimumSize(
-      base::android::AttachCurrentThread(), static_cast<jint>(rp_mode));
+      base::android::AttachCurrentThread(), static_cast<int32_t>(rp_mode));
 }
 
 // static
 int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
   return Java_AccountSelectionBridge_getBrandIconIdealSize(
-      base::android::AttachCurrentThread(), static_cast<jint>(rp_mode));
+      base::android::AttachCurrentThread(), static_cast<int32_t>(rp_mode));
 }
 
 DEFINE_JNI(AccountSelectionBridge)

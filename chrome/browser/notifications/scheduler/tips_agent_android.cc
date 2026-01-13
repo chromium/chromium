@@ -91,7 +91,7 @@ void RunGetClassificationResultCallback(
 void TipsAgentAndroid::ShowTipsPromo(
     notifications::TipsNotificationsFeatureType feature_type) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_TipsAgent_showTipsPromo(env, static_cast<jint>(feature_type));
+  Java_TipsAgent_showTipsPromo(env, static_cast<int32_t>(feature_type));
 }
 
 static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,

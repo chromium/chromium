@@ -374,7 +374,7 @@ static void JNI_TranslateBridge_MoveAcceptLanguage(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     std::string& language_code,
-    jint offset) {
+    int32_t offset) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 

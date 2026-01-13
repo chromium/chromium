@@ -87,11 +87,11 @@ HistogramBase* BooleanHistogram(JNIEnv* env,
 HistogramBase* ExponentialHistogram(JNIEnv* env,
                                     std::string& histogram_name,
                                     jlong j_histogram_hint,
-                                    jint j_min,
-                                    jint j_max,
-                                    jint j_num_buckets) {
-  int32_t min = static_cast<int32_t>(j_min);
-  int32_t max = static_cast<int32_t>(j_max);
+                                    int32_t j_min,
+                                    int32_t j_max,
+                                    int32_t j_num_buckets) {
+  int32_t min = j_min;
+  int32_t max = j_max;
   size_t num_buckets = static_cast<size_t>(j_num_buckets);
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
   if (histogram) {
@@ -109,11 +109,11 @@ HistogramBase* ExponentialHistogram(JNIEnv* env,
 HistogramBase* LinearHistogram(JNIEnv* env,
                                std::string& j_histogram_name,
                                jlong j_histogram_hint,
-                               jint j_min,
-                               jint j_max,
-                               jint j_num_buckets) {
-  int32_t min = static_cast<int32_t>(j_min);
-  int32_t max = static_cast<int32_t>(j_max);
+                               int32_t j_min,
+                               int32_t j_max,
+                               int32_t j_num_buckets) {
+  int32_t min = j_min;
+  int32_t max = j_max;
   size_t num_buckets = static_cast<size_t>(j_num_buckets);
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
   if (histogram) {
@@ -169,10 +169,10 @@ static jlong JNI_NativeUmaRecorder_RecordExponentialHistogram(
     JNIEnv* env,
     std::string& j_histogram_name,
     jlong j_histogram_hint,
-    jint j_sample,
-    jint j_min,
-    jint j_max,
-    jint j_num_buckets) {
+    int32_t j_sample,
+    int32_t j_min,
+    int32_t j_max,
+    int32_t j_num_buckets) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram = ExponentialHistogram(
       env, j_histogram_name, j_histogram_hint, j_min, j_max, j_num_buckets);
@@ -184,10 +184,10 @@ static jlong JNI_NativeUmaRecorder_RecordLinearHistogram(
     JNIEnv* env,
     std::string& j_histogram_name,
     jlong j_histogram_hint,
-    jint j_sample,
-    jint j_min,
-    jint j_max,
-    jint j_num_buckets) {
+    int32_t j_sample,
+    int32_t j_min,
+    int32_t j_max,
+    int32_t j_num_buckets) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram = LinearHistogram(
       env, j_histogram_name, j_histogram_hint, j_min, j_max, j_num_buckets);
@@ -199,7 +199,7 @@ static jlong JNI_NativeUmaRecorder_RecordSparseHistogram(
     JNIEnv* env,
     std::string& j_histogram_name,
     jlong j_histogram_hint,
-    jint j_sample) {
+    int32_t j_sample) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram =
       SparseHistogram(env, j_histogram_name, j_histogram_hint);
@@ -220,10 +220,10 @@ static void JNI_NativeUmaRecorder_RecordUserAction(
 // MetricsUtils.HistogramDelta. It should live in a test-specific file, but we
 // currently can't have test-specific native code packaged in test-specific Java
 // targets - see http://crbug.com/415945.
-static jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
+static int32_t JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
     JNIEnv* env,
     std::string& name,
-    jint sample,
+    int32_t sample,
     jlong snapshot_ptr) {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
@@ -243,7 +243,7 @@ static jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
   return actual_count;
 }
 
-static jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
+static int32_t JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
     JNIEnv* env,
     std::string& name,
     jlong snapshot_ptr) {

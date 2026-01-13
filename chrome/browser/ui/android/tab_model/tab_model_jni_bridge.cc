@@ -256,7 +256,7 @@ void TabModelJniBridge::SetMuteSetting(JNIEnv* env,
   }
 }
 
-jint TabModelJniBridge::GetSessionIdForTesting(JNIEnv* env) {
+int32_t TabModelJniBridge::GetSessionIdForTesting(JNIEnv* env) {
   return GetSessionId().id();
 }
 
@@ -683,7 +683,7 @@ void TabModelJniBridge::SetTabGroupVisualData(
 
   // The cast is safe because the enum values are synced across C++ and Java.
   Java_TabModelJniBridge_setTabGroupColor(
-      env, jobj, group_id.token(), static_cast<jint>(visual_data.color()));
+      env, jobj, group_id.token(), static_cast<int32_t>(visual_data.color()));
   Java_TabModelJniBridge_setTabGroupCollapsed(env, jobj, group_id.token(),
                                               visual_data.is_collapsed(),
                                               /*animate=*/false);
@@ -805,7 +805,7 @@ TabModelJniBridge::~TabModelJniBridge() {
 static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
                                         const JavaRef<jobject>& obj,
                                         Profile* profile,
-                                        jint j_activity_type,
+                                        int32_t j_activity_type,
                                         unsigned char is_archived_tab_model) {
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, profile, static_cast<ActivityType>(j_activity_type),

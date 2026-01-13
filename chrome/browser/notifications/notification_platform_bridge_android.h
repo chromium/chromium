@@ -46,13 +46,13 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   // Called by the Java implementation when the notification has been clicked.
   void OnNotificationClicked(JNIEnv* env,
                              std::string& notification_id,
-                             jint java_notification_type,
+                             int32_t java_notification_type,
                              std::string& origin,
                              std::string& scope_url,
                              std::string& profile_id,
                              bool incognito,
                              std::string& webapk_package,
-                             jint action_index,
+                             int32_t action_index,
                              const jni_zero::JavaRef<jstring>& java_reply);
 
   // Called by the Java implementation when the query of WebAPK's package name
@@ -65,7 +65,7 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   // Called by the Java implementation when the notification has been closed.
   void OnNotificationClosed(JNIEnv* env,
                             std::string& notification_id,
-                            jint java_notification_type,
+                            int32_t java_notification_type,
                             std::string& origin,
                             std::string& profile_id,
                             bool incognito,
@@ -75,7 +75,7 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   // from notification from this origin.
   void OnNotificationDisablePermission(JNIEnv* env,
                                        std::string& otification_id,
-                                       jint java_notification_type,
+                                       int32_t java_notification_type,
                                        std::string& origin,
                                        std::string& profile_id,
                                        bool incognito,

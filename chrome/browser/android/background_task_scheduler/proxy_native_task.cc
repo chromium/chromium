@@ -18,7 +18,7 @@
 
 static jlong JNI_ProxyNativeTask_Init(JNIEnv* env,
                                       const JavaRef<jobject>& jobj,
-                                      jint task_id,
+                                      int32_t task_id,
                                       std::string& extras,
                                       const JavaRef<jobject>& jcallback) {
   std::unique_ptr<background_task::BackgroundTask> background_task =

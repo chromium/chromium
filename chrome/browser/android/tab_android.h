@@ -197,8 +197,8 @@ class TabAndroid : public tabs::TabInterface,
       const base::android::JavaRef<jobject>& jweb_contents);
   void OnPhysicalBackingSizeChanged(
       const base::android::JavaRef<jobject>& jweb_contents,
-      jint width,
-      jint height);
+      int32_t width,
+      int32_t height);
   void SetActiveNavigationEntryTitleForUrl(std::string& jurl,
                                            std::u16string& jtitle);
   void LoadOriginalImage();

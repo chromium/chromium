@@ -55,7 +55,7 @@ JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
   tab_helper->set_has_high_engagement_for_testing(has_high_engagement);
 }
 
-static jint
+static int32_t
 JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
     JNIEnv* env,
     content::WebContents* web_contents,

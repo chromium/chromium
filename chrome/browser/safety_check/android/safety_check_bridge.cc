@@ -22,7 +22,7 @@ static bool JNI_SafetyCheckBridge_UserSignedIn(
           content::BrowserContextFromJavaHandle(jhandle)));
 }
 
-static jint JNI_SafetyCheckBridge_CheckSafeBrowsing(
+static int32_t JNI_SafetyCheckBridge_CheckSafeBrowsing(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jhandle) {
   return static_cast<int>(

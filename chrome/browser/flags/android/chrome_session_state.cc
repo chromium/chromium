@@ -122,14 +122,15 @@ MultipleUserProfilesState GetMultipleUserProfilesState() {
 }  // namespace android
 }  // namespace chrome
 
-static void JNI_ChromeSessionState_SetActivityType(JNIEnv* env, jint type) {
+static void JNI_ChromeSessionState_SetActivityType(JNIEnv* env, int32_t type) {
   DCHECK(g_browser_process);
   DCHECK(g_browser_process->local_state());
   chrome::android::SetActivityType(g_browser_process->local_state(),
                                    static_cast<ActivityType>(type));
 }
 
-static void JNI_ChromeSessionState_SetDarkModeState(JNIEnv* env, jint state) {
+static void JNI_ChromeSessionState_SetDarkModeState(JNIEnv* env,
+                                                    int32_t state) {
   dark_mode_state = static_cast<DarkModeState>(state);
 }
 

@@ -774,11 +774,11 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeUseRelros(
   return true;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT jint
+JNI_ZERO_BOUNDARY_EXPORT int32_t
 Java_org_chromium_base_library_1loader_LinkerJni_nativeGetRelroSharingResult(
     JNIEnv* env,
     jclass clazz) {
-  return static_cast<jint>(s_relro_sharing_status);
+  return static_cast<int32_t>(s_relro_sharing_status);
 }
 
 bool LinkerJNIInit(JavaVM* vm, JNIEnv* env) {

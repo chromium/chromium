@@ -179,7 +179,7 @@ int AwPrefetchManager::StartPrefetchRequest(
   return NO_PREFETCH_KEY;
 }
 
-void AwPrefetchManager::CancelPrefetch(JNIEnv* env, jint prefetch_key) {
+void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("android_webview", "AwPrefetchManager::CancelPrefetch");
   if (prefetch_key == NO_PREFETCH_KEY) {
@@ -194,12 +194,12 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env, jint prefetch_key) {
 }
 
 bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(JNIEnv* env,
-                                                       jint prefetch_key) {
+                                                       int32_t prefetch_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
 }
 
-static jint JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
+static int32_t JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
   return NO_PREFETCH_KEY;
 }
 

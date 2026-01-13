@@ -87,15 +87,15 @@ class PaintPreviewTabService : public PaintPreviewBaseService,
 #if BUILDFLAG(IS_ANDROID)
   // JNI wrapped versions of the above methods
   void CaptureTabAndroid(JNIEnv* env,
-                         jint j_tab_id,
+                         int32_t j_tab_id,
                          const base::android::JavaRef<jobject>& j_web_contents,
                          bool j_accessibility_enabled,
                          jfloat j_page_scale_factor,
-                         jint j_x,
-                         jint j_y,
+                         int32_t j_x,
+                         int32_t j_y,
                          const base::android::JavaRef<jobject>& j_callback);
-  void TabClosedAndroid(JNIEnv* env, jint j_tab_id);
-  bool HasCaptureForTabAndroid(JNIEnv* env, jint j_tab_id);
+  void TabClosedAndroid(JNIEnv* env, int32_t j_tab_id);
+  bool HasCaptureForTabAndroid(JNIEnv* env, int32_t j_tab_id);
   void AuditArtifactsAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jintArray>& j_tab_ids);

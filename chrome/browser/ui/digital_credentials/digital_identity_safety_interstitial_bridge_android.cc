@@ -62,7 +62,7 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitial(
 
 void DigitalIdentitySafetyInterstitialBridgeAndroid::OnInterstitialDone(
     JNIEnv* env,
-    jint status_for_metrics) {
+    int32_t status_for_metrics) {
   std::move(callback_).Run(
       static_cast<content::DigitalIdentityProvider::RequestStatusForMetrics>(
           status_for_metrics));

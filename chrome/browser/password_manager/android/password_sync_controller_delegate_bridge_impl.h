@@ -34,8 +34,8 @@ class PasswordSyncControllerDelegateBridgeImpl
   // Called via JNI. Called when the credential manager api call finishes with
   // an exception.
   void OnCredentialManagerError(JNIEnv* env,
-                                jint error_code,
-                                jint api_error_code);
+                                int32_t error_code,
+                                int32_t api_error_code);
 
  private:
   // Weak reference to the `Consumer` that is notified when a job completes. It

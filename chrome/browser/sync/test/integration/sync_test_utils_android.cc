@@ -160,7 +160,7 @@ void UpdateTabGroupVisualData(TabAndroid* tab,
   CHECK(tab);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_title = base::android::ConvertUTF8ToJavaString(env, title);
-  jint j_color = static_cast<jint>(color);
+  int32_t j_color = static_cast<int32_t>(color);
   Java_SyncTestTabGroupHelpers_updateGroupVisualData(env, tab->GetJavaObject(),
                                                      j_title, j_color);
 }

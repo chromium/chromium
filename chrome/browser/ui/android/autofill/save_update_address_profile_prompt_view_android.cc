@@ -67,7 +67,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   java_object_.Reset(Java_SaveUpdateAddressProfilePrompt_create(
       env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
       java_controller, browser_profile->GetJavaObject(), java_autofill_profile,
-      static_cast<jint>(prompt_mode)));
+      static_cast<int32_t>(prompt_mode)));
   if (!java_object_) {
     return false;
   }

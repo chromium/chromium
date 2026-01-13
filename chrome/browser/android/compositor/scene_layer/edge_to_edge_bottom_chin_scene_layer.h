@@ -33,10 +33,10 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
   // Update the compositor version of the view.
   void UpdateEdgeToEdgeBottomChinLayer(
       JNIEnv* env,
-      jint container_width,
-      jint container_height,
-      jint color_argb,
-      jint divider_color,
+      int32_t container_width,
+      int32_t container_height,
+      int32_t color_argb,
+      int32_t divider_color,
       jfloat y_offset,
       bool hasConstraint,
       const base::android::JavaRef<jobject>& joffset_tag);

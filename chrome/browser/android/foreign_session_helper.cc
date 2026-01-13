@@ -299,8 +299,8 @@ bool ForeignSessionHelper::OpenForeignSessionTab(
     JNIEnv* env,
     const JavaRef<jobject>& j_tab,
     const JavaRef<jstring>& session_tag,
-    jint session_tab_id,
-    jint j_disposition) {
+    int32_t session_tab_id,
+    int32_t j_disposition) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
     LOG(ERROR) << "Null OpenTabsUIDelegate returned.";
@@ -356,7 +356,7 @@ void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(JNIEnv* env,
   service->SetInvalidationsForSessionsEnabled(enabled);
 }
 
-jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
+int32_t ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
     JNIEnv* env,
     const JavaRef<jobject>& j_tab,
     const JavaRef<jintArray>& j_session_tab_ids,

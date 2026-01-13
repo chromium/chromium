@@ -187,14 +187,15 @@ static std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
 
 // static
 static void JNI_AwContentsStatics_SetRendererLibraryPrefetchMode(JNIEnv* env,
-                                                                 jint mode) {
+                                                                 int32_t mode) {
   SetRendererLibraryPrefetchMode(
       static_cast<RendererLibraryPrefetchMode>(mode));
 }
 
 // static
-static jint JNI_AwContentsStatics_GetRendererLibraryPrefetchMode(JNIEnv* env) {
-  return static_cast<jint>(GetRendererLibraryPrefetchMode());
+static int32_t JNI_AwContentsStatics_GetRendererLibraryPrefetchMode(
+    JNIEnv* env) {
+  return static_cast<int32_t>(GetRendererLibraryPrefetchMode());
 }
 
 // static

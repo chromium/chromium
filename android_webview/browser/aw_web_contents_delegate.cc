@@ -419,9 +419,9 @@ AwWebContentsDelegate::TakeFileSelectListener() {
 
 static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
     JNIEnv* env,
-    jint process_id,
-    jint render_id,
-    jint mode_flags,
+    int32_t process_id,
+    int32_t render_id,
+    int32_t mode_flags,
     const JavaRef<jobjectArray>& file_paths,
     const JavaRef<jobjectArray>& display_names) {
   content::RenderFrameHost* rfh =

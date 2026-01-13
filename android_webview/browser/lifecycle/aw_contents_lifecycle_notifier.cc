@@ -198,7 +198,7 @@ void AwContentsLifecycleNotifier::UpdateAppState() {
     }
 
     Java_AwContentsLifecycleNotifier_onAppStateChanged(
-        AttachCurrentThread(), java_ref_, static_cast<jint>(app_state_));
+        AttachCurrentThread(), java_ref_, static_cast<int32_t>(app_state_));
   }
 }
 

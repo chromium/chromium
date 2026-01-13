@@ -70,7 +70,7 @@ class FacilitatedPaymentsController {
           ui_event_listener);
 
   // Called by the Java view to communicate `payments::facilitated::UiEvent`.
-  void OnUiEvent(JNIEnv* env, jint event);
+  void OnUiEvent(JNIEnv* env, int32_t event);
 
   void OnBankAccountSelected(JNIEnv* env, jlong instrument_id);
 

@@ -45,12 +45,12 @@ class ForeignSessionHelper {
   bool OpenForeignSessionTab(JNIEnv* env,
                              const base::android::JavaRef<jobject>& j_tab,
                              const base::android::JavaRef<jstring>& session_tag,
-                             jint tab_id,
-                             jint disposition);
+                             int32_t tab_id,
+                             int32_t disposition);
   void DeleteForeignSession(JNIEnv* env,
                             const base::android::JavaRef<jstring>& session_tag);
   void SetInvalidationsForSessionsEnabled(JNIEnv* env, bool enabled);
-  jint OpenForeignSessionTabsAsBackgroundTabs(
+  int32_t OpenForeignSessionTabsAsBackgroundTabs(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_tab,
       const base::android::JavaRef<jintArray>& j_session_tab_ids,

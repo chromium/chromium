@@ -29,7 +29,7 @@ namespace collaboration {
 
 static void JNI_CollaborationControllerDelegateImpl_RunResultCallback(
     JNIEnv* env,
-    jint joutcome,
+    int32_t joutcome,
     jlong callback) {
   std::unique_ptr<ResultCallback> callback_ptr =
       conversion::GetNativeResultCallbackFromJava(callback);
@@ -57,7 +57,7 @@ static void JNI_CollaborationControllerDelegateImpl_DeleteExitCallback(
 static void
 JNI_CollaborationControllerDelegateImpl_RunResultWithGroupTokenCallback(
     JNIEnv* env,
-    jint joutcome,
+    int32_t joutcome,
     const JavaRef<jstring>& group_id,
     const JavaRef<jstring>& access_token,
     jlong callback) {
@@ -113,7 +113,7 @@ void CollaborationControllerDelegateAndroid::ShowError(const ErrorInfo& error,
                                                        ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showError(
-      env, java_obj_, static_cast<jint>(error.type()),
+      env, java_obj_, static_cast<int32_t>(error.type()),
       base::android::ConvertUTF8ToJavaString(env, error.error_header),
       base::android::ConvertUTF8ToJavaString(env, error.error_body),
       conversion::GetJavaResultCallbackPtr(std::move(result)));

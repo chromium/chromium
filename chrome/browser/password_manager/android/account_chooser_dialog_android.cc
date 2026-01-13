@@ -166,7 +166,7 @@ bool AccountChooserDialogAndroid::ShowDialog() {
 
 void AccountChooserDialogAndroid::OnCredentialClicked(
     JNIEnv* env,
-    jint credential_item,
+    int32_t credential_item,
     bool signin_button_clicked) {
   bool credential_handled =
       HandleCredentialChosen(credential_item, signin_button_clicked);

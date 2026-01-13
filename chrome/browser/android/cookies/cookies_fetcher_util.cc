@@ -97,12 +97,12 @@ static void JNI_CookiesFetcher_RestoreCookies(JNIEnv* env,
                                               jlong last_update,
                                               bool secure,
                                               bool httponly,
-                                              jint same_site,
-                                              jint priority,
+                                              int32_t same_site,
+                                              int32_t priority,
                                               std::string& partition_key,
-                                              jint source_scheme,
-                                              jint source_port,
-                                              jint source_type) {
+                                              int32_t source_scheme,
+                                              int32_t source_port,
+                                              int32_t source_type) {
   cookie_fetcher_restore_util::CookiesFetcherRestoreCookiesImpl(
       env, profile, name, value, domain, path, creation, expiration,
       last_access, last_update, secure, httponly, same_site, priority,

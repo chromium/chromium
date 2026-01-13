@@ -24,7 +24,7 @@ using base::android::JavaRef;
 static void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(
     JNIEnv* env,
     Profile* profile,
-    jint setting) {
+    int32_t setting) {
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(

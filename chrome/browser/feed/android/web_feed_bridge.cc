@@ -202,7 +202,7 @@ base::OnceCallback<void(T)> AdaptCallbackForJava(
 static void JNI_WebFeedBridge_FollowWebFeed(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& pageInfo,
-    jint change_reason,
+    int32_t change_reason,
     const base::android::JavaRef<jobject>& j_callback) {
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::FollowWebFeedResult>(
@@ -234,7 +234,7 @@ static void JNI_WebFeedBridge_FollowWebFeedById(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& webFeedId,
     bool is_durable,
-    jint change_reason,
+    int32_t change_reason,
     const base::android::JavaRef<jobject>& j_callback) {
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
   auto callback =
@@ -255,7 +255,7 @@ static void JNI_WebFeedBridge_UnfollowWebFeed(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& webFeedId,
     bool is_durable,
-    jint change_reason,
+    int32_t change_reason,
     const base::android::JavaRef<jobject>& j_callback) {
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::UnfollowWebFeedResult>(

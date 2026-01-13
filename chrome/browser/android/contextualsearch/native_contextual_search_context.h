@@ -41,8 +41,8 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
 
   // Adjust the current selection offsets by the given signed amounts.
   void AdjustSelection(JNIEnv* env,
-                       jint j_start_adjust,
-                       jint j_end_adjust);
+                       int32_t j_start_adjust,
+                       int32_t j_end_adjust);
 
   // Prepares the context to be used in a resolve request by supplying last
   // minute parameters.

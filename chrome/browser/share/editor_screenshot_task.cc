@@ -46,8 +46,8 @@ static void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
     JNIEnv* env,
     const JavaRef<jobject>& jcallback,
     const JavaRef<jobject>& jwindow_android,
-    jint window_width,
-    jint window_height) {
+    int32_t window_width,
+    int32_t window_height) {
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   gfx::Rect window_bounds(window_width, window_height);

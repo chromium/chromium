@@ -26,10 +26,10 @@ ToolbarSwipeSceneLayer::ToolbarSwipeSceneLayer(JNIEnv* env,
 ToolbarSwipeSceneLayer::~ToolbarSwipeSceneLayer() = default;
 
 void ToolbarSwipeSceneLayer::UpdateLayer(JNIEnv* env,
-                                         jint id,
+                                         int32_t id,
                                          bool left_tab,
                                          bool can_use_live_layer,
-                                         jint default_background_color,
+                                         int32_t default_background_color,
                                          jfloat x,
                                          jfloat y) {
   background_color_ = default_background_color;

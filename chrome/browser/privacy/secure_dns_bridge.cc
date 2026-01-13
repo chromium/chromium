@@ -80,7 +80,7 @@ void RunProbe(base::WaitableEvent* waiter,
 
 }  // namespace
 
-static jint JNI_SecureDnsBridge_GetMode(JNIEnv* env) {
+static int32_t JNI_SecureDnsBridge_GetMode(JNIEnv* env) {
   return static_cast<int>(
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(
@@ -88,7 +88,7 @@ static jint JNI_SecureDnsBridge_GetMode(JNIEnv* env) {
           .mode());
 }
 
-static void JNI_SecureDnsBridge_SetMode(JNIEnv* env, jint mode) {
+static void JNI_SecureDnsBridge_SetMode(JNIEnv* env, int32_t mode) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(
       prefs::kDnsOverHttpsMode,
@@ -139,7 +139,7 @@ static bool JNI_SecureDnsBridge_SetConfig(JNIEnv* env,
   return false;
 }
 
-static jint JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
+static int32_t JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
   return static_cast<int>(
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(

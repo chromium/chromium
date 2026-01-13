@@ -55,27 +55,26 @@ void TabListSceneLayer::FinishBuildingFrame(JNIEnv* env) {
   visible_tabs_this_frame_.clear();
 }
 
-void TabListSceneLayer::UpdateLayer(
-    JNIEnv* env,
-    jint background_color,
-    jfloat viewport_x,
-    jfloat viewport_y,
-    jfloat viewport_width,
-    jfloat viewport_height) {
+void TabListSceneLayer::UpdateLayer(JNIEnv* env,
+                                    int32_t background_color,
+                                    jfloat viewport_x,
+                                    jfloat viewport_y,
+                                    jfloat viewport_width,
+                                    jfloat viewport_height) {
   background_color_ = background_color;
   own_tree_->SetPosition(gfx::PointF(viewport_x, viewport_y));
   own_tree_->SetBounds(gfx::Size(viewport_width, viewport_height));
 }
 
 void TabListSceneLayer::PutTabLayer(JNIEnv* env,
-                                    jint id,
-                                    jint toolbar_resource_id,
-                                    jint shadow_resource_id,
-                                    jint contour_resource_id,
-                                    jint border_resource_id,
-                                    jint border_inner_shadow_resource_id,
+                                    int32_t id,
+                                    int32_t toolbar_resource_id,
+                                    int32_t shadow_resource_id,
+                                    int32_t contour_resource_id,
+                                    int32_t border_resource_id,
+                                    int32_t border_inner_shadow_resource_id,
                                     bool can_use_live_layer,
-                                    jint tab_background_color,
+                                    int32_t tab_background_color,
                                     bool incognito,
                                     jfloat x,
                                     jfloat y,
@@ -94,11 +93,11 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
                                     jfloat border_scale,
                                     jfloat saturation,
                                     bool show_toolbar,
-                                    jint default_theme_color,
-                                    jint toolbar_background_color,
+                                    int32_t default_theme_color,
+                                    int32_t toolbar_background_color,
                                     bool anonymize_toolbar,
-                                    jint toolbar_textbox_resource_id,
-                                    jint toolbar_textbox_background_color,
+                                    int32_t toolbar_textbox_resource_id,
+                                    int32_t toolbar_textbox_background_color,
                                     jfloat content_offset) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the TabLayer";
@@ -140,11 +139,10 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
   content_obscures_self_ |= content.Contains(self);
 }
 
-void TabListSceneLayer::PutBackgroundLayer(
-    JNIEnv* env,
-    jint resource_id,
-    jfloat alpha,
-    jint top_offset) {
+void TabListSceneLayer::PutBackgroundLayer(JNIEnv* env,
+                                           int32_t resource_id,
+                                           jfloat alpha,
+                                           int32_t top_offset) {
   int ui_resource_id = resource_manager_->GetUIResourceId(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, resource_id);
   if (ui_resource_id == ui::Resource::kInvalidResourceId) {

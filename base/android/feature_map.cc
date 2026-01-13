@@ -62,11 +62,11 @@ static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
   return base::GetFieldTrialParamValueByFeature(*feature, param_name);
 }
 
-static jint JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
+static int32_t JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
     jlong jfeature_map,
     std::string& feature_name,
     std::string& param_name,
-    const jint jdefault_value) {
+    const int32_t jdefault_value) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
       feature_map->FindFeatureExposedToJava(feature_name);

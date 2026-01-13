@@ -58,8 +58,8 @@ void CreditCardScannerViewAndroid::ScanCompleted(
     JNIEnv* env,
     const std::u16string& card_holder_name,
     const std::u16string& card_number,
-    jint expiration_month,
-    jint expiration_year) {
+    int32_t expiration_month,
+    int32_t expiration_year) {
   CreditCard card;
   card.SetNumber(card_number);
   card.SetExpirationMonth(static_cast<int>(expiration_month));

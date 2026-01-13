@@ -31,8 +31,8 @@ namespace android {
 static bool JNI_BackgroundSchedulerBridge_StartScheduledProcessing(
     JNIEnv* env,
     const bool j_power_connected,
-    const jint j_battery_percentage,
-    const jint j_net_connection_type,
+    const int32_t j_battery_percentage,
+    const int32_t j_net_connection_type,
     const JavaRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref;
   j_callback_ref.Reset(env, j_callback_obj);
@@ -122,8 +122,8 @@ BackgroundSchedulerBridge::GetCurrentDeviceConditions() {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Call the JNI methods to get the device conditions we need.
   bool jpower = Java_BackgroundSchedulerBridge_getPowerConditions(env);
-  jint jbattery = Java_BackgroundSchedulerBridge_getBatteryConditions(env);
-  jint jnetwork = Java_BackgroundSchedulerBridge_getNetworkConditions(env);
+  int32_t jbattery = Java_BackgroundSchedulerBridge_getBatteryConditions(env);
+  int32_t jnetwork = Java_BackgroundSchedulerBridge_getNetworkConditions(env);
 
   // Cast the java types back to the types we use.
   bool power = static_cast<bool>(jpower);

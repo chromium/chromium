@@ -132,7 +132,7 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
     const JavaRef<jbyteArray>& favicon,
     const JavaRef<jbyteArray>& touchicon,
     bool fetch_uncached_favicons_from_server,
-    jint desired_favicon_size_px,
+    int32_t desired_favicon_size_px,
     const JavaRef<jobject>& j_callback) {
   std::u16string url;
   std::u16string title;

@@ -148,7 +148,7 @@ bool SimpleConfirmInfoBarDelegate::Cancel() {
 static void JNI_SimpleConfirmInfoBarBuilder_Create(
     JNIEnv* env,
     const JavaRef<jobject>& j_web_contents,
-    jint j_identifier,
+    int32_t j_identifier,
     const JavaRef<jobject>& j_icon,
     const JavaRef<jstring>& j_message,
     const JavaRef<jstring>& j_primary,

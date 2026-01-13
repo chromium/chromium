@@ -17,9 +17,7 @@ class AwTracingController {
   AwTracingController(const AwTracingController&) = delete;
   AwTracingController& operator=(const AwTracingController&) = delete;
 
-  bool Start(JNIEnv* env,
-             std::string& jcategories,
-             jint mode);
+  bool Start(JNIEnv* env, std::string& jcategories, int32_t mode);
   bool StopAndFlush(JNIEnv* env);
   bool IsTracing(JNIEnv* env);
 

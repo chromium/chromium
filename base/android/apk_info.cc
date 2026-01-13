@@ -80,7 +80,7 @@ static void JNI_ApkInfo_FillFields(JNIEnv* env,
                                    std::string& resourcesVersion,
                                    std::string& installerPackageName,
                                    bool isDebugApp,
-                                   jint targetSdkVersion) {
+                                   int32_t targetSdkVersion) {
   Set(IApkInfo{.hostPackageLabel = hostPackageLabel,
                .hostPackageName = hostPackageName,
                .hostVersionCode = hostVersionCode,

@@ -27,7 +27,7 @@ static bool JNI_PageInfoAboutThisSiteController_IsFeatureEnabled(JNIEnv* env) {
       g_browser_process->GetApplicationLocale());
 }
 
-static jint JNI_PageInfoAboutThisSiteController_GetJavaDrawableIconId(
+static int32_t JNI_PageInfoAboutThisSiteController_GetJavaDrawableIconId(
     JNIEnv* env) {
   return ResourceMapper::MapToJavaDrawableId(
       IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP);

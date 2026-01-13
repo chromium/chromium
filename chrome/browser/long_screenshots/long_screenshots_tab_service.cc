@@ -273,16 +273,16 @@ void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
 
 void LongScreenshotsTabService::CaptureTabAndroid(
     JNIEnv* env,
-    jint j_tab_id,
+    int32_t j_tab_id,
     const base::android::JavaRef<jobject>& j_gurl,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jint clip_x,
-    jint clip_y,
-    jint clip_width,
-    jint clip_height,
+    int32_t clip_x,
+    int32_t clip_y,
+    int32_t clip_width,
+    int32_t clip_height,
     bool in_memory,
-    jint clip_x_coord_override,
-    jint clip_y_coord_override) {
+    int32_t clip_x_coord_override,
+    int32_t clip_y_coord_override) {
   CHECK_GE(
       clip_x_coord_override,
       static_cast<int>(paint_preview::mojom::ClipCoordOverride::kMinValue));

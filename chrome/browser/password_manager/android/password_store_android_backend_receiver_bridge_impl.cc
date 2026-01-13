@@ -79,7 +79,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::SetConsumer(
 
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
-    jint job_id,
+    int32_t job_id,
     const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
@@ -90,7 +90,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
 
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithBrandedLogins(
     JNIEnv* env,
-    jint job_id,
+    int32_t job_id,
     const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
@@ -102,7 +102,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithBrandedLogins(
 void PasswordStoreAndroidBackendReceiverBridgeImpl::
     OnCompleteWithAffiliatedLogins(
         JNIEnv* env,
-        jint job_id,
+        int32_t job_id,
         const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   CHECK(consumer_);
@@ -113,11 +113,11 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::
 
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnError(
     JNIEnv* env,
-    jint job_id,
-    jint error_type,
-    jint api_error_code,
+    int32_t job_id,
+    int32_t error_type,
+    int32_t api_error_code,
     bool has_connection_result,
-    jint connection_result_code) {
+    int32_t connection_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   // Posting the tasks to the same sequence prevents that synchronous responses
@@ -141,7 +141,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnError(
 
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
     JNIEnv* env,
-    jint job_id) {
+    int32_t job_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   // Notifying that a login changed without providing a changelist prompts the

@@ -21,7 +21,7 @@ static jlong JNI_ReauthenticatorBridge_Create(
     const base::android::JavaRef<jobject>& java_bridge,
     const base::android::JavaRef<jobject>& activity,
     Profile* profile,
-    jint source) {
+    int32_t source) {
   return reinterpret_cast<intptr_t>(
       new ReauthenticatorBridge(java_bridge, activity, profile, source));
 }
@@ -30,7 +30,7 @@ ReauthenticatorBridge::ReauthenticatorBridge(
     const base::android::JavaRef<jobject>& java_bridge,
     const base::android::JavaRef<jobject>& activity,
     Profile* profile,
-    jint source)
+    int32_t source)
     : java_bridge_(java_bridge), profile_(profile) {
   device_reauth::DeviceAuthParams params(
       base::Seconds(0), static_cast<device_reauth::DeviceAuthSource>(source));
@@ -45,11 +45,11 @@ ReauthenticatorBridge::~ReauthenticatorBridge() {
   }
 }
 
-jint ReauthenticatorBridge::GetBiometricAvailabilityStatus(JNIEnv* env) {
+int32_t ReauthenticatorBridge::GetBiometricAvailabilityStatus(JNIEnv* env) {
   if (authenticator_ == nullptr) {
-    return static_cast<jint>(device_reauth::BiometricStatus::kUnavailable);
+    return static_cast<int32_t>(device_reauth::BiometricStatus::kUnavailable);
   }
-  return static_cast<jint>(authenticator_->GetBiometricAvailabilityStatus());
+  return static_cast<int32_t>(authenticator_->GetBiometricAvailabilityStatus());
 }
 
 void ReauthenticatorBridge::Reauthenticate(JNIEnv* env) {

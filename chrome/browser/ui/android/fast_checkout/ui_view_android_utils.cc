@@ -75,7 +75,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutAutofillProfile(
       ConvertUTF16ToJavaString(env,
                                profile.GetRawInfo(autofill::EMAIL_ADDRESS)),
       ConvertUTF8ToJavaString(env, profile.language_code()),
-      static_cast<jint>(profile.record_type()));
+      static_cast<int32_t>(profile.record_type()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(
@@ -99,13 +99,13 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(
           env, credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)),
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
-      static_cast<jint>(credit_card.CardIconForAutofillSuggestion()),
+      static_cast<int32_t>(credit_card.CardIconForAutofillSuggestion()),
       ConvertUTF8ToJavaString(env, credit_card.billing_address_id()),
       ConvertUTF8ToJavaString(env, credit_card.server_id()),
       credit_card.instrument_id(),
       ConvertUTF16ToJavaString(env, credit_card.nickname()),
       url::GURLAndroid::FromNativeGURL(env, credit_card.card_art_url()),
-      static_cast<jint>(credit_card.virtual_card_enrollment_state()),
+      static_cast<int32_t>(credit_card.virtual_card_enrollment_state()),
       ConvertUTF16ToJavaString(env, credit_card.product_description()));
 }
 

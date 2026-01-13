@@ -11,7 +11,7 @@
 
 namespace customtabs {
 
-static bool JNI_CustomTabsTestUtils_HasVariationId(JNIEnv* env, jint id) {
+static bool JNI_CustomTabsTestUtils_HasVariationId(JNIEnv* env, int32_t id) {
   auto ids = variations::VariationsIdsProvider::GetInstance()
                  ->GetVariationsVectorForWebPropertiesKeys();
   return std::ranges::contains(ids, id);

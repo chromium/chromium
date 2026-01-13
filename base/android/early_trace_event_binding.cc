@@ -21,7 +21,7 @@ namespace android {
 static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(JNIEnv* env,
                                                       std::string& name,
                                                       jlong time_ns,
-                                                      jint thread_id,
+                                                      int32_t thread_id,
                                                       jlong thread_time_ms) {
   auto t = perfetto::ThreadTrack::ForThread(thread_id);
   TRACE_EVENT_BEGIN(internal::kJavaTraceCategory, perfetto::DynamicString{name},
@@ -31,17 +31,18 @@ static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(JNIEnv* env,
 static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(JNIEnv* env,
                                                     std::string& name,
                                                     jlong time_ns,
-                                                    jint thread_id,
+                                                    int32_t thread_id,
                                                     jlong thread_time_ms) {
   auto t = perfetto::ThreadTrack::ForThread(thread_id);
   TRACE_EVENT_END(internal::kJavaTraceCategory, t,
                   TimeTicks::FromJavaNanoTime(time_ns));
 }
 
-static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(JNIEnv* env,
-                                                              std::string& name,
-                                                              jlong time_ns,
-                                                              jint thread_id) {
+static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
+    JNIEnv* env,
+    std::string& name,
+    jlong time_ns,
+    int32_t thread_id) {
   auto t = perfetto::ThreadTrack::ForThread(thread_id);
   TRACE_EVENT_BEGIN(internal::kToplevelTraceCategory,
                     perfetto::DynamicString{name}, t,
@@ -51,7 +52,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(JNIEnv* env,
 static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(JNIEnv* env,
                                                             std::string& name,
                                                             jlong time_ns,
-                                                            jint thread_id) {
+                                                            int32_t thread_id) {
   auto t = perfetto::ThreadTrack::ForThread(thread_id);
   TRACE_EVENT_END(internal::kToplevelTraceCategory, t,
                   TimeTicks::FromJavaNanoTime(time_ns));

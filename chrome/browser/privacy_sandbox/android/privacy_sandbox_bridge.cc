@@ -95,8 +95,8 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_PrivacySandboxBridge_GetChildTopicsCurrentlyAssigned(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint topic_id,
-    jint taxonomy_version) {
+    int32_t topic_id,
+    int32_t taxonomy_version) {
   return ToJavaTopicsArray(
       env, GetPrivacySandboxService(j_profile)->GetChildTopicsCurrentlyAssigned(
                privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
@@ -106,8 +106,8 @@ JNI_PrivacySandboxBridge_GetChildTopicsCurrentlyAssigned(
 static void JNI_PrivacySandboxBridge_SetTopicAllowed(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint topic_id,
-    jint taxonomy_version,
+    int32_t topic_id,
+    int32_t taxonomy_version,
     bool allowed) {
   GetPrivacySandboxService(j_profile)->SetTopicAllowed(
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
@@ -148,10 +148,10 @@ static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
       base::android::ConvertJavaStringToUTF8(top_frame_etld_plus1), allowed);
 }
 
-static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
+static int32_t JNI_PrivacySandboxBridge_GetRequiredPromptType(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint surface_type) {
+    int32_t surface_type) {
   // If the FRE is disabled, as it is in tests which must not be interrupted
   // with dialogs, do not attempt to show a dialog.
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -166,8 +166,8 @@ static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
 static void JNI_PrivacySandboxBridge_PromptActionOccurred(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint action,
-    jint surface_type) {
+    int32_t action,
+    int32_t surface_type) {
   GetPrivacySandboxService(j_profile)->PromptActionOccurred(
       static_cast<PrivacySandboxService::PromptAction>(action),
       static_cast<PrivacySandboxService::SurfaceType>(surface_type));
@@ -241,7 +241,7 @@ JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
 static void JNI_PrivacySandboxBridge_RecordActivityType(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint activity_type) {
+    int32_t activity_type) {
   privacy_sandbox::PrivacySandboxActivityTypesService*
       privacy_sandbox_activity_types_service =
           PrivacySandboxActivityTypesFactory::GetForProfile(
@@ -272,8 +272,8 @@ static bool JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
 static ScopedJavaLocalRef<jstring>
 JNI_PrivacySandboxBridge_GetEmbeddedPrivacyPolicyURL(
     JNIEnv* env,
-    jint domain_type,
-    jint color_scheme,
+    int32_t domain_type,
+    int32_t color_scheme,
     const JavaRef<jstring>& locale) {
   return ConvertUTF8ToJavaString(
       env,

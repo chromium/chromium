@@ -32,8 +32,8 @@ void TabBrowserControlsConstraintsHelper::OnDestroyed(JNIEnv* env) {
 void TabBrowserControlsConstraintsHelper::UpdateState(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint constraints,
-    jint current,
+    int32_t constraints,
+    int32_t current,
     bool animate,
     const JavaRef<jobject>& joffset_tag_modifications) {
   cc::BrowserControlsState constraints_state =

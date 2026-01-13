@@ -279,9 +279,9 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_android,
-    jint index,
+    int32_t index,
     const JavaRef<jobject>& state,
-    jint saved_state_version) {
+    int32_t saved_state_version) {
   WebContentsStateByteBuffer web_contents_state =
       WebContentsStateByteBuffer(ScopedJavaLocalRef<jobject>(state),
                                  static_cast<int>(saved_state_version));
@@ -295,7 +295,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     base::Token& tab_group_id_token,
     std::u16string& serialized_saved_tab_group_id,
     std::u16string& title,
-    jint jcolor,
+    int32_t jcolor,
     std::vector<TabAndroid*>& tabs_android,
     const JavaRef<jobjectArray>& jbyte_buffers,
     std::vector<int32_t>& saved_state_versions) {

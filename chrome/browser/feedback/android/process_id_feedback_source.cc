@@ -69,7 +69,7 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
 
 ScopedJavaLocalRef<jlongArray> ProcessIdFeedbackSource::GetProcessIdsForType(
     JNIEnv* env,
-    jint process_type) {
+    int32_t process_type) {
   switch (process_type) {
     case content::PROCESS_TYPE_RENDERER:
     case content::PROCESS_TYPE_UTILITY:

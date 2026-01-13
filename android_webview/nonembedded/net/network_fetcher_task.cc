@@ -89,7 +89,7 @@ static void JNI_NetworkFetcherTask_CallResponseStartedCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
-    jint response_code,
+    int32_t response_code,
     jlong content_length) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
@@ -107,7 +107,7 @@ static void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
-    jint network_error,
+    int32_t network_error,
     jlong content_size) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
@@ -126,7 +126,7 @@ static void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     jlong weak_ptr,
     jlong task_runner,
     const base::android::JavaRef<jbyteArray>& response_body,
-    jint network_error,
+    int32_t network_error,
     std::string& header_e_tag,
     std::string& header_x_cup_server_proof,
     jlong x_header_retry_after_sec) {

@@ -419,8 +419,9 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
     }
 
     handled = Java_TabWebContentsDelegateAndroidImpl_addNewContents(
-        env, obj, jsource, jnew_contents, jurl, static_cast<jint>(disposition),
-        jwindow_features, user_gesture, jpicture_in_picture_options);
+        env, obj, jsource, jnew_contents, jurl,
+        static_cast<int32_t>(disposition), jwindow_features, user_gesture,
+        jpicture_in_picture_options);
   }
 
   if (was_blocked)

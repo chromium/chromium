@@ -177,7 +177,8 @@ std::string GetStackTrace(v8::TryCatch& try_catch, v8::Isolate* isolate) {
   return GetStackTrace(message, isolate);
 }
 
-jint remapConsoleMessageErrorLevel(const v8::Isolate::MessageErrorLevel level) {
+int32_t remapConsoleMessageErrorLevel(
+    const v8::Isolate::MessageErrorLevel level) {
   // Converted level should match the values specified in the
   // org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient AIDL
   // file (in AndroidX).
@@ -278,7 +279,7 @@ class JsSandboxIsolate::InspectorClient final
     }
 
     JNIEnv* env = base::android::AttachCurrentThread();
-    const jint converted_level = remapConsoleMessageErrorLevel(level);
+    const int32_t converted_level = remapConsoleMessageErrorLevel(level);
     base::android::ScopedJavaLocalRef<jstring> java_string_message =
         StringViewToJavaString(env, message);
     // url is actually just the source (file/expression) identifier.
@@ -290,10 +291,10 @@ class JsSandboxIsolate::InspectorClient final
     }
 
     android_webview::Java_JsSandboxIsolate_consoleMessage(
-        env, isolate_->j_isolate_, static_cast<jint>(context_group_id),
+        env, isolate_->j_isolate_, static_cast<int32_t>(context_group_id),
         converted_level, java_string_message, java_string_source,
-        base::saturated_cast<jint>(line_number),
-        base::saturated_cast<jint>(column_number), java_string_trace);
+        base::saturated_cast<int32_t>(line_number),
+        base::saturated_cast<int32_t>(column_number), java_string_trace);
   }
 
   void consoleClear(const int context_group_id) override {
@@ -302,7 +303,7 @@ class JsSandboxIsolate::InspectorClient final
     }
     JNIEnv* env = base::android::AttachCurrentThread();
     android_webview::Java_JsSandboxIsolate_consoleClear(
-        env, isolate_->j_isolate_, static_cast<jint>(context_group_id));
+        env, isolate_->j_isolate_, static_cast<int32_t>(context_group_id));
   }
 
   double currentTimeMS() override {
@@ -378,7 +379,7 @@ bool JsSandboxIsolate::EvaluateJavascript(
 // checks for streaming failures.
 bool JsSandboxIsolate::EvaluateJavascriptWithFd(
     JNIEnv* env,
-    const jint fd,
+    const int32_t fd,
     const jlong length,
     const jlong offset,
     const base::android::JavaRef<jobject>& j_callback,
@@ -408,8 +409,8 @@ void JsSandboxIsolate::DestroyNative(JNIEnv* env) {
 bool JsSandboxIsolate::ProvideNamedData(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jname,
-    const jint fd,
-    const jint length) {
+    const int32_t fd,
+    const int32_t length) {
   std::string name = ConvertJavaStringToUTF8(env, jname);
   base::AutoLock hold(named_fd_lock_);
   FdWithLength fd_with_length(fd, length);
@@ -1001,7 +1002,7 @@ void JsSandboxIsolate::ReportOutOfMemory() {
   const bool client_got_termination =
       android_webview::Java_JsSandboxIsolate_sendTermination(
           env, j_isolate_,
-          static_cast<jint>(TerminationStatus::kMemoryLimitExceeded),
+          static_cast<int32_t>(TerminationStatus::kMemoryLimitExceeded),
           base::android::ConvertUTF8ToJavaString(env, details_str));
   if (client_got_termination) {
     // Don't send any evaluation errors - the client will deal with them itself.

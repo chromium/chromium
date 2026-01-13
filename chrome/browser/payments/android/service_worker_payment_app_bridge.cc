@@ -117,7 +117,7 @@ static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
 static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
     JNIEnv* env,
     const JavaRef<jobject>& payment_request_jweb_contents,
-    jint reason) {
+    int32_t reason) {
   content::WebContents* payment_request_web_contents =
       content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
   DCHECK(payment_request_web_contents);  // Verified in Java before invoking

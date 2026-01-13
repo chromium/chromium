@@ -20,8 +20,8 @@ namespace task_manager {
 static jlong JNI_TaskManagerServiceBridge_AddObserver(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& observer,
-    const jint refresh_time_millis,
-    const jint resource_flags) {
+    const int32_t refresh_time_millis,
+    const int32_t resource_flags) {
   TaskManagerObserverAndroid* delegate =
       new TaskManagerObserverAndroid(env, observer, refresh_time_millis,
                                      static_cast<RefreshType>(resource_flags));

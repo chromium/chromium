@@ -31,20 +31,20 @@ class BASE_EXPORT TaskRunnerAndroid {
 
   void Destroy(JNIEnv* env);
 
-  void PostDelayedTask(JNIEnv* env, jlong delay, jint taskIndex);
+  void PostDelayedTask(JNIEnv* env, jlong delay, int32_t taskIndex);
 
   void PostDelayedTaskWithLocation(
       JNIEnv* env,
       jlong delay,
-      jint taskIndex,
+      int32_t taskIndex,
       const android::JavaRef<jstring>& fileName,
       const android::JavaRef<jstring>& functionName,
-      jint lineNumber);
+      int32_t lineNumber);
 
   bool BelongsToCurrentThread(JNIEnv* env);
 
-  static std::unique_ptr<TaskRunnerAndroid> Create(jint task_runner_type,
-                                                   jint j_task_traits);
+  static std::unique_ptr<TaskRunnerAndroid> Create(int32_t task_runner_type,
+                                                   int32_t j_task_traits);
 
   using UiThreadTaskRunnerCallback =
       RepeatingCallback<scoped_refptr<base::SingleThreadTaskRunner>(

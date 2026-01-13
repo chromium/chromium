@@ -83,10 +83,11 @@ void FacilitatedPaymentsController::SetUiEventListener(
   ui_event_listener_ = std::move(ui_event_listener);
 }
 
-void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
-  CHECK(event >= static_cast<jint>(
+void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, int32_t event) {
+  CHECK(event >= static_cast<int32_t>(
                      payments::facilitated::UiEvent::kNewScreenShown) &&
-        event <= static_cast<jint>(payments::facilitated::UiEvent::kMaxValue))
+        event <=
+            static_cast<int32_t>(payments::facilitated::UiEvent::kMaxValue))
       << "Invalid payments::facilitated::UiEvent value: " << event;
 
   // `payments::facilitated::UiEvent` is synced to the Java side.

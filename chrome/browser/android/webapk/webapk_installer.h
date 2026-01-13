@@ -107,13 +107,13 @@ class WebApkInstaller {
   void SetTimeoutMs(int timeout_ms);
 
   // Called once the installation is complete or failed.
-  void OnInstallFinished(JNIEnv* env, jint result);
+  void OnInstallFinished(JNIEnv* env, int32_t result);
 
   // Checks if there is enough space to install a WebAPK.
   // If yes, continue the WebAPK installation process. If there is not enough
   // space to install (even after clearing Chrome's cache), fails the
   // installation process immediately.
-  void OnGotSpaceStatus(JNIEnv* env, jint status);
+  void OnGotSpaceStatus(JNIEnv* env, int32_t status);
 
   // Builds the WebAPK proto for an update or an install request and stores it
   // to |update_request_path|. Runs |callback| with a boolean indicating

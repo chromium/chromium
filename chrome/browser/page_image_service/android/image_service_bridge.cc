@@ -45,7 +45,7 @@ static jlong JNI_ImageServiceBridge_Init(JNIEnv* env, Profile* profile) {
 
 static std::string JNI_ImageServiceBridge_ClientIdToString(
     JNIEnv* env,
-    const jint client_id) {
+    const int32_t client_id) {
   return page_image_service::ClientIdToString(
       static_cast<page_image_service::mojom::ClientId>(client_id));
 }
@@ -63,7 +63,7 @@ void ImageServiceBridge::Destroy(JNIEnv* env) {
 
 void ImageServiceBridge::FetchImageUrlFor(JNIEnv* env,
                                           const bool is_account_data,
-                                          const jint client_id,
+                                          const int32_t client_id,
                                           const GURL& page_url,
                                           const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);

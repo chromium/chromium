@@ -143,7 +143,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       card.billing_address_id(), card.server_id(), card.instrument_id(),
       card.CardNameAndLastFourDigits(), card.nickname(),
       url::GURLAndroid::FromNativeGURL(env, card.card_art_url()),
-      static_cast<jint>(card.virtual_card_enrollment_state()),
+      static_cast<int32_t>(card.virtual_card_enrollment_state()),
       card.product_description(), card.CardNameForAutofillDisplay(),
       card.ObfuscatedNumberWithVisibleLastFourDigits(), card.cvc(),
       card.issuer_id(), card.benefit_source(),
@@ -467,7 +467,7 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
       ToJavaIntArray(env, supported_payment_rails_array),
       static_cast<bool>(bank_account.payment_instrument().is_fido_enrolled()),
       jbank_name, jaccount_number_suffix,
-      static_cast<jint>(bank_account.account_type()));
+      static_cast<int32_t>(bank_account.account_type()));
 }
 
 // static

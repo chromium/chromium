@@ -202,7 +202,7 @@ void MostVisitedSitesBridge::SetHomepageClient(
 
 void MostVisitedSitesBridge::SetObserver(JNIEnv* env,
                                          const JavaRef<jobject>& j_observer,
-                                         jint num_sites) {
+                                         int32_t num_sites) {
   java_observer_ = std::make_unique<JavaObserver>(env, j_observer);
   most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
 }
@@ -210,7 +210,7 @@ void MostVisitedSitesBridge::SetObserver(JNIEnv* env,
 bool MostVisitedSitesBridge::AddCustomLinkTo(JNIEnv* env,
                                              const std::u16string& name,
                                              const GURL& url,
-                                             jint pos) {
+                                             int32_t pos) {
   return most_visited_->AddCustomLinkTo(url, name, pos);
 }
 
@@ -247,7 +247,7 @@ bool MostVisitedSitesBridge::HasCustomLink(JNIEnv* env, const GURL& key_url) {
 
 bool MostVisitedSitesBridge::ReorderCustomLink(JNIEnv* env,
                                                const GURL& key_url,
-                                               jint new_pos) {
+                                               int32_t new_pos) {
   return most_visited_->ReorderCustomLink(key_url, new_pos);
 }
 
@@ -259,19 +259,18 @@ void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
   most_visited_->AddOrRemoveBlockedUrl(url, add_url);
 }
 
-void MostVisitedSitesBridge::RecordPageImpression(
-    JNIEnv* env,
-    jint jtiles_count) {
+void MostVisitedSitesBridge::RecordPageImpression(JNIEnv* env,
+                                                  int32_t jtiles_count) {
   ntp_tiles::metrics::RecordPageImpression(jtiles_count);
 }
 
 void MostVisitedSitesBridge::RecordTileImpression(
     JNIEnv* env,
-    jint jindex,
-    jint jvisual_type,
-    jint jicon_type,
-    jint jtitle_source,
-    jint jsource,
+    int32_t jindex,
+    int32_t jvisual_type,
+    int32_t jicon_type,
+    int32_t jtitle_source,
+    int32_t jsource,
     const JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
@@ -284,12 +283,11 @@ void MostVisitedSitesBridge::RecordTileImpression(
       jindex, source, title_source, visual_type, icon_type, url));
 }
 
-void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
-    JNIEnv* env,
-    jint index,
-    jint tile_type,
-    jint title_source,
-    jint source) {
+void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(JNIEnv* env,
+                                                         int32_t index,
+                                                         int32_t tile_type,
+                                                         int32_t title_source,
+                                                         int32_t source) {
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, static_cast<TileSource>(source),
       static_cast<TileTitleSource>(title_source),

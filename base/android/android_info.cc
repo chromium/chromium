@@ -94,7 +94,7 @@ static void JNI_AndroidInfo_FillFields(std::string& brand,
                                        std::string& codename,
                                        std::string& socManufacturer,
                                        std::string& supportedAbis,
-                                       jint sdkInt,
+                                       int32_t sdkInt,
                                        bool isDebugAndroid,
                                        std::string& securityPatch) {
   Set(IAndroidInfo{.abiName = supportedAbis,

@@ -317,7 +317,7 @@ void UmaSessionStats::SessionTimeTracker::BeginBackgroundSession() {
 static void JNI_UmaSessionStats_ChangeMetricsReportingConsent(
     JNIEnv*,
     bool consent,
-    jint called_from) {
+    int32_t called_from) {
   UpdateMetricsPrefsOnPermissionChange(
       consent, static_cast<ChangeMetricsReportingStateCalledFrom>(called_from));
 
@@ -415,9 +415,8 @@ static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
       static_cast<variations::SyntheticTrialAnnotationMode>(annotation_mode));
 }
 
-static void JNI_UmaSessionStats_RecordTabCountPerLoad(
-    JNIEnv*,
-    jint num_tabs) {
+static void JNI_UmaSessionStats_RecordTabCountPerLoad(JNIEnv*,
+                                                      int32_t num_tabs) {
   // Record how many tabs total are open.
   UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", num_tabs, 1, 200, 50);
 }

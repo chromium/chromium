@@ -45,7 +45,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   void Start(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_text,
-      jint j_cursor_pos,
+      int32_t j_cursor_pos,
       const base::android::JavaRef<jstring>& j_desired_tld,
       const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
@@ -78,11 +78,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       JNIEnv* env,
       uintptr_t match_ptr,
       int suggestion_line,
-      const jint j_window_open_disposition,
+      const int32_t j_window_open_disposition,
       const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       jlong elapsed_time_since_first_modified,
-      jint completed_length,
+      int32_t completed_length,
       const base::android::JavaRef<jobject>& j_web_contents,
       jlong omnibox_action_ptr);
   bool OnSuggestionTouchDown(
@@ -91,7 +91,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       int match_index,
       const base::android::JavaRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
-  void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
+  void DeleteMatchElement(JNIEnv* env,
+                          uintptr_t match_ptr,
+                          int32_t element_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       JNIEnv* env,
@@ -126,8 +128,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Grouping framework.
   void OnSuggestionDropdownHeightChanged(
       JNIEnv* env,
-      jint dropdown_height_with_keyboard_active_px,
-      jint suggestion_height_px);
+      int32_t dropdown_height_with_keyboard_active_px,
+      int32_t suggestion_height_px);
 
   void CreateNavigationObserver(JNIEnv* env,
                                 uintptr_t navigation_handle_ptr,

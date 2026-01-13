@@ -29,7 +29,7 @@ Channel GetChannel() {
 }
 
 static void JNI_VersionConstantsBridge_NativeSetChannel(JNIEnv* env,
-                                                        jint channel) {
+                                                        int32_t channel) {
   SetChannel(static_cast<Channel>(channel));
 }
 

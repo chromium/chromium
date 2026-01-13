@@ -40,9 +40,9 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
 
   TabContentManager(JNIEnv* env,
                     const jni_zero::JavaRef<jobject>& obj,
-                    jint default_cache_size,
-                    jint compression_queue_max_size,
-                    jint write_queue_max_size,
+                    int32_t default_cache_size,
+                    int32_t compression_queue_max_size,
+                    int32_t write_queue_max_size,
                     bool save_jpeg_thumbnails);
 
   TabContentManager(const TabContentManager&) = delete;
@@ -82,23 +82,23 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                           const base::android::JavaRef<jobject>& bitmap,
                           jfloat thumbnail_scale);
   void InvalidateIfChanged(JNIEnv* env,
-                           jint tab_id,
+                           int32_t tab_id,
                            const base::android::JavaRef<jobject>& jurl);
   void UpdateVisibleIds(JNIEnv* env,
                         const base::android::JavaRef<jintArray>& priority,
-                        jint primary_tab_id);
+                        int32_t primary_tab_id);
   void NativeRemoveTabThumbnail(int tab_id);
-  void RemoveTabThumbnail(JNIEnv* env, jint tab_id);
+  void RemoveTabThumbnail(JNIEnv* env, int32_t tab_id);
   void OnUIResourcesWereEvicted();
   void WaitForJpegTabThumbnail(
       JNIEnv* env,
-      jint tab_id,
+      int32_t tab_id,
       const base::android::JavaRef<jobject>& j_callback);
   void GetEtc1TabThumbnail(JNIEnv* env,
-                           jint tab_id,
+                           int32_t tab_id,
                            const base::android::JavaRef<jobject>& j_callback);
-  void SetCaptureMinRequestTimeForTesting(JNIEnv* env, jint timeMs);
-  bool IsTabCaptureInFlightForTesting(JNIEnv* env, jint tab_id);
+  void SetCaptureMinRequestTimeForTesting(JNIEnv* env, int32_t timeMs);
+  bool IsTabCaptureInFlightForTesting(JNIEnv* env, int32_t tab_id);
 
   // ThumbnailCacheObserver implementation;
   void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;

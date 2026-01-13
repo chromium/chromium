@@ -59,7 +59,7 @@ class TabModelJniBridge : public TabModel {
                                       long android_browser_window_ptr,
                                       int new_index);
   void SetMuteSetting(JNIEnv* env, std::vector<TabAndroid*> tabs, bool mute);
-  jint GetSessionIdForTesting(JNIEnv* env);
+  int32_t GetSessionIdForTesting(JNIEnv* env);
   chrome::android::ActivityType GetActivityTypeForTesting(JNIEnv* env);
 
   // TabModel::

@@ -34,7 +34,7 @@ class MostVisitedSitesBridge {
 
   void SetObserver(JNIEnv* env,
                    const base::android::JavaRef<jobject>& j_observer,
-                   jint num_sites);
+                   int32_t num_sites);
 
   void SetHomepageClient(JNIEnv* env,
                          const base::android::JavaRef<jobject>& j_client);
@@ -42,7 +42,7 @@ class MostVisitedSitesBridge {
   bool AddCustomLinkTo(JNIEnv* env,
                        const std::u16string& name,
                        const GURL& url,
-                       jint pos);
+                       int32_t pos);
 
   bool AddCustomLink(JNIEnv* env, const std::u16string& name, const GURL& url);
 
@@ -55,26 +55,24 @@ class MostVisitedSitesBridge {
 
   bool HasCustomLink(JNIEnv* env, const GURL& key_url);
 
-  bool ReorderCustomLink(JNIEnv* env, const GURL& key_url, jint new_pos);
+  bool ReorderCustomLink(JNIEnv* env, const GURL& key_url, int32_t new_pos);
 
   void AddOrRemoveBlockedUrl(JNIEnv* env,
                              const base::android::JavaRef<jobject>& j_url,
                              bool add_url);
-  void RecordPageImpression(JNIEnv* env,
-                            jint jtiles_count);
+  void RecordPageImpression(JNIEnv* env, int32_t jtiles_count);
   void RecordTileImpression(JNIEnv* env,
-                            jint jindex,
-                            jint jvisual_type,
-                            jint jicon_type,
-                            jint jtitle_source,
-                            jint jsource,
+                            int32_t jindex,
+                            int32_t jvisual_type,
+                            int32_t jicon_type,
+                            int32_t jtitle_source,
+                            int32_t jsource,
                             const base::android::JavaRef<jobject>& jurl);
-  void RecordOpenedMostVisitedItem(
-      JNIEnv* env,
-      jint index,
-      jint tile_type,
-      jint title_source,
-      jint source);
+  void RecordOpenedMostVisitedItem(JNIEnv* env,
+                                   int32_t index,
+                                   int32_t tile_type,
+                                   int32_t title_source,
+                                   int32_t source);
 
   jdouble GetSuggestionScore(JNIEnv* env, const GURL& url);
 

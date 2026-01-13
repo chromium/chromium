@@ -171,7 +171,7 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   void GetLoadUrlParamsByOfflineId(
       JNIEnv* env,
       jlong j_offline_id,
-      jint launch_location,
+      int32_t launch_location,
       const base::android::JavaRef<jobject>& j_callback_obj);
 
   void GetLoadUrlParamsForOpeningMhtmlFileOrContent(

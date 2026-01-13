@@ -13,15 +13,15 @@ namespace android {
 
 static jlong JNI_ResourceFactory_CreateToolbarContainerResource(
     JNIEnv* env,
-    jint toolbar_left,
-    jint toolbar_top,
-    jint toolbar_right,
-    jint toolbar_bottom,
-    jint location_bar_left,
-    jint location_bar_top,
-    jint location_bar_right,
-    jint location_bar_bottom,
-    jint shadow_height) {
+    int32_t toolbar_left,
+    int32_t toolbar_top,
+    int32_t toolbar_right,
+    int32_t toolbar_bottom,
+    int32_t location_bar_left,
+    int32_t location_bar_top,
+    int32_t location_bar_right,
+    int32_t location_bar_bottom,
+    int32_t shadow_height) {
   gfx::Rect toolbar_rect(toolbar_left, toolbar_top,
                          toolbar_right - toolbar_left,
                          toolbar_bottom - toolbar_top);

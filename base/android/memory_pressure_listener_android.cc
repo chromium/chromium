@@ -18,7 +18,7 @@ using base::android::JavaRef;
 // Defined and called by JNI.
 static void JNI_MemoryPressureListener_OnMemoryPressure(
     JNIEnv* env,
-    jint memory_pressure_level) {
+    int32_t memory_pressure_level) {
   // Sometimes, early in the process's lifetime, the main thread task runner is
   // not set yet.
   if (!base::SingleThreadTaskRunner::HasMainThreadDefault()) {

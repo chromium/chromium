@@ -23,8 +23,8 @@ class BrowsingDataCounterBridge {
                             const base::android::JavaRef<jobject>& obj,
 
                             Profile* profile,
-                            jint selected_time_period,
-                            jint data_type);
+                            int32_t selected_time_period,
+                            int32_t data_type);
 
   BrowsingDataCounterBridge(const BrowsingDataCounterBridge&) = delete;
   BrowsingDataCounterBridge& operator=(const BrowsingDataCounterBridge&) =
@@ -32,8 +32,7 @@ class BrowsingDataCounterBridge {
 
   ~BrowsingDataCounterBridge();
 
-  void SetSelectedTimePeriod(JNIEnv* env,
-                             jint selected_time_period);
+  void SetSelectedTimePeriod(JNIEnv* env, int32_t selected_time_period);
 
   // Destroys the BrowsingDataCounterBridge object. This needs to be called
   // on the java side when the object is not in use anymore.

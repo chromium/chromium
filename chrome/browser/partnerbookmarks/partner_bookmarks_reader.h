@@ -44,7 +44,7 @@ class PartnerBookmarksReader {
                            const base::android::JavaRef<jbyteArray>& favicon,
                            const base::android::JavaRef<jbyteArray>& touchicon,
                            bool fetch_uncached_favicons_from_server,
-                           jint desired_favicon_size_px,
+                           int32_t desired_favicon_size_px,
                            // Callback<FaviconFetchResult>
                            const base::android::JavaRef<jobject>& j_callback);
   void PartnerBookmarksCreationComplete(JNIEnv* env);

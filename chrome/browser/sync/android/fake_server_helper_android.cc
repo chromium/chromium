@@ -167,8 +167,8 @@ static void JNI_FakeServerHelper_DeleteFakeServer(JNIEnv* env,
 static bool JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
     JNIEnv* env,
     jlong fake_server,
-    jint count,
-    jint data_type,
+    int32_t count,
+    int32_t data_type,
     std::string& name) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
@@ -211,7 +211,7 @@ static bool JNI_FakeServerHelper_VerifySessions(
 static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_FakeServerHelper_GetSyncEntitiesByDataType(JNIEnv* env,
                                                jlong fake_server,
-                                               jint data_type) {
+                                               int32_t data_type) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   std::vector<sync_pb::SyncEntity> entities =
@@ -508,9 +508,10 @@ static void JNI_FakeServerHelper_AddSavedTabGroupToFakeServer(
           saved_group));
 }
 
-static void JNI_FakeServerHelper_DeleteAllEntitiesForDataType(JNIEnv* env,
-                                                              jlong fake_server,
-                                                              jint data_type) {
+static void JNI_FakeServerHelper_DeleteAllEntitiesForDataType(
+    JNIEnv* env,
+    jlong fake_server,
+    int32_t data_type) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->DeleteAllEntitiesForDataType(

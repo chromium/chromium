@@ -25,7 +25,7 @@ SkColor SolidColorSceneLayer::GetBackgroundColor() {
 }
 
 void SolidColorSceneLayer::SetBackgroundColor(JNIEnv* env,
-                                              jint background_color) {
+                                              int32_t background_color) {
   background_color_ = static_cast<SkColor>(background_color);
 }
 

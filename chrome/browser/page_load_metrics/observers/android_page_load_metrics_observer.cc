@@ -284,7 +284,7 @@ void AndroidPageLoadMetricsObserver::ReportNetworkQualityEstimate(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PageLoadMetrics_onNetworkQualityEstimate(
       env, java_web_contents, static_cast<jlong>(navigation_id_),
-      static_cast<jint>(connection_type), static_cast<jlong>(http_rtt_ms),
+      static_cast<int32_t>(connection_type), static_cast<jlong>(http_rtt_ms),
       static_cast<jlong>(transport_rtt_ms),
       static_cast<bool>(IsPrerendering()));
 }

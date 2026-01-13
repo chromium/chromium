@@ -117,16 +117,16 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaActionInfos(
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, actions);
 }
 
-constexpr jint NotificationTypeToJava(
+constexpr int32_t NotificationTypeToJava(
     NotificationHandler::Type notification_type) {
-  return static_cast<jint>(notification_type);
+  return static_cast<int32_t>(notification_type);
 }
 
 constexpr NotificationHandler::Type JavaToNotificationType(
-    jint notification_type) {
-  constexpr jint kMinValue =
+    int32_t notification_type) {
+  constexpr int32_t kMinValue =
       NotificationTypeToJava(NotificationHandler::Type::WEB_PERSISTENT);
-  constexpr jint kMaxValue =
+  constexpr int32_t kMaxValue =
       NotificationTypeToJava(NotificationHandler::Type::MAX);
 
   if (notification_type >= kMinValue && notification_type <= kMaxValue)
@@ -169,13 +169,13 @@ NotificationPlatformBridgeAndroid::~NotificationPlatformBridgeAndroid() {
 void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     JNIEnv* env,
     std::string& notification_id,
-    jint java_notification_type,
+    int32_t java_notification_type,
     std::string& java_origin_str,
     std::string& scope_url_str,
     std::string& profile_id,
     bool incognito,
     std::string& webapk_package,
-    jint java_action_index,
+    int32_t java_action_index,
     const JavaRef<jstring>& java_reply) {
   std::optional<std::u16string> reply;
   if (java_reply)
@@ -225,7 +225,7 @@ void NotificationPlatformBridgeAndroid::
 void NotificationPlatformBridgeAndroid::OnNotificationClosed(
     JNIEnv* env,
     std::string& notification_id,
-    jint java_notification_type,
+    int32_t java_notification_type,
     std::string& origin,
     std::string& profile_id,
     bool incognito,
@@ -254,7 +254,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
 void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     JNIEnv* env,
     std::string& notification_id,
-    jint java_notification_type,
+    int32_t java_notification_type,
     std::string& origin,
     std::string& profile_id,
     bool incognito,
@@ -420,7 +420,7 @@ void NotificationPlatformBridgeAndroid::Display(
   ScopedJavaLocalRef<jobjectArray> actions =
       ConvertToJavaActionInfos(notification.buttons());
 
-  jint j_notification_type = NotificationTypeToJava(notification_type);
+  int32_t j_notification_type = NotificationTypeToJava(notification_type);
 
   Java_NotificationPlatformBridge_displayNotification(
       env, java_object_, notification.id(), j_notification_type,

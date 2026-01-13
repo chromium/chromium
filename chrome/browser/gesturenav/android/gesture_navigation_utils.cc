@@ -18,7 +18,7 @@ static bool JNI_GestureNavigationUtils_ShouldAnimateBackForwardTransitions(
 // static
 static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_GestureNavigationUtils_SetMinRequiredPhysicalRamMbForTesting(JNIEnv* env,
-                                                                 jint jMb) {
+                                                                 int32_t jMb) {
   auto reset = content::BackForwardTransitionAnimationManager::
       SetMinRequiredPhysicalRamMbForTesting(jMb);
   auto callback =

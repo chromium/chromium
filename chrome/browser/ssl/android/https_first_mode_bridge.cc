@@ -13,19 +13,19 @@
 
 using base::android::JavaRef;
 
-static jint JNI_HttpsFirstModeBridge_GetCurrentSetting(
+static int32_t JNI_HttpsFirstModeBridge_GetCurrentSetting(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(
           Profile::FromJavaObject(j_profile));
-  return static_cast<jint>(hfm_service->GetCurrentSetting());
+  return static_cast<int32_t>(hfm_service->GetCurrentSetting());
 }
 
 static void JNI_HttpsFirstModeBridge_UpdatePrefs(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint setting) {
+    int32_t setting) {
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(
           Profile::FromJavaObject(j_profile));

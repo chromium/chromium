@@ -91,7 +91,7 @@ static AutofillAddressEditorUiInfoAndroid
 JNI_AutofillProfileBridge_GetAddressEditorUiInfo(JNIEnv* env,
                                                  std::string& country_code,
                                                  std::string& language_code,
-                                                 jint j_validation_type) {
+                                                 int32_t j_validation_type) {
   std::string best_language_tag;
   Localization localization;
   localization.SetGetter(l10n_util::GetStringUTF8);

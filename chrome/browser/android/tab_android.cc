@@ -563,8 +563,8 @@ bool TabAndroid::IsPhysicalBackingSizeEmpty(
 
 void TabAndroid::OnPhysicalBackingSizeChanged(
     const JavaRef<jobject>& jweb_contents,
-    jint width,
-    jint height) {
+    int32_t width,
+    int32_t height) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
@@ -916,7 +916,7 @@ static bool JNI_TabImpl_HandleNonNavigationAboutURL(
 static void JNI_TabImpl_Init(JNIEnv* env,
                              const JavaRef<jobject>& obj,
                              Profile* profile,
-                             jint id) {
+                             int32_t id) {
   TRACE_EVENT0("native", "TabAndroid::Init");
   // This will automatically bind to the Java object and pass ownership there.
   new TabAndroid(env, obj, profile, id);

@@ -24,7 +24,7 @@ void ForwardOnSigninCompletedToJava(
     const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
     signin::WebSigninTracker::Result result) {
   Java_WebSigninBridge_onSigninResult(base::android::AttachCurrentThread(),
-                                      j_callback, static_cast<jint>(result));
+                                      j_callback, static_cast<int32_t>(result));
 }
 }  // namespace
 

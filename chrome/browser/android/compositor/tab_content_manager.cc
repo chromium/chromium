@@ -121,9 +121,9 @@ TabContentManager* TabContentManager::FromJavaObject(
 
 TabContentManager::TabContentManager(JNIEnv* env,
                                      const jni_zero::JavaRef<jobject>& obj,
-                                     jint default_cache_size,
-                                     jint compression_queue_max_size,
-                                     jint write_queue_max_size,
+                                     int32_t default_cache_size,
+                                     int32_t compression_queue_max_size,
+                                     int32_t write_queue_max_size,
                                      bool save_jpeg_thumbnails)
     : weak_java_tab_content_manager_(env, obj) {
   thumbnail_cache_ = std::make_unique<thumbnail::ThumbnailCache>(
@@ -315,7 +315,7 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
 }
 
 void TabContentManager::InvalidateIfChanged(JNIEnv* env,
-                                            jint tab_id,
+                                            int32_t tab_id,
                                             const JavaRef<jobject>& jurl) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   thumbnail_cache_->InvalidateThumbnailIfChanged(tab_id, url);
@@ -323,7 +323,7 @@ void TabContentManager::InvalidateIfChanged(JNIEnv* env,
 
 void TabContentManager::UpdateVisibleIds(JNIEnv* env,
                                          const JavaRef<jintArray>& priority,
-                                         jint primary_tab_id) {
+                                         int32_t primary_tab_id) {
   std::vector<int> priority_ids;
   base::android::JavaIntArrayToIntVector(env, priority, &priority_ids);
   UpdateVisibleIds(priority_ids, primary_tab_id);
@@ -339,13 +339,13 @@ void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {
   in_flight_captures_.erase(tab_id);
 }
 
-void TabContentManager::RemoveTabThumbnail(JNIEnv* env, jint tab_id) {
+void TabContentManager::RemoveTabThumbnail(JNIEnv* env, int32_t tab_id) {
   NativeRemoveTabThumbnail(tab_id);
 }
 
 void TabContentManager::WaitForJpegTabThumbnail(
     JNIEnv* env,
-    jint tab_id,
+    int32_t tab_id,
     const base::android::JavaRef<jobject>& j_callback) {
   auto it = in_flight_captures_.find(tab_id);
   if (it != in_flight_captures_.end() && it->second) {
@@ -361,7 +361,7 @@ void TabContentManager::WaitForJpegTabThumbnail(
 
 void TabContentManager::GetEtc1TabThumbnail(
     JNIEnv* env,
-    jint tab_id,
+    int32_t tab_id,
     const base::android::JavaRef<jobject>& j_callback) {
   thumbnail_cache_->DecompressEtc1ThumbnailFromFile(
       tab_id,
@@ -432,12 +432,12 @@ void TabContentManager::SendThumbnailToJava(
 }
 
 void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
-                                                           jint timeMs) {
+                                                           int32_t timeMs) {
   thumbnail_cache_->SetCaptureMinRequestTimeForTesting(timeMs);
 }
 
 bool TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
-                                                       jint tab_id) {
+                                                       int32_t tab_id) {
   return in_flight_captures_.find(tab_id) != in_flight_captures_.end();
 }
 
@@ -447,9 +447,9 @@ bool TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
 
 static jlong JNI_TabContentManager_Init(JNIEnv* env,
                                         const JavaRef<jobject>& obj,
-                                        jint default_cache_size,
-                                        jint compression_queue_max_size,
-                                        jint write_queue_max_size,
+                                        int32_t default_cache_size,
+                                        int32_t compression_queue_max_size,
+                                        int32_t write_queue_max_size,
                                         bool save_jpeg_thumbnails) {
   // Ensure this and its thumbnail cache are created on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

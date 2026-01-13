@@ -26,11 +26,11 @@ void AwPicture::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jint AwPicture::GetWidth(JNIEnv* env) {
+int32_t AwPicture::GetWidth(JNIEnv* env) {
   return picture_->cullRect().roundOut().width();
 }
 
-jint AwPicture::GetHeight(JNIEnv* env) {
+int32_t AwPicture::GetHeight(JNIEnv* env) {
   return picture_->cullRect().roundOut().height();
 }
 

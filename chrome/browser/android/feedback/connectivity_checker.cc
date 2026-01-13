@@ -175,7 +175,7 @@ static void JNI_ConnectivityChecker_CheckConnectivity(
     std::string& j_url,
     jlong j_timeout_ms,
     const JavaRef<jobject>& j_callback,
-    jint j_network_annotation_hash_code) {
+    int32_t j_network_annotation_hash_code) {
   if (!profile) {
     JNI_ConnectivityChecker_PostCallback(env, j_callback,
                                          CONNECTIVITY_CHECK_RESULT_ERROR);

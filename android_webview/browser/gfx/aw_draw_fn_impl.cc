@@ -235,7 +235,7 @@ void AwDrawFnImpl::ReleaseHandle(JNIEnv* env) {
   g_draw_fn_function_table->release_functor(functor_handle_);
 }
 
-jint AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
+int32_t AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return functor_handle_;
 }
@@ -344,7 +344,7 @@ void AwDrawFnImpl::RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params) {
   render_thread_manager_.RemoveOverlaysOnRT(params->merge_transaction);
 }
 
-static jint JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
+static int32_t JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return g_instance_count;
 }

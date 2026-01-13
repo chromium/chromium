@@ -83,7 +83,7 @@ void QuickDeleteBridge::Destroy(JNIEnv* env) {
 }
 
 void QuickDeleteBridge::RestartCounterForTimePeriod(JNIEnv* env,
-                                                    const jint time_period) {
+                                                    const int32_t time_period) {
   browsing_data::TimePeriod period =
       static_cast<browsing_data::TimePeriod>(time_period);
   base::Time begin_time = CalculateBeginDeleteTime(period);

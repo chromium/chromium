@@ -63,7 +63,7 @@ void ExtensionParentApproval::RequestExtensionApproval(
 }
 
 static void JNI_ExtensionParentApproval_OnCompletion(JNIEnv* env,
-                                                     jint result_value) {
+                                                     int32_t result_value) {
   // Check that we have a callback stored from the extension approval request
   // and call it.
   auto* cb = GetOnApprovalCallback();

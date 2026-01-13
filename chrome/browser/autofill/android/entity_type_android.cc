@@ -14,9 +14,9 @@ base::android::ScopedJavaLocalRef<jobject> EntityTypeAndroid::Create(
     JNIEnv* env,
     const EntityTypeAndroid& entity_type) {
   return Java_EntityType_Constructor(
-      env, static_cast<jint>(entity_type.type_name), entity_type.is_read_only,
-      entity_type.type_name_as_string, entity_type.add_entity_type_string,
-      entity_type.edit_entity_type_string,
+      env, static_cast<int32_t>(entity_type.type_name),
+      entity_type.is_read_only, entity_type.type_name_as_string,
+      entity_type.add_entity_type_string, entity_type.edit_entity_type_string,
       entity_type.delete_entity_type_string);
 }
 

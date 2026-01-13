@@ -34,7 +34,7 @@ PrefService* GetPrefService(const base::android::JavaRef<jobject>& j_profile) {
 
 namespace safe_browsing {
 
-static jint JNI_SafeBrowsingBridge_UmaValueForFile(
+static int32_t JNI_SafeBrowsingBridge_UmaValueForFile(
     JNIEnv* env,
     const JavaRef<jstring>& path) {
   base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, path));
@@ -65,17 +65,17 @@ static bool JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingManaged(
       prefs::kSafeBrowsingScoutReportingEnabled);
 }
 
-static jint JNI_SafeBrowsingBridge_GetSafeBrowsingState(
+static int32_t JNI_SafeBrowsingBridge_GetSafeBrowsingState(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
-  return static_cast<jint>(
+  return static_cast<int32_t>(
       safe_browsing::GetSafeBrowsingState(*GetPrefService(j_profile)));
 }
 
 static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint state) {
+    int32_t state) {
   return safe_browsing::SetSafeBrowsingState(
       GetPrefService(j_profile), static_cast<SafeBrowsingState>(state),
       /*is_esb_enabled_by_account_integration=*/false);

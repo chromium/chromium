@@ -31,12 +31,12 @@ void CookiesFetcherRestoreCookiesImpl(JNIEnv* env,
                                       jlong last_update,
                                       bool secure,
                                       bool httponly,
-                                      jint same_site,
-                                      jint priority,
+                                      int32_t same_site,
+                                      int32_t priority,
                                       const std::string& partition_key,
-                                      jint source_scheme,
-                                      jint source_port,
-                                      jint source_type);
+                                      int32_t source_scheme,
+                                      int32_t source_port,
+                                      int32_t source_type);
 
 }  // namespace cookie_fetcher_restore_util
 

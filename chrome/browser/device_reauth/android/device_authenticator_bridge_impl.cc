@@ -59,7 +59,7 @@ void DeviceAuthenticatorBridgeImpl::Cancel() {
 }
 
 void DeviceAuthenticatorBridgeImpl::OnAuthenticationCompleted(JNIEnv* env,
-                                                              jint result) {
+                                                              int32_t result) {
   if (!response_callback_) {
     return;
   }

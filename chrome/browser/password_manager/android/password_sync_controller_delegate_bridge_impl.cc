@@ -54,8 +54,8 @@ void PasswordSyncControllerDelegateBridgeImpl::OnCredentialManagerNotified(
 
 void PasswordSyncControllerDelegateBridgeImpl::OnCredentialManagerError(
     JNIEnv* env,
-    jint error_code,
-    jint api_error_code) {
+    int32_t error_code,
+    int32_t api_error_code) {
   AndroidBackendError error{static_cast<AndroidBackendErrorType>(error_code)};
   consumer_->OnCredentialManagerError(error, static_cast<int>(api_error_code));
 }

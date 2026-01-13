@@ -34,8 +34,8 @@ StatusIndicatorSceneLayer::~StatusIndicatorSceneLayer() = default;
 void StatusIndicatorSceneLayer::UpdateStatusIndicatorLayer(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jresource_manager,
-    jint view_resource_id,
-    jint y_offset) {
+    int32_t view_resource_id,
+    int32_t y_offset) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* resource = resource_manager->GetResource(

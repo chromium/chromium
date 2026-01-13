@@ -33,8 +33,8 @@ class StatusIndicatorSceneLayer : public SceneLayer {
   void UpdateStatusIndicatorLayer(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jresource_manager,
-      jint view_resource_id,
-      jint y_offset);
+      int32_t view_resource_id,
+      int32_t y_offset);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);

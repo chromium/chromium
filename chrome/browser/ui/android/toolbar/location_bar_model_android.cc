@@ -52,8 +52,8 @@ LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(JNIEnv* env) {
   return url::GURLAndroid::FromNativeGURL(env, location_bar_model_->GetURL());
 }
 
-jint LocationBarModelAndroid::GetPageClassification(JNIEnv* env,
-                                                    bool is_prefetch) const {
+int32_t LocationBarModelAndroid::GetPageClassification(JNIEnv* env,
+                                                       bool is_prefetch) const {
   return location_bar_model_->GetPageClassification(is_prefetch);
 }
 

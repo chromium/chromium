@@ -51,12 +51,10 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
   // --------------------------------------------------------------------------
 
   // Called when an autofill item was selected.
-  void SuggestionSelected(JNIEnv* env,
-                          jint list_index);
+  void SuggestionSelected(JNIEnv* env, int32_t list_index);
 
   // Called when the deletion of an autofill item was requested.
-  void DeletionRequested(JNIEnv* env,
-                         jint list_index);
+  void DeletionRequested(JNIEnv* env, int32_t list_index);
 
   // Called when the user closes the deletion dialog.
   void OnDeletionDialogClosed(JNIEnv* env, bool confirmed);

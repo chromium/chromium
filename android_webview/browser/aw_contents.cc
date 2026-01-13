@@ -473,7 +473,7 @@ static void JNI_AwContents_SetAwDrawSWFunctionTable(JNIEnv* env,
 }
 
 // static
-static jint JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
+static int32_t JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
   return base::subtle::NoBarrier_Load(&g_instance_count);
 }
 
@@ -948,7 +948,7 @@ void AwContents::UpdateLastHitTestData(JNIEnv* env) {
   if (data->img_src.is_valid())
     img_src = ConvertUTF8ToJavaString(env, data->img_src.spec());
 
-  Java_AwContents_updateHitTestData(env, obj, static_cast<jint>(data->type),
+  Java_AwContents_updateHitTestData(env, obj, static_cast<int32_t>(data->type),
                                     extra_data_for_type, href, anchor_text,
                                     img_src);
 }
@@ -1021,7 +1021,7 @@ bool AwContents::IsDisplayingInterstitialForTesting(JNIEnv* env) {
 
 base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
     JNIEnv* env,
-    jint max_size,
+    int32_t max_size,
     bool include_forward_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
@@ -1059,12 +1059,12 @@ bool AwContents::RestoreFromOpaqueState(JNIEnv* env,
 bool AwContents::OnDraw(JNIEnv* env,
                         const JavaRef<jobject>& canvas,
                         bool is_hardware_accelerated,
-                        jint scroll_x,
-                        jint scroll_y,
-                        jint visible_left,
-                        jint visible_top,
-                        jint visible_right,
-                        jint visible_bottom,
+                        int32_t scroll_x,
+                        int32_t scroll_y,
+                        int32_t visible_left,
+                        int32_t visible_top,
+                        int32_t visible_right,
+                        int32_t visible_bottom,
                         bool force_auxiliary_bitmap_rendering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   gfx::Point scroll(scroll_x, scroll_y);
@@ -1129,7 +1129,7 @@ void AwContents::FocusFirstNode(JNIEnv* env) {
   web_contents_->FocusThroughTabTraversal(false);
 }
 
-void AwContents::SetBackgroundColor(JNIEnv* env, jint color) {
+void AwContents::SetBackgroundColor(JNIEnv* env, int32_t color) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   web_contents_->SetPageBaseBackgroundColor(color);
 }
@@ -1226,19 +1226,21 @@ void AwContents::SetDipScaleInternal(float dip_scale) {
   browser_view_renderer_.SetDipScale(dip_scale);
 }
 
-void AwContents::ScrollTo(JNIEnv* env, jint x, jint y) {
+void AwContents::ScrollTo(JNIEnv* env, int32_t x, int32_t y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.ScrollTo(gfx::Point(x, y));
 }
 
-void AwContents::RestoreScrollAfterTransition(JNIEnv* env, jint x, jint y) {
+void AwContents::RestoreScrollAfterTransition(JNIEnv* env,
+                                              int32_t x,
+                                              int32_t y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.RestoreScrollAfterTransition(gfx::Point(x, y));
 }
 
 void AwContents::SmoothScroll(JNIEnv* env,
-                              jint target_x,
-                              jint target_y,
+                              int32_t target_x,
+                              int32_t target_y,
                               jlong duration_ms) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1305,7 +1307,7 @@ void AwContents::InsertVisualStateCallback(JNIEnv* env,
                      ScopedJavaGlobalRef<jobject>(env, callback)));
 }
 
-jint AwContents::GetEffectivePriority(JNIEnv* env) {
+int32_t AwContents::GetEffectivePriority(JNIEnv* env) {
   switch (web_contents_->GetPrimaryMainFrame()
               ->GetProcess()
               ->GetEffectiveImportance()) {
@@ -1313,11 +1315,11 @@ jint AwContents::GetEffectivePriority(JNIEnv* env) {
       NOTREACHED(base::NotFatalUntil::M140);
       [[fallthrough]];
     case content::ChildProcessImportance::NORMAL:
-      return static_cast<jint>(RendererPriority::WAIVED);
+      return static_cast<int32_t>(RendererPriority::WAIVED);
     case content::ChildProcessImportance::MODERATE:
-      return static_cast<jint>(RendererPriority::LOW);
+      return static_cast<int32_t>(RendererPriority::LOW);
     case content::ChildProcessImportance::IMPORTANT:
-      return static_cast<jint>(RendererPriority::HIGH);
+      return static_cast<int32_t>(RendererPriority::HIGH);
   }
   NOTREACHED();
 }
@@ -1331,12 +1333,12 @@ JsCommunicationHost* AwContents::GetJsCommunicationHost() {
   return js_communication_host_.get();
 }
 
-jint AwContents::AddPersistentJavaScript(
+int32_t AwContents::AddPersistentJavaScript(
     JNIEnv* env,
     const std::u16string& script,
     js_injection::mojom::DocumentInjectionTime event_type,
     const std::vector<std::string>& allowed_origin_rules,
-    jint world_identifier) {
+    int32_t world_identifier) {
   web_contents()->GetController().GetBackForwardCache().Flush(
       NotRestoredReason::kWebViewDocumentStartJavascriptChanged);
   web_contents()->CancelAllPrerendering();
@@ -1351,7 +1353,7 @@ jint AwContents::AddPersistentJavaScript(
   return result.script_id.value();
 }
 
-void AwContents::RemovePersistentJavaScript(JNIEnv* env, jint script_id) {
+void AwContents::RemovePersistentJavaScript(JNIEnv* env, int32_t script_id) {
   web_contents()->CancelAllPrerendering();
   GetJsCommunicationHost()->RemovePersistentJavaScript(script_id);
 }
@@ -1361,7 +1363,7 @@ base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
     const base::android::JavaRef<jobject>& listener,
     const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules,
-    jint world_id) {
+    int32_t world_id) {
   const std::u16string error_message =
       GetJsCommunicationHost()->AddWebMessageHostFactory(
           std::make_unique<AwWebMessageHostFactory>(listener), js_object_name,
@@ -1373,7 +1375,7 @@ base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
 
 void AwContents::RemoveWebMessageListener(JNIEnv* env,
                                           const std::u16string& js_object_name,
-                                          jint world_id) {
+                                          int32_t world_id) {
   GetJsCommunicationHost()->RemoveWebMessageHostFactory(js_object_name,
                                                         world_id);
 }
@@ -1411,12 +1413,12 @@ AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
   return script_objects;
 }
 
-void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
+void AwContents::FlushBackForwardCache(JNIEnv* env, int32_t reason) {
   web_contents()->GetController().GetBackForwardCache().Flush(
       static_cast<NotRestoredReason>(reason));
 }
 
-jint AwContents::StartPrerendering(
+int32_t AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
     const base::android::JavaRef<jobject>& j_prefetch_params,
@@ -1516,7 +1518,7 @@ jint AwContents::StartPrerendering(
   return handle_id;
 }
 
-void AwContents::CancelPrerendering(JNIEnv* env, jint prerender_id) {
+void AwContents::CancelPrerendering(JNIEnv* env, int32_t prerender_id) {
   EraseIf(
       prerender_handles_,
       [prerender_id](const std::unique_ptr<content::PrerenderHandle>& handle) {
@@ -1555,7 +1557,7 @@ void AwContents::SetJsOnlineProperty(JNIEnv* env, bool network_up) {
   aw_render_process->SetJsOnlineProperty(network_up);
 }
 
-void AwContents::TrimMemory(JNIEnv* env, jint level, bool visible) {
+void AwContents::TrimMemory(JNIEnv* env, int32_t level, bool visible) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Constants from Android ComponentCallbacks2.
   enum {

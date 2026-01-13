@@ -59,17 +59,17 @@ class CompositorView : public content::CompositorClient,
   void SurfaceDestroyed(JNIEnv* env);
   std::optional<int> SurfaceChanged(
       JNIEnv* env,
-      jint format,
-      jint width,
-      jint height,
+      int32_t format,
+      int32_t width,
+      int32_t height,
       bool can_be_used_with_surface_control,
       const base::android::JavaRef<jobject>& surface,
       const base::android::JavaRef<jobject>& browser_input_token);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      jint width,
-      jint height);
+      int32_t width,
+      int32_t height);
   void OnControlsResizeViewChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
@@ -77,10 +77,10 @@ class CompositorView : public content::CompositorClient,
   void NotifyVirtualKeyboardOverlayRect(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      jint x,
-      jint y,
-      jint width,
-      jint height);
+      int32_t x,
+      int32_t y,
+      int32_t width,
+      int32_t height);
 
   void SetOverlayVideoMode(JNIEnv* env,
                            bool enabled);

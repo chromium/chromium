@@ -152,7 +152,7 @@ static jlong JNI_TabOnBackGestureHandler_Init(JNIEnv* env,
 static bool JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
     JNIEnv* env,
     bool forward,
-    jint edge) {
+    int32_t edge) {
   return static_cast<bool>(
       content::BackForwardTransitionAnimationManager::
           ShouldAnimateNavigationTransition(

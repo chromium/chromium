@@ -30,7 +30,7 @@ using base::android::JavaRef;
 static jlong JNI_AndroidBrowserWindow_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
-    jint browser_window_type,
+    int32_t browser_window_type,
     const JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(
@@ -58,7 +58,7 @@ void AndroidBrowserWindow::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jint AndroidBrowserWindow::GetSessionIdForTesting(JNIEnv* env) const {
+int32_t AndroidBrowserWindow::GetSessionIdForTesting(JNIEnv* env) const {
   return GetSessionID().id();
 }
 

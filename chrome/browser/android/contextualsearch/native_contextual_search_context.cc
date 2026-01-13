@@ -59,8 +59,8 @@ void NativeContextualSearchContext::SetResolveProperties(
 }
 
 void NativeContextualSearchContext::AdjustSelection(JNIEnv* env,
-                                                    jint j_start_adjust,
-                                                    jint j_end_adjust) {
+                                                    int32_t j_start_adjust,
+                                                    int32_t j_end_adjust) {
   ContextualSearchContext::AdjustSelection(j_start_adjust, j_end_adjust);
 }
 

@@ -58,7 +58,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       jlong timestamp_millis,
       const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
       std::optional<std::string> opener_app_id,
-      jint theme_color,
+      int32_t theme_color,
       jlong last_navigation_committed_timestamp_millis,
       bool tab_has_sensitive_content,
       TabAndroid* tab);
@@ -66,8 +66,8 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   // Java). The caller is responsible for managing the lifecycle of the returned
   // object.
   long ConsolidateTabStripCollectionData(JNIEnv* env,
-                                         jint window_id,
-                                         jint j_tab_model_type,
+                                         int32_t window_id,
+                                         int32_t j_tab_model_type,
                                          TabAndroid* active_tab);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

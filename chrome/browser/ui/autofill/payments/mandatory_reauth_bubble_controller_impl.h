@@ -44,7 +44,7 @@ class MandatoryReauthBubbleControllerImpl
   std::u16string GetExplanationText() const override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
 #if BUILDFLAG(IS_ANDROID)
-  void OnClosed(JNIEnv* env, jint closed_reason);
+  void OnClosed(JNIEnv* env, int32_t closed_reason);
 #endif
   AutofillBubbleBase* GetBubbleView() override;
   bool IsIconVisible() override;

@@ -36,10 +36,10 @@ notifications::UserActionHandler* GetUserActionHandler() {
 
 // static
 static void JNI_DisplayAgent_OnUserAction(JNIEnv* env,
-                                          jint j_client_type,
-                                          jint j_action_type,
+                                          int32_t j_client_type,
+                                          int32_t j_action_type,
                                           std::string& guid,
-                                          jint j_button_type,
+                                          int32_t j_button_type,
                                           std::string& button_id) {
   auto user_action_type =
       static_cast<notifications::UserActionType>(j_action_type);
@@ -81,7 +81,7 @@ void DisplayAgentAndroid::ShowNotification(
   for (const auto& icon : notification_data->icons) {
     Java_DisplayAgent_addIcon(
         env, java_notification_data, static_cast<int>(icon.first /*IconType*/),
-        icon.second.bitmap, static_cast<jint>(icon.second.resource_id));
+        icon.second.bitmap, static_cast<int32_t>(icon.second.resource_id));
   }
 
   for (size_t i = 0; i < notification_data->buttons.size(); ++i) {

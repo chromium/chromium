@@ -105,15 +105,15 @@ void BookmarkBarSceneLayer::SetContentTree(
 void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jresource_manager,
-    jint view_resource_id,
-    jint scene_layer_background_color,
-    jint scene_layer_offset_height,
-    jint scene_layer_width,
-    jint scene_layer_height,
-    jint snapshot_offset_width,
-    jint snapshot_offset_height,
-    jint hairline_height,
-    jint hairline_background_color,
+    int32_t view_resource_id,
+    int32_t scene_layer_background_color,
+    int32_t scene_layer_offset_height,
+    int32_t scene_layer_width,
+    int32_t scene_layer_height,
+    int32_t snapshot_offset_width,
+    int32_t snapshot_offset_height,
+    int32_t hairline_height,
+    int32_t hairline_background_color,
     const base::android::JavaRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);

@@ -275,8 +275,8 @@ void OverlayWindowAndroid::CompositorViewCreated(
 }
 
 void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
-                                             jint width,
-                                             jint height) {
+                                             int32_t width,
+                                             int32_t height) {
   gfx::Size content_size(width, height);
   if (bounds_.size() == content_size) {
     return;

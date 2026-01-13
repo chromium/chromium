@@ -241,7 +241,7 @@ void DownloadManagerService::HandleOMADownload(download::DownloadItem* download,
 void DownloadManagerService::OpenDownload(JNIEnv* env,
                                           std::string& download_guid,
                                           const JavaRef<jobject>& j_profile_key,
-                                          jint source) {
+                                          int32_t source) {
   if (!is_manager_initialized_)
     return;
 

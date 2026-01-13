@@ -32,8 +32,8 @@ std::unique_ptr<ui::EdgeEffect> OverscrollSceneLayer::CreateEdgeEffect() {
 void OverscrollSceneLayer::Prepare(JNIEnv* env,
                                    jfloat start_x,
                                    jfloat start_y,
-                                   jint width,
-                                   jint height) {
+                                   int32_t width,
+                                   int32_t height) {
   start_pos_ = gfx::Vector2dF(start_x, start_y);
   const gfx::SizeF viewport_size(width, height);
 

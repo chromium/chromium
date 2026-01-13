@@ -559,8 +559,8 @@ static void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                         Profile* profile,
                                         std::string& type,
                                         std::vector<std::string>& available,
-                                        jint jfold,
-                                        jint jlength,
+                                        int32_t jfold,
+                                        int32_t jlength,
                                         bool jpersist,
                                         const JavaRef<jobject>& jcallback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(jcallback);

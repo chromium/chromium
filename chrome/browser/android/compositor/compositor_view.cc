@@ -193,9 +193,9 @@ void CompositorView::SurfaceDestroyed(JNIEnv* env) {
 
 std::optional<int> CompositorView::SurfaceChanged(
     JNIEnv* env,
-    jint format,
-    jint width,
-    jint height,
+    int32_t format,
+    int32_t width,
+    int32_t height,
     bool can_be_used_with_surface_control,
     const JavaRef<jobject>& surface,
     const JavaRef<jobject>& browser_input_token) {
@@ -229,8 +229,8 @@ std::optional<int> CompositorView::SurfaceChanged(
 void CompositorView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint width,
-    jint height) {
+    int32_t width,
+    int32_t height) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
@@ -250,10 +250,10 @@ void CompositorView::OnControlsResizeViewChanged(
 void CompositorView::NotifyVirtualKeyboardOverlayRect(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint x,
-    jint y,
-    jint width,
-    jint height) {
+    int32_t x,
+    int32_t y,
+    int32_t width,
+    int32_t height) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Rect keyboard_rect(x, y, width, height);

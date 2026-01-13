@@ -24,7 +24,7 @@ class SolidColorSceneLayer : public SceneLayer {
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
 
-  void SetBackgroundColor(JNIEnv* env, jint background_color);
+  void SetBackgroundColor(JNIEnv* env, int32_t background_color);
 
  private:
   SkColor background_color_;

@@ -123,8 +123,8 @@ static jlong JNI_TraceEvent_StartActivityDump(
 
 static void JNI_TraceEvent_AddViewDump(
     JNIEnv* env,
-    jint id,
-    jint parent_id,
+    int32_t id,
+    int32_t parent_id,
     bool is_shown,
     bool is_dirty,
     const base::android::JavaRef<jstring>& class_name,
@@ -203,9 +203,9 @@ static void JNI_TraceEvent_InstantAndroidIPC(
 }
 
 static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
-                                                 jint block_reason,
-                                                 jint allow_reason,
-                                                 jint snapshot_diff) {
+                                                 int32_t block_reason,
+                                                 int32_t allow_reason,
+                                                 int32_t snapshot_diff) {
   using AndroidToolbar = perfetto::protos::pbzero::AndroidToolbar;
   TRACE_EVENT_INSTANT(
       internal::kJavaTraceCategory, "AndroidToolbar",
@@ -286,9 +286,9 @@ static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
     JNIEnv* env,
     jlong start_time_ms,
     jlong duration_ms,
-    jint start_call_site,
-    jint finish_call_site,
-    jint startup_mode) {
+    int32_t start_call_site,
+    int32_t finish_call_site,
+    int32_t startup_mode) {
   auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN(
       "android_webview.timeline",
@@ -328,7 +328,7 @@ static void JNI_TraceEvent_StartupActivityStart(JNIEnv* env,
 static void JNI_TraceEvent_StartupLaunchCause(JNIEnv* env,
                                               jlong activity_id,
                                               jlong start_time_ms,
-                                              jint cause) {
+                                              int32_t cause) {
   using Startup = perfetto::protos::pbzero::StartUp;
   auto launchType = Startup::OTHER;
   switch (cause) {
@@ -444,7 +444,7 @@ static void JNI_TraceEvent_Begin(JNIEnv* env,
 static void JNI_TraceEvent_BeginWithIntArg(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jname,
-    jint jarg) {
+    int32_t jarg) {
   TRACE_EVENT_BEGIN(
       internal::kJavaTraceCategory, nullptr, "arg", jarg,
       [&](::perfetto::EventContext& ctx) {

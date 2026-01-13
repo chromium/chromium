@@ -29,7 +29,7 @@ class ProcessIdFeedbackSource
 
   base::android::ScopedJavaLocalRef<jlongArray> GetProcessIdsForType(
       JNIEnv* env,
-      jint process_type);
+      int32_t process_type);
   void PrepareProcessIds();
 
  private:

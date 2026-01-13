@@ -48,7 +48,7 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
   // Results in |this| being destroyed only when the credential handling
   // finishes.
   void OnCredentialClicked(JNIEnv* env,
-                           jint credential_item,
+                           int32_t credential_item,
                            bool sign_button_clicked);
 
   // Opens new tab with page which explains the Smart Lock branding.

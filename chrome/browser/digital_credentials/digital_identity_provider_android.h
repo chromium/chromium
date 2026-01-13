@@ -36,7 +36,7 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
   void OnReceive(JNIEnv*,
                  std::optional<std::string> protocol,
                  std::string result,
-                 jint j_status_for_metrics);
+                 int32_t j_status_for_metrics);
 
   bool IsLastCommittedOriginLowRisk(
       content::RenderFrameHost& render_frame_host) const override;

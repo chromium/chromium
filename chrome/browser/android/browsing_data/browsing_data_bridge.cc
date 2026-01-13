@@ -82,7 +82,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
     Profile* profile,
     const JavaRef<jobject>& jcallback,
     std::vector<int>& data_types_vector,
-    jint time_period,
+    int32_t time_period,
     std::vector<std::string>& excluding_domains,
     std::vector<int32_t>& excluding_domain_reasons,
     std::vector<std::string>& ignoring_domains,
@@ -201,7 +201,7 @@ static void JNI_BrowsingDataBridge_FetchImportantSites(
 }
 
 // This value should not change during a sessions, as it's used for UMA metrics.
-static jint JNI_BrowsingDataBridge_GetMaxImportantSites(JNIEnv* env) {
+static int32_t JNI_BrowsingDataBridge_GetMaxImportantSites(JNIEnv* env) {
   return site_engagement::ImportantSitesUtil::kMaxImportantSites;
 }
 
@@ -218,7 +218,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
 static bool JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
-    jint data_type) {
+    int32_t data_type) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
             static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
@@ -240,7 +240,7 @@ static bool JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
-    jint data_type,
+    int32_t data_type,
     bool value) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
@@ -256,7 +256,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
   GetPrefService(profile)->SetBoolean(pref, value);
 }
 
-static jint JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
+static int32_t JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
     Profile* profile) {
   return GetPrefService(profile)->GetInteger(
@@ -267,7 +267,7 @@ static jint JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
     Profile* profile,
-    jint time_period) {
+    int32_t time_period) {
   DCHECK_GE(time_period, 0);
   DCHECK_LE(time_period,
             static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));

@@ -70,7 +70,7 @@ static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       bool isAutomotive,
                                       bool isFoldable,
                                       bool isDesktop,
-                                      jint vulkanDeqpLevel,
+                                      int32_t vulkanDeqpLevel,
                                       bool isXr,
                                       bool wasLaunchedOnLargeDisplay) {
   Set(IDeviceInfo{.gmsVersionCode = gmsVersionCode,

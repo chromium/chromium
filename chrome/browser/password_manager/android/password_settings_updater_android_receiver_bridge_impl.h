@@ -32,18 +32,18 @@ class PasswordSettingsUpdaterAndroidReceiverBridgeImpl
 
   // Called via JNI from PasswordSettingsUpdaterAndroidReceiverBridge.java
   void OnSettingValueFetched(JNIEnv* env,
-                             jint setting,
+                             int32_t setting,
                              bool offerToSavePasswordsEnabled);
-  void OnSettingValueAbsent(JNIEnv* env, jint setting);
+  void OnSettingValueAbsent(JNIEnv* env, int32_t setting);
   void OnSettingFetchingError(JNIEnv* env,
-                              jint setting,
-                              jint error,
-                              jint api_error_code);
-  void OnSuccessfulSettingChange(JNIEnv* env, jint setting);
+                              int32_t setting,
+                              int32_t error,
+                              int32_t api_error_code);
+  void OnSuccessfulSettingChange(JNIEnv* env, int32_t setting);
   void OnFailedSettingChange(JNIEnv* env,
-                             jint setting,
-                             jint error,
-                             jint api_error_code);
+                             int32_t setting,
+                             int32_t error,
+                             int32_t api_error_code);
 
  private:
   // The consumer to be notified when a setting request finishes.

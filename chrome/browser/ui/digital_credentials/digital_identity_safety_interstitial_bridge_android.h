@@ -40,7 +40,7 @@ class DigitalIdentitySafetyInterstitialBridgeAndroid {
       content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
           callback);
 
-  void OnInterstitialDone(JNIEnv* env, jint status_for_metrics);
+  void OnInterstitialDone(JNIEnv* env, int32_t status_for_metrics);
 
  private:
   void Abort();

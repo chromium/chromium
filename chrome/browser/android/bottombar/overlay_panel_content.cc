@@ -48,8 +48,8 @@ void OverlayPanelContent::Destroy(JNIEnv* env) {
 void OverlayPanelContent::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     content::WebContents* web_contents,
-    jint width,
-    jint height) {
+    int32_t width,
+    int32_t height) {
   gfx::Size size(width, height);
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
   web_contents->GetNativeView()->OnSizeChanged(width, height);
