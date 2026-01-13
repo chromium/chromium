@@ -176,14 +176,18 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
                 json.put(method.getName(), asJSON(method.invoke(obj)));
             }
             JSONObject outerJson = new JSONObject();
-            // If proguard is enabled and InnerClasses attribute is not kept,
-            // then getCanonicalName() will return Outer$Inner instead of
-            // Outer.Inner.  So just use getName().
-            outerJson.put(
-                    annotationType
-                            .getName()
-                            .replaceFirst(annotationType.getPackage().getName() + ".", ""),
-                    json);
+
+            String annotationName = annotationType.getName();
+            var annotationPackage = annotationType.getPackage();
+            // When using ProGuard, some annotation classes may not be in any package, so we need
+            // to protect against the package being null.
+            if (annotationPackage != null) {
+                // If proguard is enabled and InnerClasses attribute is not kept,
+                // then getCanonicalName() will return Outer$Inner instead of
+                // Outer.Inner.  So just use getName().
+                annotationName = annotationName.replaceFirst(annotationPackage.getName() + ".", "");
+            }
+            outerJson.put(annotationName, json);
             return outerJson;
         } else {
             Class<?> clazz = obj.getClass();
