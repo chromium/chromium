@@ -108,6 +108,26 @@ TEST_F(JXLImageDecoderTest, DecodeWithAlpha) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+// Test high bit depth decoding selects F16 pixel format.
+TEST_F(JXLImageDecoderTest, HighBitDepthHalfFloatFormat) {
+  auto decoder = CreateJXLDecoderWithOptions(
+      ImageDecoder::kAlphaNotPremultiplied,
+      ImageDecoder::kHighBitDepthToHalfFloat, ColorBehavior::kTag);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "high_bit_depth_1x1.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->ImageIsHighBitDepth());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::PixelFormat::kRGBA_F16, frame->GetPixelFormat());
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
 // Test MIME type and extension
 TEST_F(JXLImageDecoderTest, MimeTypeAndExtension) {
   auto decoder = CreateJXLDecoder();

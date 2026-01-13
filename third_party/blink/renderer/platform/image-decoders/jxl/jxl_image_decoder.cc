@@ -195,6 +195,8 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
     }
     ImageFrame& frame = frame_buffer_cache_[frame_index];
     if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
+      frame.SetPremultiplyAlpha(premultiply_alpha_);
+      InitializeNewFrame(frame_index);
       if (!InitFrameBuffer(frame_index)) {
         SetFailed();
         return;
@@ -353,12 +355,17 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
           frame_buffer_cache_.resize(frame_index + 1);
         }
 
+        ImageFrame& frame = frame_buffer_cache_[frame_index];
+        if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
+          frame.SetPremultiplyAlpha(premultiply_alpha_);
+          InitializeNewFrame(frame_index);
+        }
+
         if (!InitFrameBuffer(frame_index)) {
           SetFailed();
           return;
         }
 
-        ImageFrame& frame = frame_buffer_cache_[frame_index];
         frame.SetHasAlpha(basic_info_.has_alpha);
 
         const uint32_t width = basic_info_.width;
