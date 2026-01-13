@@ -239,7 +239,7 @@ class GpuIntegrationTest(
     if cls._finder_options.browser_type in [
         'web-engine-shell', 'cast-streaming-shell'
     ]:
-      page_action.DEFAULT_TIMEOUT = 120
+      page_action.DEFAULT_TIMEOUT = 240
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
