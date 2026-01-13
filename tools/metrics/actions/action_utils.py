@@ -134,9 +134,32 @@ def _CreateActionFromVariant(action: Action, variant: Variant,
     new_action_description = (
         'Please enter the description of this user action. ' + variant.summary)
 
+  new_tokens = [new_token for new_token in action.tokens if new_token != token]
+
   return Action(new_name, new_action_description,
                 list(action.owners) if action.owners else [],
-                action.not_user_triggered, action.obsolete)
+                action.not_user_triggered, action.obsolete, new_tokens)
+
+
+def _CreateActionVariantsFor(action: Action) -> Dict[str, Action]:
+  """Returns dictionary of actions expanded from provided template action."""
+
+  # If there are no tokens to fill, the action goes to the list as-is.
+  if not action.tokens:
+    return {action.name: action}
+
+  ret_val: Dict[str, Action] = {}
+
+  current_token = action.tokens[0]
+  if not current_token.variants:
+    raise ValueError(f"Action {action} does not have variants"
+                     " for {current_token.key} token.")
+
+  for variant in current_token.variants:
+    ret_val |= _CreateActionVariantsFor(
+        _CreateActionFromVariant(action, variant, current_token))
+
+  return ret_val
 
 
 def CreateActionsFromVariants(
@@ -168,9 +191,6 @@ def CreateActionsFromVariants(
   while the output dictionary keys are generated actions with no tokens
   in them anymore.
 
-  Note: This currently does support only a single token per action and the
-  usage with multiple tokens leads to undefined behavior.
-
   Args:
     actions_dict: A dict of existing action name to Action object with names
         potentially containing tokens.
@@ -185,15 +205,7 @@ def CreateActionsFromVariants(
   """
   expanded_actions: Dict[str, Action] = {}
 
-  for _, action in actions_dict.items():
-    # If there are no tokens to fill, the action goes to the list as-is.
-    if not action.tokens:
-      expanded_actions[action.name] = action
-      continue
-
-    for token in action.tokens:
-      for variant in token.variants:
-        new_action = _CreateActionFromVariant(action, variant, token)
-        expanded_actions[new_action.name] = new_action
+  for action in actions_dict.values():
+    expanded_actions |= _CreateActionVariantsFor(action)
 
   return expanded_actions

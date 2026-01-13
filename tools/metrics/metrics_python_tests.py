@@ -23,8 +23,10 @@ def resolve(*paths):
 sys.exit(
     typ.main(
         tests=resolve(
+            'actions/action_utils_test.py',
             'actions/extract_actions_test.py',
             'actions/actions_model_test.py',
+            'actions/PRESUBMIT_test.py',
 
             # TODO(crbug.com/40772738) - the test ordering is very sensitive due
             # to potential name collisions between ukm/pretty_print.py and

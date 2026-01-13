@@ -14,7 +14,7 @@ class _TestScenario:
   name: str
   action_names: list[str]
   tokens_dict: dict[str, list[str]]
-  expected_outputs: list[str]
+  expected_outputs: list[str] | None
 
   def _ExtractTokens(self, action_name) -> list[action_utils.Token]:
     token_pattern = r"\{(.*?)\}"
@@ -23,12 +23,11 @@ class _TestScenario:
     for token in tokens:
       # Using TypeOf prefix to avoid confusion between type and name of token
       variants_name = f"TypeOf{token.key}"
-      if variants_name not in self.tokens_dict:
-        continue
-      token.variants = [
-          action_utils.Variant(name=variant, summary="")
-          for variant in self.tokens_dict[variants_name]
-      ]
+      if variants_name in self.tokens_dict:
+        token.variants = [
+            action_utils.Variant(name=variant, summary="")
+            for variant in self.tokens_dict[variants_name]
+        ]
       token.variants_name = variants_name
     return tokens
 
@@ -64,14 +63,51 @@ class ActionXmlTest(unittest.TestCase):
         _TestScenario(name="Variant for token missing",
                       action_names=["TestAction.{Token}"],
                       tokens_dict={},
-                      expected_outputs=[]),
-        # TODO(afie): Multiple token present
-        # TODO(afie): Multiple token present variant missing for some
-        # TODO(afie): Entry with no token return directly
-        # TODO(afie): Complex scenario with combined elements
+                      expected_outputs=None),
+        _TestScenario(name="Multiple tokens present",
+                      action_names=["TestAction.{Token}.{OtherToken}"],
+                      tokens_dict={
+                          "TypeOfToken": ["A", "B"],
+                          "TypeOfOtherToken": ["1", "2"]
+                      },
+                      expected_outputs=[
+                          "TestAction.A.1", "TestAction.B.1", "TestAction.A.2",
+                          "TestAction.B.2"
+                      ]),
+        _TestScenario(name="Multiple tokens present variant missing for some",
+                      action_names=["TestAction.{Token}.{OtherToken}"],
+                      tokens_dict={"TypeOfToken": ["A", "B"]},
+                      expected_outputs=None),
+        _TestScenario(name="Entry with no token return directly",
+                      action_names=["TestAction.NoTokens"],
+                      tokens_dict={},
+                      expected_outputs=["TestAction.NoTokens"]),
+        _TestScenario(
+            name="Multiple actions handled with some tokens overlaps",
+            action_names=[
+                "TestAction1.{Token}.{OtherToken}", "TestAction2.NoTokens",
+                "TestAction3.{OtherToken}.{DifferentToken}"
+                ".{ThirdTokenWithOneValue}"
+            ],
+            tokens_dict={
+                "TypeOfToken": ["A", "B"],
+                "TypeOfOtherToken": ["1", "2"],
+                "TypeOfDifferentToken": ["x", "y", "z"],
+                "TypeOfThirdTokenWithOneValue": ["C"],
+            },
+            expected_outputs=[
+                "TestAction1.A.1", "TestAction1.B.1", "TestAction1.A.2",
+                "TestAction1.B.2", "TestAction2.NoTokens", "TestAction3.1.x.C",
+                "TestAction3.1.y.C", "TestAction3.1.z.C", "TestAction3.2.x.C",
+                "TestAction3.2.y.C", "TestAction3.2.z.C"
+            ]),
     ]
 
     def testFunction(test_scenario):
+      if test_scenario.expected_outputs is None:
+        with self.assertRaises(ValueError):
+          test_scenario._PrepareActionsDict()
+        return
       actions_dict = test_scenario._PrepareActionsDict()
       self.assertEqual(len(actions_dict), len(test_scenario.expected_outputs))
       for expected_action_name in test_scenario.expected_outputs:
