@@ -211,6 +211,15 @@ export class ActorOverlayAppElement extends CrLitElement {
       void this.$.magicCursor.offsetWidth;
     }
 
+    // Resolve early if the visual position won't change, as no 'transitionend'
+    // event will fire.
+    if (Math.round(targetX) === Math.round(this.currentX_) &&
+        Math.round(targetY) === Math.round(this.currentY_)) {
+      this.currentX_ = targetX;
+      this.currentY_ = targetY;
+      return Promise.resolve();
+    }
+
     // Calculate distance and duration for animation
     const dx = targetX - this.currentX_;
     const dy = targetY - this.currentY_;

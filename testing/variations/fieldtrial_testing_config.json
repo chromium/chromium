@@ -11376,6 +11376,23 @@
             ]
         }
     ],
+    "GlicActorUiOverlayMagicCursor": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicActorUiOverlayMagicCursor"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicActorUiTabIndicatorSpinnerIgnoreReducedMotion": [
         {
             "platforms": [
