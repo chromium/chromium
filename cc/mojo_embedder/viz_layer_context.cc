@@ -97,6 +97,14 @@ void ComputePropertyTreeNodeUpdate(
           new_node.node_and_ancestors_are_flat &&
       old_node->node_or_ancestors_will_change_transform ==
           new_node.node_or_ancestors_will_change_transform &&
+      old_node->moved_by_safe_area_bottom ==
+          new_node.moved_by_safe_area_bottom &&
+      old_node->damage_reasons() == new_node.damage_reasons() &&
+      old_node->needs_local_transform_update ==
+          new_node.needs_local_transform_update &&
+      old_node->to_screen_is_potentially_animated ==
+          new_node.to_screen_is_potentially_animated &&
+
       // Since |transform_changed| is transient, we only need to check for it's
       // current state instead of comparing to old one.
       !new_node.transform_changed() &&
