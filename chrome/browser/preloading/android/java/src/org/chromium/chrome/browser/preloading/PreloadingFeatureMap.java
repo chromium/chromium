@@ -9,6 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Java accessor for base::Features listed in
@@ -18,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class PreloadingFeatureMap extends FeatureMap {
     private static final PreloadingFeatureMap sInstance = new PreloadingFeatureMap();
+    private static @Nullable PreloadingFeatureMap sInstanceForTesting;
 
     // Do not instantiate this class.
     private PreloadingFeatureMap() {}
@@ -26,7 +28,15 @@ public class PreloadingFeatureMap extends FeatureMap {
      * @return the singleton {@link PreloadingFeatureMap}
      */
     public static PreloadingFeatureMap getInstance() {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
         return sInstance;
+    }
+
+    /** Sets an instance for testing. */
+    public static void setInstanceForTesting(PreloadingFeatureMap instance) {
+        sInstanceForTesting = instance;
     }
 
     /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
@@ -40,6 +50,15 @@ public class PreloadingFeatureMap extends FeatureMap {
     public boolean shouldPrewarmOnZeroSuggest() {
         return isEnabled("Prewarm")
                 && getFieldTrialParamByFeatureAsBoolean("Prewarm", "zero_suggest_trigger", false);
+    }
+
+    /**
+     * @return Whether prewarming should be triggered on autocomplete.
+     */
+    public boolean shouldPrewarmOnAutocomplete() {
+        return isEnabled("Prewarm")
+                && getFieldTrialParamByFeatureAsBoolean(
+                        "Prewarm", "user_interaction_trigger", false);
     }
 
     @Override

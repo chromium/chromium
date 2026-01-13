@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFacto
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -951,6 +952,13 @@ class AutocompleteMediator
 
         // Reject results if the current session is inactive.
         if (!isActive()) return;
+
+        if (mAutocomplete != null
+                && PreloadingFeatureMap.getInstance().shouldPrewarmOnAutocomplete()) {
+            Tab tab = mDataProvider.getTab();
+            WebContents webContents = tab != null ? tab.getWebContents() : null;
+            mAutocomplete.startPrewarm(webContents);
+        }
 
         @Nullable AutocompleteMatch defaultMatch = autocompleteResult.getDefaultMatch();
         String inlineAutocompleteText =
