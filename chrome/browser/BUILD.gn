@@ -1868,7 +1868,6 @@ static_library("browser") {
     "//chrome/browser/metrics",
     "//chrome/browser/metrics:expired_histograms_array",
     "//chrome/browser/metrics/structured",
-    "//chrome/browser/metrics/variations:chrome_ui_string_overrider_factory",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/navigation_predictor:impl",
     "//chrome/browser/notifications",

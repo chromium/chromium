@@ -71,17 +71,6 @@
       "experiments": [{"name": "TestGroup2"}]
     }
   ],
-  "TrialWithOverrideUIString": [
-    {
-      "platforms": ["windows"],
-      "experiments": [
-        {
-          "name": "TestGroup",
-          "override_ui_strings": {"IDS_NEW_TAB_TITLE": "test"}
-        }
-      ]
-    }
-  ],
   "TrialWithDisableBenchmarking": [
     {
       "platforms": ["windows"],

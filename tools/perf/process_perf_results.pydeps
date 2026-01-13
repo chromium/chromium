@@ -9,7 +9,6 @@
 ../../build/util/lib/common/__init__.py
 ../../build/util/lib/common/decorators.py
 ../../build/util/lib/common/google_storage_helper.py
-../../components/variations/service/generate_ui_string_overrider.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/__init__.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/__init__.py

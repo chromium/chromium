@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/variations/service/generate_ui_string_overrider.gni")
-
 source_set("model") {
   sources = [
     "ios_chrome_variations_service_client.h",
@@ -70,26 +68,6 @@ source_set("store_private") {
 
 source_set("constants") {
   sources = [ "constants.h" ]
-}
-
-generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
-  inputs = [
-    "$root_gen_dir/components/strings/grit/components_branded_strings.h",
-    "$root_gen_dir/components/strings/grit/components_locale_settings.h",
-    "$root_gen_dir/components/strings/grit/components_strings.h",
-    "$root_gen_dir/ios/chrome/grit/ios_branded_strings.h",
-    "$root_gen_dir/ios/chrome/grit/ios_strings.h",
-  ]
-  deps = [
-    "//components/strings:components_branded_strings",
-    "//components/strings:components_locale_settings",
-    "//components/strings:components_strings",
-    "//ios/chrome/app/strings:ios_branded_strings",
-    "//ios/chrome/app/strings:ios_strings",
-  ]
-  namespace = ""  # Put the functions in the global namespace on iOS.
-  header_filename = "ios_ui_string_overrider_factory.h"
-  source_filename = "ios_ui_string_overrider_factory.cc"
 }
 
 source_set("eg_app_support+eg2") {

@@ -176,7 +176,6 @@ source_set("model") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/variations/model",
-    "//ios/chrome/browser/variations/model:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",

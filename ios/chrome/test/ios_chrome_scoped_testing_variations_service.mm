@@ -12,7 +12,6 @@
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-using variations::UIStringOverrider;
 using variations::VariationsService;
 using variations::VariationsServiceClient;
 
@@ -69,7 +68,6 @@ IOSChromeScopedTestingVariationsService::
       TestingApplicationContext::GetGlobal()->GetLocalState(),
       metrics_state_manager_.get(),
       /*disable_network_switch=*/"dummy-disable-background-switch",
-      UIStringOverrider(),
       network::TestNetworkConnectionTracker::CreateGetter());
   TestingApplicationContext::GetGlobal()->SetVariationsService(
       variations_service_.get());

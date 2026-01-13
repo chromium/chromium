@@ -37,7 +37,6 @@ bool AssociateParamsFromString(const std::string& variations_string);
 // with default field trials with |feature_list|.
 void AssociateParamsFromFieldTrialConfig(
     const FieldTrialTestingConfig& config,
-    const VariationsSeedProcessor::UIStringOverrideCallback& callback,
     Study::Platform platform,
     Study::FormFactor current_form_factor,
     base::FeatureList* feature_list);
@@ -46,7 +45,6 @@ void AssociateParamsFromFieldTrialConfig(
 // of groups specified in testing/variations/fieldtrial_testing_config.json.
 // Registers features associated with default field trials with |feature_list|.
 void AssociateDefaultFieldTrialConfig(
-    const VariationsSeedProcessor::UIStringOverrideCallback& callback,
     Study::Platform platform,
     Study::FormFactor current_form_factor,
     base::FeatureList* feature_list);

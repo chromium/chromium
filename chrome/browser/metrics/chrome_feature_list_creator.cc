@@ -128,10 +128,6 @@ void ChromeFeatureListCreator::SetApplicationLocale(const std::string& locale) {
   metrics_services_manager_->GetVariationsService()->EnsureLocaleEquals(locale);
 }
 
-void ChromeFeatureListCreator::OverrideCachedUIStrings() {
-  metrics_services_manager_->GetVariationsService()->OverrideCachedUIStrings();
-}
-
 metrics_services_manager::MetricsServicesManagerClient*
 ChromeFeatureListCreator::GetMetricsServicesManagerClient() {
   return metrics_services_manager_client_;

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -50,7 +50,7 @@ sys.exit(
             'histograms/merge_xml_test.py',
             'histograms/PRESUBMIT_test.py',
             'histograms/pretty_print_test.py',
-            "histograms/print_expanded_histograms_test.py",
+            'histograms/print_expanded_histograms_test.py',
             'histograms/validate_token_test.py',
             '../json_comment_eater/json_comment_eater_test.py',
             '../json_to_struct/element_generator_test.py',
@@ -58,7 +58,5 @@ sys.exit(
             '../variations/fieldtrial_to_struct_unittest.py',
             '../variations/fieldtrial_util_unittest.py',
             '../variations/split_variations_cmd_unittest.py',
-            '../../components/variations/service/'
-            'generate_ui_string_overrider_unittest.py',
         ),
         jobs=1))

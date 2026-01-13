@@ -17,11 +17,6 @@
 #include "base/containers/span.h"
 #include "components/variations/proto/study.pb.h"
 
-struct OverrideUIString {
-  const int name_hash;
-  const char* const value;
-};
-
 struct FieldTrialTestingExperimentParams {
   const char* const key;
   const char* const value;
@@ -38,7 +33,6 @@ struct FieldTrialTestingExperiment {
   const base::span<const char* const> enable_features;
   const base::span<const char* const> disable_features;
   const char* const forcing_flag;
-  const base::span<const OverrideUIString> override_ui_string;
   const base::span<const char* const> hardware_classes;
   const base::span<const char* const> exclude_hardware_classes;
 };

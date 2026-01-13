@@ -14,7 +14,6 @@
 #import "components/variations/pref_names.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/seed_response.h"
-#import "components/variations/service/ui_string_overrider.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_test_utils.h"
@@ -106,7 +105,6 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
     variations_service_ = variations::VariationsService::Create(
         std::make_unique<IOSChromeVariationsServiceClient>(), GetLocalState(),
         GetMetricsStateManager(), "dummy-disable-background-switch",
-        variations::UIStringOverrider(),
         network::TestNetworkConnectionTracker::CreateGetter());
   }
 

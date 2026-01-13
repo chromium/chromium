@@ -161,8 +161,6 @@ group("metrics_python_tests") {
     "//tools/variations/unittest_data/test_config.json",
     "//tools/variations/unittest_data/variations_cmd.txt",
     "//components/variations/field_trial_config/field_trial_testing_config_schema.json",
-    "//components/variations/service/generate_ui_string_overrider.py",
-    "//components/variations/service/generate_ui_string_overrider_unittest.py",
   ]
 
   data += JSON_TO_STRUCT_FILES + JSON_TO_STRUCT_TEST_FILES

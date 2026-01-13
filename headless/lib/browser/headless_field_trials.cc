@@ -16,7 +16,6 @@
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/safe_seed_manager.h"
-#include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
@@ -110,8 +109,7 @@ void SetUpFieldTrials(PrefService* local_state,
               variations_service_client.GetChannelForVariations(),
               /*entropy_providers=*/nullptr),
           variations_service_client.GetChannelForVariations(),
-          variations_service_client.GetVariationsSeedFileDir()),
-      variations::UIStringOverrider());
+          variations_service_client.GetVariationsSeedFileDir()));
 
   variations::SafeSeedManager safe_seed_manager(local_state);
 

@@ -135,8 +135,7 @@ void SetupFieldTrials() {
               variations_service_client.GetChannelForVariations(),
               /*entropy_providers=*/nullptr),
           variations_service_client.GetChannelForVariations(),
-          variations_service_client.GetVariationsSeedFileDir()),
-      variations::UIStringOverrider());
+          variations_service_client.GetVariationsSeedFileDir()));
 
   variations::SafeSeedManager safe_seed_manager(pref_service.get());
 

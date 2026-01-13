@@ -92,7 +92,6 @@ class ScopedVariationsService {
         TestingApplicationContext::GetGlobal()->GetLocalState(),
         metrics_state_manager_.get(),
         /*disable_network_switch=*/"dummy-disable-background-switch",
-        variations::UIStringOverrider(),
         network::TestNetworkConnectionTracker::CreateGetter());
 
     TestingApplicationContext::GetGlobal()->SetVariationsService(

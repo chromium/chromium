@@ -27,7 +27,6 @@
 namespace variations {
 namespace {
 
-
 // Create mock testing config equivalent to:
 // {
 //   "UnitTest": [
@@ -90,8 +89,7 @@ const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
      /*params=*/array_kFieldTrialConfig_params_0,
      /*enable_features=*/enable_features_0,
      /*disable_features=*/{},
-     /*forcing_flag=*/nullptr,
-     /*override_ui_string=*/{}},
+     /*forcing_flag=*/nullptr},
 };
 
 const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {

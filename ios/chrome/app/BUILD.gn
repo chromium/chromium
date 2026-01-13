@@ -534,7 +534,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled:ui",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/variations/model:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/browser/voice/model",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/choose_file:choose_file_file_utils",

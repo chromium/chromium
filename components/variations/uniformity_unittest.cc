@@ -155,7 +155,6 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
   StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
   VariationsSeedProcessor(sticky_activation_manager)
       .CreateTrialsFromSeed(seed, *client_state,
-                            base::BindRepeating(NoopUIStringOverrideCallback),
                             entropy_providers, layers, &feature_list);
   test::ClearAllVariationIDs();
   return base::FieldTrialList::FindFullName(kStudyName);
