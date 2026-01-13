@@ -177,8 +177,6 @@ public class NotificationContentDetectionManager {
             // When a notification is part of a WebAPK, the channel id is managed by the WebAPK
             // and should not be set here.
             if (mWebApkPackage.isEmpty()) {
-                // TODO(crbug.com/40544272): Channel ID should be retrieved from cache in native and
-                // passed through to here with other notification parameters.
                 notificationBuilder.setChannelId(mChannelId);
             }
 
