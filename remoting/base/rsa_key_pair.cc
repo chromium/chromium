@@ -66,4 +66,8 @@ std::string RsaKeyPair::GenerateCertificate() {
   return der_cert;
 }
 
+std::vector<uint8_t> RsaKeyPair::Sign(base::span<const uint8_t> data) {
+  return crypto::sign::Sign(crypto::sign::RSA_PSS_SHA256, key_, data);
+}
+
 }  // namespace remoting
