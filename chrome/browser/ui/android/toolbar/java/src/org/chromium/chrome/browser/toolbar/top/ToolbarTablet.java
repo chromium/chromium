@@ -475,12 +475,13 @@ public class ToolbarTablet extends ToolbarLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         if (isToolbarTabletResizeRefactorEnabled()) {
-            allocateAvailableToolbarWidth(mToolbarWidthConsumers, width);
+            allocateAvailableToolbarWidth(
+                    mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
         } else {
             // Hide or show toolbar buttons if needed. With the introduction of multi-window on
             // Android N, the Activity can be < 600dp, in which case the toolbar buttons need to be
             // moved into the menu so that the location bar is usable. The buttons must be shown
-            // in onMeasure() so that the location bar gets measured and laid out correctly.
+            // in onMeasure() so that the location bar is usable.
             setToolbarButtonsVisible(
                     width >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(getContext()));
         }
@@ -492,7 +493,8 @@ public class ToolbarTablet extends ToolbarLayout {
         //  width components.
         if (isToolbarTabletResizeRefactorEnabled()
                 && mIncognitoIndicatorCoordinator.needsUpdateBeforeShowing()) {
-            allocateAvailableToolbarWidth(mToolbarWidthConsumers, width);
+            allocateAvailableToolbarWidth(
+                    mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -500,7 +502,9 @@ public class ToolbarTablet extends ToolbarLayout {
     @Override
     public void onWidthConsumerVisibilityChanged() {
         // Re-allocate width to account for a change in a width consumer's visibility.
-        allocateAvailableToolbarWidth(mToolbarWidthConsumers, getWidth());
+        int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        allocateAvailableToolbarWidth(
+                mToolbarWidthConsumers, getWidth(), unspecifiedSpec, unspecifiedSpec);
     }
 
     /**
@@ -508,16 +512,23 @@ public class ToolbarTablet extends ToolbarLayout {
      *
      * @param toolbarWidthConsumer The array of all toolbar width consumers.
      * @param availableWidthDp The available width in dp.
+     * @param widthMeasureSpec The width measure spec to be used for measurement.
+     * @param heightMeasureSpec The height measure spec to be used for measurement.
      */
     @VisibleForTesting
     static void allocateAvailableToolbarWidth(
-            @Nullable ToolbarWidthConsumer[] toolbarWidthConsumer, int availableWidthDp) {
+            @Nullable ToolbarWidthConsumer[] toolbarWidthConsumer,
+            int availableWidthDp,
+            int widthMeasureSpec,
+            int heightMeasureSpec) {
         // Iterate through the toolbar components, which will show if there is enough available
         // width.
         for (@ToolbarComponentId int toolbarComponentId : ToolbarUtils.RANKED_TOOLBAR_COMPONENTS) {
             @Nullable ToolbarWidthConsumer widthConsumer = toolbarWidthConsumer[toolbarComponentId];
             if (widthConsumer == null) continue;
-            availableWidthDp -= widthConsumer.updateVisibility(availableWidthDp);
+            availableWidthDp -=
+                    widthConsumer.updateVisibility(
+                            availableWidthDp, widthMeasureSpec, heightMeasureSpec);
         }
     }
 

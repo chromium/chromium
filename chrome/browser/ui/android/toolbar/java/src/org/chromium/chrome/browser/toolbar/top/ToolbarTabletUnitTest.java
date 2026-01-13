@@ -237,24 +237,44 @@ public final class ToolbarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
-        doReturn(buttonWidth).when(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mHomeButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mHomeButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mHomeButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth).when(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mReloadButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mReloadButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mReloadButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth).when(mBackButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mBackButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mBackButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mBackButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
         doReturn(buttonWidth)
                 .when(mTabSwitcherButtonCoordinator)
-                .updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mTabSwitcherButtonCoordinator).updateVisibility(lt(buttonWidth));
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mTabSwitcherButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth).when(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mMenuButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mMenuButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mMenuButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth * 3).when(mIncognitoIndicatorCoordinator).updateVisibility(anyInt());
+        doReturn(buttonWidth * 3)
+                .when(mIncognitoIndicatorCoordinator)
+                .updateVisibility(anyInt(), anyInt(), anyInt());
         doReturn(false).when(mIncognitoIndicatorCoordinator).needsUpdateBeforeShowing();
 
         mockToolbarWidthConsumer(mLocationBarBookmarkButtonWidthConsumer, buttonWidth);
@@ -278,8 +298,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     private static void mockToolbarWidthConsumer(ToolbarWidthConsumer consumer, int width) {
-        doReturn(width).when(consumer).updateVisibility(geq(width));
-        doReturn(0).when(consumer).updateVisibility(lt(width));
+        doReturn(width).when(consumer).updateVisibility(geq(width), anyInt(), anyInt());
+        doReturn(0).when(consumer).updateVisibility(lt(width), anyInt(), anyInt());
     }
 
     @After
@@ -1184,65 +1204,79 @@ public final class ToolbarTabletUnitTest {
                         .getDimensionPixelSize(R.dimen.tablet_toolbar_start_padding);
 
         if (visibleComponents.contains(HOME)) {
-            verify(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mHomeButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mHomeButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(BACK)) {
-            verify(mBackButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mBackButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mBackButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mBackButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(RELOAD)) {
-            verify(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mReloadButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mReloadButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(TAB_SWITCHER)) {
-            verify(mTabSwitcherButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mTabSwitcherButtonCoordinator)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mTabSwitcherButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mTabSwitcherButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(MENU)) {
-            verify(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mMenuButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mMenuButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_BOOKMARK)) {
-            verify(mLocationBarBookmarkButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarBookmarkButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
             verify(mLocationBarBookmarkButtonWidthConsumer, never())
-                    .updateVisibility(geq(buttonWidth));
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_ZOOM)) {
-            verify(mLocationBarZoomButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarZoomButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mLocationBarZoomButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarZoomButtonWidthConsumer, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_INSTALL)) {
-            verify(mLocationBarInstallButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarInstallButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
             verify(mLocationBarInstallButtonWidthConsumer, never())
-                    .updateVisibility(geq(buttonWidth));
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_MIC)) {
-            verify(mLocationBarMicButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarMicButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mLocationBarMicButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarMicButtonWidthConsumer, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_LENS)) {
-            verify(mLocationBarLensButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarLensButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mLocationBarLensButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarLensButtonWidthConsumer, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         Mockito.clearInvocations(

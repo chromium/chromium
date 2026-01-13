@@ -130,6 +130,19 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
 
     @Override
     public int updateVisibility(int availableWidth) {
+        return updateVisibilityInternal(
+                availableWidth,
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+    }
+
+    @Override
+    public int updateVisibility(int availableWidth, int widthMeasureSpec, int heightMeasureSpec) {
+        return updateVisibilityInternal(availableWidth, widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private int updateVisibilityInternal(
+            int availableWidth, int widthMeasureSpec, int heightMeasureSpec) {
         assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
         // Hide and consume no width if the incognito indicator feature is not enabled, or if the
         // device is not in incognito mode. Do not cache the width of the indicator.
@@ -140,8 +153,27 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
         }
 
         // If the incognito indicator has been displayed, cache its measured width.
-        if (mIncognitoIndicator != null && mIncognitoIndicator.getMeasuredWidth() > 0) {
-            mCachedWidth = mIncognitoIndicator.getMeasuredWidth();
+        if (mIncognitoIndicator != null) {
+            // Actively measure the view content to get the "Stable Width" upfront.
+            // This mimics the "Fixed Width" behavior of other buttons by determining the
+            // intrinsic size immediately.
+            // Use the parent's measure specs to mimic the actual measurement that will happen
+            // in ToolbarTablet.onMeasure.
+            android.view.ViewGroup.LayoutParams lp = mIncognitoIndicator.getLayoutParams();
+            int childWidthSpec =
+                    android.view.ViewGroup.getChildMeasureSpec(
+                            widthMeasureSpec,
+                            mParentToolbar.getPaddingLeft() + mParentToolbar.getPaddingRight(),
+                            lp.width);
+            int childHeightSpec =
+                    android.view.ViewGroup.getChildMeasureSpec(
+                            heightMeasureSpec,
+                            mParentToolbar.getPaddingTop() + mParentToolbar.getPaddingBottom(),
+                            lp.height);
+
+            mIncognitoIndicator.measure(childWidthSpec, childHeightSpec);
+            int measuredWidth = mIncognitoIndicator.getMeasuredWidth();
+            mCachedWidth = measuredWidth > 0 ? measuredWidth : mDefaultFallbackWidth;
         } else {
             mCachedWidth = mDefaultFallbackWidth;
         }

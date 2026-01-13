@@ -44,4 +44,15 @@ public interface ToolbarWidthConsumer {
      * @return The width used to display this ToolbarChild.
      */
     int updateVisibilityWithAnimation(int availableWidth, Collection<Animator> animators);
+
+    /**
+     * @see ToolbarWidthConsumer#updateVisibility(int)
+     * @param availableWidth The available width in the toolbar.
+     * @param widthMeasureSpec The width measure spec from the parent view.
+     * @param heightMeasureSpec The height measure spec from the parent view.
+     * @return The width used to display this ToolbarChild.
+     */
+    default int updateVisibility(int availableWidth, int widthMeasureSpec, int heightMeasureSpec) {
+        return updateVisibility(availableWidth);
+    }
 }

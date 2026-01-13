@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 
@@ -84,6 +85,11 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         when(mIncognitoIndicatorView.getRootView()).thenReturn(mIncognitoIndicatorView);
         when(mIncognitoIndicatorView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         when(mIncognitoIndicatorView.getResources()).thenReturn(mResources);
+        when(mIncognitoIndicatorView.getLayoutParams())
+                .thenReturn(
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT));
         when(mParentToolbar.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
         when(mResources.getDisplayMetrics()).thenReturn(new DisplayMetrics());
