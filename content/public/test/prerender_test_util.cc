@@ -155,12 +155,6 @@ PrerenderHost* GetPrerenderHostById(WebContents* web_contents,
   return registry.FindNonReservedHostById(host_id);
 }
 
-PrerenderHost* GetPrerenderHostById(WebContents* web_contents,
-                                    FrameTreeNodeId host_id) {
-  auto& registry = GetPrerenderHostRegistry(web_contents);
-  return registry.FindNonReservedHostById(host_id);
-}
-
 PrerenderHost* GetPrerenderHostByUrl(WebContents* web_contents,
                                      const GURL& url) {
   auto& registry = GetPrerenderHostRegistry(web_contents);
@@ -304,14 +298,6 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
     StartObserving(*host);
   }
 
-  PrerenderHostObserverImpl(WebContents& web_contents,
-                            FrameTreeNodeId host_id) {
-    PrerenderHost* host = GetPrerenderHostById(&web_contents, host_id);
-    DCHECK(host)
-        << "A PrerenderHost with the given id does not, or no longer, exists.";
-    StartObserving(*host);
-  }
-
   PrerenderHostObserverImpl(WebContents& web_contents, const GURL& url) {
     registry_observer_ =
         std::make_unique<PrerenderHostRegistryObserver>(web_contents);
@@ -436,11 +422,6 @@ PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
                                              PrerenderHostId host_id)
     : impl_(
           std::make_unique<PrerenderHostObserverImpl>(web_contents, host_id)) {}
-
-PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
-                                             FrameTreeNodeId prerender_host)
-    : impl_(std::make_unique<PrerenderHostObserverImpl>(web_contents,
-                                                        prerender_host)) {}
 
 PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
                                              const GURL& url)

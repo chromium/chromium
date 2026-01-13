@@ -66,8 +66,6 @@ class PrerenderHostObserver {
   // Begins observing the given PrerenderHost immediately. DCHECKs if |host_id|
   // does not identify a live PrerenderHost.
   PrerenderHostObserver(WebContents& web_contents, PrerenderHostId host_id);
-  // Deprecated: Use the PrerenderHostId version.
-  PrerenderHostObserver(WebContents& web_contents, FrameTreeNodeId host_id);
 
   // Will start observing a PrerenderHost for |url| as soon as it is
   // triggered.
