@@ -387,5 +387,26 @@ suite('NewTabPageActionChipsTest', () => {
                 };
               }));
         });
+
+    test('should dismiss a chip when remove button is clicked', async () => {
+      loadTimeData.overrideValues({
+        ntpNextShowDismissalUIEnabled: true,
+      });
+      await initializeChips({});
+      let allChips =
+          chips.shadowRoot.querySelectorAll<HTMLButtonElement>('.action-chip');
+      assertEquals(3, allChips.length);
+
+      const removeButton = chips.shadowRoot.querySelector<HTMLButtonElement>(
+          '.chip-remove-button');
+      assertTrue(!!removeButton, 'Remove button should be present');
+
+      removeButton.click();
+      await microtasksFinished();
+
+      allChips =
+          chips.shadowRoot.querySelectorAll<HTMLButtonElement>('.action-chip');
+      assertEquals(2, allChips.length);
+    });
   });
 });
