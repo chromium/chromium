@@ -302,18 +302,6 @@
           other {<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> items}
         }
       </message>
-      <message name="IDS_TAB_SELECTION_EDITOR_GROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Group' is a verb. When the user taps the menu item, Chrome creates a new group that contains the selected tabs. [CHAR_LIMIT=27]">
-        {TABS_COUNT, plural,
-          =1 {Group tab}
-          other {Group tabs}
-        }
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_GROUP_TABS" desc="The accessibility text to read when the 'Group tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be grouped together.">
-        {TABS_COUNT, plural,
-          =1 {Group <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
-          other {Group <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
-        }
-      </message>
       <message name="IDS_ADD_TAB_TO_NEW_GROUP_MENU_ITEM" desc="This text menu item is shown in several menus and starts the UI flow for adding a tab to a new group.">
         {TABS_COUNT, plural,
           =1 {Add tab to new group}
