@@ -10379,6 +10379,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_EXPAND_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that expands the vertical tab strip.">
             Expand Vertical Tabs
           </message>
+          <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true" desc="In Title Case: The accessibility label for the button in the tab group header that opens the editor bubble.">
+            More Options
+          </message>
         </then>
         <else>
           <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
@@ -10392,6 +10395,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
           <message name="IDS_EXPAND_VERTICAL_TABS" desc="The tooltip for the button in the top container that expands the vertical tab strip.">
             Expand vertical tabs
+          </message>
+          <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true"  desc="In Title Case: The accessibility label for the button in the tab group header that opens the editor bubble.">
+            More options
           </message>
         </else>
       </if>

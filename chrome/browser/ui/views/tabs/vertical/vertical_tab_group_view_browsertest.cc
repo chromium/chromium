@@ -236,3 +236,28 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // Verify mouse press events return false while the editor dialog is visible.
   EXPECT_FALSE(tab_group_header->OnMousePressed(mouse_press_event));
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
+                       EditorBubbleOpensOnEditorBubbleButtonPress) {
+  CreateInactiveTabGroup();
+
+  VerticalTabGroupHeaderView* const tab_group_header =
+      views::AsViewClass<VerticalTabGroupHeaderView>(
+          BrowserElementsViews::From(browser())->GetView(
+              kTabGroupHeaderElementId));
+  ui::MouseEvent mouse_press_event(ui::EventType::kMousePressed, gfx::Point(),
+                                   gfx::Point(), ui::EventTimeForNow(),
+                                   ui::EF_LEFT_MOUSE_BUTTON,
+                                   ui::EF_LEFT_MOUSE_BUTTON);
+
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+      kTabGroupEditorBubbleId));
+  tab_group_header->editor_bubble_button()->OnMousePressed(mouse_press_event);
+  // The editor dialog should be visible after activating it via the tab group
+  // header's editor bubble button.
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+      kTabGroupEditorBubbleId));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return tab_group_header->editor_bubble_button()->GetVisible();
+  }));
+}

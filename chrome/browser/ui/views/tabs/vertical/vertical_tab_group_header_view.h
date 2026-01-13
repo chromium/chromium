@@ -17,6 +17,7 @@ class TabGroupVisualData;
 }
 
 namespace views {
+class LabelButton;
 class ImageView;
 class Label;
 }
@@ -49,6 +50,9 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -59,14 +63,21 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   void OnDataChanged(
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
 
+  views::LabelButton* editor_bubble_button() { return editor_bubble_button_; }
   views::ImageView* collapse_icon_for_testing() { return collapse_icon_; }
 
  private:
+  void UpdateEditorBubbleButtonVisibility();
+  void ShowEditorBubble();
+
   const raw_ptr<views::Label> group_header_label_ = nullptr;
+  const raw_ptr<views::LabelButton> editor_bubble_button_ = nullptr;
   const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
   const raw_ptr<Delegate> delegate_ = nullptr;
 
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
+  base::CallbackListSubscription editor_bubble_opened_subscription_;
+  base::CallbackListSubscription editor_bubble_closed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_HEADER_VIEW_H_

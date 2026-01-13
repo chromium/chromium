@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -174,8 +175,8 @@ void VerticalTabGroupView::ToggleCollapsedState(
 views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
     bool stop_context_menu_propagation) {
   return collection_node_->GetController()->ShowGroupEditorBubble(
-      GetTabGroupFromNode(collection_node_)->id(), group_header_,
-      stop_context_menu_propagation);
+      GetTabGroupFromNode(collection_node_)->id(),
+      group_header_->editor_bubble_button(), stop_context_menu_propagation);
 }
 
 void VerticalTabGroupView::ResetCollectionNode() {
