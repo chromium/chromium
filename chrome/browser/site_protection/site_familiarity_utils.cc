@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 
@@ -139,7 +140,7 @@ void EnableV8Optimizations(content::WebContents* web_contents) {
     return;
   }
 
-  const GURL& site_url = web_contents->GetURL();
+  const GURL& site_url = web_contents->GetSiteInstance()->GetSiteURL();
   if (site_url.is_empty()) {
     return;
   }

@@ -40,8 +40,11 @@ GetJavascriptOptimizerSettingSource(content::WebContents* web_contents);
 // Enables the v8 optimizations content setting for the current URL in the
 // given WebContents. Does nothing if the content settings map or current URL
 // is not available.
-// Note: the updated setting won't take effect until a new browsing instance
-// is started (e.g. a new tab is opened).
+// Should only be called when
+// SiteIsolationPolicy::UseDedicatedProcessesForAllSites() == true.
+//
+// Note: the updated setting won't take effect until a new browsing instance is
+// started (e.g. a new tab is opened).
 void EnableV8Optimizations(content::WebContents* web_contents);
 
 }  // namespace site_protection
