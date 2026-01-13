@@ -4,3 +4,5 @@
 # //content/common/background_fetch/
 
 peter@chromium.org
+
+per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS
