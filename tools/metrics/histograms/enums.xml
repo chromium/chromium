@@ -2416,7 +2416,7 @@ Called by update_net_error_codes.py.-->
   <int value="94" label="Federated identity auto re-authn"/>
   <int value="95" label="Federated identity IdP Registration API"/>
   <int value="96" label="Anti-abuse"/>
-  <int value="97" label="Third-Party StoragePartitioning"/>
+  <int value="97" label="Third-Party StoragePartitioning [Removed in M145]"/>
   <int value="98" label="HTTPS Enforcement"/>
   <int value="99" label="USB Chooser Data"/>
   <int value="100" label="Cookies setting"/>

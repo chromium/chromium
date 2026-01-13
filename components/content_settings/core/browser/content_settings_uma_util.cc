@@ -115,7 +115,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
      95},
     {ContentSettingsType::ANTI_ABUSE, 96},
-    {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, 97},
+    // Removed THIRD_PARTY_STORAGE_PARTITIONING in M146.
     {ContentSettingsType::HTTPS_ENFORCED, 98},
     {ContentSettingsType::USB_CHOOSER_DATA, 99},
     // The value 100 is assigned to COOKIES!

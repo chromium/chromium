@@ -5392,15 +5392,6 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
     return false;
   }
 
-  // If the enterprise policy blocks, we have directive to override the
-  // current value of net::features::ThirdPartyStoragePartitioning.
-  // We can safely read the last committed-origin (even during navigation)
-  // as we know we are not in the main-frame since that case is filtered above.
-  if (!GetContentClient()->browser()->IsThirdPartyStoragePartitioningAllowed(
-          GetBrowserContext(),
-          main_frame_for_storage_partitioning->GetLastCommittedOrigin())) {
-    return false;
-  }
   return blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
 }
 

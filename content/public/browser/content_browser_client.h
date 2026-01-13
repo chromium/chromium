@@ -3023,13 +3023,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // or in any other way.
   virtual bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);
 
-  // This function can serve to block third-party storage partitioning
-  // from being enabled if it returns false. If it returns true, then
-  // we fallback on the base feature to determine if partitioning is on.
-  virtual bool IsThirdPartyStoragePartitioningAllowed(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_level_origin);
-
   // Checks whether credentials should be included in fenced frame automatic
   // beacon requests, based on user cookie settings. Any cookies sent in an
   // automatic beacon response header will be honored and stored.

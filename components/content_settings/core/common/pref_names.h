@@ -68,8 +68,6 @@ inline constexpr char kManagedDefaultWindowManagementSetting[] =
     "profile.managed_default_content_settings.window_management";
 inline constexpr char kManagedDefaultLocalFontsSetting[] =
     "profile.managed_default_content_settings.local_fonts";
-inline constexpr char kManagedDefaultThirdPartyStoragePartitioningSetting[] =
-    "profile.managed_default_content_settings.third_party_storage_partitioning";
 inline constexpr char kManagedDefaultWebPrintingSetting[] =
     "profile.managed_default_content_settings.web_printing";
 inline constexpr char kManagedDefaultDirectSocketsSetting[] =
@@ -182,8 +180,6 @@ inline constexpr char kManagedLocalFontsAllowedForUrls[] =
     "profile.managed_local_fonts_allowed_for_urls";
 inline constexpr char kManagedLocalFontsBlockedForUrls[] =
     "profile.managed_local_fonts_blocked_for_urls";
-inline constexpr char kManagedThirdPartyStoragePartitioningBlockedForOrigins[] =
-    "profile.managed_third_party_storage_partitioning_blocked_for_origins";
 inline constexpr char kManagedWebPrintingAllowedForUrls[] =
     "profile.managed_web_printing_allowed_for_urls";
 inline constexpr char kManagedWebPrintingBlockedForUrls[] =

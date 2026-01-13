@@ -1045,10 +1045,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AreIsolatedWebAppsEnabled(
       content::BrowserContext* browser_context) override;
 
-  bool IsThirdPartyStoragePartitioningAllowed(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_level_origin) override;
-
   bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
       content::BrowserContext* browser_context,
       const GURL& destination_url,

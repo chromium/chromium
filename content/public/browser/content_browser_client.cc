@@ -1749,12 +1749,6 @@ bool ContentBrowserClient::AreIsolatedWebAppsEnabled(
   return false;
 }
 
-bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
-    content::BrowserContext*,
-    const url::Origin&) {
-  return true;
-}
-
 bool ContentBrowserClient::AreDeprecatedAutomaticBeaconCredentialsAllowed(
     content::BrowserContext* browser_context,
     const GURL& destination_url,

@@ -33,7 +33,6 @@ export const contentSettingGroups:
           ContentSettingsType.SSL_CERT_DECISIONS,
           ContentSettingsType.STORAGE_ACCESS,
           ContentSettingsType.STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
-          ContentSettingsType.THIRD_PARTY_STORAGE_PARTITIONING,
           ContentSettingsType.TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType.TPCD_HEURISTICS_GRANTS,
           ContentSettingsType.TPCD_METADATA_GRANTS,

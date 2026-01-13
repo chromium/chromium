@@ -172,7 +172,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::
           FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION:
       case ContentSettingsType::ANTI_ABUSE:
-      case ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING:
       case ContentSettingsType::HTTPS_ENFORCED:
       case ContentSettingsType::ALL_SCREEN_CAPTURE:
       case ContentSettingsType::COOKIE_CONTROLS_METADATA:
