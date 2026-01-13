@@ -50,7 +50,7 @@ items:
   name: okta
   value: okta
   supported_on:
-    - chrome.mac:145-
+    - chrome.mac:146-
 example_value:
 - all
 tags: []
