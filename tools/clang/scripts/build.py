@@ -1051,6 +1051,13 @@ def main():
         # TODO(https://crbug.com/404547503): fix and re-enable
         '^.*Profile-x86_64.*ContinuousSyncMode/online-merging-windows.c$',
     ]
+  if not sys.platform.startswith('linux'):
+    lit_excludes += [
+        # TODO(https://crbug.com/474402846): fix and re-enable
+        '^Builtins-.*ctor_dtor.c$',
+        '^Builtins-.*dso_handle.cpp$',
+        '^Builtins-i386-windows.*$',
+    ]
 
   test_env = os.environ.copy()
   # Dump all FileCheck input on test failure.

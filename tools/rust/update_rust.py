@@ -37,7 +37,7 @@ sys.path.append(
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 RUST_REVISION = 'a4cfac7093a1c1c7fbdb6bc75d6b6dc4d385fc69'
-RUST_SUB_REVISION = 2
+RUST_SUB_REVISION = 3
 
 # The revision of Crubit to use from https://github.com/google/crubit
 #
