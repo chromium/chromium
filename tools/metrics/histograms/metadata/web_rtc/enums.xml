@@ -116,6 +116,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FailureDueToSlideShowWasNotChosen"/>
 </enum>
 
+<enum name="FullScreenFindEditorResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailureDueToSameTitleWindows"/>
+</enum>
+
 <enum name="GenerateCertificateAlgorithms">
   <int value="0" label="ECDSA-P256"/>
   <int value="1" label="RSA-1024"/>

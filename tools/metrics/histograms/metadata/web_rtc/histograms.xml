@@ -1874,6 +1874,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Screenshare.DesktopCapturerFullScreenFindEditorUsage"
+    enum="Boolean" expires_after="2026-12-31">
+  <owner>agpalak@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Tracks the usage of the WebRTC FullScreen Detector heuristic for finding
+    full screen window. The Fullscreen Detector is used when capturing
+    presentation applications such as PowerPoint. This boolean histogram tracks
+    if the captured window is the same as the chosen slide show window when the
+    heuristic for finding the editor is enabled.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Screenshare.FullScreenDetectorResult"
     enum="FullScreenDetectorResult" expires_after="2026-06-16">
   <owner>agpalak@chromium.org</owner>
@@ -1883,6 +1897,20 @@ chromium-metrics-reviews@google.com.
     Detector is used when capturing presentation applications such as
     PowerPoint. This histogram records an enum that tracks if the heuristic was
     used or not to find the corresponding full screen window.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Screenshare.FullScreenFindEditorResult"
+    enum="FullScreenFindEditorResult" expires_after="2026-12-16">
+  <owner>agpalak@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Tracks the usage of the WebRTC FullScreen Detector heuristic for finding
+    editor window. The Fullscreen Detector is used when capturing presentation
+    applications such as PowerPoint. This histogram records an enum that tracks
+    if the heuristic was able to find the corresponding editor window when a
+    full screen slide show window was chosen.
   </summary>
 </histogram>
 
