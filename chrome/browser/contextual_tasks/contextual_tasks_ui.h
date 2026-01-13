@@ -31,6 +31,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -222,6 +223,12 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // Returns whether the active tab context suggestion is showing.
   bool IsActiveTabContextSuggestionShowing() const;
 
+  // Returns whether an OAuth token request is pending to verify behavior in
+  // tests.
+  bool IsAccessTokenRequestPendingForTesting() const {
+    return !!oauth_token_fetcher_;
+  }
+
  private:
   void RequestOAuthToken();
   void OnOAuthTokenReceived(GoogleServiceAuthError error,
@@ -281,6 +288,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
+
+  // Backoff entry used to control the retry logic for the OAuth token request.
+  net::BackoffEntry request_access_token_backoff_;
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
