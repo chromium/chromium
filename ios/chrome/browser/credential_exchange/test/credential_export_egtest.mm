@@ -94,7 +94,6 @@ void OpenExportCredentialsPage() {
 }  // namespace
 
 // Integration Tests for Credential Export View Controller.
-// TODO(crbug.com/454566693): Add more EGTests.
 @interface CredentialExportTestCase : ChromeTestCase
 @end
 
@@ -217,6 +216,110 @@ void OpenExportCredentialsPage() {
   [[EarlGrey selectElementWithMatcher:DownloadCsvMenuAction()]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
+}
+
+// Tests that initially all items are selected and the toggle button shows
+// "Deselect All".
+- (void)testInitialSelectionState {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"pass1", @"user1", @"https://example1.com");
+  SavePasswordFormToAccountStore(@"pass2", @"user2", @"https://example2.com");
+  OpenExportCredentialsPage();
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:DeselectAllText()];
+
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example1.com")]
+      assertWithMatcher:grey_accessibilityTrait(UIAccessibilityTraitSelected)];
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example2.com")]
+      assertWithMatcher:grey_accessibilityTrait(UIAccessibilityTraitSelected)];
+}
+
+// Tests that tapping "Deselect All" deselects all items and updates the button
+// to "Select All".
+- (void)testDeselectAllToggle {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"pass1", @"user1", @"https://example1.com");
+  SavePasswordFormToAccountStore(@"pass2", @"user2", @"https://example2.com");
+  OpenExportCredentialsPage();
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:SelectAllText()];
+
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example1.com")]
+      assertWithMatcher:grey_not(grey_accessibilityTrait(
+                            UIAccessibilityTraitSelected))];
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example2.com")]
+      assertWithMatcher:grey_not(grey_accessibilityTrait(
+                            UIAccessibilityTraitSelected))];
+}
+
+// Tests that deselecting a single item changes the main toggle button to
+// "Select All".
+- (void)testPartialDeselectionUpdatesToggleButton {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"pass1", @"user1", @"https://example1.com");
+  SavePasswordFormToAccountStore(@"pass2", @"user2", @"https://example2.com");
+  OpenExportCredentialsPage();
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:DeselectAllText()];
+
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example1.com")]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:SelectAllText()];
+}
+
+// Tests that the navigation bar title updates to reflect the number of selected
+// items.
+- (void)testTitleReflectsSelectionCount {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"pass1", @"user1", @"https://example1.com");
+  SavePasswordFormToAccountStore(@"pass2", @"user2", @"https://example2.com");
+  OpenExportCredentialsPage();
+
+  NSString* expectedLabelForTwoSelected = l10n_util::GetPluralNSStringF(
+      IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT, 2);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
+                                          expectedLabelForTwoSelected)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example1.com")]
+      performAction:grey_tap()];
+
+  NSString* expectedLabelForOneSelected = l10n_util::GetPluralNSStringF(
+      IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT, 1);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
+                                          expectedLabelForOneSelected)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:CellWithText(@"example2.com")]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
+                                          expectedLabelForTwoSelected)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 #endif
 
