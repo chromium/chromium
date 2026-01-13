@@ -1189,7 +1189,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.DocumentLoader.CommitNavigationToStartLoadingResponse.Time.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
-    units="ms" expires_after="2026-07-05">
+    units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1202,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.DocumentLoader.CreateParserPostCommit.Time.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
-    units="ms" expires_after="2026-06-28">
+    units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3451,7 +3451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.BoostImagePriorityReason"
-    enum="BoostImagePriorityReason" expires_after="2026-05-10">
+    enum="BoostImagePriorityReason" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3663,7 +3663,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.LCPP.NavigationToStartPreload.MainFrame.{SubresourceType}.Time"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -3841,7 +3841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PrewarmHttpDiskCache.{PrewarmMethod}.CacheExists"
-    enum="BooleanExists" expires_after="2026-05-03">
+    enum="BooleanExists" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3859,7 +3859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PrewarmHttpDiskCacheURL.Count" units="count"
-    expires_after="2026-05-03">
+    expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -5062,7 +5062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.AsyncScript.FromReadyToStartExecution.Time"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -5085,7 +5085,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.RaceTaskPriority"
-    enum="RaceTaskPriority" expires_after="2026-02-01">
+    enum="RaceTaskPriority" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -5098,7 +5098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.Time"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -5111,7 +5111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.Time.{RaceTaskPriority}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -5128,7 +5128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.SchedulingType" enum="ScriptSchedulingType"
-    expires_after="2026-02-01">
+    expires_after="2027-01-10">
   <owner>kouhei@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
@@ -5385,7 +5385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SVGImage.DataChanged" units="microseconds"
-    expires_after="2026-05-10">
+    expires_after="2027-01-10">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
