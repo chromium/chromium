@@ -235,7 +235,7 @@ class Command():
         default='',
         choices=[
             'sign_in_pass', 'sign_up_pass', 'sign_up_fill',
-            'capture_update_pass', '*', ''
+            'capture_update_pass', '*', '', 'automated_password_change'
         ],
         help=('Only for password tests to designate the specific '
               'test scenario. Use * to indicate all password test'

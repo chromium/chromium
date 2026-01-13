@@ -245,6 +245,10 @@ class TestRecipeReplayChromeFeatureActionExecutor {
   virtual bool WaitForSaveFallback();
   virtual bool IsChromeShowingPasswordGenerationPrompt();
   virtual bool HasChromeShownSavePasswordPrompt();
+  virtual bool TriggerPasswordChange(const GURL& url);
+  // Waits for specified state of Password Change. Possible correspond to
+  // PasswordChangeDelegate::State.
+  virtual bool WaitForPasswordChangeState(int state);
   virtual bool HasChromeStoredCredential(const std::string& origin,
                                          const std::string& username,
                                          const std::string& password);
@@ -364,6 +368,8 @@ class TestRecipeReplayer {
   bool ExecuteValidateFieldValueAction(base::Value::Dict action);
   bool ExecuteValidateNoSavePasswordPromptAction(base::Value::Dict action);
   bool ExecuteValidatePasswordGenerationPromptAction(base::Value::Dict action);
+  bool ExecuteTriggerPasswordChangeAction(base::Value::Dict action);
+  bool ExecuteWaitForPasswordChangeStateAction(base::Value::Dict action);
   bool ExecuteValidateSaveFallbackAction(base::Value::Dict action);
   bool ExecuteWaitForStateAction(base::Value::Dict action);
   bool GetTargetHTMLElementXpathFromAction(const base::Value::Dict& action,

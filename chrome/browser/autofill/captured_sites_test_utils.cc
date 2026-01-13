@@ -1371,6 +1371,16 @@ bool TestRecipeReplayer::ReplayRecordedActions(
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "breakpoint") == 0) {
       execution_state.limit = execution_state.index + 1;
+    } else if (base::CompareCaseInsensitiveASCII(
+                   *type, "triggerPasswordChange") == 0) {
+      if (!ExecuteTriggerPasswordChangeAction(std::move(action))) {
+        return false;
+      }
+    } else if (base::CompareCaseInsensitiveASCII(
+                   *type, "waitForPasswordChangeState") == 0) {
+      if (!ExecuteWaitForPasswordChangeStateAction(std::move(action))) {
+        return false;
+      }
     } else {
       ADD_FAILURE() << "Unrecognized action type: " << *type;
     }
@@ -1852,6 +1862,26 @@ bool TestRecipeReplayer::ExecuteValidateNoSavePasswordPromptAction(
     base::Value::Dict action) {
   VLOG(1) << "Verify that the page hasn't shown a save password prompt.";
   EXPECT_FALSE(feature_action_executor()->HasChromeShownSavePasswordPrompt());
+  return true;
+}
+
+bool TestRecipeReplayer::ExecuteTriggerPasswordChangeAction(
+    base::Value::Dict action) {
+  std::optional<std::string> url =
+      FindPopulateString(action, "change_password_url", "Change Password URL");
+  if (!url) {
+    return false;
+  }
+
+  feature_action_executor()->TriggerPasswordChange(GURL(url.value()));
+  return true;
+}
+
+bool TestRecipeReplayer::ExecuteWaitForPasswordChangeStateAction(
+    base::Value::Dict action) {
+  int expected_state = action.FindInt("state").value_or(0);
+
+  feature_action_executor()->WaitForPasswordChangeState(expected_state);
   return true;
 }
 
@@ -2625,6 +2655,20 @@ bool TestRecipeReplayChromeFeatureActionExecutor::
     HasChromeShownSavePasswordPrompt() {
   ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
                    "::HasChromeShownSavePasswordPrompt is not implemented!";
+  return false;
+}
+
+bool TestRecipeReplayChromeFeatureActionExecutor::TriggerPasswordChange(
+    const GURL& url) {
+  ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
+                   "::TriggerPasswordChange is not implemented!";
+  return false;
+}
+
+bool TestRecipeReplayChromeFeatureActionExecutor::WaitForPasswordChangeState(
+    int state) {
+  ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
+                   "::WaitForPasswordChangeState is not implemented!";
   return false;
 }
 
