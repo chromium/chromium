@@ -4,12 +4,12 @@
 
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -98,9 +98,9 @@ TokenServiceFlags ParseServiceFlags(const std::string& id_token) {
   }
 
   token_service_flags.is_child_account =
-      base::Contains(service_flags, kChildAccountServiceFlag);
-  token_service_flags.is_under_advanced_protection =
-      base::Contains(service_flags, kAdvancedProtectionAccountServiceFlag);
+      std::ranges::contains(service_flags, kChildAccountServiceFlag);
+  token_service_flags.is_under_advanced_protection = std::ranges::contains(
+      service_flags, kAdvancedProtectionAccountServiceFlag);
   return token_service_flags;
 }
 
