@@ -54,6 +54,18 @@ bool CanShowHostAccessRequests(
          ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests;
 }
 
+// Returns the host access request info for `extension_id`.
+ExtensionsMenuViewModel::HostAccessRequest GetHostAccessRequest(
+    ExtensionsMenuViewModel& menu_model,
+    const extensions::ExtensionId& extension_id) {
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  ExtensionsMenuViewModel::HostAccessRequest request =
+      menu_model.GetHostAccessRequest(extension_id,
+                                      gfx::Size(icon_size, icon_size));
+  return request;
+}
+
 // Returns the main page, if it is the correct type.
 ExtensionsMenuMainPageView* GetMainPage(views::View* page) {
   return views::AsViewClass<ExtensionsMenuMainPageView>(page);
@@ -98,7 +110,7 @@ void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
   UpdatePage(web_contents);
 }
 
-void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
+void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int index) {
   CHECK(current_page_);
@@ -116,7 +128,33 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
     return;
   }
 
-  AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index);
+  ExtensionsMenuViewModel::HostAccessRequest request =
+      GetHostAccessRequest(*menu_model_, extension_id);
+  main_page->AddExtensionRequestingAccess(request, index);
+  main_page->SetOptionalSectionVisibility(optional_section);
+}
+
+void ExtensionsMenuDelegateDesktop::OnHostAccessRequestUpdated(
+    const extensions::ExtensionId& extension_id,
+    int index) {
+  CHECK(current_page_);
+
+  // Site access requests only affect the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page) {
+    return;
+  }
+
+  // Requests are only visible in the 'host access requests' section.
+  ExtensionsMenuViewModel::OptionalSection optional_section =
+      menu_model_->GetOptionalSection();
+  if (!CanShowHostAccessRequests(optional_section)) {
+    return;
+  }
+
+  ExtensionsMenuViewModel::HostAccessRequest request =
+      GetHostAccessRequest(*menu_model_, extension_id);
+  main_page->UpdateExtensionRequestingAccess(request, index);
   main_page->SetOptionalSectionVisibility(optional_section);
 }
 
@@ -397,7 +435,9 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
 
     const auto& requests = menu_model_->host_access_requests();
     for (size_t i = 0; i < requests.size(); ++i) {
-      AddOrUpdateExtensionRequestingAccess(main_page, requests[i], i);
+      ExtensionsMenuViewModel::HostAccessRequest request =
+          GetHostAccessRequest(*menu_model_, requests[i]);
+      main_page->AddExtensionRequestingAccess(request, i);
     }
   }
   main_page->SetOptionalSectionVisibility(optional_section);
@@ -466,19 +506,6 @@ void ExtensionsMenuDelegateDesktop::InsertMenuEntry(
   ExtensionsMenuViewModel::MenuEntryState menu_item =
       menu_model_->GetMenuEntryState(action_model->GetId());
   main_page->CreateAndInsertMenuEntry(action_model, menu_item, index);
-}
-
-void ExtensionsMenuDelegateDesktop::AddOrUpdateExtensionRequestingAccess(
-    ExtensionsMenuMainPageView* main_page,
-    const extensions::ExtensionId& extension_id,
-    int index) {
-  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-  ExtensionsMenuViewModel::HostAccessRequest request =
-      menu_model_->GetHostAccessRequest(extension_id,
-                                        gfx::Size(icon_size, icon_size));
-
-  main_page->AddOrUpdateExtensionRequestingAccess(request, index);
 }
 
 content::WebContents* ExtensionsMenuDelegateDesktop::GetActiveWebContents()

@@ -229,25 +229,9 @@ void ExtensionsMenuMainPageView::UpdateSiteSettings(
       site_settings_state.toggle.tooltip_text);
 }
 
-void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
+void ExtensionsMenuMainPageView::AddExtensionRequestingAccess(
     ExtensionsMenuViewModel::HostAccessRequest request,
     int index) {
-  // Update request entry if existent.
-  views::View* request_entry = GetExtensionRequestEntry(request.extension_id);
-  if (request_entry) {
-    std::vector<raw_ptr<View, VectorExperimental>> extension_items =
-        request_entry->children();
-    views::AsViewClass<views::ImageView>(
-        extension_items[kRequestEntryIconIndex])
-        ->SetImage(request.extension_icon);
-    views::AsViewClass<views::Label>(extension_items[kRequestEntryLabelIndex])
-        ->SetText(request.extension_name);
-    requests_entries_view_->ReorderChildView(request_entry, index);
-
-    return;
-  }
-
-  // Otherwise, add a new request entry.
   auto* layout_provider = ChromeLayoutProvider::Get();
   const int control_vertical_margin = layout_provider->GetDistanceMetric(
       DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
@@ -306,6 +290,26 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
 
   requests_entries_.insert({request.extension_id, item.get()});
   requests_entries_view_->AddChildViewAt(std::move(item), index);
+}
+
+void ExtensionsMenuMainPageView::UpdateExtensionRequestingAccess(
+    ExtensionsMenuViewModel::HostAccessRequest request,
+    int index) {
+  // Verify the index is valid for the current layout.
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index),
+           requests_entries_view_->children().size());
+
+  views::View* request_view = requests_entries_view_->children().at(index);
+  CHECK(request_view);
+
+  std::vector<raw_ptr<View, VectorExperimental>> extension_items =
+      request_view->children();
+  views::AsViewClass<views::ImageView>(extension_items[kRequestEntryIconIndex])
+      ->SetImage(request.extension_icon);
+  views::AsViewClass<views::Label>(extension_items[kRequestEntryLabelIndex])
+      ->SetText(request.extension_name);
+  requests_entries_view_->ReorderChildView(request_view, index);
 }
 
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(

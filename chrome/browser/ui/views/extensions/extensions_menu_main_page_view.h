@@ -54,15 +54,22 @@ class ExtensionsMenuMainPageView : public views::View {
   void UpdateSiteSettings(
       ExtensionsMenuViewModel::SiteSettingsState site_settings_state);
 
-  // Adds or updates the extension entry in the `requests_access_section_` with
-  // the given information. Doesn't update the requests section view
-  // visibility.
-  void AddOrUpdateExtensionRequestingAccess(
+  // Adds or updates the extension entry in the `requests_access_section_` at
+  // `index` with the given information. Doesn't update the requests section
+  // view visibility.
+  void AddExtensionRequestingAccess(
       ExtensionsMenuViewModel::HostAccessRequest request,
       int index);
 
-  // Remove the entry in the `requests_access_section_` corresponding to `id`,
-  // if existent. Doesn't update the requests section view visibility.
+  // Updates the extension entry in the `requests_access_section_` at `index`
+  // with the given information. Doesn't update the requests section view
+  // visibility.
+  void UpdateExtensionRequestingAccess(
+      ExtensionsMenuViewModel::HostAccessRequest request,
+      int index);
+
+  // Removes the entry in the `requests_access_section_` at `index`. Doesn't
+  // update the requests section view visibility.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id,
                                        int index);
 

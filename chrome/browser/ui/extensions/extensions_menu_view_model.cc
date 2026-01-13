@@ -1022,14 +1022,11 @@ void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
   if (is_active && is_on_menu_model) {
     // Since it's already on the menu model, just notify the observers about the
     // update.
-    // TODO(crbug.com/472154266): a request update should have no change on the
-    // UI, since it only has the extension name and icon which are static from
-    // the manifest. Consider removing this.
     auto it = std::ranges::find(host_access_requests_, extension_id);
     int index = std::distance(host_access_requests_.begin(), it);
 
     for (Observer& observer : observers_) {
-      observer.OnHostAccessRequestAddedOrUpdated(extension_id, index);
+      observer.OnHostAccessRequestUpdated(extension_id, index);
     }
     return;
   }
@@ -1240,7 +1237,7 @@ void ExtensionsMenuViewModel::AddHostAccessRequest(
   // Notify observers.
   int index = std::distance(host_access_requests_.begin(), insert_it);
   for (Observer& observer : observers_) {
-    observer.OnHostAccessRequestAddedOrUpdated(extension_id, index);
+    observer.OnHostAccessRequestAdded(extension_id, index);
   }
 }
 

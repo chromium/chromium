@@ -52,9 +52,10 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
 
   // ExtensionsMenuViewModel::Observer:
   void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
-  void OnHostAccessRequestAddedOrUpdated(
-      const extensions::ExtensionId& extension_id,
-      int index) override;
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
+                                int index) override;
+  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+                                  int index) override;
   void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int index) override;
   void OnHostAccessRequestsCleared() override;
@@ -117,13 +118,6 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   void InsertMenuEntry(ExtensionsMenuMainPageView* main_page,
                        ExtensionActionViewModel* action_model,
                        int index);
-
-  // Adds or updates a request access entry for `extension_id` in `main_page` at
-  // `index`.
-  void AddOrUpdateExtensionRequestingAccess(
-      ExtensionsMenuMainPageView* main_page,
-      const extensions::ExtensionId& extension_id,
-      int index);
 
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;

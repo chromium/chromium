@@ -58,7 +58,13 @@ void ExtensionsMenuDelegateAndroid::OnActionsInitialized() {
   // TODO(crbug.com/473213114)
 }
 
-void ExtensionsMenuDelegateAndroid::OnHostAccessRequestAddedOrUpdated(
+void ExtensionsMenuDelegateAndroid::OnHostAccessRequestAdded(
+    const extensions::ExtensionId& extension_id,
+    int index) {
+  // TODO(crbug.com/473213114)
+}
+
+void ExtensionsMenuDelegateAndroid::OnHostAccessRequestUpdated(
     const extensions::ExtensionId& extension_id,
     int index) {
   // TODO(crbug.com/473213114)

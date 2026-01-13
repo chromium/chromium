@@ -54,9 +54,15 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     virtual void OnActiveWebContentsChanged(
         content::WebContents* web_contents) = 0;
 
-    // Notifies the delegate that a new host access request was added or updated
-    // with `action_model` on `index`.
-    virtual void OnHostAccessRequestAddedOrUpdated(
+    // Notifies the delegate that a new host access request was added
+    // with `extension_ind` on `index`.
+    virtual void OnHostAccessRequestAdded(
+        const extensions::ExtensionId& extension_id,
+        int index) = 0;
+
+    // Notifies the delegate that host access request with `extension_id` was
+    // updates on `index`.
+    virtual void OnHostAccessRequestUpdated(
         const extensions::ExtensionId& extension_id,
         int index) = 0;
 

@@ -42,9 +42,10 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
                        int index) override;
   void OnActionUpdated() override;
   void OnActionsInitialized() override;
-  void OnHostAccessRequestAddedOrUpdated(
-      const extensions::ExtensionId& extension_id,
-      int index) override;
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
+                                int index) override;
+  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+                                  int index) override;
   void OnHostAccessRequestsCleared() override;
   void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int index) override;
