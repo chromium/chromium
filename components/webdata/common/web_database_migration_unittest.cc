@@ -1896,4 +1896,24 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion146ToCurrent) {
   }
 }
 
+TEST_F(WebDatabaseMigrationTest, MigrateVersion147ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_147.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    EXPECT_EQ(147, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("valuables_metadata"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("valuables_metadata"));
+  }
+}
+
 }  // anonymous namespace

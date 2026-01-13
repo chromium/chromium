@@ -148,6 +148,70 @@ TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_Invalid) {
   EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
 }
 
+TEST_F(ValuablesTableTest, GetLoyaltyCards_MissingMetadata) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  ASSERT_TRUE(valuables_table().RemoveValuableMetadata(card.id()));
+
+  std::vector<LoyaltyCard> cards = valuables_table().GetLoyaltyCards();
+  ASSERT_THAT(cards, testing::SizeIs(1));
+  EXPECT_EQ(cards[0].metadata(), ValuableMetadata(card.id(), base::Time(), 0u));
+}
+
+TEST_F(ValuablesTableTest, RemoveLoyaltyCardRemovesMetadata) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  ASSERT_TRUE(valuables_table().GetValuableMetadata(card.id()).has_value());
+
+  EXPECT_TRUE(valuables_table().RemoveLoyaltyCard(card.id()));
+  EXPECT_FALSE(valuables_table().GetValuableMetadata(card.id()).has_value());
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateValuableMetadata_Add) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+
+  ValuableMetadata metadata = card.metadata();
+  metadata.use_count = 10;
+  metadata.use_date = base::Time::FromTimeT(100);
+
+  EXPECT_TRUE(valuables_table().AddOrUpdateValuableMetadata(metadata));
+  EXPECT_EQ(valuables_table().GetValuableMetadata(card.id()), metadata);
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateValuableMetadata_Update) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+
+  ValuableMetadata metadata = card.metadata();
+  metadata.use_count = 1;
+  EXPECT_TRUE(valuables_table().AddOrUpdateValuableMetadata(metadata));
+  EXPECT_EQ(valuables_table().GetValuableMetadata(card.id())->use_count, 1u);
+}
+
+TEST_F(ValuablesTableTest, RemoveValuableMetadata) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+
+  EXPECT_TRUE(valuables_table().RemoveValuableMetadata(card.id()));
+  EXPECT_FALSE(valuables_table().GetValuableMetadata(card.id()).has_value());
+}
+
+TEST_F(ValuablesTableTest, GetValuableMetadata_ExistingEntity) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+
+  std::optional<ValuableMetadata> metadata =
+      valuables_table().GetValuableMetadata(card.id());
+  EXPECT_THAT(metadata, testing::Optional(card.metadata()));
+}
+
+TEST_F(ValuablesTableTest, GetValuableMetadata_NonExistentEntity) {
+  std::optional<ValuableMetadata> metadata =
+      valuables_table().GetValuableMetadata(ValuableId("non-existent-id"));
+  EXPECT_FALSE(metadata.has_value());
+}
+
 }  // namespace
 
 }  // namespace autofill

@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_LOYALTY_CARD_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_LOYALTY_CARD_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "url/gurl.h"
 
@@ -70,6 +72,16 @@ class LoyaltyCard final {
     merchant_domains_ = std::move(merchant_domains);
   }
 
+  base::Time use_date() const { return valuable_metadata_.use_date; }
+  int64_t use_count() const { return valuable_metadata_.use_count; }
+
+  const ValuableMetadata& metadata() const { return valuable_metadata_; }
+
+  void set_metadata(ValuableMetadata metadata) {
+    CHECK_EQ(id_, metadata.valuable_id);
+    valuable_metadata_ = std::move(metadata);
+  }
+
   // Checks if this loyalty card is valid. A valid loyalty card contains a
   // non-empty loyalty card id and a logo URL which should be either empty or
   // valid.
@@ -102,6 +114,9 @@ class LoyaltyCard final {
 
   // The list of merchant domains associated to this card.
   std::vector<GURL> merchant_domains_;
+
+  // Metadata for this loyalty card.
+  ValuableMetadata valuable_metadata_;
 };
 
 }  // namespace autofill

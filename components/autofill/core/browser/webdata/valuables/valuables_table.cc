@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 
+#include <cstdint>
 #include <optional>
 #include <string_view>
 
@@ -32,6 +33,11 @@ constexpr std::string_view kLoyaltyCardMerchantDomainTable =
     "loyalty_card_merchant_domain";
 constexpr std::string_view kMerchantDomain = "merchant_domain";
 
+constexpr std::string_view kValuableId = "valuable_id";
+constexpr std::string_view kValuablesMetadataTable = "valuables_metadata";
+constexpr std::string_view kUseCount = "use_count";
+constexpr std::string_view kUseDate = "use_date";
+
 // Returns the merchant domains for the loyalty card identified by
 // `loyalty_card_id`.
 std::vector<GURL> GetMerchantDomainsForLoyaltyCardId(
@@ -52,6 +58,27 @@ std::vector<GURL> GetMerchantDomainsForLoyaltyCardId(
   return merchant_domains;
 }
 
+// Returns the metadata for the valuable identified by `valuable_id`.
+std::optional<ValuableMetadata> GetValuableMetadataFromDb(
+    sql::Database* db,
+    const ValuableId& valuable_id) {
+  sql::Statement s_valuable_metadata;
+  SelectBuilder(db, s_valuable_metadata, kValuablesMetadataTable,
+                {kValuableId, kUseCount, kUseDate},
+                base::StrCat({"WHERE ", kValuableId, " = ?"}));
+  s_valuable_metadata.BindString(0, valuable_id.value());
+
+  if (!s_valuable_metadata.Step()) {
+    return std::nullopt;
+  }
+
+  ValuableId valuable_id_(s_valuable_metadata.ColumnString(0));
+  int64_t use_count = s_valuable_metadata.ColumnInt64(1);
+  base::Time use_date = s_valuable_metadata.ColumnTime(2);
+
+  return ValuableMetadata(valuable_id_, use_date, use_count);
+}
+
 // Expects that `s` is pointing to a query result containing `kLoyaltyCardId`,
 // `kLoyaltyCardMerchantName`, `kLoyaltyCardProgramName`,
 // `kLoyaltyCardProgramLogo` and `kLoyaltyCardNumber` in that order.
@@ -59,6 +86,7 @@ std::vector<GURL> GetMerchantDomainsForLoyaltyCardId(
 std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
                                                     sql::Statement& s) {
   ValuableId loyalty_card_id = ValuableId(s.ColumnString(0));
+
   LoyaltyCard card(
       /*loyalty_card_id=*/loyalty_card_id,
       /*merchant_name=*/s.ColumnString(1),
@@ -67,6 +95,12 @@ std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
       /*loyalty_card_number=*/s.ColumnString(4),
       /*merchant_domains=*/
       GetMerchantDomainsForLoyaltyCardId(db, loyalty_card_id));
+
+  if (std::optional<ValuableMetadata> valuable_metadata =
+          GetValuableMetadataFromDb(db, loyalty_card_id)) {
+    card.set_metadata(std::move(*valuable_metadata));
+  }
+
   // Ignore invalid loyalty cards, for more information see
   // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,
   // so this situation should not happen.
@@ -94,7 +128,8 @@ WebDatabaseTable::TypeKey ValuablesTable::GetTypeKey() const {
 }
 
 bool ValuablesTable::CreateTablesIfNecessary() {
-  return InitLoyaltyCardsTable() && InitLoyaltyCardMerchantDomainTable();
+  return InitLoyaltyCardsTable() && InitLoyaltyCardMerchantDomainTable() &&
+         InitValuablesMetadataTable();
 }
 
 bool ValuablesTable::InitLoyaltyCardsTable() {
@@ -110,6 +145,13 @@ bool ValuablesTable::InitLoyaltyCardMerchantDomainTable() {
   return CreateTableIfNotExists(
       db(), kLoyaltyCardMerchantDomainTable,
       {{kLoyaltyCardId, "VARCHAR"}, {kMerchantDomain, "VARCHAR"}});
+}
+
+bool ValuablesTable::InitValuablesMetadataTable() {
+  return CreateTableIfNotExists(db(), kValuablesMetadataTable,
+                                {{kValuableId, "TEXT PRIMARY KEY NOT NULL"},
+                                 {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                                 {kUseDate, "INTEGER NOT NULL DEFAULT 0"}});
 }
 
 bool ValuablesTable::MigrateToVersion138() {
@@ -130,12 +172,22 @@ bool ValuablesTable::MigrateToVersion138() {
          transaction.Commit();
 }
 
+bool ValuablesTable::MigrateToVersion148AddMetadataTable() {
+  return CreateTable(db(), kValuablesMetadataTable,
+                     {{kValuableId, "TEXT PRIMARY KEY NOT NULL"},
+                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"}});
+}
+
 bool ValuablesTable::MigrateToVersion(int version,
                                       bool* update_compatible_version) {
   switch (version) {
     case 138:
       *update_compatible_version = true;
       return MigrateToVersion138();
+    case 148:
+      *update_compatible_version = false;
+      return MigrateToVersion148AddMetadataTable();
   }
   return true;
 }
@@ -162,8 +214,15 @@ bool ValuablesTable::SetLoyaltyCards(
   if (!transaction.Begin()) {
     return false;
   }
+  // Metadata must be deleted before the cards because the delete query depends
+  // on the cards being present in the `kLoyaltyCardsTable`.
+  // `kValuablesMetadataTable` is generic, so the whole table cannot be cleared.
+  bool response = Delete(db(), kValuablesMetadataTable,
+                         base::StrCat({kValuableId, " IN (SELECT ", kValuableId,
+                                       " FROM ", kLoyaltyCardsTable, ")"}));
+
   // Remove the existing set of loyalty cards.
-  bool response = Delete(db(), kLoyaltyCardsTable);
+  response &= Delete(db(), kLoyaltyCardsTable);
   response &= Delete(db(), kLoyaltyCardMerchantDomainTable);
 
   sql::Statement insert_cards;
@@ -199,7 +258,12 @@ bool ValuablesTable::SetLoyaltyCards(
       insert_card_merchant_domains.BindString(1, merchant_domain.spec());
       response &= insert_card_merchant_domains.Run();
     }
+
+    // Add the loyalty card's metadata. This is not a critical operation, so
+    // execution proceeds even if it fails.
+    AddValuableMetadata(loyalty_card.metadata());
   }
+
   transaction.Commit();
   return response;
 }
@@ -217,11 +281,6 @@ std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
     return LoyaltyCardFromStatement(db(), query);
   }
   return std::nullopt;
-}
-
-bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {
-  return DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardId,
-                             loyalty_card_id.value());
 }
 
 bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
@@ -270,7 +329,48 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
     }
   }
 
+  // Add the loyalty card's metadata. This is not a critical operation, so
+  // execution proceeds even if it fails.
+  AddValuableMetadata(card.metadata());
+
   return transaction.Commit();
+}
+
+bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardId,
+                             loyalty_card_id.value()) &&
+         RemoveValuableMetadata(loyalty_card_id) && transaction.Commit();
+}
+
+bool ValuablesTable::AddOrUpdateValuableMetadata(
+    const ValuableMetadata& metadata) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() && RemoveValuableMetadata(metadata.valuable_id) &&
+         AddValuableMetadata(metadata) && transaction.Commit();
+}
+
+bool ValuablesTable::RemoveValuableMetadata(ValuableId valuable_id) {
+  return DeleteWhereColumnEq(db(), kValuablesMetadataTable, kValuableId,
+                             valuable_id.value());
+}
+
+std::optional<ValuableMetadata> ValuablesTable::GetValuableMetadata(
+    ValuableId valuable_id) const {
+  return GetValuableMetadataFromDb(db(), valuable_id);
+}
+
+bool ValuablesTable::AddValuableMetadata(
+    const ValuableMetadata& metadata) const {
+  sql::Statement s;
+  InsertBuilder(db(), s, kValuablesMetadataTable,
+                {kValuableId, kUseCount, kUseDate});
+  int index = 0;
+  s.BindString(index++, metadata.valuable_id.value());
+  s.BindInt64(index++, metadata.use_count);
+  s.BindTime(index++, metadata.use_date);
+  return s.Run();
 }
 
 }  // namespace autofill

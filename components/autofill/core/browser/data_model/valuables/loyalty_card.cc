@@ -11,6 +11,7 @@
 
 namespace autofill {
 
+// TODO(crbug.com/473524209): Include metadata as part of the constructor.
 LoyaltyCard::LoyaltyCard(ValuableId id,
                          std::string merchant_name,
                          std::string program_name,
@@ -22,7 +23,8 @@ LoyaltyCard::LoyaltyCard(ValuableId id,
       program_name_(std::move(program_name)),
       program_logo_(std::move(program_logo)),
       loyalty_card_number_(std::move(loyalty_card_number)),
-      merchant_domains_(std::move(merchant_domains)) {}
+      merchant_domains_(std::move(merchant_domains)),
+      valuable_metadata_(id_, base::Time(), 0) {}
 
 LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
 LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
