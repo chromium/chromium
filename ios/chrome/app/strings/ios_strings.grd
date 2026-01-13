@@ -4817,6 +4817,21 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PASSKEY_BOOTSTRAPPING_TITLE" desc="Title of the screen shown when the user needs to enter their Google Password Manager pin to use passkeys on their device.">
         Verify it’s you to use your passkeys on this device
       </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_ACCOUNT" desc="Below the Passkey Creation Bottom Sheet's subtitle, this indicates in which account the new passkey will be saved (the currently signed in account). [iOS only]">
+        Passkeys are saved in Google Password Manager for
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_CREATE" desc="Passkey Creation Bottom Sheet's button to create a passkey. [iOS only]">
+        Create
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_SAVE_ANOTHER_WAY" desc="Passkey Creation Bottom Sheet's button to use a different credential provider to create the passkey, if any are available. [iOS only]">
+        Save another way
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_SUBTITLE" desc="Passkey Creation Bottom Sheet's subtitle. [iOS only]">
+        Sign in faster from any of your synced devices.
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_TITLE" desc="Passkey Creation Bottom Sheet's title. The user's username/email and website domain will appear below this. [iOS only]">
+        Create a passkey for
+      </message>
       <message name="IDS_IOS_PASSKEY_CREATION_DATE" desc="Passkey creation date. [iOS only]">
         Created on <ph name="Date"><ex>2023/12/31</ex>$1</ph>
       </message>
