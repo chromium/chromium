@@ -4,18 +4,21 @@
 
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -34,7 +37,7 @@ namespace {
 // uint32_t is specified in the protocol as the type for the message header.
 typedef uint32_t MessageLengthType;
 
-const int kMessageHeaderSize = sizeof(MessageLengthType);
+constexpr size_t kMessageHeaderSize = sizeof(MessageLengthType);
 
 // Limit the size of received messages, to avoid excessive memory-allocation in
 // this process, and potential overflow issues when casting to a signed 32-bit
@@ -93,18 +96,21 @@ void NativeMessagingReader::Core::ReadMessage() {
 
   // Keep reading messages until the stream is closed or an error occurs.
   while (true) {
-    MessageLengthType message_length;
-    int read_result = UNSAFE_TODO(read_stream_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&message_length), kMessageHeaderSize));
+    std::array<uint8_t, kMessageHeaderSize> message_length_bytes;
+    std::optional<size_t> read_result =
+        read_stream_.ReadAtCurrentPos(message_length_bytes);
     if (read_result != kMessageHeaderSize) {
       // 0 means EOF which is normal and should not be logged as an error.
-      if (read_result != 0) {
+      if (!read_result || *read_result != 0) {
         LOG(ERROR) << "Failed to read message header, read returned "
-                   << read_result;
+                   << read_result.value_or(-1);
       }
       NotifyEof();
       return;
     }
+
+    MessageLengthType message_length =
+        base::U32FromNativeEndian(message_length_bytes);
 
     if (message_length > kMaximumMessageSize) {
       LOG(ERROR) << "Message size too large: " << message_length;
@@ -113,11 +119,11 @@ void NativeMessagingReader::Core::ReadMessage() {
     }
 
     std::string message_json(message_length, '\0');
-    read_result = UNSAFE_TODO(
-        read_stream_.ReadAtCurrentPos(std::data(message_json), message_length));
-    if (read_result != static_cast<int>(message_length)) {
+    read_result = read_stream_.ReadAtCurrentPos(
+        base::as_writable_byte_span(message_json));
+    if (read_result != message_length) {
       LOG(ERROR) << "Failed to read message body, read returned "
-                 << read_result;
+                 << read_result.value_or(-1);
       NotifyEof();
       return;
     }
