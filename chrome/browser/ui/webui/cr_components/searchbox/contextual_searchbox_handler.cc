@@ -828,8 +828,7 @@ void ContextualSearchboxHandler::OpenUrl(
         std::string query_text;
         net::GetValueForKeyInQuery(url, "q", &query_text);
         lens_search_controller->IssueContextualSearchRequest(
-            lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
-            url,
+            lens::LensOverlayInvocationSource::kOmniboxContextualQuery, url,
             query_text.empty()
                 ? AutocompleteMatchType::Type::SEARCH_SUGGEST
                 : AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
