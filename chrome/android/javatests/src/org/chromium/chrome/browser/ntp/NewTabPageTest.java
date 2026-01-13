@@ -587,6 +587,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisabledTest(message = "crbug.com/475323609")
     public void testFeedReliabilityLoggingFocusOmnibox() throws IOException {
         mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
 
