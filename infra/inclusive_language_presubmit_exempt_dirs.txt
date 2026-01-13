@@ -513,7 +513,6 @@ third_party/hyphenation-patterns/src/am
 third_party/inspector_protocol
 third_party/jsoncpp
 third_party/libdisplay-info
-third_party/libdmg-hfsplus/patches
 third_party/libdmg-hfsplus/src/dmg
 third_party/libdmg-hfsplus/src/docs
 third_party/libdmg-hfsplus/src/test/attribution_reference
