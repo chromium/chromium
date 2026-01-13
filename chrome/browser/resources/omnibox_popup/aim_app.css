@@ -83,3 +83,8 @@ cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-ico
   left: 12px;
   top: 14px;
 }
+
+:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
+  left: unset;
+  right: 12px;
+}
