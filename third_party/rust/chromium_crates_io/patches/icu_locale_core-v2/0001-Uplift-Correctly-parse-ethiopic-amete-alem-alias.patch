@@ -1,0 +1,82 @@
+From 7a1a500f430e26f039dc4f85b710bc5ba7ecca8d Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Tue, 13 Jan 2026 17:47:56 +0000
+Subject: [PATCH] (Uplift) Correctly parse ethiopic-amete-alem alias
+
+Uplifts https://github.com/unicode-org/icu4x/pull/7413
+
+Fixes some new test262 failures.
+
+Change-Id: I2ebf37a2a47ffbd9f1a188f48490966f1d1ab6fd
+---
+ .../extensions/unicode/keywords/calendar.rs   | 44 ++++++++++++++++++-
+ 1 file changed, 44 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/preferences/extensions/unicode/keywords/calendar.rs b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/preferences/extensions/unicode/keywords/calendar.rs
+index 2f65e4e4dc963..0c18baf0b7bea 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/preferences/extensions/unicode/keywords/calendar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/preferences/extensions/unicode/keywords/calendar.rs
+@@ -4,7 +4,10 @@
+ 
+ #![allow(non_snake_case)]
+ 
++use crate::extensions::unicode::{value, Value};
+ use crate::preferences::extensions::unicode::enum_keyword;
++use crate::preferences::extensions::unicode::errors::PreferencesParseError;
++use crate::subtags::{subtag, Subtag};
+ 
+ enum_keyword!(
+     /// Hijri Calendar sub-type
+@@ -21,6 +24,18 @@ enum_keyword!(
+         Rgsa
+ });
+ 
++/// Handles aliases present in `v`. If found, returns a CalendarAlgorithm, else returns None
++fn handle_aliases(v: &Value) -> Option<CalendarAlgorithm> {
++    if *v == value!("islamicc") {
++        return Some(CalendarAlgorithm::Hijri(Some(
++            HijriCalendarAlgorithm::Civil,
++        )));
++    } else if v.as_subtags_slice() == [subtag!("ethiopic"), subtag!("amete"), subtag!("alem")] {
++        return Some(CalendarAlgorithm::Ethioaa);
++    }
++    None
++}
++
+ enum_keyword!(
+     /// A Unicode Calendar Identifier defines a type of calendar.
+     ///
+@@ -63,4 +78,31 @@ enum_keyword!(
+         ("persian" => Persian),
+         /// Republic of China calendar
+         ("roc" => Roc)
+-}, "ca", s, if *s == value!("islamicc") { return Ok(Self::Hijri(Some(HijriCalendarAlgorithm::Civil))); });
++}, "ca", s, if let Some(s) = handle_aliases(s) { return Ok(s) });
++
++#[test]
++fn test_calendar_aliases() {
++    fn test(s: &str, expectation: CalendarAlgorithm) {
++        let v = Value::try_from_str(s).unwrap();
++        let parsed = CalendarAlgorithm::try_from(&v).unwrap();
++        assert_eq!(parsed, expectation, "{s} must parse to {expectation:?}");
++    }
++
++    test("ethiopic-amete-alem", CalendarAlgorithm::Ethioaa);
++    test("ethiopic", CalendarAlgorithm::Ethiopic);
++    test("ethiopic-foobar", CalendarAlgorithm::Ethiopic);
++    test("ethioaa", CalendarAlgorithm::Ethioaa);
++    test(
++        "islamicc",
++        CalendarAlgorithm::Hijri(Some(HijriCalendarAlgorithm::Civil)),
++    );
++    test(
++        "islamic-civil",
++        CalendarAlgorithm::Hijri(Some(HijriCalendarAlgorithm::Civil)),
++    );
++    test(
++        "islamic-rgsa",
++        CalendarAlgorithm::Hijri(Some(HijriCalendarAlgorithm::Rgsa)),
++    );
++    test("islamic", CalendarAlgorithm::Hijri(None));
++}
+
