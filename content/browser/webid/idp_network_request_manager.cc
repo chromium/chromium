@@ -971,13 +971,12 @@ IdpNetworkRequestManager::AccountsResponse::PotentialAccountsForOrigin(
 
   std::vector<IdentityRequestAccountPtr> result;
   for (const auto& account : accounts) {
-    auto it = std::find_if(account->potentially_approved_origin_hashes.begin(),
-                           account->potentially_approved_origin_hashes.end(),
-                           [&hashed_origin](const auto& a) -> bool {
-                             return base::ToUpperASCII(hashed_origin) ==
-                                    base::ToUpperASCII(a);
-                           });
-    if (it != account->potentially_approved_origin_hashes.end()) {
+    bool found = std::ranges::any_of(
+        account->potentially_approved_origin_hashes,
+        [&hashed_origin](const auto& a) -> bool {
+          return base::ToUpperASCII(hashed_origin) == base::ToUpperASCII(a);
+        });
+    if (found) {
       result.push_back(account);
     }
   }
