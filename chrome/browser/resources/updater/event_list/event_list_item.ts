@@ -12,7 +12,7 @@ import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {Scope, UpdaterProcessMap} from '../event_history.js';
+import type {PolicySet, Scope, UpdaterProcessMap} from '../event_history.js';
 import {getAppId, isMergedHistoryEvent, localizeScope} from '../event_history.js';
 import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHistoryEvent, MergedInstallEvent, MergedQualifyEvent, MergedUninstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -47,6 +47,7 @@ export class EventListItemElement extends CrLitElement {
       event: {type: Object},
       eventDate: {type: Object},
       processMap: {type: Object},
+      policies: {type: Object},
       expanded: {type: Boolean, notify: true},
       status: {type: String, reflect: true},
       scope: {type: String, reflect: true},
@@ -56,6 +57,7 @@ export class EventListItemElement extends CrLitElement {
   accessor event: HistoryEvent|MergedHistoryEvent|undefined = undefined;
   accessor eventDate: Date|undefined = undefined;
   accessor processMap: UpdaterProcessMap|undefined = undefined;
+  accessor policies: PolicySet|undefined = undefined;
   accessor expanded = false;
   accessor status: 'success'|'error'|'' = '';
   accessor scope: Scope|undefined = undefined;

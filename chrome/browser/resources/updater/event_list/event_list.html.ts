@@ -30,7 +30,7 @@ export function getHtml(this: EventListElement) {
     .template="${(item: EventEntry) => html`
       <div>
         <event-list-item .event="${item.event}" .eventDate="${item.eventDate}"
-            .processMap="${this.processMap}"
+            .processMap="${this.processMap}" .policies="${item.policies}"
             @expanded-changed="${this.onEventItemExpandedChanged}">
         </event-list-item>
       </div>`}">

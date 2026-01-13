@@ -1311,6 +1311,40 @@ export class UpdaterProcessMap {
   }
 
   /**
+   * Determines the policy set which was effective for `event` by locating its
+   * most recent LOAD_POLICY event.
+   */
+  effectivePolicySet(
+      event: HistoryEvent|MergedHistoryEvent,
+      events: Array<HistoryEvent|MergedHistoryEvent>): PolicySet|undefined {
+    const process = this.getUpdaterProcessForEvent(event);
+    if (process === undefined) {
+      return undefined;
+    }
+
+    const eventTime = isMergedHistoryEvent(event) ?
+        event.startEvent.deviceUptime :
+        event.deviceUptime;
+    const loadPolicyEvents = events.filter(
+        (e): e is MergedLoadPolicyEvent => isMergedHistoryEvent(e) &&
+            e.eventType === 'LOAD_POLICY' &&
+            e.endEvent.policySet !== undefined &&
+            e.startEvent.pid === process.startEvent.pid &&
+            e.startEvent.processToken === process.startEvent.processToken &&
+            e.startEvent.deviceUptime <= eventTime);
+    if (loadPolicyEvents.length === 0) {
+      return undefined;
+    }
+    return loadPolicyEvents
+        .reduce(
+            (prev, current) =>
+                prev.endEvent.deviceUptime > current.endEvent.deviceUptime ?
+                prev :
+                current)
+        .endEvent.policySet;
+  }
+
+  /**
    * Generates a key for an event unique to its process, based on its PID and
    * processToken.
    */

@@ -122,6 +122,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"outcome", IDS_UPDATER_OUTCOME},
       {"outcomeUnknown", IDS_UPDATER_OUTCOME_UNKNOWN},
       {"persistedDataSummary", IDS_UPDATER_PERSISTED_DATA_SUMMARY},
+      {"policyDetails", IDS_UPDATER_EFFECTIVE_POLICY_SET},
       {"processSummary", IDS_UPDATER_PROCESS_SUMMARY},
       {"qualificationFailed", IDS_UPDATER_QUALIFICATION_FAILED},
       {"qualificationSucceeded", IDS_UPDATER_QUALIFICATION_SUCCEEDED},

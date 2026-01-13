@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActivateEndEvent, ActivateStartEvent, AppCommandEndEvent, AppCommandStartEvent, HistoryEvent, InstallEndEvent, InstallStartEvent, LoadPolicyEndEvent, LoadPolicyStartEvent, MergedInstallEvent, MergedUpdaterProcessEvent, PersistedDataEvent, PostRequestEndEvent, PostRequestStartEvent, QualifyEndEvent, QualifyStartEvent, UninstallEndEvent, UninstallStartEvent, UpdateEndEvent, UpdaterProcessEndEvent, UpdaterProcessStartEvent, UpdateStartEvent} from 'chrome://updater/event_history.js';
+import type {ActivateEndEvent, ActivateStartEvent, AppCommandEndEvent, AppCommandStartEvent, HistoryEvent, InstallEndEvent, InstallStartEvent, LoadPolicyEndEvent, LoadPolicyStartEvent, MergedHistoryEvent, MergedInstallEvent, MergedUpdaterProcessEvent, PersistedDataEvent, PostRequestEndEvent, PostRequestStartEvent, QualifyEndEvent, QualifyStartEvent, UninstallEndEvent, UninstallStartEvent, UpdateEndEvent, UpdaterProcessEndEvent, UpdaterProcessStartEvent, UpdateStartEvent} from 'chrome://updater/event_history.js';
 import {deduplicateEvents, mergeEvents, parseEvent, UpdaterProcessMap} from 'chrome://updater/event_history.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -1506,6 +1506,188 @@ suite('UpdaterProcessMap', () => {
       const result = map.sortEventsByDate([INSTALL2_START], [INSTALL1_MERGED]);
       assertArrayEquals([INSTALL1_MERGED], result.sortedEventsWithDates);
       assertArrayEquals([INSTALL2_START], result.unsortedEventsWithoutDates);
+    });
+  });
+
+  suite('effectivePolicySet', () => {
+    const LOAD_POLICY_START: LoadPolicyStartEvent = {
+      eventType: 'LOAD_POLICY',
+      eventId: 'p1',
+      pid: 100,
+      processToken: 'abc',
+      deviceUptime: 1050000,
+      bound: 'START',
+      errors: [],
+    };
+    const LOAD_POLICY_END: LoadPolicyEndEvent = {
+      eventType: 'LOAD_POLICY',
+      eventId: 'p1',
+      pid: 100,
+      processToken: 'abc',
+      deviceUptime: 1060000,
+      bound: 'END',
+      errors: [],
+      policySet: {
+        policiesByName: {
+          'policy1': {
+            valuesBySource: {'default': 1},
+            prevailingSource: 'default',
+          },
+        },
+        policiesByAppId: {},
+      },
+    };
+    const LOAD_POLICY_MERGED: MergedHistoryEvent = {
+      eventType: 'LOAD_POLICY',
+      startEvent: LOAD_POLICY_START,
+      endEvent: LOAD_POLICY_END,
+    };
+
+    test('should return undefined if no updater process', () => {
+      const map = new UpdaterProcessMap([]);
+      assertEquals(
+          undefined,
+          map.effectivePolicySet(INSTALL1_MERGED, [LOAD_POLICY_MERGED]));
+    });
+
+    test('should return undefined if no LOAD_POLICY events exist', () => {
+      const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+      assertEquals(
+          undefined,
+          map.effectivePolicySet(INSTALL1_MERGED, [INSTALL1_MERGED]));
+    });
+
+    suite(
+        'should return undefined if LOAD_POLICY event is in different process',
+        () => {
+          const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+
+          test('by pid', () => {
+            const OTHER_PROCESS_LOAD_POLICY_START: LoadPolicyStartEvent = {
+              ...LOAD_POLICY_START,
+              pid: 999,
+            };
+            const OTHER_PROCESS_LOAD_POLICY_END: LoadPolicyEndEvent = {
+              ...LOAD_POLICY_END,
+              pid: 999,
+            };
+            const OTHER_PROCESS_LOAD_POLICY_MERGED: MergedHistoryEvent = {
+              eventType: 'LOAD_POLICY',
+              startEvent: OTHER_PROCESS_LOAD_POLICY_START,
+              endEvent: OTHER_PROCESS_LOAD_POLICY_END,
+            };
+
+            assertEquals(
+                undefined,
+                map.effectivePolicySet(
+                    INSTALL1_MERGED, [OTHER_PROCESS_LOAD_POLICY_MERGED]));
+          });
+
+          test('by processToken', () => {
+            const OTHER_PROCESS_LOAD_POLICY_START: LoadPolicyStartEvent = {
+              ...LOAD_POLICY_START,
+              processToken: 'differentToken',
+            };
+            const OTHER_PROCESS_LOAD_POLICY_END: LoadPolicyEndEvent = {
+              ...LOAD_POLICY_END,
+              processToken: 'differentToken',
+            };
+            const OTHER_PROCESS_LOAD_POLICY_MERGED: MergedHistoryEvent = {
+              eventType: 'LOAD_POLICY',
+              startEvent: OTHER_PROCESS_LOAD_POLICY_START,
+              endEvent: OTHER_PROCESS_LOAD_POLICY_END,
+            };
+
+            assertEquals(
+                undefined,
+                map.effectivePolicySet(
+                    INSTALL1_MERGED, [OTHER_PROCESS_LOAD_POLICY_MERGED]));
+          });
+        });
+
+    test('should return undefined if LOAD_POLICY event is after event', () => {
+      const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+      const LATE_LOAD_POLICY_START: LoadPolicyStartEvent = {
+        ...LOAD_POLICY_START,
+        deviceUptime: INSTALL1_START.deviceUptime + 1,
+      };
+      const LATE_LOAD_POLICY_END: LoadPolicyEndEvent = {
+        ...LOAD_POLICY_END,
+        deviceUptime: INSTALL1_START.deviceUptime + 10,
+      };
+      const LATE_LOAD_POLICY_MERGED: MergedHistoryEvent = {
+        eventType: 'LOAD_POLICY',
+        startEvent: LATE_LOAD_POLICY_START,
+        endEvent: LATE_LOAD_POLICY_END,
+      };
+
+      assertEquals(
+          undefined,
+          map.effectivePolicySet(INSTALL1_MERGED, [LATE_LOAD_POLICY_MERGED]));
+    });
+
+    test('should return undefined if LOAD_POLICY has no policy set', () => {
+      const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+      const EMPTY_LOAD_POLICY_END: LoadPolicyEndEvent = {
+        ...LOAD_POLICY_END,
+        policySet: undefined,
+      };
+      const LATE_LOAD_POLICY_MERGED: MergedHistoryEvent = {
+        eventType: 'LOAD_POLICY',
+        startEvent: LOAD_POLICY_START,
+        endEvent: EMPTY_LOAD_POLICY_END,
+      };
+
+      assertEquals(
+          undefined,
+          map.effectivePolicySet(INSTALL1_MERGED, [LATE_LOAD_POLICY_MERGED]));
+    });
+
+    test('should return policy set', () => {
+      const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+      assertDeepEquals(
+          LOAD_POLICY_END.policySet,
+          map.effectivePolicySet(INSTALL1_MERGED, [LOAD_POLICY_MERGED]));
+    });
+
+    test('should return most recent policy set', () => {
+      const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+      const OLDER_LOAD_POLICY_START: LoadPolicyStartEvent = {
+        ...LOAD_POLICY_START,
+        eventId: 'p0',
+        deviceUptime: LOAD_POLICY_START.deviceUptime - 100,
+      };
+      const OLDER_LOAD_POLICY_END: LoadPolicyEndEvent = {
+        ...LOAD_POLICY_END,
+        eventId: 'p0',
+        deviceUptime: LOAD_POLICY_END.deviceUptime - 100,
+        policySet: {
+          policiesByName: {
+            'policy1': {
+              valuesBySource: {'default': 0},
+              prevailingSource: 'default',
+            },
+          },
+          policiesByAppId: {},
+        },
+      };
+      const OLDER_LOAD_POLICY_MERGED: MergedHistoryEvent = {
+        eventType: 'LOAD_POLICY',
+        startEvent: OLDER_LOAD_POLICY_START,
+        endEvent: OLDER_LOAD_POLICY_END,
+      };
+
+      assertDeepEquals(
+          LOAD_POLICY_END.policySet,
+          map.effectivePolicySet(
+              INSTALL1_MERGED, [OLDER_LOAD_POLICY_MERGED, LOAD_POLICY_MERGED]));
+    });
+
+    test('should return policy set for LOAD_POLICY event', () => {
+      const map = new UpdaterProcessMap([PROCESS1_MERGED]);
+      assertDeepEquals(
+          LOAD_POLICY_END.policySet,
+          map.effectivePolicySet(LOAD_POLICY_MERGED, [LOAD_POLICY_MERGED]));
     });
   });
 });

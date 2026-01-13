@@ -88,6 +88,11 @@ export function getHtml(this: EventListItemElement) {
   ${this.formattedDuration ? html`
     <span class="event-duration">${this.formattedDuration}</span>
   ` : ''}
+  ${this.policies !== undefined ? html`
+    <raw-event-details id="policySource" label="$i18n{policyDetails}"
+        .events="${[this.policies]}">
+    </raw-event-details>
+  ` : ''}
   <raw-event-details .events="${[this.event]}">
   </raw-event-details>
 </cr-collapse>

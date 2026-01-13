@@ -19854,6 +19854,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_DURATION" desc="Text indicating the duration of a Chrome Updater event in a log.">
         Duration: <ph name="DURATION">$1<ex>1m 12s</ex></ph>
       </message>
+      <message name="IDS_UPDATER_EFFECTIVE_POLICY_SET" desc="Label for an expandable section which displays the enterprise policies which controlled the behavior of an action taken by the Chrome Updater in its event log.">
+        Enterprise Policies
+      </message>
       <message name="IDS_UPDATER_END_DATE" desc="Label for the end date input field.">
         End Date:
       </message>

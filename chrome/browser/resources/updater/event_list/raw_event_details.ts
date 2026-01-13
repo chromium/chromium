@@ -27,7 +27,7 @@ export class RawEventDetailsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      label: {type: String},
+      label: {type: String, reflect: true},
       events: {type: Array},
       expanded: {type: Boolean},
     };
