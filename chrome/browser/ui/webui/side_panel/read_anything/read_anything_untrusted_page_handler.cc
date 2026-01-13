@@ -1057,6 +1057,7 @@ void ReadAnythingUntrustedPageHandler::Activate(
   active_ = active;
   if (active_) {
     last_open_trigger_ = open_trigger;
+    tab_will_detach_ = false;
   }
   if (features::IsReadAnythingReadAloudEnabled() && !active &&
       !tab_will_detach_) {
