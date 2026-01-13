@@ -73,7 +73,7 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.components.page_info.PageInfoCookiesSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
-                    org.chromium.components.browser_ui.site_settings.RwsCookieSettings
+                    org.chromium.components.browser_ui.site_settings.CookieSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.components.browser_ui.site_settings.SingleCategorySettings
                             .SEARCH_INDEX_DATA_PROVIDER,

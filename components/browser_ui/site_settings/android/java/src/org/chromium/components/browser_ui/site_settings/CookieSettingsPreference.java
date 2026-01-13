@@ -27,9 +27,9 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.content_settings.CookieControlsMode;
 
-/** A 3-state radio group Preference used for the Third-Party Cookies subpage of SiteSettings. */
+/** A radio group Preference used for the Third-Party Cookies subpage of SiteSettings. */
 @NullMarked
-public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupPreference
+public class CookieSettingsPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     @SuppressWarnings("NullAway.Init")
@@ -61,13 +61,13 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
     private @Nullable RadioGroup mRadioGroup;
     private TextViewWithCompoundDrawables mManagedView;
 
-    public TriStateCookieSettingsPreference(Context context, AttributeSet attrs) {
+    public CookieSettingsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // Sets the layout resource that will be inflated for the view.
-        setLayoutResource(R.layout.tri_state_cookie_settings_preference);
+        setLayoutResource(R.layout.cookie_settings_preference);
 
-        // Make unselectable, otherwise TriStateCookieSettingsPreference is treated as one
+        // Make unselectable, otherwise CookieSettingsPreference is treated as one
         // selectable Preference, instead of four selectable radio buttons.
         setSelectable(false);
     }
@@ -158,7 +158,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
         final int blockSublabelId =
                 params.isRelatedWebsiteSetsDataAccessEnabled
                         ? R.string
-                        .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
+                                .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
                         : R.string
                                 .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled;
         mBlockThirdPartyButton.setDescriptionText(getResources().getString(blockSublabelId));

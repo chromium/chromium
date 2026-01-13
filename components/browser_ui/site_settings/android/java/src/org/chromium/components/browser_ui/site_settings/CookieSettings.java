@@ -31,9 +31,9 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/** Related Website Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
+/** A CookieSettingsPreference subpage. */
 @NullMarked
-public class RwsCookieSettings extends BaseSiteSettingsFragment
+public class CookieSettings extends BaseSiteSettingsFragment
         implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
     public static final String ALLOW_RWS_COOKIE_PREFERENCE = "allow_rws";
     public static final String SUBTITLE = "subtitle";
@@ -56,7 +56,7 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
     @Override
     @Initializer
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
-        SettingsUtils.addPreferencesFromResource(this, R.xml.rws_cookie_settings);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.cookie_settings);
 
         mPageTitle.set(getContext().getString(R.string.cookies_title));
         mSubtitle = (TextMessagePreference) assertNonNull(findPreference(SUBTITLE));
@@ -67,7 +67,7 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
                 (ChromeSwitchPreference) assertNonNull(findPreference(ALLOW_RWS_COOKIE_PREFERENCE));
 
         @CookieControlsMode
-        int pageState = getArguments().getInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE);
+        int pageState = getArguments().getInt(CookieSettings.EXTRA_COOKIE_PAGE_STATE);
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
             setupAllowRwsPreference();
             mAllowRwsPreference.setVisible(
@@ -182,6 +182,5 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
 
     // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(
-                    RwsCookieSettings.class.getName(), R.xml.rws_cookie_settings);
+            new BaseSearchIndexProvider(CookieSettings.class.getName(), R.xml.cookie_settings);
 }

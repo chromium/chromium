@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1091584228" label="NonCardPaymentMethodsManagementFragment"/>
   <int value="-1035378917" label="PrivacySettingsFragment"/>
   <int value="-1022730020" label="AutofillOptionsFragment"/>
-  <int value="-988526347" label="RWSCookieSettings"/>
+  <int value="-988526347" label="(Obsolete) RWSCookieSettings"/>
   <int value="-980428258" label="FledgeAllSitesFragment"/>
   <int value="-894030932" label="AutofillLocalIbanEditor"/>
   <int value="-847585811" label="DeveloperSettings"/>
@@ -88,13 +88,14 @@ chromium-metrics-reviews@google.com.
   <int value="493474121" label="StandardProtectionSettingsFragment"/>
   <int value="513483078" label="DoNotTrackSettings"/>
   <int value="590543987" label="StorageAccessSubpageSettings"/>
+  <int value="603280071" label="CookieSettings"/>
   <int value="688926211" label="ManageSyncSettings"/>
   <int value="690866195" label="SafetyHubFragment"/>
   <int value="706619094" label="CredentialEditFragmentView"/>
   <int value="721075728" label="FederatedCredentialFragmentView"/>
   <int value="734412281" label="SearchResultsPreferenceFragment"/>
   <int value="790603956" label="ChosenObjectSettings"/>
-  <int value="851266805" label="RwsCookieSettings"/>
+  <int value="851266805" label="(Obsolete) RwsCookieSettings"/>
   <int value="853227285" label="ImageDescriptionsSettings"/>
   <int value="887082954"
       label="(Obsolete) FingerprintingProtectionSettingsFragment"/>

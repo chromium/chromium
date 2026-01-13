@@ -130,21 +130,21 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 SiteAddedCallback,
                 OnPreferenceTreeClickListener,
                 FragmentSettingsNavigation,
-                TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
+                CookieSettingsPreference.OnCookiesDetailsRequested,
                 CustomDividerFragment,
                 SearchViewProvider,
                 WebsitePreference.OnStorageAccessWebsiteDetailsRequested {
     @IntDef({
         GlobalToggleLayout.BINARY_TOGGLE,
         GlobalToggleLayout.TRI_STATE_TOGGLE,
-        GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE,
+        GlobalToggleLayout.COOKIE_TOGGLE,
         GlobalToggleLayout.BINARY_RADIO_BUTTON
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface GlobalToggleLayout {
         int BINARY_TOGGLE = 0;
         int TRI_STATE_TOGGLE = 1;
-        int TRI_STATE_COOKIE_TOGGLE = 2;
+        int COOKIE_TOGGLE = 2;
         int BINARY_RADIO_BUTTON = 3;
     }
 
@@ -210,10 +210,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState) {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
+        fragmentArgs.putInt(CookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
 
         mSettingsNavigation.startSettings(
-                getActivity(), RwsCookieSettings.class, fragmentArgs, /* addToBackStack= */ true);
+                getActivity(), CookieSettings.class, fragmentArgs, /* addToBackStack= */ true);
     }
 
     @Override
@@ -247,7 +247,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     public static final String BINARY_TOGGLE_KEY = "binary_toggle";
     public static final String BINARY_RADIO_BUTTON_KEY = "binary_radio_button";
     public static final String TRI_STATE_TOGGLE_KEY = "tri_state_toggle";
-    public static final String TRI_STATE_COOKIE_TOGGLE = "tri_state_cookie_toggle";
+    public static final String COOKIE_TOGGLE = "cookie_toggle";
 
     // Keys for category-specific preferences (toggle, link, button etc.), dynamically shown.
     public static final String NOTIFICATIONS_VIBRATE_TOGGLE_KEY = "notifications_vibrate";
@@ -512,7 +512,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         int contentType = mCategory.getContentSettingsType();
         if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
-            mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE;
+            mGlobalToggleLayout = GlobalToggleLayout.COOKIE_TOGGLE;
         } else if (WebsitePreferenceBridge.requiresTriStateContentSetting(contentType)) {
             mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_TOGGLE;
         } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
@@ -725,7 +725,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             WebsitePreferenceBridge.setDefaultContentSetting(
                     browserContextHandle, mCategory.getContentSettingsType(), setting);
             getInfoForOrigins();
-        } else if (TRI_STATE_COOKIE_TOGGLE.equals(preference.getKey())) {
+        } else if (COOKIE_TOGGLE.equals(preference.getKey())) {
             setThirdPartyCookieSettingsPreference((int) newValue);
             getInfoForOrigins();
         } else if (NOTIFICATIONS_VIBRATE_TOGGLE_KEY.equals(preference.getKey())) {
@@ -907,7 +907,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
         int setting = ContentSetting.DEFAULT;
         switch (mGlobalToggleLayout) {
-            case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
+            case GlobalToggleLayout.COOKIE_TOGGLE:
                 setting =
                         getCookieControlsMode() == CookieControlsMode.OFF
                                 ? ContentSetting.BLOCK
@@ -1193,10 +1193,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 TriStateSiteSettingsPreference triStateToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_TOGGLE_KEY);
                 return (triStateToggle.getCheckedSetting() == ContentSetting.BLOCK);
-            case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
-                TriStateCookieSettingsPreference triStateCookieToggle =
-                        getPreferenceScreen().findPreference(TRI_STATE_COOKIE_TOGGLE);
-                Integer state = assumeNonNull(triStateCookieToggle.getState());
+            case GlobalToggleLayout.COOKIE_TOGGLE:
+                CookieSettingsPreference cookieToggle =
+                        getPreferenceScreen().findPreference(COOKIE_TOGGLE);
+                Integer state = assumeNonNull(cookieToggle.getState());
                 return state != CookieControlsMode.OFF;
             case GlobalToggleLayout.BINARY_TOGGLE:
                 ChromeSwitchPreference binaryToggle =
@@ -1293,8 +1293,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 screen.findPreference(BINARY_RADIO_BUTTON_KEY);
         TriStateSiteSettingsPreference triStateToggle =
                 screen.findPreference(TRI_STATE_TOGGLE_KEY);
-        TriStateCookieSettingsPreference triStateCookieToggle =
-                screen.findPreference(TRI_STATE_COOKIE_TOGGLE);
+        CookieSettingsPreference cookieToggle = screen.findPreference(COOKIE_TOGGLE);
         Preference notificationsVibrate =
                 screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         mNotificationsQuietUiPref =
@@ -1320,8 +1319,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mGlobalToggleLayout != GlobalToggleLayout.TRI_STATE_TOGGLE) {
             screen.removePreference(triStateToggle);
         }
-        if (mGlobalToggleLayout != GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE) {
-            screen.removePreference(triStateCookieToggle);
+        if (mGlobalToggleLayout != GlobalToggleLayout.COOKIE_TOGGLE) {
+            screen.removePreference(cookieToggle);
         }
         switch (mGlobalToggleLayout) {
             case GlobalToggleLayout.BINARY_TOGGLE:
@@ -1333,8 +1332,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
                 configureTriStateToggle(triStateToggle, contentType);
                 break;
-            case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
-                configureTriStateCookieToggle(triStateCookieToggle);
+            case GlobalToggleLayout.COOKIE_TOGGLE:
+                configureCookieToggle(cookieToggle);
                 break;
         }
 
@@ -1560,17 +1559,15 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         toggleMessage.setIcon(mCategory.getDisabledInAndroidIcon(getContext()));
     }
 
-    private void configureTriStateCookieToggle(
-            TriStateCookieSettingsPreference triStateCookieToggle) {
-        triStateCookieToggle.setOnPreferenceChangeListener(this);
-        triStateCookieToggle.setCookiesDetailsRequestedListener(this);
-        TriStateCookieSettingsPreference.Params params =
-                new TriStateCookieSettingsPreference.Params();
+    private void configureCookieToggle(CookieSettingsPreference cookieToggle) {
+        cookieToggle.setOnPreferenceChangeListener(this);
+        cookieToggle.setCookiesDetailsRequestedListener(this);
+        CookieSettingsPreference.Params params = new CookieSettingsPreference.Params();
         params.cookieControlsMode = getCookieControlsMode();
         params.cookieControlsModeEnforced = mCategory.isManaged();
         params.isRelatedWebsiteSetsDataAccessEnabled =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
-        triStateCookieToggle.setState(params);
+        cookieToggle.setState(params);
     }
 
     private int getCookieControlsMode() {
