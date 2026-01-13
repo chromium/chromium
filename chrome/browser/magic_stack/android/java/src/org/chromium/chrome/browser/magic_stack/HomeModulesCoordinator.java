@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
@@ -22,6 +23,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -94,8 +96,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
                     @Override
                     public void allCardsConfigChanged(boolean isEnabled) {
-                        // TODO(crbug.com/7142982): If all cards are turned off, reflect that on the
-                        // NTP.
+                        if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
+                            mRecyclerView.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+                        }
                     }
                 };
         mHomeModulesConfigManager.addListener(mHomeModulesStateListener);
