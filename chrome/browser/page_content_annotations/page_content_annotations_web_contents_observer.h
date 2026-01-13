@@ -15,12 +15,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-class TemplateURLService;
-
-namespace prerender {
-class NoStatePrefetchManager;
-}  // namespace prerender
-
 namespace content {
 class Page;
 }  // namespace content
@@ -88,13 +82,7 @@ class PageContentAnnotationsWebContentsObserver
   std::unique_ptr<AnnotatedPageContentRequest> annotated_page_content_request_;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<TemplateURLService> template_url_service_;
-
-  // Not owned. Guaranteed to outlive |this|.
   raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
-
-  // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;
 
   // The client of continuous_search::mojom::SearchResultExtractor
   // interface used for extracting data from the main frame of Google SRP
