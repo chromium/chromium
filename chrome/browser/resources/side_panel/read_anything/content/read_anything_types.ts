@@ -10,6 +10,11 @@ export enum LineFocusType {
   WINDOW = 2,
 }
 
+export enum LineFocusMovement {
+  STATIC = 0,
+  CURSOR = 1,
+}
+
 export class LineFocus {
   static readonly OFF = new LineFocus(
       LineFocusType.NONE, 0, () => chrome.readingMode.lineFocusOff);
@@ -51,6 +56,27 @@ export class LineFocus {
   // placeholder.
   static defaultValue(): LineFocus {
     return this.THREE_LINE_WINDOW;
+  }
+}
+
+export class LineFocusStyle {
+  static readonly OFF = new LineFocusStyle(LineFocusType.NONE, 0);
+  static readonly SMALL_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 1);
+  static readonly MEDIUM_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 3);
+  static readonly LARGE_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 5);
+  static readonly UNDERLINE = new LineFocusStyle(LineFocusType.LINE, 1);
+
+  private constructor(
+      public readonly type: LineFocusType, public readonly lines: number) {}
+
+  // TODO(crbug.com/447427066): Finalize the default mode. This is a
+  // placeholder.
+  static defaultValue(): LineFocusStyle {
+    return this.MEDIUM_WINDOW;
+  }
+
+  equals(other: LineFocusStyle): boolean {
+    return this.type === other.type && this.lines === other.lines;
   }
 }
 

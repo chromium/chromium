@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LineFocus} from './read_anything_types.js';
+import {type LineFocus, LineFocusMovement, LineFocusStyle} from './read_anything_types.js';
 
 export class LineFocusModel {
   // The min y position allowed for the line focus element.
@@ -29,9 +29,14 @@ export class LineFocusModel {
 
   // The current line focus mode.
   private currentLineFocus_?: LineFocus;
+  private currentLineFocusStyle_: LineFocusStyle = LineFocusStyle.OFF;
+  private currentLineFocusMovement_: LineFocusMovement =
+      LineFocusMovement.STATIC;
   // The last line focus mode that was used when it was on. Used for toggling on
   // line focus with the last used line focus mode.
   private lastEnabledLineFocus_?: LineFocus;
+  private lastEnabledLineFocusStyle_: LineFocusStyle =
+      LineFocusStyle.defaultValue();
 
   // The index of the current line in textLineBottoms_ being focused. Null if
   // line focus is moving continuously with the mouse instead of discretely.
@@ -104,6 +109,30 @@ export class LineFocusModel {
 
   setLastEnabledLineFocus(lineFocus: LineFocus): void {
     this.lastEnabledLineFocus_ = lineFocus;
+  }
+
+  getCurrentLineFocusStyle(): LineFocusStyle {
+    return this.currentLineFocusStyle_;
+  }
+
+  setCurrentLineFocusStyle(style: LineFocusStyle): void {
+    this.currentLineFocusStyle_ = style;
+  }
+
+  getCurrentLineFocusMovement(): LineFocusMovement {
+    return this.currentLineFocusMovement_;
+  }
+
+  setCurrentLineFocusMovement(movement: LineFocusMovement): void {
+    this.currentLineFocusMovement_ = movement;
+  }
+
+  getLastEnabledLineFocusStyle(): LineFocusStyle {
+    return this.lastEnabledLineFocusStyle_;
+  }
+
+  setLastEnabledLineFocusStyle(style: LineFocusStyle): void {
+    this.lastEnabledLineFocusStyle_ = style;
   }
 
   getCurrentLineIndex(): number|null {
