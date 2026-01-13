@@ -6,11 +6,14 @@ package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
 import org.chromium.url.GURL;
+
+import java.util.Locale;
 
 /** AutocompleteInput encompasses the input to autocomplete. */
 @NullMarked
@@ -49,7 +52,15 @@ public class AutocompleteInput {
                     PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE;
             // LINT.ThenChange(/chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxCoordinator.java:FuseboxSupportedPageClassifications)
             default -> {
-                assert false : "Unrecognized page classification.";
+                // TODO(crbug.com/474808407): address the issue with top resumed activity change and
+                // remove condition, making assertion live again.
+                if (BuildConfig.ENABLE_DEBUG_LOGS) {
+                    assert false
+                            : String.format(
+                                    Locale.ROOT,
+                                    "Unrecognized page classification: %d",
+                                    mPageClassification);
+                }
                 yield PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE;
             }
         };
