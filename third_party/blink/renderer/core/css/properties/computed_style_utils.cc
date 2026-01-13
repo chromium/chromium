@@ -4212,12 +4212,6 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
   const size_t count = width_values->length();
 
   // If the longhands differ in length, return nullptr.
-  // Constructing a shorthand from misaligned longhands is non-trivial and
-  // currently not supported.
-  //
-  // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-  // need to construct the shorthand from individual separate longhands that
-  // don't align.
   if (count != style_values->length() || count != color_values->length()) {
     return nullptr;
   }
@@ -4236,20 +4230,12 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
     if (const auto* width_repeat_value =
             DynamicTo<cssvalue::CSSRepeatValue>(width_values->Item(i))) {
       // Return nullptr if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands that
-      // don't align.
       if (!style_repeat_value || !color_repeat_value) {
         return nullptr;
       }
 
       const bool is_auto_repeat_value = width_repeat_value->IsAutoRepeatValue();
       // Return nullptr if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands that
-      // don't align.
       if (is_auto_repeat_value != style_repeat_value->IsAutoRepeatValue() ||
           is_auto_repeat_value != color_repeat_value->IsAutoRepeatValue()) {
         return nullptr;
@@ -4259,10 +4245,6 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       if (!is_auto_repeat_value) {
         repetitions = width_repeat_value->Repetitions();
         // Return nullptr if values don't align.
-        //
-        // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-        // need to construct the shorthand from individual separate longhands
-        // that don't align.
         if (!base::ValuesEquivalent(repetitions,
                                     style_repeat_value->Repetitions()) ||
             !base::ValuesEquivalent(repetitions,
@@ -4276,10 +4258,6 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       wtf_size_t rules_count = width_repeat_value->Values().length();
 
       // Return nullptr if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands that
-      // don't align.
       if (rules_count != style_repeat_value->Values().length() ||
           rules_count != color_repeat_value->Values().length()) {
         return nullptr;
@@ -4301,10 +4279,6 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       // A simple gap rule, just append width, style and color values.
 
       // Return nullptr if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands
-      // that don't align.
       if (style_repeat_value || color_repeat_value) {
         return nullptr;
       }

@@ -2317,12 +2317,6 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
   const wtf_size_t count = width_values->length();
 
   // If the longhands differ in length, return an empty string.
-  // Constructing a shorthand from misaligned longhands is non-trivial and
-  // currently not supported.
-  //
-  // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-  // need to construct the shorthand from individual separate longhands that
-  // don't align.
   if (count != style_values->length() || count != color_values->length()) {
     return String();
   }
@@ -2340,20 +2334,12 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
     if (const auto* width_repeat_value =
             DynamicTo<cssvalue::CSSRepeatValue>(width_values->Item(i))) {
       // Return an empty string if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands that
-      // don't align.
       if (!style_repeat_value || !color_repeat_value) {
         return String();
       }
 
       const bool is_auto_repeater = width_repeat_value->IsAutoRepeatValue();
       // Return an empty string if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands that
-      // don't align.
       if (is_auto_repeater != style_repeat_value->IsAutoRepeatValue() ||
           is_auto_repeater != color_repeat_value->IsAutoRepeatValue()) {
         return String();
@@ -2363,10 +2349,6 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
       if (!is_auto_repeater) {
         repetitions = width_repeat_value->Repetitions();
         // Return an empty string if values don't align.
-        //
-        // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-        // need to construct the shorthand from individual separate longhands
-        // that don't align.
         if (!base::ValuesEquivalent(repetitions,
                                     style_repeat_value->Repetitions()) ||
             !base::ValuesEquivalent(repetitions,
@@ -2379,10 +2361,6 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
           width_repeat_value->Values().length();
 
       // Return an empty string if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands that
-      // don't align.
       if (repeated_values_count != style_repeat_value->Values().length() ||
           repeated_values_count != color_repeat_value->Values().length()) {
         return String();
@@ -2417,10 +2395,6 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
       result.Append(repeat_result.ReleaseString());
     } else {
       // Return an empty string if values don't align.
-      //
-      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
-      // need to construct the shorthand from individual separate longhands
-      // that don't align.
       if (style_repeat_value || color_repeat_value) {
         return String();
       }
