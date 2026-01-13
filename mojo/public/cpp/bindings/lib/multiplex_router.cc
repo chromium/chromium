@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <atomic>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1170,8 +1170,8 @@ bool MultiplexRouter::ProcessIncomingMessage(
   bool can_direct_call;
   if (message->has_flag(Message::kFlagIsSync)) {
     if (!message->has_flag(Message::kFlagIsResponse) &&
-        !base::Contains(endpoint->client()->sync_method_ordinals(),
-                        message->name())) {
+        !std::ranges::contains(endpoint->client()->sync_method_ordinals(),
+                               message->name())) {
       RaiseErrorInNonTestingMode();
       return true;
     }
