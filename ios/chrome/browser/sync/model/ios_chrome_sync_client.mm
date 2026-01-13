@@ -112,3 +112,7 @@ void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
+
+bool IOSChromeSyncClient::IsMetricsAndCrashReportingEnabled() {
+  return IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+}

@@ -54,6 +54,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
+  bool IsMetricsAndCrashReportingEnabled() override;
 
  private:
   const raw_ptr<PrefService> pref_service_;

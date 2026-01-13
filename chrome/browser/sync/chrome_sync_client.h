@@ -61,6 +61,7 @@ class ChromeSyncClient : public syncer::SyncClient {
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
+  bool IsMetricsAndCrashReportingEnabled() override;
 
  private:
   const base::FilePath profile_base_name_;

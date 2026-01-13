@@ -438,9 +438,7 @@ void SyncServiceImpl::StartSyncingWithServer() {
     TriggerRefresh(TriggerRefreshSource::kLocalSync, DataTypeSet::All());
   }
 
-  // TODO(crbug.com/465716865): Only kick off the device stats tracker if
-  // metrics recording is enabled per IsMetricsAndCrashReportingEnabled().
-  if (engine_ &&
+  if (engine_ && sync_client_->IsMetricsAndCrashReportingEnabled() &&
       base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
     device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
         sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
