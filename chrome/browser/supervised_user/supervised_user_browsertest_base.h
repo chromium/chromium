@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #else
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -95,7 +96,11 @@ class SupervisedUserBrowserTestBase :
   // experience.
   void SetInitialSupervisedUserState(InitialSupervisedUserState initial_state);
 
+#if BUILDFLAG(IS_ANDROID)
+  AndroidParentalControls& GetDeviceParentalControls();
+#else
   DeviceParentalControls& GetDeviceParentalControls();
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   InitialSupervisedUserState initial_state_;

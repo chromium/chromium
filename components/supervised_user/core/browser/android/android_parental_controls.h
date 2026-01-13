@@ -7,11 +7,12 @@
 
 #include <string_view>
 
-#include "base/observer_list.h"
+#include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
@@ -31,17 +32,27 @@ class AndroidParentalControls : public DeviceParentalControls,
   // DeviceParentalControls:
   void Init() override;
   bool IsWebFilteringEnabled() const override;
+  bool IsIncognitoModeDisabled() const override;
   bool IsSafeSearchForced() const override;
   bool IsEnabled() const override;
-  bool IsBrowserContentFiltersEnabled() const override;
-  bool IsSearchContentFiltersEnabled() const override;
-  void SetBrowserContentFiltersEnabledForTesting(bool enabled) override;
-  void SetSearchContentFiltersEnabledForTesting(bool enabled) override;
-  base::CallbackListSubscription Subscribe(Callback callback) override;
+  void RegisterDeviceLevelSyntheticFieldTrials(
+      SynteticFieldTrialDelegate& synthetic_field_trial_delegate)
+      const override;
+
+  // Low-level interface for state of the underlying settings.
+  bool IsBrowserContentFiltersEnabled() const;
+  bool IsSearchContentFiltersEnabled() const;
+
+  // Test-only interface to set the state of the content filter observer
+  // bridges. Note: this does not alter the actual state of Android Secure
+  // Settings, only the JNI bridge's state. Otherwise, tests would leak state to
+  // outside environment (eg. Android platform that is hosting the tests).
+  void SetBrowserContentFiltersEnabledForTesting(bool enabled);
+  void SetSearchContentFiltersEnabledForTesting(bool enabled);
 
  private:
   // ContentFiltersObserverBridge::Observer:
-  void OnContentFiltersObserverChanged(std::string_view setting_name) override;
+  void OnContentFiltersObserverChanged() override;
 
   ContentFiltersObserverBridge browser_content_filters_observer_{
       kBrowserContentFiltersSettingName};

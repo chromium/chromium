@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -22,16 +23,6 @@
 namespace supervised_user {
 
 namespace {
-
-const char kDeviceSearchContentFiltersSyntheticFieldTrialName[] =
-    "AndroidDeviceSearchContentFilters";
-const char kDeviceBrowserContentFiltersSyntheticFieldTrialName[] =
-    "AndroidDeviceBrowserContentFilters";
-
-std::string GetDeviceFiltersSynthenticFieldTrialGroupName(bool filter_enabled) {
-  return filter_enabled ? "Enabled" : "Disabled";
-}
-
 // Reports WebFilterType which indicates web filter behaviour are used for
 // current Family Link user.
 constexpr char kFamilyUserWebFilterTypeHistogramName[] =
@@ -122,7 +113,7 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
   CHECK(synthetic_field_trial_delegate_)
       << "Synthetic field trial delegate must exist on Android";
   device_parental_controls_subscription_ =
-      device_parental_controls_->Subscribe(base::BindRepeating(
+      device_parental_controls.Subscribe(base::BindRepeating(
           &SupervisedUserMetricsService::OnDeviceParentalControlsChanged,
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -162,21 +153,20 @@ void SupervisedUserMetricsService::RecordCurrentDay() {
 }
 
 void SupervisedUserMetricsService::OnDeviceParentalControlsChanged(
-    std::string_view filter_name) {
-  if (filter_name == kBrowserContentFiltersSettingName) {
-    synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
-        kDeviceBrowserContentFiltersSyntheticFieldTrialName,
-        GetDeviceFiltersSynthenticFieldTrialGroupName(
-            device_parental_controls_->IsBrowserContentFiltersEnabled()));
-  } else if (filter_name == kSearchContentFiltersSettingName) {
-    synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
-        kDeviceSearchContentFiltersSyntheticFieldTrialName,
-        GetDeviceFiltersSynthenticFieldTrialGroupName(
-            device_parental_controls_->IsSearchContentFiltersEnabled()));
-  }
+    const DeviceParentalControls& device_parental_controls) {
+  device_parental_controls.RegisterDeviceLevelSyntheticFieldTrials(
+      *synthetic_field_trial_delegate_);
+
+  // This might be also called from OnURLFilterChanged() for the very same
+  // change (eg. if browser filter has changed, triggering url filtering
+  // changes) but that's not problematic (in metrics' context) since this
+  // recording is idempotent (subsequent emits within the same day are
+  // squashed).
+  TryEmittingMetricsAndRecordCurrentDay();
 }
 
 void SupervisedUserMetricsService::OnURLFilterChanged() {
+  // See comments in OnAndroidParentalControlsChanged about idempotency.
   TryEmittingMetricsAndRecordCurrentDay();
 }
 
@@ -233,8 +223,7 @@ bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
 
 bool SupervisedUserMetricsService::TryEmittingSupervisedUserMetrics() {
   WebFilterType current = url_filtering_service_->GetWebFilterType();
-  if (last_recorded_supervised_user_web_filter_type_.has_value() &&
-      *last_recorded_supervised_user_web_filter_type_ == current) {
+  if (last_recorded_supervised_user_web_filter_type_ == current) {
     return false;
   }
 
@@ -252,5 +241,4 @@ void SupervisedUserMetricsService::ClearMetricsCache() {
   last_recorded_family_link_web_filter_type_ = std::nullopt;
   last_recorded_supervised_user_web_filter_type_ = std::nullopt;
 }
-
 }  // namespace supervised_user

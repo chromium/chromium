@@ -15,14 +15,18 @@
 namespace supervised_user {
 static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
     JNIEnv* env) {
-  g_browser_process->device_parental_controls()
-      .SetBrowserContentFiltersEnabledForTesting(true);
+  AndroidParentalControls& android_parental_controls =
+      static_cast<AndroidParentalControls&>(
+          g_browser_process->device_parental_controls());
+  android_parental_controls.SetBrowserContentFiltersEnabledForTesting(true);
 }
 
 static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
     JNIEnv* env) {
-  g_browser_process->device_parental_controls()
-      .SetSearchContentFiltersEnabledForTesting(true);
+  AndroidParentalControls& android_parental_controls =
+      static_cast<AndroidParentalControls&>(
+          g_browser_process->device_parental_controls());
+  android_parental_controls.SetSearchContentFiltersEnabledForTesting(true);
 }
 }  // namespace supervised_user
 

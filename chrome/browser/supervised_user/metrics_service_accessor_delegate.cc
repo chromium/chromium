@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 
+#include <string_view>
+
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 
 namespace supervised_user {

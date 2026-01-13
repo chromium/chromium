@@ -15,6 +15,11 @@ DeviceParentalControls::~DeviceParentalControls() = default;
 
 base::CallbackListSubscription DeviceParentalControls::Subscribe(
     Callback callback) {
+  callback.Run(*this);
   return subscriber_list_.Add(std::move(callback));
+}
+
+void DeviceParentalControls::NotifySubscribers() {
+  subscriber_list_.Notify(*this);
 }
 }  // namespace supervised_user

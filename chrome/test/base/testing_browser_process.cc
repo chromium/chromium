@@ -542,6 +542,13 @@ TestingBrowserProcess::background_printing_manager() {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+supervised_user::AndroidParentalControls&
+TestingBrowserProcess::android_parental_controls() {
+  return *device_parental_controls_;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 supervised_user::DeviceParentalControls&
 TestingBrowserProcess::device_parental_controls() {
   return *device_parental_controls_;

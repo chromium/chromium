@@ -72,6 +72,9 @@ class ResourceCoordinatorParts;
 }
 
 namespace supervised_user {
+#if BUILDFLAG(IS_ANDROID)
+class AndroidParentalControls;
+#endif
 class DeviceParentalControls;
 }  // namespace supervised_user
 
@@ -158,6 +161,11 @@ class TestingBrowserProcess
       override;
   printing::BackgroundPrintingManager* background_printing_manager() override;
   supervised_user::DeviceParentalControls& device_parental_controls() override;
+#if BUILDFLAG(IS_ANDROID)
+  // Additional convenience accessor to device_parental_controls() that returns
+  // the value cast to specific implementation.
+  supervised_user::AndroidParentalControls& android_parental_controls();
+#endif
   const std::string& GetApplicationLocale() override;
   void SetApplicationLocale(const std::string& actual_locale) override;
   DownloadStatusUpdater* download_status_updater() override;
@@ -302,8 +310,14 @@ class TestingBrowserProcess
       print_preview_dialog_controller_;
 #endif
 
+// TODO(crbug.com/474377651): instead ForTesting(), offer proper fake.
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<supervised_user::AndroidParentalControls>
+      device_parental_controls_;
+#else
   std::unique_ptr<supervised_user::DeviceParentalControls>
       device_parental_controls_;
+#endif
 
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>

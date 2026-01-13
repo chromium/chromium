@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/permission_request_creator_impl.h"
-#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -43,15 +42,6 @@
 namespace supervised_user {
 
 namespace {
-
-const char kSupervisionConflictHistogramName[] =
-    "SupervisedUsers.FamilyLinkSupervisionConflict";
-enum class SupervisionHasConflict : int {
-  kNoConflict = 0,
-  kHasConflict = 1,
-  kMaxValue = kHasConflict,
-};
-
 using base::UserMetricsAction;
 
 // All prefs that configure the url filter.
@@ -78,17 +68,6 @@ std::optional<Custodian> GetCustodianFromPrefs(
   }
   return Custodian((name.empty() ? email : name), email, gaia_id,
                    profile_image_url);
-}
-
-// Sentinel that guards against accidental pref changes.
-void PrefChangeNotAllowed(const std::string& pref_name) {
-  NOTREACHED(base::NotFatalUntil::M150)
-      << "Preference change (" << pref_name << ") not allowed.";
-}
-
-void RecordSupervisionConflict() {
-  base::UmaHistogramEnumeration(kSupervisionConflictHistogramName,
-                                SupervisionHasConflict::kHasConflict);
 }
 }  // namespace
 
@@ -158,14 +137,12 @@ SupervisedUserService::SupervisedUserService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
-    SupervisedUserContentFiltersService* content_filters_service,
     syncer::SyncService* sync_service,
     std::unique_ptr<SupervisedUserURLFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
-    DeviceParentalControls& device_parental_controls)
+    const DeviceParentalControls& device_parental_controls)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
-      content_filters_service_(content_filters_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
@@ -176,11 +153,6 @@ SupervisedUserService::SupervisedUserService(
   CHECK(settings_service_->IsReady())
       << "Settings service is initialized as part of the PrefService, which is "
          "a dependency of this service.";
-
-  device_parental_controls_subscription_ =
-      device_parental_controls_->Subscribe(base::BindRepeating(
-          &SupervisedUserService::OnDeviceParentalControlsChanged,
-          base::Unretained(this)));
 
   main_pref_change_registrar_.Init(&user_prefs_.get());
   main_pref_change_registrar_.Add(
@@ -221,32 +193,6 @@ void SupervisedUserService::OnSupervisedUserIdChanged() {
 }
 
 void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
-  // If this trap catches change from AccountTrackerService, then this means
-  // that the profile is being preloaded from disk or cache, but since the
-  // browser's last use the status of family link parental controls and local
-  // controls have changed. In this case it would be just enough to clear
-  // browser's data. However, if this is triggered from ChildAccountService,
-  // then it means that regular profile was turned to supervised while the
-  // device was also locally supervised. In this case, next start of the browser
-  // should be clean because it is expected that family link and device controls
-  // are mutually exclusive and device controls are just being disabled.
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
-      device_parental_controls_->IsEnabled()) {
-    // Device parental controls are enabled, but they are being overridden by
-    // Family Link supervision which is now active.
-    RecordSupervisionConflict();
-
-    // The following calls are idempotent: they will either disable effects of
-    // device-configured parental controls, or do nothing if device parental
-    // controls are already disabled.
-    OnBrowserContentFiltersDisabled();
-    OnSearchContentFiltersDisabled();
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Remove the handlers of the disabled parental controls mode.
   RemoveURLFilterPrefChangeHandlers();
 
@@ -256,7 +202,9 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
       std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
                                                      url_loader_factory_));
 
-  // Add handlers at the end to avoid multiple notifications.
+  // Add handlers at the end to avoid multiple notifications (eg. web filtering
+  // consists of multiple prefs changing at once but producing separate
+  // notifications).
   AddCustodianPrefChangeHandlers();
   AddURLFilterPrefChangeHandlers();
 
@@ -274,6 +222,9 @@ void SupervisedUserService::OnFamilyLinkParentalControlsDisabled() {
   SetSettingsServiceActive(false);
   remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
+  // Add handler at the end to avoid multiple notifications.
+  AddURLFilterPrefChangeHandlers();
+
   // Synchronize the filter.
   UpdateURLFilter();
 }
@@ -284,13 +235,6 @@ void SupervisedUserService::AddURLFilterPrefChangeHandlers() {
     url_filter_pref_change_registrar_.Add(
         pref, base::BindRepeating(&SupervisedUserService::OnURLFilterChanged,
                                   base::Unretained(this)));
-  }
-}
-void SupervisedUserService::AddURLFilterPrefChangeSentinels() {
-  url_filter_pref_change_registrar_.Init(&user_prefs_.get());
-  for (const char* const pref : kUrlFilterSettingsPrefs) {
-    url_filter_pref_change_registrar_.Add(
-        pref, base::BindRepeating(&PrefChangeNotAllowed));
   }
 }
 
@@ -325,7 +269,9 @@ void SupervisedUserService::OnCustodianInfoChanged() {
 }
 
 void SupervisedUserService::OnURLFilterChanged(const std::string& pref_name) {
-  CHECK(IsSubjectToParentalControls(user_prefs_.get()))
+  const PrefService::Preference* pref_value =
+      user_prefs_->FindPreference(pref_name);
+  CHECK(pref_value->IsManagedByCustodian() || pref_value->IsDefaultValue())
       << "Url filter setting `" << pref_name
       << "` can only be dynamically changed by managed user infrastructure.";
   UpdateURLFilter(pref_name);
@@ -363,71 +309,4 @@ void SupervisedUserService::Shutdown() {
   // allow all url classifications). On the other hand, if supervision is
   // disabled, then the settings service is already inactive.
 }
-
-namespace {
-bool IsEligibleForContentFilters(const PrefService& user_prefs) {
-  return !IsSubjectToParentalControls(user_prefs);
-}
-}  // namespace
-
-void SupervisedUserService::OnDeviceParentalControlsChanged(
-    std::string_view filter_name) {
-  if (filter_name == kBrowserContentFiltersSettingName) {
-    if (device_parental_controls_->IsBrowserContentFiltersEnabled()) {
-      OnBrowserContentFiltersEnabled();
-    } else {
-      OnBrowserContentFiltersDisabled();
-    }
-  } else {
-    CHECK_EQ(filter_name, kSearchContentFiltersSettingName)
-        << "Unexpected setting name: " << filter_name;
-    if (device_parental_controls_->IsSearchContentFiltersEnabled()) {
-      OnSearchContentFiltersEnabled();
-    } else {
-      OnSearchContentFiltersDisabled();
-    }
-  }
-}
-
-void SupervisedUserService::OnSearchContentFiltersEnabled() {
-  if (!IsEligibleForContentFilters(user_prefs_.get())) {
-    RecordSupervisionConflict();
-    return;
-  }
-
-  content_filters_service_->SetSearchFiltersEnabled(true);
-
-  // Required to emit WebFilterType metrics.
-  UpdateURLFilter();
-}
-void SupervisedUserService::OnSearchContentFiltersDisabled() {
-  content_filters_service_->SetSearchFiltersEnabled(false);
-}
-
-void SupervisedUserService::OnBrowserContentFiltersEnabled() {
-  if (!IsEligibleForContentFilters(user_prefs_.get())) {
-    RecordSupervisionConflict();
-    return;
-  }
-
-  RemoveURLFilterPrefChangeHandlers();
-  content_filters_service_->SetBrowserFiltersEnabled(true);
-
-  // Add handlers that will prevent unsupported url filter changes.
-  AddURLFilterPrefChangeSentinels();
-
-  // Required to emit WebFilterType metrics and reclassifies the observed
-  // navigations.
-  UpdateURLFilter();
-}
-
-void SupervisedUserService::OnBrowserContentFiltersDisabled() {
-  RemoveURLFilterPrefChangeHandlers();
-  content_filters_service_->SetBrowserFiltersEnabled(false);
-
-  // Required to emit WebFilterType metrics and reclassifies the observed
-  // navigations.
-  UpdateURLFilter();
-}
-
 }  // namespace supervised_user

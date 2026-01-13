@@ -13,9 +13,9 @@
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
-#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -43,10 +43,10 @@ class SupervisedUserTestingPrefStore : public TestingPrefStore,
  public:
   SupervisedUserTestingPrefStore(
       SupervisedUserSettingsService* settings_service,
-      SupervisedUserContentFiltersService* content_filters_service)
+      DeviceParentalControls& device_parental_controls)
       : pref_store_(base::MakeRefCounted<SupervisedUserPrefStore>(
             settings_service,
-            content_filters_service)) {
+            device_parental_controls)) {
     observation_.Observe(pref_store_.get());
   }
 
@@ -110,9 +110,9 @@ SupervisedUserSettingsService* InitializeSettingsServiceForTesting(
 
 scoped_refptr<TestingPrefStore> CreateTestingPrefStore(
     SupervisedUserSettingsService* settings_service,
-    SupervisedUserContentFiltersService* content_filters_service) {
+    DeviceParentalControls& device_parental_controls) {
   return base::MakeRefCounted<SupervisedUserTestingPrefStore>(
-      settings_service, content_filters_service);
+      settings_service, device_parental_controls);
 }
 
 bool SupervisedUserMetricsServiceExtensionDelegateFake::
@@ -179,9 +179,9 @@ SupervisedUserPrefStoreTestEnvironment::settings_service() {
   return &settings_service_;
 }
 
-SupervisedUserContentFiltersService*
-SupervisedUserPrefStoreTestEnvironment::content_filters_service() {
-  return &content_filters_service_;
+DeviceParentalControlsTestImpl&
+SupervisedUserPrefStoreTestEnvironment::device_parental_controls() {
+  return device_parental_controls_;
 }
 
 PrefService* SupervisedUserPrefStoreTestEnvironment::pref_service() {
@@ -201,8 +201,10 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
 #if BUILDFLAG(IS_ANDROID)
   if (initial_state ==
       InitialSupervisionState::kSupervisedWithAllContentFilters) {
-    device_parental_controls_.SetBrowserContentFiltersEnabledForTesting(true);
-    device_parental_controls_.SetSearchContentFiltersEnabledForTesting(true);
+    pref_store_environment_.device_parental_controls()
+        .SetBrowserContentFiltersEnabledForTesting(true);
+    pref_store_environment_.device_parental_controls()
+        .SetSearchContentFiltersEnabledForTesting(true);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -215,18 +217,19 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       *pref_store_environment_.pref_service(),
-      *pref_store_environment_.settings_service(),
-      pref_store_environment_.content_filters_service(), &sync_service_,
+      *pref_store_environment_.settings_service(), &sync_service_,
       std::make_unique<SupervisedUserURLFilter>(
           *pref_store_environment_.pref_service(),
           std::make_unique<FakeURLFilterDelegate>(), std::move(client)),
-      std::make_unique<FakePlatformDelegate>(), device_parental_controls_);
+      std::make_unique<FakePlatformDelegate>(),
+      pref_store_environment_.device_parental_controls());
 
   url_filtering_service_ = std::make_unique<SupervisedUserUrlFilteringService>(
       *service_.get(), *pref_store_environment_.settings_service());
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
-      *url_filtering_service_.get(), device_parental_controls_,
+      *url_filtering_service_.get(),
+      pref_store_environment_.device_parental_controls(),
       std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>(),
       std::move(synthetic_field_trial_delegate));
 }
@@ -326,6 +329,7 @@ SupervisedUserTestEnvironment::pref_service_syncable() {
   return static_cast<sync_preferences::TestingPrefServiceSyncable*>(
       pref_service());
 }
+
 safe_search_api::FakeURLCheckerClient*
 SupervisedUserTestEnvironment::url_checker_client() {
   return url_checker_client_.get();
@@ -333,7 +337,7 @@ SupervisedUserTestEnvironment::url_checker_client() {
 
 DeviceParentalControlsTestImpl&
 SupervisedUserTestEnvironment::device_parental_controls() {
-  return device_parental_controls_;
+  return pref_store_environment_.device_parental_controls();
 }
 
 SynteticFieldTrialDelegateMock::SynteticFieldTrialDelegateMock() = default;

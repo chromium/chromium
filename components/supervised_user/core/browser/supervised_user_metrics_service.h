@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -69,8 +70,8 @@ class SupervisedUserMetricsService : public KeyedService,
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
 
-  // DeviceParentalControls subscription handlers.
-  void OnDeviceParentalControlsChanged(std::string_view filter_name);
+  void OnDeviceParentalControlsChanged(
+      const DeviceParentalControls& device_parental_controls);
 
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
@@ -90,7 +91,7 @@ class SupervisedUserMetricsService : public KeyedService,
   const raw_ptr<PrefService> pref_service_;
   raw_ref<SupervisedUserService> supervised_user_service_;
   raw_ref<const SupervisedUserUrlFilteringService> url_filtering_service_;
-  raw_ref<DeviceParentalControls> device_parental_controls_;
+  const raw_ref<const DeviceParentalControls> device_parental_controls_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate_;
   std::unique_ptr<SynteticFieldTrialDelegate> synthetic_field_trial_delegate_;

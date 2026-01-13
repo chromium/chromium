@@ -12,11 +12,13 @@
 namespace supervised_user {
 namespace {
 
-class AndroidParentalControlsTest : public testing::Test {};
+using ::testing::_;
 
 class MockSubscriber {
  public:
-  MOCK_METHOD(void, OnDeviceParentalControlsChanged, (std::string_view), ());
+  MOCK_METHOD(void,
+              OnDeviceParentalChanged,
+              (const DeviceParentalControls& state));
 };
 
 TEST(AndroidParentalControlsTest, CheckNotificationsAreSent) {
@@ -24,17 +26,11 @@ TEST(AndroidParentalControlsTest, CheckNotificationsAreSent) {
   MockSubscriber subscriber;
 
   // Once for subscription, and once for each time the state changes.
-  EXPECT_CALL(subscriber, OnDeviceParentalControlsChanged(
-                              kBrowserContentFiltersSettingName))
-      .Times(3);
-  // Once for subscription, and once for each time the state changes.
-  EXPECT_CALL(subscriber,
-              OnDeviceParentalControlsChanged(kSearchContentFiltersSettingName))
-      .Times(3);
+  EXPECT_CALL(subscriber, OnDeviceParentalChanged(_)).Times(5);
 
   base::CallbackListSubscription subscription =
       android_parental_controls.Subscribe(
-          base::BindRepeating(&MockSubscriber::OnDeviceParentalControlsChanged,
+          base::BindRepeating(&MockSubscriber::OnDeviceParentalChanged,
                               base::Unretained(&subscriber)));
 
   android_parental_controls.SetBrowserContentFiltersEnabledForTesting(true);

@@ -14,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -36,6 +35,10 @@
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#endif
 
 namespace supervised_user {
 
@@ -79,8 +82,6 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetForKey(
-          profile->GetProfileKey()),
-      SupervisedUserContentFiltersServiceFactory::GetForKey(
           profile->GetProfileKey()),
       SyncServiceFactory::GetForProfile(profile),
       std::make_unique<MockSupervisedUserURLFilter>(
@@ -278,7 +279,7 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
 #if BUILDFLAG(IS_ANDROID)
       case SupervisionMode::kLocalSupervision:
         TestingBrowserProcess::GetGlobal()
-            ->device_parental_controls()
+            ->android_parental_controls()
             .SetBrowserContentFiltersEnabledForTesting(true);
         break;
 #endif  // BUILDFLAG(IS_ANDROID)

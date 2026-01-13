@@ -13,7 +13,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -569,8 +568,6 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
         *profile->GetPrefs(),
         *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
             profile->GetProfileKey()),
-        SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()),
         SyncServiceFactory::GetInstance()->GetForProfile(profile),
         std::make_unique<SupervisedUserURLFilter>(
             *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
@@ -587,14 +584,14 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
   // Enables or disables the browser content filters for all profiles.
   void SetBrowserContentFilters(bool enabled) {
     TestingBrowserProcess::GetGlobal()
-        ->device_parental_controls()
+        ->android_parental_controls()
         .SetBrowserContentFiltersEnabledForTesting(enabled);
   }
 
   // Enables or disables the search content filters for all profiles.
   void SetSearchContentFilters(bool enabled) {
     TestingBrowserProcess::GetGlobal()
-        ->device_parental_controls()
+        ->android_parental_controls()
         .SetSearchContentFiltersEnabledForTesting(enabled);
   }
 

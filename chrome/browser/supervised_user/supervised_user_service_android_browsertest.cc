@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
-                       FamilyLinkOverridesLocalSupervision) {
+                       FamilyLinkOverridesDeviceSupervision) {
   bool is_initially_supervised_locally =
       GetParam().initial_browser_content_filters_value ||
       GetParam().initial_search_content_filters_value;
@@ -232,18 +232,25 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
             GetDeviceParentalControls().IsEnabled());
   ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
+  // So far there is no trace of any supervision systems conflict.
+  EXPECT_EQ(0, histogram_tester().GetBucketCount(
+                   "SupervisedUsers.FamilyLinkSupervisionConflict", 1));
+
   EnableParentalControls(*GetProfile()->GetPrefs());
 
-  // Finally, local supervision is always disabled, Family Link supervision is
-  // always enabled, and if there was a conflict, it's recorded (possibly
-  // multiple times, because changes to both SupervisedUserSettingsService and
-  // AndroidParentalControls trigger pref calculations)
+  // Finally, local supervision is overridden (browser sees it as disabled),
+  // Family Link supervision is always enabled, and if there was a conflict,
+  // it's recorded (possibly multiple times, because changes to both
+  // SupervisedUserSettingsService and AndroidParentalControls trigger pref
+  // calculations)
   if (is_initially_supervised_locally) {
-    EXPECT_LT(0, histogram_tester().GetBucketCount(
-                     "SupervisedUsers.FamilyLinkSupervisionConflict", 1));
+    EXPECT_GT(histogram_tester().GetBucketCount(
+                  "SupervisedUsers.FamilyLinkSupervisionConflict", 1),
+              0);
   } else {
-    EXPECT_EQ(0, histogram_tester().GetBucketCount(
-                     "SupervisedUsers.FamilyLinkSupervisionConflict", 1));
+    EXPECT_EQ(histogram_tester().GetBucketCount(
+                  "SupervisedUsers.FamilyLinkSupervisionConflict", 1),
+              0);
   }
   EXPECT_FALSE(
       AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));

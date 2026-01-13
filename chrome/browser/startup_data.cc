@@ -244,7 +244,8 @@ void StartupData::CreateServicesInternal() {
       pref_registry_, nullptr /* extension_pref_store */,
       profile_policy_connector_->policy_service(), browser_policy_connector,
       std::move(pref_validation_delegate), io_task_runner, key_.get(), path,
-      false /* async_prefs*/, g_browser_process->os_crypt_async());
+      false /* async_prefs*/, g_browser_process->os_crypt_async(),
+      g_browser_process->device_parental_controls());
 }
 #endif
 

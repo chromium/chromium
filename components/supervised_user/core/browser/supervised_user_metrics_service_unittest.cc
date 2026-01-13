@@ -218,8 +218,8 @@ TEST_P(SupervisedUserMetricsServiceFieldTrialTest,
   EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Eq(GetParam()), "Enabled"))
       .Times(1);
 
-  // Other filter is interacted once: on subscription.
-  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Ne(GetParam()), _)).Times(1);
+  // Other filter is interacted similarly: subscribe, enable, disable.
+  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Ne(GetParam()), _)).Times(3);
   CreateTestEnvironment(std::move(mock));
 
   // This cycles all possible combinations of states for each filter:

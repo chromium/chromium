@@ -240,6 +240,10 @@ source_set("profile_util_impl") {
     ]
   }
 
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/users",

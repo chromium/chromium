@@ -4,12 +4,19 @@
 
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 
+#include "base/callback_list.h"
+#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
+
 namespace supervised_user {
 
 DeviceParentalControlsNoOpImpl::DeviceParentalControlsNoOpImpl() = default;
 DeviceParentalControlsNoOpImpl::~DeviceParentalControlsNoOpImpl() = default;
 
 bool DeviceParentalControlsNoOpImpl::IsWebFilteringEnabled() const {
+  return false;
+}
+
+bool DeviceParentalControlsNoOpImpl::IsIncognitoModeDisabled() const {
   return false;
 }
 
@@ -21,12 +28,6 @@ bool DeviceParentalControlsNoOpImpl::IsEnabled() const {
   return false;
 }
 
-bool DeviceParentalControlsNoOpImpl::IsBrowserContentFiltersEnabled() const {
-  return false;
-}
-
-bool DeviceParentalControlsNoOpImpl::IsSearchContentFiltersEnabled() const {
-  return false;
-}
-
+void DeviceParentalControlsNoOpImpl::RegisterDeviceLevelSyntheticFieldTrials(
+    SynteticFieldTrialDelegate& synthetic_field_trial_delegate) const {}
 }  // namespace supervised_user

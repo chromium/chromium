@@ -21,6 +21,7 @@ source_set("android") {
     "//components/supervised_user/android:jni_headers",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:device_parental_controls",
+    "//components/supervised_user/core/browser:synthetic_field_trial_delegate",
     "//components/supervised_user/core/common",
   ]
 }

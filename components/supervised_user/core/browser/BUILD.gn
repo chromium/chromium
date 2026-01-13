@@ -27,6 +27,7 @@ source_set("test_support") {
   deps = [
     ":browser",
     ":device_parental_controls",
+    ":synthetic_field_trial_delegate",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",
@@ -106,8 +107,6 @@ static_library("browser") {
     "permission_request_creator_impl.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
-    "supervised_user_content_filters_service.cc",
-    "supervised_user_content_filters_service.h",
     "supervised_user_content_settings_provider.cc",
     "supervised_user_content_settings_provider.h",
     "supervised_user_error_page.cc",
@@ -254,6 +253,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
+
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android" ]
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

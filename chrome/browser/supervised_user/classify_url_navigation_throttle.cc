@@ -39,7 +39,6 @@
 #include "url/gurl.h"
 
 namespace supervised_user {
-
 namespace {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

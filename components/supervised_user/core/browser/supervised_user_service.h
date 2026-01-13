@@ -21,7 +21,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
-#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -147,12 +146,11 @@ class SupervisedUserService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
       SupervisedUserSettingsService& settings_service,
-      SupervisedUserContentFiltersService* content_filters_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<SupervisedUserURLFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
           platform_delegate,
-      DeviceParentalControls& device_parental_controls);
+      const DeviceParentalControls& device_parental_controls);
 
  private:
   // Activates the service which controls managed settings of url filtering and
@@ -180,8 +178,6 @@ class SupervisedUserService : public KeyedService {
 
   // Adds url filtering change handlers, originating from Family Link.
   void AddURLFilterPrefChangeHandlers();
-  // Adds sentinel handlers that prevent unintended changes to url filtering.
-  void AddURLFilterPrefChangeSentinels();
   // Removes all url filtering change handlers. Intentionally idempotent.
   void RemoveURLFilterPrefChangeHandlers();
   // Add or remove all pref handlers related to custodians. The removal method
@@ -193,19 +189,9 @@ class SupervisedUserService : public KeyedService {
   // any parental controls are enabled and incognito mode is not available.
   void OnIncognitoModeAvailabilityChanged();
 
-  // DeviceParentalControls subscription handlers.
-  void OnDeviceParentalControlsChanged(std::string_view filter_name);
-
-  void OnSearchContentFiltersEnabled();
-  void OnSearchContentFiltersDisabled();
-  void OnBrowserContentFiltersEnabled();
-  void OnBrowserContentFiltersDisabled();
-
   const raw_ref<PrefService> user_prefs_;
 
   const raw_ref<SupervisedUserSettingsService> settings_service_;
-
-  const raw_ptr<SupervisedUserContentFiltersService> content_filters_service_;
 
   const raw_ptr<syncer::SyncService> sync_service_;
 
@@ -217,7 +203,7 @@ class SupervisedUserService : public KeyedService {
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
-  const raw_ref<DeviceParentalControls> device_parental_controls_;
+  const raw_ref<const DeviceParentalControls> device_parental_controls_;
 
   // Registrar for core prefs that drive this service.
   PrefChangeRegistrar main_pref_change_registrar_;
@@ -237,8 +223,6 @@ class SupervisedUserService : public KeyedService {
   RemoteWebApprovalsManager remote_web_approvals_manager_;
 
   base::ObserverList<SupervisedUserServiceObserver>::Unchecked observer_list_;
-
-  base::CallbackListSubscription device_parental_controls_subscription_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled_ = false;

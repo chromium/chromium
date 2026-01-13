@@ -5,17 +5,22 @@
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
 
 #include <string>
-#include <string_view>
 
-#include "base/callback_list.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
+namespace {
+const char kDeviceSearchContentFiltersSyntheticFieldTrialName[] =
+    "AndroidDeviceSearchContentFilters";
+const char kDeviceBrowserContentFiltersSyntheticFieldTrialName[] =
+    "AndroidDeviceBrowserContentFilters";
+std::string GetDeviceFiltersSynthenticFieldTrialGroupName(bool filter_enabled) {
+  return filter_enabled ? "Enabled" : "Disabled";
+}
+}  // namespace
 
 AndroidParentalControls::AndroidParentalControls() {
   browser_content_filters_observation_.Observe(
@@ -36,6 +41,10 @@ bool AndroidParentalControls::IsWebFilteringEnabled() const {
   return IsBrowserContentFiltersEnabled();
 }
 
+bool AndroidParentalControls::IsIncognitoModeDisabled() const {
+  return IsBrowserContentFiltersEnabled() || IsSearchContentFiltersEnabled();
+}
+
 bool AndroidParentalControls::IsSafeSearchForced() const {
   return IsSearchContentFiltersEnabled();
 }
@@ -44,17 +53,16 @@ bool AndroidParentalControls::IsEnabled() const {
   return IsBrowserContentFiltersEnabled() || IsSearchContentFiltersEnabled();
 }
 
-void AndroidParentalControls::OnContentFiltersObserverChanged(
-    std::string_view setting_name) {
-  subscriber_list().Notify(setting_name);
-}
-
 bool AndroidParentalControls::IsBrowserContentFiltersEnabled() const {
   return browser_content_filters_observer_.IsEnabled();
 }
 
 bool AndroidParentalControls::IsSearchContentFiltersEnabled() const {
   return search_content_filters_observer_.IsEnabled();
+}
+
+void AndroidParentalControls::OnContentFiltersObserverChanged() {
+  NotifySubscribers();
 }
 
 void AndroidParentalControls::SetBrowserContentFiltersEnabledForTesting(
@@ -67,11 +75,16 @@ void AndroidParentalControls::SetSearchContentFiltersEnabledForTesting(
   search_content_filters_observer_.SetEnabledForTesting(enabled);
 }
 
-base::CallbackListSubscription AndroidParentalControls::Subscribe(
-    Callback callback) {
-  callback.Run(kBrowserContentFiltersSettingName);
-  callback.Run(kSearchContentFiltersSettingName);
-  return DeviceParentalControls::Subscribe(std::move(callback));
+void AndroidParentalControls::RegisterDeviceLevelSyntheticFieldTrials(
+    SynteticFieldTrialDelegate& synthetic_field_trial_delegate) const {
+  synthetic_field_trial_delegate.RegisterSyntheticFieldTrial(
+      kDeviceBrowserContentFiltersSyntheticFieldTrialName,
+      GetDeviceFiltersSynthenticFieldTrialGroupName(
+          IsBrowserContentFiltersEnabled()));
+  synthetic_field_trial_delegate.RegisterSyntheticFieldTrial(
+      kDeviceSearchContentFiltersSyntheticFieldTrialName,
+      GetDeviceFiltersSynthenticFieldTrialGroupName(
+          IsSearchContentFiltersEnabled()));
 }
 
 bool AreAndroidParentalControlsEffectiveForTesting(

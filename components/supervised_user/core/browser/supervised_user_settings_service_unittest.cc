@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -451,10 +452,9 @@ TEST_F(SupervisedUserSettingsServiceTest,
        DeactivationClearsConsumingPrefStore) {
   // Example pref store that consumes changes in the settings service. Has a
   // private destructor.
+  DeviceParentalControlsNoOpImpl device_parental_controls;
   scoped_refptr<SupervisedUserPrefStore> pref_store =
-      new SupervisedUserPrefStore(
-          &settings_service_,
-          /*supervised_user_content_filters_service=*/nullptr);
+      new SupervisedUserPrefStore(&settings_service_, device_parental_controls);
   StartSyncing(syncer::SyncDataList());
 
   // Implementation detail: SupervisedUserPrefStore presets value of

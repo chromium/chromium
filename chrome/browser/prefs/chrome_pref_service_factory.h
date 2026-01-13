@@ -40,8 +40,8 @@ class PrefStore;
 class Profile;
 
 namespace supervised_user {
+class DeviceParentalControls;
 class SupervisedUserSettingsService;
-class SupervisedUserContentFiltersService;
 }  // namespace supervised_user
 
 namespace os_crypt_async {
@@ -80,8 +80,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
         validation_delegate,
     policy::PolicyService* policy_service,
     supervised_user::SupervisedUserSettingsService* supervised_user_settings,
-    supervised_user::SupervisedUserContentFiltersService*
-        content_filters_service,
+    supervised_user::DeviceParentalControls& device_parental_controls,
     scoped_refptr<PrefStore> extension_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     policy::BrowserPolicyConnector* connector,

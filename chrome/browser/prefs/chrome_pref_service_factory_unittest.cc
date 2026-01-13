@@ -36,7 +36,7 @@ class ChromePrefServiceFactoryTestBase : public testing::Test {
         /*policy_service=*/
         g_browser_process->browser_policy_connector()->GetPolicyService(),
         /*supervised_user_settings=*/nullptr,
-        /*content_filters_service=*/nullptr,
+        g_browser_process->device_parental_controls(),
         /*extension_prefs=*/nullptr, pref_registry_,
         /*connector=*/g_browser_process->browser_policy_connector(),
         /*async=*/true, task_environment_.GetMainThreadTaskRunner().get(),

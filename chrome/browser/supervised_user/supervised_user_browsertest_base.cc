@@ -17,7 +17,6 @@
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -33,6 +32,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace supervised_user {
 
@@ -67,7 +70,6 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetForKey(profile_key),
-      SupervisedUserContentFiltersServiceFactory::GetForKey(profile_key),
       SyncServiceFactory::GetForProfile(profile),
       std::make_unique<SupervisedUserURLFilter>(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
@@ -136,8 +138,17 @@ base::WeakPtr<MockUrlCheckerClient> MockUrlCheckerClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+AndroidParentalControls&
+SupervisedUserBrowserTestBase::GetDeviceParentalControls() {
+  return static_cast<AndroidParentalControls&>(
+      g_browser_process->device_parental_controls());
+}
+#else
 DeviceParentalControls&
 SupervisedUserBrowserTestBase::GetDeviceParentalControls() {
   return g_browser_process->device_parental_controls();
 }
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace supervised_user

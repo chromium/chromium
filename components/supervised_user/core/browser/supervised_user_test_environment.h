@@ -16,10 +16,10 @@
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
-#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -61,7 +61,7 @@ SupervisedUserSettingsService* InitializeSettingsServiceForTesting(
 // Prepares a pref service component for use in test.
 scoped_refptr<TestingPrefStore> CreateTestingPrefStore(
     SupervisedUserSettingsService* settings_service,
-    SupervisedUserContentFiltersService* content_filters_service);
+    DeviceParentalControls& device_parental_controls);
 
 // Pref service exposed by this environment has the supervised user pref store
 // configured.
@@ -76,7 +76,9 @@ class SupervisedUserPrefStoreTestEnvironment {
 
   PrefService* pref_service();
   SupervisedUserSettingsService* settings_service();
-  SupervisedUserContentFiltersService* content_filters_service();
+  // That's a simplification: in prod environment the parental controls are
+  // global, but in the test environment they are per pref service.
+  DeviceParentalControlsTestImpl& device_parental_controls();
 
   void Shutdown();
 
@@ -86,7 +88,7 @@ class SupervisedUserPrefStoreTestEnvironment {
 
  private:
   SupervisedUserSettingsService settings_service_;
-  SupervisedUserContentFiltersService content_filters_service_;
+  DeviceParentalControlsTestImpl device_parental_controls_;
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       syncable_pref_service_ =
@@ -95,7 +97,7 @@ class SupervisedUserPrefStoreTestEnvironment {
               /*supervised_user_prefs=*/
               CreateTestingPrefStore(
                   InitializeSettingsServiceForTesting(&settings_service_),
-                  &content_filters_service_),
+                  device_parental_controls_),
               /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
               /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
               /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
@@ -117,6 +119,9 @@ class SynteticFieldTrialDelegateMock : public SynteticFieldTrialDelegate {
               RegisterSyntheticFieldTrial,
               (std::string_view trial_name, std::string_view group_name),
               (override));
+
+ private:
+  base::WeakPtrFactory<SynteticFieldTrialDelegateMock> weak_ptr_factory_{this};
 };
 
 // Configures a handy set of components that form supervised user features, for
@@ -186,7 +191,6 @@ class SupervisedUserTestEnvironment {
   std::unique_ptr<SupervisedUserService> service_;
   std::unique_ptr<SupervisedUserUrlFilteringService> url_filtering_service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
-  DeviceParentalControlsTestImpl device_parental_controls_;
 
   // The objects are actually owned by the service_, but are referenced here for
   // convenience.
