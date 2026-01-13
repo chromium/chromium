@@ -43,6 +43,7 @@ import type {SearchboxIconElement} from './searchbox_icon.js';
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
 // LINT.ThenChange(/chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderTagName)
 const DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE = '42';
+const MULTILINE_INPUT_HEIGHT_THRESHOLD = 50;
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -69,7 +70,7 @@ interface AnimationDetails {
  * Responsible for cycling placeholder text animations on an HTMLInputElement.
  */
 export class PlaceholderTextCycler {
-  private input_: HTMLInputElement;
+  private input_: HTMLInputElement|HTMLTextAreaElement;
   private animation_: Animation|null = null;
   private placeholderTexts_: string[] = [];
   private placeholderTextsCurrentIndex_: number = 0;
@@ -77,7 +78,7 @@ export class PlaceholderTextCycler {
   private fadePlaceholderTextDurationMs_: number = 250;
 
   constructor(
-      animatedPlaceholderContainer: HTMLInputElement,
+      animatedPlaceholderContainer: HTMLInputElement|HTMLTextAreaElement,
       placeholderTexts: string[], changeTextAnimationIntervalMs: number,
       fadeTextAnimationDurationMs: number) {
     assert(placeholderTexts.length > 0);
@@ -176,7 +177,7 @@ interface ClickEventDetail {
 export interface SearchboxElement {
   $: {
     icon: SearchboxIconElement,
-    input: HTMLInputElement,
+    input: HTMLInputElement|HTMLTextAreaElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
     context: ContextualEntrypointAndCarouselElement,
@@ -258,6 +259,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
       multiLineEnabled: {
         type: Boolean,
+        reflect: true,
       },
 
       /** The aria description to include on the input element. */
@@ -630,14 +632,23 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
 
     this.result_ = result;
-    const hasMatches = result?.matches?.length > 0;
-    const hasPrimaryMatches = result?.matches?.some(match => {
+    const hasMatches = result.matches?.length > 0;
+    const hasPrimaryMatches = result.matches?.some(match => {
       const sideType =
           result.suggestionGroupsMap[match.suggestionGroupId]?.sideType ||
           SideType.kDefaultPrimary;
       return sideType === SideType.kDefaultPrimary;
     });
+
     this.dropdownIsVisible = hasPrimaryMatches;
+    if (this.multiLineEnabled) {
+      const isUserTyping = result.input.trim().length > 0;
+      const matchNum = result.matches?.length || 0;
+
+      if (isUserTyping && (matchNum <= 1)) {
+        this.dropdownIsVisible = false;
+      }
+    }
 
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
@@ -960,9 +971,16 @@ export class SearchboxElement extends SearchboxElementBase implements
       return;
     }
 
+    const matchNum = this.result_?.matches.length || 0;
+    const isMultiline =
+        this.$.input.scrollHeight > MULTILINE_INPUT_HEIGHT_THRESHOLD;
+
     // ArrowUp/ArrowDown query autocomplete when matches are not visible.
     if (!this.dropdownIsVisible) {
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        if (isMultiline || matchNum <= 1) {
+          return;
+        }
         const inputValue = this.$.input.value;
         if (inputValue.trim() || !inputValue) {
           this.queryAutocomplete_(inputValue);
@@ -1005,6 +1023,9 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
 
     if (e.key === 'Enter') {
+      if (this.multiLineEnabled && e.shiftKey) {
+        return;
+      }
       const array: HTMLElement[] = [this.$.matches, this.$.input];
       if (array.includes(e.target as HTMLElement)) {
         if (this.lastQueriedInput_ !== null &&

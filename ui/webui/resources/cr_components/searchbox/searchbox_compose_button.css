@@ -141,21 +141,16 @@
  * sits on the border of the button.
  */
 .glow-container {
-  height: 36px;
-  padding: 0 2px;
-  display: flex;
   align-items: center;
   border-radius: 100px;
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  height: 36px;
+  margin-inline-end: 8px;
+  padding-inline-end: 18px;
+  padding-inline-start: 2px;
+  position: relative;
+  top: 6px;
   z-index: var(--cr-searchbox-compose-button-z-index, 100);
-}
-
-:host-context([dir='rtl']) .glow-container {
-  left: 8px;
-  right: unset;
 }
 
 :host-context([ntp-realbox-next-enabled]) {
@@ -169,6 +164,7 @@
 
 :host-context([ntp-realbox-next-enabled]) .glow-container {
   height: var(--cr-searchbox-icon-size);
+  top: 8px;
 }
 
 :host-context([searchbox-layout-mode^='Tall']) .glow-container {
