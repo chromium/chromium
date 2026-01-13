@@ -493,7 +493,7 @@ class Profile : public content::BrowserContext {
   }
 
   // Returns a debug information in std::string.
-  std::string ToDebugString();
+  std::string ToDebugString() const;
 
 #if BUILDFLAG(IS_ANDROID)
   static Profile* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);

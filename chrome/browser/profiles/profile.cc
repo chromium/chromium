@@ -609,7 +609,7 @@ base::WeakPtr<Profile> Profile::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-std::string Profile::ToDebugString() {
+std::string Profile::ToDebugString() const {
   std::ostringstream out;
   out << "(" << this << "):" << (IsRegularProfile() ? " regular" : "")
       << (IsIncognitoProfile() ? " incognito" : "")
