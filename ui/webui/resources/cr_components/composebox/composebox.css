@@ -672,7 +672,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) #submitContainer {
-  top: 58px;
+  top: var(--cr-composebox-submit-container-top, 58px);
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_][context-files-size_="0"]) contextual-entrypoint-and-carousel::part(carousel-divider) {
@@ -694,7 +694,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) contextual-entrypoint-and-carousel::part(voice-icon) {
   bottom: unset;
-  top: 60px;
+  top: var(--cr-composebox-voice-icon-top, 60px);
 }
 
 :host([searchbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
