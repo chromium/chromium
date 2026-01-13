@@ -9369,6 +9369,13 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
       URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
       return true;
     }
+    if (path == "/connection_allowlist.html") {
+      std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+      base::StrAppend(&headers, {"Connection-Allowlist: (response-origin)\n"});
+      std::string body = "<html><body>connection allowlist</body></html>";
+      URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+      return true;
+    }
     return false;
   }
 
@@ -9421,6 +9428,76 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistNavigation) {
+  GURL url(
+      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Browser-initiated Navigations to both same-origin and cross-origin
+  // urls should succeed.
+  // Navigate to a same-origin URL. This should be allowed.
+  // New document title1 also has the same connection allowlist policy.
+  GURL same_origin_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), same_origin_url));
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), cross_origin_url));
+
+  // Navigate back to the original document to apply the connection allowlist.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Renderer initiated navigation should only succeed to same-origin
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), same_origin_url));
+  EXPECT_TRUE(web_contents()
+                  ->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .IsSameOriginWith(same_origin_url));
+  EXPECT_FALSE(NavigateToURLFromRenderer(shell(), cross_origin_url));
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistNavigationInIframe) {
+  GURL url(
+      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Create an iframe.
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     "let child = document.createElement('iframe');"
+                     "child.id = 'test_iframe';"
+                     "document.body.appendChild(child);"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
+  EXPECT_EQ(1U, main_rfh->child_count());
+  RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
+  EXPECT_TRUE(iframe->IsRenderFrameLive());
+
+  // Renderer-initiated navigation in iframe to same-origin should succeed.
+  GURL same_origin_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(iframe->frame_tree_node(), same_origin_url));
+
+  // Renderer-initiated navigation in iframe to cross-origin should fail.
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title2.html"));
+  EXPECT_FALSE(
+      NavigateToURLFromRenderer(iframe->frame_tree_node(), cross_origin_url));
+
+  // Parent-initiated navigation to a disallowed URL should fail.
+  NavigationHandleObserver observer(web_contents(), cross_origin_url);
+  TestNavigationManager navigation_manager(web_contents(), cross_origin_url);
+  EXPECT_TRUE(ExecJs(
+      main_rfh, JsReplace("document.getElementById('test_iframe').src = $1",
+                          cross_origin_url)));
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(observer.is_error());
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED, observer.net_error_code());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        EmptyIframeInjectedScriptFetch) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -9433,6 +9510,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   // Create an empty iframe
   EXPECT_TRUE(ExecJs(main_rfh,
                      "let child = document.createElement('iframe');"
+                     "child.src = 'about:blank';"
                      "document.body.appendChild(child);"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -9516,6 +9594,145 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
       d_url);
   ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                       cross_origin_fetch_resource));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistInPagehideNavigationStateKeepAlive) {
+  // 1. Set up the opener window.
+  GURL opener_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), opener_url));
+
+  // 2. Set up the openee window.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), "window.open()"));
+  Shell* openee_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
+
+  // 3. Navigate openee to a page with a connection allowlist.
+  GURL allowlist_url(
+      embedded_test_server()->GetURL("b.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(openee_shell, allowlist_url));
+
+  // 4. The openee will navigate the opener to a cross-origin URL in pagehide.
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("c.com", "/title2.html"));
+  EXPECT_TRUE(ExecJs(openee_shell, JsReplace(R"(
+    window.addEventListener("pagehide", () => {
+      opener.location.href = $1;
+    });
+  )",
+                                             cross_origin_url)));
+
+  RenderFrameHost* openee_rfh =
+      static_cast<WebContentsImpl*>(openee_shell->web_contents())
+          ->GetPrimaryMainFrame();
+
+  // 5. Issue a KeepAlive for the navigation state so that the
+  //    PolicyContainerHost will still exist after the initiator RenderFrameHost
+  //    is gone.
+  mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle> keep_alive;
+  static_cast<RenderFrameHostImpl*>(openee_rfh)
+      ->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver());
+
+  // 6. Watch for the navigation in the opener.
+  TestNavigationObserver navigation_observer(web_contents());
+
+  // 7. Close the openee, which triggers the navigation in the opener.
+  openee_shell->Close();
+
+  // 8. The navigation should fail due to the connection allowlist.
+  navigation_observer.Wait();
+  EXPECT_EQ(cross_origin_url, navigation_observer.last_navigation_url());
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+            navigation_observer.last_net_error_code());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistSrcdoc) {
+  GURL url(
+      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WebContents* web_contents = shell()->web_contents();
+  RenderFrameHostImpl* main_rfh =
+      static_cast<WebContentsImpl*>(web_contents)->GetPrimaryMainFrame();
+
+  // Create an iframe and navigate it to about:srcdoc.
+  std::string srcdoc_content = "<h1>Hello srcdoc</h1>";
+  TestNavigationObserver navigation_observer(web_contents);
+  EXPECT_TRUE(ExecJs(main_rfh,
+                     JsReplace("let iframe = document.createElement('iframe');"
+                               "iframe.srcdoc = $1;"
+                               "document.body.appendChild(iframe);",
+                               srcdoc_content)));
+
+  navigation_observer.Wait();
+
+  // TODO(crbug.com/447954811): we could allow a local navigation as it doesn't
+  // use the network and inherits the policy of the initiator, but it currently
+  // doesn't work as the connection allowlist is not applied to its subresource
+  // fetches because the CommitDeferringConditions don't get invoked. Fix this.
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            navigation_observer.last_navigation_url());
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+            navigation_observer.last_net_error_code());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistBrowserBackAllowed) {
+  GURL allowlist_url(
+      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1. Navigate to a.com with Connection-Allowlist.
+  EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
+  EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
+
+  // 2. Navigate to b.com (cross-origin).
+  EXPECT_TRUE(NavigateToURL(shell(), cross_origin_url));
+  EXPECT_EQ(cross_origin_url, web_contents()->GetLastCommittedURL());
+
+  // 3. Navigate back to a.com using browser initiated back.
+  // This should be allowed.
+  TestNavigationObserver navigation_observer(web_contents());
+  web_contents()->GetController().GoBack();
+  navigation_observer.Wait();
+
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistHistoryBackDisallowed) {
+  GURL allowlist_url(
+      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1. Navigate to a.com with Connection-Allowlist.
+  EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
+  EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
+
+  // 2. Navigate to b.com (cross-origin). This will be allowed since
+  // it is browser initiated.
+  EXPECT_TRUE(NavigateToURL(shell(), cross_origin_url));
+  EXPECT_EQ(cross_origin_url, web_contents()->GetLastCommittedURL());
+
+  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
+
+  // 3. Now invoke history.back(). This should be disallowed
+  // because the connection allowlist restricts cross-origin
+  // navigations depending on the issue resolution:
+  //  https://github.com/WICG/connection-allowlists/issues/4
+  // TODO(crbug.com/447954811): Currently it is allowed. See TODO in
+  // NavigationRequest::IsAllowedByConnectionAllowlist().
+  TestNavigationObserver navigation_observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "history.back();"));
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
 }
 
 }  // namespace content

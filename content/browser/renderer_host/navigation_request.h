@@ -1917,6 +1917,10 @@ class CONTENT_EXPORT NavigationRequest
   // call.
   void CommitPageActivation();
 
+  // Checks whether this navigation is allowed based on the connection
+  // allowlist header, if present.
+  bool IsAllowedByConnectionAllowlist();
+
   // Checks if the specified CSP context's relevant CSP directive
   // allows the navigation. This is called to perform the frame-src check.
   bool IsAllowedByCSPDirective(
