@@ -40,6 +40,10 @@ def FuzzParameters(test_file_data):
         'TRANSFORM_CHARACTERISTICS_RETRIEVED_BASE',
         constraints.get_characteristics_retrieved_base, test_file_data)
 
+    test_file_data = FillInParameter(
+        'TRANSFORM_DESCRIPTORS_RETRIEVED_BASE',
+        constraints.get_descriptors_retrieved_base, test_file_data)
+
     test_file_data = FillInParameter('TRANSFORM_REQUEST_DEVICE_OPTIONS',
                                      constraints.GetRequestDeviceOptions,
                                      test_file_data)
@@ -52,12 +56,20 @@ def FuzzParameters(test_file_data):
                                      constraints.get_characteristics_call,
                                      test_file_data)
 
+    test_file_data = FillInParameter('TRANSFORM_GET_DESCRIPTORS',
+                                     constraints.get_descriptors_call,
+                                     test_file_data)
+
     test_file_data = FillInParameter('TRANSFORM_PICK_A_SERVICE',
                                      constraints.get_pick_a_service,
                                      test_file_data)
 
     test_file_data = FillInParameter('TRANSFORM_PICK_A_CHARACTERISTIC',
                                      constraints.get_pick_a_characteristic,
+                                     test_file_data)
+
+    test_file_data = FillInParameter('TRANSFORM_PICK_A_DESCRIPTOR',
+                                     constraints.get_pick_a_descriptor,
                                      test_file_data)
 
     test_file_data = FillInParameter(
