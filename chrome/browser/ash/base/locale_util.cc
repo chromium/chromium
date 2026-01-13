@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/base/locale_util.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
@@ -262,7 +262,7 @@ bool AddLocaleToPreferredLanguages(const std::string& locale,
   std::vector<std::string> preferred_languages =
       base::SplitString(preferred_languages_string, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  if (!base::Contains(preferred_languages, locale)) {
+  if (!std::ranges::contains(preferred_languages, locale)) {
     preferred_languages.push_back(locale);
     prefs->SetString(language::prefs::kPreferredLanguages,
                      base::JoinString(preferred_languages, ","));

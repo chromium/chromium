@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <utility>
 #include <vector>
@@ -68,7 +69,7 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
   if (app_id == kAppId2) {
     app->name = kAppName2;
   }
-  if (base::Contains(::video_conference::kSkipAppIds, app_id)) {
+  if (std::ranges::contains(::video_conference::kSkipAppIds, app_id)) {
     app->name = base::StrCat({"AppName-", app_id});
   }
 

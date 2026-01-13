@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 
+#include <algorithm>
 #include <initializer_list>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/drive_upload_virtual_task.h"
@@ -113,7 +113,8 @@ bool ExecuteVirtualTask(Profile* profile,
 
 bool IsVirtualTask(const TaskDescriptor& task) {
   return LooksLikeVirtualTask(task) &&
-         base::Contains(GetVirtualTasks(), task.action_id, &VirtualTask::id);
+         std::ranges::contains(GetVirtualTasks(), task.action_id,
+                               &VirtualTask::id);
 }
 
 VirtualTask* FindVirtualTask(const TaskDescriptor& task) {

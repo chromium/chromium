@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -59,7 +59,7 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
   if (active_user) {
     active_account_id = active_user->GetAccountId();
   }
-  if (base::Contains(account_ids, active_account_id)) {
+  if (std::ranges::contains(account_ids, active_account_id)) {
     cryptohomes_barrier_closure = BarrierClosure(
         account_ids.size() - 1, base::BindOnce(&chrome::AttemptUserExit));
   }

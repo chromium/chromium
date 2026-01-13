@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -1159,8 +1160,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   for (const auto& [app_type, app_delegate] : app_map) {
     if (app_delegate->IsAppEnabled() && app_delegate->ShouldShowInLauncher() &&
         !kLauncherPositionExemptTypes.contains(app_type)) {
-      EXPECT_TRUE(base::Contains(app_order,
-                                 GetManager().GetAppIdForSystemApp(app_type)))
+      EXPECT_TRUE(std::ranges::contains(
+          app_order, GetManager().GetAppIdForSystemApp(app_type)))
           << "System app '" << app_delegate->GetInternalName()
           << "' appears in the launcher but does not have an app order "
              "definition. Its app ID should be added to GetDefault() in "

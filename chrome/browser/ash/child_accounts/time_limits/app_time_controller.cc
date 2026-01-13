@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -422,7 +422,7 @@ void AppTimeController::OnAppInstalled(const AppId& app_id) {
   const base::Value::Dict& allowlist_policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
   AppTimeLimitsAllowlistPolicyWrapper wrapper(&allowlist_policy);
-  if (base::Contains(wrapper.GetAllowlistAppList(), app_id)) {
+  if (std::ranges::contains(wrapper.GetAllowlistAppList(), app_id)) {
     app_registry_->SetAppAllowlisted(app_id);
   }
 

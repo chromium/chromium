@@ -16,7 +16,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -630,7 +629,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     // In principle, order of items is not defined.
     for (const auto& app : apps) {
       const std::string id = ArcAppTest::GetAppId(*app);
-      EXPECT_TRUE(base::Contains(ids, id));
+      EXPECT_TRUE(std::ranges::contains(ids, id));
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(id);
       ASSERT_NE(nullptr, app_info.get());
       EXPECT_EQ(app->name, app_info->name);
@@ -644,7 +643,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     for (auto& shortcut : shortcuts) {
       const std::string id = ArcAppTest::GetAppId(shortcut);
-      EXPECT_TRUE(base::Contains(ids, id));
+      EXPECT_TRUE(std::ranges::contains(ids, id));
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(id);
       ASSERT_NE(nullptr, app_info.get());
       EXPECT_EQ(shortcut.name, app_info->name);

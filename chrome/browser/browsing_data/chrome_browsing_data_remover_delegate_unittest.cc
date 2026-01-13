@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -15,7 +16,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -3832,7 +3832,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 
   // Set a value for every WebsiteSetting.
   for (const content_settings::WebsiteSettingsInfo* info : *registry) {
-    if (base::Contains(non_deletable_types, info->type())) {
+    if (std::ranges::contains(non_deletable_types, info->type())) {
       continue;
     }
     base::Value some_value =
@@ -3864,7 +3864,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 
   // All settings should be deleted now.
   for (const content_settings::WebsiteSettingsInfo* info : *registry) {
-    if (base::Contains(non_deletable_types, info->type())) {
+    if (std::ranges::contains(non_deletable_types, info->type())) {
       continue;
     }
     base::Value value = map->GetWebsiteSetting(url, url, info->type());

@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -157,7 +156,7 @@ void AddContainerToPrefs(Profile* profile,
 
   base::Value::Dict new_container = container_id.ToDictValue();
   for (auto [key, value] : properties) {
-    if (base::Contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(*kPropertiesAllowList, key)) {
       new_container.Set(key, std::move(value));
     }
   }
@@ -208,7 +207,7 @@ void UpdateContainerPref(Profile* profile,
     return MatchContainerDict(dict, container_id);
   });
   if (it != updater->end()) {
-    if (base::Contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(*kPropertiesAllowList, key)) {
       it->GetDict().Set(key, std::move(value));
     } else {
       LOG(ERROR) << "Ignoring disallowed property: " << key;
@@ -225,7 +224,7 @@ void MergeContainerPref(Profile* profile,
     return MatchContainerDict(dict, container_id);
   });
   if (it != updater->end()) {
-    if (base::Contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(*kPropertiesAllowList, key)) {
       base::Value::Dict* old_container_dict = it->GetIfDict();
       if (old_container_dict) {
         base::Value::Dict wrapped;

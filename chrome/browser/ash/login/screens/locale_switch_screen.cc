@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
@@ -385,7 +385,7 @@ void LocaleSwitchScreen::SwitchLocale() {
   // flow.
   if (!chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() &&
       context()->is_add_person_flow &&
-      base::Contains(kAddPersonUserTypes, user->GetType())) {
+      std::ranges::contains(kAddPersonUserTypes, user->GetType())) {
     VLOG(1) << "Add Person flow detected, delegating locale switch decision"
             << " to the user.";
     // Delegate language switch to the notification. User will be able to

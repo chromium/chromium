@@ -4,11 +4,11 @@
 
 #include "chrome/browser/apps/app_service/policy_util.h"
 
+#include <algorithm>
 #include <functional>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -89,7 +89,7 @@ std::vector<std::string> GetAppIdsFromPolicyId(Profile* profile,
       ->AppRegistryCache()
       .ForEachApp([&policy_id, &app_ids](const apps::AppUpdate& update) {
         if (IsInstalled(update.Readiness()) &&
-            base::Contains(update.PolicyIds(), policy_id)) {
+            std::ranges::contains(update.PolicyIds(), policy_id)) {
           app_ids.push_back(update.AppId());
         }
       });

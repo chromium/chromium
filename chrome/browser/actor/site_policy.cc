@@ -4,11 +4,11 @@
 
 #include "chrome/browser/actor/site_policy.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
@@ -94,12 +94,12 @@ bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
                        const GURL& url,
                        bool include_subdomains) {
   if (!include_subdomains) {
-    return base::Contains(allowlist, url.host());
+    return std::ranges::contains(allowlist, url.host());
   }
 
   std::string host = url.GetHost();
   while (!host.empty()) {
-    if (base::Contains(allowlist, host)) {
+    if (std::ranges::contains(allowlist, host)) {
       return true;
     }
     host = net::GetSuperdomain(host);

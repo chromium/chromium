@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -55,7 +56,7 @@ void SamlConfirmPasswordScreen::TryPassword(const std::string& password) {
   Key key(password);
   key.SetLabel(kCryptohomeGaiaKeyLabel);
   if (scraped_saml_passwords_.empty() ||
-      base::Contains(scraped_saml_passwords_, password)) {
+      std::ranges::contains(scraped_saml_passwords_, password)) {
     user_context_->SetKey(key);
     user_context_->SetSamlPassword(SamlPassword{password});
     user_context_->SetPasswordKey(Key(password));

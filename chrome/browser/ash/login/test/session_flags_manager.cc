@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -214,10 +214,10 @@ void SessionFlagsManager::StoreStateToBackingFile() {
   if (has_restart_job) {
     const std::vector<std::string>& argv =
         FakeSessionManagerClient::Get()->restart_job_argv().value();
-    DCHECK(
-        base::Contains(argv, base::StringPrintf("--%s=%s", switches::kLoginUser,
-                                                user_manager::kGuestUserName)));
-    DCHECK(base::Contains(
+    DCHECK(std::ranges::contains(
+        argv, base::StringPrintf("--%s=%s", switches::kLoginUser,
+                                 user_manager::kGuestUserName)));
+    DCHECK(std::ranges::contains(
         argv, base::StringPrintf("--%s=%s", switches::kLoginProfile, "user")));
 
     cached_state.Set(kRestartJobKey, GetSwitchesValueFromArgv(argv));

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -34,8 +35,8 @@ bool SetUserInputMethodImpl(
                  << " (entry dropped). Use hardware default instead.";
     return false;
   }
-  if (!base::Contains(ime_state->GetEnabledInputMethodIds(),
-                      user_input_method_id)) {
+  if (!std::ranges::contains(ime_state->GetEnabledInputMethodIds(),
+                             user_input_method_id)) {
     if (!ime_state->EnableInputMethod(user_input_method_id)) {
       DLOG(ERROR) << "SetUserInputMethod: user input method '"
                   << user_input_method_id

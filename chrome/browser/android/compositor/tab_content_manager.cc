@@ -17,7 +17,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -176,7 +175,7 @@ void TabContentManager::UpdateVisibleIds(const std::vector<int>& priority_ids,
                                          int primary_tab_id) {
   thumbnail_cache_->UpdateVisibleIds(priority_ids, primary_tab_id);
   std::erase_if(static_layer_cache_, [&priority_ids](const auto& pair) {
-    bool not_priority = !base::Contains(priority_ids, pair.first);
+    bool not_priority = !std::ranges::contains(priority_ids, pair.first);
     if (not_priority && pair.second) {
       pair.second->layer()->RemoveFromParent();
     }

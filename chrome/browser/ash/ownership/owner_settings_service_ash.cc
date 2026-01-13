@@ -7,6 +7,7 @@
 #include <keyhi.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,7 +16,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -438,13 +438,13 @@ void OwnerSettingsServiceAsh::FixupLocalOwnerPolicy(
   if (settings->has_user_whitelist() && !settings->has_user_allowlist()) {
     em::UserWhitelistProto* whitelist_proto =
         settings->mutable_user_whitelist();
-    if (!base::Contains(whitelist_proto->user_whitelist(), user_id)) {
+    if (!std::ranges::contains(whitelist_proto->user_whitelist(), user_id)) {
       whitelist_proto->add_user_whitelist(user_id);
     }
   } else {
     em::UserAllowlistProto* allowlist_proto =
         settings->mutable_user_allowlist();
-    if (!base::Contains(allowlist_proto->user_allowlist(), user_id)) {
+    if (!std::ranges::contains(allowlist_proto->user_allowlist(), user_id)) {
       allowlist_proto->add_user_allowlist(user_id);
     }
   }

@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -234,7 +233,7 @@ bool ActionMove::ParseJsonFromKeyboard(const base::Value::Dict& value) {
                  << "}.";
       return false;
     }
-    if (base::Contains(keycodes, key)) {
+    if (std::ranges::contains(keycodes, key)) {
       LOG(ERROR) << "Duplicated key {" << val
                  << "} for move key action: " << name_;
       return false;

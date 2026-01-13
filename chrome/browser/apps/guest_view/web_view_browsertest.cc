@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -10,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -2430,13 +2430,13 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageRouteEvents) {
       content::GetInputEventRouterRenderWidgetHostViews(
           GetFirstAppWindowWebContents());
 
-  ASSERT_TRUE(base::Contains(
+  ASSERT_TRUE(std::ranges::contains(
       hosts, GetFirstAppWindowWebContents()->GetPrimaryMainFrame()->GetView()));
 
   auto* guest_main_frame =
       GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   ASSERT_TRUE(guest_main_frame);
-  ASSERT_TRUE(base::Contains(hosts, guest_main_frame->GetView()));
+  ASSERT_TRUE(std::ranges::contains(hosts, guest_main_frame->GetView()));
 }
 
 // Test makes sure that the browser does not crash when a `<webview>` navigates

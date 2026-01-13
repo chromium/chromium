@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -360,11 +361,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
   std::vector<std::string> top_level_id_list =
       app_list_test_api_.GetTopLevelViewIdList();
   ASSERT_GT(top_level_id_list.size(), 2u);
-  EXPECT_TRUE(base::Contains(top_level_id_list, folder_id));
+  EXPECT_TRUE(std::ranges::contains(top_level_id_list, folder_id));
   model->MoveItemToRootAt(app1_item, app2_item->position().CreateBefore());
 
   top_level_id_list = app_list_test_api_.GetTopLevelViewIdList();
-  EXPECT_FALSE(base::Contains(top_level_id_list, folder_id));
+  EXPECT_FALSE(std::ranges::contains(top_level_id_list, folder_id));
 
   std::vector<std::string> leading_items = {
       top_level_id_list[0],

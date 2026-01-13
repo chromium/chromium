@@ -258,7 +258,7 @@ void FindAppServiceTasks(Profile* profile,
   };
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
-    if (!base::Contains(supported_app_types, app_type)) {
+    if (!std::ranges::contains(supported_app_types, app_type)) {
       continue;
     }
 
@@ -448,7 +448,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
         apps_util::GetAppIdsFromPolicyId(profile, policy_id);
     for (auto& task : resulting_tasks->tasks) {
       const auto& td = task.task_descriptor;
-      if (base::Contains(app_ids, td.app_id)) {
+      if (std::ranges::contains(app_ids, td.app_id)) {
         filtered_tasks.push_back(&task);
       }
     }

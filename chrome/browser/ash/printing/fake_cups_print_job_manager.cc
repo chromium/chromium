@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/printing/fake_cups_print_job_manager.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
@@ -79,8 +79,8 @@ bool FakeCupsPrintJobManager::ResumePrintJob(CupsPrintJob* job) {
 
 void FakeCupsPrintJobManager::ChangePrintJobState(CupsPrintJob* job) {
   // |job| might have been deleted.
-  const bool found =
-      base::Contains(print_jobs_, job, &std::unique_ptr<CupsPrintJob>::get);
+  const bool found = std::ranges::contains(print_jobs_, job,
+                                           &std::unique_ptr<CupsPrintJob>::get);
   if (!found || job->state() == CupsPrintJob::State::STATE_SUSPENDED ||
       job->state() == CupsPrintJob::State::STATE_FAILED) {
     return;

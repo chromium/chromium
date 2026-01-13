@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -287,7 +287,8 @@ void WelcomeScreen::SetInputMethod(const std::string& input_method) {
       input_method::InputMethodManager::Get()
           ->GetActiveIMEState()
           ->GetEnabledInputMethodIds();
-  if (input_method.empty() || !base::Contains(input_methods, input_method)) {
+  if (input_method.empty() ||
+      !std::ranges::contains(input_methods, input_method)) {
     LOG(WARNING) << "The input method is empty or ineligible!";
     return;
   }

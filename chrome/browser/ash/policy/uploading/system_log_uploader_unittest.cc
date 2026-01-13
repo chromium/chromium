@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -154,7 +154,7 @@ class MockSystemLogDelegate : public SystemLogUploader::Delegate {
   void ZipSystemLogs(std::unique_ptr<SystemLogUploader::SystemLogs> system_logs,
                      ZippedLogUploadCallback upload_callback) override {
     for (const auto& log : system_logs_)
-      EXPECT_TRUE(base::Contains(*system_logs, log));
+      EXPECT_TRUE(std::ranges::contains(*system_logs, log));
     std::move(upload_callback).Run(std::string(kZippedData));
   }
 

@@ -245,7 +245,8 @@ bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
   }
 
   // Check that the filter has a view action.
-  if (!base::Contains(arc_intent_filter.actions(), arc::kIntentActionView)) {
+  if (!std::ranges::contains(arc_intent_filter.actions(),
+                             arc::kIntentActionView)) {
     return false;
   }
 

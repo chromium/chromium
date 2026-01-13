@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "chromeos/ash/components/quick_start/logging.h"
@@ -34,7 +34,7 @@ void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
       FeatureSupportStatus::kWaitingForAdapterToBecomePowered};
   FeatureSupportStatus status = GetFeatureSupportStatus();
 
-  if (base::Contains(kShouldNotNotifyStatus, status)) {
+  if (std::ranges::contains(kShouldNotNotifyStatus, status)) {
     return;
   }
 

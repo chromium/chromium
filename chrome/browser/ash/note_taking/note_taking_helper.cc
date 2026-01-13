@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <atomic>
 #include <iterator>
 #include <map>
@@ -18,7 +19,6 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -499,10 +499,10 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     cache.ForOneApp(id, [&app_ids](const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()))
         return;
-      if (!base::Contains(kNoteTakingAppTypes, update.AppType())) {
+      if (!std::ranges::contains(kNoteTakingAppTypes, update.AppType())) {
         return;
       }
-      DCHECK(!base::Contains(app_ids, update.AppId()));
+      DCHECK(!std::ranges::contains(app_ids, update.AppId()));
       app_ids.push_back(update.AppId());
     });
   }
@@ -510,10 +510,10 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
   cache.ForEachApp([&app_ids](const apps::AppUpdate& update) {
     if (!apps_util::IsInstalled(update.Readiness()))
       return;
-    if (base::Contains(app_ids, update.AppId())) {
+    if (std::ranges::contains(app_ids, update.AppId())) {
       return;
     }
-    if (!base::Contains(kNoteTakingAppTypes, update.AppType())) {
+    if (!std::ranges::contains(kNoteTakingAppTypes, update.AppType())) {
       return;
     }
     if (HasNoteTakingIntentFilter(update.IntentFilters())) {
@@ -641,13 +641,13 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
 }
 
 void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!base::Contains(kNoteTakingAppTypes, update.AppType())) {
+  if (!std::ranges::contains(kNoteTakingAppTypes, update.AppType())) {
     return;
   }
   // App was added, removed, enabled, or disabled.
   if (!update.ReadinessChanged())
     return;
-  if (!base::Contains(force_allowed_app_ids_, update.AppId()) &&
+  if (!std::ranges::contains(force_allowed_app_ids_, update.AppId()) &&
       !HasNoteTakingIntentFilter(update.IntentFilters())) {
     return;
   }

@@ -9,7 +9,6 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -539,8 +538,8 @@ void ArcAppTest::RemovePackage(const std::string& package_name) {
 }
 
 bool ArcAppTest::FindPackage(const std::string& package_name) {
-  return base::Contains(fake_packages_, package_name,
-                        &arc::mojom::ArcPackageInfo::package_name);
+  return std::ranges::contains(fake_packages_, package_name,
+                               &arc::mojom::ArcPackageInfo::package_name);
 }
 
 void ArcAppTest::SetUserEmail(const std::string& email) {

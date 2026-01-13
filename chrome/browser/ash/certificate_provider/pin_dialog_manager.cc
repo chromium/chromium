@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 
@@ -172,7 +172,7 @@ void PinDialogManager::ExtensionUnloaded(const std::string& extension_id) {
 
 void PinDialogManager::AddPinDialogHost(
     SecurityTokenPinDialogHost* pin_dialog_host) {
-  DCHECK(!base::Contains(added_dialog_hosts_, pin_dialog_host));
+  DCHECK(!std::ranges::contains(added_dialog_hosts_, pin_dialog_host));
   added_dialog_hosts_.push_back(pin_dialog_host);
 }
 
@@ -180,7 +180,7 @@ void PinDialogManager::RemovePinDialogHost(
     SecurityTokenPinDialogHost* pin_dialog_host) {
   if (active_dialog_state_ && active_dialog_state_->host == pin_dialog_host)
     CloseActiveDialog();
-  DCHECK(base::Contains(added_dialog_hosts_, pin_dialog_host));
+  DCHECK(std::ranges::contains(added_dialog_hosts_, pin_dialog_host));
   std::erase(added_dialog_hosts_, pin_dialog_host);
 }
 

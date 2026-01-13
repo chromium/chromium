@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -86,7 +86,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
                              ->GetDependencyGraphForTesting()
                              .GetConstructionOrder(&nodes);
     EXPECT_TRUE(success);
-    return base::Contains(
+    return std::ranges::contains(
         nodes, "OneDrivePrefObserverFactory",
         [](const DependencyNode* node) -> std::string_view {
           return static_cast<const KeyedServiceBaseFactory*>(node)->name();

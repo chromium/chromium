@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_helper.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -343,14 +343,14 @@ TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
 
   for (auto device : {kCamera, kMic}) {
     EXPECT_EQ(vm_camera_mic_manager_->IsDeviceActive(device),
-              base::Contains(GetParam().device_expectations, device));
+              std::ranges::contains(GetParam().device_expectations, device));
   }
 
   for (auto notification :
        {kCameraNotification, kMicNotification, kCameraAndMicNotification}) {
-    EXPECT_EQ(
-        vm_camera_mic_manager_->IsNotificationActive(notification),
-        base::Contains(GetParam().notification_expectations, notification));
+    EXPECT_EQ(vm_camera_mic_manager_->IsNotificationActive(notification),
+              std::ranges::contains(GetParam().notification_expectations,
+                                    notification));
   }
 }
 

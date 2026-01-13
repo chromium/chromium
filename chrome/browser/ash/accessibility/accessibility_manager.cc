@@ -1332,9 +1332,9 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         // immediately.
         ShowDictationLanguageUpgradedNudge(dictation_locale);
       } else if (!offline_nudge &&
-                 base::Contains(speech::SodaInstaller::GetInstance()
-                                    ->GetAvailableLanguages(),
-                                dictation_locale)) {
+                 std::ranges::contains(speech::SodaInstaller::GetInstance()
+                                           ->GetAvailableLanguages(),
+                                       dictation_locale)) {
         // If the SODA language isn't installed yet, update the preference to
         // ensure the nudge gets shown for this locale when installation
         // completes.
@@ -2733,7 +2733,7 @@ bool AccessibilityManager::ShouldShowNetworkDictationDialog(
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   std::vector<std::string> supported_languages =
       soda_installer->GetAvailableLanguages();
-  return !base::Contains(supported_languages, locale);
+  return !std::ranges::contains(supported_languages, locale);
 }
 
 void AccessibilityManager::ShowNetworkDictationDialog() {
@@ -2769,7 +2769,7 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (!base::Contains(
+  if (!std::ranges::contains(
           speech::SodaInstaller::GetInstance()->GetAvailableLanguages(),
           locale)) {
     // Don't continue initializing SODA if this locale isn't supported.

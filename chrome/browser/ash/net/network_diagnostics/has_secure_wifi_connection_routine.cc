@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/has_secure_wifi_connection_routine.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -66,7 +66,7 @@ void HasSecureWiFiConnectionRoutine::Run() {
 void HasSecureWiFiConnectionRoutine::AnalyzeResultsAndExecuteCallback() {
   if (!wifi_connected_) {
     set_verdict(mojom::RoutineVerdict::kNotRun);
-  } else if (base::Contains(kInsecureWiFiEncryptions, wifi_security_)) {
+  } else if (std::ranges::contains(kInsecureWiFiEncryptions, wifi_security_)) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     switch (wifi_security_) {
       case SecurityType::kNone:
@@ -85,7 +85,7 @@ void HasSecureWiFiConnectionRoutine::AnalyzeResultsAndExecuteCallback() {
       case SecurityType::kWpaPsk:
         break;
     }
-  } else if (base::Contains(kSecureWiFiEncryptions, wifi_security_)) {
+  } else if (std::ranges::contains(kSecureWiFiEncryptions, wifi_security_)) {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
   } else {
     set_verdict(mojom::RoutineVerdict::kProblem);

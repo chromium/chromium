@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 
 #include <stddef.h>
+
+#include <algorithm>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -182,8 +184,8 @@ TEST_F(GuestOsMimeTypesServiceTest, SetMimeTypesAndGetExtensionTypes) {
   // We should have 2 possible extensions for this mime type case.
   result = GetExtensionTypesFromMimeTypes({"x/abcdef"});
   EXPECT_EQ(2u, result.size());
-  EXPECT_TRUE(base::Contains(result, "abc"));
-  EXPECT_TRUE(base::Contains(result, "def"));
+  EXPECT_TRUE(std::ranges::contains(result, "abc"));
+  EXPECT_TRUE(std::ranges::contains(result, "def"));
 }
 
 }  // namespace guest_os

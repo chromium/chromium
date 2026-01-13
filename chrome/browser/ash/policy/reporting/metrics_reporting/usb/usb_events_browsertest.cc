@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
@@ -83,8 +83,8 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   }
 
   bool NoUsbEventsEnqueued(const std::vector<Record>& records) {
-    return !base::Contains(records, Destination::PERIPHERAL_EVENTS,
-                           &Record::destination);
+    return !std::ranges::contains(records, Destination::PERIPHERAL_EVENTS,
+                                  &Record::destination);
   }
 
   void LoginAffiliatedUser() {

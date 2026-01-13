@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names.h"
@@ -42,13 +42,13 @@ void InputMethodPrefs::UpdateEnabledImes(
   const std::string current_ime =
       prefs->GetString(prefs::kLanguageCurrentInputMethod);
   if (ce::IsArcIME(current_ime) &&
-      !base::Contains(enabled_ime_list, current_ime)) {
+      !std::ranges::contains(enabled_ime_list, current_ime)) {
     prefs->SetString(prefs::kLanguageCurrentInputMethod, std::string());
   }
   const std::string previous_ime =
       prefs->GetString(prefs::kLanguagePreviousInputMethod);
   if (ce::IsArcIME(previous_ime) &&
-      !base::Contains(enabled_ime_list, previous_ime)) {
+      !std::ranges::contains(enabled_ime_list, previous_ime)) {
     prefs->SetString(prefs::kLanguagePreviousInputMethod, std::string());
   }
 }

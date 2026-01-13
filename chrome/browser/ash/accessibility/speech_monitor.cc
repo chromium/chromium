@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
@@ -34,7 +35,7 @@ SpeechMonitor::Expectation::Matches(
     const base::circular_deque<SpeechMonitorUtterance>& queue) const {
   std::vector<std::string> all_text;
   for (auto it = queue.begin(); it != queue.end(); it++) {
-    if (base::Contains(disallowed_text_, it->text)) {
+    if (std::ranges::contains(disallowed_text_, it->text)) {
       break;
     }
 
@@ -179,7 +180,7 @@ void SpeechMonitor::WillSpeakUtteranceWithVoice(
     const content::VoiceData& voice_data) {
   if (!utterance_queue_.empty() &&
       utterance_queue_.back().text == utterance->GetText() &&
-      !base::Contains(repeated_speech_, utterance->GetText())) {
+      !std::ranges::contains(repeated_speech_, utterance->GetText())) {
     repeated_speech_.push_back(utterance->GetText());
   }
 

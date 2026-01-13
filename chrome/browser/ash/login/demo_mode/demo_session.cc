@@ -16,7 +16,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -447,7 +446,8 @@ bool DemoSession::ShouldShowAppInShelf(const std::string& app_id_or_package) {
 
   // Ignore for specified chrome/android apps.
   if (content::GetNetworkConnectionTracker()->IsOffline() &&
-      base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package)) {
+      std::ranges::contains(ignore_pin_policy_offline_apps_,
+                            app_id_or_package)) {
     return false;
   }
 

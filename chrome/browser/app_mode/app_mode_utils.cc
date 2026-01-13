@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -95,8 +95,8 @@ bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
 
   constexpr int kAllowedPopup[] = {IDC_CLOSE_TAB};
 
-  return base::Contains(kAllowed, command_id) ||
-         (is_popup && base::Contains(kAllowedPopup, command_id));
+  return std::ranges::contains(kAllowed, command_id) ||
+         (is_popup && std::ranges::contains(kAllowedPopup, command_id));
 }
 
 bool IsRunningInAppMode() {

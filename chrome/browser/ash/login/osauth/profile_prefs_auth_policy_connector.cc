@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -144,7 +145,7 @@ bool ProfilePrefsAuthPolicyConnector::IsAuthFactorUserModifiable(
 
       for (const auto* pref_list : pref_lists) {
         for (const auto& pref_list_value : pref_list_values) {
-          if (base::Contains(*pref_list, pref_list_value)) {
+          if (std::ranges::contains(*pref_list, pref_list_value)) {
             return true;
           }
         }

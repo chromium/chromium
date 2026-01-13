@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/dns_resolution_routine.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -117,7 +117,7 @@ void DnsResolutionRoutine::OnComplete(
     AnalyzeResultsAndExecuteCallback();
     return;
   }
-  if (base::Contains(kRetryResponseCodes, result) && num_retries_ > 0) {
+  if (std::ranges::contains(kRetryResponseCodes, result) && num_retries_ > 0) {
     num_retries_--;
     AttemptResolution();
   } else {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -265,7 +265,7 @@ TEST_F(AppServiceWrapperTest, GetInstalledApps) {
       AppId(apps::AppType::kChromeApp, app_constants::kChromeAppId);
   std::vector<AppId> installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(1u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, chrome));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, chrome));
 
   // Add ARC app.
   const AppId app1(apps::AppType::kArc, kArcPackage1);
@@ -293,7 +293,7 @@ TEST_F(AppServiceWrapperTest, GetInstalledApps) {
   installed_apps = tested_wrapper().GetInstalledApps();
   ASSERT_EQ(4u, installed_apps.size());
   for (const auto& app : expected_apps) {
-    EXPECT_TRUE(base::Contains(installed_apps, app));
+    EXPECT_TRUE(std::ranges::contains(installed_apps, app));
   }
 }
 
@@ -335,7 +335,7 @@ TEST_F(AppServiceWrapperTest, ArcAppInstallation) {
 
   std::vector<AppId> installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(2u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, app1));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, app1));
 
   // Install second ARC app.
   const AppId app2(apps::AppType::kArc, kArcPackage2);
@@ -344,7 +344,7 @@ TEST_F(AppServiceWrapperTest, ArcAppInstallation) {
 
   installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(3u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, app2));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, app2));
 
   // Uninstall first ARC app.
   EXPECT_CALL(test_listener(), OnAppUninstalled(app1)).Times(1);
@@ -352,7 +352,7 @@ TEST_F(AppServiceWrapperTest, ArcAppInstallation) {
 
   installed_apps = tested_wrapper().GetInstalledApps();
   ASSERT_EQ(2u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, app2));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, app2));
 }
 
 // Tests installs and uninstalls of web apps.
@@ -369,7 +369,7 @@ TEST_F(AppServiceWrapperTest, WebAppInstallation) {
 
   std::vector<AppId> installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(2u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, app1));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, app1));
 
   // Install second web app.
   const AppId app2(
@@ -380,7 +380,7 @@ TEST_F(AppServiceWrapperTest, WebAppInstallation) {
 
   installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(3u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, app2));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, app2));
 
   // Uninstall first web app.
   EXPECT_CALL(test_listener(), OnAppUninstalled(app1)).Times(1);
@@ -388,7 +388,7 @@ TEST_F(AppServiceWrapperTest, WebAppInstallation) {
 
   installed_apps = tested_wrapper().GetInstalledApps();
   ASSERT_EQ(2u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, app2));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, app2));
 }
 
 TEST_F(AppServiceWrapperTest, ArcAppDisabled) {
@@ -427,7 +427,7 @@ TEST_F(AppServiceWrapperTest, WebAppDisabled) {
 TEST_F(AppServiceWrapperTest, IgnoreOtherExtensions) {
   const AppId chrome(apps::AppType::kChromeApp, app_constants::kChromeAppId);
   std::vector<AppId> installed_apps = tested_wrapper().GetInstalledApps();
-  EXPECT_TRUE(base::Contains(installed_apps, chrome));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, chrome));
 
   const AppId app1(
       apps::AppType::kChromeApp,
@@ -437,7 +437,7 @@ TEST_F(AppServiceWrapperTest, IgnoreOtherExtensions) {
 
   installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(2u, installed_apps.size());
-  EXPECT_TRUE(base::Contains(installed_apps, chrome));
+  EXPECT_TRUE(std::ranges::contains(installed_apps, chrome));
 
   // TODO(yilkal): simulate install for non hosted extension apps (such as
   // platform extensions apps, normal extensions, theme extensions for this

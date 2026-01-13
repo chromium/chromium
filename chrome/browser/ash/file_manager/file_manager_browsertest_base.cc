@@ -30,7 +30,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -4273,8 +4272,8 @@ FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
       }
 
       // Ignore known WebContents.
-      if (!base::Contains(swa_web_contents_, web_contents,
-                          &IdToWebContents::value_type::second)) {
+      if (!std::ranges::contains(swa_web_contents_, web_contents,
+                                 &IdToWebContents::value_type::second)) {
         return web_contents;
       }
     }

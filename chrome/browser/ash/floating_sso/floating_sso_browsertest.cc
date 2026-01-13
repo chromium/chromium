@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -10,7 +11,6 @@
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
@@ -233,7 +233,7 @@ class FloatingSsoTest : public policy::PolicyTest {
                              ->GetDependencyGraphForTesting()
                              .GetConstructionOrder(&nodes);
     EXPECT_TRUE(success);
-    return base::Contains(
+    return std::ranges::contains(
         nodes, "FloatingSsoService",
         [](const DependencyNode* node) -> std::string_view {
           return static_cast<const KeyedServiceBaseFactory*>(node)->name();

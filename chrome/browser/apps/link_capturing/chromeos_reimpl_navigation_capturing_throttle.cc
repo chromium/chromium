@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -535,8 +536,8 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  const bool is_for_projector_swa =
-      base::Contains(app_candidates, ash::kChromeUIUntrustedProjectorSwaAppId);
+  const bool is_for_projector_swa = std::ranges::contains(
+      app_candidates, ash::kChromeUIUntrustedProjectorSwaAppId);
 
   // Note: This is an unfortunate way to detect a link click. If there is a
   // better way to know all of navigation's original disposition, frame, etc,

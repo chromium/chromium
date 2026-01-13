@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "ash/public/cpp/shelf_model.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -481,8 +481,8 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   app_instance_->SendRefreshPackageList(std::move(packages));
 
   EXPECT_EQ(2u, removed_packages_.size());
-  EXPECT_TRUE(base::Contains(removed_packages_, kPackageName));
-  EXPECT_TRUE(base::Contains(removed_packages_, kPackageName1));
+  EXPECT_TRUE(std::ranges::contains(removed_packages_, kPackageName));
+  EXPECT_TRUE(std::ranges::contains(removed_packages_, kPackageName1));
   EXPECT_EQ(std::nullopt, service->GetPackageNameForWebApp(kAppUrl));
   EXPECT_EQ(std::nullopt, service->GetPackageNameForWebApp(kAppUrl1));
 

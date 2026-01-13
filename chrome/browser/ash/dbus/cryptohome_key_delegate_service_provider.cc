@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/dbus/cryptohome_key_delegate_service_provider.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -150,7 +150,7 @@ void HandleSignatureKeyChallenge(
                                                  "Key is unavailable"));
     return;
   }
-  if (!base::Contains(supported_ssl_algorithms, ssl_algorithm)) {
+  if (!std::ranges::contains(supported_ssl_algorithms, ssl_algorithm)) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
                                                  "Unsupported algorithm"));

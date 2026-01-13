@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/guest_os_apps.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -233,7 +234,7 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // https://specifications.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html.
   // In this case, remove all mime types that begin with "text/" and replace
   // them with a single "text/*" mime type.
-  if (base::Contains(mime_types, "text/plain")) {
+  if (std::ranges::contains(mime_types, "text/plain")) {
     std::erase_if(mime_types, [](const std::string& s) {
       return base::StartsWith(s, "text/");
     });

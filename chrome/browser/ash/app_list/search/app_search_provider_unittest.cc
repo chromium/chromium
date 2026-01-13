@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -576,7 +575,7 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
       results_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (auto* app : kOemAppNames) {
-    EXPECT_TRUE(base::Contains(results, app));
+    EXPECT_TRUE(std::ranges::contains(results, app));
   }
 }
 

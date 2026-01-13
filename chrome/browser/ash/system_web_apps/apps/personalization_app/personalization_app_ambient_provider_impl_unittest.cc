@@ -959,7 +959,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
   // The fake data has album '1' as selected.
   std::vector<std::string> selected_ids = SelectedAlbumIds();
-  EXPECT_TRUE(base::Contains(selected_ids, "1"));
+  EXPECT_TRUE(std::ranges::contains(selected_ids, "1"));
 
   ash::personalization_app::mojom::AmbientModeAlbumPtr album =
       ash::personalization_app::mojom::AmbientModeAlbum::New();
@@ -981,7 +981,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
   selected_ids = SelectedAlbumIds();
   EXPECT_EQ(1u, selected_ids.size());
-  EXPECT_TRUE(base::Contains(selected_ids, "1"));
+  EXPECT_TRUE(std::ranges::contains(selected_ids, "1"));
   EXPECT_EQ(mojom::TopicSource::kGooglePhotos, TopicSource());
 }
 

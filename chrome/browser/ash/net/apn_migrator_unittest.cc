@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/net/apn_migrator.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
@@ -649,7 +651,8 @@ TEST_F(ApnMigratorTest, SkipMigratingWhenNoChangeInIccids) {
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   EXPECT_EQ(1u, custom_apns[0]->apn_types.size());
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
@@ -1170,7 +1173,8 @@ TEST_F(ApnMigratorTest,
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsManagedMigrationTypeHistogram,
       1);
@@ -1261,8 +1265,10 @@ TEST_F(ApnMigratorTest,
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       1);
@@ -1342,7 +1348,8 @@ TEST_F(
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       1);
@@ -1422,7 +1429,8 @@ TEST_F(
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       1);
@@ -1504,8 +1512,10 @@ TEST_F(ApnMigratorTest,
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       1);
@@ -1585,8 +1595,10 @@ TEST_F(
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_FALSE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_FALSE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       1);
@@ -1669,8 +1681,10 @@ TEST_F(
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_FALSE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_FALSE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
       1);
@@ -1766,12 +1780,14 @@ TEST_F(
   // Last connected default APN is saved first.
   EXPECT_EQ(kDefaultAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
 
   // Last connected attach APN is saved second.
   EXPECT_EQ(kAttachAccessPointName, custom_apns[1]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[1]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[1]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[1]->apn_types, ApnType::kAttach));
 
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
@@ -1868,13 +1884,16 @@ TEST_F(
   // Last connected default APN is saved first.
   EXPECT_EQ(kDefaultAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kAttach));
 
   // Last connected attach APN is saved second.
   EXPECT_EQ(kAttachAccessPointName, custom_apns[1]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[1]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[1]->apn_types, ApnType::kAttach));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[1]->apn_types, ApnType::kAttach));
 
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
@@ -2036,7 +2055,8 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
   ASSERT_EQ(1u, custom_apns.size());
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
-  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(
+      std::ranges::contains(custom_apns[0]->apn_types, ApnType::kDefault));
   EXPECT_EQ(1u, custom_apns[0]->apn_types.size());
   histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
