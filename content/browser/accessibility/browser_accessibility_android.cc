@@ -2668,6 +2668,11 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
           GetData().HasIntListAttribute(
               ax::mojom::IntListAttribute::kLabelledbyIds)) {
         name_to_cache_ = AndroidNameTo::kLabeledBy;
+      } else if (base::FeatureList::IsEnabled(
+                     features::
+                         kAccessibilityPopulateSupplementalDescriptionApi)) {
+        // Fallback to supplemental description when labeledBy cannot be used.
+        name_to_cache_ = AndroidNameTo::kSupplementalDescription;
       } else {
         name_to_cache_ = AndroidNameTo::kText;
       }
