@@ -90,7 +90,7 @@ TEST_F(ThemeColorsSourceManagerTest,
 
   blink::mojom::LocalResourceLoaderConfig config;
   url::Origin requesting_origin =
-      url::Origin::Create(GURL("chrome://webui-toolbar/"));
+      url::Origin::Create(GURL("chrome://webui-toolbar.top-chrome/"));
 
   ui::ColorProvider color_provider;
   manager->SetColorProviderForTesting(&color_provider);
@@ -98,13 +98,13 @@ TEST_F(ThemeColorsSourceManagerTest,
   manager->PopulateLocalResourceLoaderConfig(&config, requesting_origin,
                                              web_contents());
 
-  EXPECT_THAT(
-      config,
-      ContainsThemeSource(Pointee(AllOf(
-          HasResource("colors.css", Not(IsEmpty())),
-          // Implementation adds headers if requesting origin != theme origin,
-          // and chrome://webui-toolbar != chrome://theme.
-          HasHeader("Access-Control-Allow-Origin: chrome://webui-toolbar")))));
+  EXPECT_THAT(config,
+              ContainsThemeSource(Pointee(AllOf(
+                  HasResource("colors.css", Not(IsEmpty())),
+                  // Implementation adds headers if requesting origin != theme
+                  // origin, and chrome://webui-toolbar != chrome://theme.
+                  HasHeader("Access-Control-Allow-Origin: "
+                            "chrome://webui-toolbar.top-chrome")))));
 }
 
 // Verifies cross-origin resource access. Checks that the

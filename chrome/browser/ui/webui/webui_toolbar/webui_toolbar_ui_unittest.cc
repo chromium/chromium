@@ -180,7 +180,7 @@ TEST_F(WebUIToolbarUITest, PopulateLocalResourceLoaderConfig) {
 
   blink::mojom::LocalResourceLoaderConfig config;
   ui()->PopulateLocalResourceLoaderConfig(
-      &config, url::Origin::Create(GURL("chrome://webui-toolbar/")));
+      &config, url::Origin::Create(GURL("chrome://webui-toolbar.top-chrome/")));
 
   // Verify that the color CSS is added.
   url::Origin theme_origin = url::Origin::Create(GURL("chrome://theme/"));
