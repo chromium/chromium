@@ -7,7 +7,6 @@
 #import <string>
 
 #import "base/containers/circular_deque.h"
-#import "base/containers/contains.h"
 #import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"

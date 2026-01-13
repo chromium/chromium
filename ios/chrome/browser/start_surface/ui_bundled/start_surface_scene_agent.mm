@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -297,13 +298,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // If the active tab is going to be closed, pick the last ungrouped
   // NTP as the new active tab, otherwise insert a new NTP.
-  if (base::Contains(indicesToRemove, webStateList->active_index())) {
+  if (std::ranges::contains(indicesToRemove, webStateList->active_index())) {
     int lastUngroupedNTPIndex = WebStateList::kInvalidIndex;
     for (int index = webStateList->count() - 1; index >= 0; --index) {
       const web::WebState* webState = webStateList->GetWebStateAt(index);
       const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
       if (IsNTP(webState) && !tabGroup &&
-          !base::Contains(indicesToRemove, index)) {
+          !std::ranges::contains(indicesToRemove, index)) {
         lastUngroupedNTPIndex = index;
         break;
       }

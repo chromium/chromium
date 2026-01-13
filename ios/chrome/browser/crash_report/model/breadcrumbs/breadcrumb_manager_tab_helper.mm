@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
-#import "base/containers/contains.h"
 #import "base/ios/ns_error_util.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"

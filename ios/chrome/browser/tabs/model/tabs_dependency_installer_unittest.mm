@@ -8,7 +8,6 @@
 #import <memory>
 #import <vector>
 
-#import "base/containers/contains.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_mediator.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
@@ -97,8 +98,9 @@
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
     GaiaId gaia(self.selectedIdentity.gaiaId);
-    return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
-                          [](const AccountInfo& info) { return info.gaia; });
+    return std::ranges::contains(
+        _identityManager->GetAccountsOnDevice(), gaia,
+        [](const AccountInfo& info) { return info.gaia; });
   }
   return false;
 }

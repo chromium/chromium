@@ -6,11 +6,11 @@
 #import "ios/chrome/app/tests_hook.h"
 // clang-format on
 
+#import <algorithm>
 #import <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
-#import "base/containers/contains.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
@@ -405,7 +405,7 @@ void DeleteFilesRecursively(NSString* directoryPath) {
 
 void WipeProfileIfRequested(base::span<const char* const> args) {
   static constexpr std::string_view kWipeArg = "-EGTestWipeProfile";
-  if (!base::Contains(args, kWipeArg)) {
+  if (!std::ranges::contains(args, kWipeArg)) {
     return;
   }
 

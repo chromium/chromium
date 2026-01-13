@@ -8,7 +8,6 @@
 #import <set>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"

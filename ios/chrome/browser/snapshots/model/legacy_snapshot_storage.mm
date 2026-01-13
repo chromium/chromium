@@ -7,7 +7,6 @@
 #import <map>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"

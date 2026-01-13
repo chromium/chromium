@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 
+#import <algorithm>
+
 #import "base/check_op.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
@@ -303,7 +305,7 @@ enum class AuthenticationFlowInProfileState {
       IdentityManagerFactory::GetForProfile(profile);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
-  BOOL isValidIdentityInProfile = base::Contains(
+  BOOL isValidIdentityInProfile = std::ranges::contains(
       accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
   if (!isValidIdentityInProfile) {
     [self handleAuthenticationError:ios::provider::

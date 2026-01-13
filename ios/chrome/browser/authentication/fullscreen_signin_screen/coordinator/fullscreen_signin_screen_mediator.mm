@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -346,8 +347,9 @@ enum class SigninScreenState {
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
     GaiaId gaia(self.selectedIdentity.gaiaId);
-    return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
-                          [](const AccountInfo& info) { return info.gaia; });
+    return std::ranges::contains(
+        _identityManager->GetAccountsOnDevice(), gaia,
+        [](const AccountInfo& info) { return info.gaia; });
   }
   return false;
 }

@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"

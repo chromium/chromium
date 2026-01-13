@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 
+#import <algorithm>
 #import <numeric>
 #import <string>
 
-#import "base/containers/contains.h"
 #import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/metrics/histogram_functions.h"
@@ -75,7 +75,7 @@ bool UserIsAndroidSwitcher(
   return result.status == segmentation_platform::PredictionStatus::kSucceeded &&
          result.ordered_labels[0] ==
              segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel &&
-         !base::Contains(
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel);
 }

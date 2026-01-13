@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 
+#import <algorithm>
 #import <memory>
 #import <vector>
 
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -26,7 +26,7 @@ class TestObserver : public ContextualPanelTabHelperObserver {
   ~TestObserver() override {}
 
   bool WasInvokedFor(ContextualPanelTabHelper* tab_helper) {
-    return base::Contains(invoker_tab_helpers_, tab_helper);
+    return std::ranges::contains(invoker_tab_helpers_, tab_helper);
   }
 
   void Reset() { invoker_tab_helpers_.clear(); }

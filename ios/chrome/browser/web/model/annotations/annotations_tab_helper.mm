@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_util.h"

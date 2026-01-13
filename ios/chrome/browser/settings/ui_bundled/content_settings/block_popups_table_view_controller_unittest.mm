@@ -9,7 +9,6 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"

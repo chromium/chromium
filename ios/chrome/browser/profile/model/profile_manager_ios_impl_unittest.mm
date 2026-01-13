@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 
-#import "base/containers/contains.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"

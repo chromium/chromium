@@ -5,7 +5,6 @@
 #import <memory>
 #import <set>
 
-#import "base/containers/contains.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/in_memory_pref_store.h"
 #import "components/prefs/pref_registry_simple.h"

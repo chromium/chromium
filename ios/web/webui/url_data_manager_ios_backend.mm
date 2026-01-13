@@ -4,6 +4,7 @@
 
 #import "ios/web/webui/url_data_manager_ios_backend.h"
 
+#import <algorithm>
 #import <set>
 
 #import "base/command_line.h"
@@ -58,7 +59,7 @@ bool CheckURLIsValid(const GURL& url) {
   std::vector<std::string> additional_schemes;
   DCHECK(GetWebClient()->IsAppSpecificURL(url) ||
          (GetWebClient()->GetAdditionalWebUISchemes(&additional_schemes),
-          base::Contains(additional_schemes, url.GetScheme())));
+          std::ranges::contains(additional_schemes, url.GetScheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();

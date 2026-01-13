@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 
-#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/metrics/metrics_pref_names.h"

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
 
 #import "base/containers/circular_deque.h"
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"

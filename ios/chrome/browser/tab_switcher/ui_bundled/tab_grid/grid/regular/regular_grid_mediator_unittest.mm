@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_mediator.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
@@ -145,9 +146,9 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommand) {
   [mediator_ undoCloseAllItems];
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[0]));
-  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[1]));
-  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[2]));
+  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[0]));
+  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[1]));
+  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[2]));
 }
 
 // Tests that the WebStateList is restored to 3 items when

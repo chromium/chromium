@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 
-#import "base/containers/contains.h"
 #import "base/time/default_clock.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"

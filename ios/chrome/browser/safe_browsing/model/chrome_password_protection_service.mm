@@ -486,8 +486,8 @@ bool ChromePasswordProtectionService::IsInExcludedCountry() {
   if (!variations_service) {
     return false;
   }
-  return base::Contains(safe_browsing::GetExcludedCountries(),
-                        variations_service->GetLatestCountry());
+  return std::ranges::contains(safe_browsing::GetExcludedCountries(),
+                               variations_service->GetLatestCountry());
 }
 
 void ChromePasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(

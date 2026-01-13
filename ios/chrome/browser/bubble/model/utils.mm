@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/bubble/model/utils.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
@@ -34,7 +35,7 @@ bool IsUserSafariSwitcher(
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
     return false;
   }
-  return base::Contains(
+  return std::ranges::contains(
       result.ordered_labels,
       segmentation_platform::DeviceSwitcherModel::kSyncedAndFirstDeviceLabel);
 }

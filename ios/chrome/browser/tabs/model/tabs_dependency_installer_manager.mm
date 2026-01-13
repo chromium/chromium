@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_manager.h"
 
+#import <algorithm>
+
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
@@ -34,7 +35,7 @@ void TabsDependencyInstallerManager::RemoveInstaller(
 
 void TabsDependencyInstallerManager::InstallDependencies(
     web::WebState* web_state) {
-  if (base::Contains(installed_web_states_, web_state)) {
+  if (std::ranges::contains(installed_web_states_, web_state)) {
     return;
   }
   for (TabsDependencyInstaller& installer : installers_) {
@@ -45,7 +46,7 @@ void TabsDependencyInstallerManager::InstallDependencies(
 
 void TabsDependencyInstallerManager::UninstallDependencies(
     web::WebState* web_state) {
-  if (!base::Contains(installed_web_states_, web_state)) {
+  if (!std::ranges::contains(installed_web_states_, web_state)) {
     return;
   }
   for (TabsDependencyInstaller& installer : installers_) {
@@ -56,7 +57,7 @@ void TabsDependencyInstallerManager::UninstallDependencies(
 
 void TabsDependencyInstallerManager::PurgeDependencies(
     web::WebState* web_state) {
-  if (!base::Contains(installed_web_states_, web_state)) {
+  if (!std::ranges::contains(installed_web_states_, web_state)) {
     return;
   }
   for (TabsDependencyInstaller& installer : installers_) {

@@ -6,10 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import <algorithm>
+
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
-#import "base/containers/contains.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_split.h"
@@ -78,7 +79,7 @@ SpeechInputLocaleConfigImpl::GetTextToSpeechLanguages() const {
 bool SpeechInputLocaleConfigImpl::IsTextToSpeechEnabledForCode(
     const std::string& locale_code) const {
   std::string language = GetLanguageComponentForLocaleCode(locale_code);
-  return base::Contains(text_to_speech_languages_, language);
+  return std::ranges::contains(text_to_speech_languages_, language);
 }
 
 SpeechInputLocale SpeechInputLocaleConfigImpl::GetMatchingLocale(

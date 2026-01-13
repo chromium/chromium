@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_list_observer.h"
 
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/common/features.h"

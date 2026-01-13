@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/containers/fixed_flat_set.h"
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"

@@ -6,7 +6,6 @@
 
 #import <algorithm>
 
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"

@@ -4,7 +4,6 @@
 
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
 
-#import "base/containers/contains.h"
 #import "base/files/file_util.h"
 #import "base/task/thread_pool.h"
 #import "base/test/metrics/histogram_tester.h"

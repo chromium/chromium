@@ -68,8 +68,8 @@
       GetApplicationContext()->GetVariationsService();
   if (variations_service) {
     countryIsExcluded =
-        base::Contains(GetCountriesExcludedFromDefaultBrowserCondition(),
-                       variations_service->GetStoredPermanentCountry());
+        std::ranges::contains(GetCountriesExcludedFromDefaultBrowserCondition(),
+                              variations_service->GetStoredPermanentCountry());
   }
   return IsChromeLikelyDefaultBrowser() && !countryIsExcluded;
 }

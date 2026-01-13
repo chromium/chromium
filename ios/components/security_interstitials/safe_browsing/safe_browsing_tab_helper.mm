@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
