@@ -425,11 +425,19 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 
   web_app->SetParentAppId(web_app_info.parent_app_id);
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
+
+  bool is_app_suggested_for_migration =
+      web_app->install_state() == proto::SUGGESTED_FROM_MIGRATION;
+  if (is_app_suggested_for_migration) {
+    CHECK_NE(options.source, WebAppManagement::kSync)
+        << " sync installs are not allowed for apps suggested from migration";
+  }
   web_app->AddSource(options.source);
   if (options.source == WebAppManagement::kUserInstalled &&
-      IsSyncEnabledForApps(profile_)) {
+      IsSyncEnabledForApps(profile_) && !is_app_suggested_for_migration) {
     web_app->AddSource(WebAppManagement::kSync);
   }
+
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetLatestInstallSource(options.install_surface);
 

@@ -738,15 +738,15 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   auto web_app = std::make_unique<WebApp>(
       GenerateManifestIdFromStartUrlOnly(start_url), start_url,
       scope.is_valid() ? scope : start_url.GetWithoutFilename());
-  web_app->AddSource(source_type);
-  web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
-  web_app->SetName("Name");
   // Adding OS integration to this app introduces too many edge cases in tests.
   // Simply set this to partially installed w/ no os integration, and the
   // correct OS integration state to match that.
   web_app->SetInstallState(
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+  web_app->AddSource(source_type);
+  web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+  web_app->SetName("Name");
   proto::os_state::WebAppOsIntegration os_state;
   web_app->SetCurrentOsIntegrationStates(os_state);
 
@@ -819,6 +819,33 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
   auto app = std::make_unique<WebApp>(manifest_id, start_url, scope);
+
+  app->SetName(name);
+  app->SetDescription(description);
+  if (relative_manifest_id) {
+    app->SetManifestId(
+        GenerateManifestId(relative_manifest_id.value(), start_url));
+  }
+
+  if (random.next_bool()) {
+    app->SetThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+  if (random.next_bool()) {
+    app->SetBackgroundColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+  if (random.next_bool()) {
+    app->SetDarkModeThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+  if (random.next_bool()) {
+    app->SetDarkModeBackgroundColor(
+        SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+
+  app->SetInstallState(random.next_enum<proto::InstallState,
+                                        /*min=*/proto::InstallState_MIN,
+                                        /*max=*/
+                                        proto::InstallState_MAX>());
+
   std::vector<WebAppManagement::Type> management_types;
 
   // Generate all possible permutations of field values in a random way:
@@ -837,7 +864,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
       app->AddSource(WebAppManagement::kWebAppStore);
       management_types.push_back(WebAppManagement::kWebAppStore);
     }
-    if (random.next_bool()) {
+    if (random.next_bool() &&
+        app->install_state() != proto::SUGGESTED_FROM_MIGRATION) {
       app->AddSource(WebAppManagement::kSync);
       management_types.push_back(WebAppManagement::kSync);
     }
@@ -888,31 +916,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
     management_types.push_back(WebAppManagement::kUserInstalled);
   }
 
-  app->SetName(name);
-  app->SetDescription(description);
-  if (relative_manifest_id) {
-    app->SetManifestId(
-        GenerateManifestId(relative_manifest_id.value(), start_url));
-  }
-
-  if (random.next_bool()) {
-    app->SetThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-  if (random.next_bool()) {
-    app->SetBackgroundColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-  if (random.next_bool()) {
-    app->SetDarkModeThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-  if (random.next_bool()) {
-    app->SetDarkModeBackgroundColor(
-        SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-
-  app->SetInstallState(random.next_enum<proto::InstallState,
-                                        /*min=*/proto::InstallState_MIN,
-                                        /*max=*/
-                                        proto::InstallState_MAX>());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
   const std::array<sync_pb::WebAppSpecifics::UserDisplayMode, 3>

@@ -425,14 +425,15 @@ class WebApp {
 
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
+  // `AddSource()` should always happen after the install state has been set for
+  // the web app. Without this, the CHECK inside this function can fail, or not
+  // catch the edge cases for which it might happen.
   void AddSource(WebAppManagement::Type source);
   void RemoveSource(WebAppManagement::Type source);
   bool HasAnySources() const;
   bool HasOnlySource(WebAppManagement::Type source) const;
   WebAppManagementTypes GetSources() const;
 
-  // Provides information on whether this app will be synced across devices. App
-  // suggested for migration shouldn't be synced.
   bool IsSynced() const;
   // Returns true if the app is preinstalled through PreinstalledWebAppManager.
   // Does not include apps preloaded through the App Preload Service.

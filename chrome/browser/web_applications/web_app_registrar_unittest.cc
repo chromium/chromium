@@ -89,11 +89,11 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
         GenerateManifestIdFromStartUrlOnly(start_url);
     GURL scope = start_url.GetWithoutFilename();
     auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
-    web_app->AddSource(WebAppManagement::kSync);
     web_app->SetName("Name" + base::NumberToString(i));
     web_app->SetDisplayMode(DisplayMode::kBrowser);
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
+    web_app->AddSource(WebAppManagement::kSync);
     // Set an OS integration state (with shortcuts) to prevent migration to a
     // partially installed status.
     proto::os_state::WebAppOsIntegration os_state;
@@ -392,11 +392,11 @@ TEST_F(WebAppRegistrarTest, AppsNotLocallyInstalledMetric) {
 
   auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/path"),
                                              WebAppManagement::kSync);
-  web_app->AddSource(WebAppManagement::kSync);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("name");
   web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
+  web_app->AddSource(WebAppManagement::kSync);
   PopulateRegistryWithApp(std::move(web_app));
   StartWebAppProvider();
 
@@ -472,7 +472,6 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
       DisplayOverride::Create(DisplayMode::kStandalone)};
 
   auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
-  web_app->AddSource(WebAppManagement::kSync);
   web_app->SetName(name);
   web_app->SetDescription(description);
   web_app->SetThemeColor(theme_color);
@@ -480,6 +479,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   web_app->SetUserDisplayMode(user_display_mode);
   web_app->SetDisplayModeOverride(std::move(display_mode_override));
   web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
+  web_app->AddSource(WebAppManagement::kSync);
   webapps::AppId app_id = web_app->app_id();
 
   PopulateRegistryWithApp(std::move(web_app));

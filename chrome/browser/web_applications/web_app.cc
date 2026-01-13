@@ -338,6 +338,11 @@ const SortedSizesPx& WebApp::stored_trusted_icon_sizes(
 }
 
 void WebApp::AddSource(WebAppManagement::Type source) {
+  if (source == WebAppManagement::kSync) {
+    CHECK_NE(proto::SUGGESTED_FROM_MIGRATION, install_state_)
+        << "Synced apps should not have an install state suggested from "
+           "migration";
+  }
   sources_.Put(source);
 }
 
@@ -361,8 +366,7 @@ WebAppManagementTypes WebApp::GetSources() const {
 }
 
 bool WebApp::IsSynced() const {
-  return install_state_ != proto::SUGGESTED_FROM_MIGRATION &&
-         sources_.Has(WebAppManagement::kSync);
+  return sources_.Has(WebAppManagement::kSync);
 }
 
 bool WebApp::IsPreinstalledApp() const {
@@ -524,6 +528,11 @@ void WebApp::SetWebAppChromeOsData(
 }
 
 void WebApp::SetInstallState(proto::InstallState install_state) {
+  if (install_state == proto::SUGGESTED_FROM_MIGRATION) {
+    CHECK(!IsSynced())
+        << " Attempted to set an install state of suggested from migration "
+           "from an app that has been sync installed";
+  }
   install_state_ = install_state;
 }
 
