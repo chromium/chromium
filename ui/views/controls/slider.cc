@@ -419,15 +419,36 @@ void Slider::VisibilityChanged(View* starting_from, bool is_visible) {
   }
 }
 
+void Slider::OnWidgetVisibilityChanged(views::Widget* widget, bool visible) {
+  if (widget == attached_widget_) {
+    if (visible && GetVisible()) {
+      ApplyPendingAccessibleValueUpdate();
+    }
+  }
+}
+
 void Slider::AddedToWidget() {
+  if (attached_widget_) {
+    attached_widget_->RemoveObserver(this);
+  }
+  attached_widget_ = GetWidget();
+  attached_widget_->AddObserver(this);
   if (GetWidget()->IsVisible() && GetVisible()) {
     ApplyPendingAccessibleValueUpdate();
   }
 }
 
+void Slider::RemovedFromWidget() {
+  if (attached_widget_) {
+    attached_widget_->RemoveObserver(this);
+    attached_widget_ = nullptr;
+  }
+}
+
 void Slider::ApplyPendingAccessibleValueUpdate() {
-  if (!pending_accessibility_value_change_)
+  if (!pending_accessibility_value_change_) {
     return;
+  }
 
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
   pending_accessibility_value_change_ = false;
