@@ -144,10 +144,10 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(int text_length,
   bool has_files = file_count != 0;
   // Submission requests will always have either 1) both text and files 2) text
   // only or 3) files only.
-  MultimodalState multimodal_state =
-      has_text ? (has_files ? MultimodalState::kTextAndFile
-                            : MultimodalState::kTextOnly)
-               : MultimodalState::kFileOnly;
+  ContextualSearchMultimodalState multimodal_state =
+      has_text ? (has_files ? ContextualSearchMultimodalState::kTextAndFile
+                            : ContextualSearchMultimodalState::kTextOnly)
+               : ContextualSearchMultimodalState::kFileOnly;
   base::UmaHistogramEnumeration(
       base::StrCat({kContextualSearchQueryModality, ".", metrics_suffix_}),
       multimodal_state);
@@ -181,12 +181,10 @@ void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
 void ContextualSearchMetricsRecorder::RecordTabClickedMetrics(
     bool has_duplicate_title,
     std::optional<int> recency_ranking) {
-  base::UmaHistogramBoolean(
-      "ContextualSearch.TabContextAdded." + metrics_suffix_, true);
-
-  base::UmaHistogramBoolean(
-      "ContextualSearch.TabWithDuplicateTitleClicked." + metrics_suffix_,
-      has_duplicate_title);
+  session_metrics_->tab_context_added_count++;
+  if (has_duplicate_title) {
+    session_metrics_->tab_with_duplicate_title_clicked_count++;
+  }
 
   if (recency_ranking) {
     base::UmaHistogramCounts100(
@@ -287,6 +285,12 @@ void ContextualSearchMetricsRecorder::RecordTotalSessionDuration(
 }
 
 void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
+  base::UmaHistogramCounts100(
+      "ContextualSearch.TabContextAdded.V2." + metrics_suffix_,
+      session_metrics_->tab_context_added_count);
+  base::UmaHistogramCounts100(
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2." + metrics_suffix_,
+      session_metrics_->tab_with_duplicate_title_clicked_count);
   // Log upload attempt metrics.
   int total_attempts = 0;
   for (const auto& file_info :
@@ -356,6 +360,8 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
 
 void ContextualSearchMetricsRecorder::ResetSessionMetrics() {
   session_metrics_->session_elapsed_timer.reset();
+  session_metrics_->tab_context_added_count = 0;
+  session_metrics_->tab_with_duplicate_title_clicked_count = 0;
   session_metrics_->file_upload_attempt_count_per_type.clear();
   session_metrics_->file_upload_success_count_per_type.clear();
   session_metrics_->file_upload_failure_count_per_type.clear();

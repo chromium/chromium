@@ -111,6 +111,13 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder() {
     return ContextualSearchboxHandler::GetMetricsRecorder();
   }
+
+  void NotifySessionStateChanged(
+      contextual_search::SessionState session_state) {
+    GetContextualSessionHandle()
+        ->GetMetricsRecorder()
+        ->NotifySessionStateChanged(session_state);
+  }
 };
 
 class TestContextualSearchboxHandler : public FakeContextualSearchboxHandler {
@@ -821,7 +828,15 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
 
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .WillRepeatedly(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
+
   base::test::TestFuture<std::optional<base::UnguessableToken>> future;
+  handler().NotifySessionStarted();
   handler().AddTabContext(
       tab_id, false,
       base::BindLambdaForTesting(
@@ -831,8 +846,11 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
   ASSERT_TRUE(future.Wait());
 
   // Check that the histogram was recorded.
+  handler().NotifySessionStateChanged(SessionState::kSessionAbandoned);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.TabContextAdded.NewTabPage", true, 1);
+      "ContextualSearch.TabContextAdded.V2.NewTabPage", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 0, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -905,17 +923,24 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(2);
 
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .WillRepeatedly(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
+
   // Click on a tab with a duplicate title.
   base::test::TestFuture<std::optional<base::UnguessableToken>> future1;
+  handler().NotifySessionStarted();
   handler().AddTabContext(
       tab_a1->GetHandle().raw_value(), false,
       base::BindLambdaForTesting(
           [&](const std::optional<base::UnguessableToken>& token) {
+            EXPECT_TRUE(token.has_value());
             future1.SetValue(token);
           }));
   ASSERT_TRUE(future1.Wait());
-  histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", true, 1);
 
   // Click on a tab with a unique title.
   base::test::TestFuture<std::optional<base::UnguessableToken>> future2;
@@ -926,10 +951,13 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
             future2.SetValue(token);
           }));
   ASSERT_TRUE(future2.Wait());
-  histogram_tester().ExpectBucketCount(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", false, 1);
-  histogram_tester().ExpectTotalCount(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", 2);
+
+  // End the session to log the metrics.
+  handler().NotifySessionStateChanged(SessionState::kSessionAbandoned);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.V2.NewTabPage", 2, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -956,17 +984,36 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
 
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .WillRepeatedly(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
+
   // Click on a tab with a unique title.
   base::test::TestFuture<std::optional<base::UnguessableToken>> future;
+  handler().NotifySessionStarted();
   handler().AddTabContext(
       tab_a1->GetHandle().raw_value(), false,
       base::BindLambdaForTesting(
           [&](const std::optional<base::UnguessableToken>& token) {
+            EXPECT_TRUE(token.has_value());
             future.SetValue(token);
           }));
   ASSERT_TRUE(future.Wait());
+
+  // End the session to log the metrics.
+  EXPECT_CALL(*GetMetricsRecorderPtr(),
+              NotifySessionStateChanged(SessionState::kSessionAbandoned))
+      .WillOnce([this](SessionState session_state) {
+        GetMetricsRecorderPtr()->NotifySessionStateChangedBase(session_state);
+      });
+  handler().NotifySessionStateChanged(SessionState::kSessionAbandoned);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", false, 1);
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 0, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.V2.NewTabPage", 1, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {

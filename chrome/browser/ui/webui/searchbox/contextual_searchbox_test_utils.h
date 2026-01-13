@@ -103,6 +103,11 @@ class MockContextualSearchMetricsRecorder
               NotifySessionStateChanged,
               (contextual_search::SessionState session_state),
               (override));
+
+  void NotifySessionStateChangedBase(
+      contextual_search::SessionState session_state) {
+    ContextualSearchMetricsRecorder::NotifySessionStateChanged(session_state);
+  }
 };
 
 class ContextualSearchboxHandlerTestHarness

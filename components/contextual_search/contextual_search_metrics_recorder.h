@@ -37,7 +37,7 @@ enum class ContextualSearchSource {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Describes the query submission details.
-enum class MultimodalState {
+enum class ContextualSearchMultimodalState {
   kTextOnly = 0,
   kFileOnly = 1,
   kTextAndFile = 2,
@@ -70,6 +70,11 @@ struct SessionMetrics {
   // where a user navigates to the AIM page on a new window or tab and the
   // composebox remains open.
   int num_query_submissions = 0;
+  // The number of times a tab is added as context to the session.
+  int tab_context_added_count = 0;
+  // The number of times a tab with a duplicate title is added as context to the
+  // session.
+  int tab_with_duplicate_title_clicked_count = 0;
 };
 
 class ContextualSearchMetricsRecorder {

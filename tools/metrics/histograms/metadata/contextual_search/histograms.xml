@@ -440,7 +440,7 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
-<histogram name="ContextualSearch.TabContextAdded.{ContextualSearchSource}"
+<histogram name="ContextualSearch.TabContextAdded.V2.{ContextualSearchSource}"
     units="count" expires_after="2026-06-10">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.TabWithDuplicateTitleClicked.{ContextualSearchSource}"
+    name="ContextualSearch.TabWithDuplicateTitleClicked.V2.{ContextualSearchSource}"
     units="count" expires_after="2026-06-10">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
