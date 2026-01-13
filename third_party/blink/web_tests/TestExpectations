@@ -864,6 +864,10 @@ crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandator
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
 crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Failure Timeout ]
 
+# TODO(crbug.com/453989940): This test requires the window to be focused, which appears to be flaky on Mac.
+# It also fails flakily because "Chrome only supports one internal authenticator per environment".
+crbug.com/453989940 [ Mac ] external/wpt/secure-payment-confirmation/authentication-invalid-payment-entity-logo.https.html [ Failure Pass ]
+
 crbug.com/359319433 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
 # Gardener 2025-08-13 this test produces output that changes with each Chrome version
 crbug.com/359319433 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass ]
