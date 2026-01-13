@@ -49,6 +49,11 @@ class LoginPinInputViewTest
     SetWidget(CreateWidgetWithContent(view_));
   }
 
+  void TearDown() override {
+    view_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
   void OnPinSubmit(std::u16string_view pin) {
     submitted_pin_ = std::make_optional(std::u16string(pin));
   }
@@ -83,7 +88,7 @@ class LoginPinInputViewTest
     ExpectAttribute(value, ax::mojom::StringAttribute::kValue);
   }
 
-  raw_ptr<LoginPinInputView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<LoginPinInputView> view_ = nullptr;
   int length_ = 0;
 
   // Generated during the callback response.
