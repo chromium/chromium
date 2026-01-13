@@ -61,8 +61,12 @@ class CounterDirectives {
   // Returns an optional <integer> value of `counter-reset`. The return value is
   // `nullopt` if the reversed function is specified and the <integer> is
   // omitted(e.g., `counter-reset: reversed(list-item)`).
-  std::optional<int> ResetValue() const { return reset_value_; }
-  void SetResetValue(int value) { reset_value_ = value; }
+  std::optional<int> ResetValue() const {
+    return reset_value_.transform(
+        [](int64_t v) { return base::saturated_cast<int>(v); });
+  }
+  std::optional<int64_t> ResetValueInt64() const { return reset_value_; }
+  void SetResetValue(int64_t value) { reset_value_ = value; }
   bool IsResetReversed() const { return is_reset_reversed_; }
   void SetIsResetReversed() { is_reset_reversed_ = true; }
   void ClearReset() {
@@ -113,15 +117,14 @@ class CounterDirectives {
     // According to the spec, if an increment would overflow or underflow the
     // counter, we are allowed to ignore the increment.
     // https://drafts.csswg.org/css-lists-3/#valdef-counter-reset-custom-ident-integer
-    return base::CheckAdd(reset_value_.value_or(0),
-                          increment_value_.value_or(0))
-        .ValueOrDefault(reset_value_.value_or(0));
+    return base::saturated_cast<int>(ResetValueInt64().value_or(0) +
+                                     increment_value_.value_or(0));
   }
 
   bool operator==(const CounterDirectives&) const = default;
 
  private:
-  std::optional<int> reset_value_;
+  std::optional<int64_t> reset_value_;
   std::optional<int> increment_value_;
   std::optional<int> set_value_;
   bool is_reset_reversed_ = false;

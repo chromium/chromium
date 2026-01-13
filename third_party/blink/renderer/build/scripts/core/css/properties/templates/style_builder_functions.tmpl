@@ -358,7 +358,12 @@ state.GetFontBuilder().{{property.setter}}
     }
         {% endif %}
     if (const CSSPrimitiveValue* counter_data_value = counter_data.Value()) {
+          {% if action == 'Reset' %}
+      int64_t counter_value = counter_data_value->ComputeNumber(state.CssToLengthConversionData());
+          {% else %}
       int counter_value = counter_data_value->ComputeInteger(state.CssToLengthConversionData());
+          {% endif %}
+
           {% if action == 'Reset' %}
       directives.SetResetValue(counter_value);
           {% elif action == 'Increment' %}

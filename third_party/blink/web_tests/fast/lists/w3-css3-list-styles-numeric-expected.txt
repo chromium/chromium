@@ -94,6 +94,9 @@ PASS list marker is 1.
 PASS list marker is -2147483648.
 PASS list marker is -2147483647.
 
+PASS list marker is 2147483647.
+PASS list marker is 2147483646.
+
 decimal-leading-zero
 PASS list marker is 01.
 PASS list marker is 02.
@@ -112,6 +115,9 @@ PASS list marker is 01.
 
 PASS list marker is -2147483648.
 PASS list marker is -2147483647.
+
+PASS list marker is 2147483647.
+PASS list marker is 2147483646.
 
 devanagari
 PASS list marker is १.
