@@ -11896,6 +11896,7 @@ from previous Chrome versions.
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825758143"
       label="AutofillPreferBuyNowPayLaterBlocklists:enabled"/>
+  <int value="-825688261" label="glic-force-g1-for-mi"/>
   <int value="-825514105" label="TimeOfDayDlc:enabled"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-825284137" label="EnableTouchscreenMappingExperience:disabled"/>
@@ -12588,6 +12589,7 @@ from previous Chrome versions.
   <int value="-591219096" label="SystemChinesePhysicalTyping:enabled"/>
   <int value="-589491568" label="DataSharingNonProductionEnvironment:disabled"/>
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
+  <int value="-588491904" label="glic-reset-mi-enabled-by-tier:disabled"/>
   <int value="-588245348"
       label="history-clusters-should-show-all-clusters-on-prominent-ui-surfaces"/>
   <int value="-588163454"
@@ -14007,6 +14009,7 @@ from previous Chrome versions.
   <int value="-89434839" label="SystemTrayMicGainSetting:enabled"/>
   <int value="-89286848" label="EnableWireGuard:enabled"/>
   <int value="-88822940" label="ssl-version-min"/>
+  <int value="-88640719" label="glic-reset-mi-enabled-by-tier"/>
   <int value="-88638121" label="AutofillFixFillableFieldTypes:enabled"/>
   <int value="-88273414" label="ContentSuggestionsShowSummary:enabled"/>
   <int value="-87554952" label="EnableRootNsDnsProxy:disabled"/>
@@ -16250,6 +16253,7 @@ from previous Chrome versions.
   <int value="687967510" label="LacrosNonSyncingProfiles:disabled"/>
   <int value="688254068" label="AppCache:enabled"/>
   <int value="688710636" label="PickerGrid:disabled"/>
+  <int value="689030249" label="glic-force-g1-for-mi:disabled"/>
   <int value="689117929" label="EarlyEstablishGpuChannel:disabled"/>
   <int value="689489984" label="disable-zero-suggest"/>
   <int value="689577480" label="vr-shell-experimental-rendering"/>
@@ -19021,6 +19025,7 @@ from previous Chrome versions.
   <int value="1639314588" label="LookalikeUrlNavigationSuggestions:disabled"/>
   <int value="1639681180" label="HelpAppAppsDiscovery:enabled"/>
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
+  <int value="1639767213" label="glic-force-g1-for-mi:enabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
   <int value="1640633395" label="ApproximateGeolocationPermission:disabled"/>
   <int value="1641671651" label="ContextualPageActionShareModel:disabled"/>
@@ -19354,6 +19359,7 @@ from previous Chrome versions.
       label="DropUnrecognizedTemplateUrlParameters:enabled"/>
   <int value="1754345141" label="SettingsMultiColumn:enabled"/>
   <int value="1755024316" label="HostWindowsInAppShimProcess:disabled"/>
+  <int value="1756003505" label="glic-reset-mi-enabled-by-tier:enabled"/>
   <int value="1756736642" label="DynamicSearchUpdateAnimation:enabled"/>
   <int value="1756997013" label="TextSafetyClassifier:enabled"/>
   <int value="1757654890"

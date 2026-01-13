@@ -5212,10 +5212,26 @@
     "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150
   },
-    {
+  {
     "name": "glic-print-menu-item",
     "owners": [
       "basiaz@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "glic-reset-mi-enablement-by-tier",
+    "owners": [
+      "cuianthony@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "glic-set-g1-for-mi",
+    "owners": [
+      "cuianthony@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
     "expiry_milestone": 150
