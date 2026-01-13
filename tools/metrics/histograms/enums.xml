@@ -8282,6 +8282,7 @@ from previous Chrome versions.
   <int value="-2064999807"
       label="OmniboxRevertModelBeforeClosingPopup:disabled"/>
   <int value="-2064902003" label="show-spatial-audio-toggle:disabled"/>
+  <int value="-2064247229" label="WebAssemblyStackSwitching:enabled"/>
   <int value="-2064193453" label="GameDashboardGamesInTest:enabled"/>
   <int value="-2064164557" label="DownloadsForeground:disabled"/>
   <int value="-2063352474" label="enable-new-task-manager"/>
@@ -16547,6 +16548,7 @@ from previous Chrome versions.
   <int value="777667507" label="DesktopPWAsLinkCapturing:enabled"/>
   <int value="778000757" label="EnableInputEventLogging:disabled"/>
   <int value="778338284" label="Prewarm:enabled"/>
+  <int value="778533213" label="WebAssemblyStackSwitching:disabled"/>
   <int value="779086132" label="enable-data-reduction-proxy-alt"/>
   <int value="779703052" label="ChromeOSAmbientMode:enabled"/>
   <int value="779849093" label="OfflinePagesCTSuppressNotifications:disabled"/>

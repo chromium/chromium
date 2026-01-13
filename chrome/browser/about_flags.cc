@@ -5419,6 +5419,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          features::kEnableExperimentalWebAssemblySharedEverything)},
+    {"enable-experimental-webassembly-stack-switching",
+     flag_descriptions::kEnableWasmStackSwitchingName,
+     flag_descriptions::kEnableWasmStackSwitchingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebAssemblyStackSwitching)},
     {"enable-webassembly-baseline", flag_descriptions::kEnableWasmBaselineName,
      flag_descriptions::kEnableWasmBaselineDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebAssemblyBaseline)},

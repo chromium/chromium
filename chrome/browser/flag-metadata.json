@@ -3257,6 +3257,16 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-experimental-webassembly-stack-switching",
+    "owners": [
+      "thibaudm@chromium.org",
+      "fgm@chromium.org",
+      "wasm-team@google.com"
+    ],
+    // This flag is used by web developers to test stack switching
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-extension-ai-data-collection",
     "owners": [ "ryansturm@chromium.org" ],
     "expiry_milestone": 150

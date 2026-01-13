@@ -2009,6 +2009,11 @@ inline constexpr char kEnableWasmLazyCompilationName[] =
 inline constexpr char kEnableWasmLazyCompilationDescription[] =
     "Enables lazy (JIT on first call) compilation of WebAssembly modules.";
 
+inline constexpr char kEnableWasmStackSwitchingName[] =
+    "WebAssembly stack switching";
+inline constexpr char kEnableWasmStackSwitchingDescription[] =
+    "Enables WasmFX.";
+
 inline constexpr char kEnableWasmTieringName[] = "WebAssembly tiering";
 inline constexpr char kEnableWasmTieringDescription[] =
     "Enables tiered compilation of WebAssembly (will tier up to TurboFan if "

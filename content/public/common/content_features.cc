@@ -1132,6 +1132,10 @@ BASE_FEATURE(kWebAssemblyTrapHandler,
 #endif
 );
 
+// Enable WebAssembly Core stack switching.
+// https://github.com/WebAssembly/stack-switching
+BASE_FEATURE(kWebAssemblyStackSwitching, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Web Bluetooth API is enabled:
 // https://webbluetoothcg.github.io/web-bluetooth/
 BASE_FEATURE(kWebBluetooth, base::FEATURE_DISABLED_BY_DEFAULT);
