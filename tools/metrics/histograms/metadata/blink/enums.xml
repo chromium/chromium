@@ -211,7 +211,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kImageICO"/>
   <int value="6" label="kImageBMP"/>
   <int value="7" label="kImageAVIF"/>
-  <int value="8" label="(obsolete) kImageJXL"/>
+  <int value="8" label="kImageJXLDeprecated"/>
+  <int value="9" label="kImageJXL"/>
 </enum>
 
 <enum name="DigitalIdentityInterstitialClosedReason">

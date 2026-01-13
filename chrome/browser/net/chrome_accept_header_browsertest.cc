@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -11,12 +12,18 @@
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 using ChromeAcceptHeaderTest = InProcessBrowserTest;
 
 namespace {
 std::string GetOptionalImageCodecs() {
   std::string result;
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (base::FeatureList::IsEnabled(blink::features::kJXLImageFormat)) {
+    result.append("image/jxl,");
+  }
+#endif
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   result.append("image/avif,");
 #endif

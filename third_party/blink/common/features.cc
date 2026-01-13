@@ -1033,6 +1033,10 @@ BASE_FEATURE_ENUM_PARAM(IsolateSandboxedIframesGrouping,
                         IsolateSandboxedIframesGrouping::kPerOrigin,
                         &isolated_sandboxed_iframes_grouping_types);
 
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+BASE_FEATURE(kJXLImageFormat, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kKeepAliveInBrowserMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLimitLayerMergeDistance, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -88,6 +88,8 @@ class CC_EXPORT ImageDecodeCache {
         return ScopedImageType::kIco;
       case ImageType::kJPEG:
         return ScopedImageType::kJpeg;
+      case ImageType::kJXL:
+        return ScopedImageType::kJxl;
       case ImageType::kPNG:
         return ScopedImageType::kPng;
       case ImageType::kWEBP:

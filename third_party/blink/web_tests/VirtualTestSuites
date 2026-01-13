@@ -1703,6 +1703,26 @@
     ]
   },
   {
+    "prefix": "jxl-enabled",
+    "owners": [
+      "helmut@januschka.com",
+      "veluca@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-picture.js",
+      "http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-img.js",
+      "http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js",
+      "http/tests/misc/xhtml.php"
+    ],
+    "args": [
+      "--enable-features=JXLImageFormat"
+    ],
+    "expires": "Jun 1, 2027"
+  },
+  {
     "prefix": "image-disabled",
     "owners": [
       "leimy@google.com"

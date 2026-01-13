@@ -34,7 +34,6 @@
 #include "media/media_buildflags.h"
 #include "skia/ext/cicp.h"
 #include "third_party/blink/public/common/buildflags.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_decoder_factory.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -50,6 +49,10 @@
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+#include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
 #endif
 
 namespace blink {
@@ -78,6 +81,11 @@ cc::ImageType FileExtensionToImageType(String image_extension) {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   if (image_extension == "avif") {
     return cc::ImageType::kAVIF;
+  }
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (image_extension == "jxl") {
+    return cc::ImageType::kJXL;
   }
 #endif
   return cc::ImageType::kInvalid;
@@ -209,6 +217,11 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
     return "image/avif";
   }
 #endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (JXLImageDecoder::MatchesJXLSignature(fast_reader)) {
+    return "image/jxl";
+  }
+#endif
 
   return String();
 }
@@ -317,6 +330,12 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (mime_type == "image/avif") {
     decoder = std::make_unique<AVIFImageDecoder>(
+        alpha_option, high_bit_depth_decoding_option, color_behavior, aux_image,
+        max_decoded_bytes, animation_option);
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  } else if (mime_type == "image/jxl") {
+    decoder = std::make_unique<JXLImageDecoder>(
         alpha_option, high_bit_depth_decoding_option, color_behavior, aux_image,
         max_decoded_bytes, animation_option);
 #endif

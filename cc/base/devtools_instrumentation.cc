@@ -105,6 +105,9 @@ ScopedImageDecodeTask::~ScopedImageDecodeTask() {
     case ImageType::kJpeg:
       histogram_name = "Renderer4.ImageDecodeTaskDurationUs.Jpeg";
       break;
+    case ImageType::kJxl:
+      histogram_name = "Renderer4.ImageDecodeTaskDurationUs.Jxl";
+      break;
     case ImageType::kPng:
       histogram_name = "Renderer4.ImageDecodeTaskDurationUs.Png";
       break;

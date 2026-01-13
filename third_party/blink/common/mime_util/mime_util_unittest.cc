@@ -4,11 +4,13 @@
 
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -54,7 +56,6 @@ TEST(MimeUtilTest, LookupTypes) {
 
   EXPECT_TRUE(IsSupportedImageMimeType("image/jpeg"));
   EXPECT_TRUE(IsSupportedImageMimeType("Image/JPEG"));
-  EXPECT_FALSE(IsSupportedImageMimeType("image/jxl"));
   EXPECT_EQ(IsSupportedImageMimeType("image/avif"),
             BUILDFLAG(ENABLE_AV1_DECODER));
   EXPECT_FALSE(IsSupportedImageMimeType("image/lolcat"));
@@ -92,5 +93,21 @@ TEST(MimeUtilTest, LookupTypes) {
   EXPECT_FALSE(IsSupportedNonImageMimeType("application/vnd.doc;x=y+json"));
   EXPECT_FALSE(IsSupportedNonImageMimeType("Application/VND.DOC;X=Y+JSON"));
 }
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+class JxlFeatureFlagTest : public testing::TestWithParam<bool> {};
+
+TEST_P(JxlFeatureFlagTest, JxlSupportMatchesFeatureFlag) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(blink::features::kJXLImageFormat, GetParam());
+  EXPECT_EQ(IsSupportedImageMimeType("image/jxl"), GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(MimeUtilTest, JxlFeatureFlagTest, testing::Bool());
+#else
+TEST(MimeUtilTest, JxlNotSupportedWhenDecoderDisabled) {
+  EXPECT_FALSE(IsSupportedImageMimeType("image/jxl"));
+}
+#endif
 
 }  // namespace blink

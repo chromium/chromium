@@ -11,6 +11,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -38,6 +39,11 @@ BitmapImageMetrics::StringToDecodedImageType(const String& type) {
   if (type == "avif")
     return BitmapImageMetrics::DecodedImageType::kAVIF;
 #endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (type == "jxl") {
+    return BitmapImageMetrics::DecodedImageType::kJXL;
+  }
+#endif
   return BitmapImageMetrics::DecodedImageType::kUnknown;
 }
 
@@ -54,6 +60,10 @@ void BitmapImageMetrics::CountDecodedImageType(const String& type,
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     } else if (type == "avif") {
       use_counter->CountUse(WebFeature::kAVIFImage);
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+    } else if (type == "jxl") {
+      use_counter->CountWebDXFeature(WebDXFeature::kJpegxl);
 #endif
     }
   }

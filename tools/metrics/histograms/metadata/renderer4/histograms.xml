@@ -152,6 +152,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Gif"/>
     <variant name=".Ico"/>
     <variant name=".Jpeg"/>
+    <variant name=".Jxl"/>
     <variant name=".Other"/>
     <variant name=".OutOfRaster"/>
     <variant name=".Png"/>

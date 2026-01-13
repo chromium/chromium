@@ -10,6 +10,7 @@
 #include <unordered_set>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
@@ -119,7 +120,13 @@ constexpr auto kSupportedNonImageTypes =
 }  // namespace
 
 bool IsSupportedImageMimeType(std::string_view mime_type) {
-  return kSupportedImageTypes.contains(base::ToLowerASCII(mime_type));
+  std::string mime_lower = base::ToLowerASCII(mime_type);
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (mime_lower == "image/jxl") {
+    return base::FeatureList::IsEnabled(features::kJXLImageFormat);
+  }
+#endif
+  return kSupportedImageTypes.contains(mime_lower);
 }
 
 bool IsSupportedNonImageMimeType(std::string_view mime_type) {

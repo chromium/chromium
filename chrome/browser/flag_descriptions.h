@@ -2543,6 +2543,11 @@ inline constexpr char kJourneysName[] = "History Journeys";
 inline constexpr char kJourneysDescription[] =
     "Enables the History Journeys UI.";
 
+inline constexpr char kJxlImageFormatName[] = "Enable JXL image format";
+inline constexpr char kJxlImageFormatDescription[] =
+    "Adds image/jxl to the Accept header and enables decoding of JPEG XL "
+    "(JXL) images.";
+
 inline constexpr char kJumpStartOmniboxName[] = "Jump-start Omnibox";
 inline constexpr char kJumpStartOmniboxDescription[] =
     "Modifies cold- and warm start-up "
