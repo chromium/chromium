@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.logo.LogoUtils.getGoogleLogoDrawable;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -24,9 +25,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 public class UploadImagePreviewLayout extends ConstraintLayout {
     private ImageView mLogoView;
     private Guideline mGuidelineTop;
-    private Guideline mGuidelineBottom;
     private int mDefaultLogoTopMarginPx;
-    private int mDefaultBottomPaddingPx;
 
     public UploadImagePreviewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -37,10 +36,6 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
         super.onFinishInflate();
         mLogoView = findViewById(R.id.default_search_engine_logo);
         mGuidelineTop = findViewById(R.id.guideline_top);
-        mGuidelineBottom = findViewById(R.id.guideline_bottom);
-        mDefaultBottomPaddingPx =
-                getResources()
-                        .getDimensionPixelSize(R.dimen.ntp_customization_back_button_margin_start);
     }
 
     void setLogo(@Nullable Bitmap logoBitmap) {
@@ -69,12 +64,13 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
         mGuidelineTop.setLayoutParams(params);
     }
 
-    void setBottomInsets(int bottomInsetHeight) {
-        int totalBottomPadding = bottomInsetHeight + mDefaultBottomPaddingPx;
-
-        ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) mGuidelineBottom.getLayoutParams();
-        params.guideEnd = totalBottomPadding;
-        mGuidelineBottom.setLayoutParams(params);
+    /**
+     * Applies padding to the sides and bottom of the layout. The top padding is preserved as it is
+     * managed via the top guideline.
+     *
+     * @param insets A Rect where left, right, and bottom represent the required padding.
+     */
+    void setSideAndBottomInsets(Rect insets) {
+        setPadding(insets.left, getPaddingTop(), insets.right, insets.bottom);
     }
 }

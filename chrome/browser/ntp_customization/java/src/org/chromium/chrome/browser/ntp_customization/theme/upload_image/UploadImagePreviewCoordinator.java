@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -135,18 +136,24 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
             View view, WindowInsetsCompat windowInsetsCompat) {
-        int statusBarHeight =
-                windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars()).top;
-        int navigationBarHeight =
-                windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+        Insets combinedInsets =
+                windowInsetsCompat.getInsets(
+                        WindowInsetsCompat.Type.systemBars()
+                                | WindowInsetsCompat.Type.displayCutout());
 
-        mPreviewPropertyModel.set(NtpThemeProperty.TOP_INSETS, mToolBarHeight + statusBarHeight);
-        mPreviewPropertyModel.set(NtpThemeProperty.BOTTOM_MARGIN, navigationBarHeight);
+        mPreviewPropertyModel.set(NtpThemeProperty.TOP_INSETS, mToolBarHeight + combinedInsets.top);
+
+        // Groups Left, Right, and Bottom into a Rect to update the model once. We pass 0 for top
+        // since it's handled by the TOP_INSETS property above.
+        Rect sideAndBottomInsets =
+                new Rect(combinedInsets.left, 0, combinedInsets.right, combinedInsets.bottom);
+        mPreviewPropertyModel.set(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS, sideAndBottomInsets);
 
         // Consumes the insets since the root view already adjusted their paddings.
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
                 .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
                 .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
+                .setInsets(WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
                 .build();
     }
 

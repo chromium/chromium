@@ -35,7 +35,6 @@ public class UploadImagePreviewLayoutUnitTest {
     private UploadImagePreviewLayout mLayout;
     private ImageView mLogoView;
     private Guideline mGuidelineTop;
-    private Guideline mGuidelineBottom;
 
     @Before
     public void setUp() {
@@ -49,7 +48,6 @@ public class UploadImagePreviewLayoutUnitTest {
 
         mLogoView = mLayout.findViewById(R.id.default_search_engine_logo);
         mGuidelineTop = mLayout.findViewById(R.id.guideline_top);
-        mGuidelineBottom = mLayout.findViewById(R.id.guideline_bottom);
     }
 
     @Test
@@ -118,24 +116,5 @@ public class UploadImagePreviewLayoutUnitTest {
                 "Guideline begin should be sum of inset and logo margin",
                 topInsetAndToolBarHeight + logoTopMargin,
                 params.guideBegin);
-    }
-
-    @Test
-    public void testSetBottomInsets() {
-        int inputBottomInset = 80;
-        int resourceMargin =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.ntp_customization_back_button_margin_start);
-
-        mLayout.setBottomInsets(inputBottomInset);
-
-        ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) mGuidelineBottom.getLayoutParams();
-
-        assertEquals(
-                "Guideline end should be sum of inset and resource margin",
-                inputBottomInset + resourceMargin,
-                params.guideEnd);
     }
 }

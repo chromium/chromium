@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -120,9 +121,10 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
     }
 
     @Test
-    public void testSetBottomMargin() {
-        int bottomMargin = 210;
-        mModel.set(NtpThemeProperty.BOTTOM_MARGIN, bottomMargin);
-        verify(mLayoutView).setBottomInsets(eq(bottomMargin));
+    public void testSetSideAndBottomInsets() {
+        Rect expectedInsets =
+                new Rect(/* left= */ 10, /* top= */ 0, /* right= */ 20, /* bottom= */ 30);
+        mModel.set(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS, expectedInsets);
+        verify(mLayoutView).setSideAndBottomInsets(eq(expectedInsets));
     }
 }

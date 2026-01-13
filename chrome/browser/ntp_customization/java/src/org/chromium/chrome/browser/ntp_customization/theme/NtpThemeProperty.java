@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
@@ -60,9 +61,14 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableIntPropertyKey TOP_INSETS =
             new PropertyModel.WritableIntPropertyKey();
 
-    // The bottom margin in pixels applied to the layout to avoid overlapping with navigation bars.
-    public static final PropertyModel.WritableIntPropertyKey BOTTOM_MARGIN =
+    // The bottom inset in pixels to ensure interactive buttons clear the system navigation
+    // bar.
+    public static final PropertyModel.WritableIntPropertyKey BOTTOM_INSETS =
             new PropertyModel.WritableIntPropertyKey();
+
+    // The left, right, and bottom insets to be applied as view padding.
+    public static final PropertyModel.WritableObjectPropertyKey<Rect> SIDE_AND_BOTTOM_INSETS =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] THEME_KEYS =
             new PropertyKey[] {
@@ -77,10 +83,11 @@ public class NtpThemeProperty {
                 BITMAP_FOR_PREVIEW,
                 PREVIEW_SAVE_CLICK_LISTENER,
                 PREVIEW_CANCEL_CLICK_LISTENER,
-                BOTTOM_MARGIN,
                 LOGO_BITMAP,
                 LOGO_VISIBILITY,
                 LOGO_PARAMS,
-                TOP_INSETS
+                TOP_INSETS,
+                BOTTOM_INSETS,
+                SIDE_AND_BOTTOM_INSETS
             };
 }
