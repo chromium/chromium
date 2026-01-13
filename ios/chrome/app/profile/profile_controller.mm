@@ -483,7 +483,9 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   // Save the cookies unless there is already a save in progress. This avoid
   // posting multiple tasks if the user switch rapidly between multiple apps.
-  if (!_savingCookies) {
+  if (!base::FeatureList::IsEnabled(
+          kDisableCookieStoreIOSFlushOnBackgrounding) &&
+      !_savingCookies) {
     _savingCookies = YES;
 
     // Save the cookie while ensuring the application will be given time for

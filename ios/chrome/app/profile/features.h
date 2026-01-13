@@ -9,4 +9,8 @@
 
 BASE_DECLARE_FEATURE(kLogApplicationStorageSizeMetrics);
 
+// Feature to disable CookieStoreIOS::FlushStore when the application enters the
+// background.
+BASE_DECLARE_FEATURE(kDisableCookieStoreIOSFlushOnBackgrounding);
+
 #endif  // IOS_CHROME_APP_PROFILE_FEATURES_H_

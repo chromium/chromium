@@ -9064,6 +9064,21 @@
             ]
         }
     ],
+    "DisableCookieStoreIOSFlushOnBackgrounding": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableCookieStoreIOSFlushOnBackgrounding"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGeoLanguageModel": [
         {
             "platforms": [
