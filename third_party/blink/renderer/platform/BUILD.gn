@@ -2272,6 +2272,7 @@ source_set("blink_platform_unittests_sources") {
     "graphics/decoding_image_generator_test.cc",
     "graphics/deferred_image_decoder_test_wo_platform.cc",
     "graphics/filters/fe_composite_test.cc",
+    "graphics/filters/fe_turbulence_test.cc",
     "graphics/filters/image_filter_builder_test.cc",
     "graphics/gpu/drawing_buffer_test.cc",
     "graphics/gpu/shared_gpu_context_test.cc",
