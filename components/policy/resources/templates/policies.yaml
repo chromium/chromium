@@ -1285,7 +1285,7 @@ policies:
   1284: SystemShortcutBehavior
   1285: DeletingUndecryptablePasswordsEnabled
   1286: StandardizedBrowserZoomEnabled
-  1287: ReportingEndpoints
+  1287: ''
   1288: PrintingLPACSandboxEnabled
   1289: ShowGeminiIntroScreenEnabled
   1290: DeviceRestrictionSchedule
@@ -1476,7 +1476,7 @@ atomic_groups:
   51: WebPrintingSettings
   52: DirectSocketsSettings
   53: SkyVaultSettings
-  54: BrowserEventReporting
+  54: ''
   55: SmartCardConnectSettings
   56: WebRtc
   57: ControlledFrameSettings

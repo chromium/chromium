@@ -2079,8 +2079,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
   registry->RegisterIntegerPref(prefs::kLensOverlayStartCount, 0);
 
-  registry->RegisterDictionaryPref(prefs::kReportingEndpoints);
-
   registry->RegisterBooleanPref(prefs::kViewSourceLineWrappingEnabled, false);
 
   // TODO(crbug.com/442891187): Move these to appropriate manager files when
