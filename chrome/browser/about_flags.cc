@@ -4854,6 +4854,16 @@ const FeatureEntry::FeatureVariation kRobustWindowManagementVariations[] = {
     {"Bulk Close", kRobustWindowManagementBulkCloseEnabled,
      std::size(kRobustWindowManagementBulkCloseEnabled), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kRobustWindowManagementExperimentalOpenAdjacently[] = {
+        {"open_adjacently", "false"}};
+const FeatureEntry::FeatureVariation
+    kRobustWindowManagementExperimentalVariations[] = {
+        {"Open Fullscreen",
+         kRobustWindowManagementExperimentalOpenAdjacently,
+         std::size(kRobustWindowManagementExperimentalOpenAdjacently),
+         nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -12126,7 +12136,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRobustWindowManagementExperimentalName,
      flag_descriptions::kRobustWindowManagementExperimentalDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRobustWindowManagementExperimental)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kRobustWindowManagementExperimental,
+         kRobustWindowManagementExperimentalVariations,
+         "RobustWindowManagementExperimental")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
