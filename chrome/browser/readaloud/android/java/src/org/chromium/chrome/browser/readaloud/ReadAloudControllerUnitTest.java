@@ -27,7 +27,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -134,7 +133,6 @@ import java.util.Locale;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 @DisableFeatures({
-    ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
     ChromeFeatureList.READALOUD_TAP_TO_SEEK,
     ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
 })
@@ -432,25 +430,6 @@ public class ReadAloudControllerUnitTest {
     public void testIsAvailable_noMSBB() {
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
         assertFalse(mController.isAvailable());
-    }
-
-    @Test
-    public void testIsAvailable_inMultiWindow() {
-        shadowOf(mActivity).setInMultiWindowMode(true);
-        assertFalse(mController.isAvailable());
-
-        shadowOf(mActivity).setInMultiWindowMode(false);
-        assertTrue(mController.isAvailable());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
-    public void testIsAvailable_inMultiWindow_flag() {
-        shadowOf(mActivity).setInMultiWindowMode(true);
-        assertTrue(mController.isAvailable());
-
-        shadowOf(mActivity).setInMultiWindowMode(false);
-        assertTrue(mController.isAvailable());
     }
 
     @Test
@@ -1045,43 +1024,6 @@ public class ReadAloudControllerUnitTest {
 
         verify(mPlayerCoordinator, never())
                 .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
-    }
-
-    @Test
-    public void testPlayTab_inMultiWindow() {
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
-        resolvePromises();
-
-        verify(mPlaybackHooks)
-                .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
-        assertEquals(null, mPlaybackArgsCaptor.getValue().getLanguage());
-
-        shadowOf(mActivity).setInMultiWindowMode(true);
-        onPlaybackSuccess(mPlayback);
-
-        verify(mPlayerCoordinator).playbackFailed();
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
-    public void testPlayTab_inMultiWindow_flag() {
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
-        resolvePromises();
-
-        verify(mPlaybackHooks)
-                .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
-        assertEquals(null, mPlaybackArgsCaptor.getValue().getLanguage());
-
-        shadowOf(mActivity).setInMultiWindowMode(true);
-        onPlaybackSuccess(mPlayback);
-
-        verify(mPlayerCoordinator, times(1))
-                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
-        verify(mPlayerCoordinator).addObserver(mController);
     }
 
     @Test

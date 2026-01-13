@@ -911,12 +911,10 @@ public class ReadAloudController
 
     /**
      * Checks if Read Aloud is supported which is true iff: user is not in the incognito mode and
-     * user opted into "Make searches and browsing better". If the ReadAloudInMultiWindow flag is
-     * disabled, this will return false if the activity is in multi window mode.
+     * user opted into "Make searches and browsing better".
      */
     public boolean isAvailable() {
-        return ReadAloudFeatures.isAllowed(mProfileSupplier.get())
-                && !ReadAloudFeatures.isInMultiWindowAndDisabled(mActivity);
+        return ReadAloudFeatures.isAllowed(mProfileSupplier.get());
     }
 
     private boolean isTabUnavailableForReadAloud(@Nullable Tab tab) {
@@ -1807,47 +1805,45 @@ public class ReadAloudController
             promise.reject(new Exception("missing profile"));
             return promise;
         }
-        assumeNonNull(mPlaybackHooks).createPlayback(
-                args,
-                new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
-                    @Override
-                    public void onSuccess(Playback playback) {
-                        if (playback == null) {
-                            promise.reject(new Exception("Playback is null"));
-                        }
-                        // Check if in multi-window mode and not supporting multi-window
-                        // This failure will also trigger when the user goes into multi-window mode
-                        // with a playback since we will attempt to restore
-                        if (ReadAloudFeatures.isInMultiWindowAndDisabled(mActivity)) {
-                            playback.release();
-                            promise.reject(new Exception("In multi window mode"));
-                            return;
-                        }
-                        assumeNonNull(mReadabilityHooks);
-                        // If we rely on the backend to detect page language, ensure it is supported
-                        if (args.getLanguage() == null
-                                && !mReadabilityHooks
-                                        .getCompatibleLanguages()
-                                        .contains(
-                                                getLanguage(
-                                                        assumeNonNull(playback.getMetadata()).languageCode()))) {
-                            playback.release();
-                            promise.reject(new Exception("Unsupported language"));
-                            return;
-                        }
+        assumeNonNull(mPlaybackHooks)
+                .createPlayback(
+                        args,
+                        new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
+                            @Override
+                            public void onSuccess(Playback playback) {
+                                if (playback == null) {
+                                    promise.reject(new Exception("Playback is null"));
+                                }
 
-                        promise.fulfill(playback);
-                    }
+                                assumeNonNull(mReadabilityHooks);
+                                // If we rely on the backend to detect page language, ensure it is
+                                // supported
+                                if (args.getLanguage() == null
+                                        && !mReadabilityHooks
+                                                .getCompatibleLanguages()
+                                                .contains(
+                                                        getLanguage(
+                                                                assumeNonNull(
+                                                                                playback
+                                                                                        .getMetadata())
+                                                                        .languageCode()))) {
+                                    playback.release();
+                                    promise.reject(new Exception("Unsupported language"));
+                                    return;
+                                }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        if (throwable instanceof Exception) {
-                            promise.reject((Exception) throwable);
-                        } else {
-                            promise.reject(new Exception(throwable));
-                        }
-                    }
-                });
+                                promise.fulfill(playback);
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                if (throwable instanceof Exception) {
+                                    promise.reject((Exception) throwable);
+                                } else {
+                                    promise.reject(new Exception(throwable));
+                                }
+                            }
+                        });
         return promise;
     }
 
