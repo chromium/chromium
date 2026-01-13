@@ -18,6 +18,8 @@ source_set("contextual_tasks") {
       "active_task_context_provider_impl.h",
       "contextual_tasks_context_service.h",
       "contextual_tasks_context_service_factory.h",
+      "contextual_tasks_tab_visit_tracker.cc",
+      "contextual_tasks_tab_visit_tracker.h",
     ]
   }
 
@@ -261,6 +263,7 @@ source_set("unit_tests") {
       "contextual_tasks_context_service_factory_unittest.cc",
       "contextual_tasks_side_panel_coordinator_unittest.cc",
       "contextual_tasks_signal_utils_unittest.cc",
+      "contextual_tasks_tab_visit_tracker_unittest.cc",
       "contextual_tasks_ui_service_unittest.cc",
       "contextual_tasks_ui_unittest.cc",
       "entry_point_eligibility_manager_unittest.cc",

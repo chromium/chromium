@@ -147,6 +147,11 @@ class ContextualTasksContextService
   std::optional<base::TimeDelta> GetDurationSinceLastActive(
       content::WebContents* web_contents);
 
+  // Returns the time spent in the tab on its last visit. If the tab is still
+  // active, then it returns the time spent in the current visit.
+  std::optional<base::TimeDelta> GetDurationOfCurrentOrLastVisit(
+      content::WebContents* web_contents);
+
   // Returns whether the tab should be added to the selection.
   bool ShouldAddTabToSelection(content::WebContents* web_contents);
 
