@@ -16,10 +16,7 @@
     // of a menu element, and its reflected IDL attribute exists here for
     // developer convenience.
     [CEReactions, Reflect] attribute boolean defaultChecked;
-
-    // Command Invokers
-    [CEReactions, Reflect=commandfor] attribute Element? commandForElement;
-    [CEReactions] attribute DOMString command;
 };
 
+HTMLMenuItemElement includes CommandInvokerElement;
 HTMLMenuItemElement includes InterestInvokerElement;

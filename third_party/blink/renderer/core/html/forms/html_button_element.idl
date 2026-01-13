@@ -37,10 +37,6 @@
     [CEReactions, Reflect] attribute DOMString value;
     // FIXME: attribute HTMLMenuElement? menu;
 
-    // Command Invokers
-    [CEReactions, Reflect=commandfor] attribute Element? commandForElement;
-    [CEReactions] attribute DOMString command;
-
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;
     readonly attribute DOMString validationMessage;
@@ -52,4 +48,5 @@
 };
 
 HTMLButtonElement includes PopoverTargetAttributes;
+HTMLButtonElement includes CommandInvokerElement;
 HTMLButtonElement includes InterestInvokerElement;
