@@ -120,7 +120,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(GetProfile());
     CoreAccountInfo account_info = SetPrimaryAccount(
-        identity_manager, kTestEmail, signin::ConsentLevel::kSync);
+        identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
     SetRefreshTokenForPrimaryAccount(identity_manager, kFakeRefreshToken);
 
     AccountInfo primary_account_info =
