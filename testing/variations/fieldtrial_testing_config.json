@@ -8661,7 +8661,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Dev_Canary_Beta",
+                    "params": {
+                        "ModuleMinStalenessUpdateTimeInterval": "1d",
+                        "ShortcutsMinStalenessUpdateTimeInterval": "1d",
+                        "StaleModulesCountThreshold": "1",
+                        "StaleShortcutsCountThreshold": "3"
+                    },
+                    "enable_features": [
+                        "NtpFeatureOptimizationDismissModulesRemoval",
+                        "NtpFeatureOptimizationModuleRemoval",
+                        "NtpFeatureOptimizationShortcutsRemoval"
+                    ]
+                },
+                {
+                    "name": "Enabled_Stable",
                     "params": {
                         "ModuleMinStalenessUpdateTimeInterval": "1d",
                         "ShortcutsMinStalenessUpdateTimeInterval": "1d",
