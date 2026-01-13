@@ -11067,16 +11067,16 @@ void RenderFrameHostImpl::RecordWindowProxyUsageMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 
-void RenderFrameHostImpl::InitializeCrashReportStorage(
+void RenderFrameHostImpl::InitializeCrashReportContext(
     uint64_t length,
-    InitializeCrashReportStorageCallback callback) {
+    InitializeCrashReportContextCallback callback) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kCrashReportingStorageAPI)) {
     mojo::ReportBadMessage("kCrashReportingStorageAPI feature must be enabled");
     return;
   }
 
-  if (length > blink::mojom::kMaxCrashReportStorageSize) {
+  if (length > blink::mojom::kMaxCrashReportContextSize) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE);
     return;
@@ -11084,7 +11084,7 @@ void RenderFrameHostImpl::InitializeCrashReportStorage(
 
   // A renderer process must not try and create and initialize its shared memory
   // buffer for crash reports more than once. See
-  // `CrashReportStorage::initialize()`.
+  // `CrashReportContext::initialize()`.
   if (document_associated_data_->crash_report_storage_region().IsValid()) {
     bad_message::ReceivedBadMessage(
         GetProcess(),
@@ -11104,7 +11104,7 @@ void RenderFrameHostImpl::InitializeCrashReportStorage(
 
   // We can use `ValueOrDie()` below because we know `length` is sufficiently
   // far enough from the boundary of `uint32_t` (because of the
-  // `kMaxCrashReportStorageSize` check) such that it cannot have overflown at
+  // `kMaxCrashReportContextSize` check) such that it cannot have overflown at
   // this point.
   base::UnsafeSharedMemoryRegion region =
       base::UnsafeSharedMemoryRegion::Create(total_size.ValueOrDie());
@@ -11113,7 +11113,7 @@ void RenderFrameHostImpl::InitializeCrashReportStorage(
     return;
   }
 
-  document_associated_data_->SetCrashReportStorageRegion(region.Duplicate());
+  document_associated_data_->SetCrashReportContextRegion(region.Duplicate());
   std::move(callback).Run(std::move(region));
 }
 
@@ -16462,7 +16462,7 @@ base::Value::Dict RenderFrameHostImpl::ReadCrashReportAPIBody() {
   // Only attempt to read the report data if the recorded size of the data
   // fits inside the real size of the shared memory. Only a compromised
   // renderer could set us up to fail this condition; see
-  // `CrashReportStorage::set()`, which ensures that the writes of oversized
+  // `CrashReportContext::set()`, which ensures that the writes of oversized
   // reports are not attempted.
   if (mapping.size() < sizeof(data_size) + data_size) {
     return crash_report_api_body;

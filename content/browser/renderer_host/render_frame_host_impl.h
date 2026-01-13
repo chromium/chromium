@@ -2650,9 +2650,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RecordWindowProxyUsageMetrics(
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
-  void InitializeCrashReportStorage(
+  void InitializeCrashReportContext(
       uint64_t length,
-      InitializeCrashReportStorageCallback callback) override;
+      InitializeCrashReportContextCallback callback) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(

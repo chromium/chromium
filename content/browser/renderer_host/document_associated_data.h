@@ -207,7 +207,7 @@ class DocumentAssociatedData : public base::SupportsUserData {
   void RemoveCookieSettingOverride(
       net::CookieSettingOverride cookie_setting_override);
 
-  void SetCrashReportStorageRegion(base::UnsafeSharedMemoryRegion region);
+  void SetCrashReportContextRegion(base::UnsafeSharedMemoryRegion region);
   const base::UnsafeSharedMemoryRegion& crash_report_storage_region() const {
     return crash_report_storage_region_;
   }

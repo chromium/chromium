@@ -224,9 +224,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void RecordWindowProxyUsageMetrics(
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
-  void InitializeCrashReportStorage(
+  void InitializeCrashReportContext(
       uint64_t length,
-      InitializeCrashReportStorageCallback callback) override;
+      InitializeCrashReportContextCallback callback) override;
   void NotifyDocumentInteractive() override;
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
 

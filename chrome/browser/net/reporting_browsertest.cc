@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
       crashReport.set('self.origin', self.origin + '/');
       crashReport.set('outer_height', window.outerHeight);
       crashReport.set('custom_key', 'custom_value');
-      crashReport.remove('custom_key');
+      crashReport.delete('custom_key');
     })();
   )")
                   .is_ok());
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   EXPECT_EQ(
       contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL().spec(),
       *self_origin);
-  // Because `crashReport.remove('custom_key')` was called before the process
+  // Because `crashReport.delete('custom_key')` was called before the process
   // crashed, this value is not present in the report body.
   EXPECT_EQ(custom_key, nullptr);
 }

@@ -90,7 +90,7 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/bar_prop.h"
-#include "third_party/blink/renderer/core/frame/crash_report_storage.h"
+#include "third_party/blink/renderer/core/frame/crash_report_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/dom_viewport.h"
@@ -2652,14 +2652,14 @@ Fence* LocalDOMWindow::fence() {
   return fence_.Get();
 }
 
-CrashReportStorage* LocalDOMWindow::crashReport() {
+CrashReportContext* LocalDOMWindow::crashReport() {
   // TODO(domfarolino): Maybe document this.
   if (!GetFrame()) {
     return nullptr;
   }
 
   if (!crash_report_storage_) {
-    crash_report_storage_ = MakeGarbageCollected<CrashReportStorage>(*this);
+    crash_report_storage_ = MakeGarbageCollected<CrashReportContext>(*this);
   }
 
   return crash_report_storage_.Get();

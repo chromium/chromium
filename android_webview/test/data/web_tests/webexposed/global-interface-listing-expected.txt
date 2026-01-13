@@ -1467,11 +1467,11 @@ interface CountQueuingStrategy
     getter highWaterMark
     getter size
     method constructor
-interface CrashReportStorage
+interface CrashReportContext
     attribute @@toStringTag
     method constructor
+    method delete
     method initialize
-    method remove
     method set
 interface CreateMonitor : EventTarget
     attribute @@toStringTag

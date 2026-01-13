@@ -71,7 +71,7 @@ class DocumentInit;
 class DOMSelection;
 class DOMViewport;
 class DOMVisualViewport;
-class CrashReportStorage;
+class CrashReportContext;
 class Element;
 class ExceptionState;
 class External;
@@ -524,7 +524,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   Fence* fence();
 
-  CrashReportStorage* crashReport();
+  CrashReportContext* crashReport();
 
   CloseWatcher::WatcherStack* closewatcher_stack() {
     return closewatcher_stack_.Get();
@@ -688,7 +688,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // https://github.com/shivanigithub/fenced-frame/issues/14
   Member<Fence> fence_;
 
-  Member<CrashReportStorage> crash_report_storage_;
+  Member<CrashReportContext> crash_report_storage_;
 
   Member<CloseWatcher::WatcherStack> closewatcher_stack_;
 

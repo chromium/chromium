@@ -216,7 +216,7 @@
 
     // See
     // https://github.com/WICG/crash-reporting/blob/gh-pages/crashStorage-explainer.md.
-    [RuntimeEnabled=CrashReportingStorageAPI] readonly attribute CrashReportStorage? crashReport;
+    [RuntimeEnabled=CrashReportingStorageAPI] readonly attribute CrashReportContext? crashReport;
 
     // Responsively-sized iframes
     [RuntimeEnabled=ResponsiveIframes, RaisesException] void requestResize();

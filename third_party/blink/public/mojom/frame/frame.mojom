@@ -259,8 +259,8 @@ struct LegacyTechEventCodeLocation {
 
 // The maximum allowed size of a crash report storage shared memory buffer. This
 // is used when the renderer requests a shared memory buffer for crash report
-// data; see `CreateCrashReportStorage()`.
-const uint64 kMaxCrashReportStorageSize = 65536;
+// data; see `CreateCrashReportContext()`.
+const uint64 kMaxCrashReportContextSize = 65536;
 
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
@@ -822,12 +822,12 @@ interface LocalFrameHost {
 
   // This IPC lets the browser initialize memory reserved for crash reporting
   // API of size `length`. Note that the maximum allowed size is
-  // `kMaxCrashReportStorageSize`. In the future, if we decide that shared
+  // `kMaxCrashReportContextSize`. In the future, if we decide that shared
   // memory is to be the backing storage mechanism for this feature, then this
   // method's async callback will contain an `UnsafeSharedMemoryRegion` that the
   // renderer can use to write crash report data that the browser will read,
   // instead of using the two synchronous IPCs below.
-  InitializeCrashReportStorage(uint64 length)
+  InitializeCrashReportContext(uint64 length)
       => (mojo_base.mojom.UnsafeSharedMemoryRegion region);
 };
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/crash_report_storage.h"
+#include "third_party/blink/renderer/core/frame/crash_report_context.h"
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -24,13 +24,13 @@
 
 namespace blink {
 
-CrashReportStorage::CrashReportStorage(LocalDOMWindow& window)
+CrashReportContext::CrashReportContext(LocalDOMWindow& window)
     : ExecutionContextClient(&window) {
   DCHECK(RuntimeEnabledFeatures::CrashReportingStorageAPIEnabled(
       GetExecutionContext()));
 }
 
-void CrashReportStorage::Trace(Visitor* visitor) const {
+void CrashReportContext::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
 
   ScriptWrappable::Trace(visitor);
@@ -38,13 +38,13 @@ void CrashReportStorage::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-ScriptPromise<IDLUndefined> CrashReportStorage::initialize(
+ScriptPromise<IDLUndefined> CrashReportContext::initialize(
     ScriptState* script_state,
     uint64_t length,
     ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot use CrashReportStorage with a "
+                                      "Cannot use CrashReportContext with a "
                                       "document that is not fully active.");
     return ScriptPromise<IDLUndefined>();
   }
@@ -60,7 +60,7 @@ ScriptPromise<IDLUndefined> CrashReportStorage::initialize(
       script_state, exception_state.GetContext());
   ScriptPromise<IDLUndefined> promise = resolver_->Promise();
 
-  if (length > mojom::blink::kMaxCrashReportStorageSize) {
+  if (length > mojom::blink::kMaxCrashReportContextSize) {
     resolver_->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
                                            "The requested size is too large."));
@@ -70,19 +70,19 @@ ScriptPromise<IDLUndefined> CrashReportStorage::initialize(
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame);
 
-  frame->GetLocalFrameHostRemote().InitializeCrashReportStorage(
+  frame->GetLocalFrameHostRemote().InitializeCrashReportContext(
       length,
-      blink::BindOnce(&CrashReportStorage::OnCreateCrashReportStorage,
+      blink::BindOnce(&CrashReportContext::OnCreateCrashReportContext,
                       WrapPersistent(this), WrapPersistent(resolver_.Get())));
   return promise;
 }
 
-void CrashReportStorage::set(const String& key,
+void CrashReportContext::set(const String& key,
                              const String& value,
                              ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot use CrashReportStorage with a "
+                                      "Cannot use CrashReportContext with a "
                                       "document that is not fully active.");
     return;
   }
@@ -90,7 +90,7 @@ void CrashReportStorage::set(const String& key,
   if (!shm_mapping_.IsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "CrashReportStorage is not initialized. Call initialize() and wait for "
+        "CrashReportContext is not initialized. Call initialize() and wait for "
         "it to resolve.");
     return;
   }
@@ -103,11 +103,11 @@ void CrashReportStorage::set(const String& key,
   }
 }
 
-void CrashReportStorage::remove(const String& key,
-                                ExceptionState& exception_state) {
+void CrashReportContext::deleteKey(const String& key,
+                                   ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot use CrashReportStorage with a "
+                                      "Cannot use CrashReportContext with a "
                                       "document that is not fully active.");
     return;
   }
@@ -115,7 +115,7 @@ void CrashReportStorage::remove(const String& key,
   if (!shm_mapping_.IsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "CrashReportStorage is not initialized. Call initialize() and wait for "
+        "CrashReportContext is not initialized. Call initialize() and wait for "
         "it to resolve.");
     return;
   }
@@ -124,11 +124,11 @@ void CrashReportStorage::remove(const String& key,
   WriteToSharedMemory(exception_state);
 }
 
-void CrashReportStorage::OnCreateCrashReportStorage(
+void CrashReportContext::OnCreateCrashReportContext(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     base::UnsafeSharedMemoryRegion region) {
   // The mapping must not have been already initialized. See
-  // `CrashReportStorage::initialize()`.
+  // `CrashReportContext::initialize()`.
   CHECK(!shm_mapping_.IsValid());
 
   if (!region.IsValid()) {
@@ -143,7 +143,7 @@ void CrashReportStorage::OnCreateCrashReportStorage(
   resolver->Resolve();
 }
 
-bool CrashReportStorage::WriteToSharedMemory(ExceptionState& exception_state) {
+bool CrashReportContext::WriteToSharedMemory(ExceptionState& exception_state) {
   CHECK(shm_mapping_.IsValid());
 
   auto json_object = std::make_unique<JSONObject>();
