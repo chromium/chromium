@@ -83,6 +83,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSupportContentOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosModuleOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosModuleImageOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSearchResultsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];

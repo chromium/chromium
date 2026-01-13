@@ -60,6 +60,7 @@ static_library("base") {
     "wait_for_network_callback_helper.h",
   ]
   deps = [
+    "//components/contextual_tasks/public:feature_list",
     "//components/prefs",
     "//crypto",
     "//third_party/boringssl",

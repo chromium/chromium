@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "components/contextual_tasks/public/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace {
@@ -491,11 +492,11 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kYouTubeMusicName,
           /*scopes=*/{GaiaConstants::kYouTubeMusicOAuth2Scope});
     case OAuthConsumerId::kContextualTasks:
-      // TODO(crbug.com/461578148): Remove kChromeSyncOAuth2Scope once a scope
-      // is created specifically for the search results page.
       return OAuthConsumer(
           /*name=*/kContextualTasksName,
-          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope,
+          /*scopes=*/{contextual_tasks::ShouldUseSearchResultsScope()
+                          ? GaiaConstants::kSearchResultsOAuth2Scope
+                          : GaiaConstants::kChromeSyncOAuth2Scope,
                       GaiaConstants::kClearCutOAuth2Scope});
     case OAuthConsumerId::kEnterprisePlusAddress:
       return GetOAuthConsumerForEnterprisePlusAddress();
