@@ -7,14 +7,25 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
+
+namespace ash {
+class DebugDaemonClient;
+}  // namespace ash
 
 namespace ash::network_diagnostics {
 
+// Tests connectivity to Google services by attempting to connect to various
+// Google endpoints.
 class GoogleServicesConnectivityRoutine : public NetworkDiagnosticsRoutine {
  public:
-  explicit GoogleServicesConnectivityRoutine(
-      chromeos::network_diagnostics::mojom::RoutineCallSource source);
+  // `debug_daemon_client` must outlive this object.
+  GoogleServicesConnectivityRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source,
+      DebugDaemonClient* debug_daemon_client);
   GoogleServicesConnectivityRoutine(const GoogleServicesConnectivityRoutine&) =
       delete;
   GoogleServicesConnectivityRoutine& operator=(
@@ -28,9 +39,15 @@ class GoogleServicesConnectivityRoutine : public NetworkDiagnosticsRoutine {
   void AnalyzeResultsAndExecuteCallback() override;
 
  private:
+  void OnGetHostsConnectivityResult(const std::vector<uint8_t>& response);
+  void ParseConnectivityResponse(const std::vector<uint8_t>& proto_response);
+
+  const raw_ref<DebugDaemonClient> debug_daemon_client_;
   std::vector<chromeos::network_diagnostics::mojom::
                   GoogleServicesConnectivityProblemPtr>
       problems_;
+
+  base::WeakPtrFactory<GoogleServicesConnectivityRoutine> weak_factory_{this};
 };
 
 }  // namespace ash::network_diagnostics

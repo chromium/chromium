@@ -267,7 +267,8 @@ void NetworkDiagnostics::RunGoogleServicesConnectivity(
   if (source.has_value()) {
     src = source.value();
   }
-  auto routine = std::make_unique<GoogleServicesConnectivityRoutine>(src);
+  auto routine = std::make_unique<GoogleServicesConnectivityRoutine>(
+      src, debug_daemon_client_);
   RunRoutine(std::move(routine), std::move(callback));
 }
 
