@@ -840,6 +840,7 @@ crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authenticat
 crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure ]
 
 # Secure Payment Confirmation Browser Bound Keys do not work on platforms without TPMs and TPMs are not available yet on the bots that run these tests.
+crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
 crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure ]
 crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-invalid-payment-entity-logo.https.html [ Failure ]
 crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
