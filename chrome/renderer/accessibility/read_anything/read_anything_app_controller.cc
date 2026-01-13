@@ -1192,6 +1192,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
       .SetProperty("isPhraseHighlightingEnabled",
                    &ReadAnythingAppController::IsPhraseHighlightingEnabled)
+      .SetProperty("htmlTitle",
+                   &ReadAnythingAppController::GetDomDistillerTitle)
+      .SetProperty("htmlContent",
+                   &ReadAnythingAppController::GetDomDistillerContentHtml)
       .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
@@ -2580,4 +2584,12 @@ void ReadAnythingAppController::OnTreeRemoved(ui::AXTree* tree) {
   if (it != tree_observers_.end()) {
     tree_observers_.erase(it);
   }
+}
+
+std::string ReadAnythingAppController::GetDomDistillerTitle() const {
+  return dom_distiller_title_;
+}
+
+std::string ReadAnythingAppController::GetDomDistillerContentHtml() const {
+  return dom_distiller_content_html_;
 }

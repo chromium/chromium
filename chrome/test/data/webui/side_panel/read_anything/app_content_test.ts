@@ -130,6 +130,27 @@ suite('AppContent', () => {
     assertStringContains(emptyState.imagePath, spinner);
   });
 
+  test(
+      'read aloud state resets on new content (Readability enabled)',
+      async () => {
+        chrome.readingMode.isReadabilityEnabled = true;
+        chrome.readingMode.isTsTextSegmentationEnabled = true;
+
+        let resetCallCount = 0;
+        speechController.resetForNewContent = () => {
+          resetCallCount++;
+        };
+
+        readingMode.htmlContent = '<div> My name is Regina George.</div>';
+
+        app.updateContent();
+        await microtasksFinished();
+
+        assertEquals(
+            1, resetCallCount,
+            'resetForNewContent() should have been called once');
+      });
+
   test('showLoading clears read aloud state', () => {
     setContent('My name is Regina George', readAloudModel);
     emitEvent(app, ToolbarEvent.PLAY_PAUSE);

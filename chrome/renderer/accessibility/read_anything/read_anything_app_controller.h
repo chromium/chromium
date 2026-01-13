@@ -251,6 +251,8 @@ class ReadAnythingAppController
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
+  std::string GetDomDistillerTitle() const;
+  std::string GetDomDistillerContentHtml() const;
   // Will only return a state if IsImmersiveReadAnythingEnabled() is true.
   // Returns the presentation through the OnGetPresentationState callback.
   void SendGetPresentationStateRequest() const;
@@ -523,6 +525,16 @@ class ReadAnythingAppController
   // The number of times distillation completes successfully after a page
   // change. Used for logging.
   int distillationsCompleted_;
+
+  // TODO(crbug.com/459144991): implement updating this variable to show
+  // distilled title in the WebUI. The distilled title result of DOM distiller
+  // distillation.
+  std::string dom_distiller_title_ = "";
+
+  // TODO(crbug.com/459144991): implement updating this variable to show
+  // distilled content in the WebUI. The distilled content result of DOM
+  // distiller distillation.
+  std::string dom_distiller_content_html_ = "";
 
   // As a subclass of RenderFrameObserver, all objects of this class are stored
   // in data structure and should not get deallocated as long as the object is

@@ -141,6 +141,12 @@ declare namespace chrome {
     // Max number of characters to display in one line of Reading mode.
     let maxLineWidth: number;
 
+    // Distiled title from DOM distiller distillation.
+    let htmlTitle: string;
+
+    // Distiled html content from DOM distiller distillation.
+    let htmlContent: string;
+
     // Returns whether the reading highlight is currently on.
     function isHighlightOn(): boolean;
 

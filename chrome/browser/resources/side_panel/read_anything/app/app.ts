@@ -157,6 +157,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
     TextSegmenter.getInstance().updateLanguage(
         chrome.readingMode.baseLanguageForSpeech);
     this.contentState_ = this.contentController_.getState();
+    if (chrome.readingMode.isReadabilityEnabled) {
+      this.contentController_.configureTrustedTypes();
+    }
   }
 
   override disconnectedCallback() {
@@ -362,9 +365,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (newRoot) {
       this.$.container.appendChild(newRoot);
     }
+    const wordCountContainer =
+        chrome.readingMode.isReadabilityEnabled ? this.$.container : newRoot;
     if (!this.willDrawAgainSoon_) {
-      const wordCount = (newRoot && newRoot.textContent) ?
-          getWordCount(newRoot.textContent) :
+      const wordCount = (wordCountContainer && wordCountContainer.textContent) ?
+          getWordCount(wordCountContainer.textContent) :
           0;
       chrome.readingMode.onDistilled(wordCount);
       requestAnimationFrame(() => {

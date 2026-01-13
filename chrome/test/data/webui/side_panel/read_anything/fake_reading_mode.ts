@@ -77,6 +77,10 @@ export class FakeReadingMode {
   inSidePanelPresentationState: number = 2;
   inImmersiveOverlayPresentationState: number = 3;
 
+  // Current Read Anything distilled values.
+  htmlContent: string = '';
+  title: string = '';
+
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
   imagesFeatureEnabled: boolean = false;
@@ -86,6 +90,12 @@ export class FakeReadingMode {
 
   // Whether the line focus feature flag is enabled.
   isLineFocusEnabled: boolean = false;
+
+  // Whether the text segmentation  feature flag is enabled.
+  isTsTextSegmentationEnabled: boolean = false;
+
+  // Whether the readability feature flag is enabled.
+  isReadabilityEnabled: boolean = false;
 
   // Returns true if the webpage corresponds to a Google Doc.
   isGoogleDocs: boolean = false;
