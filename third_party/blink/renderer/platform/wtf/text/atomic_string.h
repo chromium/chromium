@@ -235,20 +235,20 @@ class WTF_EXPORT AtomicString {
 
   String string_;
 
-  ALWAYS_INLINE static scoped_refptr<StringImpl> Add(
-      scoped_refptr<StringImpl>&& r) {
-    if (!r || r->IsAtomic())
+  ALWAYS_INLINE static String Add(String&& r) {
+    if (!r || r.Impl()->IsAtomic()) {
       return std::move(r);
+    }
     return AddSlowCase(std::move(r));
   }
 
-  ALWAYS_INLINE static scoped_refptr<StringImpl> Add(StringImpl* r) {
+  ALWAYS_INLINE static String Add(StringImpl* r) {
     if (!r || r->IsAtomic())
       return r;
     return AddSlowCase(r);
   }
-  static scoped_refptr<StringImpl> AddSlowCase(scoped_refptr<StringImpl>&&);
-  static scoped_refptr<StringImpl> AddSlowCase(StringImpl*);
+  static String AddSlowCase(String&&);
+  static String AddSlowCase(StringImpl*);
 };
 
 inline bool operator==(const AtomicString& a, const AtomicString& b) {

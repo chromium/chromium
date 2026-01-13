@@ -211,7 +211,7 @@ void AtomicStringTable::ReserveCapacity(unsigned size) {
 }
 
 template <typename T, typename HashTranslator>
-scoped_refptr<StringImpl> AtomicStringTable::AddToStringTable(const T& value) {
+String AtomicStringTable::AddToStringTable(const T& value) {
   // Lock not only protects access to the table, it also guarantees
   // mutual exclusion with the refcount decrement on removal.
   base::AutoLock auto_lock(lock_);
@@ -225,11 +225,10 @@ scoped_refptr<StringImpl> AtomicStringTable::AddToStringTable(const T& value) {
              : base::WrapRefCounted(*add_result.stored_value);
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(
-    base::span<const UChar> chars,
-    AtomicStringUCharEncoding encoding) {
+String AtomicStringTable::Add(base::span<const UChar> chars,
+                              AtomicStringUCharEncoding encoding) {
   if (!chars.data()) {
-    return nullptr;
+    return String();
   }
 
   if (chars.empty()) {
@@ -272,10 +271,9 @@ struct LCharBufferTranslator {
   }
 };
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(
-    const StringView& string_view) {
+String AtomicStringTable::Add(const StringView& string_view) {
   if (string_view.IsNull()) {
-    return nullptr;
+    return String();
   }
 
   if (string_view.empty()) {
@@ -290,10 +288,9 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
   return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(
-    base::span<const LChar> chars) {
+String AtomicStringTable::Add(base::span<const LChar> chars) {
   if (!chars.data()) {
-    return nullptr;
+    return String();
   }
 
   if (chars.empty()) {
@@ -314,7 +311,7 @@ StringImpl* AtomicStringTable::AddNoLock(StringImpl* string) {
   return entry;
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(StringImpl* string) {
+String AtomicStringTable::Add(StringImpl* string) {
   if (!string->length())
     return StringImpl::empty_;
 
@@ -324,23 +321,23 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(StringImpl* string) {
   return base::WrapRefCounted(AddNoLock(string));
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(
-    scoped_refptr<StringImpl>&& string) {
-  if (!string->length())
+String AtomicStringTable::Add(String&& string) {
+  if (!string.length()) {
     return StringImpl::empty_;
+  }
 
   // Lock not only protects access to the table, it also guarantess
   // mutual exclusion with the refcount decrement on removal.
   base::AutoLock auto_lock(lock_);
-  StringImpl* entry = AddNoLock(string.get());
-  if (entry == string.get())
+  StringImpl* entry = AddNoLock(string.Impl());
+  if (entry == string.Impl()) {
     return std::move(string);
+  }
 
   return base::WrapRefCounted(entry);
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
-    base::span<const uint8_t> characters_span) {
+String AtomicStringTable::AddUTF8(base::span<const uint8_t> characters_span) {
   bool seen_non_ascii = false;
   bool seen_non_latin1 = false;
 
