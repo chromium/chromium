@@ -1416,12 +1416,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 #if BUILDFLAG(ENABLE_REPORTING)
     network_context_params->file_paths->reporting_and_nel_store_database_name =
         base::FilePath(chrome::kReportingAndNelStoreFilename);
-
-    if (base::FeatureList::IsEnabled(
-            net::features::kReportingApiEnableEnterpriseCookieIssues)) {
-      network_context_params->enterprise_reporting_endpoints =
-          GetEnterpriseReportingEndpoints();
-    }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
     if (relative_partition_path.empty()) {  // This is the main partition.

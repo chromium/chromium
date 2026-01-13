@@ -352,8 +352,7 @@ ReportingService::~ReportingService() = default;
 std::unique_ptr<ReportingService> ReportingService::Create(
     const ReportingPolicy& policy,
     URLRequestContext* request_context,
-    ReportingCache::PersistentReportingStore* store,
-    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints) {
+    ReportingCache::PersistentReportingStore* store) {
   return std::make_unique<ReportingServiceImpl>(
       ReportingContext::Create(policy, request_context, store));
 }

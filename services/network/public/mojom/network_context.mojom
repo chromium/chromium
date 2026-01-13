@@ -579,10 +579,6 @@ struct NetworkContextParams {
   // |bound_network|.
   int64 bound_network = -1;
 
-  // Stores mapping of endpoint name to endpoint url from initial reporting
-  // endpoints set by the ReportingEndpoints enterprise policy.
-  map<string, url.mojom.Url>? enterprise_reporting_endpoints;
-
   // Enables usage of net::dns::StaleHostResolver. This is only available
   // as opt-in in Android. This will be used during constructing
   // the URLRequestContextOwner object in the NetworkContext.
