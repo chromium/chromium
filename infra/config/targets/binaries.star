@@ -931,30 +931,6 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
-    name = "cronet_tests",
-    label = "//components/cronet:cronet_tests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
-    name = "cronet_tests_android",
-    label = "//components/cronet/android:cronet_tests_android",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
-    name = "cronet_unittests",
-    label = "//components/cronet:cronet_unittests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
     name = "cronet_unittests_android",
     label = "//components/cronet/android:cronet_unittests_android",
     # All references have been moved to starlark

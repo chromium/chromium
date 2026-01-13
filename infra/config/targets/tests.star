@@ -990,18 +990,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "cronet_tests",
-)
-
-targets.tests.gtest_test(
-    name = "cronet_tests_android",
-)
-
-targets.tests.gtest_test(
-    name = "cronet_unittests",
-)
-
-targets.tests.gtest_test(
     name = "cronet_unittests_android",
 )
 

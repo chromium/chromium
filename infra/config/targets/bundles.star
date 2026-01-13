@@ -2551,7 +2551,6 @@ targets.bundle(
         "cronet_smoketests_missing_native_library_instrumentation_apk",
         "cronet_smoketests_platform_only_instrumentation_apk",
         "cronet_test_instrumentation_apk",
-        "cronet_tests_android",
         "cronet_unittests_android",
         "net_unittests",
     ],
@@ -2572,7 +2571,6 @@ targets.bundle(
         "cronet_smoketests_missing_native_library_instrumentation_apk",
         "cronet_smoketests_platform_only_instrumentation_apk",
         "cronet_test_instrumentation_apk",
-        "cronet_tests_android",
         "cronet_unittests_android",
         "net_unittests",
     ],
@@ -6095,7 +6093,6 @@ targets.bundle(
         "components_unittests",
         "content_unittests",
         "crashpad_tests",
-        "cronet_unittests",
         "device_unittests",
         "net_unittests",
         # TODO(crbug.com/40274401): Enable this.
@@ -6309,8 +6306,6 @@ targets.bundle(
 targets.bundle(
     name = "non_android_and_cast_and_chromeos_chromium_gtests",
     targets = [
-        "cronet_tests",
-        "cronet_unittests",
         "headless_browsertests",
         "headless_unittests",
     ],

@@ -14,8 +14,6 @@ import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/version.gni")
 import("//components/cronet/android/cronet_test_templates.gni")
-import("//components/cronet/native/include/headers.gni")
-import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//third_party/netty4/netty4.gni")
@@ -199,9 +197,6 @@ source_set("cronet_static") {
     "//third_party/zlib",
     "//url",
   ]
-  if (!is_cronet_for_aosp_build) {
-    deps += [ "//components/cronet/native:cronet_native_impl" ]
-  }
   sources = [
     "//components/cronet/android/completion_once_callback_adapter.cc",
     "//components/cronet/android/completion_once_callback_adapter.h",
@@ -1744,41 +1739,7 @@ cronet_test("cronet_unittests_android") {
     "//testing/gtest",
   ]
 
-  if (!is_cronet_for_aosp_build) {
-    deps += [ "//components/cronet/native:cronet_native_unittests" ]
-  }
-
   sources = [ "../run_all_unittests.cc" ]
-
-  data = [ "//components/cronet/android/test/test_server/data/" ]
-
-  if (is_android) {
-    shard_timeout = 180
-  }
-}
-
-cronet_test("cronet_tests_android") {
-  deps = [
-    ":cronet_impl_native_java",
-    ":cronet_static",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//net",
-    "//net:test_support",
-    "//net/android:net_java",
-    "//testing/gtest",
-  ]
-
-  if (!is_cronet_for_aosp_build) {
-    deps += [ "//components/cronet/native/test:cronet_native_tests" ]
-  }
-
-  allow_cleartext_traffic = true
-
-  sources = [ "../run_all_unittests.cc" ]
-
-  defines = [ "CRONET_TESTS_IMPLEMENTATION" ]
 
   data = [ "//components/cronet/android/test/test_server/data/" ]
 
@@ -1936,12 +1897,6 @@ copy("cronet_package_copy") {
     ":cronet_shared_java",
     ":httpengine_native_provider_java",
   ]
-}
-
-copy("cronet_package_copy_native_headers") {
-  sources = cronet_native_public_headers + grpc_public_headers
-
-  outputs = [ "$_package_dir/include/{{source_file_part}}" ]
 }
 
 copy("cronet_package_copy_native_lib") {
@@ -2156,7 +2111,6 @@ if (!using_sanitizer) {
 group("cronet_non_test_package") {
   deps = [
     ":cronet_package_copy",
-    ":cronet_package_copy_native_headers",
     ":cronet_package_copy_native_lib",
     ":cronet_package_copy_native_lib_unstripped",
     ":cronet_package_copy_resources",

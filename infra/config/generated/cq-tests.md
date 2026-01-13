@@ -585,26 +585,6 @@
 ### cronet_sizes
 * [android-cronet-arm-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-cronet-arm-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-cronet-arm-rel%5C%22%22))
 
-### cronet_tests
-* [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-rel%5C%22%22))
-* [linux_chromium_asan_rel_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_asan_rel_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_asan_rel_ng%5C%22%22))
-* [linux_chromium_compile_dbg_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_compile_dbg_ng%5C%22%22))
-* [linux_chromium_tsan_rel_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_tsan_rel_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_tsan_rel_ng%5C%22%22))
-* [mac-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-rel%5C%22%22))
-* [mac_chromium_compile_dbg_ng](https://ci.chromium.org/ui/p/chromium/builders/try/mac_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac_chromium_compile_dbg_ng%5C%22%22))
-* [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
-* [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
-
-### cronet_unittests
-* [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-rel%5C%22%22))
-* [linux_chromium_asan_rel_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_asan_rel_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_asan_rel_ng%5C%22%22))
-* [linux_chromium_compile_dbg_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_compile_dbg_ng%5C%22%22))
-* [linux_chromium_tsan_rel_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_tsan_rel_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_tsan_rel_ng%5C%22%22))
-* [mac-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-rel%5C%22%22))
-* [mac_chromium_compile_dbg_ng](https://ci.chromium.org/ui/p/chromium/builders/try/mac_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac_chromium_compile_dbg_ng%5C%22%22))
-* [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
-* [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
-
 ### crypto_unittests
 * [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
 * [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))

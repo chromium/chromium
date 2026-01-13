@@ -910,24 +910,6 @@
     "module_scheme": "junit",
     "skip_usage_check": True,
   },
-  "cronet_tests": {
-    "label": "//components/cronet:cronet_tests",
-    "type": "console_test_launcher",
-    "module_scheme": "gtest",
-    "skip_usage_check": True,
-  },
-  "cronet_tests_android": {
-    "label": "//components/cronet/android:cronet_tests_android",
-    "type": "console_test_launcher",
-    "module_scheme": "gtest",
-    "skip_usage_check": True,
-  },
-  "cronet_unittests": {
-    "label": "//components/cronet:cronet_unittests",
-    "type": "console_test_launcher",
-    "module_scheme": "gtest",
-    "skip_usage_check": True,
-  },
   "cronet_unittests_android": {
     "label": "//components/cronet/android:cronet_unittests_android",
     "type": "console_test_launcher",
