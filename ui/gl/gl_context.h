@@ -115,6 +115,10 @@ struct GL_EXPORT GLContextAttribs {
   // Allow the usage of client arrays in the created context
   bool allow_client_arrays = true;
 
+  // When the context is not a WebGL context, harden it anyway in case the
+  // renderer is compromised and the attacker is creating a non-WebGL context.
+  bool hardened_context = false;
+
   AngleContextVirtualizationGroup angle_context_virtualization_group_number =
       AngleContextVirtualizationGroup::kDefault;
 

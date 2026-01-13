@@ -204,6 +204,10 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     context_attributes.push_back(EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE);
     context_attributes.push_back(
         attribs.webgl_compatibility_context ? EGL_TRUE : EGL_FALSE);
+
+    context_attributes.push_back(EGL_CONTEXT_HARDENED_ANGLE);
+    context_attributes.push_back(attribs.hardened_context ? EGL_TRUE
+                                                          : EGL_FALSE);
   } else {
     DCHECK(!attribs.webgl_compatibility_context);
   }
