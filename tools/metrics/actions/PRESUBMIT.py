@@ -8,8 +8,10 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+import copy
 import os
 import sys
+
 
 def CheckChange(input_api, output_api):
   """Checks that actions.xml is up to date and pretty-printed."""
@@ -43,10 +45,7 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
 
   # Add actions dir to sys.path to import print_action_names
   actions_dir = input_api.PresubmitLocalPath()
-  sys_path_modified = False
-  if actions_dir not in sys.path:
-    sys.path.append(actions_dir)
-    sys_path_modified = True
+  sys.path.append(actions_dir)
 
   removed_actions = []
   try:
@@ -57,17 +56,11 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
     removed_actions = removed_names
   except Exception as e:
     return [output_api.PresubmitError(f'Error getting user action diff: {e}')]
-  finally:
-    if sys_path_modified:
-      sys.path.remove(actions_dir)
 
   tools_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
                                      '..', 'components',
                                      'segmentation_platform', 'tools')
-  sys_path_modified = False
-  if tools_dir not in sys.path:
-    sys.path.append(tools_dir)
-    sys_path_modified = True
+  sys.path.append(tools_dir)
 
   try:
     import generate_histogram_list
@@ -77,10 +70,6 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
             'Could not import generate_histogram_list.py. Make sure the path '
             'is correct.')
     ]
-  finally:
-    if sys_path_modified:
-      # Avoid polluting sys.path.
-      sys.path.remove(tools_dir)
 
   # Load the list of all actions required by segmentation models.
   segmentation_actions = generate_histogram_list.GetActualActionNames()
@@ -106,12 +95,20 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  results = CheckChange(input_api, output_api)
-  results.extend(CheckRemovedSegmentationUserActions(input_api, output_api))
+  # Store sys path to avoid its pollution by the PRESUBMIT
+  original_sys_path = copy.deepcopy(sys.path)
+  try:
+    results = CheckChange(input_api, output_api)
+  finally:
+    sys.path = original_sys_path
   return results
 
 
 def CheckChangeOnCommit(input_api, output_api):
-  results = CheckChange(input_api, output_api)
-  results.extend(CheckRemovedSegmentationUserActions(input_api, output_api))
+  # Store sys path to avoid its pollution by the PRESUBMIT
+  original_sys_path = copy.deepcopy(sys.path)
+  try:
+    results = CheckChange(input_api, output_api)
+  finally:
+    sys.path = original_sys_path
   return results
