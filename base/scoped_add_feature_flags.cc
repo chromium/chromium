@@ -4,11 +4,11 @@
 
 #include "base/scoped_add_feature_flags.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 
@@ -68,10 +68,10 @@ bool ScopedAddFeatureFlags::IsEnabledWithParameter(
   if (!parameter_name.empty()) {
     StrAppend(&feature_name, {":", parameter_name, "/", parameter_value});
   }
-  if (Contains(disabled_features_, feature_name)) {
+  if (std::ranges::contains(disabled_features_, feature_name)) {
     return false;
   }
-  if (Contains(enabled_features_, feature_name)) {
+  if (std::ranges::contains(enabled_features_, feature_name)) {
     return true;
   }
   return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
@@ -81,8 +81,8 @@ void ScopedAddFeatureFlags::AddFeatureIfNotSet(const Feature& feature,
                                                std::string_view suffix,
                                                bool enable) {
   std::string feature_name = StrCat({feature.name, suffix});
-  if (Contains(enabled_features_, feature_name) ||
-      Contains(disabled_features_, feature_name)) {
+  if (std::ranges::contains(enabled_features_, feature_name) ||
+      std::ranges::contains(disabled_features_, feature_name)) {
     return;
   }
   if (enable) {

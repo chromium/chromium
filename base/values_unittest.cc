@@ -23,7 +23,6 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -1520,8 +1519,8 @@ TEST(ValuesTest, List) {
   EXPECT_EQ("foo", mixed_list[3]);
 
   // Try searching in the mixed list.
-  ASSERT_TRUE(Contains(mixed_list, 42, &Value::GetIfInt));
-  ASSERT_FALSE(Contains(mixed_list, false, &Value::GetIfBool));
+  ASSERT_TRUE(std::ranges::contains(mixed_list, 42, &Value::GetIfInt));
+  ASSERT_FALSE(std::ranges::contains(mixed_list, false, &Value::GetIfBool));
 }
 
 TEST(ValuesTest, RvalueAppend) {

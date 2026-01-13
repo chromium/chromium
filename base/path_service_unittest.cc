@@ -4,8 +4,9 @@
 
 #include "base/path_service.h"
 
+#include <algorithm>
+
 #include "base/base_paths.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -143,8 +144,9 @@ TEST_F(PathServiceTest, Get) {
   constexpr std::array<BasePathKey, 0> kUnsupportedKeys = {};
 #endif  // BUILDFLAG(IS_ANDROID)
   for (int key = PATH_START + 1; key < PATH_END; ++key) {
-    EXPECT_PRED1(Contains(kUnsupportedKeys, key) ? &ReturnsInvalidPath
-                                                 : &ReturnsValidPath,
+    EXPECT_PRED1(std::ranges::contains(kUnsupportedKeys, key)
+                     ? &ReturnsInvalidPath
+                     : &ReturnsValidPath,
                  key);
   }
 #if BUILDFLAG(IS_WIN)

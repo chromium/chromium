@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 
+#include <algorithm>
 #include <atomic>
 #include <memory>
 #include <string_view>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
@@ -189,10 +189,11 @@ std::string_view GetFeatureName(std::string_view feature) {
 bool ContainsFeature(
     const std::vector<ScopedFeatureList::FeatureWithStudyGroup>& feature_vector,
     std::string_view feature_name) {
-  return Contains(feature_vector, feature_name,
-                  [](const ScopedFeatureList::FeatureWithStudyGroup& a) {
-                    return a.feature_name;
-                  });
+  return std::ranges::contains(
+      feature_vector, feature_name,
+      [](const ScopedFeatureList::FeatureWithStudyGroup& a) {
+        return a.feature_name;
+      });
 }
 
 // Merges previously-specified feature overrides with those passed into one of

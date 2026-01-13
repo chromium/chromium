@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "base/test/gtest_util.h"
@@ -40,7 +39,7 @@ void TestSource::RemoveObserver(TestSourceObserver* observer) {
 }
 
 bool TestSource::HasObserver(TestSourceObserver* observer) const {
-  return base::Contains(observers_, observer);
+  return std::ranges::contains(observers_, observer);
 }
 
 using TestScopedMultiSourceObservation =
