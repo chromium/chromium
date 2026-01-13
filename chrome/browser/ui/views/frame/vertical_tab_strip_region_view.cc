@@ -110,7 +110,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
                           base::Unretained(this)));
 
   SetBackground(std::make_unique<TopContainerBackground>(
-      browser_view, TopContainerBackground::TopChromeArea::FRAME));
+      browser_view, TopContainerBackground::ColorChoice::kFrameColor));
   UpdateBackgroundColors();
 }
 

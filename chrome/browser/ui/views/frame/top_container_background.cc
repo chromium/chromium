@@ -27,13 +27,13 @@ bool IsFrameActive(const views::View* view) {
   return view->GetWidget() ? view->GetWidget()->ShouldPaintAsActive() : true;
 }
 
-std::pair<int, ui::ColorId> GetTopChromeInfo(
-    TopContainerBackground::TopChromeArea top_chrome_area,
+std::pair<int, ui::ColorId> GetColorChoiceInfo(
+    TopContainerBackground::ColorChoice color_choice,
     const views::View* view) {
-  switch (top_chrome_area) {
-    case TopContainerBackground::TopChromeArea::TOOLBAR:
+  switch (color_choice) {
+    case TopContainerBackground::ColorChoice::kToolbarColor:
       return {IDR_THEME_TOOLBAR, kColorToolbar};
-    case TopContainerBackground::TopChromeArea::FRAME:
+    case TopContainerBackground::ColorChoice::kFrameColor:
       if (IsFrameActive(view)) {
         return {IDR_THEME_FRAME, ui::kColorFrameActive};
       } else {
@@ -47,20 +47,20 @@ std::pair<int, ui::ColorId> GetTopChromeInfo(
 }  // namespace
 
 TopContainerBackground::TopContainerBackground(BrowserView* browser_view,
-                                               TopChromeArea top_chrome_area)
-    : browser_view_(browser_view), top_chrome_area_(top_chrome_area) {}
+                                               ColorChoice color_choice)
+    : browser_view_(browser_view), color_choice_(color_choice) {}
 
 void TopContainerBackground::Paint(gfx::Canvas* canvas,
                                    views::View* view) const {
-  PaintBackground(canvas, view, browser_view_, top_chrome_area_);
+  PaintBackground(canvas, view, browser_view_, color_choice_);
 }
 
 bool TopContainerBackground::PaintThemeCustomImage(
     gfx::Canvas* canvas,
     const views::View* view,
     const BrowserView* browser_view,
-    TopChromeArea top_chrome_area) {
-  int theme_resource_id = GetTopChromeInfo(top_chrome_area, view).first;
+    ColorChoice color_choice) {
+  int theme_resource_id = GetColorChoiceInfo(color_choice, view).first;
 
   if (!WillPaintCustomImage(view, theme_resource_id)) {
     return false;
@@ -104,25 +104,25 @@ void TopContainerBackground::PaintThemeAlignedImage(
 void TopContainerBackground::PaintBackground(gfx::Canvas* canvas,
                                              const views::View* view,
                                              const BrowserView* browser_view,
-                                             TopChromeArea top_chrome_area) {
+                                             ColorChoice color_choice) {
   bool painted =
-      PaintThemeCustomImage(canvas, view, browser_view, top_chrome_area);
+      PaintThemeCustomImage(canvas, view, browser_view, color_choice);
   if (!painted) {
     canvas->DrawColor(view->GetColorProvider()->GetColor(
-        GetTopChromeInfo(top_chrome_area, view).second));
+        GetColorChoiceInfo(color_choice, view).second));
   }
 }
 
 std::optional<SkColor> TopContainerBackground::GetBackgroundColor(
     const views::View* view,
     const BrowserView* browser_view,
-    TopChromeArea top_chrome_area) {
-  std::pair<int, ui::ColorId> top_chrome_info =
-      GetTopChromeInfo(top_chrome_area, view);
+    ColorChoice color_choice) {
+  std::pair<int, ui::ColorId> color_choice_info =
+      GetColorChoiceInfo(color_choice, view);
   const bool will_be_painted =
-      WillPaintCustomImage(view, top_chrome_info.first);
+      WillPaintCustomImage(view, color_choice_info.first);
   if (!will_be_painted) {
-    return view->GetColorProvider()->GetColor(top_chrome_info.second);
+    return view->GetColorProvider()->GetColor(color_choice_info.second);
   }
 
   return std::nullopt;

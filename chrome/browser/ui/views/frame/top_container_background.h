@@ -20,10 +20,10 @@ class BrowserView;
 // TODO(crbug.com/473064096): Refactor to be More Extensible.
 class TopContainerBackground : public views::Background {
  public:
-  enum TopChromeArea { TOOLBAR, FRAME };
+  enum ColorChoice { kToolbarColor, kFrameColor };
   // Construct a themed background for the specified browser.
   explicit TopContainerBackground(BrowserView* browser_view,
-                                  TopChromeArea top_chrome_area = TOOLBAR);
+                                  ColorChoice color_choice = kToolbarColor);
 
   TopContainerBackground(const TopContainerBackground& other) = delete;
   TopContainerBackground& operator=(const TopContainerBackground& other) =
@@ -61,7 +61,7 @@ class TopContainerBackground : public views::Background {
   static bool PaintThemeCustomImage(gfx::Canvas* canvas,
                                     const views::View* view,
                                     const BrowserView* browser_view,
-                                    TopChromeArea top_chrome_area = TOOLBAR);
+                                    ColorChoice color_choice = kToolbarColor);
 
   // Similar to PaintThemeCustomImage but the image is supplied.
   static void PaintThemeAlignedImage(gfx::Canvas* canvas,
@@ -75,23 +75,23 @@ class TopContainerBackground : public views::Background {
   static void PaintBackground(gfx::Canvas* canvas,
                               const views::View* view,
                               const BrowserView* browser_view,
-                              TopChromeArea top_chrome_area = TOOLBAR);
+                              ColorChoice color_choice = kToolbarColor);
 
   // Returns the theme-aware solid background color painted when
   // IDR_THEME_TOOLBAR does not exist; otherwise returns a nullptr.
   static std::optional<SkColor> GetBackgroundColor(
       const views::View* view,
       const BrowserView* browser_view,
-      TopChromeArea top_chrome_area = TOOLBAR);
+      ColorChoice color_choice = kToolbarColor);
 
-  TopChromeArea GetTopChromeArea() { return top_chrome_area_; }
+  ColorChoice GetColorChoice() { return color_choice_; }
 
  private:
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
 
   const raw_ptr<BrowserView> browser_view_;
-  TopChromeArea top_chrome_area_;
+  ColorChoice color_choice_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
