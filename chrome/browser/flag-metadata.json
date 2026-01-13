@@ -9684,7 +9684,7 @@
   {
     "name": "web-app-migrate-preinstalled-chat",
     "owners": [ "pwa-team@google.com", "mek@chromium.org" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
   {
     "name": "web-app-migration-api",
