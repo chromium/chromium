@@ -339,6 +339,7 @@
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"  // nogncheck
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/webstore/features.h"
 #include "components/infobars/core/features.h"
@@ -7060,6 +7061,12 @@ const FeatureEntry kFeatureEntries[] = {
              kContextualSuggestionsAblateOthersWhenPresent,
          kContextualSuggestionsAblateOthersWhenPresentVariations,
          "ContextualSuggestionsAblateOthersWhenPresent")},
+
+    {"enable-force-download-to-onedrive",
+     flag_descriptions::kEnableForceDownloadToOneDriveName,
+     flag_descriptions::kEnableForceDownloadToOneDriveDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         enterprise_data_protection::kEnableForceDownloadToOneDrive)},
 
     {"omnibox-contextual-search-on-focus-suggestions",
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsName,
