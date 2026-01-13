@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_H_
 
-#include <memory>
-
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/models/dialog_model.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
-class ExtensionPostInstallDialogModel;
+class SkBitmap;
 
 namespace content {
 class WebContents;
@@ -22,11 +21,12 @@ class WebContents;
 
 namespace extensions {
 
-// Shows the extension post-install dialog. This function is platform-agnostic.
-void ShowExtensionPostInstallDialog(
+// Triggers the post-install dialog for an extension.
+void TriggerPostInstallDialog(
     Profile* profile,
-    content::WebContents* web_contents,
-    std::unique_ptr<ExtensionPostInstallDialogModel> model);
+    scoped_refptr<const extensions::Extension> extension,
+    const SkBitmap& icon,
+    base::OnceCallback<content::WebContents*()> get_web_contents_callback);
 
 }  // namespace extensions
 

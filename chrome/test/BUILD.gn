@@ -2585,7 +2585,7 @@ if (!is_android) {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:browser_tests",
       "//chrome/browser/ui/extensions:browser_tests",
-      "//chrome/browser/ui/extensions:extension_post_install_dialog_utils",
+      "//chrome/browser/ui/extensions:extension_post_install_dialog",
       "//chrome/browser/ui/feature_first_run:browser_tests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:browser_tests",
@@ -5308,7 +5308,10 @@ if (!is_android) {
           "../browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
         ]
-        deps += [ "//chrome/browser/ui/views/shortcuts:browser_tests" ]
+        deps += [
+          "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils",
+          "//chrome/browser/ui/views/shortcuts:browser_tests",
+        ]
       }
       deps += [
         ":test_support_ui",
@@ -11945,7 +11948,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/actions",
         "//chrome/browser/ui/commerce",
         "//chrome/browser/ui/commerce:test_support",
-        "//chrome/browser/ui/extensions:extension_post_install_dialog_utils",
+        "//chrome/browser/ui/extensions:extension_post_install_dialog",
         "//chrome/browser/ui/extensions:test_support",
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/hats",

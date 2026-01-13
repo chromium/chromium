@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
-#include "chrome/browser/ui/extensions/extension_post_install_dialog_utils.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"

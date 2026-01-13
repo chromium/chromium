@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/extensions/extension_post_install_dialog_utils.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
