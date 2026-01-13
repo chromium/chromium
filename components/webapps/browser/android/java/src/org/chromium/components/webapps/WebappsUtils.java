@@ -21,6 +21,7 @@ import androidx.annotation.WorkerThread;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
@@ -48,6 +49,8 @@ public class WebappsUtils {
     // Synchronization locks for thread-safe access to variables
     // sCheckedIfRequestPinShortcutSupported and sIsRequestPinShortcutSupported.
     private static final Object sLock = new Object();
+
+    private static @Nullable Boolean sIsTwaInstallerPackage;
 
     /**
      * Creates an intent that will add a shortcut to the home screen.
@@ -222,5 +225,29 @@ public class WebappsUtils {
             return false;
         }
         return aconfigFlaggedApiDelegate.isWebAppServiceEnabled();
+    }
+
+    public static void isTwaInstallerPackage(String title, Callback<Boolean> callback) {
+        if (sIsTwaInstallerPackage != null) {
+            callback.onResult(sIsTwaInstallerPackage);
+            return;
+        }
+        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            Log.e(TAG, "Failed to get AconfigFlaggedApiDelegate in isWebAppServiceEnabled()");
+            callback.onResult(false);
+            return;
+        }
+
+        aconfigFlaggedApiDelegate.isInstalled(title).then(callback);
+    }
+
+    /**
+     * Override whether TwaInstallerPackage is installed for testing.
+     *
+     * @param installed Whether TwaInstallerPackage is installed.
+     */
+    public static void setIsTwaInstallerPackageForTesting(Boolean installed) {
+        sIsTwaInstallerPackage = installed;
     }
 }

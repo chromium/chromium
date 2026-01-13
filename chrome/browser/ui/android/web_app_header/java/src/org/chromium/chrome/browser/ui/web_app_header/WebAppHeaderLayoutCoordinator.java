@@ -54,6 +54,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -253,8 +254,18 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         onAndroidControlsVisibilityChanged(
                 mBrowserControlsStateProvider.getAndroidControlsVisibility());
 
-        if (mIsTWA && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled()) {
-            mAppOriginView = (TextView) mView.findViewById(R.id.origin);
+        if (mIsTWA
+                && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled()
+                && mClientPackageName != null) {
+            // Show origin only for TWA Installer installed apps.
+            WebappsUtils.isTwaInstallerPackage(
+                    mClientPackageName,
+                    (isTwaInstallerPackage) -> {
+                        if (isTwaInstallerPackage) {
+                            assert mView != null;
+                            mAppOriginView = (TextView) mView.findViewById(R.id.origin);
+                        }
+                    });
         }
 
         mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);

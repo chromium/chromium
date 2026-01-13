@@ -378,4 +378,17 @@ public interface AconfigFlaggedApiDelegate {
     default boolean isShowPasswordsSplitEnabled() {
         return false;
     }
+
+    /**
+     * Constructs {@link WebAppQueryRequest} and calls {@link
+     * android.content.pm.webapp.WebAppManager#query(@NonNull WebAppQueryRequest
+     * request, @NonNull @CallbackExecutor Executor executor, @NonNull IntConsumer callback)} with
+     * it if supported.
+     *
+     * @param title The title of the web app to query.
+     * @return A promise fulfilled with true if the TWA is installed, false otherwise.
+     */
+    default Promise<Boolean> isInstalled(String title) {
+        return Promise.fulfilled(false);
+    }
 }

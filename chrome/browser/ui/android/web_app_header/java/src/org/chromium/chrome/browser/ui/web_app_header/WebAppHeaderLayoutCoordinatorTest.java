@@ -67,6 +67,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -707,6 +708,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     public void testOriginTextViewShowsCorrectDomain() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupDisplayMode(DisplayMode.MINIMAL_UI);
+        WebappsUtils.setIsTwaInstallerPackageForTesting(true);
 
         GURL testUrl = new GURL("https://www.example.com/path/to/page");
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(testUrl.getSpec());
