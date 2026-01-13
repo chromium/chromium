@@ -44,11 +44,23 @@ namespace {
 bool MayReturnNullRenderingStyleForPseudoElement(
     PseudoId pseudo_id,
     const ComputedStyle* parent_style) {
-  if (pseudo_id != kPseudoIdScrollMarkerGroup) {
-    return true;
+  switch (pseudo_id) {
+    // We always create styles for ::column pseduo-elements to collect
+    // pseudo-element styles even if there are no matched properties.
+    // E.g. if we only have ::column::scroll-marker {} rule, we need to create
+    // a style for ::column.
+    case kPseudoIdColumn: {
+      return false;
+    }
+    // We always create styles for ::scroll-marker-group pseudo-elements
+    // if there is 'scroll-marker-group' property specified on the parent.
+    case kPseudoIdScrollMarkerGroup: {
+      CHECK(parent_style);
+      return parent_style->ScrollMarkerGroupNone();
+    }
+    default:
+      return true;
   }
-  CHECK(parent_style);
-  return parent_style->ScrollMarkerGroupNone();
 }
 
 Element* ComputeStyledElement(const StyleRequest& style_request,

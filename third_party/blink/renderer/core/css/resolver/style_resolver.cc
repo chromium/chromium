@@ -1829,6 +1829,13 @@ void StyleResolver::ApplyBaseStyleNoCache(
                 state.OriginatingElementStyle(), state);
       StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
       state.SetHadNoMatchedProperties();
+      // Even though there were no matched properties, we may still have
+      // pseudo-element styles to set (e.g. only ::column::scroll-marker rule
+      // and no ::column rule should still have ::column style).
+      if (match_result.PseudoElementStyles().HasAny()) {
+        state.StyleBuilder().SetPseudoElementStyles(
+            match_result.PseudoElementStyles().Bits());
+      }
       return;
     }
   }
