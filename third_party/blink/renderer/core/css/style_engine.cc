@@ -3975,8 +3975,10 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {
-    if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
-      ancestor_element->RecalcStyleForTraversalRootAncestor();
+    if (!InInterleavedStyleRecalc()) {
+      if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
+        ancestor_element->RecalcStyleForTraversalRootAncestor();
+      }
     }
     ancestor->ClearChildNeedsStyleRecalc();
   }
