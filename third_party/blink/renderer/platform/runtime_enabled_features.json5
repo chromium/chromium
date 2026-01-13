@@ -3145,6 +3145,14 @@
       status: "stable",
     },
     {
+      // Checks interactive content using EventPath captured at
+      // dispatch start instead of current DOM state. This was
+      // added in M145 and can be removed after M147.
+      // https://issues.chromium.org/issues/452084024
+      name: "LabelInteractiveContentCheckBeforeHandler",
+      status: "stable",
+    },
+    {
       name: "LangAttributeAwareFormControlUI",
       settable_from_internals: true,
     },
