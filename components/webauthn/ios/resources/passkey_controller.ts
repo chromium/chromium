@@ -48,12 +48,25 @@ const cachedNavigatorCredentials: CredentialsContainer = navigator.credentials;
 // passkeys requests directly in the browser.
 declare const shouldHandleModalPasskeyRequests: () => boolean;
 
-/*! {{PLACEHOLDER_HANDLE_MODAL_PASSKEY_REQUESTS}} */
+// A function will be defined here by the placeholder replacement.
+// It will be called to determine whether to attempt to handle conditional
+// passkeys requests directly in the browser.
+declare const shouldHandleConditionalPasskeyRequests: () => boolean;
+
+/*! {{PLACEHOLDER_HANDLE_PASSKEY_REQUESTS}} */
 
 // Returns whether a passkey request uses conditional mediation.
 function isConditionalMediation(
     options: CredentialRequestOptions|CredentialCreationOptions): boolean {
   return ('mediation' in options && options.mediation === 'conditional');
+}
+
+// Returns whether passkey requests should be handled directly in the browser.
+function shouldHandlePasskeyRequests(
+    options: CredentialRequestOptions|CredentialCreationOptions): boolean {
+  return isConditionalMediation(options) ?
+      shouldHandleConditionalPasskeyRequests() :
+      shouldHandleModalPasskeyRequests();
 }
 
 // Returns whether a Credential is a PublicKeyCredential upon successful
@@ -581,8 +594,7 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.get(options);
     }
 
-    if (shouldHandleModalPasskeyRequests() &&
-        !isConditionalMediation(options) && options.publicKey.challenge) {
+    if (shouldHandlePasskeyRequests(options) && options.publicKey.challenge) {
       return createAssertionRequest(options.publicKey).then(result => {
         if (isValidCredential(result)) {
           // TODO(crbug.com/460485333): Notification message of success here?
@@ -602,8 +614,7 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.create(options);
     }
 
-    if (shouldHandleModalPasskeyRequests() &&
-        !isConditionalMediation(options) && options.publicKey.challenge &&
+    if (shouldHandlePasskeyRequests(options) && options.publicKey.challenge &&
         options.publicKey.user && options.publicKey.user.id) {
       return createRegistrationRequest(options.publicKey).then(result => {
         if (isValidCredential(result)) {

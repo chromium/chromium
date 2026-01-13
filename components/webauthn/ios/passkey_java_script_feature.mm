@@ -35,8 +35,8 @@ constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
 
 // Placeholder logic.
-constexpr char kHandleModalPasskeyRequestsPlaceholder[] =
-    "/*! {{PLACEHOLDER_HANDLE_MODAL_PASSKEY_REQUESTS}} */";
+constexpr char kHandlePasskeyRequestsPlaceholder[] =
+    "/*! {{PLACEHOLDER_HANDLE_PASSKEY_REQUESTS}} */";
 
 // Message event.
 constexpr char kEvent[] = "event";
@@ -59,16 +59,19 @@ constexpr char kIsGpm[] = "isGpm";
 // Returns the placeholder replacements for the JavaScript feature script.
 web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
 GetPlaceholderReplacements() {
-  // Overrides the placeholder for whether modal passkey requests can be handled
-  // by the browser.
+  // Overrides the placeholder for whether modal and conditional passkey
+  // requests can be handled by the browser.
   bool handle_modal_passkey_requests =
       base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
-  std::u16string full_script_block = base::StrCat(
+  bool handle_conditional_passkey_requests = false;
+  std::u16string handle_passkey_requests_script_block = base::StrCat(
       {u"const shouldHandleModalPasskeyRequests = () => { return ",
-       handle_modal_passkey_requests ? u"true;" : u"false;", u" };"});
+       handle_modal_passkey_requests ? u"true;" : u"false;", u" };\n\n",
+       u"const shouldHandleConditionalPasskeyRequests = () => { return ",
+       handle_conditional_passkey_requests ? u"true;" : u"false;", u" };"});
   return @{
-    base::SysUTF8ToNSString(kHandleModalPasskeyRequestsPlaceholder) :
-        base::SysUTF16ToNSString(full_script_block),
+    base::SysUTF8ToNSString(kHandlePasskeyRequestsPlaceholder) :
+        base::SysUTF16ToNSString(handle_passkey_requests_script_block),
   };
 }
 
