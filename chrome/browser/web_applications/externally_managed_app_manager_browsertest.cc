@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -169,8 +170,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   ASSERT_TRUE(app_id.has_value());
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
   // Same AppID should be in the registrar using start_url from the manifest.
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            registrar().GetInstallState(app_id.value()));
+  EXPECT_TRUE(registrar().AppMatches(
+      app_id.value(), WebAppFilter::InstalledInOperatingSystemForTesting()));
   std::optional<webapps::AppId> opt_app_id =
       registrar().FindBestAppWithUrlInScope(
           start_url,
@@ -199,8 +200,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
       registrar().FindBestAppWithUrlInScope(
           final_url,
           web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
-  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            registrar().GetInstallState(*opt_app_id));
   ASSERT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
   EXPECT_EQ(registrar().GetAppStartUrl(*opt_app_id), final_url);
@@ -416,8 +415,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   EXPECT_NE(new_app_id, placeholder_app_id);
   EXPECT_FALSE(registrar().IsInRegistrar(placeholder_app_id));
-  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            registrar().GetInstallState(new_app_id));
+  EXPECT_TRUE(registrar().AppMatches(
+      new_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());
@@ -466,8 +465,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   EXPECT_NE(new_app_id, placeholder_app_id);
   EXPECT_FALSE(registrar().IsInRegistrar(placeholder_app_id));
-  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            registrar().GetInstallState(new_app_id));
+  EXPECT_TRUE(registrar().AppMatches(
+      new_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());
@@ -1179,8 +1178,8 @@ IN_PROC_BROWSER_TEST_F(
   WaitUntilDisplayNotificationCount(/*display_count=*/0u);
 
   EXPECT_NE(final_app_id, placeholder_app_id);
-  EXPECT_EQ(registrar().GetInstallState(final_app_id),
-            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_TRUE(registrar().AppMatches(
+      final_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(final_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());

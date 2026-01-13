@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -101,8 +102,8 @@ IN_PROC_BROWSER_TEST_P(
   webapps::AppId app_id =
       InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
 
-  ASSERT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            GetProvider().registrar_unsafe().GetInstallState(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ASSERT_TRUE(browser);
@@ -113,8 +114,8 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
   webapps::AppId app_id =
       InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
 
-  ASSERT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            GetProvider().registrar_unsafe().GetInstallState(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);
@@ -274,8 +275,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   provider().scheduler().LaunchApp(app_id, std::nullopt,
                                    launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait());
-  EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
-            proto::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   // Check the state is correct.
   EXPECT_TRUE(AppBrowserController::IsWebApp(
@@ -290,8 +291,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
                   .registrar_unsafe()
                   .GetAppCurrentOsIntegrationState(app_id)
                   ->has_shortcut());
-  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            provider().registrar_unsafe().GetInstallState(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,

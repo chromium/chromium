@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -581,9 +582,9 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
   WaitForAppsToSynchronize();
 
   EXPECT_NE(GetPolicyInstalledNoContainerApp(), nullptr);
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            app_registrar().GetInstallState(
-                GetPolicyInstalledNoContainerApp()->app_id()));
+  EXPECT_TRUE(app_registrar().AppMatches(
+      GetPolicyInstalledNoContainerApp()->app_id(),
+      WebAppFilter::InstalledInOperatingSystemForTesting()));
 }
 
 TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {

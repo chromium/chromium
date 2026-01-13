@@ -278,9 +278,8 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
                            CreateDialogCallback(
                                true, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kSuccessNewInstall);
-  auto& registrar = provider()->registrar_unsafe();
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            registrar.GetInstallState(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
+      kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -367,8 +366,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            provider()->registrar_unsafe().GetInstallState(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
+      kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
@@ -386,8 +385,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            provider()->registrar_unsafe().GetInstallState(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
+      kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
             "test app");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
@@ -1172,10 +1171,10 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
 
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
 
-  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            provider()->registrar_unsafe().GetInstallState(app_id));
-
   auto& registrar = provider()->registrar_unsafe();
+
+  ASSERT_TRUE(registrar.AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   std::string name = base::UTF16ToUTF8(GetAppName().value_or(kPageTitle));
   EXPECT_EQ(registrar.GetAppShortName(app_id), name);
