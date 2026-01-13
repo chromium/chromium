@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1377,7 +1376,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
   bool found = false;
   bool source_icon = false;
   for (auto& image_type : images_) {
-    if (base::Contains(image_type.second, image)) {
+    if (std::ranges::contains(image_type.second, image)) {
       found = true;
 
       if (image_type.first ==
@@ -1391,7 +1390,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
   // Or the `image` is in chapters.
   if (!found) {
     for (auto& chapter : metadata_.chapters) {
-      if (base::Contains(chapter.artwork(), image)) {
+      if (std::ranges::contains(chapter.artwork(), image)) {
         found = true;
         break;
       }

@@ -4,10 +4,10 @@
 
 #include "content/browser/webui/url_data_manager_backend.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -256,7 +256,7 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
          url.SchemeIs(kChromeUIUntrustedScheme) ||
          (GetContentClient()->browser()->GetAdditionalWebUISchemes(
               &additional_schemes),
-          base::Contains(additional_schemes, url.GetScheme())));
+          std::ranges::contains(additional_schemes, url.GetScheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();

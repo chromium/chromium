@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/features.h"
@@ -445,7 +445,7 @@ class NetworkResponder {
   // Returns true if the network request for path received a response.
   bool ReportSent(const std::string& path) const {
     base::AutoLock auto_lock(lock_);
-    return base::Contains(sent_reports_, path);
+    return std::ranges::contains(sent_reports_, path);
   }
 
   // Indicates whether `stored_url_loader_client_` is connected to a receiver.

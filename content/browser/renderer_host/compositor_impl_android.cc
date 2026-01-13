@@ -17,7 +17,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -595,7 +594,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
 
   // Otherwise, the interesting nodes are leaf nodes with non-whitespace accessible name.
   return IsLeaf() && !base::ContainsOnlyChars(GetAccessibleNameUTF16(),
-                                               base::kWhitespaceUTF16);
+                                              base::kWhitespaceUTF16);
 }
 
 BrowserAccessibilityAndroid*

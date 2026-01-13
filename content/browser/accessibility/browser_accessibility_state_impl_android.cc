@@ -4,10 +4,10 @@
 
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -297,7 +297,7 @@ void BrowserAccessibilityStateImplAndroid::
 
     if (RecordAssistiveTechHistogram(service_hash)) {
       has_assistive_tech = true;
-    } else if (base::Contains(kPasswordPackageHashes, service_hash)) {
+    } else if (std::ranges::contains(kPasswordPackageHashes, service_hash)) {
       has_password_manager = true;
     } else {
       has_unknown = true;

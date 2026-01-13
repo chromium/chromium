@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
+#include <algorithm>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1942,7 +1944,7 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 
   if (!has_second_client) {
     // - `PrefetchContainer` is destructed before prefetch is completed:
-    CHECK(base::Contains(
+    CHECK(std::ranges::contains(
         params,
         std::vector<Event>{Event::kCreateRequestHandler, Event::kRequestHandler,
                            Event::kDestructPrefetchContainer,
@@ -1951,7 +1953,7 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 
     // - `PrefetchContainer` is destructed before PrefetchRequestHandler is
     // invoked and prefetch is completed:
-    CHECK(base::Contains(
+    CHECK(std::ranges::contains(
         params,
         std::vector<Event>{
             Event::kCreateRequestHandler, Event::kDestructPrefetchContainer,
@@ -1960,7 +1962,7 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 
     // - `PrefetchContainer` is destructed before PrefetchRequestHandler is
     // invoked but after prefetch is completed:
-    CHECK(base::Contains(
+    CHECK(std::ranges::contains(
         params, std::vector<Event>{
                     Event::kPrefetchOnComplete, Event::kCreateRequestHandler,
                     Event::kDestructPrefetchContainer, Event::kRequestHandler,

@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -83,7 +82,7 @@ std::vector<base::test::FeatureRefAndParams> Merge(
   }
   // Add any default features we didn't have additional params for.
   for (const auto& feature_and_params : default_features_and_params) {
-    if (!base::Contains(
+    if (!std::ranges::contains(
             final_features_and_params, feature_and_params.feature->name,
             [](const base::test::FeatureRefAndParams default_feature) {
               return default_feature.feature->name;
@@ -203,10 +202,11 @@ GetDefaultDisabledBackForwardCacheFeaturesForTesting(
       features::kBackForwardCacheMemoryControls};
 
   for (auto additional_feature : additional_features) {
-    if (!base::Contains(final_features, additional_feature->name,
-                        [](const base::test::FeatureRef default_feature) {
-                          return default_feature->name;
-                        })) {
+    if (!std::ranges::contains(
+            final_features, additional_feature->name,
+            [](const base::test::FeatureRef default_feature) {
+              return default_feature->name;
+            })) {
       final_features.emplace_back(additional_feature);
     }
   }

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
@@ -1780,15 +1781,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   std::vector<base::Bucket> blocklist_values = histogram_tester().GetAllSamples(
       "BackForwardCache.HistoryNavigationOutcome."
       "BlocklistedFeature");
-  EXPECT_TRUE(base::Contains(blocklist_values, sample, &base::Bucket::min));
+  EXPECT_TRUE(
+      std::ranges::contains(blocklist_values, sample, &base::Bucket::min));
 
   std::vector<base::Bucket> all_sites_blocklist_values =
       histogram_tester().GetAllSamples(
           "BackForwardCache.AllSites.HistoryNavigationOutcome."
           "BlocklistedFeature");
 
-  EXPECT_TRUE(
-      base::Contains(all_sites_blocklist_values, sample, &base::Bucket::min));
+  EXPECT_TRUE(std::ranges::contains(all_sites_blocklist_values, sample,
+                                    &base::Bucket::min));
 }
 
 // Pages with acquired keyboard lock should not enter BackForwardCache.

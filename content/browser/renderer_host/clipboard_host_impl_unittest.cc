@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -176,8 +176,8 @@ TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
       IsFormatAvailable(ui::ClipboardFormatType::DataTransferCustomType()));
   EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::PlainTextType()));
   mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
-  EXPECT_TRUE(base::Contains(types, u"text/plain"));
-  EXPECT_TRUE(base::Contains(types, u"text/uri-list"));
+  EXPECT_TRUE(std::ranges::contains(types, u"text/plain"));
+  EXPECT_TRUE(std::ranges::contains(types, u"text/uri-list"));
 }
 
 TEST_F(ClipboardHostImplTest, GetSequenceNumber) {

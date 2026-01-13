@@ -22,7 +22,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -6600,7 +6599,7 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     blink::InterestGroupKey winning_group(response->interest_group_owner,
                                           response->interest_group_name);
     // Winning group must be a bidder.
-    if (!base::Contains(response->bidding_groups, winning_group)) {
+    if (!std::ranges::contains(response->bidding_groups, winning_group)) {
       errors_.push_back("runAdAuction(): Winning group must be a bidder");
       saved_response_.emplace();
       base::UmaHistogramEnumeration(

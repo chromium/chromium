@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_request.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -827,8 +827,8 @@ bool IsOptedInFencedFrame(const net::HttpResponseHeaders& http_headers) {
   network::mojom::SupportsLoadingModePtr result =
       network::ParseSupportsLoadingMode(http_headers);
   return !result.is_null() &&
-         base::Contains(result->supported_modes,
-                        network::mojom::LoadingMode::kFencedFrame);
+         std::ranges::contains(result->supported_modes,
+                               network::mojom::LoadingMode::kFencedFrame);
 }
 
 // If there are any "Origin-Trial" headers on the |response|, persist those

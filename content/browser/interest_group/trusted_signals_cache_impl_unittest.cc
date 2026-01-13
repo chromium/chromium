@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -1335,8 +1335,8 @@ class TrustedSignalsCacheTest : public testing::Test {
         merged_bidding_params.trusted_bidding_signals_keys.emplace();
       }
       for (const auto& key : *bidding_params2.trusted_bidding_signals_keys) {
-        if (!base::Contains(*merged_bidding_params.trusted_bidding_signals_keys,
-                            key)) {
+        if (!std::ranges::contains(
+                *merged_bidding_params.trusted_bidding_signals_keys, key)) {
           merged_bidding_params.trusted_bidding_signals_keys->push_back(key);
         }
       }

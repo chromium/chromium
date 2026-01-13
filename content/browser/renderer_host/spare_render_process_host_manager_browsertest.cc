@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -509,7 +510,7 @@ class SpareRendererContentBrowserClient
                       const GURL& site_url) override {
     const auto& spares = SpareRenderProcessHostManagerImpl::Get().GetSpares();
     if (!spares.empty()) {
-      return base::Contains(spares, process_host);
+      return std::ranges::contains(spares, process_host);
     }
     return true;
   }

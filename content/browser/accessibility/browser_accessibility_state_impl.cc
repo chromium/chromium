@@ -822,7 +822,7 @@ void BrowserAccessibilityStateImpl::OnWebContentsHidden(
   }
 
   // Add `web_contents` to the list of the last five hidden WCs.
-  CHECK(!base::Contains(last_hidden_, web_contents));
+  CHECK(!std::ranges::contains(last_hidden_, web_contents));
   last_hidden_.push_back(web_contents);
 
   // Create the disabler for this WebContents. The provided callback will be run

@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -107,7 +106,7 @@ void PluginList::LoadPlugins() {
   std::vector<base::FilePath> seen_plugin_paths;
   plugins_list_.clear();
   for (const WebPluginInfo& plugin_info : internal_plugins_) {
-    if (base::Contains(seen_plugin_paths, plugin_info.path)) {
+    if (std::ranges::contains(seen_plugin_paths, plugin_info.path)) {
       continue;
     }
     seen_plugin_paths.push_back(plugin_info.path);

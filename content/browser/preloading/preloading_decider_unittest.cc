@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/preloading_decider.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -1506,8 +1507,8 @@ TEST_F(PreloadingDeciderTest, SpeculationRulesTagsMergingForNVSMatch) {
 
   // The merged tags should contain tags from both NVS-matched candidates.
   EXPECT_EQ(merged_tags.size(), 2u);
-  EXPECT_TRUE(base::Contains(merged_tags, "tag1"));
-  EXPECT_TRUE(base::Contains(merged_tags, "tag2"));
+  EXPECT_TRUE(std::ranges::contains(merged_tags, "tag1"));
+  EXPECT_TRUE(std::ranges::contains(merged_tags, "tag2"));
 }
 
 TEST_F(PreloadingDeciderTest,
@@ -1557,6 +1558,6 @@ TEST_F(PreloadingDeciderTest,
   // The merged tags should contain a single std::nullopt since no candidates
   // have tags.
   EXPECT_EQ(merged_tags.size(), 1u);
-  EXPECT_TRUE(base::Contains(merged_tags, std::optional<std::string>{}));
+  EXPECT_TRUE(std::ranges::contains(merged_tags, std::optional<std::string>{}));
 }
 }  // namespace content

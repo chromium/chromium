@@ -4,9 +4,10 @@
 
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -1028,12 +1029,12 @@ void PrerenderHostRegistry::CancelHostsForTriggers(
   std::vector<PrerenderHostId> ids_to_be_deleted;
 
   for (auto& iter : prerender_host_by_id_) {
-    if (base::Contains(trigger_types, iter.second->trigger_type())) {
+    if (std::ranges::contains(trigger_types, iter.second->trigger_type())) {
       ids_to_be_deleted.push_back(iter.first);
     }
   }
   for (auto& iter : prerender_new_tab_handle_by_id_) {
-    if (base::Contains(trigger_types, iter.second->trigger_type())) {
+    if (std::ranges::contains(trigger_types, iter.second->trigger_type())) {
       // Prerendering into a new tab can be triggered by speculation rules only.
       CHECK(IsSpeculationRuleType(iter.second->trigger_type()));
       ids_to_be_deleted.push_back(iter.first);

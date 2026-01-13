@@ -4,10 +4,10 @@
 
 #include "content/browser/permissions/permission_overrides.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/types/optional_ref.h"
@@ -214,8 +214,8 @@ void PermissionOverrides::GrantPermissions(
     // GEOLOCATION_APPROXIMATE.
     if (type != blink::PermissionType::GEOLOCATION_APPROXIMATE) {
       Set(requesting_origin, embedding_origin, type,
-          base::Contains(permissions, type) ? PermissionStatus::GRANTED
-                                            : PermissionStatus::DENIED);
+          std::ranges::contains(permissions, type) ? PermissionStatus::GRANTED
+                                                   : PermissionStatus::DENIED);
     }
   }
 }

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1080,12 +1080,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
             dialog_params_.file_types->extensions[0][0]);
   EXPECT_EQ(FILE_PATH_LITERAL("Js"),
             dialog_params_.file_types->extensions[0][1]);
-  EXPECT_TRUE(base::Contains(dialog_params_.file_types->extensions[1],
-                             FILE_PATH_LITERAL("jpg")));
-  EXPECT_TRUE(base::Contains(dialog_params_.file_types->extensions[1],
-                             FILE_PATH_LITERAL("jpeg")));
-  EXPECT_TRUE(base::Contains(dialog_params_.file_types->extensions[2],
-                             FILE_PATH_LITERAL("svg")));
+  EXPECT_TRUE(std::ranges::contains(dialog_params_.file_types->extensions[1],
+                                    FILE_PATH_LITERAL("jpg")));
+  EXPECT_TRUE(std::ranges::contains(dialog_params_.file_types->extensions[1],
+                                    FILE_PATH_LITERAL("jpeg")));
+  EXPECT_TRUE(std::ranges::contains(dialog_params_.file_types->extensions[2],
+                                    FILE_PATH_LITERAL("svg")));
 
   ASSERT_EQ(3u,
             dialog_params_.file_types->extension_description_overrides.size());

@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
@@ -137,7 +137,7 @@ void URLDataManager::UpdateWebUIDataSource(BrowserContext* browser_context,
 bool URLDataManager::IsScheduledForDeletion(
     const URLDataSourceImpl* data_source) {
   base::AutoLock lock(GetDeleteLock());
-  return data_sources_ && base::Contains(*data_sources_, data_source);
+  return data_sources_ && std::ranges::contains(*data_sources_, data_source);
 }
 
 }  // namespace content

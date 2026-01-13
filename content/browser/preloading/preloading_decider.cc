@@ -609,7 +609,7 @@ PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
   // Iterate through all suitable candidates and merge their tags.
   for (const auto& candidate_pair : suitable_candidates) {
     for (const auto& tag : candidate_pair.second->tags) {
-      if (!base::Contains(merged_tags, tag)) {
+      if (!std::ranges::contains(merged_tags, tag)) {
         merged_tags.push_back(tag);
       }
     }

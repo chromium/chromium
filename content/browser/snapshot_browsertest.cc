@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -365,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_AsyncMultiWindowTest) {
       ExpectedColor expected;
       do {
         PickRandomColor(&expected);
-      } while (base::Contains(expected_snapshots, expected));
+      } while (std::ranges::contains(expected_snapshots, expected));
       expected_snapshots.push_back(expected);
 
       std::string colorString = base::StringPrintf("#%02x%02x%02x", expected.r,

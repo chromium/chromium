@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/check.h"
@@ -894,7 +895,7 @@ void SpareRenderProcessHostManagerImpl::ReleaseSpare(
 
 void SpareRenderProcessHostManagerImpl::RenderProcessReady(
     RenderProcessHost* host) {
-  CHECK(base::Contains(spare_rphs_, host));
+  CHECK(std::ranges::contains(spare_rphs_, host));
 
   CHECK(process_startup_timer_);
   UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"

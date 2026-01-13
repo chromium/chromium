@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -883,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
     const auto evicted_ids =
         static_cast<RenderWidgetHostImpl*>(rfh1->GetRenderWidgetHost())
             ->CollectSurfaceIdsForEviction();
-    ASSERT_TRUE(base::Contains(evicted_ids, id_after_cached));
+    ASSERT_TRUE(std::ranges::contains(evicted_ids, id_after_cached));
   }
 }
 

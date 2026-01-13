@@ -12,7 +12,6 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -538,8 +537,8 @@ void VideoCaptureController::MakeClientUseBufferContext(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // On the first use of a BufferContext for a particular client, call
   // OnBufferCreated().
-  if (!base::Contains(client->known_buffer_context_ids,
-                      frame_context->buffer_context_id())) {
+  if (!std::ranges::contains(client->known_buffer_context_ids,
+                             frame_context->buffer_context_id())) {
     client->known_buffer_context_ids.push_back(
         frame_context->buffer_context_id());
     client->event_handler->OnNewBuffer(client->controller_id,
@@ -547,8 +546,8 @@ void VideoCaptureController::MakeClientUseBufferContext(
                                        frame_context->buffer_context_id());
   }
   // Ensure buffer is registered as in use by the client.
-  if (!base::Contains(client->buffers_in_use,
-                      frame_context->buffer_context_id())) {
+  if (!std::ranges::contains(client->buffers_in_use,
+                             frame_context->buffer_context_id())) {
     client->buffers_in_use.push_back(frame_context->buffer_context_id());
   } else {
     NOTREACHED() << "Unexpected duplicate buffer: "

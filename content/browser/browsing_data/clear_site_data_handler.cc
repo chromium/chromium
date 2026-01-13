@@ -4,9 +4,9 @@
 
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -273,7 +273,7 @@ bool ClearSiteDataHandler::ParseHeader(
       net::ClearSiteDataHeaderContents(header);
   std::string output_types;
 
-  if (base::Contains(input_types, net::kDatatypeWildcard)) {
+  if (std::ranges::contains(input_types, net::kDatatypeWildcard)) {
     input_types.push_back(net::kDatatypeCookies);
     input_types.push_back(net::kDatatypeStorage);
     input_types.push_back(net::kDatatypeCache);

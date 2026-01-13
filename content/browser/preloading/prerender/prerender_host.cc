@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prerender/prerender_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -743,7 +744,7 @@ void PrerenderHost::ReadyToCommitNavigation(
         base::FeatureList::IsEnabled(
             blink::features::kPrerender2CrossOriginIframes);
     if (is_prerender_2_cross_origin_iframes_enabled &&
-        base::Contains(
+        std::ranges::contains(
             parsed_headers->supports_loading_mode,
             network::mojom::LoadingMode::kPrerenderCrossOriginFrames)) {
       allow_cross_origin_subframe_navigation_ = true;

@@ -182,7 +182,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 
  private:
   bool IsHangingHost(const GURL& url) const {
-    return base::Contains(hanging_hosts_, url.GetHost());
+    return std::ranges::contains(hanging_hosts_, url.GetHost());
   }
 
   using ResolveHostClientKey =

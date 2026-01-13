@@ -13,7 +13,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -3677,7 +3676,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SyncRendererPrefs) {
     DLOG(INFO) << "render_view_host=" << render_view_host;
 
     // Multiple frame hosts can be associated to the same RenderViewHost.
-    if (!base::Contains(render_view_hosts, render_view_host)) {
+    if (!std::ranges::contains(render_view_hosts, render_view_host)) {
       render_view_hosts.push_back(render_view_host);
     }
   }
@@ -4597,10 +4596,11 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
       inner_wc->GetPrimaryMainFrame()->GetParentOrOuterDocumentOrEmbedder());
   EXPECT_EQ(nullptr,
             inner_wc->GetPrimaryMainFrame()->GetParentOrOuterDocument());
-  EXPECT_TRUE(base::Contains(CollectAllRenderFrameHosts(outer_wc),
-                             inner_wc->GetPrimaryMainFrame()));
+  EXPECT_TRUE(std::ranges::contains(CollectAllRenderFrameHosts(outer_wc),
+                                    inner_wc->GetPrimaryMainFrame()));
 
-  EXPECT_TRUE(base::Contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
 
   // Verify that the inner WebContents can navigate while attached.
   EXPECT_TRUE(NavigateToURL(inner_wc.get(), another_url));
@@ -4700,12 +4700,13 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   // Verify that the connection is broken.
   EXPECT_EQ(nullptr, inner_wc->GetOuterWebContents());
   EXPECT_TRUE(inner_wc_impl->GetOuterDelegateFrameTreeNodeId().is_null());
-  EXPECT_FALSE(base::Contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
+  EXPECT_FALSE(
+      std::ranges::contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
   EXPECT_EQ(
       nullptr,
       inner_wc->GetPrimaryMainFrame()->GetParentOrOuterDocumentOrEmbedder());
-  EXPECT_FALSE(base::Contains(CollectAllRenderFrameHosts(outer_wc),
-                              inner_wc->GetPrimaryMainFrame()));
+  EXPECT_FALSE(std::ranges::contains(CollectAllRenderFrameHosts(outer_wc),
+                                     inner_wc->GetPrimaryMainFrame()));
   EXPECT_FALSE(iframe_rfh->frame_tree_node()->render_manager()
             ->is_attaching_inner_delegate());
 

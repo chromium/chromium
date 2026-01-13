@@ -4,7 +4,6 @@
 
 #include "content/shell/browser/shell_platform_delegate.h"
 
-#include "base/containers/contains.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"

@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14785,9 +14784,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   crash_observer.Wait();
 
   EXPECT_EQ(test_client.crashed_rfhs().size(), 2u);
-  EXPECT_TRUE(base::Contains(test_client.crashed_rfhs(), rfh_b1));
-  EXPECT_TRUE(base::Contains(test_client.crashed_rfhs(), rfh_b2));
-  EXPECT_FALSE(base::Contains(test_client.crashed_rfhs(), rfh_b3));
+  EXPECT_TRUE(std::ranges::contains(test_client.crashed_rfhs(), rfh_b1));
+  EXPECT_TRUE(std::ranges::contains(test_client.crashed_rfhs(), rfh_b2));
+  EXPECT_FALSE(std::ranges::contains(test_client.crashed_rfhs(), rfh_b3));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -178,7 +177,7 @@ ShellDevToolsBindings::ShellDevToolsBindings(WebContents* devtools_contents,
       inspect_element_at_x_(-1),
       inspect_element_at_y_(-1) {
   auto* bindings = GetShellDevtoolsBindingsInstances();
-  DCHECK(!base::Contains(*bindings, this));
+  DCHECK(!std::ranges::contains(*bindings, this));
   bindings->push_back(this);
 }
 
@@ -187,7 +186,7 @@ ShellDevToolsBindings::~ShellDevToolsBindings() {
     agent_host_->DetachClient(this);
 
   auto* bindings = GetShellDevtoolsBindingsInstances();
-  DCHECK(base::Contains(*bindings, this));
+  DCHECK(std::ranges::contains(*bindings, this));
   std::erase(*bindings, this);
 }
 

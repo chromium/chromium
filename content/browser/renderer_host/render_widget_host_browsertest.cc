@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -295,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
     // that we generated a GestureScrollEnd and routed it without crashing.
     TestInputEventObserver::EventTypeVector dispatched_events =
         observer.GetAndResetDispatchedEventTypes();
-    EXPECT_TRUE(base::Contains(dispatched_events,
-                               blink::WebInputEvent::Type::kGestureScrollEnd));
+    EXPECT_TRUE(std::ranges::contains(
+        dispatched_events, blink::WebInputEvent::Type::kGestureScrollEnd));
   } while (!touch_emulator->suppress_next_fling_cancel_for_testing());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

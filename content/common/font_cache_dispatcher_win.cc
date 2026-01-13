@@ -4,13 +4,13 @@
 
 #include "content/public/common/font_cache_dispatcher_win.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/checked_math.h"
@@ -48,7 +48,7 @@ class FontCache {
 
     std::wstring font_name = font.lfFaceName;
     bool inc_ref_count = true;
-    if (!base::Contains(dispatcher_font_map_[dispatcher], font_name)) {
+    if (!std::ranges::contains(dispatcher_font_map_[dispatcher], font_name)) {
       // Requested font is new to cache.
       dispatcher_font_map_[dispatcher].push_back(font_name);
     } else {

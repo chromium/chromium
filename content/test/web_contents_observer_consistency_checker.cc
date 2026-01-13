@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "content/test/web_contents_observer_consistency_checker.h"
+
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
 #include "base/strings/stringprintf.h"
@@ -339,7 +340,7 @@ void WebContentsObserverConsistencyChecker::MediaStartedPlaying(
     const MediaPlayerInfo& media_info,
     const MediaPlayerId& id) {
   CHECK(!web_contents_destroyed_);
-  CHECK(!base::Contains(active_media_players_, id));
+  CHECK(!std::ranges::contains(active_media_players_, id));
   active_media_players_.push_back(id);
 }
 
@@ -348,7 +349,7 @@ void WebContentsObserverConsistencyChecker::MediaStoppedPlaying(
     const MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   CHECK(!web_contents_destroyed_);
-  CHECK(base::Contains(active_media_players_, id));
+  CHECK(std::ranges::contains(active_media_players_, id));
   std::erase(active_media_players_, id);
 }
 

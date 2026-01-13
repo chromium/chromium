@@ -4,12 +4,12 @@
 
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -431,7 +431,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
+  EXPECT_TRUE(std::ranges::contains(quarantine_.paths, test_file_url_.path()));
 
   EXPECT_EQ("", ReadFile(test_file_url_));
 }
@@ -445,7 +445,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteValidNonEmpty) {
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
+  EXPECT_TRUE(std::ranges::contains(quarantine_.paths, test_file_url_.path()));
 
   EXPECT_EQ(test_data, ReadFile(test_file_url_));
 }
@@ -464,7 +464,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetInFile) {
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
+  EXPECT_TRUE(std::ranges::contains(quarantine_.paths, test_file_url_.path()));
 
   EXPECT_EQ("1234abc890", ReadFile(test_file_url_));
 }
@@ -477,7 +477,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetPastFile) {
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
+  EXPECT_TRUE(std::ranges::contains(quarantine_.paths, test_file_url_.path()));
 
   using std::string_literals::operator""s;
   EXPECT_EQ("\0\0\0\0abc"s, ReadFile(test_file_url_));
@@ -833,7 +833,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
       file_system_context_.get(), test_file_url_, 3));
 
   // Destination file should also have been quarantined.
-  EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
+  EXPECT_TRUE(std::ranges::contains(quarantine_.paths, test_file_url_.path()));
 }
 
 struct WriteModeTestParams {

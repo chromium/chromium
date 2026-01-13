@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
@@ -502,10 +501,10 @@ class ParseContext {
     std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> aliases;
     for (const auto [site, site_alias_list] : *cctld_dict) {
       net::SchemefulSite site_as_schemeful_site((GURL(site)));
-      if (!base::Contains(set_entries, site_as_schemeful_site,
-                          [](const auto& site_and_entry) {
-                            return site_and_entry.first;
-                          })) {
+      if (!std::ranges::contains(set_entries, site_as_schemeful_site,
+                                 [](const auto& site_and_entry) {
+                                   return site_and_entry.first;
+                                 })) {
         warnings_.push_back(ParseWarning(
             ParseWarningType::kCctldKeyNotCanonical, {kCCTLDsField, site}));
         continue;
@@ -568,7 +567,7 @@ class ParseContext {
 
     if (result.has_site()) {
       const net::SchemefulSite& site = result.site();
-      if (base::Contains(
+      if (std::ranges::contains(
               set_entries, site,
               &std::pair<net::SchemefulSite, net::FirstPartySetEntry>::first)) {
         if (result.modified_host()) {

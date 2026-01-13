@@ -4,10 +4,10 @@
 
 #include "content/browser/service_worker/embedded_worker_instance.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -945,7 +945,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     // redirects to data: URLs in ServiceWorkerGlobalScope
     // (https://crbug.com/1334249).
     if (scheme != url::kDataScheme &&
-        !base::Contains(GetServiceWorkerSchemes(), scheme)) {
+        !std::ranges::contains(GetServiceWorkerSchemes(), scheme)) {
       continue;
     }
 

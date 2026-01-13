@@ -632,7 +632,7 @@ void DevToolsHttpHandler::OnJsonRequest(
   std::vector<std::string_view> query_components = base::SplitStringPiece(
       query, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  bool for_tab = base::Contains(query_components, "for_tab");
+  bool for_tab = std::ranges::contains(query_components, "for_tab");
 
   if (command == "list") {
     DevToolsManager* manager = DevToolsManager::GetInstance();

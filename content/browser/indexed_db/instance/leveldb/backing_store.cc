@@ -3106,7 +3106,7 @@ StatusOr<IndexedDBKey> BackingStore::Transaction::GetFirstPrimaryKeyForIndexKey(
 StatusOr<bool> BackingStore::DatabaseExists(std::u16string_view database_name) {
   return GetDatabaseNames().transform(
       [&](const std::vector<std::u16string>& names) {
-        return base::Contains(names, database_name);
+        return std::ranges::contains(names, database_name);
       });
 }
 

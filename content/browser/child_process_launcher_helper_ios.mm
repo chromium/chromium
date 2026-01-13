@@ -11,6 +11,7 @@
 
 #import <BrowserEngineKit/BrowserEngineKit.h>
 
+#include <algorithm>
 #include <list>
 
 #include "base/apple/mach_port_rendezvous_ios.h"
@@ -432,7 +433,7 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
       // Add the process to the global table.
       {
         base::AutoLock guard(*g_process_table_lock_);
-        CHECK(!base::Contains(*g_process_table_, process_id));
+        CHECK(!std::ranges::contains(*g_process_table_, process_id));
         g_process_table_->emplace(process_id, this);
       }
 

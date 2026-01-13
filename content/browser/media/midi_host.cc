@@ -4,7 +4,8 @@
 
 #include "content/browser/media/midi_host.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -234,7 +235,7 @@ void MidiHost::SendData(uint32_t port,
   // in JavaScript. The actual permission check for security purposes
   // happens here in the browser process.
   if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
-    if (!has_midi_permission_ && !base::Contains(data, kSysExByte)) {
+    if (!has_midi_permission_ && !std::ranges::contains(data, kSysExByte)) {
       has_midi_permission_ =
           ChildProcessSecurityPolicyImpl::GetInstance()->CanSendMidiMessage(
               renderer_process_id_);
@@ -248,7 +249,7 @@ void MidiHost::SendData(uint32_t port,
 
   // Check `has_midi_sysex_permission_` here to avoid searching kSysExByte in
   // large bulk data transfers for correct uses.
-  if (!has_midi_sysex_permission_ && base::Contains(data, kSysExByte)) {
+  if (!has_midi_sysex_permission_ && std::ranges::contains(data, kSysExByte)) {
     has_midi_sysex_permission_ =
         ChildProcessSecurityPolicyImpl::GetInstance()->CanSendMidiSysExMessage(
             renderer_process_id_);

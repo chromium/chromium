@@ -4,9 +4,9 @@
 
 #include "content/common/webid/identity_url_loader_throttle.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -131,7 +131,7 @@ bool IdentityUrlLoaderThrottle::HeaderHasToken(
 
   std::vector<std::string_view> tokens = base::SplitStringPiece(
       value, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::Contains(tokens, token);
+  return std::ranges::contains(tokens, token);
 }
 
 }  // namespace content
