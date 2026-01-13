@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -145,14 +144,5 @@ public class ModuleRegistry {
         mActivityLifecycleDispatcher.unregister(mLifecycleObserver);
         mLifecycleObserver = null;
         mActivityLifecycleDispatcher = null;
-    }
-
-    /** Creates an instance of InputContext. */
-    InputContext createInputContext() {
-        InputContext inputContext = new InputContext();
-        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
-            inputContext.mergeFrom(builder.createInputContext());
-        }
-        return inputContext;
     }
 }

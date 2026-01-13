@@ -104,7 +104,8 @@ public class HomeModulesMediator {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
         List<Integer> rankedModules = new ArrayList<>();
-        InputContext inputContext = createInputContextForRanking(rankedModules);
+        InputContext inputContext =
+                createInputContextForRankingAndUpdateManuallyRankedModuleList(rankedModules);
 
         HomeModulesRankingHelper.fetchModulesRank(
                 profile,
@@ -127,21 +128,26 @@ public class HomeModulesMediator {
     }
 
     /**
-     * Creates an InputContext for the segmentation platform, excluding manually ranked modules.
+     * Creates an InputContext for the segmentation platform, excluding manually ranked modules. The
+     * manually ranked modules will be added in manuallyRankedModules.
      *
      * @param manuallyRankedModules A list to which the {@link ModuleType}s of manually ranked
      *     modules will be added.
      * @return An {@link InputContext} containing signals from non-manually ranked modules.
      */
-    InputContext createInputContextForRanking(List<Integer> manuallyRankedModules) {
+    InputContext createInputContextForRankingAndUpdateManuallyRankedModuleList(
+            List<Integer> manuallyRankedModules) {
         InputContext inputContext = new InputContext();
-        if (mModuleDelegateHost.getTrackingTab() != null) {
-            return inputContext;
-        }
+        boolean skipManuallyRankedModules = mModuleDelegateHost.getTrackingTab() != null;
+
         for (@ModuleType int moduleType : mModuleRegistry.getAllRegisteredModuleTypes()) {
             ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
             if (builder.hasManualOrdering()) {
-                manuallyRankedModules.add(moduleType);
+                // TODO (https://crbug.com/469425754): implement ranking logic using segmentation
+                // platform.
+                if (!skipManuallyRankedModules) {
+                    manuallyRankedModules.add(moduleType);
+                }
             } else {
                 // inputContext is only required modules that need to be ranked
                 inputContext.mergeFrom(builder.createInputContext());
