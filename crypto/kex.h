@@ -24,6 +24,15 @@ CRYPTO_EXPORT void EcdhP256(const crypto::keypair::PublicKey& theirs,
                             const crypto::keypair::PrivateKey& ours,
                             base::span<uint8_t, 32> out);
 
+// The caller is responsible for ensuring that `theirs` and `ours` are P-384
+// keys, e.g. with `IsEcP384`. Passing keys of the wrong type will cause the
+// function to abort. Note that these conditions imply ECDH is infallible;
+// `PublicKey` constructors enforce that P-384 keys are on the curve and not the
+// point at infinity.
+CRYPTO_EXPORT void EcdhP384(const crypto::keypair::PublicKey& theirs,
+                            const crypto::keypair::PrivateKey& ours,
+                            base::span<uint8_t, 48> out);
+
 }  // namespace crypto::kex
 
 #endif  // CRYPTO_KEX_H_
