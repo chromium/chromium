@@ -84,6 +84,8 @@ BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
 
 BASE_FEATURE(kGlicUnpinOnUnbindIfUnused, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSuppressFocusOnReady, base::FEATURE_ENABLED_BY_DEFAULT);
+
 constexpr size_t kMaxRecentConversationsForPanel = 3;
 
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
@@ -1023,7 +1025,8 @@ void GlicInstanceImpl::ClientReadyToShow(
 
 void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
   instance_metrics_.OnWebUiStateChanged(state);
-  if (state == mojom::WebUiState::kReady) {
+  if (state == mojom::WebUiState::kReady &&
+      !base::FeatureList::IsEnabled(kSuppressFocusOnReady)) {
     if (auto* embedder = GetActiveEmbedder()) {
       embedder->Focus();
     }
