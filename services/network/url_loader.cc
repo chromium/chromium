@@ -178,13 +178,9 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
 }
 
 scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
-MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
-    ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>& observer,
+InitializeDeviceBoundSessionAccessObserverSharedRemote(
+    ObserverWrapper<mojom::DeviceBoundSessionAccessObserver> observer,
     URLLoaderContext& context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionAccessObserverSharedRemote)) {
-    return nullptr;
-  }
   auto remote = observer.TakeRemote();
   if (remote) {
     return base::MakeRefCounted<
@@ -259,17 +255,6 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
     return false;
   }
   return item->item.is_token() && item->item.GetString() == "load";
-}
-
-mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
-    mojom::DeviceBoundSessionAccessObserver& observer) {
-  TRACE_EVENT("loading", "CloneDeviceBoundSessionAccessObserver");
-  base::ScopedUmaHistogramTimer timer(
-      "NetworkService.URLLoader.CloneDeviceBoundSessionAccessObserver",
-      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
-  mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> new_observer;
-  observer.Clone(new_observer.BindNewPipeAndPassReceiver());
-  return new_observer;
 }
 
 int32_t PopulateOptions(int32_t initial_options,
@@ -409,10 +394,9 @@ URLLoader::URLLoader(
       trust_token_observer_(std::move(trust_token_observer)),
       url_loader_network_observer_(std::move(url_loader_network_observer)),
       devtools_observer_(std::move(devtools_observer)),
-      device_bound_session_observer_(std::move(device_bound_session_observer)),
       device_bound_session_observer_shared_remote_(
-          MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
-              device_bound_session_observer_,
+          InitializeDeviceBoundSessionAccessObserverSharedRemote(
+              std::move(device_bound_session_observer),
               context)),
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
@@ -584,14 +568,6 @@ void URLLoader::SetUpUrlRequestCallbacks(
           shared_remote.get()->data->OnDeviceBoundSessionAccessed(access);
         },
         device_bound_session_observer_shared_remote_));
-  } else if (device_bound_session_observer_) {
-    // This is just for the experiment to measure the impact on the
-    // DeviceBoundSessionAccessObserverSharedRemote feature.
-    // TODO(crbug.com/407680127): Remove this and when the feature is enabled
-    // and the feature flag is removed.
-    url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
-        &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
-        Clone(*device_bound_session_observer_)));
   }
 }
 

@@ -3626,13 +3626,6 @@ inline constexpr char kRendererSideContentDecodingDescription[] =
     "network service sends compressed HTTP response bodies to the renderer "
     "process.";
 
-inline constexpr char kDeviceBoundSessionAccessObserverSharedRemoteName[] =
-    "Reduce device bound session access observer IPC";
-inline constexpr char
-    kDeviceBoundSessionAccessObserverSharedRemoteDescription[] =
-        "Enables the optimization of reducing unnecessary IPC for cloning "
-        "DeviceBoundSessionAccessObserver.";
-
 inline constexpr char kBackgroundCompactMessageName[] =
     "Enable Background Compaction";
 inline constexpr char kBackgroundCompactDescription[] =

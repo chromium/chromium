@@ -703,9 +703,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   ObserverWrapper<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer_;
   ObserverWrapper<mojom::DevToolsObserver> devtools_observer_;
-  ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>
-      device_bound_session_observer_;
-
   const scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
       device_bound_session_observer_shared_remote_;
 
