@@ -1068,8 +1068,6 @@ public class NotificationPlatformBridge {
                                         origin, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
 
         if (shouldSetChannelId(forWebApk)) {
-            // TODO(crbug.com/40544272): Channel ID should be retrieved from cache in native and
-            // passed through to here with other notification parameters.
             notificationBuilder.setChannelId(identifyingAttributes.channelId);
         }
 
