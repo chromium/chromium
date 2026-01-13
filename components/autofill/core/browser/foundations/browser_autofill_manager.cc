@@ -136,6 +136,7 @@
 #include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
@@ -1291,7 +1292,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
   InitializeSuggestionGenerators(trigger_source, form.global_id(),
-                                 field.global_id());
+                                 field.global_id(), form_structure,
+                                 *autofill_field);
 
   auto barrier_callback = base::BarrierCallback<
       std::pair<SuggestionGenerator::SuggestionDataSource,
@@ -3575,7 +3577,9 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
 void BrowserAutofillManager::InitializeSuggestionGenerators(
     AutofillSuggestionTriggerSource trigger_source,
     FormGlobalId form_id,
-    FieldGlobalId field_id) {
+    FieldGlobalId field_id,
+    const FormStructure* form_structure,
+    const AutofillField& trigger_autofill_field) {
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
@@ -3649,6 +3653,27 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
     suggestion_generators_.push_back(
         std::make_unique<AddressSuggestionGenerator>(std::nullopt,
                                                      log_manager()));
+  }
+  if (relevant_filling_products.contains(FillingProduct::kCreditCard)) {
+    // TODO(crbug.com/409962888): Move calculating of
+    // `should_show_scan_credit_card` and `is_complete_form` inside of the
+    // `CreditCardSuggestionGenerator` class, and remove them from the
+    // constructor.
+    suggestion_generators_.push_back(
+        std::make_unique<CreditCardSuggestionGenerator>(
+            four_digit_combinations_in_dom_,
+            ShouldShowScanCreditCard(*form_structure, trigger_autofill_field),
+            form_structure->IsCompleteCreditCardForm(
+                FormStructure::CreditCardFormCompleteness::
+                    kCompleteCreditCardFormIncludingCvcAndName),
+            payments::AmountExtractionStatus{
+                .has_timed_out_for_page_load =
+                    GetAmountExtractionManager().HasTimedOutForPageLoad(),
+                .seen_unsupported_currency_for_page_load =
+                    GetAmountExtractionManager()
+                        .SeenUnsupportedCurrencyForPageLoad()},
+            metrics_->credit_card_form_event_logger,
+            metrics_->signin_state_for_metrics));
   }
 }
 

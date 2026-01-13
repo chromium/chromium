@@ -425,17 +425,6 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillField& trigger_autofill_field,
       std::optional<std::string> plus_address_email_override);
 
-  // Returns a list of values from the stored credit cards that match
-  // the type and value of `trigger_field` and returns the labels of the
-  // matching credit cards.
-  // TODO(crbug.com/40227496): Keep only one of `form` or `form_structure` and
-  // `trigger_field` or `autofill_trigger_field`.
-  std::vector<Suggestion> GetCreditCardSuggestions(
-      const FormData& form,
-      const FormStructure& form_structure,
-      const FormFieldData& trigger_field,
-      const AutofillField& autofill_trigger_field);
-
   // Returns a list of suggestions from the stored loyalty cards for the given
   // last committed primary main frame URL obtained from `client()` and the
   // value of the trigger `field`.
@@ -654,11 +643,15 @@ class BrowserAutofillManager : public AutofillManager {
           identification_time);
 
   // Populates `suggestion_generators_` with those capable of producing
-  // suggestions for field with `field_id` given `trigger_source`.
+  // suggestions for field.
+  // TODO(crbug.com/409962888): Remove `form_structure` and
+  // `trigger_autofill_field` arguments after simplifying CCSG initialization.
   void InitializeSuggestionGenerators(
       AutofillSuggestionTriggerSource trigger_source,
       FormGlobalId form_id,
-      FieldGlobalId field_id);
+      FieldGlobalId field_id,
+      const FormStructure* form_structure,
+      const AutofillField& trigger_autofill_field);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.
