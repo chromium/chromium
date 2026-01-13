@@ -210,7 +210,7 @@ class ActionXmlTest(unittest.TestCase):
                                      obsolete=obsolete,
                                      comment=comment,
                                      not_user_triggered=not_user_triggered)
-    actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
+    actions_dict, comments, variants_dict = action_utils.ParseActionFile(
         current_xml)
     for action_name in new_actions:
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
@@ -225,7 +225,7 @@ class ActionXmlTest(unittest.TestCase):
     Returns:
       An updated and pretty-printed actions XML string with variants expanded.
     """
-    actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
+    actions_dict, comments, variants_dict = action_utils.ParseActionFile(
         actions_xml)
     expanded_actions = action_utils.CreateActionsFromVariants(actions_dict)
 
@@ -242,7 +242,7 @@ class ActionXmlTest(unittest.TestCase):
     Returns:
       A pretty-printed actions XML string.
     """
-    actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
+    actions_dict, comments, variants_dict = action_utils.ParseActionFile(
         actions_xml)
     return extract_actions.PrettyPrint(actions_dict, comments, variants_dict)
 
@@ -269,10 +269,10 @@ class ActionXmlTest(unittest.TestCase):
                                      comment=NO_VALUE,
                                      not_user_triggered=NO_VALUE)
     # Since there are two description tags, the function ParseActionFile will
-    # raise SystemExit with exit code 1.
-    with self.assertRaises(SystemExit) as cm:
-      extract_actions.ParseActionFile(current_xml)
-    self.assertEqual(cm.exception.code, 1)
+    # raise ValueError.
+    with self.assertRaises(ValueError) as error_ctx:
+      action_utils.ParseActionFile(current_xml)
+    self.assertTrue('description' in str(error_ctx.exception))
 
   def testObsolete(self):
     xml_result = self._GetProcessedAction(TWO_OWNERS, DESCRIPTION, OBSOLETE)
@@ -286,10 +286,10 @@ class ActionXmlTest(unittest.TestCase):
                                      not_user_triggered=NO_VALUE)
 
     # Since there are two obsolete tags, the function ParseActionFile will
-    # raise SystemExit with exit code 1.
-    with self.assertRaises(SystemExit) as cm:
-      extract_actions.ParseActionFile(current_xml)
-    self.assertEqual(cm.exception.code, 1)
+    # raise ValueError.
+    with self.assertRaises(ValueError) as error_ctx:
+      action_utils.ParseActionFile(current_xml)
+    self.assertTrue('obsolete' in str(error_ctx.exception))
 
   def testAddNewActions(self):
     xml_result = self._GetProcessedAction(TWO_OWNERS,

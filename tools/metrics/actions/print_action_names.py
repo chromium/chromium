@@ -13,7 +13,7 @@ import sys
 import io
 
 sys.path.append(os.path.dirname(__file__))
-import extract_actions
+import action_utils
 
 
 def get_names(xml_content):
@@ -26,7 +26,7 @@ def get_names(xml_content):
   """
   if not xml_content:
     return set()
-  actions_dict, _, _ = extract_actions.ParseActionFile(xml_content)
+  actions_dict, _, _ = action_utils.ParseActionFile(xml_content)
   return set(actions_dict.keys())
 
 
