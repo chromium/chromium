@@ -7591,6 +7591,10 @@ static_library("browser") {
   if (enable_extensions_core) {
     sources += [
       "download/download_crx_util.cc",
+      "policy/cloud/extension_install_policy_service.cc",
+      "policy/cloud/extension_install_policy_service.h",
+      "policy/cloud/extension_install_policy_service_factory.cc",
+      "policy/cloud/extension_install_policy_service_factory.h",
       "speech/extension_api/tts_engine_extension_api.cc",
       "speech/extension_api/tts_engine_extension_api.h",
       "speech/extension_api/tts_extension_api.cc",
@@ -7667,10 +7671,6 @@ static_library("browser") {
       "page_load_metrics/observers/serp_page_load_metrics_observer.h",
       "performance_manager/extension_watcher.cc",
       "performance_manager/extension_watcher.h",
-      "policy/cloud/extension_install_policy_service.cc",
-      "policy/cloud/extension_install_policy_service.h",
-      "policy/cloud/extension_install_policy_service_factory.cc",
-      "policy/cloud/extension_install_policy_service_factory.h",
       "policy/value_provider/extension_policies_value_provider.cc",
       "policy/value_provider/extension_policies_value_provider.h",
       "renderer_context_menu/context_menu_content_type_app_mode.cc",

@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -28,6 +29,7 @@ namespace policy {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool IsExtensionInstallBlocked(
     const PolicyMap::Entry& entry,
     const ExtensionIdAndVersion& extension_id_and_version) {
@@ -48,6 +50,7 @@ bool IsExtensionInstallBlocked(
               enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW));
   return action == enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -64,6 +67,10 @@ ExtensionInstallPolicyServiceImpl::~ExtensionInstallPolicyServiceImpl() =
 void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
     const ExtensionIdAndVersion& extension_id_and_version,
     base::OnceCallback<void(bool)> callback) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  std::move(callback).Run(true);
+  return;
+#else
   if (!profile_->GetPrefs()->GetBoolean(
           extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
     std::move(callback).Run(true);
@@ -130,10 +137,14 @@ void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
             extension_id_and_version, PolicyFetchReason::kExtensionInstall,
             barrier_callback);
   }
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
     const ExtensionIdAndVersion& extension_id_and_version) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  return std::nullopt;
+#else
   auto* policy_service =
       profile_->GetProfilePolicyConnector()->policy_service();
   if (!policy_service) {
@@ -165,6 +176,7 @@ std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
     }
   }
   return true;
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace policy
