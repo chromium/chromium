@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -56,7 +57,7 @@ const char kInvalidTargetVersion[] = "INVALID_TARGET_VERSION";
 const char kFisAuthError[] = "FIS_AUTH_ERROR";
 
 // Gets correct status from the error message.
-RegistrationRequest::Status GetStatusFromError(const std::string& error) {
+RegistrationRequest::Status GetStatusFromError(std::string_view error) {
   if (error.contains(kDeviceRegistrationError)) {
     return RegistrationRequest::DEVICE_REGISTRATION_ERROR;
   }
@@ -285,8 +286,8 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
   // some errors will have HTTP_OK response code!
   size_t error_pos = response.find(kErrorPrefix);
   if (error_pos != std::string::npos) {
-    std::string error =
-        response.substr(error_pos + std::size(kErrorPrefix) - 1);
+    std::string_view error = std::string_view(response).substr(
+        error_pos + std::size(kErrorPrefix) - 1);
     LOG(ERROR) << "Registration response error message: " << error;
     RegistrationRequest::Status status = GetStatusFromError(error);
     return status;
