@@ -93,11 +93,9 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
     return *integrity_block;
   }
 
-  test::MockIwaClient& iwa_client() { return iwa_client_; }
-
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 using IsolatedWebAppValidatorIntegrityBlockTest = IsolatedWebAppValidatorTest;

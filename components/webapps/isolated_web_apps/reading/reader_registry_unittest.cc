@@ -165,8 +165,6 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         response_->Clone());
   }
 
-  test::MockIwaClient& iwa_client() { return iwa_client_; }
-
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -196,7 +194,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
       reset_signature_verifier_ =
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 using ReadResult =

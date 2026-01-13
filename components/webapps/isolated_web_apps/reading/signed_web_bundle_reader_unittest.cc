@@ -83,9 +83,6 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ON_CALL(iwa_client_,
-            ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
-        .WillByDefault(testing::Return(base::ok()));
     IwaIdentityValidator::CreateSingleton();
   }
 
@@ -140,7 +137,7 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       reset_signature_verifier_ =
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 // Note that Isolated Web Apps (IWAs) don't support having primary URLs, but the
@@ -890,12 +887,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class UnsecureSignedWebBundleReaderTest : public testing::Test {
  protected:
-  void SetUp() override {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ON_CALL(iwa_client_,
-            ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
-        .WillByDefault(testing::Return(base::ok()));
-  }
+  void SetUp() override { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override {
     // Allow cleanup tasks posted by the destructor of `web_package::SharedFile`
@@ -906,7 +898,7 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {

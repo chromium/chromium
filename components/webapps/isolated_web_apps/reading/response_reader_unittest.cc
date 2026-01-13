@@ -49,8 +49,6 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
  protected:
   void SetUp() override {
     IwaIdentityValidator::CreateSingleton();
-    ON_CALL(iwa_client(), ValidateTrust(_, web_bundle_id_, _))
-        .WillByDefault(Return(base::ok()));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
@@ -82,8 +80,6 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
     return future.Take();
   }
 
-  test::MockIwaClient& iwa_client() { return iwa_client_; }
-
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
@@ -91,7 +87,7 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
   content::TestBrowserContext browser_context_;
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 
   GURL base_url_ = GURL(base::StrCat(
       {"isolated-app", url::kStandardSchemeSeparator, web_bundle_id_.id()}));

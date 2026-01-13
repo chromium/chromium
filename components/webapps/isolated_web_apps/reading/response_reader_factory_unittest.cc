@@ -128,9 +128,6 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
         base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
-
-    ON_CALL(iwa_client_, ValidateTrust(_, kWebBundleId, _))
-        .WillByDefault(Return(base::ok()));
   }
 
   void TearDown() override { factory_.reset(); }
@@ -184,7 +181,7 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
 
-  test::MockIwaClient iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 using ReaderResult =

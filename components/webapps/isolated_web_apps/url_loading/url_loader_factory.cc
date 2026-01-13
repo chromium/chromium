@@ -428,12 +428,14 @@ class IsolatedWebAppURLLoaderFactoryImpl
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       base::WeakPtr<HeaderInjectionURLLoaderClient>
           weak_header_injection_client,
-      base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>
-          result) {
-    ASSIGN_OR_RETURN(IwaSourceWithModeOrGeneratedResponse source_or_response,
-                     std::move(result), [&](const std::string& error) {
-                       LogErrorAndFail(error, std::move(loader_client));
-                     });
+      base::expected<IwaSourceWithModeOrGeneratedResponse,
+                     IwaClient::SourceRequestError> result) {
+    ASSIGN_OR_RETURN(
+        IwaSourceWithModeOrGeneratedResponse source_or_response,
+        std::move(result), [&](const IwaClient::SourceRequestError& error) {
+          LogErrorAndFail(error.error_description, std::move(loader_client),
+                          error.net_error);
+        });
 
     if (!IsSupportedHttpMethod(resource_request.method)) {
       CompleteWithGeneratedResponse(
@@ -472,31 +474,22 @@ class IsolatedWebAppURLLoaderFactoryImpl
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-    std::visit(
-        absl::Overload{[&](const IwaSourceBundleWithMode& bundle) {
-                         CHECK(!web_bundle_id.is_for_proxy_mode());
-                         RETURN_IF_ERROR(
-                             IwaClient::GetInstance()->ValidateTrust(
-                                 browser_context_, web_bundle_id,
-                                 bundle.dev_mode()),
-                             [&](const std::string& error) {
-                               LogErrorAndFail(error, std::move(loader_client),
-                                               net::ERR_INVALID_WEB_BUNDLE);
-                             });
-                         IsolatedWebAppURLLoader::CreateAndStart(
-                             browser_context_, bundle.path(), web_bundle_id,
-                             std::move(loader_receiver),
-                             std::move(loader_client), resource_request,
-                             frame_tree_node_id_);
-                       },
-                       [&](const IwaSourceProxy& proxy) {
-                         CHECK(web_bundle_id.is_for_proxy_mode());
-                         HandleProxy(browser_context_, web_bundle_id, proxy,
-                                     std::move(loader_receiver),
-                                     std::move(loader_client), resource_request,
-                                     traffic_annotation, frame_tree_node_id_);
-                       }},
-        source.variant());
+    std::visit(absl::Overload{
+                   [&](const IwaSourceBundleWithMode& bundle) {
+                     CHECK(!web_bundle_id.is_for_proxy_mode());
+                     IsolatedWebAppURLLoader::CreateAndStart(
+                         browser_context_, bundle.path(), web_bundle_id,
+                         std::move(loader_receiver), std::move(loader_client),
+                         resource_request, frame_tree_node_id_);
+                   },
+                   [&](const IwaSourceProxy& proxy) {
+                     CHECK(web_bundle_id.is_for_proxy_mode());
+                     HandleProxy(browser_context_, web_bundle_id, proxy,
+                                 std::move(loader_receiver),
+                                 std::move(loader_client), resource_request,
+                                 traffic_annotation, frame_tree_node_id_);
+                   }},
+               source.variant());
   }
 
   bool CanRequestUrl(const GURL& url) const {
