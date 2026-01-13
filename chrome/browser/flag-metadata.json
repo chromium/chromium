@@ -2171,7 +2171,7 @@
   {
     "name": "devtools-individual-request-throttling",
     "owners": [ "pfaffe@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 147
   },
   {
     "name": "devtools-live-edit",
