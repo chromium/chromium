@@ -8707,7 +8707,7 @@
                         "ModuleMinStalenessUpdateTimeInterval": "1d",
                         "ShortcutsMinStalenessUpdateTimeInterval": "1d",
                         "StaleModulesCountThreshold": "1",
-                        "StaleShortcutsCountThreshold": "3"
+                        "StaleShortcutsCountThreshold": "2"
                     },
                     "enable_features": [
                         "NtpFeatureOptimizationDismissModulesRemoval",
