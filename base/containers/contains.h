@@ -36,7 +36,7 @@ constexpr bool Contains(const Container& container, const Value& value) {
         "Error: About to perform linear search on an associative container. "
         "Either use a more generic comparator (e.g. std::less<>) or, if a "
         "linear search is desired, provide an explicit projection parameter.");
-    return std::ranges::find(container, value) != std::ranges::end(container);
+    return std::ranges::contains(container, value);
   }
 }
 
@@ -47,8 +47,7 @@ template <typename Container, typename Value, typename Proj>
 constexpr bool Contains(const Container& container,
                         const Value& value,
                         Proj proj) {
-  return std::ranges::find(container, value, std::move(proj)) !=
-         std::ranges::end(container);
+  return std::ranges::contains(container, value, std::move(proj));
 }
 
 }  // namespace base
