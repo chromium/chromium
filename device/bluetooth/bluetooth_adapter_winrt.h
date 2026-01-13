@@ -142,6 +142,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadioStatics>
           radio_statics);
 
+  // Move destruction of agile references to a background MTA thread to
+  // avoid synchronous COM/RPC blocking on the UI thread. The provided
+  // StaticsInterfaces is destroyed at the end of the MTA task scope.
+  static void DestroyAgileStaticsOnMTA(StaticsInterfaces statics);
+
   // CompleteInitAgile is a proxy to CompleteInit that resolves agile
   // references.
   void CompleteInitAgile(base::OnceClosure init_callback,
