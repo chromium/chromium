@@ -27,7 +27,9 @@ enum class DefaultBrowserEntrypointType {
   kStartupInfobar = 0,
   // Default browser Settings page UI.
   kSettingsPage = 1,
-  kMaxValue = kSettingsPage
+  // Default browser change detected os notification.
+  kChangeDetectedNotification = 2,
+  kMaxValue = kChangeDetectedNotification,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:DefaultBrowserEntrypointType)
 

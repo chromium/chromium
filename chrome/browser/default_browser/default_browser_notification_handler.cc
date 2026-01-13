@@ -4,11 +4,15 @@
 
 #include "chrome/browser/default_browser/default_browser_notification_handler.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -27,16 +31,31 @@ namespace default_browser {
 
 namespace {
 
-void HandleDefaultBrowserNotificationClick(std::optional<int> button_index) {
-  // The user clicked "Yes" (button 0) or the notification body.
-  if (!button_index.has_value() || button_index.value() == 0) {
-    // TODO(https://crbug.com/454597786): Implement guided settings-panel
-    // setter. This should follow the rule of the setter in place.
+// Delegate to route notification events back to the handler.
+class DefaultBrowserNotificationDelegate
+    : public message_center::NotificationDelegate {
+ public:
+  explicit DefaultBrowserNotificationDelegate(
+      base::WeakPtr<DefaultBrowserNotificationHandler> handler)
+      : handler_(handler) {}
+
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
+    if (handler_) {
+      handler_->OnNotificationClick(button_index);
+    }
   }
 
-  // If the "No, thanks" button (index 1) is clicked, we do nothing and let
-  // the notification close.
-}
+  void Close(bool by_user) override {
+    if (handler_) {
+      handler_->OnNotificationClose(by_user);
+    }
+  }
+
+ private:
+  ~DefaultBrowserNotificationDelegate() override = default;
+  base::WeakPtr<DefaultBrowserNotificationHandler> handler_;
+};
 
 }  // namespace
 
@@ -58,9 +77,8 @@ void DefaultBrowserNotificationHandler::OnDefaultBrowserStateChanged(
     return;
   }
 
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&HandleDefaultBrowserNotificationClick));
+  auto delegate = base::MakeRefCounted<DefaultBrowserNotificationDelegate>(
+      weak_ptr_factory_.GetWeakPtr());
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(
@@ -85,6 +103,44 @@ void DefaultBrowserNotificationHandler::OnDefaultBrowserStateChanged(
       optional_fields, delegate);
 
   SystemNotificationHelper::GetInstance()->Display(std::move(notification));
+
+  // Create a new controller for this interaction.
+  controller_ = manager_->CreateControllerFor(
+      DefaultBrowserEntrypointType::kChangeDetectedNotification);
+  CHECK(controller_);
+  controller_->OnShown();
+}
+
+void DefaultBrowserNotificationHandler::OnNotificationClick(
+    std::optional<int> button_index) {
+  auto controller = std::exchange(controller_, nullptr);
+  if (!controller) {
+    return;
+  }
+
+  if (!button_index.has_value() || button_index.value() == 0) {
+    auto* controller_ptr = controller.get();
+    controller_ptr->OnAccepted(
+        base::DoNothingWithBoundArgs(std::move(controller)));
+  } else if (button_index.value() == 1) {
+    controller->OnDismissed();
+  } else {
+    NOTREACHED();
+  }
+
+  SystemNotificationHelper::GetInstance()->Close(kNotificationId);
+}
+
+void DefaultBrowserNotificationHandler::OnNotificationClose(bool by_user) {
+  if (auto controller = std::exchange(controller_, nullptr)) {
+    // If the notification closes without a click action (e.g. user clicked X
+    // or system timeout), treat as dismissed.
+    if (by_user) {
+      controller->OnDismissed();
+    } else {
+      controller->OnIgnored();
+    }
+  }
 }
 
 }  // namespace default_browser

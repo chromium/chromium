@@ -38,6 +38,8 @@ std::string UiEntrypointTypeToString(
       return "SettingsPage";
     case DefaultBrowserEntrypointType::kStartupInfobar:
       return "InfoBar";
+    case DefaultBrowserEntrypointType::kChangeDetectedNotification:
+      return "ChangeDetectedNotification";
     default:
       NOTREACHED();
   }

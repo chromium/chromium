@@ -42,18 +42,6 @@ constexpr wchar_t kRegistryPath[] =
     L"Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\h"
     L"ttp\\UserChoice";
 
-void CreateDefaultBrowserKey(const std::wstring& prog_id) {
-  base::win::RegKey key(HKEY_CURRENT_USER, kRegistryPath,
-                        KEY_WRITE | KEY_CREATE_SUB_KEY);
-  ASSERT_TRUE(key.Valid());
-  ASSERT_EQ(key.WriteValue(kProgIdValue, prog_id.c_str()), ERROR_SUCCESS);
-}
-
-void ChangeDefaultBrowserProgId(const std::wstring& new_prog_id) {
-  base::win::RegKey key(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE);
-  ASSERT_TRUE(key.Valid());
-  ASSERT_EQ(key.WriteValue(kProgIdValue, new_prog_id.c_str()), ERROR_SUCCESS);
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -75,13 +63,19 @@ class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE));
-
     InProcessBrowserTest::SetUp();
   }
 
-  void PostRunTestOnMainThread() override {
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    display_service_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(nullptr);
+  }
+
+  void TearDownOnMainThread() override {
+    display_service_tester_.reset();
     fake_shell_delegate_ptr_ = nullptr;
-    InProcessBrowserTest::PostRunTestOnMainThread();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -95,7 +89,50 @@ class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
             }));
   }
 
+  // Helper to simulate the environment change that triggers the notification.
+  void TriggerNotification() {
+    // 1. Ensure Chrome believes it is NOT default.
+    fake_shell_delegate_ptr_->set_default_state(shell_integration::IS_DEFAULT);
+
+    // 2. Set up the registry to look like Chrome was default initially (so the
+    //    change to something else is significant).
+    CreateDefaultBrowserKey(L"ChromeHTML");
+    content::RunAllTasksUntilIdle();
+
+    // 3. Prepare to listen for the async monitor event.
+    base::test::TestFuture<DefaultBrowserState> monitor_future;
+    auto* manager = DefaultBrowserManager::From(g_browser_process);
+    base::CallbackListSubscription sub = manager->RegisterDefaultBrowserChanged(
+        monitor_future.GetRepeatingCallback());
+
+    // 4. Simulate external registry change to a different browser.
+    ChangeDefaultBrowserProgId(L"VanadiumHTML");
+
+    // 5. Wait for the manager to detect the change and update state.
+    fake_shell_delegate_ptr_->set_default_state(shell_integration::NOT_DEFAULT);
+    EXPECT_EQ(monitor_future.Take(), shell_integration::NOT_DEFAULT);
+
+    // 6. Allow the notification tasks to post to the UI thread.
+    content::RunAllTasksUntilIdle();
+  }
+
+  void CreateDefaultBrowserKey(const std::wstring& prog_id) {
+    base::win::RegKey key;
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.Create(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE));
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kProgIdValue, prog_id.c_str()));
+  }
+
+  void ChangeDefaultBrowserProgId(const std::wstring& prog_id) {
+    base::win::RegKey key;
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.Open(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE));
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kProgIdValue, prog_id.c_str()));
+  }
+
   raw_ptr<FakeShellDelegate> fake_shell_delegate_ptr_;
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -224,37 +261,23 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
                        RegistryChangeTriggersSystemNotification) {
-  NotificationDisplayServiceTester notification_tester(nullptr);
+  TriggerNotification();
 
-  fake_shell_delegate_ptr_->set_default_state(shell_integration::NOT_DEFAULT);
-
-  CreateDefaultBrowserKey(L"ChromeHTML");
-
-  base::test::TestFuture<DefaultBrowserState> monitor_future;
-  auto* manager = DefaultBrowserManager::From(g_browser_process);
-  base::CallbackListSubscription sub = manager->RegisterDefaultBrowserChanged(
-      monitor_future.GetRepeatingCallback());
-
-  ChangeDefaultBrowserProgId(L"VanadiumHTML");
-  EXPECT_EQ(monitor_future.Take(), shell_integration::NOT_DEFAULT);
-
-  content::RunAllTasksUntilIdle();
-
-  auto notification = notification_tester.GetNotification(
+  auto notification = display_service_tester_->GetNotification(
       DefaultBrowserNotificationHandler::kNotificationId);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(),
             l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_CHANGED_TITLE));
   EXPECT_EQ(notification->message(),
             l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_CHANGED_MESSAGE));
+
+  histogram_tester_.ExpectUniqueSample(
+      "DefaultBrowser.ChangeDetectedNotification.Shown", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
                        NoNotificationWhenChromeRemainsDefault) {
-  NotificationDisplayServiceTester notification_tester(nullptr);
-
   fake_shell_delegate_ptr_->set_default_state(shell_integration::IS_DEFAULT);
-
   CreateDefaultBrowserKey(L"ChromeHTML");
 
   base::test::TestFuture<DefaultBrowserState> monitor_future;
@@ -267,11 +290,83 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
 
   content::RunAllTasksUntilIdle();
 
-  auto notification = notification_tester.GetNotification(
+  auto notification = display_service_tester_->GetNotification(
       DefaultBrowserNotificationHandler::kNotificationId);
   EXPECT_FALSE(notification.has_value())
       << "Notification shown even though Chrome is default.";
 }
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       ClickAcceptTriggersSetterAndMetric) {
+  TriggerNotification();
+
+  ASSERT_TRUE(display_service_tester_->GetNotification(
+      DefaultBrowserNotificationHandler::kNotificationId));
+
+  display_service_tester_->SimulateClick(
+      NotificationHandler::Type::TRANSIENT,
+      DefaultBrowserNotificationHandler::kNotificationId,
+      /*action_index=*/0,
+      /*reply=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      DefaultBrowserInteractionType::kAccepted, 1);
+
+  histogram_tester_.ExpectBucketCount(
+      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      DefaultBrowserInteractionType::kDismissed, 0);
+
+  EXPECT_FALSE(display_service_tester_->GetNotification(
+      DefaultBrowserNotificationHandler::kNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       ClickNoThanksDismissesAndRecordsMetric) {
+  TriggerNotification();
+
+  ASSERT_TRUE(display_service_tester_->GetNotification(
+      DefaultBrowserNotificationHandler::kNotificationId));
+
+  display_service_tester_->SimulateClick(
+      NotificationHandler::Type::TRANSIENT,
+      DefaultBrowserNotificationHandler::kNotificationId,
+      /*action_index=*/1,
+      /*reply=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      DefaultBrowserInteractionType::kDismissed, 1);
+
+  histogram_tester_.ExpectBucketCount(
+      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      DefaultBrowserInteractionType::kAccepted, 0);
+
+  EXPECT_FALSE(display_service_tester_->GetNotification(
+      DefaultBrowserNotificationHandler::kNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       UserCloseDismissesAndRecordsMetric) {
+  TriggerNotification();
+
+  ASSERT_TRUE(display_service_tester_->GetNotification(
+      DefaultBrowserNotificationHandler::kNotificationId));
+
+  display_service_tester_->RemoveNotification(
+      NotificationHandler::Type::TRANSIENT,
+      DefaultBrowserNotificationHandler::kNotificationId,
+      /*by_user=*/true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      DefaultBrowserInteractionType::kDismissed, 1);
+
+  histogram_tester_.ExpectBucketCount(
+      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      DefaultBrowserInteractionType::kAccepted, 0);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace default_browser

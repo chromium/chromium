@@ -53,10 +53,16 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
+<!-- LINT.IfChange(DefaultBrowserEntrypointType) -->
+
 <variants name="DefaultBrowserEntrypointType">
+  <variant name="ChangeDetectedNotification"
+      summary="the change detected Os notification"/>
   <variant name="InfoBar" summary="the startup infobar"/>
   <variant name="SettingsPage" summary="the settings page"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserEntrypointType) -->
 
 <variants name="DefaultBrowserSetterType">
   <variant name="ShellIntegration" summary="the shell integration setter"/>
