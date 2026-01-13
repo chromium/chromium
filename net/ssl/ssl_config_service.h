@@ -102,6 +102,11 @@ struct NET_EXPORT SSLContextConfig {
   // MTC TLS Trust Anchor IDs that are configured as trusted, as a list of
   // Trust Anchor IDs in binary representation.
   std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids;
+
+  // The time (represented as seconds since the unix epoch) that the latest
+  // MtcMetadata was generated. See MtcMetadata.update_time_seconds in
+  // net/cert/root_store.proto.
+  int64_t mtc_update_time_seconds = 0;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

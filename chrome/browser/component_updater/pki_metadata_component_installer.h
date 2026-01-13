@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_PKI_METADATA_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_PKI_METADATA_COMPONENT_INSTALLER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -163,6 +164,10 @@ class PKIMetadataComponentInstallerService final {
   };
   std::vector<MtcLogIdAndLandmarkTrustAnchorId>
       mtc_log_id_landmark_trust_anchor_ids_;
+
+  // The time (as seconds since the unix epoch) that the latest MtcMetadata
+  // was generated.
+  int64_t mtc_metadata_update_time_seconds_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

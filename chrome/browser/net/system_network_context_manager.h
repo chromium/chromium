@@ -164,7 +164,8 @@ class SystemNetworkContextManager {
   // representation).
   void UpdateTrustAnchorIDs(
       std::vector<std::vector<uint8_t>> trust_anchor_ids,
-      std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids);
+      std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids,
+      int64_t mtc_update_time_seconds);
 
   // Returns whether the network sandbox is enabled. This depends on policy but
   // also feature status from sandbox. Called before there is an instance of

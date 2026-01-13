@@ -5593,6 +5593,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.HasMTCMetadata" enum="Boolean"
+    expires_after="2026-06-21">
+  <owner>nharper@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Whether or not the client has the MtcMetadata needed for validating
+    (signatureless) Merkle tree Certificates. Recorded at certificate validation
+    time on QUIC connections, but only on connections where the client supports
+    verifying MTCs and the server supports sending MTCs.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.HeaderCompressionRatioHpackReceived" units="%"
     expires_after="2026-06-21">
   <owner>dschinazi@chromium.org</owner>
@@ -5831,6 +5844,19 @@ chromium-metrics-reviews@google.com.
     client's (which indicates that the client has out of date information and is
     unable to verify the server's MTC). Only recorded for QUIC connections where
     the client supports verifying MTCs and the server supports sending MTCs.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.MTCMetadataAge" units="Milliseconds"
+    expires_after="2026-06-21">
+  <owner>nharper@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The age of the MtcMetadata used for validating (signatureless) Merkle tree
+    Certificates. Recorded at certificate validation time on QUIC connections,
+    but only on connections where the client supports verifying MTCs and the
+    server supports sending MTCs.
   </summary>
 </histogram>
 

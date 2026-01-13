@@ -67,6 +67,7 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   for (const auto& tai : mojo_config->mtc_trust_anchor_ids) {
     net_config.mtc_trust_anchor_ids.push_back(tai);
   }
+  net_config.mtc_update_time_seconds = mojo_config->mtc_update_time_seconds;
 
   return net_config;
 }
