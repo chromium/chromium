@@ -16,9 +16,9 @@ export function getHtml(this: SimpleActionMenuElement) {
       ?non-modal="${this.nonModal}"
       tabindex="-1">
     ${this.menuItems.map((item, index) => html`
-      <hr class="sp-hr has-header-${this.doesItemHaveHeader_(item)}">
+      <hr class="sp-hr has-header-${this.doesItemHaveHeaderSeparator_(item)}">
       <span class="has-header-${this.doesItemHaveHeader_(item)} header-style">
-          ${item.header}
+          ${item.header?.title}
       </span>
       <button
           class="dropdown-item"

@@ -47,7 +47,10 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   private styleOptions_: Array<MenuStateItem<LineFocusStyle>> = [
     {
-      header: loadTimeData.getString('lineFocusStyleHeading'),
+      header: {
+        title: loadTimeData.getString('lineFocusStyleHeading'),
+        separator: false,
+      },
       title: loadTimeData.getString('lineFocusOffTitle'),
       data: LineFocusStyle.OFF,
       eventName: ToolbarEvent.LINE_FOCUS_STYLE,
@@ -76,7 +79,10 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   private movementOptions_: Array<MenuStateItem<LineFocusMovement>> = [
     {
-      header: loadTimeData.getString('lineFocusMovementHeading'),
+      header: {
+        title: loadTimeData.getString('lineFocusMovementHeading'),
+        separator: true,
+      },
       title: loadTimeData.getString('lineFocusStaticTitle'),
       data: LineFocusMovement.STATIC,
       eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,

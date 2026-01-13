@@ -97,6 +97,10 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
   protected doesItemHaveHeader_(item: MenuStateItem<any>): boolean {
     return chrome.readingMode.isLineFocusEnabled && !!item.header;
   }
+
+  protected doesItemHaveHeaderSeparator_(item: MenuStateItem<any>): boolean {
+    return chrome.readingMode.isLineFocusEnabled && !!item.header?.separator;
+  }
 }
 
 declare global {
