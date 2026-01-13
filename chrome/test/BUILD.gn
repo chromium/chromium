@@ -2930,7 +2930,6 @@ if (!is_android) {
       "//components/sync_device_info:test_support",
       "//components/sync_preferences:features",
       "//components/tab_groups",
-      "//components/tpcd/enterprise_reporting",
       "//components/tpcd/metadata/browser",
       "//components/tpcd/metadata/browser:test_support",
       "//components/tpcd/metadata/common/proto",
