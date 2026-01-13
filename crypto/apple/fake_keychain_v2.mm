@@ -17,7 +17,9 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_typeref.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_policy.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
@@ -35,6 +37,17 @@ namespace {
 // A null `query_value` is a wildcard and is always considered a match.
 bool Matches(CFTypeRef query_value, CFTypeRef item_value) {
   return !query_value || (item_value && CFEqual(query_value, item_value));
+}
+
+constexpr char kPassword[] = "mock_password";
+
+// Adds an entry to a local histogram to indicate that the Keychain would have
+// been accessed, if this class were not a mock of the Keychain.
+void IncrementKeychainAccessHistogram() {
+  // This local histogram is accessed by Telemetry to track the number of times
+  // the keychain is accessed, since keychain access is known to be synchronous
+  // and slow.
+  LOCAL_HISTOGRAM_BOOLEAN("OSX.Keychain.Access", true);
 }
 
 }  // namespace
@@ -309,6 +322,36 @@ OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
     return errSecSuccess;
   }
   return errSecItemNotFound;
+}
+
+base::expected<std::vector<uint8_t>, OSStatus>
+FakeKeychainV2::FindGenericPassword(std::string_view service_name,
+                                    std::string_view account_name) {
+  IncrementKeychainAccessHistogram();
+
+  // When simulating |noErr|, return mock password. Otherwise, return given
+  // code.
+  if (find_generic_result_ == noErr) {
+    return base::ToVector(base::byte_span_from_cstring(kPassword));
+  }
+
+  return base::unexpected(find_generic_result_);
+}
+
+OSStatus FakeKeychainV2::AddGenericPassword(
+    std::string_view service_name,
+    std::string_view account_name,
+    base::span<const uint8_t> password) {
+  IncrementKeychainAccessHistogram();
+  called_add_generic_ = true;
+
+  DCHECK(!password.empty());
+  return noErr;
+}
+
+std::string FakeKeychainV2::GetEncryptionPassword() const {
+  IncrementKeychainAccessHistogram();
+  return kPassword;
 }
 
 #if !BUILDFLAG(IS_IOS)
