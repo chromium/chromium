@@ -93,6 +93,10 @@ cr-composebox[searchbox-layout-mode="TallBottomContext"]::part(voice-icon) {
   bottom: 6px;
 }
 
+cr-composebox[searchbox-layout-mode="TallTopContext"] {
+  --cr-composebox-submit-button-margin-inline-start: 0;
+}
+
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
   left: unset;
   right: 12px;
