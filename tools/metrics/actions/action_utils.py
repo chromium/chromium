@@ -248,6 +248,7 @@ def ParseActionFile(
           f'one description is needed for each user action. Please '
           f'fix.')
     description = description_list[0] if description_list else None
+
     # There is at most one obsolete tag for each user action.
     obsolete_list = _ExtractText(action_dom, 'obsolete')
     if len(obsolete_list) > 1:
