@@ -23,7 +23,7 @@ public class EducationalTipCardProviderFactory {
     /**
      * @return An instance of EducationalTipCardProvider.
      */
-    static @Nullable EducationalTipCardProvider createInstance(
+    public static @Nullable EducationalTipCardProvider createInstance(
             @ModuleType int moduleType,
             Runnable onModuleClickedCallback,
             CallbackController callbackController,

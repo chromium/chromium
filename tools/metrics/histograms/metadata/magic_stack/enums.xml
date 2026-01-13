@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Tips Notifications Promo Card"/>
   <int value="12" label="Enhanced Safe Browsing Promo Card"/>
   <int value="13" label="Address bar placement Promo Card"/>
+  <int value="14" label="Settings container Promo Card"/>
 </enum>
 
 </enums>

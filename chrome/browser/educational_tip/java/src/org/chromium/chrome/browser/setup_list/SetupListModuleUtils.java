@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.setup_list;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 /** Utilities for setup list modules. */
 @NullMarked
 public class SetupListModuleUtils {
+    @Nullable private static List<Integer> sRankedModuleTypesForTesting;
 
     /**
      * Returns a ranked list of module types supported by the setup list. The order of modules in
@@ -20,6 +22,9 @@ public class SetupListModuleUtils {
      * is rank 1, index 1 is rank 2, etc.).
      */
     public static List<Integer> getRankedModuleTypes() {
+        if (sRankedModuleTypesForTesting != null) {
+            return sRankedModuleTypesForTesting;
+        }
         List<Integer> modules = new ArrayList<>();
         // TODO(crbug.com/469425754): Add all the modules once they're ready, in the following order
         // 1. Default Browser
@@ -46,5 +51,9 @@ public class SetupListModuleUtils {
             default:
                 return false;
         }
+    }
+
+    public static void setRankedModuleTypesForTesting(List<Integer> rankedModuleTypes) {
+        sRankedModuleTypesForTesting = rankedModuleTypes;
     }
 }

@@ -266,7 +266,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.HISTORY_SYNC_PROMO,
                         ModuleType.TIPS_NOTIFICATIONS_PROMO,
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
-                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -280,7 +281,10 @@ public class HomeModulesCoordinatorUnitTest {
                 .getValue()
                 .onModuleConfigChanged(ModuleType.DEFAULT_BROWSER_PROMO, false);
         Set<Integer> expectedModuleListAfterHidingModule =
-                Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+                Set.of(
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
         assertEquals(
                 expectedModuleListAfterHidingModule,
                 mCoordinator.getFilteredEnabledModuleSetForTesting());
@@ -295,8 +299,6 @@ public class HomeModulesCoordinatorUnitTest {
         mHomeModulesStateListener
                 .getValue()
                 .onModuleConfigChanged(ModuleType.TAB_GROUP_SYNC_PROMO, false);
-        expectedModuleListAfterHidingModule =
-                Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
         assertEquals(
                 expectedModuleListAfterHidingModule,
                 mCoordinator.getFilteredEnabledModuleSetForTesting());
