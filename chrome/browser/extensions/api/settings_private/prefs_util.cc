@@ -1542,13 +1542,13 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
         return settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
       }
 
-      std::string_view string_value = value->GetString();
+      std::string string_value = value->GetString();
       if (IsPrefTypeURL(pref_name)) {
         GURL fixed = url_formatter::FixupURL(string_value);
         if (fixed.is_valid()) {
           string_value = fixed.spec();
         } else {
-          string_value = "";
+          string_value = std::string();
         }
       }
 
