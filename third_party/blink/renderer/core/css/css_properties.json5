@@ -4595,7 +4595,7 @@
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       default_value: "none",
-      runtime_flag: "CSSOverscrollGestures",
+      runtime_flag: "OverscrollGestures",
     },
     {
       name: "overscroll-behavior-inline",
@@ -4653,7 +4653,7 @@
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       default_value: "none",
-      runtime_flag: "CSSOverscrollGestures",
+      runtime_flag: "OverscrollGestures",
     },
     {
       name: "padding-bottom",

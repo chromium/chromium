@@ -840,7 +840,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoOverscrollAreaParent &&
-      !RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled()) {
+      !RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

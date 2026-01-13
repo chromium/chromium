@@ -3634,7 +3634,7 @@ bool SelectorChecker::MatchesActiveViewTransitionPseudoClass(
 }
 
 bool SelectorChecker::MatchesOverscrollTarget(const Element& element) {
-  if (!RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled()) {
+  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
     return false;
   }
 

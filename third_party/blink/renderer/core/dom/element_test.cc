@@ -1476,7 +1476,7 @@ TEST_F(ElementTest, ThePickerIconPseudoElement) {
 }
 
 TEST_F(ElementTest, OverscrollPseudoElementLayoutStructure) {
-  ScopedCSSOverscrollGesturesForTest enabled(true);
+  ScopedOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       div, #scroller::before {
@@ -1533,7 +1533,7 @@ TEST_F(ElementTest, OverscrollPseudoElementLayoutStructure) {
 }
 
 TEST_F(ElementTest, OverscrollPropertyTrees) {
-  ScopedCSSOverscrollGesturesForTest enabled(true);
+  ScopedOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #container {
@@ -1586,7 +1586,7 @@ TEST_F(ElementTest, OverscrollPropertyTrees) {
 }
 
 TEST_F(ElementTest, OverscrollPseudoElementStyles) {
-  ScopedCSSOverscrollGesturesForTest enabled(true);
+  ScopedOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #scroller {
@@ -1632,7 +1632,7 @@ TEST_F(ElementTest, OverscrollPseudoElementStyles) {
 // TODO(crbug.com/463729080): Enable this when the layout objects are properly
 // created.
 TEST_F(ElementTest, DISABLED_OverscrollContainerWithElement) {
-  ScopedCSSOverscrollGesturesForTest enabled(true);
+  ScopedOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="container" overscrollcontainer>
       <div id="menu"></div>

@@ -2852,7 +2852,7 @@ CommandEventType HTMLElement::GetCommandEventType(
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled() &&
+  if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
       EqualIgnoringASCIICase(action, keywords::kToggleOverscroll)) {
     return CommandEventType::kToggleOverscroll;
   }

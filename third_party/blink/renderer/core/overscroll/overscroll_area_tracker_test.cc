@@ -19,9 +19,9 @@
 namespace blink {
 
 class OverscrollAreaTrackerTest : public testing::Test,
-                                  ScopedCSSOverscrollGesturesForTest {
+                                  ScopedOverscrollGesturesForTest {
  public:
-  OverscrollAreaTrackerTest() : ScopedCSSOverscrollGesturesForTest(true) {}
+  OverscrollAreaTrackerTest() : ScopedOverscrollGesturesForTest(true) {}
 
   void SetUp() override {
     dummy_page_holder_ =

@@ -3879,7 +3879,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     if (parentNode()) {
       UpdateFocusgroup(params.new_value);
     }
-  } else if (RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled() &&
+  } else if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
              name == html_names::kOverscrollcontainerAttr) {
     if (params.new_value.IsNull() || params.old_value.IsNull()) {
       // TODO(crbug.com/467968812): We can optimize this in some cases since a
