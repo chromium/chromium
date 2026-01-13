@@ -11,7 +11,8 @@
 
 namespace content {
 
-TEST(TtsMacTest, CachedVoiceData) {
+// TODO(crbug.com/438118294): Re-enable this test.
+TEST(TtsMacTest, DISABLED_CachedVoiceData) {
   std::vector<VoiceData> voices;
   TtsPlatformImplMac::GetInstance()->GetVoices(&voices);
 
