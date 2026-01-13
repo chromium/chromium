@@ -10442,10 +10442,10 @@ interface TimelineTrigger : AnimationTrigger
     method constructor
 interface TimelineTriggerRange
     attribute @@toStringTag
-    getter exitRangeEnd
-    getter exitRangeStart
-    getter rangeEnd
-    getter rangeStart
+    getter activeRangeEnd
+    getter activeRangeStart
+    getter entryRangeEnd
+    getter entryRangeStart
     getter timeline
     method constructor
 interface TimelineTriggerRangeList

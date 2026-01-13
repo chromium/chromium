@@ -1559,18 +1559,19 @@ bool TimelineTriggerBoundariesMatch(
 
 bool TimelineTriggerRangeBoundariesUnchanged(
     TimelineTrigger* const trigger,
-    TimelineTrigger::RangeBoundary* new_range_start,
-    const TimelineTrigger::RangeBoundary* new_range_end,
-    const TimelineTrigger::RangeBoundary* new_exit_range_start,
-    const TimelineTrigger::RangeBoundary* new_exit_range_end) {
+    TimelineTrigger::RangeBoundary* new_entry_range_start,
+    const TimelineTrigger::RangeBoundary* new_entry_range_end,
+    const TimelineTrigger::RangeBoundary* new_active_range_start,
+    const TimelineTrigger::RangeBoundary* new_active_range_end) {
   DCHECK(trigger);
-  return TimelineTriggerBoundariesMatch(trigger->RangeStart(),
-                                        new_range_start) &&
-         TimelineTriggerBoundariesMatch(trigger->RangeEnd(), new_range_end) &&
-         TimelineTriggerBoundariesMatch(trigger->ExitRangeStart(),
-                                        new_exit_range_start) &&
-         TimelineTriggerBoundariesMatch(trigger->ExitRangeEnd(),
-                                        new_exit_range_end);
+  return TimelineTriggerBoundariesMatch(trigger->EntryRangeStart(),
+                                        new_entry_range_start) &&
+         TimelineTriggerBoundariesMatch(trigger->EntryRangeEnd(),
+                                        new_entry_range_end) &&
+         TimelineTriggerBoundariesMatch(trigger->ActiveRangeStart(),
+                                        new_active_range_start) &&
+         TimelineTriggerBoundariesMatch(trigger->ActiveRangeEnd(),
+                                        new_active_range_end);
 }
 
 // TODO(crbug.com/473568234): This function constructs only a single
@@ -1595,38 +1596,38 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
     new_timeline = &element->GetDocument().Timeline();
   }
 
-  const std::optional<TimelineOffset>& new_start_offset =
+  const std::optional<TimelineOffset>& new_entry_start_offset =
       CSSAnimationData::GetRepeated(data->TimelineTriggerEntryRangeStartList(),
                                     animation_index);
-  const std::optional<TimelineOffset>& new_end_offset =
+  const std::optional<TimelineOffset>& new_entry_end_offset =
       CSSAnimationData::GetRepeated(data->TimelineTriggerEntryRangeEndList(),
                                     animation_index);
-  const TimelineOffsetOrAuto& new_exit_start_offset =
+  const TimelineOffsetOrAuto& new_active_start_offset =
       CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeStartList(),
                                     animation_index);
-  const TimelineOffsetOrAuto& new_exit_end_offset =
+  const TimelineOffsetOrAuto& new_active_end_offset =
       CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeEndList(),
                                     animation_index);
 
-  Animation::RangeBoundary* new_range_start =
-      Animation::ToRangeBoundary(new_start_offset, zoom);
-  Animation::RangeBoundary* new_range_end =
-      Animation::ToRangeBoundary(new_end_offset, zoom);
-  Animation::RangeBoundary* new_exit_range_start =
-      Animation::ToRangeBoundary(new_exit_start_offset, zoom);
-  Animation::RangeBoundary* new_exit_range_end =
-      Animation::ToRangeBoundary(new_exit_end_offset, zoom);
+  Animation::RangeBoundary* new_entry_range_start =
+      Animation::ToRangeBoundary(new_entry_start_offset, zoom);
+  Animation::RangeBoundary* new_entry_range_end =
+      Animation::ToRangeBoundary(new_entry_end_offset, zoom);
+  Animation::RangeBoundary* new_active_range_start =
+      Animation::ToRangeBoundary(new_active_start_offset, zoom);
+  Animation::RangeBoundary* new_active_range_end =
+      Animation::ToRangeBoundary(new_active_end_offset, zoom);
 
-  bool need_new_trigger = !existing_trigger ||
-                          existing_timeline != new_timeline ||
-                          !TimelineTriggerRangeBoundariesUnchanged(
-                              existing_trigger, new_range_start, new_range_end,
-                              new_exit_range_start, new_exit_range_end);
+  bool need_new_trigger =
+      !existing_trigger || existing_timeline != new_timeline ||
+      !TimelineTriggerRangeBoundariesUnchanged(
+          existing_trigger, new_entry_range_start, new_entry_range_end,
+          new_active_range_start, new_active_range_end);
 
   if (need_new_trigger) {
     TimelineTriggerRange* range = MakeGarbageCollected<TimelineTriggerRange>(
-        new_timeline, new_range_start, new_range_end, new_exit_range_start,
-        new_exit_range_end);
+        new_timeline, new_entry_range_start, new_entry_range_end,
+        new_active_range_start, new_active_range_end);
 
     HeapVector<Member<TimelineTriggerRange>> ranges;
     ranges.push_back(range);

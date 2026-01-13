@@ -1432,18 +1432,19 @@ void CSSAnimationsTriggerTest::TestTimelineTrigger(
     EXPECT_TRUE(timeline->IsViewTimeline());
   }
 
-  const TimelineTrigger::RangeBoundary* range_start = trigger->RangeStart();
+  const TimelineTrigger::RangeBoundary* range_start =
+      trigger->EntryRangeStart();
   VerifyTriggerRangeBoundary(range_start, expected_start);
 
-  const TimelineTrigger::RangeBoundary* range_end = trigger->RangeEnd();
+  const TimelineTrigger::RangeBoundary* range_end = trigger->EntryRangeEnd();
   VerifyTriggerRangeBoundary(range_end, expected_end);
 
   const TimelineTrigger::RangeBoundary* exit_range_start =
-      trigger->ExitRangeStart();
+      trigger->ActiveRangeStart();
   VerifyTriggerRangeBoundary(exit_range_start, expected_exit_start);
 
   const TimelineTrigger::RangeBoundary* exit_range_end =
-      trigger->ExitRangeEnd();
+      trigger->ActiveRangeEnd();
   VerifyTriggerRangeBoundary(exit_range_end, expected_exit_end);
 }
 
@@ -1832,7 +1833,7 @@ void CSSAnimationsTriggerTest::TestRangeStartChange(
   } else {
     EXPECT_NE(old_trigger, new_trigger);
   }
-  VerifyTriggerRangeBoundary(new_trigger->RangeStart(), expected_boundary);
+  VerifyTriggerRangeBoundary(new_trigger->EntryRangeStart(), expected_boundary);
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeRangeStart) {
@@ -2040,8 +2041,8 @@ TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
-  const RangeBoundary* range_start = trigger->RangeStart();
-  const RangeBoundary* range_end = trigger->RangeEnd();
+  const RangeBoundary* range_start = trigger->EntryRangeStart();
+  const RangeBoundary* range_end = trigger->EntryRangeEnd();
 
   EXPECT_TRUE(range_start->IsTimelineRangeOffset());
   EXPECT_TRUE(range_end->IsTimelineRangeOffset());
