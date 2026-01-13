@@ -196,9 +196,11 @@ export class ComposeboxElement extends I18nMixinLit
       maxSuggestions: {type: Number},
       disableVoiceSearchAnimation: {type: Boolean},
       fileUploadsComplete: {type: Boolean},
+      inComposebox: {type: Boolean},
     };
   }
 
+  accessor inComposebox: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor fileUploadsComplete: boolean = true;
   accessor maxSuggestions: number|null = null;
