@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-shared.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"

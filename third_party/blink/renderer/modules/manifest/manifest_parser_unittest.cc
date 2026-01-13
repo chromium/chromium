@@ -17,7 +17,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "services/device/public/mojom/screen_orientation_lock_types.mojom-data-view.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
