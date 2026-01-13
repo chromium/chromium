@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -29,7 +30,7 @@ WindowsStationarityMonitorMac::WindowsStationarityMonitorMac()
     // For example, if the window is a system created NSToolbarFullScreenWindow
     // GetFromNativeWindow() will later interrogate the original NSWindow,
     // result in a tracked widget.
-    if (!widget || base::Contains(tracked_windows_, widget)) {
+    if (!widget || std::ranges::contains(tracked_windows_, widget)) {
       continue;
     }
 

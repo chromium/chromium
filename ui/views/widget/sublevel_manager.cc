@@ -90,7 +90,7 @@ void SublevelManager::EnsureOwnerTreeSublevel() {
 
 void SublevelManager::OnWidgetChildAdded(Widget* owner, Widget* child) {
   CHECK_EQ(owner, owner_);
-  CHECK(!base::Contains(children_, child));
+  CHECK(!std::ranges::contains(children_, child));
   CHECK_EQ(child->parent(), owner_);
   children_.push_back(child);
 }

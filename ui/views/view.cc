@@ -20,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -1864,7 +1863,7 @@ void View::AddAccelerator(const ui::Accelerator& accelerator) {
     accelerators_ = std::make_unique<std::vector<ui::Accelerator>>();
   }
 
-  if (!base::Contains(*accelerators_, accelerator)) {
+  if (!std::ranges::contains(*accelerators_, accelerator)) {
     accelerators_->push_back(accelerator);
   }
 
@@ -2651,7 +2650,8 @@ void View::AddLayerToRegionImpl(
     ui::Layer* new_layer,
     std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layer_vector) {
   DCHECK(new_layer);
-  DCHECK(!base::Contains(layer_vector, new_layer)) << "Layer already added.";
+  DCHECK(!std::ranges::contains(layer_vector, new_layer))
+      << "Layer already added.";
 
   new_layer->AddObserver(this);
   new_layer->SetVisible(GetVisible());

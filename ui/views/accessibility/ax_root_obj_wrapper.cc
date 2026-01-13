@@ -4,9 +4,9 @@
 
 #include "ui/views/accessibility/ax_root_obj_wrapper.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -27,7 +27,7 @@ AXRootObjWrapper::~AXRootObjWrapper() = default;
 bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
   std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>> children;
   GetChildren(&children);
-  return base::Contains(children, child);
+  return std::ranges::contains(children, child);
 }
 
 views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
