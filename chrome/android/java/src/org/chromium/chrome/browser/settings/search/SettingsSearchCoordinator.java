@@ -18,7 +18,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
@@ -59,6 +58,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -242,7 +242,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         assert mMultiColumnSettings != null;
         if (mMultiColumnSettings == null) return;
 
-        updateMultiColumnSearchUi();
+        updateSearchUiWidth();
 
         // Determine the search bar visibility.
         View searchBox = mActivity.findViewById(R.id.search_box);
@@ -272,7 +272,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                         new FragmentManager.FragmentLifecycleCallbacks() {
                             @Override
                             public void onFragmentResumed(FragmentManager fm, Fragment f) {
-                                updateMultiColumnSearchUi();
+                                updateSearchUiWidth();
                             }
                         },
                         false);
@@ -416,6 +416,8 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (mUseMultiColumn) {
             int stackCount = getSettingsFragmentManager().getBackStackEntryCount();
             mUpdateFirstVisibleTitle.onResult(stackCount + 1);
+        } else {
+            updateSingleColumnSearchUiWidth();
         }
     }
 
@@ -534,7 +536,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     }
 
     // Update search UI width/location when multi-column settings fragment is enabled.
-    private void updateMultiColumnSearchUi() {
+    private void updateSearchUiWidth() {
         assert mMultiColumnSettings != null;
         if (mMultiColumnSettings == null) return;
 
@@ -546,7 +548,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             View menuView = getHelpMenuView();
             int detailPaneWidth = mActivity.findViewById(R.id.preferences_detail).getWidth();
             if (detailPaneWidth == 0 || menuView == null) {
-                mHandler.post(this::updateMultiColumnSearchUi);
+                mHandler.post(this::updateSearchUiWidth);
                 return;
             }
             int width = detailPaneWidth - settingsMargin * 2 - menuView.getWidth();
@@ -560,8 +562,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
             showBackIcon = true;
         } else {
-            updateView(searchBox, settingsMargin, settingsMargin, LayoutParams.MATCH_PARENT);
-            updateView(query, settingsMargin, settingsMargin, LayoutParams.MATCH_PARENT);
+            updateSingleColumnSearchUiWidth();
         }
         assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(showBackIcon);
     }
@@ -572,6 +573,23 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         lp.setMarginEnd(endMargin);
         lp.width = width;
         view.setLayoutParams(lp);
+    }
+
+    private void updateSingleColumnSearchUiWidth() {
+        int appBarWidth = mActivity.findViewById(R.id.app_bar_layout).getWidth();
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View query = mActivity.findViewById(R.id.search_query_container);
+
+        int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
+        int padding =
+                ViewResizerUtil.computePaddingForWideDisplay(mActivity, searchBox, minWidePadding);
+        int settingsMargin = padding;
+        if (padding > minWidePadding) settingsMargin += getPixelSize(R.dimen.settings_item_margin);
+
+        int searchBoxWidth = appBarWidth - settingsMargin * 2;
+        int queryWidth = searchBoxWidth - assumeNonNull(getHelpMenuView()).getWidth();
+        updateView(searchBox, settingsMargin, settingsMargin, searchBoxWidth);
+        updateView(query, settingsMargin, settingsMargin, queryWidth);
     }
 
     /** Show/hide search bar UI. */
@@ -597,7 +615,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (useMultiColumn == mUseMultiColumn) {
             // Resizing/rotation could only change the window width. Adjust search bar UI in
             // response to the header/detail pane width.
-            if (mUseMultiColumn) updateMultiColumnSearchUi();
+            updateSearchUiWidth();
             return;
         }
 
@@ -610,7 +628,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             mHandler.post(
                     () -> {
                         switchSearchUiLayout();
-                        updateMultiColumnSearchUi();
+                        updateSearchUiWidth();
                     });
         } else {
             assumeNonNull(mBoxUiConfig).updateDisplayStyle();
