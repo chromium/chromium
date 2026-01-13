@@ -65,9 +65,9 @@ export class FakeReadingMode {
 
   // Enum values for line focus modes.
   lineFocusOff: number = 50;
-  lineFocusOneLineWindow: number = 51;
-  lineFocusThreeLineWindow: number = 52;
-  lineFocusFiveLineWindow: number = 53;
+  lineFocusSmallCursorWindow: number = 51;
+  lineFocusMediumCursorWindow: number = 52;
+  lineFocusLargeCursorWindow: number = 53;
   lineFocusStaticLine: number = 54;
   lineFocusCursorLine: number = 55;
 

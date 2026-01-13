@@ -54,16 +54,16 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     },
     {
       title: loadTimeData.getString('lineFocusOneLineTitle'),
-      data: chrome.readingMode.lineFocusOneLineWindow,
+      data: chrome.readingMode.lineFocusSmallCursorWindow,
       header: loadTimeData.getString('lineFocusWindowHeading'),
     },
     {
       title: loadTimeData.getString('lineFocusThreeLineTitle'),
-      data: chrome.readingMode.lineFocusThreeLineWindow,
+      data: chrome.readingMode.lineFocusMediumCursorWindow,
     },
     {
       title: loadTimeData.getString('lineFocusFiveLineTitle'),
-      data: chrome.readingMode.lineFocusFiveLineWindow,
+      data: chrome.readingMode.lineFocusLargeCursorWindow,
     },
     {
       title: loadTimeData.getString('lineFocusStaticLineTitle'),

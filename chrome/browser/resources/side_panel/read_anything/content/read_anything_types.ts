@@ -14,13 +14,14 @@ export class LineFocus {
   static readonly OFF = new LineFocus(
       LineFocusType.NONE, 0, () => chrome.readingMode.lineFocusOff);
   static readonly ONE_LINE_WINDOW = new LineFocus(
-      LineFocusType.WINDOW, 1, () => chrome.readingMode.lineFocusOneLineWindow);
+      LineFocusType.WINDOW, 1,
+      () => chrome.readingMode.lineFocusSmallCursorWindow);
   static readonly THREE_LINE_WINDOW = new LineFocus(
       LineFocusType.WINDOW, 3,
-      () => chrome.readingMode.lineFocusThreeLineWindow);
+      () => chrome.readingMode.lineFocusMediumCursorWindow);
   static readonly FIVE_LINE_WINDOW = new LineFocus(
       LineFocusType.WINDOW, 5,
-      () => chrome.readingMode.lineFocusFiveLineWindow);
+      () => chrome.readingMode.lineFocusLargeCursorWindow);
   static readonly STATIC_LINE = new LineFocus(
       LineFocusType.LINE, 1, () => chrome.readingMode.lineFocusStaticLine);
   static readonly CURSOR_LINE = new LineFocus(

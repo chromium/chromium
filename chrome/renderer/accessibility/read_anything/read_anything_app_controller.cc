@@ -1148,12 +1148,12 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "unexpectedUpdateContentStopSource",
           &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
       .SetProperty("lineFocusOff", &ReadAnythingAppController::LineFocusOff)
-      .SetProperty("lineFocusOneLineWindow",
-                   &ReadAnythingAppController::LineFocusOneLineWindow)
-      .SetProperty("lineFocusThreeLineWindow",
-                   &ReadAnythingAppController::LineFocusThreeLineWindow)
-      .SetProperty("lineFocusFiveLineWindow",
-                   &ReadAnythingAppController::LineFocusFiveLineWindow)
+      .SetProperty("lineFocusSmallCursorWindow",
+                   &ReadAnythingAppController::LineFocusSmallCursorWindow)
+      .SetProperty("lineFocusMediumCursorWindow",
+                   &ReadAnythingAppController::LineFocusMediumCursorWindow)
+      .SetProperty("lineFocusLargeCursorWindow",
+                   &ReadAnythingAppController::LineFocusLargeCursorWindow)
       .SetProperty("lineFocusStaticLine",
                    &ReadAnythingAppController::LineFocusStaticLine)
       .SetProperty("lineFocusCursorLine",
@@ -1529,15 +1529,15 @@ int ReadAnythingAppController::LineFocusOff() const {
   return std::to_underlying(read_anything::mojom::LineFocus::kOff);
 }
 
-int ReadAnythingAppController::LineFocusOneLineWindow() const {
+int ReadAnythingAppController::LineFocusSmallCursorWindow() const {
   return std::to_underlying(read_anything::mojom::LineFocus::kWindow1);
 }
 
-int ReadAnythingAppController::LineFocusThreeLineWindow() const {
+int ReadAnythingAppController::LineFocusMediumCursorWindow() const {
   return std::to_underlying(read_anything::mojom::LineFocus::kWindow3);
 }
 
-int ReadAnythingAppController::LineFocusFiveLineWindow() const {
+int ReadAnythingAppController::LineFocusLargeCursorWindow() const {
   return std::to_underlying(read_anything::mojom::LineFocus::kWindow5);
 }
 

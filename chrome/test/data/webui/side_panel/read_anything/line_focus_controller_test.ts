@@ -132,7 +132,7 @@ suite('LineFocusController', () => {
         LineFocusType.LINE, lineFocusController.getCurrentLineFocusType());
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusOneLineWindow, defaultContainer,
+        chrome.readingMode.lineFocusSmallCursorWindow, defaultContainer,
         defaultHeight);
     assertEquals(
         LineFocusType.WINDOW, lineFocusController.getCurrentLineFocusType());
@@ -165,7 +165,8 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
 
     assertEquals(container.offsetTop, lineFocusController.getTop());
     assertLT(0, lineFocusController.getHeight()!);
@@ -175,13 +176,16 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     const height1 = lineFocusController.getHeight();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusOneLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusSmallCursorWindow, container,
+        defaultHeight);
     const height2 = lineFocusController.getHeight();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusFiveLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusLargeCursorWindow, container,
+        defaultHeight);
     const height3 = lineFocusController.getHeight();
 
     assertTrue(!!height1);
@@ -198,7 +202,8 @@ suite('LineFocusController', () => {
     chrome.readingMode.startLineFocusSession = () => started = true;
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     assertTrue(started);
 
     started = false;
@@ -215,7 +220,8 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     lineFocusController.onLineFocusChange(
         chrome.readingMode.lineFocusOff, container, defaultHeight);
 
@@ -228,7 +234,8 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     lineFocusController.onLineFocusChange(
         chrome.readingMode.lineFocusOff, container, defaultHeight);
 
@@ -240,7 +247,8 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     lineFocusController.onLineFocusChange(
         chrome.readingMode.lineFocusOff, container, defaultHeight);
 
@@ -318,7 +326,8 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     lineFocusController.onLineFocusChange(
         chrome.readingMode.lineFocusOff, container, defaultHeight);
 
@@ -330,7 +339,8 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     lineFocusController.onLineFocusChange(
         chrome.readingMode.lineFocusOff, container, defaultHeight);
 
@@ -407,7 +417,8 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
 
     lineFocusController.toggle(container, defaultHeight);
 
@@ -526,7 +537,8 @@ suite('LineFocusController', () => {
   test('onMouseMove sets new window position and height', () => {
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     const newPos = container.offsetTop + 100;
 
@@ -541,7 +553,8 @@ suite('LineFocusController', () => {
   test('onMouseMove honors container top with height', () => {
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusFiveLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusLargeCursorWindow, container,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
 
     lineFocusController.onMouseMove(0);
@@ -631,7 +644,8 @@ suite('LineFocusController', () => {
   test('onMouseMoveInToolbar sets new window position and height', () => {
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     const newPos = container.offsetTop + 100;
 
@@ -646,7 +660,8 @@ suite('LineFocusController', () => {
   test('onMouseMoveInToolbar honors container top with height', () => {
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusFiveLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusLargeCursorWindow, container,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
 
     lineFocusController.onMouseMoveInToolbar(0);
@@ -674,7 +689,8 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     const oldTop = lineFocusController.getTop();
     const oldHeight = lineFocusController.getHeight();
     const heading = document.createElement('h1');
@@ -712,7 +728,7 @@ suite('LineFocusController', () => {
     container.appendChild(text);
     document.body.appendChild(container);
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, 100);
+        chrome.readingMode.lineFocusMediumCursorWindow, container, 100);
     lineFocusController.onMouseMove(100);
     const oldTop = lineFocusController.getTop();
     const oldHeight = lineFocusController.getHeight();
@@ -1003,7 +1019,8 @@ suite('LineFocusController', () => {
         'for the things I\'ve done you blame before';
     document.body.appendChild(container);
     lineFocusController.onLineFocusChange(
-        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, container,
+        defaultHeight);
     let oldTop = lineFocusController.getTop();
 
     // Snap to the third line.

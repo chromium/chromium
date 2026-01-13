@@ -254,7 +254,7 @@ suite('AppReceivesToolbarChanges', () => {
         chrome.readingMode.isLineFocusEnabled = true;
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS,
-            {detail: {data: chrome.readingMode.lineFocusOneLineWindow}});
+            {detail: {data: chrome.readingMode.lineFocusSmallCursorWindow}});
         await microtasksFinished();
         const startingHeight =
             app.style.getPropertyValue('--line-focus-height');

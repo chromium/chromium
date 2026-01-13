@@ -53,7 +53,7 @@ suite('LineFocusMenuElement', () => {
     document.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-    const window = chrome.readingMode.lineFocusThreeLineWindow;
+    const window = chrome.readingMode.lineFocusMediumCursorWindow;
     lineFocusMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: window}}));
     assertEquals(window, chrome.readingMode.lineFocus);
@@ -77,7 +77,7 @@ suite('LineFocusMenuElement', () => {
   });
 
   test('restores saved line focus option', async () => {
-    const lineFocus = chrome.readingMode.lineFocusOneLineWindow;
+    const lineFocus = chrome.readingMode.lineFocusSmallCursorWindow;
     const startingIndex = lineFocusMenu.$.menu.currentSelectedIndex;
     assertNotEquals(lineFocus, startingIndex);
 

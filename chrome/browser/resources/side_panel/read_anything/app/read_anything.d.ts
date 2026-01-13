@@ -83,9 +83,9 @@ declare namespace chrome {
 
     // Enum values for line focus modes.
     let lineFocusOff: number;
-    let lineFocusOneLineWindow: number;
-    let lineFocusThreeLineWindow: number;
-    let lineFocusFiveLineWindow: number;
+    let lineFocusSmallCursorWindow: number;
+    let lineFocusMediumCursorWindow: number;
+    let lineFocusLargeCursorWindow: number;
     let lineFocusStaticLine: number;
     let lineFocusCursorLine: number;
 
