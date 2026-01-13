@@ -35,8 +35,8 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
         base::StrCat({"Memory.DumpProvider.FinalStatus.",
                       provider_info_->name.histogram_name()}),
         status_);
-    base::UmaHistogramMicrosecondsTimes(
-        base::StrCat({"Memory.DumpProvider.TotalTime.",
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Memory.DumpProvider.TotalTime2.",
                       provider_info_->name.histogram_name()}),
         total_time);
 
@@ -44,8 +44,7 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
     base::UmaHistogramCounts1000("Memory.DumpProvider.FollowingProviders2",
                                  static_cast<int>(num_following_providers_));
     base::UmaHistogramEnumeration("Memory.DumpProvider.FinalStatus", status_);
-    base::UmaHistogramMicrosecondsTimes("Memory.DumpProvider.TotalTime",
-                                        total_time);
+    base::UmaHistogramMediumTimes("Memory.DumpProvider.TotalTime2", total_time);
   }
 }
 
