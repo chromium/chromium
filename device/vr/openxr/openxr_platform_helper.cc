@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 #include "device/vr/openxr/openxr_platform_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -261,10 +261,10 @@ bool OpenXrPlatformHelper::IsArBlendModeSupported(XrInstance instance) {
   std::vector<XrEnvironmentBlendMode> environment_blend_modes =
       OpenXrApiWrapper::GetSupportedBlendModes(instance, system);
 
-  return base::Contains(environment_blend_modes,
-                        XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||
-         base::Contains(environment_blend_modes,
-                        XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND);
+  return std::ranges::contains(environment_blend_modes,
+                               XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||
+         std::ranges::contains(environment_blend_modes,
+                               XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND);
 }
 
 }  // namespace device

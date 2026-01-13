@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -1153,9 +1152,9 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   std::unique_ptr<PrivateKey> private_key;
   for (const auto& param :
        request.public_key_credential_params.public_key_credential_params()) {
-    const bool advertised =
-        base::Contains(config_.advertised_algorithms, param.algorithm,
-                       [](auto algo) { return static_cast<int32_t>(algo); });
+    const bool advertised = std::ranges::contains(
+        config_.advertised_algorithms, param.algorithm,
+        [](auto algo) { return static_cast<int32_t>(algo); });
     if (!advertised && !config_.advertised_algorithms.empty()) {
       continue;
     }
@@ -1334,8 +1333,8 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       switch (request.attestation_preference) {
         case AttestationConveyancePreference::
             kEnterpriseIfRPListedOnAuthenticator:
-          if (base::Contains(config_.enterprise_attestation_rps,
-                             request.rp.id)) {
+          if (std::ranges::contains(config_.enterprise_attestation_rps,
+                                    request.rp.id)) {
             enterprise_attestation_requested = true;
           }
           break;

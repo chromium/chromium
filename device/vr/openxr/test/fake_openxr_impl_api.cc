@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
@@ -218,7 +219,7 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
   auto supported_extensions = OpenXrTestHelper::GetSupportedExtensions();
   bool all_valid = std::ranges::all_of(
       enabled_extensions, [&supported_extensions](std::string_view name) {
-        return base::Contains(supported_extensions, name);
+        return std::ranges::contains(supported_extensions, name);
       });
 
   RETURN_IF_FALSE(all_valid, XR_ERROR_VALIDATION_FAILURE,

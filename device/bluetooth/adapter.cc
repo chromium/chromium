@@ -4,11 +4,11 @@
 
 #include "device/bluetooth/adapter.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -314,7 +314,7 @@ void Adapter::CreateLocalGattService(
 void Adapter::IsLeScatternetDualRoleSupported(
     IsLeScatternetDualRoleSupportedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
-  std::move(callback).Run(base::Contains(
+  std::move(callback).Run(std::ranges::contains(
       adapter_->GetSupportedRoles(),
       device::BluetoothAdapter::BluetoothRole::kCentralPeripheral));
 #else

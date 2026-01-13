@@ -4,10 +4,10 @@
 
 #include "device/vr/openxr/test/openxr_test_helper.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_interaction_profile_paths.h"
@@ -637,7 +637,7 @@ XrResult OpenXrTestHelper::BeginSession(
     }
 
     // Check for duplicates.
-    if (base::Contains(view_configs_enabled_, view_configs[i])) {
+    if (std::ranges::contains(view_configs_enabled_, view_configs[i])) {
       return XR_ERROR_VALIDATION_FAILURE;
     }
 

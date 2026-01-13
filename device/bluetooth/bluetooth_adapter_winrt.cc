@@ -9,11 +9,11 @@
 #include <windows.storage.streams.h>
 #include <wrl/event.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1383,7 +1383,7 @@ void BluetoothAdapterWinrt::OnAdvertisementWatcherStopped(
 void BluetoothAdapterWinrt::OnRegisterAdvertisement(
     BluetoothAdvertisement* advertisement,
     CreateAdvertisementCallback callback) {
-  DCHECK(base::Contains(pending_advertisements_, advertisement));
+  DCHECK(std::ranges::contains(pending_advertisements_, advertisement));
   auto wrapped_advertisement = base::WrapRefCounted(advertisement);
   std::erase(pending_advertisements_, advertisement);
   std::move(callback).Run(std::move(wrapped_advertisement));

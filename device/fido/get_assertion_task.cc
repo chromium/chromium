@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "device/base/features.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -41,8 +40,8 @@ bool SetResponseCredential(
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
   if (response->credential) {
     if (!allow_list.empty() &&
-        !base::Contains(allow_list, response->credential->id,
-                        &PublicKeyCredentialDescriptor::id)) {
+        !std::ranges::contains(allow_list, response->credential->id,
+                               &PublicKeyCredentialDescriptor::id)) {
       return false;
     }
 

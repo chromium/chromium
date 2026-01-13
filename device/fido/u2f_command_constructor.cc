@@ -4,10 +4,10 @@
 
 #include "device/fido/u2f_command_constructor.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "components/apdu/apdu_command.h"
 #include "crypto/hash.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -21,7 +21,7 @@ bool IsConvertibleToU2fRegisterCommand(
       request.resident_key_required)
     return false;
 
-  return base::Contains(
+  return std::ranges::contains(
       request.public_key_credential_params.public_key_credential_params(),
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
       &PublicKeyCredentialParams::CredentialInfo::algorithm);

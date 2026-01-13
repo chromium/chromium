@@ -4,7 +4,8 @@
 
 #include "device/vr/openxr/openxr_spatial_plane_manager.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_spatial_framework_manager.h"
@@ -84,7 +85,8 @@ bool OpenXrSpatialPlaneManager::IsSupported(
   // XR_SPATIAL_COMPONENT_TYPE_PLANE_ALIGNMENT_EXT which are guaranteed to be
   // supported if the XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT is supported, so
   //  that's all we need to check.
-  return base::Contains(capabilities, XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
+  return std::ranges::contains(capabilities,
+                               XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
 }
 
 OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
@@ -107,15 +109,15 @@ OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
               .xrEnumerateSpatialCapabilityComponentTypesEXT,
           instance, system, XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
 
-  polygon_enabled_ = base::Contains(plane_tracking_components,
-                                    XR_SPATIAL_COMPONENT_TYPE_POLYGON_2D_EXT);
+  polygon_enabled_ = std::ranges::contains(
+      plane_tracking_components, XR_SPATIAL_COMPONENT_TYPE_POLYGON_2D_EXT);
   if (polygon_enabled_) {
     enabled_components_.insert(XR_SPATIAL_COMPONENT_TYPE_POLYGON_2D_EXT);
   }
 
   semantic_label_enabled_ =
-      base::Contains(plane_tracking_components,
-                     XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
+      std::ranges::contains(plane_tracking_components,
+                            XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
   if (semantic_label_enabled_) {
     enabled_components_.insert(
         XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
@@ -130,7 +132,7 @@ OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
   auto first_attachable_component = std::find_if(
       attachable_components.begin(), attachable_components.end(),
       [&plane_tracking_components](XrSpatialComponentTypeEXT component) {
-        return base::Contains(plane_tracking_components, component);
+        return std::ranges::contains(plane_tracking_components, component);
       });
 
   if (first_attachable_component != attachable_components.end()) {
@@ -140,7 +142,7 @@ OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
     bool attachable_component_enabled = std::any_of(
         enabled_components_.begin(), enabled_components_.end(),
         [&attachable_components](XrSpatialComponentTypeEXT component) {
-          return base::Contains(attachable_components, component);
+          return std::ranges::contains(attachable_components, component);
         });
 
     // If not, let's enable the first attachable component that we found, since

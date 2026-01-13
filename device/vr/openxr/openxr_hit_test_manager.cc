@@ -4,13 +4,13 @@
 
 #include "device/vr/openxr/openxr_hit_test_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/hit_test_subscription_id.h"
@@ -241,8 +241,8 @@ OpenXrHitTestManager::GetMojoFromInputSources(
   }
   for (const auto& input_source_state : input_state.value()) {
     if (input_source_state && input_source_state->description) {
-      if (base::Contains(input_source_state->description->profiles,
-                         profile_name)) {
+      if (std::ranges::contains(input_source_state->description->profiles,
+                                profile_name)) {
         // Input source represented by input_state matches the profile, find
         // the transform and grab input source id.
         std::optional<gfx::Transform> maybe_mojo_from_input_source =

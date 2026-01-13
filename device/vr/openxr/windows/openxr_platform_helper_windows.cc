@@ -6,7 +6,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"

@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -745,7 +744,7 @@ void FakeBluetoothDeviceClient::SetSimulationIntervalMs(int interval_ms) {
 void FakeBluetoothDeviceClient::CreateDevice(
     const dbus::ObjectPath& adapter_path,
     const dbus::ObjectPath& device_path) {
-  if (base::Contains(device_list_, device_path))
+  if (std::ranges::contains(device_list_, device_path))
     return;
 
   std::unique_ptr<Properties> properties(new Properties(
@@ -891,7 +890,7 @@ void FakeBluetoothDeviceClient::CreateDeviceWithProperties(
     const dbus::ObjectPath& adapter_path,
     const IncomingDeviceProperties& props) {
   dbus::ObjectPath device_path(props.device_path);
-  if (base::Contains(device_list_, device_path))
+  if (std::ranges::contains(device_list_, device_path))
     return;
 
   std::unique_ptr<Properties> properties(new Properties(
@@ -1946,7 +1945,7 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
     id = base::Base64Encode(base::RandBytesAsVector(10));
     base::RemoveChars(id, "+/=", &id);
     device_path = dbus::ObjectPath(adapter_path.value() + "/dev" + id);
-  } while (base::Contains(device_list_, device_path));
+  } while (std::ranges::contains(device_list_, device_path));
 
   std::unique_ptr<Properties> properties(new Properties(
       base::BindRepeating(&FakeBluetoothDeviceClient::OnPropertyChanged,
