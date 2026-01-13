@@ -10,6 +10,7 @@ import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-t
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -135,6 +136,7 @@ suite('NewTabPageActionChipsTest', () => {
       url: fakeTab.url,
       title: fakeTab.title,
       delayUpload: true,
+      origin: TabUploadOrigin.ACTION_CHIP,
     };
 
     assertTrue(!!event.detail.contextFiles);

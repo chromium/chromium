@@ -5,6 +5,7 @@
 import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/recent_tab_chip.js';
 
+import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {RecentTabChipElement} from 'chrome://resources/cr_components/composebox/recent_tab_chip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -68,6 +69,7 @@ suite('RecentTabChipTest', function() {
     assertEquals(MOCK_TAB_INFO.title, event.detail.title);
     assertEquals(MOCK_TAB_INFO.url, event.detail.url);
     assertFalse(event.detail.delayUpload);
+    assertEquals(TabUploadOrigin.RECENT_TAB_CHIP, event.detail.origin);
   });
 
   test('delayUploads is true when flag is enabled', async () => {
@@ -90,6 +92,7 @@ suite('RecentTabChipTest', function() {
     assertEquals(MOCK_TAB_INFO.title, event.detail.title);
     assertEquals(MOCK_TAB_INFO.url, event.detail.url);
     assertTrue(event.detail.delayUpload);
+    assertEquals(TabUploadOrigin.RECENT_TAB_CHIP, event.detail.origin);
     // Assert context added method was context menu.
     assertEquals(
         1,
