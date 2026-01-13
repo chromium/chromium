@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/token_service_factory.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 
 #include <optional>
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/legion/token_service.h"
+#include "chrome/browser/legion/private_ai_service.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/legion/features.h"
@@ -17,14 +17,14 @@
 
 namespace legion {
 
-class TokenServiceFactoryTest : public testing::Test {
+class PrivateAiServiceFactoryTest : public testing::Test {
  protected:
-  explicit TokenServiceFactoryTest(bool feature_enabled = true) {
+  explicit PrivateAiServiceFactoryTest(bool feature_enabled = true) {
     scoped_feature_list_.InitWithFeatureState(legion::kLegion, feature_enabled);
     // ProfileSelections must be created after the feature is initialized.
     profile_selections_.emplace(
-        TokenServiceFactory::GetInstance(),
-        TokenServiceFactory::CreateProfileSelectionsForTesting());
+        PrivateAiServiceFactory::GetInstance(),
+        PrivateAiServiceFactory::CreateProfileSelectionsForTesting());
   }
 
   TestingProfile* profile() {
@@ -44,28 +44,31 @@ class TokenServiceFactoryTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(TokenServiceFactoryTest, ServiceCreationSucceedsWhenFlagEnabled) {
-  legion::TokenService* service = TokenServiceFactory::GetForProfile(profile());
+TEST_F(PrivateAiServiceFactoryTest, ServiceCreationSucceedsWhenFlagEnabled) {
+  legion::PrivateAiService* service =
+      PrivateAiServiceFactory::GetForProfile(profile());
   EXPECT_TRUE(service);
 }
 
-TEST_F(TokenServiceFactoryTest, ServiceCreationFailsForIncognito) {
+TEST_F(PrivateAiServiceFactoryTest, ServiceCreationFailsForIncognito) {
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(otr_profile);
   // Service should be `nullptr` for OTR profiles.
-  EXPECT_FALSE(TokenServiceFactory::GetForProfile(otr_profile));
+  EXPECT_FALSE(PrivateAiServiceFactory::GetForProfile(otr_profile));
 }
 
-class TokenServiceFactoryFeatureDisabledTest : public TokenServiceFactoryTest {
+class PrivateAiServiceFactoryFeatureDisabledTest
+    : public PrivateAiServiceFactoryTest {
  public:
-  TokenServiceFactoryFeatureDisabledTest()
-      : TokenServiceFactoryTest(/*feature_enabled=*/false) {}
+  PrivateAiServiceFactoryFeatureDisabledTest()
+      : PrivateAiServiceFactoryTest(/*feature_enabled=*/false) {}
 };
 
-TEST_F(TokenServiceFactoryFeatureDisabledTest,
+TEST_F(PrivateAiServiceFactoryFeatureDisabledTest,
        ServiceCreationFailsWhenFlagDisabled) {
-  legion::TokenService* service = TokenServiceFactory::GetForProfile(profile());
+  legion::PrivateAiService* service =
+      PrivateAiServiceFactory::GetForProfile(profile());
   EXPECT_FALSE(service);
 }
 

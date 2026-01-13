@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LEGION_TOKEN_SERVICE_H_
-#define CHROME_BROWSER_LEGION_TOKEN_SERVICE_H_
+#ifndef CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_H_
+#define CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_H_
 
 #include <memory>
 
@@ -26,28 +26,29 @@ namespace legion {
 
 class Client;
 
-// The `TokenService` is a KeyedService responsible for managing authentication
-// tokens for the Legion feature. It observes the user's sign-in state and, when
-// a primary account is available, it can fetch OAuth2 access tokens. These
-// access tokens are then used by the underlying `phosphor::TokenManager` and
-// `phosphor::TokenFetcher` to acquire and manage authentication tokens for
-// Legion. This service also creates and provides the `legion::Client`, which
-// serves as the primary interface for interacting with the Legion feature.
-class TokenService : public KeyedService,
-                     public phosphor::TokenFetcherImpl::Delegate,
-                     public signin::IdentityManager::Observer {
+// The `PrivateAiService` is a KeyedService responsible for managing
+// authentication tokens for the Legion feature. It observes the user's sign-in
+// state and, when a primary account is available, it can fetch OAuth2 access
+// tokens. These access tokens are then used by the underlying
+// `phosphor::TokenManager` and `phosphor::TokenFetcher` to acquire and manage
+// authentication tokens for Legion. This service also creates and provides the
+// `legion::Client`, which serves as the primary interface for interacting with
+// the Legion feature.
+class PrivateAiService : public KeyedService,
+                         public phosphor::TokenFetcherImpl::Delegate,
+                         public signin::IdentityManager::Observer {
  public:
-  explicit TokenService(signin::IdentityManager* identity_manager,
-                        PrefService* pref_service,
-                        Profile* profile);
-  ~TokenService() override;
+  explicit PrivateAiService(signin::IdentityManager* identity_manager,
+                            PrefService* pref_service,
+                            Profile* profile);
+  ~PrivateAiService() override;
 
   // KeyedService override:
   void Shutdown() override;
 
   static bool CanLegionBeEnabled();
 
-  // Returns `nullptr` if `TokenService` is shutting down.
+  // Returns `nullptr` if `PrivateAiService` is shutting down.
   phosphor::TokenManager* GetTokenManager();
 
   Client* GetClient();
@@ -83,9 +84,9 @@ class TokenService : public KeyedService,
 
   bool is_shutting_down_ = false;
 
-  base::WeakPtrFactory<TokenService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PrivateAiService> weak_ptr_factory_{this};
 };
 
 }  // namespace legion
 
-#endif  // CHROME_BROWSER_LEGION_TOKEN_SERVICE_H_
+#endif  // CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_H_

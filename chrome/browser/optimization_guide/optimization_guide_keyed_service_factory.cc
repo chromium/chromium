@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/legion/token_service_factory.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 #endif
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
@@ -57,7 +57,7 @@ OptimizationGuideKeyedServiceFactory::OptimizationGuideKeyedServiceFactory()
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
-  DependsOn(legion::TokenServiceFactory::GetInstance());
+  DependsOn(legion::PrivateAiServiceFactory::GetInstance());
 #endif
 }
 

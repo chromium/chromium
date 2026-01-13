@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/token_service.h"
+#include "chrome/browser/legion/private_ai_service.h"
 
 #include "base/sequence_checker.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -21,24 +21,24 @@
 namespace legion {
 
 // static
-bool TokenService::CanLegionBeEnabled() {
+bool PrivateAiService::CanLegionBeEnabled() {
   return base::FeatureList::IsEnabled(kLegion);
 }
 
-TokenService::TokenService(signin::IdentityManager* identity_manager,
-                           PrefService* pref_service,
-                           Profile* profile)
+PrivateAiService::PrivateAiService(signin::IdentityManager* identity_manager,
+                                   PrefService* pref_service,
+                                   Profile* profile)
     : profile_(profile),
       identity_manager_(identity_manager),
       pref_service_(pref_service) {
   identity_manager_->AddObserver(this);
 }
 
-TokenService::~TokenService() {
+PrivateAiService::~PrivateAiService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void TokenService::Shutdown() {
+void PrivateAiService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_shutting_down_ = true;
@@ -47,8 +47,8 @@ void TokenService::Shutdown() {
 
 // TODO(b:469400476): Move into ctor. Currently some tests will fail because
 // vtable is not matching the expectation that
-// `TestTokenService::CreateBlindSignAuth()` will be called.
-void TokenService::InitializeServicesIfNeeded() {
+// `TestPrivateAiService::CreateBlindSignAuth()` will be called.
+void PrivateAiService::InitializeServicesIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_shutting_down_) {
@@ -70,7 +70,7 @@ void TokenService::InitializeServicesIfNeeded() {
       profile_->GetDefaultStoragePartition()->GetNetworkContext());
 }
 
-phosphor::TokenManager* TokenService::GetTokenManager() {
+phosphor::TokenManager* PrivateAiService::GetTokenManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   InitializeServicesIfNeeded();
@@ -78,7 +78,7 @@ phosphor::TokenManager* TokenService::GetTokenManager() {
   return token_manager_.get();
 }
 
-Client* TokenService::GetClient() {
+Client* PrivateAiService::GetClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   InitializeServicesIfNeeded();
@@ -86,7 +86,7 @@ Client* TokenService::GetClient() {
   return client_.get();
 }
 
-bool TokenService::IsTokenFetchEnabled() {
+bool PrivateAiService::IsTokenFetchEnabled() {
   CHECK(identity_manager_);
   if (is_shutting_down_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -96,7 +96,7 @@ bool TokenService::IsTokenFetchEnabled() {
   return true;
 }
 
-void TokenService::RequestOAuthToken(RequestOAuthTokenCallback callback) {
+void PrivateAiService::RequestOAuthToken(RequestOAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsTokenFetchEnabled()) {
@@ -112,13 +112,13 @@ void TokenService::RequestOAuthToken(RequestOAuthTokenCallback callback) {
           signin::ConsentLevel::kSignin);
 
   auto* fetcher_ptr = oauth_token_fetcher.get();
-  fetcher_ptr->Start(base::BindOnce(&TokenService::OnRequestOAuthTokenCompleted,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(oauth_token_fetcher),
-                                    std::move(callback)));
+  fetcher_ptr->Start(
+      base::BindOnce(&PrivateAiService::OnRequestOAuthTokenCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(oauth_token_fetcher), std::move(callback)));
 }
 
-void TokenService::OnRequestOAuthTokenCompleted(
+void PrivateAiService::OnRequestOAuthTokenCompleted(
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
     RequestOAuthTokenCallback callback,
     GoogleServiceAuthError error,
@@ -136,7 +136,7 @@ void TokenService::OnRequestOAuthTokenCompleted(
                           access_token_info.token);
 }
 
-void TokenService::OnPrimaryAccountChanged(
+void PrivateAiService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

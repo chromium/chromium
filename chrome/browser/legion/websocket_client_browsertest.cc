@@ -6,8 +6,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/legion/token_service.h"
-#include "chrome/browser/legion/token_service_factory.h"
+#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -54,10 +54,10 @@ IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest, MANUAL_Client) {
                           "Please provide a query text."
                        << "--enable-features=Legion:test-query-text/'Hello "
                           "Legion!'";
-  auto* token_service =
-      TokenServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(token_service);
-  auto* client = token_service->GetClient();
+  auto* private_ai_service =
+      PrivateAiServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(private_ai_service);
+  auto* client = private_ai_service->GetClient();
   ASSERT_TRUE(client);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;

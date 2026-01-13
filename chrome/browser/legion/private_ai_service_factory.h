@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LEGION_TOKEN_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_LEGION_TOKEN_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -13,27 +13,27 @@ class Profile;
 
 namespace legion {
 
-class TokenService;
+class PrivateAiService;
 
-class TokenServiceFactory : public ProfileKeyedServiceFactory {
+class PrivateAiServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static legion::TokenService* GetForProfile(Profile* profile);
-  static TokenServiceFactory* GetInstance();
+  static legion::PrivateAiService* GetForProfile(Profile* profile);
+  static PrivateAiServiceFactory* GetInstance();
 
   static ProfileSelections CreateProfileSelectionsForTesting() {
     return CreateProfileSelections();
   }
 
-  TokenServiceFactory(const TokenServiceFactory&) = delete;
-  TokenServiceFactory& operator=(const TokenServiceFactory&) = delete;
+  PrivateAiServiceFactory(const PrivateAiServiceFactory&) = delete;
+  PrivateAiServiceFactory& operator=(const PrivateAiServiceFactory&) = delete;
 
  private:
-  friend base::NoDestructor<TokenServiceFactory>;
+  friend base::NoDestructor<PrivateAiServiceFactory>;
 
   static ProfileSelections CreateProfileSelections();
 
-  TokenServiceFactory();
-  ~TokenServiceFactory() override;
+  PrivateAiServiceFactory();
+  ~PrivateAiServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
@@ -42,4 +42,4 @@ class TokenServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace legion
 
-#endif  // CHROME_BROWSER_LEGION_TOKEN_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_FACTORY_H_

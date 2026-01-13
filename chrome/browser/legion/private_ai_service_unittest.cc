@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/token_service.h"
+#include "chrome/browser/legion/private_ai_service.h"
 
 #include <memory>
 #include <optional>
@@ -31,17 +31,17 @@ namespace {
 
 constexpr char kTestEmail[] = "test@example.com";
 
-class TestTokenService : public TokenService {
+class TestPrivateAiService : public PrivateAiService {
  public:
-  TestTokenService(signin::IdentityManager* identity_manager,
-                   PrefService* pref_service,
-                   Profile* profile)
-      : TokenService(identity_manager, pref_service, profile) {}
+  TestPrivateAiService(signin::IdentityManager* identity_manager,
+                       PrefService* pref_service,
+                       Profile* profile)
+      : PrivateAiService(identity_manager, pref_service, profile) {}
 
-  ~TestTokenService() override = default;
+  ~TestPrivateAiService() override = default;
 
   // KeyedService override:
-  void Shutdown() override { TokenService::Shutdown(); }
+  void Shutdown() override { PrivateAiService::Shutdown(); }
 
   // phosphor::TokenFetcherImpl::Delegate override:
   std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
@@ -60,16 +60,16 @@ class TestTokenService : public TokenService {
 
 }  // namespace
 
-class TokenServiceTest : public testing::Test {
+class PrivateAiServiceTest : public testing::Test {
  protected:
-  TokenServiceTest()
-      : token_service_(identity_test_env_.identity_manager(),
-                       profile_.GetPrefs(),
-                       &profile_) {
+  PrivateAiServiceTest()
+      : private_ai_service_(identity_test_env_.identity_manager(),
+                            profile_.GetPrefs(),
+                            &profile_) {
     feature_list_.InitAndEnableFeature(legion::kLegion);
   }
 
-  ~TokenServiceTest() override { token_service_.Shutdown(); }
+  ~PrivateAiServiceTest() override { private_ai_service_.Shutdown(); }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -77,20 +77,20 @@ class TokenServiceTest : public testing::Test {
 
   TestingProfile profile_;
 
-  TestTokenService token_service_;
+  TestPrivateAiService private_ai_service_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TokenServiceTest, RequestOAuthTokenSuccess) {
+TEST_F(PrivateAiServiceTest, RequestOAuthTokenSuccess) {
   base::test::TestFuture<phosphor::GetAuthnTokensResult,
                          std::optional<std::string>>
       future;
   identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
                                                  signin::ConsentLevel::kSync);
 
-  token_service_.RequestOAuthToken(future.GetCallback());
+  private_ai_service_.RequestOAuthToken(future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
@@ -99,23 +99,23 @@ TEST_F(TokenServiceTest, RequestOAuthTokenSuccess) {
   EXPECT_EQ(future.Get<1>(), "access_token");
 }
 
-TEST_F(TokenServiceTest, RequestOAuthTokenNoAccount) {
+TEST_F(PrivateAiServiceTest, RequestOAuthTokenNoAccount) {
   base::test::TestFuture<phosphor::GetAuthnTokensResult,
                          std::optional<std::string>>
       future;
-  token_service_.RequestOAuthToken(future.GetCallback());
+  private_ai_service_.RequestOAuthToken(future.GetCallback());
   EXPECT_EQ(future.Get<0>(), phosphor::GetAuthnTokensResult::kFailedNoAccount);
   EXPECT_EQ(future.Get<1>(), std::nullopt);
 }
 
-TEST_F(TokenServiceTest, RequestOAuthTokenTransientError) {
+TEST_F(PrivateAiServiceTest, RequestOAuthTokenTransientError) {
   base::test::TestFuture<phosphor::GetAuthnTokensResult,
                          std::optional<std::string>>
       future;
   identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
                                                  signin::ConsentLevel::kSync);
 
-  token_service_.RequestOAuthToken(future.GetCallback());
+  private_ai_service_.RequestOAuthToken(future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
@@ -125,14 +125,14 @@ TEST_F(TokenServiceTest, RequestOAuthTokenTransientError) {
   EXPECT_EQ(future.Get<1>(), std::nullopt);
 }
 
-TEST_F(TokenServiceTest, RequestOAuthTokenPersistentError) {
+TEST_F(PrivateAiServiceTest, RequestOAuthTokenPersistentError) {
   base::test::TestFuture<phosphor::GetAuthnTokensResult,
                          std::optional<std::string>>
       future;
   identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
                                                  signin::ConsentLevel::kSync);
 
-  token_service_.RequestOAuthToken(future.GetCallback());
+  private_ai_service_.RequestOAuthToken(future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));

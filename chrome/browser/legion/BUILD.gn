@@ -5,10 +5,10 @@
 if (!is_android) {
   source_set("legion") {
     sources = [
-      "token_service.cc",
-      "token_service.h",
-      "token_service_factory.cc",
-      "token_service_factory.h",
+      "private_ai_service.cc",
+      "private_ai_service.h",
+      "private_ai_service_factory.cc",
+      "private_ai_service_factory.h",
     ]
     public_deps = [
       "//chrome/browser:browser_public_dependencies",
@@ -34,8 +34,8 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "token_service_factory_unittest.cc",
-      "token_service_unittest.cc",
+      "private_ai_service_factory_unittest.cc",
+      "private_ai_service_unittest.cc",
     ]
     deps = [
       ":legion",
@@ -55,8 +55,8 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "private_ai_service_browsertest.cc",
       "secure_session_async_impl_browsertest.cc",
-      "token_service_browsertest.cc",
       "websocket_client_browsertest.cc",
     ]
 

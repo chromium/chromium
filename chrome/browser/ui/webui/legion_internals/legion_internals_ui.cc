@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "chrome/browser/legion/token_service.h"
-#include "chrome/browser/legion/token_service_factory.h"
+#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals_page_handler.h"
@@ -39,8 +39,9 @@ bool LegionInternalsUIConfig::IsWebUIEnabled(
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* token_service = legion::TokenServiceFactory::GetForProfile(profile);
-  return token_service && token_service->GetTokenManager();
+  auto* private_ai_service =
+      legion::PrivateAiServiceFactory::GetForProfile(profile);
+  return private_ai_service && private_ai_service->GetTokenManager();
 }
 
 LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
@@ -68,12 +69,13 @@ void LegionInternalsUI::BindInterface(
     mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
         receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  auto* token_service = legion::TokenServiceFactory::GetForProfile(profile);
+  auto* private_ai_service =
+      legion::PrivateAiServiceFactory::GetForProfile(profile);
 
   // IsWebUIEnabled should have prevented this from being created if the token
   // service or manager is not available.
-  CHECK(token_service);
-  auto* token_manager = token_service->GetTokenManager();
+  CHECK(private_ai_service);
+  auto* token_manager = private_ai_service->GetTokenManager();
   CHECK(token_manager);
 
   auto* network_context =

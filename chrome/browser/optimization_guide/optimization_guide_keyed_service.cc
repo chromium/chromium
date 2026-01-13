@@ -93,8 +93,8 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
-#include "chrome/browser/legion/token_service.h"
-#include "chrome/browser/legion/token_service_factory.h"
+#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 #include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "components/legion/client.h"    // nogncheck
@@ -142,11 +142,11 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
 
   // Takes a BrowserContext instead of a legion::Client directly to avoid a
   // dangling pointer. The KeyedService dependency (DependsOn) ensures that
-  // the TokenService outlives this service during normal shutdown. However,
-  // in tests, the TokenService can be replaced with a test factory after this
-  // service has been created, immediately destroying the original TokenService
-  // and its Client. Holding a BrowserContext allows for fetching the
-  // correct, current TokenService instance at execution time.
+  // the PrivateAiService outlives this service during normal shutdown. However,
+  // in tests, the PrivateAiService can be replaced with a test factory after
+  // this service has been created, immediately destroying the original
+  // PrivateAiService and its Client. Holding a BrowserContext allows for
+  // fetching the correct, current PrivateAiService instance at execution time.
   explicit FetcherDelegate(content::BrowserContext* browser_context)
       : browser_context_(browser_context) {
     CHECK(browser_context_);
@@ -154,11 +154,11 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
 
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
   CreateLegionFetcher() override {
-    legion::TokenService* token_service =
-        legion::TokenServiceFactory::GetForProfile(
+    legion::PrivateAiService* private_ai_service =
+        legion::PrivateAiServiceFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context_));
-    if (token_service) {
-      if (legion::Client* client = token_service->GetClient()) {
+    if (private_ai_service) {
+      if (legion::Client* client = private_ai_service->GetClient()) {
         return std::make_unique<
             optimization_guide::LegionModelExecutionFetcher>(client);
       }

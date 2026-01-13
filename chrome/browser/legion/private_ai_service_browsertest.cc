@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/legion/token_service.h"
+#include "chrome/browser/legion/private_ai_service.h"
 
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/legion/token_service_factory.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -28,21 +28,21 @@ namespace legion {
 
 namespace {
 
-class TestTokenService : public legion::TokenService {
+class TestPrivateAiService : public legion::PrivateAiService {
  public:
-  TestTokenService(signin::IdentityManager* identity_manager,
-                   PrefService* pref_service,
-                   Profile* profile)
-      : legion::TokenService(identity_manager, pref_service, profile) {}
+  TestPrivateAiService(signin::IdentityManager* identity_manager,
+                       PrefService* pref_service,
+                       Profile* profile)
+      : legion::PrivateAiService(identity_manager, pref_service, profile) {}
 
-  ~TestTokenService() override = default;
+  ~TestPrivateAiService() override = default;
 
   // KeyedService override:
   void Shutdown() override {
     // Clear the raw pointer BEFORE calling the base Shutdown.
     // Base Shutdown destroys TokenManager -> TokenFetcher -> MockBlindSignAuth.
     bsa_ = nullptr;
-    legion::TokenService::Shutdown();
+    legion::PrivateAiService::Shutdown();
   }
 
   // phosphor::TokenFetcherImpl::Delegate override:
@@ -62,22 +62,22 @@ class TestTokenService : public legion::TokenService {
 
 }  // namespace
 
-class TokenServiceBrowserTest : public InProcessBrowserTest {
+class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
  public:
-  TokenServiceBrowserTest()
+  PrivateAiServiceBrowserTest()
       : profile_selections_(
-            TokenServiceFactory::GetInstance(),
-            TokenServiceFactory::CreateProfileSelectionsForTesting()) {}
+            PrivateAiServiceFactory::GetInstance(),
+            PrivateAiServiceFactory::CreateProfileSelectionsForTesting()) {}
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    TokenServiceFactory::GetInstance()->SetTestingFactory(
+    PrivateAiServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
           Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<TestTokenService>(
+          return std::make_unique<TestPrivateAiService>(
               IdentityManagerFactory::GetForProfile(profile),
               profile->GetPrefs(), profile);
         }));
@@ -92,7 +92,7 @@ class TokenServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    TokenServiceFactory::GetForProfile(profile())->Shutdown();
+    PrivateAiServiceFactory::GetForProfile(profile())->Shutdown();
 
     identity_test_env_adaptor_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
@@ -112,9 +112,10 @@ class TokenServiceBrowserTest : public InProcessBrowserTest {
       profile_selections_;
 };
 
-IN_PROC_BROWSER_TEST_F(TokenServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
                        IsTokenFetchEnabledAfterAccountChanges) {
-  legion::TokenService* host = TokenServiceFactory::GetForProfile(profile());
+  legion::PrivateAiService* host =
+      PrivateAiServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(host);
 
   // No account, so token fetch should be disabled.
@@ -138,9 +139,9 @@ IN_PROC_BROWSER_TEST_F(TokenServiceBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-IN_PROC_BROWSER_TEST_F(TokenServiceBrowserTest, GetAuthToken) {
-  TestTokenService* host = static_cast<TestTokenService*>(
-      TokenServiceFactory::GetForProfile(profile()));
+IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest, GetAuthToken) {
+  TestPrivateAiService* host = static_cast<TestPrivateAiService*>(
+      PrivateAiServiceFactory::GetForProfile(profile()));
   ASSERT_TRUE(host);
 
   auto* token_manager = host->GetTokenManager();
