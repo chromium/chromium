@@ -621,7 +621,6 @@ public class NotificationPlatformBridge {
         }
 
         // This code parses the notification id that was generated in notification_id_generator.cc
-        // TODO(crbug.com/41364310): Extract this to a separate class.
         String[] parts = tag.split(NotificationConstants.NOTIFICATION_TAG_SEPARATOR);
         assert parts.length >= 3;
         try {
