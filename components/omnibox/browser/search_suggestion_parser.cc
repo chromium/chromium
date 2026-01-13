@@ -24,6 +24,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_i18n.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -233,6 +234,39 @@ void FormatAnswerTemplateImageURL(
       omnibox::answer_data_parser::GetFormattedURL(url_string).spec());
 }
 
+std::u16string GetAnnotation(
+    const omnibox::EntityInfo& entity_info,
+    base::optional_ref<const omnibox::SuggestTemplateInfo>
+        suggest_template_info) {
+  if (suggest_template_info.has_value() &&
+      !suggest_template_info->secondary_text().text().empty()) {
+    return base::UTF8ToUTF16(suggest_template_info->secondary_text().text());
+  }
+
+  if (!entity_info.annotation().empty()) {
+    return base::UTF8ToUTF16(entity_info.annotation());
+  }
+  return u"";
+}
+
+// Update `match_contents` if there is any input that has a higher precedence.
+void MaybeUpdateMatchContents(
+    const omnibox::EntityInfo& entity_info,
+    base::optional_ref<const omnibox::SuggestTemplateInfo>
+        suggest_template_info,
+    std::u16string& match_contents) {
+  if (suggest_template_info.has_value() &&
+      !suggest_template_info->primary_text().text().empty()) {
+    match_contents =
+        base::UTF8ToUTF16(suggest_template_info->primary_text().text());
+    return;
+  }
+
+  if (!entity_info.name().empty()) {
+    match_contents = base::UTF8ToUTF16(entity_info.name());
+    return;
+  }
+}
 }  // namespace
 
 omnibox::SuggestSubtype SuggestSubtypeForNumber(int value) {
@@ -344,13 +378,8 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
       entity_info_(std::move(entity_info)),
       should_prefetch_(should_prefetch),
       should_prerender_(should_prerender) {
-  annotation_ = !entity_info_.annotation().empty()
-                    ? base::UTF8ToUTF16(entity_info_.annotation())
-                    : annotation;
-  match_contents_ = !entity_info_.name().empty()
-                        ? base::UTF8ToUTF16(entity_info_.name())
-                        : match_contents;
-  match_contents_ = base::CollapseWhitespace(match_contents_, false);
+  annotation_ = annotation;
+  match_contents_ = base::CollapseWhitespace(match_contents, false);
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
 }
@@ -656,6 +685,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,
     bool is_keyword_result,
+    const SearchSuggestionParser::ParseSuggestResultsOptions& options,
     Results* results) {
   const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();
 
@@ -816,7 +846,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Google search may return empty suggestions for weird input characters,
     // they make no sense at all and can cause problems in our code.
     suggestion = base::CollapseWhitespace(suggestion, false);
-    if (suggestion.empty()) {
+    if (suggestion.empty() && !options.allow_empty_suggestion) {
       continue;
     }
 
@@ -879,7 +909,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
             relevances != nullptr, input_text));
       }
     } else {
-      std::u16string annotation;
       std::u16string match_contents = suggestion;
       if (match_type == AutocompleteMatchType::CALCULATOR) {
         const bool has_equals_prefix = !suggestion.compare(0, 2, u"= ");
@@ -979,6 +1008,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
       int int_index = static_cast<int>(index);
       bool should_prefetch = int_index == prefetch_index;
       bool should_prerender = int_index == prerender_index;
+      const base::optional_ref<const omnibox::SuggestTemplateInfo>
+          maybe_suggest_template_info =
+              has_suggest_template ? &suggest_template_info : nullptr;
+      MaybeUpdateMatchContents(entity_info, maybe_suggest_template_info,
+                               match_contents);
+      const std::u16string annotation =
+          GetAnnotation(entity_info, maybe_suggest_template_info);
       results->suggest_results.push_back(
           SuggestResult(suggestion, match_type, suggest_type, subtypes[index],
                         match_contents, match_contents_prefix, annotation,
@@ -993,19 +1029,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
       }
 
-      // Update suggest result match contents and annotation to use
-      // SuggestTemplateInfo if it is sent from server.
       if (has_suggest_template) {
         results->suggest_results.back().SetSuggestTemplateInfo(
             suggest_template_info);
-        if (!suggest_template_info.primary_text().text().empty()) {
-          results->suggest_results.back().SetMatchContents(
-              base::UTF8ToUTF16(suggest_template_info.primary_text().text()));
-        }
-        if (!suggest_template_info.secondary_text().text().empty()) {
-          results->suggest_results.back().SetAnnotation(
-              base::UTF8ToUTF16(suggest_template_info.secondary_text().text()));
-        }
       }
 
       if (suggestion_group_id) {
@@ -1070,4 +1096,18 @@ bool SearchSuggestionParser::ParseSuggestResults(
   }
 
   return true;
+}
+
+// static
+bool SearchSuggestionParser::ParseSuggestResults(
+    const base::Value::List& root_list,
+    const AutocompleteInput& input,
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    int default_result_relevance,
+    bool is_keyword_result,
+    Results* results) {
+  return SearchSuggestionParser::ParseSuggestResults(
+      root_list, input, scheme_classifier, default_result_relevance,
+      is_keyword_result,
+      /*options=*/{}, results);
 }

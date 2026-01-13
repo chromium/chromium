@@ -397,10 +397,25 @@ class SearchSuggestionParser {
   static std::optional<base::Value::List> DeserializeJsonData(
       std::string_view json_data);
 
+  // The options struct for ParseSuggestResultsWithOptions
+  struct ParseSuggestResultsOptions {
+    bool allow_empty_suggestion = false;
+  };
+
   // Parses results from the suggest server and updates the appropriate suggest
   // and navigation result lists in |results|. |is_keyword_result| indicates
   // whether the response was received from the keyword provider.
   // Returns whether the appropriate result list members were updated.
+  static bool ParseSuggestResults(
+      const base::Value::List& root_list,
+      const AutocompleteInput& input,
+      const AutocompleteSchemeClassifier& scheme_classifier,
+      int default_result_relevance,
+      bool is_keyword_result,
+      const ParseSuggestResultsOptions& options,
+      Results* results);
+
+  // ParseSuggestResultsWithOptions with optional values set to their default
   static bool ParseSuggestResults(
       const base::Value::List& root_list,
       const AutocompleteInput& input,
