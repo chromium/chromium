@@ -895,6 +895,11 @@ BASE_FEATURE(kGraduationUseEmbeddedTransferEndpoint,
 // nudge to conditionally disable the G1 file banner for CBX boards via finch.
 BASE_FEATURE(kGoogleOneOfferFilesBanner, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Google Services Connectivity diagnostic routine for testing
+// connectivity to essential Google services.
+BASE_FEATURE(kGoogleServicesConnectivityRoutine,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables targeting for feature-aware devices, as controlled by the feature
 // management module.
 BASE_FEATURE(kFeatureManagementGrowthFramework,

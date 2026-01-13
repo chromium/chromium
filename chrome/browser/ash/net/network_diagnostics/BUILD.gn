@@ -24,6 +24,8 @@ static_library("network_diagnostics") {
     "dns_resolver_present_routine.h",
     "gateway_can_be_pinged_routine.cc",
     "gateway_can_be_pinged_routine.h",
+    "google_services_connectivity_routine.cc",
+    "google_services_connectivity_routine.h",
     "has_secure_wifi_connection_routine.cc",
     "has_secure_wifi_connection_routine.h",
     "http_firewall_routine.cc",
@@ -56,6 +58,7 @@ static_library("network_diagnostics") {
 
   deps = [
     "//ash",
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
@@ -99,6 +102,7 @@ source_set("unit_tests") {
     "fake_udp_socket.cc",
     "fake_udp_socket.h",
     "gateway_can_be_pinged_routine_unittest.cc",
+    "google_services_connectivity_routine_unittest.cc",
     "has_secure_wifi_connection_routine_unittest.cc",
     "http_firewall_routine_unittest.cc",
     "http_request_manager_unittest.cc",
