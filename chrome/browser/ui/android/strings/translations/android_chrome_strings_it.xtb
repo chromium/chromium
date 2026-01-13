@@ -725,6 +725,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4180726336228139707">Solo su questo dispositivo</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4188221736490993796">Ordina dalla Z alla A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedito a questo sito di inviare notifiche a causa di spam o contenuto ingannevole}other{Chrome ha impedito a questi siti di inviare notifiche a causa di spam o contenuto ingannevole}}</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 scheda su questo dispositivo}other{# schede su questo dispositivo}}</translation>
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
@@ -1117,6 +1118,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5833984609253377421">Condividi link</translation>
 <translation id="5839058148541733625">Dino di Chrome</translation>
 <translation id="5841444063256914865">Scaricare comunque "<ph name="FILE_NAME" />"?</translation>
+<translation id="5847265694842662173">Chrome ha impedito a siti illeciti e inutilizzati di inviare notifiche</translation>
 <translation id="5848257610304005265">Aprire il PDF con <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Interrompere la condivisione?</translation>
 <translation id="5853623416121554550">in pausa</translation>
@@ -1145,6 +1147,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5956665950594638604">Apri Centro assistenza di Chrome in nuova scheda</translation>
 <translation id="59577092665511740">Scegli un account.</translation>
 <translation id="5958275228015807058">Puoi trovare i tuoi file e le tue pagine nella cartella Download</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedito a un sito che non hai visitato di recente di inviarti notifiche}other{Chrome ha impedito a siti che non hai visitato di recente di inviarti notifiche}}</translation>
 <translation id="5962718611393537961">Tocca per comprimere</translation>
 <translation id="5964869237734432770">Interrompi descr. immagini</translation>
 <translation id="5972844218283131174">Deseleziona tutto</translation>
@@ -1805,6 +1808,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="847433688444405067">Naviga su più dispositivi</translation>
 <translation id="8477178913400731244">Elimina dati</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nessuna finestra inattiva</translation>
 <translation id="8493948351860045254">Libera spazio</translation>
 <translation id="8497242791509864205">Apri opzioni di ordinamento</translation>
 <translation id="8497480609928300907">Spiegazione della Guida alla privacy</translation>

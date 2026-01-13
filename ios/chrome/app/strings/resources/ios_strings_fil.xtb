@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Paano ko magagamit ang feature na ito?</translation>
 <translation id="1901600657316773839">Panatilihin ang pinili</translation>
 <translation id="1902277226107477495">Naka-off ang pag-detect ng address. I-on ulit ito sa Mga Setting.</translation>
+<translation id="1909201414196501151">Naidagdag at na-pin ang site</translation>
 <translation id="1911619930368729126">I-upload sa Google Drive</translation>
 <translation id="1925706052394657380">Buksan ang mga setting ng <ph name="BEGIN_BOLD" />Mga Default na App<ph name="END_BOLD" /> sa iOS</translation>
 <translation id="1941314575388338491">I-double tap upang kopyahin.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Na-save ang bookmark sa "{title}" sa iyong account, {email}}one{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}other{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}}</translation>
 <translation id="334690320928261823">Mga Kamakailang Tab</translation>
 <translation id="3349031117032695619">I-block ang mga pop-up</translation>
+<translation id="3350976670663926380">Na-save ang mga pag-edit</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Pinapamahalaan ang account na ito.</translation>
 <translation id="3365529507898144230">I-save sa Photos</translation>
 <translation id="3371831930909698441">Available ang pagsasalin. May mga opsyon malapit sa ibaba ng screen.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Piliin ang "Pinaigting na Proteksyon"</translation>
 <translation id="3610041351087301930">I-hide ang Reader</translation>
 <translation id="3610866916973186448">Oo, i-delete</translation>
+<translation id="3616161326314492065">Kumuha ng mga larawan at i-share sa Gemini para makagawa at mag-remix ng mga larawan.</translation>
 <translation id="3622175633937495219">History ng Paghahanap (<ph name="COUNT" /> ang nakita)</translation>
 <translation id="3625008969091706597">Puwede mong i-swipe ang gilid na bahagi para bumalik.</translation>
 <translation id="362709345066740529">I-customize dito ang iyong mga card, feed, at higit pa</translation>
@@ -1841,6 +1844,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7854006015462979438">Buksan ang General</translation>
 <translation id="7855678267851972597">Mga Audio</translation>
+<translation id="7857520352710212030">Na-pin ang site</translation>
 <translation id="7859988229622350291">Huwag isalin kailanman</translation>
 <translation id="7863211248337747225">Kunin ang app</translation>
 <translation id="7865127013871431856">Mga opsyon sa pagsasalin</translation>

@@ -725,6 +725,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4180726336228139707">Tikai šajā ierīcē</translation>
 <translation id="4181841719683918333">Valodas</translation>
 <translation id="4188221736490993796">Kārtot no Z līdz A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no šīs vietnes, jo tajā ir nevēlams vai maldinošs saturs.}zero{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no šīm vietnēm, jo tajās ir nevēlams vai maldinošs saturs.}one{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no šīm vietnēm, jo tajās ir nevēlams vai maldinošs saturs.}other{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no šīm vietnēm, jo tajās ir nevēlams vai maldinošs saturs.}}</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Viena cilne šajā ierīcē.}zero{# ciļņu šajā ierīcē.}one{# cilne šajā ierīcē.}other{# cilnes šajā ierīcē.}}</translation>
 <translation id="4198423547019359126">Nav pieejamu lejupielādes atrašanās vietu.</translation>
@@ -1117,6 +1118,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5833984609253377421">Kopīgot saiti</translation>
 <translation id="5839058148541733625">Chrome dinozaurs</translation>
 <translation id="5841444063256914865">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />”?</translation>
+<translation id="5847265694842662173">Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no ļaunprātīgām un neizmantotām vietnēm.</translation>
 <translation id="5848257610304005265">Vai atvērt PDF failu lietotnē <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vai pārtraukt kopīgošanu?</translation>
 <translation id="5853623416121554550">apturēta</translation>
@@ -1145,6 +1147,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5956665950594638604">Atvērt Chrome palīdzības centru jaunā cilnē</translation>
 <translation id="59577092665511740">Izvēlieties kontu.</translation>
 <translation id="5958275228015807058">Atrodiet savus failus un lapas sadaļā Lejupielādes</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no vietnes, kura pēdējā laikā netika apmeklēta.}zero{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no vietnēm, kuras pēdējā laikā netika apmeklētas.}one{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no vietnēm, kuras pēdējā laikā netika apmeklētas.}other{Pārlūkā Chrome tika apturēta paziņojumu sūtīšana no vietnēm, kuras pēdējā laikā netika apmeklētas.}}</translation>
 <translation id="5962718611393537961">Pieskarties, lai sakļautu</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
 <translation id="5972844218283131174">Noņemt visu atlasi</translation>
@@ -1805,6 +1808,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="847433688444405067">Pārlūkošana dažādās ierīcēs</translation>
 <translation id="8477178913400731244">Dzēst datus</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nav neaktīvu logu</translation>
 <translation id="8493948351860045254">Atbrīvot vietu</translation>
 <translation id="8497242791509864205">Atvērt kārtošanas opcijas</translation>
 <translation id="8497480609928300907">Paskaidrojums par konfidencialitātes ceļvedi</translation>

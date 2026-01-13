@@ -569,6 +569,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7347827960336370838">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Votre administrateur système a configuré Chromium de sorte que <ph name="ALTERNATIVE_BROWSER_NAME" /> s'ouvre pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
+<translation id="7368826207863345663">Vous devez disposer de macOS 13 ou version ultérieure pour recevoir les futures mises à jour de Chromium. macOS 12 est installé sur cet ordinateur.</translation>
 <translation id="7376384068949534168">Vous n'avez pas consulté le site récemment. Chromium a supprimé "<ph name="PERMISSION_1" />" et "<ph name="PERMISSION_2" />".</translation>
 <translation id="7384121030444253939">Cette extension n'est plus prise en charge. Chromium vous recommande de la supprimer.</translation>
 <translation id="7413153308467572558">Reprenez là où vous en étiez : Chromium restaure vos onglets à chaque redémarrage. Pour désactiver cette option, accédez aux</translation>

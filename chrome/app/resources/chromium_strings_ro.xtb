@@ -569,6 +569,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7347827960336370838">Numai un utilizator care știe expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, va trebui să <ph name="BEGIN_LINK" />ștergi datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administratorul sistemului a configurat Chromium să deschidă <ph name="ALTERNATIVE_BROWSER_NAME" /> pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
+<translation id="7368826207863345663">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 13 sau o versiune ulterioară. Acest computer folosește macOS 12.</translation>
 <translation id="7376384068949534168">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Extensia nu mai este acceptată. Chromium recomandă să o elimini.</translation>
 <translation id="7413153308467572558">Continuă de unde ai rămas: Chromium restabilește filele de fiecare dată când repornești. Pentru a dezactiva opțiunea, accesează</translation>

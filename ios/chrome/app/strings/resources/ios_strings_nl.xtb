@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Hoe gebruik ik deze functie?</translation>
 <translation id="1901600657316773839">Selectie behouden</translation>
 <translation id="1902277226107477495">Adresdetectie uitgezet. Zet deze functie weer aan in Instellingen.</translation>
+<translation id="1909201414196501151">Site toegevoegd en vastgezet</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
 <translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="334690320928261823">Recente tabbladen</translation>
 <translation id="3349031117032695619">Pop-ups blokkeren</translation>
+<translation id="3350976670663926380">Bewerkingen opgeslagen</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dit account wordt beheerd.</translation>
 <translation id="3365529507898144230">Opslaan in Foto's</translation>
 <translation id="3371831930909698441">Vertalen is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Kies Geoptimaliseerde beveiliging</translation>
 <translation id="3610041351087301930">Lezer verbergen</translation>
 <translation id="3610866916973186448">Ja, verwijderen</translation>
+<translation id="3616161326314492065">Maak foto's en deel ze met Gemini om afbeeldingen te maken en te remixen.</translation>
 <translation id="3622175633937495219">Zoekgeschiedenis (<ph name="COUNT" /> gevonden)</translation>
 <translation id="3625008969091706597">Je kunt over de rand swipen om terug te gaan.</translation>
 <translation id="362709345066740529">Pas hier onder andere je kaarten en feed aan</translation>
@@ -1841,6 +1844,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7854006015462979438">Open Algemeen</translation>
 <translation id="7855678267851972597">Audio</translation>
+<translation id="7857520352710212030">Site vastgezet</translation>
 <translation id="7859988229622350291">Nooit vertalen</translation>
 <translation id="7863211248337747225">App downloaden</translation>
 <translation id="7865127013871431856">Opties voor vertalen</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Làm thế nào để sử dụng tính năng này?</translation>
 <translation id="1901600657316773839">Giữ lựa chọn</translation>
 <translation id="1902277226107477495">Tính năng phát hiện địa chỉ đang tắt. Để bật lại, hãy vào phần Cài đặt.</translation>
+<translation id="1909201414196501151">Đã thêm và ghim trang web</translation>
 <translation id="1911619930368729126">Tải lên Google Drive</translation>
 <translation id="1925706052394657380">Mở phần cài đặt <ph name="BEGIN_BOLD" />Ứng dụng mặc định<ph name="END_BOLD" /> trong iOS</translation>
 <translation id="1941314575388338491">Nhấn đúp để sao chép.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}other{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}}</translation>
 <translation id="334690320928261823">Các thẻ gần đây</translation>
 <translation id="3349031117032695619">Chặn cửa sổ bật lên</translation>
+<translation id="3350976670663926380">Đã lưu nội dung chỉnh sửa</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Đây là tài khoản được quản lý.</translation>
 <translation id="3365529507898144230">Lưu vào Photos</translation>
 <translation id="3371831930909698441">Có tính năng dịch. Các tùy chọn nằm ở gần cuối màn hình.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Chọn "Bảo vệ nâng cao"</translation>
 <translation id="3610041351087301930">Ẩn Chế độ đọc</translation>
 <translation id="3610866916973186448">Có, hãy xoá</translation>
+<translation id="3616161326314492065">Chụp ảnh rồi chia sẻ với Gemini để tạo và phối lại hình ảnh.</translation>
 <translation id="3622175633937495219">Nhật ký tìm kiếm (Đã tìm thấy <ph name="COUNT" /> kết quả)</translation>
 <translation id="3625008969091706597">Bạn có thể vuốt từ mép này để quay lại mục trước.</translation>
 <translation id="362709345066740529">Tuỳ chỉnh thẻ, nguồn cấp dữ liệu và nhiều nội dung khác tại đây</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">Hoạt động</translation>
 <translation id="7854006015462979438">Mở phần Cài đặt chung</translation>
 <translation id="7855678267851972597">Âm thanh</translation>
+<translation id="7857520352710212030">Đã ghim trang web</translation>
 <translation id="7859988229622350291">Không bao giờ dịch</translation>
 <translation id="7863211248337747225">Tải ứng dụng</translation>
 <translation id="7865127013871431856">Các lựa chọn Dịch</translation>

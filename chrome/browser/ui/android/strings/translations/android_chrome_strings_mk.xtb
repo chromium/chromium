@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">Само на уредов</translation>
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4188221736490993796">Подредување од Ш до А</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome го спречи сајтов да испраќа известувања поради спам или измамнички содржини}one{Chrome ги спречи сајтовиве да испраќаат известувања поради спам или измамнички содржини}other{Chrome ги спречи сајтовиве да испраќаат известувања поради спам или измамнички содржини}}</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 картичка на уредов}one{# картичка на уредов}other{# картички на уредов}}</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">Сподели го линкот</translation>
 <translation id="5839058148541733625">Диносаурус на Chrome</translation>
 <translation id="5841444063256914865">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“?</translation>
+<translation id="5847265694842662173">Chrome ги спречи сајтовите што злоупотребуваат и сајтовите што не се користат да испраќаат известувања</translation>
 <translation id="5848257610304005265">Да се отвори PDF-датотеката со <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Да се сопре споделувањето?</translation>
 <translation id="5853623416121554550">паузирано</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">Отвори „Центар за помош на Chrome“ во нова картичка</translation>
 <translation id="59577092665511740">Изберете сметка.</translation>
 <translation id="5958275228015807058">Вашите датотеки и страници ќе ги најдете во „Преземања“</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome спречи сајт што не сте го посетиле неодамна да ви испраќа известувања}one{Chrome ги спречи сајтовите што не сте ги посетиле неодамна да ви испраќаат известувања}other{Chrome ги спречи сајтовите што не сте ги посетиле неодамна да ви испраќаат известувања}}</translation>
 <translation id="5962718611393537961">Допрете за да се собере</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
 <translation id="5972844218283131174">Поништи го изборот на сите</translation>
@@ -1805,6 +1808,7 @@
 <translation id="847433688444405067">Прелистување на уредите</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Нема неактивни прозорци</translation>
 <translation id="8493948351860045254">Ослободете простор</translation>
 <translation id="8497242791509864205">Отворете ги опциите за подредување</translation>
 <translation id="8497480609928300907">Објаснување за водичот за приватност</translation>

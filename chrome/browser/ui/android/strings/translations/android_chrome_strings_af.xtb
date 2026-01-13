@@ -725,6 +725,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4180726336228139707">Net op hierdie toestel</translation>
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4188221736490993796">Rangskik volgens Z na A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome het weens strooipos of misleidende inhoud hierdie werf gekeer om kennisgewings te stuur}other{Chrome het weens strooipos of misleidende inhoud hierdie werwe gekeer om kennisgewings te stuur}}</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 oortjie op hierdie toestel}other{# oortjies op hierdie toestel}}</translation>
 <translation id="4198423547019359126">Geen beskikbare aflaailiggings nie</translation>
@@ -1117,6 +1118,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5833984609253377421">Deel skakel</translation>
 <translation id="5839058148541733625">Chrome-dinosourusspeletjie</translation>
 <translation id="5841444063256914865">Wil jy in elk geval “<ph name="FILE_NAME" />” aflaai?</translation>
+<translation id="5847265694842662173">Chrome het misbruikende en ongebruikte werwe gekeer om kennisgewings te stuur</translation>
 <translation id="5848257610304005265">Maak PDF oop met <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Hou op deel?</translation>
 <translation id="5853623416121554550">laat wag</translation>
@@ -1145,6 +1147,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5956665950594638604">Maak die Chrome-hulpsentrum in 'n nuwe oortjie oop</translation>
 <translation id="59577092665511740">Kies ’n rekening.</translation>
 <translation id="5958275228015807058">Kry jou lêers en bladsye in Aflaaie</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome het ’n werf wat jy nie onlangs besoek het nie gekeer om vir jou kennisgewings te stuur}other{Chrome het werwe wat jy nie onlangs besoek het nie gekeer om vir jou kennisgewings te stuur}}</translation>
 <translation id="5962718611393537961">Tik om in te vou</translation>
 <translation id="5964869237734432770">Stop prentbeskrywings</translation>
 <translation id="5972844218283131174">Ontkies alles</translation>
@@ -1805,6 +1808,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8477178913400731244">Vee data uit</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Geen onaktiewe vensters nie</translation>
 <translation id="8493948351860045254">Maak spasie beskikbaar</translation>
 <translation id="8497242791509864205">Maak rangskikopsies oop</translation>
 <translation id="8497480609928300907">Privaatheidgidsverduideliking</translation>

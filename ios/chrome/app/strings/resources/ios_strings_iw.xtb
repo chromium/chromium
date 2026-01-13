@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">איך משתמשים בתכונה הזו?</translation>
 <translation id="1901600657316773839">שמירת הבחירה</translation>
 <translation id="1902277226107477495">זיהוי הכתובת מושבת. אפשר להפעיל אותו שוב בהגדרות.</translation>
+<translation id="1909201414196501151">האתר נוסף והוצמד</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
 <translation id="1925706052394657380">‏פותחים את ההגדרות של <ph name="BEGIN_BOLD" />יישומי ברירת מחדל<ph name="END_BOLD" /> ב-iOS</translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים פעמיים.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="334690320928261823">כרטיסיות אחרונות</translation>
 <translation id="3349031117032695619">חסימת חלונות קופצים</translation>
+<translation id="3350976670663926380">העריכות נשמרו</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. החשבון הזה מנוהל.</translation>
 <translation id="3365529507898144230">‏שמירה ב-Photos</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">בוחרים באפשרות 'הגנה משופרת'</translation>
 <translation id="3610041351087301930">הסתרת "קורא"</translation>
 <translation id="3610866916973186448">כן, למחוק</translation>
+<translation id="3616161326314492065">‏אפשר לצלם תמונות ולשתף אותן עם Gemini כדי ליצור ולערוך תמונות.</translation>
 <translation id="3622175633937495219">חיפוש בהיסטוריה (התקבלו <ph name="COUNT" /> תוצאות)</translation>
 <translation id="3625008969091706597">אפשר להחליק את הקצה כדי לעבור אחורה.</translation>
 <translation id="362709345066740529">כאן אפשר להתאים אישית את הכרטיסים, הפיד ועוד</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7854006015462979438">פתיחת המידע הכללי</translation>
 <translation id="7855678267851972597">אודיו</translation>
+<translation id="7857520352710212030">האתר הוצמד</translation>
 <translation id="7859988229622350291">אין לתרגם אף פעם</translation>
 <translation id="7863211248337747225">להורדת האפליקציה</translation>
 <translation id="7865127013871431856">אפשרויות תרגום</translation>

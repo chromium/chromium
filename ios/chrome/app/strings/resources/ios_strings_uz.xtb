@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Bu funksiyadan qanday foydalanish mumkin?</translation>
 <translation id="1901600657316773839">Tanlovni qoldirish</translation>
 <translation id="1902277226107477495">Manzil aniqlanishi yoqilmagan. Sozlamalar orqali qayta yoqish mumkin</translation>
+<translation id="1909201414196501151">Sayt qoʻshildi va qadaldi</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
 <translation id="1925706052394657380">iOS qurilmada <ph name="BEGIN_BOLD" />Birlamchi ilovalar<ph name="END_BOLD" /> sozlamalarini oching</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}other{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}}</translation>
 <translation id="334690320928261823">Oxirgi varaqlar</translation>
 <translation id="3349031117032695619">Qalqib chiquvchi oynalarni bloklash</translation>
+<translation id="3350976670663926380">Tahrirlar saqlandi</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Bu hisob nazorat ostida.</translation>
 <translation id="3365529507898144230">Photos xizmatiga saqlash</translation>
 <translation id="3371831930909698441">Tarjima mavjud. Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"Kuchaytirilgan himoya" bandini tanlang</translation>
 <translation id="3610041351087301930">Mutolaani yopish</translation>
 <translation id="3610866916973186448">Ha, oʻchirib tashlansin</translation>
+<translation id="3616161326314492065">Rasmlarni yaratish va remiks qilish uchun suratga olib, Gemini bilan ulashing.</translation>
 <translation id="3622175633937495219">Brauzer tarixidan qidirish (<ph name="COUNT" /> ta natija)</translation>
 <translation id="3625008969091706597">Ortga qaytish uchun ekran chetidan yonga suring.</translation>
 <translation id="362709345066740529">Bildirgilar, tasma va boshqalarni shu yerda moslang</translation>
@@ -1841,6 +1844,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7853202427316060426">Harakat</translation>
 <translation id="7854006015462979438">Umumiy sozlamalarni oching</translation>
 <translation id="7855678267851972597">Audiolar</translation>
+<translation id="7857520352710212030">Sayt qadaldi</translation>
 <translation id="7859988229622350291">Hech qachon tarjima qilinmasin</translation>
 <translation id="7863211248337747225">Ilovani yuklab olish</translation>
 <translation id="7865127013871431856">Tarjima parametrlari</translation>

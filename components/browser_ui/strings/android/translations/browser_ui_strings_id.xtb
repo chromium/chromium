@@ -412,6 +412,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
 <translation id="5407203562970638234">Tingkatkan keamanan Anda</translation>
+<translation id="5436307623797390637">Aplikasi di perangkat</translation>
 <translation id="5438097262470833822">Pilihan ini akan mereset izin untuk <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Jika diaktifkan, situs dapat meminta lokasi Anda. Jika dinonaktifkan, situs tidak dapat melihat lokasi Anda.</translation>
 <translation id="5489227211564503167">Waktu berlalu <ph name="ELAPSED_TIME" /> dari <ph name="TOTAL_TIME" />.</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Как использовать функцию</translation>
 <translation id="1901600657316773839">Сохранить выбор</translation>
 <translation id="1902277226107477495">Обнаружение адресов выключено. Снова включить его можно в настройках.</translation>
+<translation id="1909201414196501151">Сайт добавлен и закреплен.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1925706052394657380">Откройте <ph name="BEGIN_BOLD" />Приложения по умолчанию<ph name="END_BOLD" /> в настройках iOS.</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте ({email}).}one{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}few{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}many{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}other{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="334690320928261823">Недавние вкладки</translation>
 <translation id="3349031117032695619">Блокировать всплывающие окна</translation>
+<translation id="3350976670663926380">Изменения сохранены.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Это управляемый аккаунт.</translation>
 <translation id="3365529507898144230">Сохранить в Фото</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Выберите параметр "Улучшенная защита".</translation>
 <translation id="3610041351087301930">Скрыть режим чтения</translation>
 <translation id="3610866916973186448">Удалить</translation>
+<translation id="3616161326314492065">Делайте снимки и делитесь ими с Gemini, чтобы создавать и изменять изображения.</translation>
 <translation id="3622175633937495219">Поиск в истории (совпадений: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Чтобы перейти назад, проведите пальцем по краю экрана.</translation>
 <translation id="362709345066740529">Настройте карточки, ленту и многое другое</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">История действий</translation>
 <translation id="7854006015462979438">Нажмите "Основные".</translation>
 <translation id="7855678267851972597">Аудиофайлы</translation>
+<translation id="7857520352710212030">Сайт закреплен.</translation>
 <translation id="7859988229622350291">Никогда не переводить</translation>
 <translation id="7863211248337747225">Установить</translation>
 <translation id="7865127013871431856">Параметры перевода</translation>

@@ -725,6 +725,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4180726336228139707">Numai pe acest dispozitiv</translation>
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4188221736490993796">Sortează de la Z la A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a împiedicat acest site să trimită notificări din cauza spamului sau a conținutului înșelător}few{Chrome a împiedicat aceste site-uri să trimită notificări din cauza spamului sau a conținutului înșelător}other{Chrome a împiedicat aceste site-uri să trimită notificări din cauza spamului sau a conținutului înșelător}}</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{O filă pe acest dispozitiv}few{# file pe acest dispozitiv}other{# de file pe acest dispozitiv}}</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
@@ -1117,6 +1118,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5833984609253377421">Trimite linkul</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Vrei să descarci oricum <ph name="FILE_NAME" />?</translation>
+<translation id="5847265694842662173">Chrome a împiedicat site-urile abuzive și nefolosite să trimită notificări</translation>
 <translation id="5848257610304005265">Deschizi fișierul PDF cu <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Nu mai permiți accesul?</translation>
 <translation id="5853623416121554550">întreruptă</translation>
@@ -1145,6 +1147,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5956665950594638604">Deschide Centrul de ajutor Chrome într-o filă nouă</translation>
 <translation id="59577092665511740">Alege un cont.</translation>
 <translation id="5958275228015807058">Găsește fișierele și paginile în Descărcări</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a împiedicat un site pe care nu l-ai accesat recent să îți trimită notificări}few{Chrome a împiedicat site-urile pe care nu le-ai accesat recent să îți trimită notificări}other{Chrome a împiedicat site-urile pe care nu le-ai accesat recent să îți trimită notificări}}</translation>
 <translation id="5962718611393537961">Atinge pentru a restrânge</translation>
 <translation id="5964869237734432770">Nu genera descrieri imagine</translation>
 <translation id="5972844218283131174">Deselectează tot</translation>
@@ -1805,6 +1808,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="847433688444405067">Navighează pe mai multe dispozitive</translation>
 <translation id="8477178913400731244">Șterge datele</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nu există ferestre inactive</translation>
 <translation id="8493948351860045254">Eliberează spațiu</translation>
 <translation id="8497242791509864205">Deschide opțiunile de sortare</translation>
 <translation id="8497480609928300907">Prezentare a Ghidului privind confidențialitatea</translation>

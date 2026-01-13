@@ -725,6 +725,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4180726336228139707">Kun på denne enhed</translation>
 <translation id="4181841719683918333">Sprog</translation>
 <translation id="4188221736490993796">Sortér fra Å til A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome forhindrede dette website i at sende notifikationer på grund af spam eller vildledende indhold}one{Chrome forhindrede dette website i at sende notifikationer på grund af spam eller vildledende indhold}other{Chrome forhindrede disse websites i at sende notifikationer på grund af spam eller vildledende indhold}}</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enhed}one{# fane på denne enhed}other{# faner på denne enhed}}</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
@@ -1117,6 +1118,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5833984609253377421">Del link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Vil du downloade "<ph name="FILE_NAME" />" alligevel?</translation>
+<translation id="5847265694842662173">Chrome forhindrede skadelige og ubrugte websites i at sende notifikationer</translation>
 <translation id="5848257610304005265">Vil du åbne PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vil du stoppe delingen?</translation>
 <translation id="5853623416121554550">sat på pause</translation>
@@ -1145,6 +1147,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5956665950594638604">Åbn Hjælp til Chrome i en ny fane</translation>
 <translation id="59577092665511740">Vælg en konto.</translation>
 <translation id="5958275228015807058">Find dine filer og sider i Downloads</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome forhindrede et website, du ikke har besøgt for nylig, i at sende dig notifikationer}one{Chrome forhindrede et website, du ikke har besøgt for nylig, i at sende dig notifikationer}other{Chrome forhindrede websites, du ikke har besøgt for nylig, i at sende dig notifikationer}}</translation>
 <translation id="5962718611393537961">Tryk for at skjule</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>
@@ -1805,6 +1808,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="847433688444405067">Få samme indhold på flere enheder</translation>
 <translation id="8477178913400731244">Slet data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Ingen inaktive vinduer</translation>
 <translation id="8493948351860045254">Frigør plads</translation>
 <translation id="8497242791509864205">Åbn sorteringsmuligheder</translation>
 <translation id="8497480609928300907">Beskrivelse af Privatlivsguide</translation>

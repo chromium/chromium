@@ -504,6 +504,7 @@
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6327105987658262776">Tidak ada update yang tersedia.</translation>
 <translation id="6334815226785304306">Jadikan Google Chrome sebagai browser default dan sematkan ke taskbar</translation>
+<translation id="63540178978900677">Chrome bukan lagi browser default Anda. Jadikan Chrome browser default?</translation>
 <translation id="6360449101159168105">Saat tab ini tidak aktif, memori akan dikosongkan agar Chrome tetap cepat. Anda dapat memilih untuk selalu mengecualikan situs ini agar tetap aktif.</translation>
 <translation id="6388799252195623474">bantu saya dengan hal ini</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
@@ -705,6 +706,9 @@
 <translation id="8418845734693287262">ChromeOS tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="842386925677997438">Alat keamanan Chrome</translation>
 <translation id="8425765582779547329">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chrome</translation>
+<translation id="842852285618875960">Anda telah mencapai batas <ph name="BOOKMARK_LIMIT" /> bookmark Google Chrome, sehingga beberapa bookmark belum disimpan di Akun Google Anda.
+
+Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookmark. Jika Anda logout sekarang, bookmark yang belum disimpan akan dihapus.</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8496177819998570653">Pengelola S&amp;andi Google</translation>
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>

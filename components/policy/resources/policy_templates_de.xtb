@@ -2221,6 +2221,17 @@ Hinweis: Wenn du ein Feld auslässt, gelten alle Werte für dieses Feld als übe
 <translation id="2568488785376704318">Diese Richtlinie ist veraltet. Bitte verwende stattdessen die Richtlinie <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Gesprochenes Feedback deaktivieren</translation>
 <translation id="2570181623957732921"><ph name="DESK_API_NAME" /> für eine Liste von Drittanbieterdomains aktivieren</translation>
+<translation id="2571353268726025696">Über diese Richtlinie kann die Funktion „First-Party-Sets“ deaktiviert werden (die später in die Funktion „<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />“ umbenannt wurde).
+
+Ist diese Richtlinie nicht konfiguriert oder aktiviert, ist die Funktion „First-Party-Sets“ aktiviert.
+
+Wenn diese Richtlinie deaktiviert ist, ist die Funktion „First-Party-Sets“ deaktiviert.
+
+Außerdem legt die Richtlinie fest, ob zu First-Party-Sets zugehörige Integrationen in Chrome unterstützt werden.
+
+Dies entspricht der Richtlinie „<ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />“.
+Beide Richtlinien haben die gleiche Auswirkung auf das Browserverhalten.
+Beide Richtlinien werden nach der Einstellung der <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />-Funktion in <ph name="PRODUCT_NAME" />-Version 144 nicht mehr unterstützt.</translation>
 <translation id="2571821662934804440">Nutzung der Funktion ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="2573850437942404034">Nicht zulassen</translation>
 <translation id="2575198840408498393">Erstellung von Roaming-Profilen deaktivieren</translation>
@@ -7439,6 +7450,35 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="6083631234867522991">Windows (Windows-Clients):</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus verwenden</translation>
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
+<translation id="6089118101413877627">Mit dieser Richtlinie wird die Liste der Sets überschrieben, die der Browser für die „First-Party-Sets“-Funktionen verwendet (die später in die Funktion „<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />“ umbenannt wurden).
+
+Jedes Set auf der Liste der First-Party-Sets muss die Anforderungen eines First-Party-Sets erfüllen.
+Ein First-Party-Set muss eine primäre Website und mindestens eine Mitgliedswebsite enthalten.
+Es kann auch eine Liste mit Dienstwebsites enthalten, deren Inhaber es ist, sowie eine Zuordnung einer Website zu allen seinen ccTLD-Varianten.
+Unter https://github.com/WICG/first-party-sets findest du weitere Informationen dazu, welche First-Party-Sets in <ph name="PRODUCT_NAME" /> verwendet werden.
+
+Bei allen Websites in einem First-Party-Set muss es sich um registrierfähige Domains handeln, die über HTTPS bereitgestellt werden. Außerdem müssen alle Websites in einem First-Party-Set eindeutig sein, dürfen also nicht mehrmals in einem First-Party-Set aufgeführt sein.
+
+Wenn für diese Richtlinie ein leeres Wörterbuch angegeben wird, verwendet der Browser die öffentlichen First-Party-Sets.
+
+Wenn eine Website eines First-Party-Sets in der <ph name="REPLACEMENTS" />-Liste auch Teil eines First-Party-Sets in der Liste des Browsers ist, wird sie aus dem First-Party-Set des Browsers entfernt.
+Anschließend wird das First-Party-Set der Richtlinie zur Liste der First-Party-Sets des Browsers hinzugefügt.
+
+Wenn eine Website eines First-Party-Sets in der <ph name="ADDITIONS" />-Liste auch Teil eines First-Party-Sets in der Liste des Browsers ist, wird das First-Party-Set des Browsers aktualisiert, damit das neue First-Party-Set zur Liste des Browsers hinzugefügt werden kann. Nachdem die Liste des Browsers aktualisiert wurde, wird das First-Party-Set der Richtlinie zur Liste der First-Party-Sets des Browsers hinzugefügt.
+
+Alle Websites in der Liste der First-Party-Sets des Browsers dürfen nur jeweils Teil eines Sets sein. Dies gilt auch für die <ph name="REPLACEMENTS" />-Liste und die <ph name="ADDITIONS" />-Liste. Eine Website darf außerdem nicht gleichzeitig in der <ph name="REPLACEMENTS" />-Liste und der <ph name="ADDITIONS" />-Liste stehen.
+
+Platzhalter (*) sind kein gültiger Richtlinienwert und können nicht in First-Party-Sets in diesen Listen verwendet werden.
+
+Alle in dieser Richtlinie angegebenen Sets müssen gültige First-Party-Sets sein. Andernfalls wird ein entsprechender Fehler ausgegeben.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Dies entspricht der Richtlinie „<ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />“.
+Beide Richtlinien haben die gleiche Auswirkung auf das Browserverhalten.
+Beide Richtlinien werden nach der Einstellung der <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />-Funktion in <ph name="PRODUCT_NAME" />-Version 144 nicht mehr unterstützt.</translation>
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
 <translation id="6092073071805297119">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung zulassen.</translation>
@@ -10129,6 +10169,28 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
       Ist sie auf „true“ gesetzt, werden die Netzwerkereignisse des Geräts gemeldet.</translation>
 <translation id="780629758750905699">Hinzufügen von Family Link-Konten auf diesem Gerät erlauben</translation>
 <translation id="7807139251387225825">Liste von Typen, die von der Synchronisierung ausgeschlossen werden sollen</translation>
+<translation id="7812285231594048601">Diese Richtlinie wurde eingestellt. Verwende stattdessen die Richtlinie „<ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" />“.
+
+Standardverhalten (Richtlinie nicht konfiguriert)
+Wenn im Inhaltsbereich ein Konto hinzugefügt wird, wird der Nutzer möglicherweise über ein kleines Dialogfeld gebeten, ein neues Profil zu erstellen. Dieses Dialogfeld kann geschlossen werden.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Wenn sich ein Nutzer das erste Mal über einen <ph name="PRODUCT_NAME" />-Browser in einem Google-Dienst anmeldet, wird er über ein Dialogfeld gebeten, ein neues Profil für sein Unternehmenskonto zu erstellen. Der Nutzer kann auf „Abbrechen“ klicken, um abgemeldet zu werden, oder auf „Weiter“, um ein neues Profil zu erstellen. Vorhandene Browserdaten werden nicht in das neue Profil übernommen. Das neu erstellte Profil darf sekundäre Konten enthalten. Nutzer können sich also beispielsweise im Inhaltsbereich in einem anderen Konto anmelden.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, außer dass das neu erstellte Profil keine sekundären Konten enthalten darf.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, außer dass dem Dialogfeld ein Kästchen hinzugefügt wird, das es Nutzern ermöglicht, lokale Browserdaten beizubehalten.
+Wenn der Nutzer das Kästchen markiert, werden die vorhandenen Profildaten mit dem verwalteten Konto verknüpft.
+– Alle vorhandenen Browserdaten sind im neuen Profil enthalten.
+– Diese Daten umfassen z. B. Lesezeichen, Verlauf, Passwörter, Autofill-Daten, geöffnete Tabs, Cookies, Cache, Webspeicherplatz und Erweiterungen.
+Wenn der Nutzer das Kästchen nicht markiert:
+– Das alte Profil bleibt bestehen und es gehen keine Daten verloren.
+– Ein neues Profil wird erstellt.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, außer dass das neu erstellte Profil keine sekundären Konten enthalten darf.</translation>
 <translation id="781268256210530471">Plug-in-Einstellungen</translation>
 <translation id="7816326058023670173">Secret, das zwischen Geräten von Kindern und Eltern geteilt wird.</translation>
 <translation id="7818131573217430250">Standardstatus für den Modus mit hohem Kontrast auf der Anmeldeseite festlegen</translation>
@@ -10671,9 +10733,6 @@ Diese Richtlinie wird auf den Inkognitomodus angewendet. Das bedeutet, dass der 
 <translation id="8225579382697740712">Verwendung der WebHID API verwalten</translation>
 <translation id="8229912067600517877">Entwicklertools aktivieren</translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
-<translation id="8238558579601006178">Wenn diese Richtlinie auf „0“ festgelegt oder nicht konfiguriert ist, wird die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ nur auf Nutzerebene für Nutzer angewendet, die mit einer Organisation verknüpft sind.
-Wenn diese Richtlinie auf „1“ festgelegt ist, wird die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ auf Nutzerebene angewendet, auch wenn der Nutzer nicht mit einer Organisation verknüpft ist.
-Wenn diese Richtlinie auf „2“ festgelegt ist, wird die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ nie angewendet, wenn die Quelle ein Nutzer ist.</translation>
 <translation id="8239109177194627162">Autofill für Kreditkarten deaktivieren</translation>
 <translation id="8239143983379015783">Aktivierung des persistenten Kontingents erzwingen</translation>
 <translation id="8240976615241583524">Mit dieser Richtlinie kannst du einschränken, welche IP-Adressen und Schnittstellen WebRTC bei der Suche nach der bestmöglichen Verbindung verwenden kann.

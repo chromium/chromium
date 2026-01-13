@@ -1141,6 +1141,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2859383374160668142">Du kan når som helst se avslag for produkter du sporer.</translation>
 <translation id="2859806420264540918">Dette nettstedet viser forstyrrende eller villedende annonser.</translation>
 <translation id="28618371182701850">Elbiler og plug-in-biler</translation>
+<translation id="2873317327342476681">Dino-spillet – trykk på dinosauren eller på mellomrom for å spille</translation>
 <translation id="287387905105155974">Hjelpeboble</translation>
 <translation id="28761159517501904">Filmer</translation>
 <translation id="2876489322757410363">Går ut av Inkognitomodus for å betale via en ekstern app. Vil du fortsette?</translation>
@@ -1494,6 +1495,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3415471717466570460">Søkene dine, de beste treffene og innholdet på sidene sendes til Google og kan bli sett av menneskelige evaluerere i arbeidet med å forbedre denne funksjonen. Dette er en funksjon på forsøksstadiet. Det kan hende den gjør feil.</translation>
 <translation id="3422248202833853650">Prøv å lukke andre programmer for å frigjøre minne.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> er ikke tilgjengelig for øyeblikket.</translation>
+<translation id="3422794267539320056">Trykk på dinosauren eller på mellomrom for å spille</translation>
 <translation id="3423742043356668186">Systemspesifisert</translation>
 <translation id="3427342743765426898">&amp;Endre likevel</translation>
 <translation id="342781501876943858">Chromium anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
@@ -3540,7 +3542,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6702851555558236418">Programvare for lyd og musikk</translation>
 <translation id="6702919718839027939">Presenter</translation>
 <translation id="6704458454638854812">Egenskapen «custom_size» er angitt, og navnet er forventet å være «custom».</translation>
-<translation id="670477556876354552">Omstart er nødvendig</translation>
 <translation id="6706005862292023715">Gardiner og vindusbehandling</translation>
 <translation id="6706210727756204531">Omfang</translation>
 <translation id="6706678697074905703">Kunne ikke lagre dette IBAN-nummeret i Google-kontoen din. Det ble lagret i Chrome på denne enheten i stedet.</translation>

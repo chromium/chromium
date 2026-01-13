@@ -10953,9 +10953,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 <translation id="8225579382697740712">WebHID API 사용 제어</translation>
 <translation id="8229912067600517877">개발자 도구 사용</translation>
 <translation id="8238421250255592181">터치 키보드가 자동 완성을 지원할 수 있는지 나타내는 부울 플래그입니다.</translation>
-<translation id="8238558579601006178">정책을 0으로 설정하거나 설정하지 않은 상태로 두면 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 연결된 사용자의 사용자 범위에만 적용됩니다.
-정책을 1로 설정하면 사용자가 연결되어 있지 않더라도 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 사용자 범위에서 적용됩니다.
-정책을 2로 설정하면 소스가 사용자인 경우 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 적용되지 않습니다.</translation>
 <translation id="8239109177194627162">신용카드 입력 시 자동 완성 사용 안함</translation>
 <translation id="8239143983379015783">영구 할당량을 강제 적용합니다.</translation>
 <translation id="8240976615241583524">이 정책은 사용 가능한 최상의 연결을 찾으려고 할 때 WebRTC가 사용하는 IP 주소 및 인터페이스를 제한할 수 있습니다.

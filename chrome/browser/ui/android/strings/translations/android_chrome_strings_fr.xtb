@@ -725,6 +725,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4180726336228139707">Uniquement sur cet appareil</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4188221736490993796">Trier de Z à A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a empêché ce site d'envoyer des notifications en raison de spam ou de contenu trompeur}one{Chrome a empêché ce site d'envoyer des notifications en raison de spam ou de contenu trompeur}other{Chrome a empêché ces sites d'envoyer des notifications en raison de spam ou de contenu trompeur}}</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 onglet sur cet appareil}one{# onglet sur cet appareil}other{# onglets sur cet appareil}}</translation>
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
@@ -1117,6 +1118,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5833984609253377421">Partager le lien</translation>
 <translation id="5839058148541733625">Dinosaure sur Chrome</translation>
 <translation id="5841444063256914865">Voulez-vous quand même télécharger "<ph name="FILE_NAME" />" ?</translation>
+<translation id="5847265694842662173">Chrome a empêché des sites abusifs et inutilisés d'envoyer des notifications</translation>
 <translation id="5848257610304005265">Ouvrir le PDF dans <ph name="APP_NAME" /> ?</translation>
 <translation id="5849288995120328556">Arrêter le partage ?</translation>
 <translation id="5853623416121554550">suspendu</translation>
@@ -1145,6 +1147,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5956665950594638604">Ouvrir le centre d'aide dans un nouvel onglet</translation>
 <translation id="59577092665511740">Sélectionnez un compte.</translation>
 <translation id="5958275228015807058">Recherchez vos fichiers et vos pages dans la section "Téléchargements"</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a empêché un site que vous n'avez pas consulté récemment de vous envoyer des notifications}one{Chrome a empêché un site que vous n'avez pas consulté récemment de vous envoyer des notifications}other{Chrome a empêché des sites que vous n'avez pas consultés récemment de vous envoyer des notifications}}</translation>
 <translation id="5962718611393537961">Appuyer pour réduire</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
@@ -1805,6 +1808,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Aucune fenêtre inactive</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>
 <translation id="8497242791509864205">Ouvrir les options de tri</translation>
 <translation id="8497480609928300907">Explications du Guide sur la confidentialité</translation>

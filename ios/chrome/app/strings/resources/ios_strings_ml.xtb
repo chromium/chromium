@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">ഞാൻ എങ്ങനെ ഈ ഫീച്ചർ ഉപയോഗിക്കും?</translation>
 <translation id="1901600657316773839">തിരഞ്ഞെടുത്തത് നിലനിർത്തുക</translation>
 <translation id="1902277226107477495">വിലാസം കണ്ടെത്തൽ ഓഫാണ്. ക്രമീകരണത്തിൽ അത് വീണ്ടും ഓണാക്കുക.</translation>
+<translation id="1909201414196501151">സൈറ്റ് ചേർത്ത് പിൻ ചെയ്തു</translation>
 <translation id="1911619930368729126">Google ഡ്രൈവിലേക്ക് അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="1925706052394657380">iOS-ൽ <ph name="BEGIN_BOLD" />ഡിഫോൾട്ട് ആപ്പ്<ph name="END_BOLD" /> ക്രമീകരണം തുറക്കുക</translation>
 <translation id="1941314575388338491">പകർത്താൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="334690320928261823">അടുത്തിടെ ഉപയോഗിച്ച ടാബുകൾ</translation>
 <translation id="3349031117032695619">പോപ്പ്അപ്പ് തടയൂ</translation>
+<translation id="3350976670663926380">എഡിറ്റുകൾ സംരക്ഷിച്ചു</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യപ്പെടുന്നുണ്ട്.</translation>
 <translation id="3365529507898144230">Photos-ൽ സംരക്ഷിക്കുക</translation>
 <translation id="3371831930909698441">വിവർത്തനം ലഭ്യമാണ്. സ്‌ക്രീനിൻ്റെ ചുവടെ ഓപ്‌ഷനുകൾ ലഭ്യമാണ്.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"മെച്ചപ്പെടുത്തിയ പരിരക്ഷ" തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3610041351087301930">റീഡർ മറയ്‌ക്കുക</translation>
 <translation id="3610866916973186448">ഉവ്വ്, ഇല്ലാതാക്കുക</translation>
+<translation id="3616161326314492065">ചിത്രങ്ങൾ സൃഷ്ടിക്കാനും റീമിക്‌സ് ചെയ്യാനും ഫോട്ടോകൾ എടുത്ത് Gemini-യുമായി പങ്കിടുക.</translation>
 <translation id="3622175633937495219">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
 <translation id="3625008969091706597">പിന്നിലേക്ക് പോകാൻ അറ്റത്ത് സ്വൈപ്പ് ചെയ്യാം.</translation>
 <translation id="362709345066740529">നിങ്ങളുടെ കാർഡുകളും ഫീഡും മറ്റും ഇവിടെ ഇഷ്ടാനുസൃതമാക്കുക</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7854006015462979438">പൊതുവായത് തുറക്കുക</translation>
 <translation id="7855678267851972597">ഓഡിയോകൾ</translation>
+<translation id="7857520352710212030">സൈറ്റ് പിൻ ചെയ്തു</translation>
 <translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="7863211248337747225">ആപ്പ് നേടൂ</translation>
 <translation id="7865127013871431856">വിവർത്തന ഓപ്ഷനുകൾ</translation>

@@ -118,6 +118,7 @@
 <translation id="1185343831726846924">व्हर्च्युअल कार्ड सुरू करता येणार नाही हे कन्फर्म करत आहे</translation>
 <translation id="1186201132766001848">पासवर्ड तपासा</translation>
 <translation id="1187430513518041110">ऑटो आणि वाहने</translation>
+<translation id="1188817995162638216">फाइल सेव्ह करणे रद्द करायचे आहे का?</translation>
 <translation id="1190491977647722791">पेपर (हेवीवेट)</translation>
 <translation id="1194278116501666615">ArcVm प्रीलोड करण्याच्या प्रगतीसंबंधित अपडेट</translation>
 <translation id="1195073053842921378">हा पत्ता या डिव्हाइसवरून हटवला जाईल</translation>
@@ -404,6 +405,7 @@
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1640180200866533862">वापरकर्ता धोरणे</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटच्या होमवर भेट देऊन<ph name="END_LINK" /> पहा.</translation>
+<translation id="1641962500621836664">कॅमेरा फाइल सेव्ह करत आहे</translation>
 <translation id="1641976391427233992">या कालावधीपर्यंत आउटपुटला विलंब करा</translation>
 <translation id="1643651787397909318">Chrome सुरक्षितता तपासणीवर जा बटण, सेटिंग्जमध्ये Chrome सुरक्षितता तपासणी पेजला भेट देण्यासाठी हे अ‍ॅक्टिव्हेट करा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -494,6 +496,7 @@
 <translation id="1777422078676229054">फोटो (आर्कायव्हल)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">वेब अ‍ॅप्स इंस्टॉल करायची आहेत का?</translation>
+<translation id="1791044335740781449">Google Drive वर फाइल अपलोड करत आहे</translation>
 <translation id="1791415068765905273">सर्व तुलना सारण्या दाखवा</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Google खाते मध्ये तुमची माहिती, गोपनीयता आणि सुरक्षा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
 <translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> पूर्वी शेवटचे वापरले</translation>
@@ -560,6 +563,7 @@
 <translation id="1884843295353628214">जॅझ</translation>
 <translation id="1890171020361705182">Dino गेम. पिक्सलेट झालेला डायनासोर हा काट्यांपासून आणि टेरोडॅक्टिलपासून स्वतःचे रक्षण करत एका ओसाड जागेतून धावत आहे. तुम्ही ऑडिओ संकेत ऐकता तेव्हा, अडथळे आल्यावर उडी मारण्यासाठी टॅप करा.</translation>
 <translation id="1898423065542865115">फिल्टर करणे</translation>
+<translation id="1898678876221454577">तुमचे स्कॅन सेव्ह करण्यासाठी साइन इन करा</translation>
 <translation id="1901443836186977402">{1,plural, =1{या सर्व्हरला तो <ph name="DOMAIN" />असल्याचे सिद्ध करता आले नाही; त्याचे सुरक्षितता प्रमाणपत्र शेवटच्या तारखेला एक्स्पायर झाले आहे. हे कदाचित चुकीच्या काँफिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झाले आहे. तुमच्या काँप्युटरचे घड्याळ सध्या <ph name="CURRENT_DATE" /> वर सेट केले आहे. हे योग्य आहे का? ते योग्य नसल्यास, तुम्ही तुमच्या सिस्टमचे घड्याळ पुन्हा सेट करा आणि त्यानंतर हे पेज रिफ्रेश करा.}other{या सर्व्हरला तो <ph name="DOMAIN" />असल्याचे सिद्ध करता आले नाही; त्याचे सुरक्षितता प्रमाणपत्र # दिवसांपूर्वी एक्स्पायर झाले आहे. हे कदाचित चुकीच्या काँफिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झाले आहे. तुमच्या काँप्युटरचे घड्याळ सध्या <ph name="CURRENT_DATE" /> वर सेट केले आहे. हे योग्य आहे का? ते योग्य नसल्यास, तुम्ही तुमच्या सिस्टमचे घड्याळ पुन्हा सेट करा आणि त्यानंतर हे पेज रिफ्रेश करा.}}</translation>
 <translation id="190166348986967700">तुमचा ॲडमिनिस्ट्रेटर <ph name="DATE_TIME" /> रोजी तुमच्या फाइल <ph name="CLOUD_PROVIDER" /> मध्ये अपलोड करण्यास सुरुवात करेल. तुमचा फाइल अपलोड पूर्ण होईपर्यंत तुमचे डिव्हाइस कनेक्ट केलेले ठेवा. अपलोडदरम्यान, तुम्ही फक्त स्थानिक फाइल रीड करू शकाल.</translation>
 <translation id="1902576642799138955">वैधता कालावधी</translation>
@@ -896,6 +900,7 @@
 <translation id="2413528052993050574">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित रद्द केले असू शकते. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2414676293664737497">मार्कडाउन</translation>
 <translation id="2414886740292270097">गडद</translation>
+<translation id="2429702686644080813">तुमचा व्हिडिओ सेव्ह करण्यासाठी साइन इन करा</translation>
 <translation id="2429716554270894715">फॅब्रिक (वॉटरप्रूफ)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ला सर्व <ph name="PROTOCOL" /> लिंक उघडण्याची अनुमती द्यायची?</translation>
 <translation id="2436976580469434549">फायबर आणि टेक्सटाइल आर्ट</translation>
@@ -1099,6 +1104,7 @@
 <translation id="2742128390261873684">होम ऑटोमेशन</translation>
 <translation id="2743512410823092182">डीजे स्रोत आणि उपकरणे</translation>
 <translation id="2743934314332613923">ड्रायव्हरच्या परवान्यासंबंधित माहिती अपडेट करायची आहे का?</translation>
+<translation id="2757727729385895652">Google Drive वर <ph name="COUNT" /> फाइल अपलोड करत आहे</translation>
 <translation id="2759299890026163685">पुन्हा प्रयत्न करण्यापूर्वी तुमच्याकडे स्थिर इंटरनेट कनेक्शन असल्याची खात्री करा</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मध्ये तुमचा पासवर्ड भरा</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1141,6 +1147,7 @@
 <translation id="2859383374160668142">तुम्ही ट्रॅक करत असलेल्या उत्पादनांची कमी झालेली किंमत कधीही पाहू शकता.</translation>
 <translation id="2859806420264540918">ही साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते.</translation>
 <translation id="28618371182701850">इलेक्ट्रिक आणि प्लग-इन वाहने</translation>
+<translation id="2873317327342476681">Dino गेम, खेळण्यासाठी dino वर टॅप करा किंवा स्पेस प्रेस करा</translation>
 <translation id="287387905105155974">मदतीसंबंधित बबल</translation>
 <translation id="28761159517501904">चित्रपट</translation>
 <translation id="2876489322757410363">बाह्य ॲप्लिकेशनमार्फत पेमेंट करण्यासाठी गुप्त मोडमधून बाहेर पडत आहे. पुढे सुरू ठेवायचे आहे का?</translation>
@@ -1226,6 +1233,7 @@
 <translation id="2983666748527428214">गुप्त टॅब उघडा</translation>
 <translation id="2985306909656435243">सक्षम केल्‍यास, Chromium जलदपणे फॉर्म भरण्‍यासाठी तुमच्या कार्डची एक प्रत या डिव्‍हाइसवर संग्रहित करेल.</translation>
 <translation id="2985398929374701810">वैध पत्ता एंटर करा</translation>
+<translation id="2986485254770343131">कॅमेरा फाइल सेव्ह करत आहे</translation>
 <translation id="2987034854559945715">कोणतीही जुळणारी वैशिष्‍ट्ये नाहीत</translation>
 <translation id="2989742184762224133">ड्युअल स्टेपल टॉप</translation>
 <translation id="2991174974383378012">वेबसाइटसह शेअर करीत आहे</translation>
@@ -1494,6 +1502,7 @@
 <translation id="3415471717466570460">तुमचे शोध, सर्वोत्तम जुळण्या आणि त्यांचा पेजचा आशय Google कडे पाठवला जातो आणि या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी मानवी परीक्षणकर्त्यांद्वारे पाहिला जाऊ शकतो. हे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
 <translation id="3422248202833853650">मेमरी मोकळी करण्‍यासाठी अन्य प्रोग्राम मधून बाहर पडण्याचा प्रयत्न करा.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> सध्या आवाक्याबाहेर आहे.</translation>
+<translation id="3422794267539320056">खेळण्यासाठी dino वर टॅप करा किंवा स्पेस प्रेस करा</translation>
 <translation id="3423742043356668186">सिस्टीम निर्दिष्ट केली</translation>
 <translation id="3427342743765426898">&amp;संपादित करा पुन्हा करा</translation>
 <translation id="342781501876943858">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chromium तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
@@ -1901,6 +1910,7 @@
 <translation id="4059523390906550209">संवेदनशील डेटा संरक्षणाबद्दल अधिक जाणून घ्या</translation>
 <translation id="4060880210388108757">इंडी आणि पर्यायी संगीत</translation>
 <translation id="4060883793524802469">सारण्यांमधून काढून टाका</translation>
+<translation id="4061573458783426621">स्कॅन OneDrive वर सेव्ह करू शकत नाही</translation>
 <translation id="4063063121357725926">Google ला तुमच्या कार्टसाठी सवलती शोधण्याकरिता तुम्हाला मदत करू द्या</translation>
 <translation id="406358100705415968">कामाच्या ठिकाणी सुरक्षिततेसाठी संरक्षणात्मक गिअर</translation>
 <translation id="4065659219963895623">रेस्टॉरंट</translation>
@@ -2212,6 +2222,7 @@
 <translation id="4530347922939905757">एसएमएस</translation>
 <translation id="4531477351494678589">व्हर्च्युअल कार्ड नंबर:</translation>
 <translation id="4535523368173457420">ही शोध इंजीन तुमच्या प्रदेशात लोकप्रिय आहेत आणि रँडम क्रमाने दाखवली आहेत</translation>
+<translation id="4535602490975885745">OneDrive वर फोटो सेव्ह करू शकत नाही</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{१ वर्षापूर्वी तयार केला आहे}other{{NUM_YEARS} वर्षांपूर्वी तयार केला आहे}}</translation>
 <translation id="4541810033354695636">ऑगमेंटेड रीअ‍ॅलिटी</translation>
 <translation id="4542971377163063093">ट्रे ६</translation>
@@ -2306,6 +2317,7 @@
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चालविणे<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> साठी पासवर्ड</translation>
 <translation id="4724144314178270921">तुमच्या क्लिपबोर्डवरील मजकूर आणि इमेज पाहण्याची विनंती करू शकते</translation>
+<translation id="4725766358270333890">Microsoft OneDrive वर <ph name="COUNT" /> फाइल अपलोड करत आहे</translation>
 <translation id="4726672564094551039">धोरणे रीलोड करा</translation>
 <translation id="4728558894243024398">प्लॅटफॉर्म</translation>
 <translation id="4729147136006144950">धर्मार्थ आणि लोकोपकार</translation>
@@ -2348,6 +2360,7 @@
 <translation id="4771249073710170730">रेडिओ नियंत्रण आणि मॉडेलिंग</translation>
 <translation id="4771973620359291008">एक अज्ञात एरर आली आहे.</translation>
 <translation id="4774055414220872623">आर्ट आणि क्राफ्ट वस्तूंचा पुरवठा</translation>
+<translation id="4775456404799771098">तुम्ही फाइल कायमची गमवाल</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पॉप-अप ब्लॉक केला}other{# पॉप-अप ब्लॉक केले}}</translation>
 <translation id="4780320432697076749">फोटोशी संबंधित सॉफ्टवेअर</translation>
 <translation id="4780366598804516005">मेलबॉक्स १</translation>
@@ -2800,6 +2813,7 @@
 <translation id="5509913453990750440">फॅशन आणि स्टाइल</translation>
 <translation id="5510766032865166053">ती कदाचित हलविली किंवा हटविली गेली आहे.</translation>
 <translation id="551222491709693708">कॉमिक आणि अ‍ॅनिमेशन</translation>
+<translation id="5512381366239323820">कॅमेरा फाइल</translation>
 <translation id="5512812358367123529">ऑफिससाठीचे फर्निचर</translation>
 <translation id="5513528801833998679">डिव्हाइस साइन-इन वापरा</translation>
 <translation id="5515388687005870733">५५ x ८५ मिमी</translation>
@@ -2935,6 +2949,7 @@
 <translation id="572328651809341494">अलीकडील टॅब</translation>
 <translation id="5723873695528696965">तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करा</translation>
 <translation id="5725297205162868298">शॉर्टकट @ या वर्णापासून सुरू होऊ शकत नाही: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5725797473946373607">पुढील वेळी हा डायलॉग दाखवू नका</translation>
 <translation id="5728246486828755318">प्रिंटरची प्रगत वैशिष्ट्ये वापरण्याची विनंती करू शकते</translation>
 <translation id="5729442113829771034">बालवाडीपूर्व शिक्षण</translation>
 <translation id="5730040223043577876">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chrome तुम्हाला तो रीसेट करण्याची शिफारस करत आहे.</translation>
@@ -3101,6 +3116,7 @@
 <translation id="6017514345406065928">हिरवा</translation>
 <translation id="6018650639991193045">Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि बरेच काही हटवा</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
+<translation id="6023960830218262456">OneDrive वर व्हिडिओ सेव्ह करू शकत नाही</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक केलेले)</translation>
 <translation id="6025471531651464742">फाइल जोडा</translation>
 <translation id="6028591542479806248">मोबाइल आणि ईमेल सूचना व्यवस्थापित करा</translation>
@@ -3443,6 +3459,7 @@
 <translation id="6529173248185917884">सातवा रोल</translation>
 <translation id="6529602333819889595">&amp;पुन्हा करा हटवा</translation>
 <translation id="6532101170117367231">Google ड्राइव्ह मध्ये सेव्ह करा</translation>
+<translation id="6535903140035956341">कॅमेरा फाइल आणि डाउनलोड</translation>
 <translation id="6536221421038631327">तुमच्या <ph name="DEVICE_TYPE" /> वरून पासपॉइंट सदस्यत्व काढून टाकल्यामुळे संबंधित नेटवर्क काढून टाकली जातील. तुमच्या सदस्यत्व प्लॅनमध्ये बदल करण्यासाठी "<ph name="FRIENDLY_NAME" />" शी संपर्क साधा. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">तुलना सारण्या पाहण्यासाठी, सिंक सुरू करा</translation>
 <translation id="6539092367496845964">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
@@ -3540,7 +3557,6 @@
 <translation id="6702851555558236418">ऑडिओ आणि संगीताशी संबंधित सॉफ्टवेअर</translation>
 <translation id="6702919718839027939">सादर करा</translation>
 <translation id="6704458454638854812">"custom_size" ही प्रॉपर्टी सेट केली आहे, "custom" असे नाव अपेक्षित आहे.</translation>
-<translation id="670477556876354552">रीस्टार्ट करणे आवश्यक आहे</translation>
 <translation id="6706005862292023715">पडदे आणि खिडकी यांसाठी सजावट</translation>
 <translation id="6706210727756204531">व्याप्ती</translation>
 <translation id="6706678697074905703">हा IBAN तुमच्या Google खाते मध्ये सेव्ह करता आला नाही. त्याऐवजी तो या डिव्हाइसवरील Chrome मध्ये सेव्ह केला आहे.</translation>
@@ -3671,6 +3687,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहने</translation>
+<translation id="6927878187051807444">कॅमेरा फाइल आणि स्क्रीनशॉट</translation>
 <translation id="6930607614725241390">साइड पॅनलमध्ये शोधा</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />तुमचे डीफॉल्ट शोध इंजीन तुम्हाला वेबवर शोधू देते आणि Chrome वैशिष्ट्यांना सामर्थ्य देते<ph name="END_BOLD" />, जसे की ॲड्रेस बारवरून आणि वेब पेजवरील इमेजमधून शोधणे. तुमचे शोध इंजीन त्यास सपोर्ट करत नसल्यास, एखादे वैशिष्ट्य कदाचित उपलब्ध होणार नाही.</translation>
 <translation id="6934672428414710184">हे नाव तुमच्या Google खात्यावरून आहे</translation>
@@ -3813,6 +3830,7 @@
 <translation id="7140087718106278457">पेमेंट पद्धतींची सूची बंद आहे.</translation>
 <translation id="714064300541049402">साइड २ इमेज X शिफ्ट</translation>
 <translation id="7140922144008419614">टॅब शोधा बटण, टॅब शोधण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
+<translation id="7143668445748322952">कॅमेरा फाइल, डाउनलोड आणि स्क्रीनशॉट</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -4064,6 +4082,7 @@
 <translation id="7535087603100972091">मूल्य</translation>
 <translation id="753556296624075801">Google द्वारे प्रायोजित</translation>
 <translation id="753713322968419914">Chrome मधून घराचा पत्ता काढून टाकायचा आहे का?</translation>
+<translation id="753714465667062283">तुमचा फोटो सेव्ह करण्यासाठी साइन इन करा</translation>
 <translation id="7537536606612762813">अनिवार्य</translation>
 <translation id="7543525346216957623">आपल्या पालकास विचारा</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> सुरू होत आहे</translation>
@@ -4173,6 +4192,7 @@
 <translation id="7684928361160505327">{0,plural, =1{धोरणामुळे <ph name="FILE_NAME" /> ब्लॉक केली गेली}other{धोरणामुळे <ph name="FILE_COUNT" /> ब्लॉक केल्या गेल्या}}</translation>
 <translation id="7687186412095877299">तुमच्या सेव्ह केलेल्या पेमेंट पद्धतींसह पेमेंट फॉर्म भरते</translation>
 <translation id="7687305263118037187">पुन्हा प्रयत्न करण्याची वेळ संपली</translation>
+<translation id="7689605946980652287">Microsoft OneDrive वर फाइल अपलोड करत आहे</translation>
 <translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
 <translation id="7693583928066320343">पेजचा क्रम मिळाला</translation>
 <translation id="769424100851389104">आता अपडेट करणे सुरू करा</translation>
@@ -5122,6 +5142,7 @@
 <translation id="963734905955638680">तुमच्या प्रदेशामधील कायद्याच्या आधारावर, Chromium तुम्हाला तुमचे डीफॉल्ट शोध इंजीन निवडण्यास सांगते. ही शोध इंजीन तुमच्या प्रदेशात लोकप्रिय असून, रँडम क्रमाने दाखवली आहेत.</translation>
 <translation id="963837307749850257">सर्व वापरकर्ते</translation>
 <translation id="964050462028070434">पासवर्ड आणि पासकी व्यवस्थापित करा…</translation>
+<translation id="964681140808832181">होय, मला रद्द करायचे आहे</translation>
 <translation id="969892804517981540">अधिकृत बिल्ड</translation>
 <translation id="97054401902912338">आशय फिल्टरबद्दल अधिक जाणून घ्या</translation>
 <translation id="973788791897303708">हा टॅब गट पूर्ण भरला आहे</translation>

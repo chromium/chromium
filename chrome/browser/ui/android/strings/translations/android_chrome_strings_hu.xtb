@@ -725,6 +725,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4180726336228139707">Csak ezen az eszközön</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4188221736490993796">Rendezés Z-től A-ig</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{A Chrome spam vagy megtévesztő tartalom miatt megakadályozta, hogy ez a webhely értesítéseket küldjön}other{A Chrome spam vagy megtévesztő tartalom miatt megakadályozta, hogy ezek a webhelyek értesítéseket küldjenek}}</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 lap ezen az eszközön}other{# lap ezen az eszközön}}</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
@@ -1117,6 +1118,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5833984609253377421">Link megosztása</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Mindenképpen le szeretné tölteni a következő fájlt: <ph name="FILE_NAME" />?</translation>
+<translation id="5847265694842662173">A Chrome megakadályozta, hogy a visszaélésszerű és nem használt webhelyek értesítéseket küldjenek</translation>
 <translation id="5848257610304005265">Megnyitja a PDF-et a következővel: <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Leállítja a megosztást?</translation>
 <translation id="5853623416121554550">szüneteltetve</translation>
@@ -1145,6 +1147,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5956665950594638604">A Chrome súgójának megnyitása új lapon</translation>
 <translation id="59577092665511740">Válasszon egy fiókot.</translation>
 <translation id="5958275228015807058">A fájlokat és oldalakat a Letöltések között találja meg</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{A Chrome megakadályozta, hogy egy olyan webhely értesítéseket küldjön Önnek, amelyet nem keresett fel mostanában}other{A Chrome megakadályozta, hogy olyan webhelyek értesítéseket küldjenek Önnek, amelyeket nem keresett fel mostanában}}</translation>
 <translation id="5962718611393537961">Koppintson az összecsukáshoz</translation>
 <translation id="5964869237734432770">Képleírások leállítása</translation>
 <translation id="5972844218283131174">Összes kijelölésének megszüntetése</translation>
@@ -1805,6 +1808,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="847433688444405067">Böngészés több eszközön</translation>
 <translation id="8477178913400731244">Adatok törlése</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nincsenek inaktív ablakok</translation>
 <translation id="8493948351860045254">Terület felszabadítása</translation>
 <translation id="8497242791509864205">Rendezési beállítások megnyitása</translation>
 <translation id="8497480609928300907">Magyarázat az adatvédelmi útmutatóhoz</translation>

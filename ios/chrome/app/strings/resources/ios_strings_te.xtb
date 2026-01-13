@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">నేను ఈ ఫీచర్‌ను ఉపయోగించడం ఎలా?</translation>
 <translation id="1901600657316773839">ఎంపికను అలానే ఉంచండి</translation>
 <translation id="1902277226107477495">అడ్రస్ గుర్తింపు ఆఫ్‌లో ఉంది. సెట్టింగ్‌లలో దాన్ని తిరిగి ఆన్ చేయండి.</translation>
+<translation id="1909201414196501151">సైట్ జోడించబడింది, పిన్ చేయబడింది</translation>
 <translation id="1911619930368729126">Google Driveకు అప్‌. చే.</translation>
 <translation id="1925706052394657380">iOSలో <ph name="BEGIN_BOLD" />ఆటోమేటిక్ సెట్టింగ్ యాప్స్<ph name="END_BOLD" /> సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="1941314575388338491">కాపీ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{బుక్‌మార్క్ మీ {email} ఖాతాలోని "{title}"‌లో సేవ్ అయ్యింది}other{బుక్‌మార్క్‌లు మీ {email} ఖాతాలోని "{title}"‌లో సేవ్ అయ్యాయి}}</translation>
 <translation id="334690320928261823">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="3349031117032695619">పాప్-అప్‌లను బ్లాక్ చేయండి</translation>
+<translation id="3350976670663926380">ఎడిట్‌లు సేవ్ చేయబడ్డాయి</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. ఈ ఖాతా మేనేజ్ అవుతోంది.</translation>
 <translation id="3365529507898144230">Photosలో సేవ్ చేయండి</translation>
 <translation id="3371831930909698441">అనువాదం అందుబాటులో ఉంది. స్క్రీన్ దిగువ భాగానికి సమీపంలో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"మెరుగైన రక్షణ"ను ఎంచుకోండి</translation>
 <translation id="3610041351087301930">రీడర్‌ను దాచండి</translation>
 <translation id="3610866916973186448">అవును, తొలగించు</translation>
+<translation id="3616161326314492065">ఇమేజ్‌లను క్రియేట్ చేయడానికి, రీమిక్స్ చేయడానికి ఫోటోలు తీసి, Geminiతో షేర్ చేయండి.</translation>
 <translation id="3622175633937495219">సెర్చ్ హిస్టరీ (<ph name="COUNT" /> కనుగొనబడింది)</translation>
 <translation id="3625008969091706597">మీరు వెనుకకు వెళ్లడానికి అంచును స్వైప్ చేయవచ్చు.</translation>
 <translation id="362709345066740529">మీ కార్డ్‌లు, ఫీడ్, అలాగే మరిన్నింటిని ఇక్కడ అనుకూలంగా మార్చండి</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">కార్యాచరణ</translation>
 <translation id="7854006015462979438">సాధారణ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="7855678267851972597">ఆడియోలు</translation>
+<translation id="7857520352710212030">సైట్ పిన్ చేయబడింది</translation>
 <translation id="7859988229622350291">వీటిని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7863211248337747225">యాప్‌ను పొందండి</translation>
 <translation id="7865127013871431856">Translate ఆప్షన్‌లు</translation>

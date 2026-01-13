@@ -1088,7 +1088,6 @@
 <translation id="1709085899471866534">ເບິ່ງເວລາທີ່ແຖບບໍ່ເຮັດວຽກໄດ້ຢ່າງວ່ອງໄວ. ທ່ານສາມາດປິດຮູບລັກໃໝ່ນີ້ໃນການຕັ້ງຄ່າໄດ້ທຸກເວລາ.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ເດີມ)</translation>
 <translation id="1709217939274742847">ເລືອກປີ້ເພື່ອໃຊ້ການກວດສອບຄວາມຖືກຕ້ອງ <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="1709509436926747582">ສະແດງແຖບຢູ່ເທິງສຸດ</translation>
 <translation id="1709762881904163296">ການຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
 <translation id="1709916727352927457">ລຶບກະແຈຜ່ານອອກ</translation>
 <translation id="1709972045049031556">ບໍ່ສາມາດແບ່ງປັນໄດ້</translation>
@@ -1128,7 +1127,6 @@
 <translation id="1744108098763830590">ຫນ້າ​ພື້ນຫຼັງ</translation>
 <translation id="1745732479023874451">ຈັດການລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ເປີດ ແລະ ແກ້ໄຂ # ໄຟລ໌ໃນເວັບແອັບນີ້ບໍ?}}</translation>
-<translation id="1748329107062243374">ໃຊ້ກະແຈຜ່ານຈາກ <ph name="DEVICE_NAME" /> ເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ຫຼື ໃນອຸປະກອນນີ້ໄດ້ເທົ່ານັ້ນ</translation>
 <translation id="1749733017156547309">ຕ້ອງໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="1750172676754093297">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ສາມາດເກັບຮັກສາລາຍນິ້ວມືໄວ້ໄດ້</translation>
@@ -4034,6 +4032,7 @@
 <translation id="3712143870407382523">ເລືອກໜ້າຈໍສຳລັບດ້ານນີ້</translation>
 <translation id="3712897371525859903">ບັນທຶກໜ້າເປັນ...</translation>
 <translation id="371300529209814631">ກັບຫຼັງ/ໄປໜ້າ</translation>
+<translation id="371302509916403935">ຂີດກ້ອງ</translation>
 <translation id="3713047097299026954">ກະແຈຄວາມປອດໄພນີ້ບໍ່ມີຂໍ້ມູນການເຂົ້າສູ່ລະບົບໃດໆ.</translation>
 <translation id="3713091615825314967">ການອັບເດດອັດຕະໂນມັດເປີດຢູ່.</translation>
 <translation id="3713673533020367620">ເປີດແຖບໃນມຸມມອງແບບແຍກ</translation>
@@ -4544,7 +4543,6 @@
 <translation id="4028467762035011525">ເພີ່ມວິທີການປ້ອນຂໍ້ມູນ</translation>
 <translation id="4029024445166427442">ຕົວເປີດໃຊ້ + shift + ປຸ່ມ backspace</translation>
 <translation id="4029556917477724407">ກັບມາຈາກໜ້າ <ph name="PAGE_TITLE" /></translation>
-<translation id="4031178684547097947">5 ເສັ້ນ</translation>
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4031527940632463547">ບລັອກເຊັນເຊີແລ້ວ</translation>
 <translation id="4033471457476425443">ເພີ່ມໂຟນເດີໃໝ່</translation>
@@ -5812,7 +5810,6 @@
 <translation id="4908811072292128752">ເປີດແຖບໃໝ່ເພື່ອເລື່ອນເບິ່ງສອງເວັບໄຊພ້ອມກັນ</translation>
 <translation id="4910241725741323970">ຕິດຕັ້ງແອັບແລ້ວ</translation>
 <translation id="4912643508233590958">ການປຸກຢູ່ຊື່ໆ</translation>
-<translation id="4912892750325639080">3 ເສັ້ນ</translation>
 <translation id="4913209098186576320">ໄຟລ໌ນີ້ອາດເປັນອັນຕະລາຍ<ph name="LINE_BREAK" />ການກວດສອບນີ້ໃຊ້ເວລາດົນກວ່າປົກກະຕິ...</translation>
 <translation id="4913695564084524048">ບໍ່ພົບຂໍ້ມູນແອັບ</translation>
 <translation id="4915961947098019832">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງຮູບ</translation>
@@ -6347,7 +6344,6 @@
 <translation id="529296195492126134">ບໍ່ຮອງຮັບໂໝດຊົ່ວຄາວ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="5293043095535566171">ເປີດສິດເຂົ້າເຖິງສະຖານທີ່ບໍ?</translation>
 <translation id="5293170712604732402">ກູ້ຄືນການຕັ້ງຄ່າເປັນຄ່າເລີ່ມຕົ້ນເດີມຂອງພວກມັນ</translation>
-<translation id="5293567237718106662">ສະແດງແຖບຢູ່ເທິງສຸດ</translation>
 <translation id="5294068591166433464">ຫາກເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ທີ່ເປັນອັນຕະລາຍ, Chrome ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Google ນຳ</translation>
 <translation id="5294097441441645251">ຕ້ອງເລີ່ມດ້ວຍຕົວອັກສອນຕົວພິມນ້ອຍ ຫຼື ຂີດກ້ອງ</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະໃຊ້ເຊັນເຊີທີ່ມີມາໃນຕົວເພື່ອກວດຫາຄົນທີ່ຢູ່ໜ້າອຸປະກອນຂອງທ່ານ. ຂໍ້ມູນທັງໝົດຈະຖືກປະມວນຜົນຢູ່ອຸປະກອນຂອງທ່ານທັນທີແລ້ວຈາກນັ້ນຈະຖືກລຶບອອກ. ຂໍ້ມູນເຊັນເຊີຈະບໍ່ຖືກສົ່ງໃຫ້ Google ເດັດຂາດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -6941,7 +6937,6 @@
 <translation id="571222594670061844">ເວັບໄຊສາມາດສະແດງຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆໄດ້</translation>
 <translation id="5713033452812927234">ການເປີດໜ້າຈໍຈາກອຸປະກອນກ່ອນໜ້າຂອງທ່ານ</translation>
 <translation id="5713158217420111469">ເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /> ແລ້ວ</translation>
-<translation id="5714095002162155866">ສະແດງແຖບທາງຂ້າງ</translation>
 <translation id="5714100381896040477">ຈໍາກັດການເຄື່ອນໄຫວຢູ່ໜ້າຈໍ</translation>
 <translation id="5719854774000914513">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ HID ໄດ້</translation>
 <translation id="572155275267014074">ການຕັ້ງຄ່າ Android</translation>
@@ -7436,7 +7431,6 @@
 <translation id="6059652578941944813">ລໍາດັບໃບຮັບຮອງ</translation>
 <translation id="6059775313639803773">ຮັບຄຳຕອບແບບເຈາະເລິກຍິ່ງຂຶ້ນດ້ວຍແຫຼ່ງຂໍ້ມູນທີ່ຫຼາຍຂຶ້ນ, ໂດຍໃຊ້ເວລາເພີ່ມອີກເລັກນ້ອຍ</translation>
 <translation id="6059925163896151826">ອຸປະກອນ USB</translation>
-<translation id="6061408389284235459">ສົ່ງການແຈ້ງເຕືອນໄປຫາ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="6063284707309177505">ສ້າງລະຫັດ QR</translation>
 <translation id="6064217302520318294">ການລັອກໜ້າຈໍ</translation>
 <translation id="606449270532897041">ຈັດການຂໍ້ມູນເວັບໄຊ</translation>
@@ -8554,7 +8548,6 @@
 <translation id="6833753236242482566">ສົມດຸນ (ແນະນຳ)</translation>
 <translation id="6835624277262316125">ທີ່ຢູ່ບ່ອນເຮັດວຽກຂອງທ່ານສາມາດຊ່ວຍໃຫ້ທ່ານເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດດ້ວຍບໍລິການ Google ໄດ້ ເຊັ່ນ: ຜົນການຊອກຫາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ ແລະ ເສັ້ນທາງໃນ Google ແຜນທີ່. ທ່ານສາມາດແກ້ໄຂ ຫຼື ລຶບທີ່ຢູ່ຂອງທ່ານໃນ <ph name="BEGIN_LINK" />ບັນຊີ Google <ph name="USERNAME" /><ph name="END_LINK" /> ຂອງທ່ານໄດ້.</translation>
 <translation id="6835762382653651563">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
-<translation id="6836441935577925845">ສະແດງແຖບທາງຂ້າງ</translation>
 <translation id="6838992358006915573">ແວ່ນຂະຫຍາຍຕິດຕາມໂຟກັສຂອງ ChromeVox</translation>
 <translation id="6839916869147598086">ການເຂົ້າສູ່ລະບົບໄດ້ປ່ຽນໄປແລ້ວ</translation>
 <translation id="6840155290835956714">ຖາມກ່ອນສົ່ງ</translation>
@@ -9052,7 +9045,6 @@
 <translation id="7191159667348037">ເຄື່ອງພິມທີ່ບໍ່ຮູ້ຈັກ (USB)</translation>
 <translation id="7191631508323321927">ຫ້ອງໂຖງ</translation>
 <translation id="7191632649590906354">ຕອນນີ້ສະມາຊິກຄອບຄົວຂອງທ່ານສາມາດໃຊ້ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ເຂົາເຈົ້າໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google. ກະລຸນາບອກໃຫ້ເຂົາເຈົ້າເຂົ້າໄປ <ph name="WEBSITE" /> ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
-<translation id="7192393330344360021">1 ເສັ້ນ</translation>
 <translation id="7193051357671784796">ແອັບນີ້ຖືກເພີ່ມເຂົ້າໂດຍອົງການຂອງທ່ານ. ປິດເປີດແອັບຄືນໃໝ່ເພື່ອສຳເລັດການຕິດຕັ້ງມັນ.</translation>
 <translation id="7193374945610105795">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">ສົ່ງຄຳຕິຊົມສຳລັບກຸ່ມທີ່ແນະນຳ</translation>
@@ -10722,7 +10714,6 @@
 <translation id="8312841338723044391">ສົດ</translation>
 <translation id="8313308349366087671">ຕົວເລືອກແອັບພລິເຄຊັນ</translation>
 <translation id="8313599942510782709">ໜ້າວຽກຂອງທ່ານຍັງຄົງດຳເນີນຢູ່</translation>
-<translation id="8314089908545021657">ຈັບຄູ່ກັບໂທລະສັບໃໝ່</translation>
 <translation id="8314381333424235892">ສ່ວນຂະຫຍາຍບໍ່ເຫັນ ຫຼື ບໍ່ໄດ້ຕິດຕັ້ງ</translation>
 <translation id="831440797644402910">ບໍ່ສາມາດເປີດໂຟນເດີນີ້ໄດ້</translation>
 <translation id="8314835274931377415">ເລີ່ມການຕັ້ງຄ່າການເຂົ້າເຖິງດ້ວຍສະວິດບໍ?</translation>

@@ -725,6 +725,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4180726336228139707">Gailu honetan soilik</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
 <translation id="4188221736490993796">Ordenatu Ztik Ara</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-k webgune honi jakinarazpenak bidaltzea galarazi dio, spama edo eduki engainagarria duelako}other{Chrome-k webgune hauei jakinarazpenak bidaltzea galarazi die, spama edo eduki engainagarria dutelako}}</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Gailu honetako fitxa bat}other{Gailu honetako # fitxa}}</translation>
 <translation id="4198423547019359126">Ez dago deskarga-kokapenik eskuragarri</translation>
@@ -1117,6 +1118,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5833984609253377421">Partekatu esteka</translation>
 <translation id="5839058148541733625">Chrome-ko Dino</translation>
 <translation id="5841444063256914865">"<ph name="FILE_NAME" />" deskargatu egin nahi duzu hala ere?</translation>
+<translation id="5847265694842662173">Chrome-k gehiegikeriak egiten dituzten eta erabiltzen ez diren webguneei jakinarazpenak bidaltzea galarazi die</translation>
 <translation id="5848257610304005265">PDFa <ph name="APP_NAME" /> bidez ireki nahi duzu?</translation>
 <translation id="5849288995120328556">Partekatzeari utzi nahi diozu?</translation>
 <translation id="5853623416121554550">pausatuta</translation>
@@ -1145,6 +1147,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5956665950594638604">Ireki Chrome laguntza-zentroa beste fitxa batean</translation>
 <translation id="59577092665511740">Aukeratu kontu bat.</translation>
 <translation id="5958275228015807058">Bilatu Deskargak atalean dituzun fitxategiak eta orriak</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-k azkenaldian bisitatu ez duzun webgune bati jakinarazpenak bidaltzea galarazi dio}other{Chrome-k azkenaldian bisitatu ez dituzun webguneei jakinarazpenak bidaltzea galarazi die}}</translation>
 <translation id="5962718611393537961">Sakatu tolesteko</translation>
 <translation id="5964869237734432770">Gelditu irudi-deskribapenak</translation>
 <translation id="5972844218283131174">Desautatu guztiak</translation>
@@ -1805,6 +1808,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="847433688444405067">Arakatu gailu guztietan</translation>
 <translation id="8477178913400731244">Ezabatu datuak</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Ez dago leiho inaktiborik</translation>
 <translation id="8493948351860045254">Egin tokia</translation>
 <translation id="8497242791509864205">Ireki ordenatzeko aukerak</translation>
 <translation id="8497480609928300907">Pribatutasun-gidaren azalpena</translation>

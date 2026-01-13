@@ -725,7 +725,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4180726336228139707">Samo na ovaj uređaj</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4188221736490993796">Poredaj od Ž do A</translation>
-<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavijesti s te web-lokacije zbog neželjenog ili obmanjujućeg sadržaja}one{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}few{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}other{Chrome je zaustavio slanje obavijesti s tih web-lokacija zbog neželjenog ili obmanjujućeg sadržaja}}</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavještenja s ove web lokacije zbog neželjenog ili obmanjujućeg sadržaja}one{Chrome je zaustavio slanje obavještenja s ovih web lokacija zbog neželjenog ili obmanjujućeg sadržaja}few{Chrome je zaustavio slanje obavještenja s ovih web lokacija zbog neželjenog ili obmanjujućeg sadržaja}other{Chrome je zaustavio slanje obavještenja s ovih web lokacija zbog neželjenog ili obmanjujućeg sadržaja}}</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na uređaju}one{# kartica na uređaju}few{# kartice na uređaju}other{# kartica na uređaju}}</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
@@ -1118,7 +1118,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5833984609253377421">Dijeli link</translation>
 <translation id="5839058148541733625">Dinosaur na Chromeu</translation>
 <translation id="5841444063256914865">Želite li ipak preuzeti fajl "<ph name="FILE_NAME" />"?</translation>
-<translation id="5847265694842662173">Chrome je zaustavio slanje obavijesti sa zlonamjernih i nekorištenih web-lokacija</translation>
+<translation id="5847265694842662173">Chrome je zaustavio slanje obavještenja sa zlonamjernih i nekorištenih web lokacija</translation>
 <translation id="5848257610304005265">Otvoriti PDF putem aplikacije <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Zaustaviti dijeljenje?</translation>
 <translation id="5853623416121554550">pauzirano</translation>
@@ -1147,7 +1147,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5956665950594638604">Otvori Chrome Centar za pomoć u novoj kartici</translation>
 <translation id="59577092665511740">Odabir računa.</translation>
 <translation id="5958275228015807058">Pronađite svoje fajlove i stranice u meniju Preuzimanja</translation>
-<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavijesti s web-lokacije koju niste posjetili u posljednje vrijeme}one{Chrome je zaustavio slanje obavijesti s web-lokacija koje niste posjetili u posljednje vrijeme}few{Chrome je zaustavio slanje obavijesti s web-lokacija koje niste posjetili u posljednje vrijeme}other{Chrome je zaustavio slanje obavijesti s web-lokacija koje niste posjetili u posljednje vrijeme}}</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio slanje obavještenja s web lokacije koju niste posjetili u posljednje vrijeme}one{Chrome je zaustavio slanje obavještenja s web lokacija koje niste posjetili u posljednje vrijeme}few{Chrome je zaustavio slanje obavještenja s web lokacija koje niste posjetili u posljednje vrijeme}other{Chrome je zaustavio slanje obavještenja s web lokacija koje niste posjetili u posljednje vrijeme}}</translation>
 <translation id="5962718611393537961">Dodirnite da suzite</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5972844218283131174">Poništi sve odabire</translation>

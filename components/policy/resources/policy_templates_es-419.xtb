@@ -2320,6 +2320,17 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo en part
 <translation id="2568488785376704318">Esta política es obsoleta. En su lugar, utiliza <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Inhabilitar las descripciones por voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
+<translation id="2571353268726025696">Esta política se utiliza como método para inhabilitar la función de Conjuntos propios (que luego se renombró como función de <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Si habilitas esta política o no la estableces, se habilitará la función de Conjuntos propios.
+
+Si la inhabilitas, se inhabilitará la función de Conjuntos propios.
+
+Controla si Chrome admite integraciones relacionadas con Conjuntos propios.
+
+Esto equivale a la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Cualquiera de las políticas se puede usar con el mismo efecto en el comportamiento del navegador.
+Ambas políticas dejaron de estar disponibles después de la baja de la función <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> en la versión 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2571821662934804440">Permitir el uso de la función sin mejorar los modelos de IA</translation>
 <translation id="2573850437942404034">No permitir</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
@@ -7712,6 +7723,44 @@ política mientras se esté ejecutando el navegador.</translation>
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
 <translation id="6087413944876892918">Usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Establecer en porcentaje el umbral de la batería para el cambio de carga fuera del horario de mayor consumo</translation>
+<translation id="6089118101413877627">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los Conjuntos propios (que luego se renombró como la función <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Cada conjunto de la lista de Conjuntos propios del navegador debe cumplir los requisitos de un Conjunto propio.
+Un Conjunto propio debe contener un sitio principal y uno o más sitios miembros.
+Un conjunto también puede contener una lista de sitios de servicio de su propiedad, así como un mapa de un sitio a todas sus variantes de ccTLD.
+Consulta https://github.com/WICG/first-party-sets para obtener más información sobre los Conjuntos propios que usa <ph name="PRODUCT_NAME" />.
+
+Todos los sitios de un Conjunto propio deben ser un dominio registrable de HTTPS. Además, cada sitio en un Conjunto propio debe ser único.
+Esto quiere decir que un sitio no puede estar enumerado más de una vez en un Conjunto propio.
+
+Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de Conjuntos propios.
+
+Para todos los sitios de un Conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
+en un Conjunto propio de la lista del navegador, ese sitio se quitará del Conjunto propio del navegador.
+Luego de esto, el Conjunto propio de la política se agregará a la lista de Conjuntos propios del navegador.
+
+Para todos los sitios de un Conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
+en un Conjunto propio de la lista del navegador, ese conjunto se actualizará para que
+el nuevo Conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
+el Conjunto propio de la política se agregará a la lista de Conjuntos propios del navegador.
+
+La lista de Conjuntos propios del navegador requiere que ningún sitio de la lista esté en
+más de un conjunto. Este también es un requisito para las listas <ph name="REPLACEMENTS" />
+y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
+las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />.
+
+Los comodines (*) no se admiten como valor de la política, ni en ningún Conjunto propio en estas listas.
+
+Todos los conjuntos que brinda esta política deben ser Conjuntos propios válidos. De lo contrario, se
+producirá un error.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Esto equivale a la política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Cualquiera de las políticas se puede usar con el mismo efecto en el comportamiento del navegador.
+Ambas políticas dejaron de estar disponibles después de la baja de la función <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> en la versión 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Supervisa la configuración del controlador de telemetría y diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Obligar a los usuarios a acceder para usar el navegador</translation>
 <translation id="6092073071805297119">Permitir el uso del filtro de rendimiento de accesibilidad</translation>
@@ -10576,6 +10625,28 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si la estableces como verdadera, se informarán los eventos de red desde el dispositivo.</translation>
 <translation id="780629758750905699">Permitir agregar cuentas de Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos que deben excluirse de la sincronización</translation>
+<translation id="7812285231594048601">Esta política dejó de estar disponible. En su lugar, utiliza <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" />.
+
+Comportamiento predeterminado (política no establecida)
+Cuando se agrega una cuenta en el área de contenido, puede aparecer un pequeño diálogo que le solicita al usuario crear un perfil nuevo. Este diálogo se puede descartar.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Si un usuario accede a un servicio de Google por primera vez en un navegador de <ph name="PRODUCT_NAME" />, aparece un diálogo que le solicita crear un perfil nuevo para su cuenta empresarial. El usuario puede hacer clic en Cancelar y salir, o en Continuar para crear un perfil nuevo. Los datos de navegación existentes no se agregarán al perfil nuevo. El perfil nuevo puede tener cuentas secundarias; por ejemplo, el usuario puede acceder a otra cuenta en el área de contenido.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, excepto que el perfil nuevo no puede tener cuentas secundarias.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, excepto que se agregará una casilla de verificación al diálogo para permitir que el usuario conserve los datos de navegación locales.
+Si el usuario marca la casilla, los datos de perfil existentes se asocian con la cuenta administrada.
+- Todos los datos de navegación existentes estarán en el nuevo perfil.
+- Estos datos incluyen favoritos, Historial, contraseña, datos autocompletados, pestañas abiertas, cookies, caché, almacenamiento web, extensiones, etc.
+Si el usuario no marca la casilla, sucederá lo siguiente:
+- El perfil anterior seguirá existiendo y no se perderán datos.
+- Se creará un nuevo perfil.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, excepto que el perfil nuevo no puede tener cuentas secundarias.</translation>
 <translation id="781268256210530471">Configuración de los complementos</translation>
 <translation id="7816326058023670173">El secreto compartido entre el dispositivo del niño y el del padre o la madre.</translation>
 <translation id="7818131573217430250">Establece el estado predeterminado del modo de contraste alto en la pantalla de acceso.</translation>
@@ -11152,9 +11223,6 @@ Esta política se aplica al modo Incógnito. Esto significa que debes habilitar 
 <translation id="8225579382697740712">Controlar el uso de la API de WebHID</translation>
 <translation id="8229912067600517877">Habilitar las Herramientas para desarrolladores</translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
-<translation id="8238558579601006178">Si estableces esta política en 0 o no la estableces, la política de <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> solo se aplicará en el permiso del usuario para los usuarios afiliados.
-Cuando esta política se establezca en 1, se aplicará la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en el permiso del usuario, incluso si no está afiliado.
-Si estableces esta política con el valor 2, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nunca se aplicará cuando su fuente sea un usuario.</translation>
 <translation id="8239109177194627162">Inhabilitar Autocompletar para las tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar la habilitación de la cuota persistente</translation>
 <translation id="8240976615241583524">Esta política permite restringir las direcciones IP y las interfaces que utiliza WebRTC al momento de intentar encontrar la mejor conexión disponible.

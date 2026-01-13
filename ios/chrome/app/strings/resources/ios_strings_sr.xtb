@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Како да користим ову функцију?</translation>
 <translation id="1901600657316773839">Задржи избор</translation>
 <translation id="1902277226107477495">Откривање адреса је искључено. Поново га укључите у Подешавањима.</translation>
+<translation id="1909201414196501151">Сајт је додат и закачен</translation>
 <translation id="1911619930368729126">Отпреми у Google диск</translation>
 <translation id="1925706052394657380">Отворите подешавања <ph name="BEGIN_BOLD" />подразумеваних апликација<ph name="END_BOLD" /> у iOS-у</translation>
 <translation id="1941314575388338491">Додирните двапут да бисте копирали.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}few{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}other{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}}</translation>
 <translation id="334690320928261823">Недавне картице</translation>
 <translation id="3349031117032695619">Блокирај искачуће прозоре</translation>
+<translation id="3350976670663926380">Измене су сачуване</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Овим налогом се управља.</translation>
 <translation id="3365529507898144230">Сачувај у Сликама</translation>
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Одаберите Побољшана заштита</translation>
 <translation id="3610041351087301930">Сакриј читач</translation>
 <translation id="3610866916973186448">Да, избриши</translation>
+<translation id="3616161326314492065">Снимајте слике и делите их са Gemini-јем да бисте правили и ремиксовали слике.</translation>
 <translation id="3622175633937495219">Историја претраге (пронађених: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да превучете ивицу да бисте ишли назад.</translation>
 <translation id="362709345066740529">Овде прилагодите картице, фид и друго</translation>
@@ -1841,6 +1844,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворите Општа</translation>
 <translation id="7855678267851972597">Аудио снимци</translation>
+<translation id="7857520352710212030">Сајт је закачен</translation>
 <translation id="7859988229622350291">Никад не преводи</translation>
 <translation id="7863211248337747225">Преузми апликацију</translation>
 <translation id="7865127013871431856">Опције превода</translation>

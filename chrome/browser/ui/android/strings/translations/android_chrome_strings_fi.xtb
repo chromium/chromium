@@ -725,6 +725,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4180726336228139707">Vain tälle laitteelle</translation>
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4188221736490993796">Lajittele Z:sta A:han</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome on estänyt sivustoa lähettämästä ilmoituksia roskasisällön tai vilpillisen sisällön vuoksi}other{Chrome on estänyt näitä sivustoja lähettämästä ilmoituksia roskasisällön tai vilpillisen sisällön vuoksi}}</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 välilehti tällä laitteella}other{# välilehteä tällä laitteella}}</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
@@ -1117,6 +1118,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5833984609253377421">Jaa linkki</translation>
 <translation id="5839058148541733625">Chromen Dino</translation>
 <translation id="5841444063256914865">Ladataanko "<ph name="FILE_NAME" />" silti?</translation>
+<translation id="5847265694842662173">Chrome on estänyt haitallisia ja käyttämättömiä sivustoja lähettämästä ilmoituksia</translation>
 <translation id="5848257610304005265">Avataanko PDF sovelluksella <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Lopetetaanko jakaminen?</translation>
 <translation id="5853623416121554550">keskeytetty</translation>
@@ -1145,6 +1147,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5956665950594638604">Avaa Chromen ohjekeskus uudella välilehdellä</translation>
 <translation id="59577092665511740">Valitse tili.</translation>
 <translation id="5958275228015807058">Löydät tiedostosi ja sivusi Latauksista</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome on estänyt sivustoa, jolla et ole käynyt viime aikoina, lähettämästä sinulle ilmoituksia}other{Chrome on estänyt sivustoja, joilla et ole käynyt viime aikoina, lähettämästä sinulle ilmoituksia}}</translation>
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
 <translation id="5964869237734432770">Lopeta kuvaselitykset</translation>
 <translation id="5972844218283131174">Poista valinta kaikista</translation>
@@ -1805,6 +1808,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="847433688444405067">Selaa eri laitteilla</translation>
 <translation id="8477178913400731244">Poista data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Ei ei-aktiivisia ikkunoita</translation>
 <translation id="8493948351860045254">Vapauta tilaa</translation>
 <translation id="8497242791509864205">Avaa lajitteluvaihtoehdot</translation>
 <translation id="8497480609928300907">Yksityisyysoppaan selitys</translation>

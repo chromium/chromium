@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="4181841719683918333">ቋንቋዎች</translation>
 <translation id="4188221736490993796">ከፐ ወደ ሀ ደርድር</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{በአይፈለጌ መልዕክት ወይም አታላይ ይዘት ምክንያት Chrome ይህ ጣቢያ ማሳወቂያዎችን እንዳይልክ አግዷል}one{በአይፈለጌ መልዕክት ወይም አታላይ ይዘት ምክንያት Chrome ይህ ጣቢያ ማሳወቂያዎችን እንዳይልክ አግዷል}other{በአይፈለጌ መልዕክት ወይም አታላይ ይዘት ምክንያት Chrome እነዚህ ጣቢያዎች ማሳወቂያዎችን እንዳይልኩ አግዷል}}</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{በዚህ መሣሪያ ላይ 1 ትር}one{በዚህ መሣሪያ ላይ # ትር}other{በዚህ መሣሪያ ላይ # ትሮች}}</translation>
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">አገናኝ አጋራ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">ለማንኛውም «<ph name="FILE_NAME" />»ን ማውረድ ይፈልጋሉ?</translation>
+<translation id="5847265694842662173">Chrome አላግባብ የሚጠቀሙ እና ጥቅም ላይ ያልዋሉ ጣቢያዎች ማሳወቂያዎችን እንዳይልኩ አስቁሟል</translation>
 <translation id="5848257610304005265">PDF በ<ph name="APP_NAME" /> ይከፈት?</translation>
 <translation id="5849288995120328556">ማጋራት ይቁም?</translation>
 <translation id="5853623416121554550">ባለበት ቆሟል</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">የChrome እገዛ ማዕከልን በአዲስ ትር ውስጥ ክፈት</translation>
 <translation id="59577092665511740">መለያ ይምረጡ።</translation>
 <translation id="5958275228015807058">የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome በቅርብ ጊዜ ያልጎበኙት ጣቢያ ማሳወቂያዎችን ለእርስዎ እንዳይልክ አስቁሟል}one{Chrome በቅርብ ጊዜ ያልጎበኙት ጣቢያ ማሳወቂያዎችን ለእርስዎ እንዳይልክ አስቁሟል}other{Chrome በቅርብ ጊዜ ያልጎበኟቸው ጣቢያዎች ማሳወቂያዎችን ለእርስዎ እንዳይልኩ አስቁሟል}}</translation>
 <translation id="5962718611393537961">ለመሰብሰብ መታ ያድርጉ</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
 <translation id="5972844218283131174">ሁሉንም አትምረጥ</translation>
@@ -1805,6 +1808,7 @@
 <translation id="847433688444405067">በመላው መሣሪያዎች ላይ ያስሱ</translation>
 <translation id="8477178913400731244">ውሂብን ይሰርዙ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">ምንም ገቢር ያልሆኑ መስኮቶች የሉም</translation>
 <translation id="8493948351860045254">ቦታ አስለቅቅ</translation>
 <translation id="8497242791509864205">የአደራደር አማራጮችን ክፈት</translation>
 <translation id="8497480609928300907">የግላዊነት መመሪያ ማብራሪያ</translation>

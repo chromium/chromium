@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">ဤစက်တွင်သာ</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4188221736490993796">Z မှ A သို့ စီရန်</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{စပမ်း (သို့) လှည့်ဖြားသည့် အကြောင်းအရာကြောင့် Chrome သည် ဤဝဘ်ဆိုက်ထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်}other{စပမ်း (သို့) လှည့်ဖြားသည့် အကြောင်းအရာကြောင့် Chrome သည် ဤဝဘ်ဆိုက်များထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်}}</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ဤစက်ပေါ်ရှိ တဘ် ၁ ခု}other{ဤစက်ပေါ်ရှိ တဘ် # ခု}}</translation>
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">လင့်ခ်ကို မျှဝေရန်</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">မည်သို့ပင်ဖြစ်စေ “<ph name="FILE_NAME" />” ကို ဒေါင်းလုဒ်လုပ်လိုသလား။</translation>
+<translation id="5847265694842662173">Chrome သည် အလွဲသုံးစားပြုသည့်၊ အသုံးမပြုသည့် ဝဘ်ဆိုက်များထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်</translation>
 <translation id="5848257610304005265">PDF ကို <ph name="APP_NAME" /> ဖြင့် ဖွင့်မလား။</translation>
 <translation id="5849288995120328556">မျှဝေခြင်းကို ရပ်မလား။</translation>
 <translation id="5853623416121554550">ခဏရပ်ထားသည်</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">Chrome ကူညီရေးရာဌာနကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="59577092665511740">အကောင့်ရွေးပါ။</translation>
 <translation id="5958275228015807058">သင့်ဖိုင်များနှင့် စာမျက်နှာများကို ဒေါင်းလုဒ်များထဲတွင် ရှာဖွေပါ</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome သည် လတ်တလော သင်ဝင်မကြည့်ဖြစ်သော ဝဘ်ဆိုက်ထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်}other{Chrome သည် လတ်တလော သင်ဝင်မကြည့်ဖြစ်သော ဝဘ်ဆိုက်များထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်}}</translation>
 <translation id="5962718611393537961">လျှော့ပြရန် တို့ပါ</translation>
 <translation id="5964869237734432770">ပုံရှင်းလင်းချက်များ ရပ်ရန်</translation>
 <translation id="5972844218283131174">အားလုံးမရွေးပါနှင့်</translation>
@@ -1804,6 +1807,7 @@
 <translation id="847433688444405067">စက်အားလုံးတွင် ကြည့်ပါ</translation>
 <translation id="8477178913400731244">ဒေတာဖျက်ရန်</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">အသုံးမပြုသော ဝင်းဒိုးမရှိပါ</translation>
 <translation id="8493948351860045254">နေရာလွတ်အောင် ပြုလုပ်ပါ</translation>
 <translation id="8497242791509864205">စီသည့်နည်းလမ်းများ ဖွင့်ရန်</translation>
 <translation id="8497480609928300907">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန် ရှင်းလင်းချက်</translation>

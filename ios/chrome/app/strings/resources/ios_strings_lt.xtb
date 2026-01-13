@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Kaip naudoti šią funkciją?</translation>
 <translation id="1901600657316773839">Išsaugoti pasirinkimą</translation>
 <translation id="1902277226107477495">Adreso aptikimas išjungtas. Įjunkite jį nustatymuose.</translation>
+<translation id="1909201414196501151">Svetainė pridėta ir prisegta</translation>
 <translation id="1911619930368729126">Įkelti į „Google“ diską</translation>
 <translation id="1925706052394657380">Atidarykite <ph name="BEGIN_BOLD" />numatytųjų programų<ph name="END_BOLD" /> nustatymus sistemoje „iOS“</translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}one{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}few{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}many{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}other{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}}</translation>
 <translation id="334690320928261823">Naujausi skirtukai</translation>
 <translation id="3349031117032695619">Blokuoti iššokančiuosius langus</translation>
+<translation id="3350976670663926380">Redagavimai išsaugoti</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ši paskyra yra tvarkoma.</translation>
 <translation id="3365529507898144230">Išsaugoti Nuotraukose</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Pasirinkite „Sustiprinta apsauga“</translation>
 <translation id="3610041351087301930">Slėpti skaitytoją</translation>
 <translation id="3610866916973186448">Taip, ištrinti</translation>
+<translation id="3616161326314492065">Fotografuokite ir bendrinkite su „Gemini“, kad galėtumėte kurti ir perkurti vaizdus.</translation>
 <translation id="3622175633937495219">Paieškos istorija (rasta: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Galite perbraukti kraštą, kad grįžtumėte.</translation>
 <translation id="362709345066740529">Čia galite tinkinti korteles, sklaidos kanalą ir kt.</translation>
@@ -1841,6 +1844,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7854006015462979438">Atidarykite „Bendra“</translation>
 <translation id="7855678267851972597">Garso įrašai</translation>
+<translation id="7857520352710212030">Svetainė prisegta</translation>
 <translation id="7859988229622350291">Niekada neversti</translation>
 <translation id="7863211248337747225">Gauti programą</translation>
 <translation id="7865127013871431856">Vertimo parinktys</translation>

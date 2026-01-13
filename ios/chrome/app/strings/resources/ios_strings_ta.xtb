@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">இந்த அம்சத்தை எப்படிப் பயன்படுத்துவது?</translation>
 <translation id="1901600657316773839">தேர்ந்தெடுத்தவற்றை வைத்திரு</translation>
 <translation id="1902277226107477495">முகவரியைக் கண்டறிதல் முடக்கப்பட்டது. அதை மீண்டும் இயக்க அமைப்புகளுக்குச் செல்லவும்.</translation>
+<translation id="1909201414196501151">தளம் சேர்க்கப்பட்டுப் பின் செய்யப்பட்டது</translation>
 <translation id="1911619930368729126">Google இயக்ககத்தில் பதிவேற்றுக</translation>
 <translation id="1925706052394657380">iOSஸில் <ph name="BEGIN_BOLD" />இயல்பு ஆப்ஸ்<ph name="END_BOLD" /> அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="1941314575388338491">நகலெடுக்க, இருமுறை தட்டவும்.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{உங்கள் கணக்கில் ({email}) உள்ள “{title}” ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் கணக்கில் ({email}) உள்ள “{title}” ஃபோல்டரில் புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="334690320928261823">சமீபத்தியவை</translation>
 <translation id="3349031117032695619">பாப்-அப்களைத் தடு</translation>
+<translation id="3350976670663926380">மாற்றங்கள் சேமிக்கப்பட்டன</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. இந்தக் கணக்கு நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="3365529507898144230">Photosஸில் சேமி</translation>
 <translation id="3371831930909698441">மொழியாக்கம் கிடைக்கிறது திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"மேம்பட்ட பாதுகாப்பு" என்பதைத் தேர்வுசெய்யவும்</translation>
 <translation id="3610041351087301930">படித்தல் பயன்முறையை மறை</translation>
 <translation id="3610866916973186448">ஆம், நீக்கு</translation>
+<translation id="3616161326314492065">படங்களை உருவாக்கி ரீமிக்ஸ் செய்ய, படங்களை எடுத்து Gemini உடன் பகிரலாம்.</translation>
 <translation id="3622175633937495219">இதுவரை தேடியவை (<ph name="COUNT" /> முடிவுகள் உள்ளன)</translation>
 <translation id="3625008969091706597">பின்செல்ல ஓரத்தில் ஸ்வைப் செய்யலாம்.</translation>
 <translation id="362709345066740529">உங்கள் கார்டுகள், ஊட்டம் மற்றும் பலவற்றை இங்கே பிரத்தியேகமாக்கலாம்</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">செயல்பாடு</translation>
 <translation id="7854006015462979438">பொது என்பதைத் திறக்கவும்</translation>
 <translation id="7855678267851972597">ஆடியோக்கள்</translation>
+<translation id="7857520352710212030">தளம் பின் செய்யப்பட்டது</translation>
 <translation id="7859988229622350291">மொழிபெயர்க்கக்கூடாதவை</translation>
 <translation id="7863211248337747225">ஆப்ஸைப் பெறுங்கள்</translation>
 <translation id="7865127013871431856">Translate விருப்பங்கள்</translation>

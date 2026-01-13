@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">मी हे वैशिष्ट्य कसे वापरावे?</translation>
 <translation id="1901600657316773839">निवड ठेवा</translation>
 <translation id="1902277226107477495">पत्त्याशी संबंधित डिटेक्शन बंद आहे. सेटिंग्ज मध्ये ते परत सुरू करा.</translation>
+<translation id="1909201414196501151">साइट जोडली आणि पिन केली आहे</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
 <translation id="1925706052394657380">iOS मध्ये <ph name="BEGIN_BOLD" />डीफॉल्ट अ‍ॅप्स<ph name="END_BOLD" /> सेटिंग्ज उघडा</translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="334690320928261823">अलीकडील टॅब</translation>
 <translation id="3349031117032695619">पॉप-अप ब्लॉक करा</translation>
+<translation id="3350976670663926380">संपादने सेव्ह केली आहेत</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. हे खाते व्यवस्थापित केले जात आहे.</translation>
 <translation id="3365529507898144230">Photos मध्ये सेव्ह करा</translation>
 <translation id="3371831930909698441">भाषांतर उपलब्ध आहे. स्क्रीनच्या खाली पर्याय उपलब्ध आहेत.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"वर्धित संरक्षण" निवडा</translation>
 <translation id="3610041351087301930">रीडर लपवा</translation>
 <translation id="3610866916973186448">होय, हटवा</translation>
+<translation id="3616161326314492065">इमेज तयार करण्यासाठी आणि रीमिक्स करण्यासाठी फोटो घ्या व Gemini सोबत शेअर करा.</translation>
 <translation id="3622175633937495219">शोध इतिहास (<ph name="COUNT" /> आढळले)</translation>
 <translation id="3625008969091706597">तुम्ही मागे जाण्यासाठी कडेवर स्‍वाइप करू शकता.</translation>
 <translation id="362709345066740529">इथे तुमची कार्ड, फीड आणि आणखी बरेच काही कस्टमाइझ करा</translation>
@@ -1842,6 +1845,7 @@
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7854006015462979438">साधारण उघडा</translation>
 <translation id="7855678267851972597">ऑडिओ</translation>
+<translation id="7857520352710212030">साइट पिन केली आहे</translation>
 <translation id="7859988229622350291">कधीही भाषांतर करू नका</translation>
 <translation id="7863211248337747225">ॲप मिळवा</translation>
 <translation id="7865127013871431856">भाषांतराचे पर्याय</translation>

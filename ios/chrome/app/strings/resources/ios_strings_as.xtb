@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">এই সুবিধাটো মই কেনেকৈ ব্যৱহাৰ কৰিব পাৰোঁ?</translation>
 <translation id="1901600657316773839">বাছনি ৰাখক</translation>
 <translation id="1902277226107477495">ঠিকনা চিনাক্তকৰণ অফ আছে। ছেটিঙত সেয়া পুনৰ অন কৰক।</translation>
+<translation id="1909201414196501151">ছাইট যোগ দিয়া হৈছে আৰু পিন কৰা হৈছে</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
 <translation id="1925706052394657380">iOSত <ph name="BEGIN_BOLD" />ডিফ’ল্ট এপ্‌<ph name="END_BOLD" /> ছেটিংটো খোলক</translation>
 <translation id="1941314575388338491">প্ৰতিলিপি কৰিবলৈ দুবাৰ টিপক।</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে, {email}}one{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}other{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}}</translation>
 <translation id="334690320928261823">শেহতীয়া টেব</translation>
 <translation id="3349031117032695619">পপ-আপ অৱৰোধ কৰক</translation>
+<translation id="3350976670663926380">সম্পাদনাসমূহ ছেভ কৰা হ’ল</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />। এই একাউণ্টটো পৰিচালনা কৰা হয়।</translation>
 <translation id="3365529507898144230">Photosত ছেভ কৰক</translation>
 <translation id="3371831930909698441">অনুবাদ কৰিব পাৰি। স্ক্ৰীনৰ একেবাৰে তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"বৰ্ধিত সুৰক্ষা" বাছনি কৰক</translation>
 <translation id="3610041351087301930">ৰীডাৰ লুকুৱাওক</translation>
 <translation id="3610866916973186448">হয়, মচক</translation>
+<translation id="3616161326314492065">প্ৰতিচ্ছবি সৃষ্টি আৰু ৰিমিক্স কৰিবলৈ ফট’ তোলক আৰু Geminiৰ সৈতে শ্বেয়াৰ কৰক।</translation>
 <translation id="3622175633937495219">সন্ধানৰ ইতিহাস (<ph name="COUNT" /> টা পোৱা গৈছে)</translation>
 <translation id="3625008969091706597">পাছলৈ যাবলৈ আপুনি কাষৰ পৰা ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="362709345066740529">ইয়াত আপোনাৰ কাৰ্ড, ফীড আৰু আন বহুতো বস্তু কাষ্টমাইজ কৰক</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7854006015462979438">সাধাৰণ খোলক</translation>
 <translation id="7855678267851972597">অডিঅ’</translation>
+<translation id="7857520352710212030">ছাইট পিন কৰা হৈছে</translation>
 <translation id="7859988229622350291">কেতিয়াও অনুবাদ কৰিব নলগীয়া</translation>
 <translation id="7863211248337747225">এপ্‌টো ইনষ্টল কৰক</translation>
 <translation id="7865127013871431856">অনুবাদৰ বিকল্প</translation>

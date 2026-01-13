@@ -10809,9 +10809,6 @@ Esta política se aplica al modo Incógnito. Esto quiere decir que el modo Incó
 <translation id="8225579382697740712">Controla el uso de la API WebHID</translation>
 <translation id="8229912067600517877">Habilitar herramientas de desarrollo</translation>
 <translation id="8238421250255592181">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de autocompletar.</translation>
-<translation id="8238558579601006178">Si se le asigna el valor 0 a esta política o no se define, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> solo se aplicará al permiso de usuario para los usuarios afiliados.
-Si se le asigna el valor 1 a esta política, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se aplicará al permiso de usuario, aunque ese usuario no esté afiliado.
-Si se le asigna el valor 2 a esta política, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nunca se aplicará cuando su origen sea un usuario.</translation>
 <translation id="8239109177194627162">Inhabilitar la función Autocompletar para tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar que se habilite la cuota persistente</translation>
 <translation id="8240976615241583524">Esta política permite restringir el uso de direcciones IP e interfaces por parte de WebRTC al intentar buscar la mejor conexión disponible.

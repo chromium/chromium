@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Je, nitatumia kipengele hiki vipi?</translation>
 <translation id="1901600657316773839">Hifadhi chaguo</translation>
 <translation id="1902277226107477495">Umezima kipengele cha kutambua anwani. Kiwashe tena kwenye Mipangilio.</translation>
+<translation id="1909201414196501151">Tovuti imewekwa na kubandikwa</translation>
 <translation id="1911619930368729126">Pakia kwenye Hifadhi ya Google</translation>
 <translation id="1925706052394657380">Fungua mipangilio ya <ph name="BEGIN_BOLD" />Programu Chaguomsingi<ph name="END_BOLD" /> katika iOS</translation>
 <translation id="1941314575388338491">Gusa mara mbili ili unakili.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}" katika akaunti yako, {email}}other{Alamisho zimehifadhiwa kwenye "{title}" katika akaunti yako, {email}}}</translation>
 <translation id="334690320928261823">Vichupo vya Hivi Majuzi</translation>
 <translation id="3349031117032695619">Kuzuia madirisha ibukizi</translation>
+<translation id="3350976670663926380">Mabadiliko yamehifadhiwa</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akaunti hii inadhibitiwa.</translation>
 <translation id="3365529507898144230">Hifadhi kwenye Picha</translation>
 <translation id="3371831930909698441">Huduma ya Tafsiri inapatikana. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Chagua "Ulinzi Ulioboreshwa"</translation>
 <translation id="3610041351087301930">Ficha Kisomaji</translation>
 <translation id="3610866916973186448">Ndiyo, futa</translation>
+<translation id="3616161326314492065">Piga picha na uzitume kwa Gemini ili ibuni na iandae mseto wa picha.</translation>
 <translation id="3622175633937495219">Historia ya Mambo Uliyotafuta (Yamepatikana <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Unaweza kutelezesha kidole kwenye ukingo ili urudi nyuma.</translation>
 <translation id="362709345066740529">Wekea mapendeleo kadi, mipasho yako na mengineyo hapa</translation>
@@ -1841,6 +1844,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7853202427316060426">Shughuli</translation>
 <translation id="7854006015462979438">Fungua Mipangilio ya Jumla</translation>
 <translation id="7855678267851972597">Sauti</translation>
+<translation id="7857520352710212030">Tovuti imebandikwa</translation>
 <translation id="7859988229622350291">Kamwe usitafsiri</translation>
 <translation id="7863211248337747225">Weka programu kwenye kifaa</translation>
 <translation id="7865127013871431856">Chaguo za tafsiri</translation>
