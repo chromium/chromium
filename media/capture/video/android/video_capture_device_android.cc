@@ -36,10 +36,7 @@
 #include "media/capture/video/android/capture_jni_headers/VideoCapture_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::CheckException;
-using base::android::GetClass;
 using base::android::JavaRef;
-using base::android::MethodID;
 using base::android::ScopedJavaLocalRef;
 
 namespace media {
