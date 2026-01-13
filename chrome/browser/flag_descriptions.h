@@ -6581,12 +6581,6 @@ inline constexpr char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vCPU on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
-inline constexpr char kArcSwitchToKeyMintDaemonName[] =
-    "Switch to KeyMint Daemon.";
-inline constexpr char kArcSwitchToKeyMintDaemonDesc[] =
-    "Switch from Keymaster Daemon to KeyMint Daemon. Must be switched on/off "
-    "at the same time with \"Switch To KeyMint on ARC-T\"";
-
 inline constexpr char kArcSyncInstallPriorityName[] =
     "Enable supporting install priority for synced ARC apps.";
 inline constexpr char kArcSyncInstallPriorityDescription[] =
