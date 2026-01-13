@@ -27,10 +27,11 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -80,8 +81,16 @@ time_t GetEndTime(base::Time end) {
 //   3. Caps length at 50 characters.
 //   4. ICU-aware: correctly handles characters from scripts such as emojis,
 //   Kanji, Hangul, Greek, Cyrillic, etc.
+//   5. Unicode NFKC normalization - canonicalization for string comparison.
 std::u16string NormalizeLabel(std::u16string_view label_view) {
   icu::UnicodeString uni_label(label_view.data(), label_view.length());
+
+  UErrorCode status = U_ZERO_ERROR;
+  const icu::Normalizer2* normalizer =
+      icu::Normalizer2::getNFKCInstance(status);
+  if (U_SUCCESS(status)) {
+    uni_label = normalizer->normalize(uni_label, status);
+  }
 
   int32_t start = 0;
   int32_t end = uni_label.length() - 1;
