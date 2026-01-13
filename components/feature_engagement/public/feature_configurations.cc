@@ -1051,15 +1051,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHMostVisitedTilesCustomizationPinFeature.name == feature->name) {
+    // Allows an IPH for the MVT customization "Pin this shortcut" feature.
+    // * Only once in its lifetime.
+    // * (Per trigger logic) Only if the user has no Custom Tiles.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig("most_visited_tiles_customization_pin_triggered",
-                    Comparator(LESS_THAN, 1), 1, 360);
-    config.used = EventConfig("most_visited_tiles_customization_pin_clicked",
-                              Comparator(EQUAL, 0), 90, 360);
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("most_visited_tiles_customization_pin_clicked",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
     return config;
   }
 
