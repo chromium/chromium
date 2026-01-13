@@ -29,12 +29,12 @@ MenuItemListIterator::MenuItemListIterator(const HTMLElement& owner_menu,
   }
 }
 
-HTMLMenuItemElement& MenuItemListIterator::operator*() {
+HTMLMenuItemElement& MenuItemListIterator::operator*() const {
   DCHECK(current_);
   return *current_;
 }
 
-HTMLMenuItemElement* MenuItemListIterator::operator->() {
+HTMLMenuItemElement* MenuItemListIterator::operator->() const {
   return current_;
 }
 
@@ -53,6 +53,10 @@ MenuItemListIterator& MenuItemListIterator::operator--() {
 }
 
 MenuItemListIterator::operator bool() const {
+  return current_;
+}
+
+MenuItemListIterator::operator HTMLMenuItemElement*() const {
   return current_;
 }
 
@@ -165,6 +169,7 @@ HTMLMenuItemElement* MenuItemList::FindFocusableMenuItem(
     ++menu_item_list_iterator;
   }
   CHECK_EQ(*menu_item_list_iterator, menuitem);
+  HTMLMenuItemElement* first_item_tested = nullptr;
   while (true) {
     if (!inclusive) {
       if (forward) {
@@ -173,12 +178,24 @@ HTMLMenuItemElement* MenuItemList::FindFocusableMenuItem(
         --menu_item_list_iterator;
       }
     }
+    // Directional focus in menu item lists always loops, whether in a menubar
+    // or a menulist.
     if (!menu_item_list_iterator) {
-      return nullptr;
+      menu_item_list_iterator = forward ? begin() : last();
     }
     inclusive = false;
-    if (menu_item_list_iterator->IsFocusable()) {
-      return &*menu_item_list_iterator;
+    HTMLMenuItemElement* this_item = menu_item_list_iterator;
+    CHECK(this_item);
+    if (first_item_tested) {
+      if (this_item == first_item_tested) {
+        // We've tested all the items and none is focusable.
+        return nullptr;
+      }
+    } else {
+      first_item_tested = this_item;
+    }
+    if (this_item->IsFocusable()) {
+      return this_item;
     }
   }
 }
