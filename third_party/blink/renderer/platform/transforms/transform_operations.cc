@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
+#include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/box_f.h"
@@ -73,6 +74,20 @@ TransformOperations ApplyFunctionToMatchingPrefix(
   }
   return result;
 }
+
+bool IsSingularMatrixOp(const TransformOperation& op) {
+  if (op.GetType() == InterpolatedTransformOperation::OperationType::kMatrix) {
+    return !To<MatrixTransformOperation>(op).Matrix().IsInvertible();
+  }
+
+  if (op.GetType() ==
+      InterpolatedTransformOperation::OperationType::kMatrix3D) {
+    return !To<Matrix3DTransformOperation>(op).Matrix().IsInvertible();
+  }
+
+  return false;
+}
+
 }  // namespace
 
 bool TransformOperations::operator==(const TransformOperations& o) const {
@@ -373,6 +388,44 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
     rotation.RotateAbout(axis, Rad2deg(radians));
     box.ExpandTo(rotation.MapPoint(point));
   }
+}
+
+bool TransformOperations::CanSmoothlyBlendWith(
+    const TransformOperations& other) const {
+  // When blending transform lists, we start with pairwise blending while the
+  // type of operation matches between the two lists. Matrices need to be
+  // checked if singular single matrix decomposition is not possible when the
+  // matrix is singular.
+  if (ContainsSingularMatrixTransform() ||
+      other.ContainsSingularMatrixTransform()) {
+    return false;
+  }
+
+  // Remaining transforms in list after the matching prefix are combined into
+  // a matrix transform. The trailing matrix transforms cannot be smoothly
+  // blended if singular since matrix decomposition is not possible.
+  wtf_size_t matching_prefix_length = MatchingPrefixLength(other);
+  if (IsMergedTransformSingular(matching_prefix_length) ||
+      other.IsMergedTransformSingular(matching_prefix_length)) {
+    return false;
+  }
+  return true;
+}
+
+bool TransformOperations::ContainsSingularMatrixTransform() const {
+  for (const auto& operation : operations_) {
+    if (IsSingularMatrixOp(*operation)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool TransformOperations::IsMergedTransformSingular(
+    wtf_size_t starting_offset) const {
+  gfx::Transform transform;
+  ApplyRemaining(gfx::SizeF(), starting_offset, transform);
+  return !transform.IsInvertible();
 }
 
 bool TransformOperations::BlendedBoundsForBox(const gfx::BoxF& box,

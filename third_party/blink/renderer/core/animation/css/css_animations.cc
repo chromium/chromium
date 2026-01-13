@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
+#include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
@@ -1054,6 +1055,25 @@ const StylePropertyShorthand& PropertiesForTransitionAllNormal(
   DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
                       (CSSPropertyID::kInvalid, properties));
   return property_shorthand;
+}
+
+bool IsNonTransitionableTransformInterpolation(const InterpolationValue& start,
+                                               const InterpolationValue& end) {
+  const InterpolableValue* start_value = start.interpolable_value;
+  if (!start_value || !start_value->IsTransformList()) {
+    return false;
+  }
+  const TransformOperations start_operations =
+      To<InterpolableTransformList>(start_value)->operations();
+
+  const InterpolableValue* end_value = end.interpolable_value;
+  if (!end_value || !end_value->IsTransformList()) {
+    return false;
+  }
+  const TransformOperations end_operations =
+      To<InterpolableTransformList>(end_value)->operations();
+
+  return !start_operations.CanSmoothlyBlendWith(end_operations);
 }
 
 }  // namespace
@@ -2607,6 +2627,17 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
         MakeGarbageCollected<InterpolableList>(0),
         MakeGarbageCollected<CSSDefaultNonInterpolableValue>(end_css_value));
   }
+
+  // If the interpolated transform lists contain any singular matrices, a
+  // smooth transition is not possible since the matrices cannot be decomposed.
+  // A singular matrix can also be encountered when forced to fall back on
+  // matrix composition due to the presence of unpaired transforms in the lists.
+  if (behavior != CSSTransitionData::TransitionBehavior::kAllowDiscrete &&
+      IsNonTransitionableTransformInterpolation(start, end)) {
+    state.update.UnstartTransition(property);
+    return;
+  }
+
   // If we have multiple transitions on the same property, we will use the
   // last one since we iterate over them in order.
 
