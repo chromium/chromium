@@ -10,7 +10,7 @@
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/bits.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -41,10 +41,8 @@ void LogNativeCodeResidentPages(base::span<size_t> accessed_pages_set) {
   }
 
   for (size_t page : accessed_pages_set) {
-    std::string page_str = base::StringPrintf("%" PRIuS "\n", page);
-
-    if (UNSAFE_TODO(file.WriteAtCurrentPos(
-            page_str.c_str(), static_cast<int>(page_str.size()))) < 0) {
+    if (!file.WriteAtCurrentPos(
+            base::as_byte_span(base::StringPrintf("%" PRIuS "\n", page)))) {
       DLOG(WARNING) << "Error while dumping Resident pages";
       return;
     }
