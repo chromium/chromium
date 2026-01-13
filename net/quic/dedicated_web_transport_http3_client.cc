@@ -4,10 +4,10 @@
 
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -533,7 +533,7 @@ int DedicatedWebTransportHttp3Client::DoInit() {
   // Add other supported versions if available.
   for (quic::ParsedQuicVersion& version :
        quic_context_->params()->supported_versions) {
-    if (base::Contains(supported_versions_, version))
+    if (std::ranges::contains(supported_versions_, version))
       continue;  // Skip as we've already added it above.
     supported_versions_.push_back(version);
   }
@@ -991,7 +991,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     original_supported_versions_ = supported_versions_;
     std::erase_if(
         supported_versions_, [this](const quic::ParsedQuicVersion& version) {
-          return !base::Contains(
+          return !std::ranges::contains(
               session_->connection()->server_supported_versions(), version);
         });
     if (!supported_versions_.empty()) {

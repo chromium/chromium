@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
@@ -568,8 +567,8 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
 
     metadata.supported_protocol_alpns = service->alpn_ids();
     if (service->default_alpn() &&
-        !base::Contains(metadata.supported_protocol_alpns,
-                        dns_protocol::kHttpsServiceDefaultAlpn)) {
+        !std::ranges::contains(metadata.supported_protocol_alpns,
+                               dns_protocol::kHttpsServiceDefaultAlpn)) {
       metadata.supported_protocol_alpns.push_back(
           dns_protocol::kHttpsServiceDefaultAlpn);
     }

@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -920,7 +920,7 @@ class CookieUtilComputeSameSiteContextTest
     std::vector<GURL> cross_site_urls;
     std::vector<GURL> same_site_urls = GetSameSiteUrls();
     for (const GURL& url : GetAllUrls()) {
-      if (!base::Contains(same_site_urls, url))
+      if (!std::ranges::contains(same_site_urls, url))
         cross_site_urls.push_back(url);
     }
     return cross_site_urls;
@@ -943,8 +943,8 @@ class CookieUtilComputeSameSiteContextTest
     std::vector<SiteForCookies> cross_site_sfc;
     std::vector<SiteForCookies> same_site_sfc = GetSameSiteSitesForCookies();
     for (const SiteForCookies& sfc : GetAllSitesForCookies()) {
-      if (!base::Contains(same_site_sfc, sfc.RepresentativeUrl(),
-                          &SiteForCookies::RepresentativeUrl)) {
+      if (!std::ranges::contains(same_site_sfc, sfc.RepresentativeUrl(),
+                                 &SiteForCookies::RepresentativeUrl)) {
         cross_site_sfc.push_back(sfc);
       }
     }
@@ -975,7 +975,7 @@ class CookieUtilComputeSameSiteContextTest
     std::vector<std::optional<url::Origin>> same_site_initiators =
         GetSameSiteInitiators();
     for (const std::optional<url::Origin>& initiator : GetAllInitiators()) {
-      if (!base::Contains(same_site_initiators, initiator))
+      if (!std::ranges::contains(same_site_initiators, initiator))
         cross_site_initiators.push_back(initiator);
     }
     return cross_site_initiators;

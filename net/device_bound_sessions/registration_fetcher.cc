@@ -4,11 +4,11 @@
 
 #include "net/device_bound_sessions/registration_fetcher.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -374,7 +374,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     std::string target_origin =
         url::Origin::Create(fetcher_endpoint_).Serialize();
     if (!maybe_params->relying_origins.has_value() ||
-        !base::Contains(*maybe_params->relying_origins, target_origin)) {
+        !std::ranges::contains(*maybe_params->relying_origins, target_origin)) {
       return SessionError::kFederatedNotAuthorizedByProvider;
     }
 
@@ -738,8 +738,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     if (!maybe_params->registering_origins.has_value() ||
-        !base::Contains(*maybe_params->registering_origins,
-                        url::Origin::Create(fetcher_endpoint_).Serialize())) {
+        !std::ranges::contains(
+            *maybe_params->registering_origins,
+            url::Origin::Create(fetcher_endpoint_).Serialize())) {
       return RegistrationResult(
           SessionError{SessionError::kSubdomainRegistrationUnauthorized});
     }

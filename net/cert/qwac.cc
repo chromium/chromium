@@ -4,7 +4,8 @@
 
 #include "net/cert/qwac.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/logging.h"
 #include "third_party/boringssl/src/pki/parser.h"
 
@@ -193,8 +194,8 @@ QwacEkuStatus Has2QwacEku(const bssl::ParsedCertificate* cert) {
   if (!cert->has_extended_key_usage()) {
     return QwacEkuStatus::kNotQwac;
   }
-  if (!base::Contains(cert->extended_key_usage(),
-                      bssl::der::Input(kIdKpTlsBinding))) {
+  if (!std::ranges::contains(cert->extended_key_usage(),
+                             bssl::der::Input(kIdKpTlsBinding))) {
     return QwacEkuStatus::kNotQwac;
   }
   if (cert->extended_key_usage().size() != 1) {

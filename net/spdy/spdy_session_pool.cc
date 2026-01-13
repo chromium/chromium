@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -329,7 +328,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     // If `endpoint` has no associated ALPN protocols, it is TCP-based and thus
     // would have been eligible for connecting with HTTP/2.
     if (!endpoint.metadata.supported_protocol_alpns.empty() &&
-        !base::Contains(endpoint.metadata.supported_protocol_alpns, "h2")) {
+        !std::ranges::contains(endpoint.metadata.supported_protocol_alpns,
+                               "h2")) {
       continue;
     }
     for (const auto& address : endpoint.ip_endpoints) {

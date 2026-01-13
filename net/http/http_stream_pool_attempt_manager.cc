@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -406,8 +405,8 @@ bool HttpStreamPool::AttemptManager::IsEndpointUsableForTcpBasedAttempt(
   // configured ones.
   return std::ranges::any_of(
       endpoint.metadata.supported_protocol_alpns, [&](const auto& alpn) {
-        return base::Contains(http_network_session()->GetAlpnProtos(),
-                              NextProtoFromString(alpn));
+        return std::ranges::contains(http_network_session()->GetAlpnProtos(),
+                                     NextProtoFromString(alpn));
       });
 }
 
@@ -485,7 +484,7 @@ HttpStreamPool::AttemptManager::GetServiceEndpoint(
     const std::vector<IPEndPoint>& ip_endpoints = ip_endpoint.address().IsIPv4()
                                                       ? endpoint.ipv4_endpoints
                                                       : endpoint.ipv6_endpoints;
-    if (!base::Contains(ip_endpoints, ip_endpoint)) {
+    if (!std::ranges::contains(ip_endpoints, ip_endpoint)) {
       continue;
     }
     return endpoint;

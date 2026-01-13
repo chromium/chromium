@@ -4,6 +4,7 @@
 
 #include "net/dns/host_resolver_manager_job.h"
 
+#include <algorithm>
 #include <deque>
 #include <memory>
 #include <optional>
@@ -319,7 +320,7 @@ base::OnceClosure HostResolverManager::Job::GetAbortInsecureDnsTaskClosure(
 
 void HostResolverManager::Job::AbortInsecureDnsTask(int error,
                                                     bool fallback_only) {
-  bool has_system_fallback = base::Contains(tasks_, TaskType::SYSTEM);
+  bool has_system_fallback = std::ranges::contains(tasks_, TaskType::SYSTEM);
   if (has_system_fallback) {
     for (auto it = tasks_.begin(); it != tasks_.end();) {
       if (*it == TaskType::DNS) {

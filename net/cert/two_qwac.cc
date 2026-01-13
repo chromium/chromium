@@ -4,9 +4,10 @@
 
 #include "net/cert/two_qwac.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
@@ -552,7 +553,7 @@ bool TwoQwacCertBinding::BindsTlsCert(base::span<const uint8_t> tls_cert_der) {
       crypto::hash::DigestSizeForHashKind(header_.hash_alg));
   crypto::hash::Hash(header_.hash_alg, tls_cert_b64, tls_cert_hash);
 
-  return base::Contains(header_.bound_cert_hashes, tls_cert_hash);
+  return std::ranges::contains(header_.bound_cert_hashes, tls_cert_hash);
 }
 
 }  // namespace net

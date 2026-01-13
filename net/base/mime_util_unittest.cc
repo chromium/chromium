@@ -4,9 +4,9 @@
 
 #include "net/base/mime_util.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -587,7 +587,7 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
     }
 
     if (test.contained_result) {
-      bool found = base::Contains(
+      bool found = std::ranges::contains(
           extensions, base::FilePath::FromASCII(test.contained_result).value());
 
       ASSERT_TRUE(found) << "Must find at least the contained result within "

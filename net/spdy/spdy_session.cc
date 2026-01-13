@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
@@ -1720,8 +1719,9 @@ bool SpdySession::CancelStreamRequest(
   for (int i = MINIMUM_PRIORITY; i <= MAXIMUM_PRIORITY; ++i) {
     if (priority == i)
       continue;
-    DCHECK(!base::Contains(pending_create_stream_queues_[i], request.get(),
-                           &base::WeakPtr<SpdyStreamRequest>::get));
+    DCHECK(!std::ranges::contains(pending_create_stream_queues_[i],
+                                  request.get(),
+                                  &base::WeakPtr<SpdyStreamRequest>::get));
   }
 #endif
 

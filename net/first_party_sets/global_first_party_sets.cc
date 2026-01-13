@@ -12,7 +12,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
@@ -345,10 +344,10 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   // which is not already contained in the overlay, we explicitly ignore that
   // alias.
   ForEachAlias([&](const SchemefulSite& alias, const SchemefulSite& canonical) {
-    if (base::Contains(
+    if (std::ranges::contains(
             site_to_override, canonical,
             &std::pair<SchemefulSite, FirstPartySetEntryOverride>::first) &&
-        !base::Contains(
+        !std::ranges::contains(
             site_to_override, alias,
             &std::pair<SchemefulSite, FirstPartySetEntryOverride>::first)) {
       site_to_override.emplace_back(alias, FirstPartySetEntryOverride());

@@ -4,10 +4,10 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -209,9 +209,10 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   bool vary_by_default = true;
 
   // If the dictionary contains unknown keys, maybe fail parsing.
-  const bool has_unrecognized_keys = !std::ranges::all_of(
-      dict,
-      [&](const auto& pair) { return base::Contains(kValidKeys, pair.first); });
+  const bool has_unrecognized_keys =
+      !std::ranges::all_of(dict, [&](const auto& pair) {
+        return std::ranges::contains(kValidKeys, pair.first);
+      });
 
   UMA_HISTOGRAM_BOOLEAN("Net.HttpNoVarySearch.HasUnrecognizedKeys",
                         has_unrecognized_keys);

@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_attempt.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -11,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
@@ -242,7 +242,7 @@ bool HttpStreamPool::Attempt::IsEndpointUsable(const ServiceEndpoint& endpoint,
         if (!kTcpBasedProtocols.Has(next_proto)) {
           return false;
         }
-        return base::Contains(delegate_->GetAlpnProtos(), next_proto);
+        return std::ranges::contains(delegate_->GetAlpnProtos(), next_proto);
       });
 }
 
@@ -312,7 +312,7 @@ HttpStreamPool::Attempt::GetServiceEndpointForTlsHandshake(
         ip_endpoint.address().IsIPv4() ? service_endpoint.ipv4_endpoints
                                        : service_endpoint.ipv6_endpoints;
 
-    if (!base::Contains(ip_endpoints, ip_endpoint)) {
+    if (!std::ranges::contains(ip_endpoints, ip_endpoint)) {
       continue;
     }
     return service_endpoint;
