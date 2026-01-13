@@ -10396,6 +10396,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kWebUIOmniboxAimPopupVariations,
                                     "WebUIOmniboxAimPopupVariations")},
 
+    {"webui-omnibox-aim-popup-disable-animation",
+     flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationName,
+     flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxAimPopupDisableAnimation)},
+
     {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
      flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup)},

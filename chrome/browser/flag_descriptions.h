@@ -3256,6 +3256,12 @@ inline constexpr char kWebUIOmniboxAimPopupDescription[] =
     "popup transition to showing the AI-Mode "
     "compose-box input and suggestions.";
 
+inline constexpr char kWebUIOmniboxAimPopupDisableAnimationName[] =
+    "WebUI Omnibox AIM Popup Disable Animation";
+inline constexpr char kWebUIOmniboxAimPopupDisableAnimationDescription[] =
+    "If enabled, there will no longer be animation in the WebUI Omnibox AIM "
+    "popup.";
+
 inline constexpr char kWebUIOmniboxFullPopupName[] = "WebUI Omnibox Full Popup";
 inline constexpr char kWebUIOmniboxFullPopupDescription[] =
     "If enabled, shows the omnibox suggestions and the search input in the "

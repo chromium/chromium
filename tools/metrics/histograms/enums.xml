@@ -10084,6 +10084,8 @@ from previous Chrome versions.
   <int value="-1498681588" label="AndroidWebContentsDarkMode:enabled"/>
   <int value="-1498582719"
       label="ColorProviderRedirectionForThemeProvider:enabled"/>
+  <int value="-1498390472"
+      label="WebUIOmniboxAimPopupDisableAnimation:disabled"/>
   <int value="-1498334893" label="ExperimentalVRFeatures:enabled"/>
   <int value="-1498297966"
       label="AutofillEnableBuyNowPayLaterForExternallyLinked:enabled"/>
@@ -14460,6 +14462,7 @@ from previous Chrome versions.
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
+  <int value="32352055" label="WebUIOmniboxAimPopupDisableAnimation:enabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="32675677" label="WebRequestSecurityInfo:enabled"/>
