@@ -98,6 +98,7 @@ public class BookmarkPaneTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/474580496")
     public void testBookmarkSearchMatch() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
