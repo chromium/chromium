@@ -293,6 +293,26 @@ public class SettingsIndexData {
      *
      * @param prefFragment Full class name of the Fragment where the entry belongs.
      * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param summaryId String resource ID of the summary.
+     * @param extras Extra bundle to pass to the Fragment.
+     */
+    public void addEntryForKey(
+            String prefFragment, String key, int titleId, int summaryId, Bundle extras) {
+        Context context = ContextUtils.getApplicationContext();
+        addEntryForKey(
+                prefFragment,
+                key,
+                context.getString(titleId),
+                summaryId != 0 ? context.getString(summaryId) : null,
+                extras);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
      * @param title Title text.
      * @param summary Summary text.
      */
