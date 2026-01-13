@@ -11,8 +11,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -45,6 +43,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -135,7 +134,9 @@ public class WebsiteParentApprovalTest {
                 () -> {
                     mBottomSheetTestSupport.endAllAnimations();
                 });
-        waitForNoView(withId(R.id.local_parent_approval_layout));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.local_parent_approval_layout),
+                ViewUtils.VIEW_INVISIBLE | ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 
     @Test

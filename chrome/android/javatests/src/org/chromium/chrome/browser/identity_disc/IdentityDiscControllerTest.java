@@ -19,8 +19,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
-
 import android.app.Activity;
 
 import androidx.annotation.StringRes;
@@ -393,7 +391,8 @@ public class IdentityDiscControllerTest {
             Assert.assertNull(chromeTabbedActivity.findViewById(R.id.optional_toolbar_button));
         } else {
             // For an incognito tab, Identity Disc is inflated, but shouldn't be visible.
-            waitForNoView(withId(R.id.optional_toolbar_button));
+            ViewUtils.waitForViewCheckingState(
+                    withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE);
         }
     }
 

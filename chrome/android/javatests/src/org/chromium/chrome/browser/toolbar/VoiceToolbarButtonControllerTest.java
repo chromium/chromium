@@ -16,7 +16,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -110,11 +109,13 @@ public final class VoiceToolbarButtonControllerTest {
     }
 
     private void assertButtonMissingOrNonVoice() {
-        waitForNoView(
+        ViewUtils.waitForViewCheckingState(
                 allOf(
                         withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
                         isEnabled(),
-                        withContentDescription(mButtonString)));
+                        withContentDescription(mButtonString)),
+                ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 
     @Test

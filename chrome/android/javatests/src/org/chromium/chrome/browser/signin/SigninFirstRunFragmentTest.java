@@ -65,7 +65,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -475,7 +474,8 @@ public class SigninFirstRunFragmentTest {
     public void testContinueButtonWhenCannotUseGooglePlayService() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
         launchActivityWithFragment();
-        ViewFinder.waitForNoView(withId(R.id.signin_fre_selected_account));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.signin_fre_selected_account), ViewUtils.VIEW_GONE);
 
         onScrollToView(withText(R.string.continue_button)).perform(click());
 
@@ -1636,7 +1636,8 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void checkFragmentWhenSigninIsDisabledByPolicy() {
-        ViewFinder.waitForNoView(withId(R.id.signin_fre_selected_account));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.signin_fre_selected_account), ViewUtils.VIEW_GONE);
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         ViewUtils.waitForVisibleView(withId(R.id.fre_browser_managed_by));

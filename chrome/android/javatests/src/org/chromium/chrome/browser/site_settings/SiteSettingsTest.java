@@ -33,12 +33,15 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForViewCheckingState;
 
 import android.content.Context;
 import android.content.Intent;
@@ -1867,7 +1870,9 @@ public class SiteSettingsTest {
                                     new GURL("https://secondary3.com")));
                 });
 
-        waitForNoView(withText("secondary1.com"));
+        waitForViewCheckingState(
+                withText("secondary1.com"), VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE);
+        onView(withText("secondary1.com")).check(doesNotExist());
         onView(withText("secondary3.com")).check(matches(isDisplayed()));
 
         // Reset second permission.

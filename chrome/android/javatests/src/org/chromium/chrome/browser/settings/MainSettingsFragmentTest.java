@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_APPEARANCE;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_UI_THEME;
@@ -139,6 +138,7 @@ import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -506,7 +506,7 @@ public class MainSettingsFragmentTest {
 
         // Wait for the default browser promo view to disappear to avoid flakiness due to race
         // conditions.
-        waitForNoView(withId(R.id.promo_card_view));
+        ViewUtils.waitForViewCheckingState(withId(R.id.promo_card_view), ViewUtils.VIEW_NULL);
         View view =
                 mSettingsActivityTestRule
                         .getActivity()

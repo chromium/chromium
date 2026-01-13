@@ -17,10 +17,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForViewCheckingState;
 
 import android.graphics.Bitmap;
 
@@ -160,7 +161,7 @@ public class HistoryTest {
         SyncTestUtil.waitForHistorySyncEnabled();
 
         // Verify that the content is still shown and the promo is dismissed.
-        waitForNoView(withId(R.id.signin_promo_view_container));
+        waitForViewCheckingState(withId(R.id.signin_promo_view_container), VIEW_NULL);
         onView(withId(R.id.history_page_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.empty_state_container)).check(matches(not(isDisplayed())));
     }
