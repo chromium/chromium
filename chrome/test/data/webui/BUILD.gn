@@ -306,6 +306,12 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/signin:signin_utils",
     ]
   }
+
+  if (is_mac) {
+    sources += [
+      "unexportable_keys_internals/unexportable_keys_internals_browsertest.cc",
+    ]
+  }
 }
 
 source_set("interactive_ui_tests") {
@@ -823,6 +829,12 @@ generate_grd("build_grd") {
   if (enable_compose) {
     deps += [ "compose:build_grdp" ]
     grdp_files += [ "$target_gen_dir/compose/resources.grdp" ]
+  }
+
+  if (is_mac) {
+    deps += [ "unexportable_keys_internals:build_grdp" ]
+    grdp_files +=
+        [ "$target_gen_dir/unexportable_keys_internals/resources.grdp" ]
   }
 
   manifest_files =

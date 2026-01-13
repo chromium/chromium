@@ -16,7 +16,7 @@ struct UnexportableKeyInfo {
   string wrapped_key;
   string algorithm;
   string key_tag;
-  mojo_base.mojom.Time creation_time;
+  mojo_base.mojom.JSTime creation_time;
 };
 
 // Factory ensures that the Page and Handler interfaces
