@@ -122,20 +122,12 @@ WebEngineBrowserContext::GetSpecialStoragePolicy() {
 
 content::PlatformNotificationService*
 WebEngineBrowserContext::GetPlatformNotificationService() {
-#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
   return &platform_notification_service_;
-#else
-  return nullptr;
-#endif
 }
 
 content::PushMessagingService*
 WebEngineBrowserContext::GetPushMessagingService() {
-#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
   return &push_messaging_service_;
-#else
-  return nullptr;
-#endif
 }
 
 content::StorageNotificationService*
@@ -208,13 +200,10 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       client_hints_delegate_(network_quality_tracker,
                              IsJavaScriptAllowedCallback(),
                              embedder_support::GetUserAgentMetadata()),
-      reduce_accept_language_delegate_(GetAcceptLanguages())
-#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
-      ,
+      reduce_accept_language_delegate_(GetAcceptLanguages()),
       push_messaging_service_(*this,
                               *os_crypt_async,
                               *network_connection_tracker)
-#endif
 {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 

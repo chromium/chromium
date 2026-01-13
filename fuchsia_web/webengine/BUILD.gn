@@ -18,11 +18,6 @@ import("//tools/grit/repack.gni")
 # Only allow use by targets in this directory unless explicitly specified.
 visibility = [ ":*" ]
 
-declare_args() {
-  # A temporary gn arg to enable the push messaging apis.
-  enable_push_messaging_api = false
-}
-
 config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
@@ -385,10 +380,6 @@ component("web_engine_core") {
       ":cast_streaming_receiver",
       "//components/cast_streaming/renderer",
     ]
-  }
-
-  if (enable_push_messaging_api) {
-    defines = [ "WEB_ENGINE_ENABLE_PUSH_MESSAGING_API" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
