@@ -1086,12 +1086,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 #pragma mark - UISearchControllerDelegate
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
-  // This is needed to remove the transparency of the navigation bar at scroll
-  // edge in iOS 15+ to prevent the following UITableViewRowAnimationTop
-  // animations from being visible through the navigation bar.
-  self.navigationController.navigationBar.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-
   [self showScrim];
   // Remove save passwords switch section, password check section and
   // on device encryption.
@@ -1101,30 +1095,26 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       performBatchTableViewUpdates:^{
         // Sections must be removed from bottom to top, otherwise it crashes
         [self clearSectionWithIdentifier:SectionIdentifierAddPasswordButton
-                        withRowAnimation:UITableViewRowAnimationTop];
+                        withRowAnimation:UITableViewRowAnimationFade];
 
         [self clearSectionWithIdentifier:SectionIdentifierPasswordCheck
-                        withRowAnimation:UITableViewRowAnimationTop];
+                        withRowAnimation:UITableViewRowAnimationFade];
 
         [self clearSectionWithIdentifier:SectionIdentifierWidgetPromo
-                        withRowAnimation:UITableViewRowAnimationTop];
+                        withRowAnimation:UITableViewRowAnimationFade];
 
         [self
             clearSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo
-                      withRowAnimation:UITableViewRowAnimationTop];
+                      withRowAnimation:UITableViewRowAnimationFade];
 
         [self clearSectionWithIdentifier:SectionIdentifierManageAccountHeader
-                        withRowAnimation:UITableViewRowAnimationTop];
+                        withRowAnimation:UITableViewRowAnimationFade];
       }
                         completion:nil];
 }
 
 - (void)willDismissSearchController:(UISearchController*)searchController {
   _searchPasswordsUserActionWasRecorded = false;
-
-  // This is needed to restore the transparency of the navigation bar at
-  // scroll edge in iOS 15+.
-  self.navigationController.navigationBar.backgroundColor = nil;
 
   // No need to restore UI if the Password Manager is being dismissed or if a
   // previous call to `willDismissSearchController` already restored the UI.
@@ -1149,7 +1139,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
             forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
         [self.tableView
               insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-            withRowAnimation:UITableViewRowAnimationTop];
+            withRowAnimation:UITableViewRowAnimationFade];
 
         sectionIndex++;
         // Add the trusted vault promo section.
@@ -1159,7 +1149,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                      atIndex:sectionIndex];
           [self.tableView
                 insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              withRowAnimation:UITableViewRowAnimationTop];
+              withRowAnimation:UITableViewRowAnimationFade];
           [model addItem:self.trustedVaultWidgetPromoItem
               toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
 
@@ -1172,7 +1162,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                      atIndex:sectionIndex];
           [self.tableView
                 insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              withRowAnimation:UITableViewRowAnimationTop];
+              withRowAnimation:UITableViewRowAnimationFade];
           [model addItem:self.widgetPromoItem
               toSectionWithIdentifier:SectionIdentifierWidgetPromo];
 
@@ -1187,7 +1177,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
         [self.tableView
               insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-            withRowAnimation:UITableViewRowAnimationTop];
+            withRowAnimation:UITableViewRowAnimationFade];
         [model addItem:self.passwordProblemsItem
             toSectionWithIdentifier:SectionIdentifierPasswordCheck];
         [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:0
@@ -1209,7 +1199,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                      atIndex:sectionIndex];
           [self.tableView
                 insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              withRowAnimation:UITableViewRowAnimationTop];
+              withRowAnimation:UITableViewRowAnimationFade];
           [model addItem:self.addPasswordItem
               toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
           [rowsIndexPaths
@@ -1224,7 +1214,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         }
 
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
-                              withRowAnimation:UITableViewRowAnimationTop];
+                              withRowAnimation:UITableViewRowAnimationFade];
 
         _tableIsInSearchMode = NO;
       }
@@ -1335,12 +1325,24 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // Shows scrim overlay and hide toolbar.
 - (void)showScrim {
   UIView* scrimView = self.scrimView;
-  if (scrimView.alpha < 1.0f) {
-    scrimView.alpha = 0.0f;
-    [self.tableView addSubview:scrimView];
+  if (scrimView.alpha >= 1.0f) {
+    return;
+  }
+  scrimView.alpha = 0.0f;
+  [self.tableView addSubview:scrimView];
 
-    UIView* superview = self.tableView.superview;
+  UIView* superview = self.tableView.superview;
 
+  // We attach our constraints to the superview because the tableView is
+  // a scrollView and it seems that we get an empty frame when attaching to
+  // it.
+  if (@available(iOS 26, *)) {
+    // On iOS 26+, the search bar won't be obscured by the scrim view even when
+    // the scrim view's top constraint is aligned with the superview's top,
+    // likely due to changes in UIKit's layout system or view hierarchy
+    // handling.
+    AddSameConstraints(scrimView, superview);
+  } else {
     [NSLayoutConstraint activateConstraints:@[
       [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
       [scrimView.trailingAnchor
@@ -1349,16 +1351,16 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       [scrimView.topAnchor
           constraintEqualToAnchor:self.navigationController.navigationBar
                                       .bottomAnchor],
-
     ]];
-    self.tableView.accessibilityElementsHidden = YES;
-    self.tableView.scrollEnabled = NO;
-    [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
-                     animations:^{
-                       scrimView.alpha = 1.0f;
-                       [self.view layoutIfNeeded];
-                     }];
   }
+
+  self.tableView.accessibilityElementsHidden = YES;
+  self.tableView.scrollEnabled = NO;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+                   animations:^{
+                     scrimView.alpha = 1.0f;
+                     [self.view layoutIfNeeded];
+                   }];
 }
 
 // Hides scrim and restore toolbar.
