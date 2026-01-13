@@ -2486,6 +2486,14 @@ class ClientSideDetectionHostCreditCardFormTest
     return autofill_manager_injector_[web_contents()->GetPrimaryMainFrame()];
   }
 
+  void NavigateAndWaitOnPreclassificationChecks(const GURL& url) {
+    ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                  nullptr);
+    NavigateAndCommit(url);
+    WaitUntilHighConfidenceAllowlistCheckDone();
+    WaitAndCheckPreClassificationChecks();
+  }
+
   // Creates a credit card form, where field types are determined by whether
   // the form has local or server predictions.
   // has_local_predictions:  Whether fields have a local heuristic identifying
@@ -2553,7 +2561,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  NavigateAndCommit(url);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   csd_host_->RegisterAutofillManager();
 
@@ -2584,7 +2592,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  NavigateAndCommit(url);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   csd_host_->RegisterAutofillManager();
 
@@ -2615,7 +2623,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  NavigateAndCommit(url);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   // This should not actually register since ESB is disabled.
   csd_host_->RegisterAutofillManager();
@@ -2648,12 +2656,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndCommit(url);
-  WaitUntilHighConfidenceAllowlistCheckDone();
-  WaitAndCheckPreClassificationChecks();
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   auto form_data = CreateCreditCardForm();
 
@@ -2704,12 +2707,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndCommit(url);
-  WaitUntilHighConfidenceAllowlistCheckDone();
-  WaitAndCheckPreClassificationChecks();
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   auto form_data = CreateCreditCardForm();
 
@@ -2764,12 +2762,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndCommit(url);
-  WaitUntilHighConfidenceAllowlistCheckDone();
-  WaitAndCheckPreClassificationChecks();
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   auto form_data = CreateCreditCardForm();
 
@@ -2816,8 +2809,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
-  NavigateAndCommit(url);
   auto form_data = CreateCreditCardForm();
 
   // Check that histograms haven't been recorded yet.
@@ -2868,12 +2861,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndCommit(url);
-  WaitUntilHighConfidenceAllowlistCheckDone();
-  WaitAndCheckPreClassificationChecks();
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   auto form_data = CreateCreditCardForm(
       /*has_local_predictions=*/true, /*has_server_predictions=*/false);
@@ -2918,8 +2906,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
-  NavigateAndCommit(url);
   auto form_data = CreateCreditCardForm(
       /*has_local_predictions=*/true, /*has_server_predictions=*/true);
 
@@ -2962,8 +2950,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
-  NavigateAndCommit(url);
   auto form_data = CreateCreditCardForm();
 
   // Check that histograms haven't been recorded yet.
@@ -3091,12 +3079,7 @@ TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndCommit(url);
-  WaitUntilHighConfidenceAllowlistCheckDone();
-  WaitAndCheckPreClassificationChecks();
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   auto form_data = CreateCreditCardForm();
 
@@ -3156,8 +3139,7 @@ TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-
-  NavigateAndCommit(url);
+  NavigateAndWaitOnPreclassificationChecks(url);
 
   // Check that histograms haven't been recorded yet.
   histogram_tester.ExpectTotalCount("SBClientPhishing.CreditCardFormEvent", 0);
