@@ -466,6 +466,105 @@ bool IsSyntheticResponseDryRunModeEnabled() {
   return is_dry_run;
 }
 
+storage::mojom::ServiceWorkerFindRegistrationResultPtr
+CreateSyntheticRegistration(const GURL& client_url,
+                            const blink::StorageKey& key) {
+  GURL::Replacements replacements_for_script;
+  replacements_for_script.ClearQuery();
+  replacements_for_script.SetPathStr(
+      "/service-worker-for-synthetic-response.js");
+  const auto kScript = client_url.ReplaceComponents(replacements_for_script);
+
+  GURL::Replacements replacements_for_scope;
+  replacements_for_scope.ClearQuery();
+  const auto kScope = client_url.ReplaceComponents(replacements_for_scope);
+
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  {
+    auto resource = storage::mojom::ServiceWorkerResourceRecord::New(
+        blink::mojom::kSyntheticResponseServiceWorkerResourceId, kScript, 0,
+        /*sha256_checksum=*/"");
+    resources.push_back(std::move(resource));
+  }
+
+  auto data = storage::mojom::ServiceWorkerRegistrationData::New();
+  data->registration_id =
+      blink::mojom::kSyntheticResponseServiceWorkerRegistrationId;
+  data->scope = kScope;
+  data->key = key;
+  data->script = kScript;
+  data->script_type = blink::mojom::ScriptType::kModule;
+  data->update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
+  data->version_id = blink::mojom::kSyntheticResponseServiceWorkerVersionId;
+  data->is_active = true;
+  data->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  data->last_update_check = base::Time::Now();
+  data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
+
+  {
+    int64_t resources_total_size_bytes = 0;
+    for (auto& resource : resources) {
+      resources_total_size_bytes += resource->size_bytes;
+    }
+    data->resources_total_size_bytes = resources_total_size_bytes;
+  }
+
+  data->script_response_time = base::Time::Now();
+  data->ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
+  data->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+
+  // Add the router rules to let all requests go to network source.
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    {
+      blink::ServiceWorkerRouterRule rule;
+      {
+        blink::ServiceWorkerRouterOrCondition or_condition;
+        {
+          blink::ServiceWorkerRouterRequestCondition request;
+          request.mode = network::mojom::RequestMode::kNavigate;
+          or_condition.conditions.push_back(
+              blink::ServiceWorkerRouterCondition::WithRequest(
+                  std::move(request)));
+        }
+        {
+          blink::ServiceWorkerRouterNotCondition not_condition;
+          {
+            blink::ServiceWorkerRouterRequestCondition request;
+            request.mode = network::mojom::RequestMode::kNavigate;
+            not_condition.condition =
+                std::make_unique<blink::ServiceWorkerRouterCondition>(
+                    blink::ServiceWorkerRouterCondition::WithRequest(
+                        std::move(request)));
+          }
+          or_condition.conditions.push_back(
+              blink::ServiceWorkerRouterCondition::WithNotCondition(
+                  std::move(not_condition)));
+        }
+        rule.condition = blink::ServiceWorkerRouterCondition::WithOrCondition(
+            std::move(or_condition));
+      }
+      {
+        blink::ServiceWorkerRouterSource source;
+        source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+        source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+        rule.sources.emplace_back(std::move(source));
+      }
+      router_rules.rules.emplace_back(std::move(rule));
+    }
+    data->router_rules = std::move(router_rules);
+  }
+
+  mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
+      remote_reference;
+  // We don't need to care about the receiver since this is a fake one.
+  std::ignore = remote_reference.InitWithNewPipeAndPassReceiver();
+  return storage::mojom::ServiceWorkerFindRegistrationResult::New(
+      std::move(remote_reference), std::move(data), std::move(resources));
+}
+
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content

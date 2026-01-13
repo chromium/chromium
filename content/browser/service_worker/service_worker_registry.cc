@@ -423,6 +423,31 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   }
 
   FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
+
+  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          context_->wrapper()->browser_context(), client_url)) {
+    // If `client_url` is eligible for SyntheticResponse, create a fake
+    // ServiceWorker registration so that the navigation is handled by
+    // ServiceWorker main resource loader.
+    //
+    // NOTE: Unlike the regular SW registration lookup, this lookup is processed
+    // without IPC. This is OK because eventually the feature will be
+    // implemented as a part of ServiceWorker API, and the registration will be
+    // registered by the web developer side. For the regular SW registration,
+    // some internal optimizations (e.g.
+    // `ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache`,
+    // `ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl`) will
+    // eliminate this IPC overhead.
+    storage::mojom::ServiceWorkerFindRegistrationResultPtr result =
+        service_worker_loader_helpers::CreateSyntheticRegistration(client_url,
+                                                                   key);
+    DidFindRegistrationForClientUrl(
+        client_url, key, trace_event_id, std::move(callback),
+        storage::mojom::ServiceWorkerDatabaseStatus::kOk, std::move(result),
+        scopes);
+    return;
+  }
+
   if (no_registration) {
     DidFindRegistrationForClientUrl(
         client_url, key, trace_event_id, std::move(callback),
@@ -437,24 +462,6 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
         client_url, key, trace_event_id, std::move(callback),
         storage::mojom::ServiceWorkerDatabaseStatus::kOk,
         std::move(preflight_result), scopes);
-    return;
-  }
-  // TODO(crbug.com/352578800): Consider moving this block before
-  // kServiceWorkerMergeFindRegistrationForClientUrl check since this block
-  // will be skipped when no_registration is true.
-  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-          context_->wrapper()->browser_context(), client_url)) {
-    // If `client_url` is eligible for SyntheticResponse, create a fake
-    // ServiceWorker registration so that the navigation is handled by
-    // ServiceWorker main resource loader.
-    is_mojo_called = true;
-    CreateInvokerAndStartRemoteCall(
-        &storage::mojom::ServiceWorkerStorageControl::
-            GetFakeRegistrationForClientUrl,
-        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-                       weak_factory_.GetWeakPtr(), client_url, key,
-                       trace_event_id, std::move(callback)),
-        client_url, key);
     return;
   }
   is_mojo_called = true;
