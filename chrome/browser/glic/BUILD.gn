@@ -44,6 +44,8 @@ source_set("glic") {
     "service/glic_instance_helper.cc",
     "service/glic_instance_helper.h",
     "service/metrics/glic_instance_helper_metrics.h",
+    "service/metrics/metrics_types.cc",
+    "service/metrics/metrics_types.h",
   ]
   if (!is_android) {
     # TODO(b/470059315): Make these work on Android, or move them to the

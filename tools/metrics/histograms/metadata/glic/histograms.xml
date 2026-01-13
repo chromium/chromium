@@ -671,17 +671,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.FirstActionInDaisyChainPanel"
+<histogram name="Glic.Instance.FirstActionInDaisyChainPanel.{Source}"
     enum="GlicDaisyChainFirstAction" expires_after="2026-12-31">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the first action that occurs on a tab that was created by
-    daisy-chaining (opening a link from the side panel). Recorded when a
-    significant action occurs (tab closed, side panel closed, input submitted,
-    conversation switched, daisy chain another tab) or records &quot;No
-    Action&quot; when tab helper is destroyed before any action occurs.
+    daisy-chaining (opening a link from the side panel), broken down by the
+    source of the daisy chain. Recorded when a significant action occurs (tab
+    closed, side panel closed, input submitted, conversation switched, daisy
+    chain another tab) or records &quot;No Action&quot; when tab helper is
+    destroyed before any action occurs.
   </summary>
+  <token key="Source">
+    <variant name="ActorAddTab"/>
+    <variant name="GlicContents"/>
+    <variant name="NewTab"/>
+    <variant name="TabContents"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.Instance.Floaty.InitialMode" enum="GlicWebClientMode"

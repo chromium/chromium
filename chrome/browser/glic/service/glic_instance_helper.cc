@@ -62,8 +62,8 @@ GlicInstanceHelper::GetPinnedInstances() const {
                                 pinned_instances_.end());
 }
 
-void GlicInstanceHelper::SetIsDaisyChained() {
-  metrics_.SetIsDaisyChained();
+void GlicInstanceHelper::SetIsDaisyChained(DaisyChainSource source) {
+  metrics_.SetIsDaisyChained(source);
 }
 
 void GlicInstanceHelper::OnDaisyChainAction(DaisyChainFirstAction action) {

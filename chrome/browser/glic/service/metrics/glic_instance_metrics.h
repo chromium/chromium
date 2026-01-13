@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 
 namespace content {
 class WebContents;
@@ -51,14 +52,6 @@ enum class GlicInstanceMetricsError {
   kMaxValue = kFloatyClosedWithoutOpen,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceMetricsError)
-
-enum class DaisyChainSource {
-  kUnknown = 0,
-  kGlicContents = 1,
-  kTabContents = 2,
-  kActorAddTab = 3,
-  kMaxValue = kActorAddTab,
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

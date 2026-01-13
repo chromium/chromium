@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 
 namespace glic {
 
@@ -39,7 +40,7 @@ class GlicInstanceHelperMetrics {
   void OnPinnedByInstance(const InstanceId& instance_id);
 
   // Marks the tab as being part of a daisy chain session.
-  void SetIsDaisyChained();
+  void SetIsDaisyChained(DaisyChainSource source);
 
   // Records a significant user action during a daisy chain session.
   // Only the *first* action is recorded as the session outcome.
@@ -52,6 +53,7 @@ class GlicInstanceHelperMetrics {
   base::flat_set<InstanceId> pinned_by_instances_;
 
   bool is_daisy_chained_ = false;
+  DaisyChainSource daisy_chain_source_ = DaisyChainSource::kUnknown;
   bool metric_finalized_ = false;
   DaisyChainFirstAction current_metric_action_ =
       DaisyChainFirstAction::kNoAction;

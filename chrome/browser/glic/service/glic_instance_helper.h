@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -43,7 +44,7 @@ class GlicInstanceHelper {
 
   std::vector<Instance*> GetPinnedInstances() const;
 
-  void SetIsDaisyChained();
+  void SetIsDaisyChained(DaisyChainSource source);
   void OnDaisyChainAction(DaisyChainFirstAction action);
 
   base::CallbackListSubscription SubscribeToDestruction(

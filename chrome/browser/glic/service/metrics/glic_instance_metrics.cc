@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -37,19 +38,6 @@ std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
     case mojom::WebClientMode::kAudio:
       return "Audio";
     case mojom::WebClientMode::kUnknown:
-      return "Unknown";
-  }
-}
-
-std::string GetDaisyChainSourceString(DaisyChainSource source) {
-  switch (source) {
-    case DaisyChainSource::kGlicContents:
-      return "GlicContents";
-    case DaisyChainSource::kTabContents:
-      return "TabContents";
-    case DaisyChainSource::kActorAddTab:
-      return "ActorAddTab";
-    default:
       return "Unknown";
   }
 }
@@ -402,7 +390,7 @@ void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source,
       }
 
       if (auto* new_helper = GlicInstanceHelper::From(new_tab)) {
-        new_helper->SetIsDaisyChained();
+        new_helper->SetIsDaisyChained(source);
       }
     }
     // If the new tab is opened from a daisy chain source, propagate the state

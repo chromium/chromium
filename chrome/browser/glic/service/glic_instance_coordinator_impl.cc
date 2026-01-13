@@ -757,6 +757,10 @@ void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
   side_panel_options.suppress_opening_animation = true;
   side_panel_options.pin_trigger = GlicPinTrigger::kNewTabDaisyChain;
   instance->Show(ShowOptions{side_panel_options});
+
+  instance->metrics()->OnDaisyChain(DaisyChainSource::kNewTab,
+                                    /*success=*/true, creation_event->new_tab,
+                                    creation_event->old_tab);
 }
 
 void GlicInstanceCoordinatorImpl::OnMemoryPressure(

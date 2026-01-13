@@ -173,6 +173,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestHibernateAllAggressiveOnMemoryPressure",
       "GlicOnboardingApiTest",
       "GlicApiTestHibernateOnMemoryUsage",
+      "GlicApiTestWithDaisyChain",
   };
 }
 
@@ -1111,7 +1112,25 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
   RunTestSequence(CheckPopupCount(1));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLinkDaisyChains) {
+class GlicApiTestWithDaisyChain : public GlicApiTest {
+ public:
+  GlicApiTestWithDaisyChain() {
+    daisy_chain_features_.InitAndEnableFeature(
+        features::kGlicDaisyChainNewTabs);
+  }
+
+  void SetUpOnMainThread() override {
+    GlicApiTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList daisy_chain_features_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
+                       testCreateTabByClickingOnLinkDaisyChains) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Test only supported with multi-instance on";
   }
@@ -2338,7 +2357,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowWithinBounds) {
             glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testDaisyChainRecursiveAndInput) {
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
+                       testDaisyChainRecursiveAndInput) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Only supported with multi-instance.";
   }
@@ -2360,7 +2380,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDaisyChainRecursiveAndInput) {
 
   // 4. Verify no action yet.
   histogram_tester->ExpectTotalCount(
-      "Glic.Instance.FirstActionInDaisyChainPanel", 0);
+      "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents", 0);
 
   // 5. Trigger "createTab" (recursive) from the second tab's panel.
   ExecuteJsTest({.params = base::Value("createTab")});
@@ -2372,7 +2392,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDaisyChainRecursiveAndInput) {
   // 7. Verify recursive metric for the second tab (which was daisy chained).
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester->GetBucketCount(
-               "Glic.Instance.FirstActionInDaisyChainPanel",
+               "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents",
                DaisyChainFirstAction::kRecursiveDaisyChain) == 1;
   }));
 
@@ -2386,7 +2406,39 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDaisyChainRecursiveAndInput) {
   // 10. Verify inputSubmitted metric for the third tab.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester->GetBucketCount(
-               "Glic.Instance.FirstActionInDaisyChainPanel",
+               "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents",
+               DaisyChainFirstAction::kInputSubmitted) == 1;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain, testNewTabMetrics) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported with multi-instance.";
+  }
+
+  // 1. Open Glic in first tab.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
+
+  // 2. Open a new tab (Ctrl+T equivalent).
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL("chrome://newtab/"), ui::PAGE_TRANSITION_TYPED));
+  auto* tab_strip = browser()->tab_strip_model();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_strip->count() == 2; }));
+  tab_strip->ActivateTabAt(1);
+
+  // 3. Verify Glic is open in the new tab.
+  TrackGlicInstanceWithTabIndex(1);
+  WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents);
+
+  // 4. Trigger "inputSubmitted".
+  ExecuteJsTest({.params = base::Value("inputSubmitted")});
+
+  // 5. Verify Metric.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Instance.FirstActionInDaisyChainPanel.NewTab",
                DaisyChainFirstAction::kInputSubmitted) == 1;
   }));
 }
@@ -3706,6 +3758,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestHibernateOnMemoryUsage,
                          DefaultTestParamSet(),
                          WithTestParams::PrintTestVariant);
-
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithDaisyChain,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
 }  // namespace
 }  // namespace glic
