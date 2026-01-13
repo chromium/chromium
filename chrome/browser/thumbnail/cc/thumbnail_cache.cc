@@ -281,7 +281,7 @@ void ThumbnailCache::PruneCache() {
   std::vector<TabId> ids_to_remove;
 
   for (const auto& entry : cache_) {
-    if (!base::Contains(ids_to_keep, entry.first)) {
+    if (!ids_to_keep.contains(entry.first)) {
       ids_to_remove.push_back(entry.first);
     }
   }

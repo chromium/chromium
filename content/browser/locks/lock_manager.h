@@ -455,7 +455,7 @@ void LockManager<LockGroupIdType>::RequestLock(
     return;
   }
 
-  if (!base::Contains(lock_groups_, context.lock_group_id)) {
+  if (!lock_groups_.contains(context.lock_group_id)) {
     lock_groups_.emplace(context.lock_group_id, this);
   }
 

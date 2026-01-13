@@ -189,10 +189,10 @@ class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
         .Run(/* responseCode= */ 200, /* content_size= */ 0);
     std::string response_body;
     int network_error = 0;
-    if (base::Contains(post_data, "updatecheck")) {
+    if (post_data.contains("updatecheck")) {
       ASSERT_TRUE(base::ReadFileToString(
           GetTestFile("fake_component_update_response.json"), &response_body));
-    } else if (base::Contains(post_data, "eventtype")) {
+    } else if (post_data.contains("eventtype")) {
       ASSERT_TRUE(base::ReadFileToString(
           GetTestFile("fake_component_ping_response.json"), &response_body));
     } else {  // error post request not a ping nor update.

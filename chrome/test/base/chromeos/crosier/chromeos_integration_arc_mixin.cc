@@ -161,8 +161,7 @@ bool ShouldEnableArcVm() {
   std::string use_flags;
   CHECK(base::ReadFileToString(
       base::FilePath("/usr/local/etc/tast_use_flags.txt"), &use_flags));
-  return base::Contains(use_flags, "arcvm") &&
-         !base::Contains(use_flags, "arcpp");
+  return use_flags.contains("arcvm") && !use_flags.contains("arcpp");
 }
 
 // Gets the active user's browser context.

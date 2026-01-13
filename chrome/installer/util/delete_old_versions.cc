@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/file_version_info.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -89,7 +88,7 @@ bool DeleteDirectoriesWithoutMatchingExecutable(
   bool success = true;
   for (const base::FilePath& directory_name : directories) {
     // Delete the directory if it doesn't have a matching executable.
-    if (!base::Contains(executables, directory_name)) {
+    if (!executables.contains(directory_name)) {
       const base::FilePath directory_path = install_dir.Append(directory_name);
       LOG(WARNING) << "Attempting to delete stray directory "
                    << directory_path.value();
@@ -115,7 +114,7 @@ bool DeleteExecutablesWithoutMatchingDirectory(
     const auto& executables_for_version = version_and_executables.second;
 
     // Don't delete the executables if they have a matching directory.
-    if (base::Contains(directories, version_dir_name)) {
+    if (directories.contains(version_dir_name)) {
       continue;
     }
 

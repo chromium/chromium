@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/values.h"
@@ -61,7 +60,7 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
     ExpectTrueToJava(version.GetString() == "123.456.789",
                      "version != 123.456.789");
     ExpectTrueToJava(fd_map.size() == 1u, "fd_map.size != 1");
-    ExpectTrueToJava(base::Contains(fd_map, "file.test"),
+    ExpectTrueToJava(fd_map.contains("file.test"),
                      "file.test is not found in the fd_map");
     Java_EmbeddedComponentLoaderTest_onComponentLoaded(
         base::android::AttachCurrentThread());

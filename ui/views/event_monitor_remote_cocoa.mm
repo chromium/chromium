@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -38,7 +37,7 @@ void EventMonitorRemoteCocoa::NativeWidgetMacEventMonitorOnEvent(
     return;
   }
 
-  if (target_is_this_window && base::Contains(types_, ui_event->type())) {
+  if (target_is_this_window && types_.contains(ui_event->type())) {
     event_observer_->OnEvent(*ui_event);
   }
 }

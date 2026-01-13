@@ -6,7 +6,6 @@
 
 #include <limits>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -463,11 +462,11 @@ void AXFragmentRootWin::OnEventListenerRemoved(
 }
 
 bool AXFragmentRootWin::HasEventListenerForEvent(EVENTID event_id) {
-  return base::Contains(event_listener_count_, event_id);
+  return event_listener_count_.contains(event_id);
 }
 
 bool AXFragmentRootWin::HasEventListenerForProperty(PROPERTYID property_id) {
-  return base::Contains(property_listener_count_, property_id);
+  return property_listener_count_.contains(property_id);
 }
 
 IRawElementProviderSimple* AXFragmentRootWin::GetProvider() {

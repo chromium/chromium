@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
@@ -152,7 +151,7 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
     }
     // When `match_dest` is empty, we don't check the `destination`.
     if (!info.match_dest().empty() &&
-        !base::Contains(info.match_dest(), destination)) {
+        !info.match_dest().contains(destination)) {
       continue;
     }
     CHECK(info.matcher());

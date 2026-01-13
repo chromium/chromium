@@ -8,7 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
@@ -177,7 +176,7 @@ void BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic(
   std::string instance_id_string =
       base::android::ConvertJavaStringToUTF8(env, instance_id);
 
-  DCHECK(!base::Contains(characteristics_, instance_id_string));
+  DCHECK(!characteristics_.contains(instance_id_string));
   AddCharacteristic(BluetoothRemoteGattCharacteristicAndroid::Create(
       adapter_, this, instance_id_string, bluetooth_gatt_characteristic_wrapper,
       chrome_bluetooth_device));

@@ -6,7 +6,6 @@
 
 #include <AppKit/AppKit.h>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #import "base/mac/mac_util.h"
@@ -74,10 +73,10 @@ class DroppedScreenShotCopierMac {
  private:
   bool IsPathScreenShot(const base::FilePath& path) const {
     const std::string& value = path.value();
-    if (!base::Contains(value, "/var")) {
+    if (!value.contains("/var")) {
       return false;
     }
-    if (!base::Contains(value, "screencaptureui")) {
+    if (!value.contains("screencaptureui")) {
       return false;
     }
     return true;

@@ -6,7 +6,6 @@
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/binding_set.h>
 
-#include "base/containers/contains.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -181,7 +180,7 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
 
   uint16_t port2 = *dev_tools_listener2.debug_ports().begin();
   ASSERT_NE(port1, port2);
-  ASSERT_TRUE(base::Contains(dev_tools_listener_.debug_ports(), port2));
+  ASSERT_TRUE(dev_tools_listener_.debug_ports().contains(port2));
 
   base::Value::List devtools_list2 = GetDevToolsListFromPort(port2);
   EXPECT_EQ(devtools_list2.size(), 1u);

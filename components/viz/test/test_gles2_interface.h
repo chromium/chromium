@@ -108,7 +108,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
 
   size_t NumUsedTextures() const { return used_textures_.size(); }
   bool UsedTexture(int texture) const {
-    return base::Contains(used_textures_, texture);
+    return used_textures_.contains(texture);
   }
   void ResetUsedTextures() { used_textures_.clear(); }
 

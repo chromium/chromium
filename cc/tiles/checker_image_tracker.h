@@ -118,7 +118,7 @@ class CC_EXPORT CheckerImageTracker {
   }
   PaintImage::DecodingMode get_decoding_mode_hint_for_testing(
       PaintImage::Id id) {
-    DCHECK(base::Contains(decoding_mode_map_, id));
+    DCHECK(decoding_mode_map_.contains(id));
     return decoding_mode_map_[id];
   }
 

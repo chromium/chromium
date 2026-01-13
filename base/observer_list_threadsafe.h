@@ -150,7 +150,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     bool was_empty = observers_.empty();
 
     // Add |observer| to the list of observers.
-    DCHECK(!Contains(observers_, observer));
+    DCHECK(!observers_.contains(observer));
     const scoped_refptr<SequencedTaskRunner> task_runner =
         SequencedTaskRunner::GetCurrentDefault();
     // Each observer gets a unique identifier. These unique identifiers are used

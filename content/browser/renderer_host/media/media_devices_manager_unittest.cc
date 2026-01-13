@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -1333,10 +1332,9 @@ TEST_F(MediaDevicesManagerTest, EnumerateDevicesUnplugCommunicationsDevice) {
   RunEnumerateDevices();
 
   EXPECT_EQ(removed_device_ids_.size(), 2u);
-  EXPECT_TRUE(base::Contains(removed_device_ids_, communications_device_id));
-  EXPECT_TRUE(
-      base::Contains(removed_device_ids_,
-                     media::AudioDeviceDescription::kCommunicationsDeviceId));
+  EXPECT_TRUE(removed_device_ids_.contains(communications_device_id));
+  EXPECT_TRUE(removed_device_ids_.contains(
+      media::AudioDeviceDescription::kCommunicationsDeviceId));
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -1380,12 +1378,11 @@ TEST_F(MediaDevicesManagerTest,
   RunEnumerateDevices();
 
   EXPECT_EQ(removed_device_ids_.size(), 3u);
-  EXPECT_TRUE(base::Contains(removed_device_ids_, target_device_id));
-  EXPECT_TRUE(base::Contains(removed_device_ids_,
-                             media::AudioDeviceDescription::kDefaultDeviceId));
-  EXPECT_TRUE(
-      base::Contains(removed_device_ids_,
-                     media::AudioDeviceDescription::kCommunicationsDeviceId));
+  EXPECT_TRUE(removed_device_ids_.contains(target_device_id));
+  EXPECT_TRUE(removed_device_ids_.contains(
+      media::AudioDeviceDescription::kDefaultDeviceId));
+  EXPECT_TRUE(removed_device_ids_.contains(
+      media::AudioDeviceDescription::kCommunicationsDeviceId));
 #endif  // BUILDFLAG(IS_WIN)
 }
 

@@ -109,10 +109,9 @@ bool LiveCaptionUnavailabilityNotifier::
 }
 
 bool LiveCaptionUnavailabilityNotifier::ErrorSilencedForOrigin() {
-  return base::Contains(
-      profile_prefs_->GetList(
-          prefs::kLiveCaptionMediaFoundationRendererErrorSilenced),
-      render_frame_host().GetLastCommittedOrigin().Serialize());
+  return profile_prefs_
+      ->GetList(prefs::kLiveCaptionMediaFoundationRendererErrorSilenced)
+      .contains(render_frame_host().GetLastCommittedOrigin().Serialize());
 }
 
 void LiveCaptionUnavailabilityNotifier::DisplayMediaFoundationRendererError() {

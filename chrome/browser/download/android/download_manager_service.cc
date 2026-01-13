@@ -618,7 +618,7 @@ void DownloadManagerService::ResetCoordinatorIfNeeded(ProfileKey* profile_key) {
 void DownloadManagerService::UpdateCoordinator(
     download::SimpleDownloadManagerCoordinator* new_coordinator,
     ProfileKey* profile_key) {
-  bool coordinator_exists = base::Contains(coordinators_, profile_key);
+  bool coordinator_exists = coordinators_.contains(profile_key);
   if (!coordinator_exists || coordinators_[profile_key] != new_coordinator) {
     if (coordinator_exists)
       coordinators_[profile_key]->GetNotifier()->RemoveObserver(this);
@@ -629,7 +629,7 @@ void DownloadManagerService::UpdateCoordinator(
 
 download::SimpleDownloadManagerCoordinator*
 DownloadManagerService::GetCoordinator(ProfileKey* profile_key) {
-  DCHECK(base::Contains(coordinators_, profile_key));
+  DCHECK(coordinators_.contains(profile_key));
   return coordinators_[profile_key];
 }
 

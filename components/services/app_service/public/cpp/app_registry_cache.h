@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     for (const auto& d_iter : deltas_in_progress_) {
       const App* delta = d_iter.second;
 
-      if (base::Contains(states_, d_iter.first)) {
+      if (states_.contains(d_iter.first)) {
         continue;
       }
 

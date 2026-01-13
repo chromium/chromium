@@ -101,7 +101,7 @@ void InProgressJobsStorageChromeOS::OnPrintJobUpdate(
     }
     observer.OnWebPrintJobUpdate(std::move(out_update));
   }
-  if (state && base::Contains(kTerminalJobStates, *state)) {
+  if (state && kTerminalJobStates.contains(*state)) {
     state_observers_.Remove(observer_id);
     controllers_.Remove(controller_id);
     job_id_to_observer_controller_id_pair_.erase(id_pair_itr);

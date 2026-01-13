@@ -74,7 +74,6 @@
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #endif
 
@@ -2087,7 +2086,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     const bool in_memory = db_file_path == kSqliteOpenInMemoryPath;
     if (!in_memory) {
       // Do not allow query injection.
-      if (base::Contains(db_file_path, '?')) {
+      if (db_file_path.contains('?')) {
         RecordOpenDatabaseFailureReason(
             histogram_tag_, OpenDatabaseFailedReason::kIncorrectPath);
         return false;

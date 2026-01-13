@@ -39,7 +39,7 @@ void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
 void ShellPlatformDelegate::CreatePlatformWindow(
     Shell* shell,
     const gfx::Size& initial_size) {
-  DCHECK(!base::Contains(shell_data_map_, shell));
+  DCHECK(!shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   platform_->aura->ResizeWindow(initial_size);
@@ -48,13 +48,13 @@ void ShellPlatformDelegate::CreatePlatformWindow(
 }
 
 gfx::NativeWindow ShellPlatformDelegate::GetNativeWindow(Shell* shell) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
   return shell_data.window;
 }
 
 void ShellPlatformDelegate::CleanUp(Shell* shell) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   shell_data_map_.erase(shell);
 }
 

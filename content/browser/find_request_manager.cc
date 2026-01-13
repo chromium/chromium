@@ -604,7 +604,7 @@ void FindRequestManager::OnGetNearestFindResultReply(RenderFrameHostImpl* rfh,
                                                      int request_id,
                                                      float distance) {
   if (request_id != activate_.current_request_id ||
-      !base::Contains(activate_.pending_replies, rfh)) {
+      !activate_.pending_replies.contains(rfh)) {
     return;
   }
 

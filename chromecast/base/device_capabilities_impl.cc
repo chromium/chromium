@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -27,7 +26,7 @@ const char kPathSeparator = '.';
 // Determines if a key passed to Register() is valid. No path separators can
 // be present in the key and it must not be empty.
 bool IsValidRegisterKey(const std::string& key) {
-  return !key.empty() && !base::Contains(key, kPathSeparator);
+  return !key.empty() && !key.contains(kPathSeparator);
 }
 
 // Determines if a path is valid. This is true if there are no empty keys

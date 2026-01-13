@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -171,7 +170,7 @@ ValidationStatus RemoteValidation::ValidateWellKnownJSON(
     }
 
     const std::string etld_plus_1_label = domain.substr(0, dot_index);
-    if (!base::Contains(labels_seen, etld_plus_1_label)) {
+    if (!labels_seen.contains(etld_plus_1_label)) {
       if (labels_seen.size() >= kMaxLabels) {
         hit_limits = true;
         continue;

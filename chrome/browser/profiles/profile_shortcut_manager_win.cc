@@ -1018,7 +1018,7 @@ void ProfileShortcutManagerWin::OnProfileAvatarChanged(
 
 void ProfileShortcutManagerWin::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
-  if (base::Contains(profiles_with_pending_avatar_load_, profile_path)) {
+  if (profiles_with_pending_avatar_load_.contains(profile_path)) {
     profiles_with_pending_avatar_load_.erase(profile_path);
     CreateOrUpdateProfileIcon(profile_path);
   }

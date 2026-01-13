@@ -400,7 +400,7 @@ TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
                   "parsing patterns";
 #else
   bool is_expected_to_pass =
-      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
+      !GetFailingTestNames().contains(GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),
                        is_expected_to_pass);
 #endif

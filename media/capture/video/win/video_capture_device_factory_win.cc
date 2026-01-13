@@ -520,7 +520,7 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
       }
     }
     std::erase_if(availability_cache_, [&device_ids](const auto& entry) {
-      return !base::Contains(device_ids, entry.first);
+      return !device_ids.contains(entry.first);
     });
   }
 

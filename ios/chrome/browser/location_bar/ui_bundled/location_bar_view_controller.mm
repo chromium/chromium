@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -838,8 +837,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   if (clipboard_content_types.has_value()) {
     std::set<ClipboardContentType> clipboard_content_types_values =
         clipboard_content_types.value();
-    if (base::Contains(clipboard_content_types_values,
-                       ClipboardContentType::Image)) {
+    if (clipboard_content_types_values.contains(ClipboardContentType::Image)) {
       // Either add an option to search the copied image with Lens, or via the
       // default search engine's reverse image search functionality.
       if (self.shouldUseLensInLongPressMenu) {
@@ -865,8 +863,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                               handler:searchCopiedImageHandler];
         [menuElements addObject:searchCopiedImageAction];
       }
-    } else if (base::Contains(clipboard_content_types_values,
-                              ClipboardContentType::URL)) {
+    } else if (clipboard_content_types_values.contains(
+                   ClipboardContentType::URL)) {
       id visitCopiedLinkHandler = ^(UIAction* action) {
         [self visitCopiedLink:nil];
       };
@@ -876,8 +874,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                identifier:nil
                   handler:visitCopiedLinkHandler];
       [menuElements addObject:visitCopiedLinkAction];
-    } else if (base::Contains(clipboard_content_types_values,
-                              ClipboardContentType::Text)) {
+    } else if (clipboard_content_types_values.contains(
+                   ClipboardContentType::Text)) {
       id searchCopiedTextHandler = ^(UIAction* action) {
         [self searchCopiedText:nil];
       };

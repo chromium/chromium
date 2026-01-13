@@ -608,8 +608,8 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     return std::nullopt;
   }
 
-  if (base::Contains(enabled_features,
-                     device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
+  if (enabled_features.contains(
+          device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
     internal::ScopedArCoreObject<ArLightEstimate*> light_estimate;
     ArLightEstimate_create(
         session.get(),
@@ -626,13 +626,12 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   arcore_frame_ = std::move(frame);
   arcore_session_ = std::move(session);
 
-  if (base::Contains(enabled_features,
-                     device::mojom::XRSessionFeature::ANCHORS)) {
+  if (enabled_features.contains(device::mojom::XRSessionFeature::ANCHORS)) {
     anchor_manager_ = std::make_unique<ArCoreAnchorManager>(
         base::PassKey<ArCoreImpl>(), arcore_session_.get());
   }
-  if (base::Contains(enabled_features,
-                     device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+  if (enabled_features.contains(
+          device::mojom::XRSessionFeature::PLANE_DETECTION)) {
     plane_manager_ = std::make_unique<ArCorePlaneManager>(
         base::PassKey<ArCoreImpl>(), arcore_session_.get());
   }
@@ -660,10 +659,10 @@ bool ArCoreImpl::ConfigureFeatures(
   }
 
   const bool light_estimation_requested =
-      base::Contains(required_features,
-                     device::mojom::XRSessionFeature::LIGHT_ESTIMATION) ||
-      base::Contains(optional_features,
-                     device::mojom::XRSessionFeature::LIGHT_ESTIMATION);
+      required_features.contains(
+          device::mojom::XRSessionFeature::LIGHT_ESTIMATION) ||
+      optional_features.contains(
+          device::mojom::XRSessionFeature::LIGHT_ESTIMATION);
 
   if (light_estimation_requested) {
     // Enable lighting estimation with spherical harmonics
@@ -672,10 +671,10 @@ bool ArCoreImpl::ConfigureFeatures(
   }
 
   const bool image_tracking_requested =
-      base::Contains(required_features,
-                     device::mojom::XRSessionFeature::IMAGE_TRACKING) ||
-      base::Contains(optional_features,
-                     device::mojom::XRSessionFeature::IMAGE_TRACKING);
+      required_features.contains(
+          device::mojom::XRSessionFeature::IMAGE_TRACKING) ||
+      optional_features.contains(
+          device::mojom::XRSessionFeature::IMAGE_TRACKING);
 
   if (image_tracking_requested) {
     internal::ScopedArCoreObject<ArAugmentedImageDatabase*> image_db;
@@ -708,9 +707,9 @@ bool ArCoreImpl::ConfigureFeatures(
   }
 
   const bool depth_api_optional =
-      base::Contains(optional_features, device::mojom::XRSessionFeature::DEPTH);
+      optional_features.contains(device::mojom::XRSessionFeature::DEPTH);
   const bool depth_api_required =
-      base::Contains(required_features, device::mojom::XRSessionFeature::DEPTH);
+      required_features.contains(device::mojom::XRSessionFeature::DEPTH);
   const bool depth_api_requested = depth_api_required || depth_api_optional;
 
   const bool depth_api_configuration_successful =
@@ -828,10 +827,10 @@ bool ArCoreImpl::ConfigureCamera(
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
     std::unordered_set<device::mojom::XRSessionFeature>& enabled_features) {
-  const bool front_facing_camera_required = base::Contains(
-      required_features, device::mojom::XRSessionFeature::FRONT_FACING);
-  const bool front_facing_camera_optional = base::Contains(
-      optional_features, device::mojom::XRSessionFeature::FRONT_FACING);
+  const bool front_facing_camera_required =
+      required_features.contains(device::mojom::XRSessionFeature::FRONT_FACING);
+  const bool front_facing_camera_optional =
+      optional_features.contains(device::mojom::XRSessionFeature::FRONT_FACING);
   const bool front_facing_camera_requested =
       front_facing_camera_required || front_facing_camera_optional;
 
@@ -1689,7 +1688,7 @@ bool ArCoreImpl::RequestHitTest(
                         &ar_trackable_type);
 
     // Only consider trackables listed in arcore_entity_types.
-    if (!base::Contains(arcore_entity_types, ar_trackable_type)) {
+    if (!arcore_entity_types.contains(ar_trackable_type)) {
       DVLOG(2) << __func__
                << ": hit a trackable that is not in entity types set, ignoring "
                   "it. ar_trackable_type="

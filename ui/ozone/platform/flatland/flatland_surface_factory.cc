@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
@@ -219,7 +218,7 @@ bool FlatlandSurfaceFactory::IsFormatSupportedForTexturing(
 void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                         FlatlandSurface* surface) {
   base::AutoLock lock(surface_lock_);
-  DCHECK(!base::Contains(surface_map_, widget));
+  DCHECK(!surface_map_.contains(widget));
   surface->AssertBelongsToCurrentThread();
   surface_map_.emplace(widget, surface);
 }

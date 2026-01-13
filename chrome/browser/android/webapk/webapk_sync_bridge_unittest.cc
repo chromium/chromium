@@ -88,7 +88,7 @@ void InsertAppIntoRegistry(Registry* registry,
                            std::unique_ptr<WebApkProto> app) {
   webapps::AppId app_id =
       GenerateAppIdFromManifestId(GURL(app->sync_data().manifest_id()));
-  ASSERT_FALSE(base::Contains(*registry, app_id));
+  ASSERT_FALSE(registry->contains(app_id));
   registry->emplace(std::move(app_id), std::move(app));
 }
 

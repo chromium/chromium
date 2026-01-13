@@ -7,7 +7,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -47,8 +46,7 @@ class CastDevToolsManagerDelegateTest
     EXPECT_EQ(enabled_web_contents.size(), targets.size());
 
     for (const auto& target : targets) {
-      EXPECT_TRUE(
-          base::Contains(enabled_web_contents, target->GetWebContents()))
+      EXPECT_TRUE(enabled_web_contents.contains(target->GetWebContents()))
           << "Discovered target not found in enabled WebContents.";
     }
   }

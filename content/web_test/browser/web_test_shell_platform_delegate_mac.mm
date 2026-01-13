@@ -5,7 +5,6 @@
 #include "content/web_test/browser/web_test_shell_platform_delegate.h"
 
 #import "base/apple/foundation_util.h"
-#include "base/containers/contains.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
@@ -42,7 +41,7 @@ void WebTestShellPlatformDelegate::CreatePlatformWindow(
     return;
   }
 
-  DCHECK(!base::Contains(web_test_shell_data_map_, shell));
+  DCHECK(!web_test_shell_data_map_.contains(shell));
   WebTestShellData& shell_data = web_test_shell_data_map_[shell];
 
   shell_data.initial_size = initial_size;
@@ -61,7 +60,7 @@ void WebTestShellPlatformDelegate::CleanUp(Shell* shell) {
     return;
   }
 
-  DCHECK(base::Contains(web_test_shell_data_map_, shell));
+  DCHECK(web_test_shell_data_map_.contains(shell));
   web_test_shell_data_map_.erase(shell);
   if (shell == activated_headless_shell_)
     activated_headless_shell_ = nullptr;
@@ -107,7 +106,7 @@ void WebTestShellPlatformDelegate::MainFrameCreated(
     return;
   }
 
-  DCHECK(base::Contains(web_test_shell_data_map_, shell));
+  DCHECK(web_test_shell_data_map_.contains(shell));
   WebTestShellData& shell_data = web_test_shell_data_map_[shell];
 
   // In mac headless mode, the OS view for the WebContents is not attached to a

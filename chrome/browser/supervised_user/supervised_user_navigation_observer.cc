@@ -502,7 +502,7 @@ void SupervisedUserNavigationObserver::LearnMore(LearnMoreCallback callback) {
   }
 
   content::FrameTreeNodeId frame_id = frame_tree_node_id();
-  if (!base::Contains(supervised_user_interstitials_, frame_id)) {
+  if (!supervised_user_interstitials_.contains(frame_id)) {
     DLOG(WARNING) << "Interstitial with id not found: " << frame_id;
     return;
   }

@@ -10,7 +10,6 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -133,7 +132,7 @@ void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
 void ShellPlatformDelegate::CreatePlatformWindow(
     Shell* shell,
     const gfx::Size& initial_size) {
-  DCHECK(!base::Contains(shell_data_map_, shell));
+  DCHECK(!shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   int width = initial_size.width();
@@ -209,19 +208,19 @@ void ShellPlatformDelegate::CreatePlatformWindow(
 }
 
 gfx::NativeWindow ShellPlatformDelegate::GetNativeWindow(Shell* shell) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   return gfx::NativeWindow(shell_data.delegate.window);
 }
 
 void ShellPlatformDelegate::CleanUp(Shell* shell) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   shell_data_map_.erase(shell);
 }
 
 void ShellPlatformDelegate::SetContents(Shell* shell) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   NSView* web_view = shell->web_contents()->GetNativeView().GetNativeNSView();
@@ -240,7 +239,7 @@ void ShellPlatformDelegate::SetContents(Shell* shell) {
 
 void ShellPlatformDelegate::ResizeWebContent(Shell* shell,
                                              const gfx::Size& content_size) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   int toolbar_height = Shell::ShouldHideToolbar() ? 0 : kURLBarHeight;
@@ -252,7 +251,7 @@ void ShellPlatformDelegate::ResizeWebContent(Shell* shell,
 void ShellPlatformDelegate::EnableUIControl(Shell* shell,
                                             UIControl control,
                                             bool is_enabled) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   int id;
@@ -278,7 +277,7 @@ void ShellPlatformDelegate::SetAddressBarURL(Shell* shell, const GURL& url) {
     return;
   }
 
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   NSString* url_string = base::SysUTF8ToNSString(url.spec());
@@ -289,7 +288,7 @@ void ShellPlatformDelegate::SetIsLoading(Shell* shell, bool loading) {}
 
 void ShellPlatformDelegate::SetTitle(Shell* shell,
                                      const std::u16string& title) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   shell_data.delegate.window.title = base::SysUTF16ToNSString(title);
@@ -299,7 +298,7 @@ void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
                                              RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   [shell_data.delegate.window performClose:nil];
@@ -308,7 +307,7 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
 
 void ShellPlatformDelegate::ActivateContents(Shell* shell,
                                              WebContents* top_contents) {
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   // This focuses the main frame RenderWidgetHost in the window, but does not
@@ -336,7 +335,7 @@ bool ShellPlatformDelegate::HandleKeyboardEvent(
     return false;
   }
 
-  DCHECK(base::Contains(shell_data_map_, shell));
+  DCHECK(shell_data_map_.contains(shell));
   ShellData& shell_data = shell_data_map_[shell];
 
   // The event handling to get this strictly right is a tangle; cheat here a bit

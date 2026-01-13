@@ -309,7 +309,7 @@ bool OpenXrApiWrapper::HasFrameState() const {
 
 bool OpenXrApiWrapper::IsFeatureEnabled(
     device::mojom::XRSessionFeature feature) const {
-  return base::Contains(enabled_features_, feature);
+  return enabled_features_.contains(feature);
 }
 
 XrResult OpenXrApiWrapper::InitializeViewConfig(
@@ -1116,8 +1116,7 @@ XrResult OpenXrApiWrapper::UpdateSecondaryViewConfigStates(
 
   bool state_changed = false;
   for (const XrSecondaryViewConfigurationStateMSFT& state : states) {
-    DCHECK(
-        base::Contains(secondary_view_configs_, state.viewConfigurationType));
+    DCHECK(secondary_view_configs_.contains(state.viewConfigurationType));
     OpenXrViewConfiguration& view_config =
         secondary_view_configs_.at(state.viewConfigurationType);
 

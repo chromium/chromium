@@ -47,7 +47,7 @@ class HttpsOnlyModeTabHelper
   GURL fallback_url() const { return fallback_url_; }
 
   bool has_failed_upgrade(const GURL& url) const {
-    return base::Contains(failed_upgrade_urls_, url);
+    return failed_upgrade_urls_.contains(url);
   }
   void add_failed_upgrade(const GURL& url) { failed_upgrade_urls_.insert(url); }
 

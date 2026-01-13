@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -313,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
-      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
+      !GetFailingTestNames().contains(GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetOutputDirectory(), is_expected_to_pass);
 #endif
 }

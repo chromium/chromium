@@ -256,7 +256,7 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
           FromJavaAwUserAgentMetadata(env, java_ua_metadata);
       LogUserAgentMetadataAvailableType(
           UserAgentMetadataAvailableType::kUserOverrides);
-    } else if (base::Contains(ua_string_override, ua_default)) {
+    } else if (ua_string_override.contains(ua_default)) {
       override_ua_with_metadata.ua_metadata_override =
           AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
       LogUserAgentMetadataAvailableType(

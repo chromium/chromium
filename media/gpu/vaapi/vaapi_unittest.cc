@@ -528,7 +528,7 @@ TEST_F(VaapiTest, EncryptionSchemeNeedsCodecMode) {
           VaapiWrapper::kDecode);
   // H.264 decoding is currently supported everywhere, but leave an ASSERT.
   constexpr auto kVAProfile = VAProfileH264ConstrainedBaseline;
-  ASSERT_TRUE(base::Contains(configurations, kVAProfile));
+  ASSERT_TRUE(configurations.contains(kVAProfile));
 
   auto wrapper_or_error =
       VaapiWrapper::Create(VaapiWrapper::kDecode, kVAProfile,

@@ -22,7 +22,6 @@
 #include <drm_fourcc.h>
 #endif
 
-#include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
@@ -450,7 +449,7 @@ std::vector<SVCScalabilityMode> GetSupportedScalabilityModesForV4L2Codec(
 std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
     const IoctlAsCallback& ioctl_cb,
     uint32_t codec_as_pix_fmt) {
-  if (!base::Contains(kV4L2CodecPixFmtToProfileCID, codec_as_pix_fmt)) {
+  if (!kV4L2CodecPixFmtToProfileCID.contains(codec_as_pix_fmt)) {
     // This is OK: there are many codecs that are not supported by Chrome.
     VLOGF(4) << "Unsupported codec: " << FourccToString(codec_as_pix_fmt);
     return {};
@@ -463,8 +462,7 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
     DVLOGF(4) << "Driver doesn't support enumerating "
               << FourccToString(codec_as_pix_fmt)
               << " profiles, using default ones.";
-    DCHECK(
-        base::Contains(kDefaultVideoCodecProfilesForProfileCID, profile_cid));
+    DCHECK(kDefaultVideoCodecProfilesForProfileCID.contains(profile_cid));
     return kDefaultVideoCodecProfilesForProfileCID.at(profile_cid);
   }
 
@@ -549,7 +547,7 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
 
 uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
                                        bool slice_based) {
-  CHECK(base::Contains(kVideoCodecProfileToV4L2CodecPixFmt, profile))
+  CHECK(kVideoCodecProfileToV4L2CodecPixFmt.contains(profile))
       << "Unsupported profile: " << GetProfileName(profile);
 
   const auto& v4l2_pix_fmt = kVideoCodecProfileToV4L2CodecPixFmt.at(profile);

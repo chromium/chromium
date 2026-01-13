@@ -45,8 +45,7 @@ bool IsVp9KSVCStream(VideoCodecProfile profile,
 }
 
 bool IsVp9KSVCSupportedDriver(const std::string& driver_name) {
-  const std::string kVP9KSVCSupportedDrivers[] = {"qcom-venus"};
-  return base::Contains(kVP9KSVCSupportedDrivers, driver_name);
+  return driver_name == "qcom-venus";
 }
 
 std::optional<uint8_t> V4L2PixelFormatToBitDepth(uint32_t v4l2_pixelformat) {
@@ -454,7 +453,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
     // TODO(b/190615065) |flat_timespec| might be repeated with H.264
     // bitstreams, investigate why, and change the if() to DCHECK().
-    if (base::Contains(encoding_timestamps_, flat_timespec)) {
+    if (encoding_timestamps_.contains(flat_timespec)) {
       UMA_HISTOGRAM_TIMES(
           "Media.PlatformVideoDecoding.Decode",
           base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);

@@ -17,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -1024,8 +1023,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     SCOPED_TRACE(testing::Message() << "At line number: " << test.line_num);
 
 #if BUILDFLAG(IS_WIN)
-    bool has_win_hybrid = base::Contains(
-        test.params, TransportAvailabilityParam::kWindowsHandlesHybrid);
+    bool has_win_hybrid =
+        test.params.contains(TransportAvailabilityParam::kWindowsHandlesHybrid);
     fake_win_webauthn_api.set_version(has_win_hybrid ? 7 : 4);
 #endif
 
@@ -1176,7 +1175,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     }
 #if BUILDFLAG(IS_MAC)
     transports_info.platform_has_biometrics =
-        !base::Contains(test.params, TransportAvailabilityParam::kNoTouchId);
+        !test.params.contains(TransportAvailabilityParam::kNoTouchId);
 #endif
 
     std::optional<device::FidoTransportProtocol> hint_transport;

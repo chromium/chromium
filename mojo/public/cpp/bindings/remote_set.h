@@ -151,7 +151,7 @@ class RemoteSetImpl {
   }
 
   // Indicates whether a remote with the given ID is present in the set.
-  bool Contains(RemoteSetElementId id) { return base::Contains(storage_, id); }
+  bool Contains(RemoteSetElementId id) { return storage_.contains(id); }
 
   // Returns an `Interface*` for the given ID, that can be used to issue
   // interface calls.

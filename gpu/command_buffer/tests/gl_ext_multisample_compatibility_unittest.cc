@@ -11,7 +11,6 @@
 #include <array>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -230,8 +229,8 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAlphaOneAndResolve) {
   // TODO: Figure out why this fails on NVIDIA Shield. crbug.com/700060.
   std::string renderer(gl_.context()->GetGLRenderer());
   std::string version(gl_.context()->GetGLVersion());
-  if (base::Contains(renderer, "NVIDIA Tegra") &&
-      base::Contains(version, "OpenGL ES 3.2 NVIDIA 361.00")) {
+  if (renderer.contains("NVIDIA Tegra") &&
+      version.contains("OpenGL ES 3.2 NVIDIA 361.00")) {
     return;
   }
 #endif

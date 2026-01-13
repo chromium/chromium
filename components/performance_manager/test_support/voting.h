@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_VOTING_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_VOTING_H_
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "components/performance_manager/public/voting/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,7 +110,7 @@ bool DummyVoteObserver<VoteImpl>::HasVote(
 
   const auto& votes = votes_it->second;
 
-  return base::Contains(votes, context);
+  return votes.contains(context);
 }
 
 template <class VoteImpl>

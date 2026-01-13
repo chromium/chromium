@@ -136,7 +136,7 @@ void FeatureManager::OnFeatureManagerRequest(
 }
 
 bool FeatureManager::FeatureEnabled(const std::string& feature) const {
-  return base::Contains(features_map_, feature);
+  return features_map_.contains(feature);
 }
 
 const chromecast::shell::mojom::FeaturePtr& FeatureManager::GetFeature(

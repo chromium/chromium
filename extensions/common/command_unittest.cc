@@ -459,10 +459,10 @@ TEST(CommandTest, ExtensionCommandParsingNormalizedError) {
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
 
   // The error message should contain the original, un-normalized string.
-  EXPECT_TRUE(base::Contains(error, base::ASCIIToUTF16(invalid_shortcut)))
+  EXPECT_TRUE(error.contains(base::ASCIIToUTF16(invalid_shortcut)))
       << " expected error to contain '" << invalid_shortcut << "', but was '"
       << base::UTF16ToASCII(error) << "'";
-  EXPECT_FALSE(base::Contains(error, u"Command+Alt+Z"));
+  EXPECT_FALSE(error.contains(u"Command+Alt+Z"));
 }
 #endif  // BUILDFLAG(IS_MAC)
 

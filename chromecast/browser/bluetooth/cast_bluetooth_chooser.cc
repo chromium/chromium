@@ -33,7 +33,7 @@ void CastBluetoothChooser::GrantAccess(const std::string& address) {
     return;
   }
 
-  if (base::Contains(available_devices_, address)) {
+  if (available_devices_.contains(address)) {
     RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent::SELECTED,
                                     address);
     return;
@@ -60,7 +60,7 @@ void CastBluetoothChooser::AddOrUpdateDevice(const std::string& device_id,
   DCHECK(event_handler_);
 
   // Note: |device_id| is just a canonical Bluetooth address.
-  if (all_devices_approved_ || base::Contains(approved_devices_, device_id)) {
+  if (all_devices_approved_ || approved_devices_.contains(device_id)) {
     RunEventHandlerAndResetReceiver(content::BluetoothChooserEvent::SELECTED,
                                     device_id);
     return;

@@ -641,7 +641,7 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     DWORD pid;
     GetWindowThreadProcessId(hwnd, &pid);
     current_pids_with_visible_windows->insert(pid);
-    if (!base::Contains(process_event_hooks_, pid))
+    if (!process_event_hooks_.contains(pid))
       RegisterEventHookForProcess(pid);
   }
 

@@ -15,7 +15,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/queue.h"
 #include "base/debug/alias.h"
@@ -1075,7 +1074,7 @@ void FrameSinkManagerImpl::CacheBackBuffer(
     return;
   }
 
-  DCHECK(!base::Contains(cached_back_buffers_, cache_id));
+  DCHECK(!cached_back_buffers_.contains(cache_id));
   cached_back_buffers_[cache_id] = root_frame_sink->GetCacheBackBufferCb();
 }
 

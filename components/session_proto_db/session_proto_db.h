@@ -273,7 +273,7 @@ void SessionProtoDB<T>::PerformMaintenance(
               // Return all keys which where key_substring_to_match is a
               // substring of said keys and hasn't been explicitly marked
               // not to be removed in keys_to_keep.
-              return base::Contains(key, key_substring_to_match) &&
+              return key.contains(key_substring_to_match) &&
                      !base::Contains(keys_to_keep, key);
             },
             keys_to_keep, key_substring_to_match),

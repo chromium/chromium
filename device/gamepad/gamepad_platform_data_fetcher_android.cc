@@ -115,7 +115,7 @@ void GamepadPlatformDataFetcherAndroid::OnAddedToProvider() {
 
 void GamepadPlatformDataFetcherAndroid::SetDualRumbleVibrationActuator(
     int source_id) {
-  DCHECK(!base::Contains(vibration_actuators_, source_id));
+  DCHECK(!vibration_actuators_.contains(source_id));
   vibration_actuators_.emplace(
       source_id, std::make_unique<HapticGamepadAndroid>(source_id));
 }

@@ -112,7 +112,7 @@ void TokenResultsMerger<T>::HandleOneResult(
     std::move(result.value().begin(), result.value().end(),
               std::back_inserter(good_results_));
   } else {
-    CHECK(!base::Contains(errors_, token));
+    CHECK(!errors_.contains(token));
     errors_[token] = result.error();
   }
   --results_to_receive_;

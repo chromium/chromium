@@ -128,7 +128,7 @@ void IconHelper::MarkUnableToDownloadFavicon(const GURL& icon_url) {
 
 bool IconHelper::WasUnableToDownloadFavicon(const GURL& icon_url) const {
   MissingFaviconURLHash url_hash = base::FastHash(icon_url.spec());
-  return base::Contains(missing_favicon_urls_, url_hash);
+  return missing_favicon_urls_.contains(url_hash);
 }
 
 void IconHelper::ClearUnableToDownloadFavicons() {

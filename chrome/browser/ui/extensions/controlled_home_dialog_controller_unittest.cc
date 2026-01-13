@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -298,8 +297,8 @@ TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
 
   std::u16string bubble_text = dialog_controller->GetBodyText();
 
-  EXPECT_FALSE(base::Contains(bubble_text, long_name));
-  EXPECT_TRUE(base::Contains(bubble_text, truncated_name));
+  EXPECT_FALSE(bubble_text.contains(long_name));
+  EXPECT_TRUE(bubble_text.contains(truncated_name));
 }
 
 TEST_F(ControlledHomeDialogControllerTest,

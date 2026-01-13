@@ -295,7 +295,7 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   // language, but not sr-Cyrl-CS. Matching language + script subtags assures
   // we get the correct script for spellchecking, and not use sr-Latn-RS if
   // language packs for both scripts are installed on the system.
-  if (!base::Contains(supported_language_full_tag, "-")) {
+  if (!supported_language_full_tag.contains("-")) {
     return "";
   }
 
@@ -357,7 +357,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   bool first_user_language_spellchecked = false;
   for (const auto& dictionary_value : user_dictionaries) {
     first_user_language_spellchecked =
-        base::Contains(dictionary_value.GetString(), first_user_language);
+        dictionary_value.GetString().contains(first_user_language);
     if (first_user_language_spellchecked)
       break;
   }

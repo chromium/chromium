@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -203,8 +202,8 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
       return std::ranges::any_of(
           GetExtensionHandlerFactories(),
           [feature](const auto* extension_handler_factory) {
-            return base::Contains(
-                extension_handler_factory->GetSupportedFeatures(), feature);
+            return extension_handler_factory->GetSupportedFeatures().contains(
+                feature);
           });
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
       return IsExtensionSupported(
@@ -285,7 +284,7 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     auto supported_function =
         [&supported_features](mojom::XRSessionFeature feature) {
           return IsSceneUnderstandingFeature(feature) &&
-                 base::Contains(supported_features, feature);
+                 supported_features.contains(feature);
         };
 
     // Get the count of how many required and optional features are scene

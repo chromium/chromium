@@ -217,8 +217,7 @@ struct TestCreditCardForm {
         return AssertionFailure()
                << "frame with id " << frame_id << " couldn't be found";
       }
-      const bool should_be_filled =
-          base::Contains(filled_field_ids, field.global_id);
+      const bool should_be_filled = filled_field_ids.contains(field.global_id);
 
       const std::u16string expected_filled_value =
           should_be_filled ? base::UTF8ToUTF16(field.fill_value) : u"";

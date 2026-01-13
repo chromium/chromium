@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
@@ -22,7 +21,7 @@ namespace sandbox {
 bool SignedPolicy::GenerateRules(base::FilePath dll_path,
                                  LowLevelPolicy* policy) {
   // Disallow patterns to allow for future API changes.
-  if (base::Contains(dll_path.value(), L'*')) {
+  if (dll_path.value().contains(L'*')) {
     return false;
   }
   if (!dll_path.IsAbsolute()) {

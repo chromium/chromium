@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -57,7 +56,7 @@ bool CastMetricsHelper::DecodeAppInfoFromMetricsName(
   DCHECK(session_id);
   DCHECK(sdk_version);
 
-  if (!base::Contains(metrics_name, kMetricsNameAppInfoDelimiter)) {
+  if (!metrics_name.contains(kMetricsNameAppInfoDelimiter)) {
     return false;
   }
 

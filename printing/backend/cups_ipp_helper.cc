@@ -480,7 +480,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
   size_t attr_count = 0;
   for (int i = 0; i < num_options; i++) {
     const char* option_name = ippGetString(attr, i, nullptr);
-    if (base::Contains(kOptionsToIgnore, option_name)) {
+    if (kOptionsToIgnore.contains(option_name)) {
       continue;
     }
     auto it = handlers->find(option_name);

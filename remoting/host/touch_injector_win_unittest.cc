@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "remoting/proto/event.pb.h"
@@ -68,7 +67,7 @@ MATCHER_P(EqualsPointerTouchInfoFlag, id_to_flag_map, "") {
 
   for (const auto& touch_info : touch_infos) {
     const uint32_t id = touch_info.pointerInfo.pointerId;
-    if (!base::Contains(id_to_flag_map, id)) {
+    if (!id_to_flag_map.contains(id)) {
       return false;
     }
 

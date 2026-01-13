@@ -195,7 +195,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
   // Check if the delegate explicitly disabled this feature.
   if (delegate_->ShouldDisableAndroidNetworkDetection()) {
     parameters->rely_on_android_network_detection = false;
-  } else if (base::Contains(field_params, kRelyOnAndroidNetworkDetection)) {
+  } else if (field_params.contains(kRelyOnAndroidNetworkDetection)) {
     if (base::EqualsCaseInsensitiveASCII(
             field_params[kRelyOnAndroidNetworkDetection], "true")) {
       parameters->rely_on_android_network_detection = true;

@@ -353,7 +353,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  if (!base::Contains(supported_formats_, format)) {
+  if (!supported_formats_.contains(format)) {
     LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
                << format.ToString();
     return nullptr;
@@ -433,7 +433,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
-  if (!base::Contains(supported_formats_, format)) {
+  if (!supported_formats_.contains(format)) {
     LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
                << format.ToString();
     return nullptr;

@@ -735,7 +735,7 @@ void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
   }
 
   // We do not need to clear a node more than once per atomic update.
-  if (base::Contains(nodes_already_cleared_, unique_id)) {
+  if (nodes_already_cleared_.contains(unique_id)) {
     return;
   }
 

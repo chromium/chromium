@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/contains.h"
 #include "content/browser/android/java/jni_reflect.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -70,7 +69,7 @@ std::set<std::string> GinJavaBoundObject::GetMethodNames() {
 
 bool GinJavaBoundObject::HasMethod(const std::string& method_name) {
   EnsureMethodsAreSetUp();
-  return base::Contains(methods_, method_name);
+  return methods_.contains(method_name);
 }
 
 const JavaMethod* GinJavaBoundObject::FindMethod(

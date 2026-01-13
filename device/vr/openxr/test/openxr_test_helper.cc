@@ -25,7 +25,7 @@
 
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {
-  return base::Contains(path, s);
+  return path.contains(s);
 }
 
 device::XrEye GetEyeForIndex(uint32_t index, uint32_t num_views) {
@@ -617,7 +617,7 @@ XrResult OpenXrTestHelper::BeginSession(
 
   // xrBeginSession in the fake OpenXR runtime should have added the primary
   // view configuration first.
-  if (!base::Contains(primary_configs_supported_, view_configs[0])) {
+  if (!primary_configs_supported_.contains(view_configs[0])) {
     return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
   }
 
@@ -627,12 +627,12 @@ XrResult OpenXrTestHelper::BeginSession(
 
   // Process the rest of the view configurations, which should all be secondary.
   for (uint32_t i = 1; i < view_configs.size(); i++) {
-    if (!base::Contains(secondary_configs_supported_, view_configs[i])) {
+    if (!secondary_configs_supported_.contains(view_configs[i])) {
       return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
     }
 
     // Check for additional primary view configuration.
-    if (base::Contains(primary_configs_supported_, view_configs[i])) {
+    if (primary_configs_supported_.contains(view_configs[i])) {
       return XR_ERROR_VALIDATION_FAILURE;
     }
 
@@ -1619,8 +1619,8 @@ XrResult OpenXrTestHelper::ValidateViews(uint32_t view_capacity_input,
 
 XrResult OpenXrTestHelper::ValidateViewConfigType(
     XrViewConfigurationType view_config) const {
-  RETURN_IF(!base::Contains(primary_configs_supported_, view_config) &&
-                !base::Contains(secondary_configs_supported_, view_config),
+  RETURN_IF(!primary_configs_supported_.contains(view_config) &&
+                !secondary_configs_supported_.contains(view_config),
             XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED,
             "XrViewConfigurationType unsupported");
 

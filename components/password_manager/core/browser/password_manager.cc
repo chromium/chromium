@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -1320,8 +1319,8 @@ void PasswordManager::UpdateStateOnUserInput(
 
   OnUserModifiedNonPasswordField(
       driver, field_id, field_value,
-      base::Contains(field.autocomplete_attribute(),
-                     password_manager::constants::kAutocompleteUsername),
+      field.autocomplete_attribute().contains(
+          password_manager::constants::kAutocompleteUsername),
       is_likely_otp);
 }
 // LINT.ThenChange()

@@ -2013,13 +2013,12 @@ std::map<base::FilePath, int> AppShimManager::GetProfilesWithMatchingHandlers(
           std::string file_extension =
               base::FilePath(file_path.Extension()).AsUTF8Unsafe();
           return file_extension.length() > 1 &&
-                 base::Contains(handler_info.file_handler_extensions,
-                                file_extension);
+                 handler_info.file_handler_extensions.contains(file_extension);
         });
 
     if (protocol_handler_url.is_valid() &&
-        base::Contains(handler_info.protocol_handlers,
-                       protocol_handler_url.GetScheme())) {
+        handler_info.protocol_handlers.contains(
+            protocol_handler_url.GetScheme())) {
       count++;
     }
 

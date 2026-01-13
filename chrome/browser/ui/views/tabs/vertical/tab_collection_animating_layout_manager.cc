@@ -241,7 +241,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   for (const auto& start_child : starting_layout_.child_layouts) {
     // Animate-out only pending delete views that were present in the previous
     // layout.
-    if (base::Contains(child_view_set, start_child.child_view) &&
+    if (child_view_set.contains(start_child.child_view) &&
         start_child.child_view->GetProperty(kPendingDeletion)) {
       // Removed child.
       // Pending delete Views will remain in the Views hierarchy until they are

@@ -6,7 +6,6 @@
 
 #import <unordered_set>
 
-#import "base/containers/contains.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -309,7 +308,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
   _untappedDestinations.erase(destination);
 
-  if (base::Contains(_destinationBadgeData, destination) &&
+  if (_destinationBadgeData.contains(destination) &&
       !_destinationBadgeData[destination].isFeatureDrivenBadge) {
     _destinationBadgeData.erase(destination);
   }
@@ -856,7 +855,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
     // If item is badged with impressions remaining, it should be reordered to
     // a specific position and will be added later.
-    if (base::Contains(_destinationBadgeData, destination) &&
+    if (_destinationBadgeData.contains(destination) &&
         _destinationBadgeData[destination].impressionsRemaining > 0) {
       continue;
     }
@@ -1093,7 +1092,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   for (overflow_menu::Destination newDestination : newDestinations) {
     _untappedDestinations.insert(newDestination);
 
-    if (!base::Contains(_destinationBadgeData, newDestination)) {
+    if (!_destinationBadgeData.contains(newDestination)) {
       _destinationBadgeData[newDestination].badgeType = BadgeTypeNew;
       _destinationBadgeData[newDestination].impressionsRemaining = 3;
     }
@@ -1127,7 +1126,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       // If this is a new badge, the current badge is not feature driven, or the
       // badge from the provider is different than the current, then update the
       // data. Otherwise, the badge is already known about.
-      if (!base::Contains(_destinationBadgeData, destination) ||
+      if (!_destinationBadgeData.contains(destination) ||
           !_destinationBadgeData[destination].isFeatureDrivenBadge ||
           badgeType != _destinationBadgeData[destination].badgeType) {
         _destinationBadgeData[destination].badgeType = badgeType;

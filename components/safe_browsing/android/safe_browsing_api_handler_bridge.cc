@@ -351,8 +351,7 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
     const SBThreatTypeSet& threat_types) {
   DCHECK_LT(0u, threat_types.size());
   size_t threat_type_size =
-      base::Contains(threat_types,
-                     SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
+      threat_types.contains(SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
           ? threat_types.size() + 1
           : threat_types.size();
   auto int_threat_types = base::HeapArray<int>::WithSize(threat_type_size);
@@ -469,7 +468,7 @@ void OnUrlCheckDoneBySafeBrowsingApi(
 
   PendingSafeBrowsingCallbacksMap& pending_callbacks =
       GetPendingSafeBrowsingCallbacksMap();
-  bool found = base::Contains(pending_callbacks, callback_id);
+  bool found = pending_callbacks.contains(callback_id);
   DCHECK(found) << "Not found in pending_safe_browsing_callbacks: "
                 << callback_id;
   if (!found) {
@@ -546,7 +545,7 @@ void OnVerifyAppsEnabledDone(jlong callback_id, jint j_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PendingVerifyAppsCallbacksMap& pending_callbacks =
       GetPendingVerifyAppsCallbacks();
-  bool found = base::Contains(pending_callbacks, callback_id);
+  bool found = pending_callbacks.contains(callback_id);
   DCHECK(found) << "Not found in pending_verify_apps_callbacks: "
                 << callback_id;
   if (!found) {
@@ -573,7 +572,7 @@ void OnHasHarmfulAppsDone(jlong callback_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PendingHarmfulAppsCallbacksMap& pending_callbacks =
       GetPendingHarmfulAppsCallbacks();
-  bool found = base::Contains(pending_callbacks, callback_id);
+  bool found = pending_callbacks.contains(callback_id);
   DCHECK(found) << "Not found in pending_harmful_apps_callbacks: "
                 << callback_id;
   if (!found) {
@@ -640,8 +639,8 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     const SBThreatTypeSet& threat_types) {
   bool for_browse_url = SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types);
   if (for_browse_url &&
-      base::Contains(threat_types, SBThreatType::SB_THREAT_TYPE_URL_PHISHING) &&
-      base::Contains(artificially_marked_phishing_urls_, url)) {
+      threat_types.contains(SBThreatType::SB_THREAT_TYPE_URL_PHISHING) &&
+      artificially_marked_phishing_urls_.contains(url)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   SBThreatType::SB_THREAT_TYPE_URL_PHISHING,

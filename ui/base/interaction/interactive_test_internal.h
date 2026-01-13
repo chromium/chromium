@@ -428,7 +428,7 @@ class StateObserverElementT : public StateObserverElement {
         current_value_(observer->GetStateObserverInitialState()),
         observer_(std::move(observer)) {
     auto& table = GetLookupTable();
-    CHECK(!base::Contains(table, std::make_pair(id, context)))
+    CHECK(!table.contains(std::make_pair(id, context)))
         << "Duplicate ID + context for StateObserver not allowed: " << id
         << ", " << context;
     table.emplace(std::make_pair(id, context), this);

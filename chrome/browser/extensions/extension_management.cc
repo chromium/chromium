@@ -187,7 +187,7 @@ bool ExtensionManagement::ExtensionsEnabledForDesktopAndroid() const {
   // This check keeps many tests from failing.
   std::string user_name = profile_->GetProfileUserName();
   // Crude check to avoid passing invalid strings to `ExtractDomainName`.
-  if (base::Contains(user_name, "@")) {
+  if (user_name.contains("@")) {
     std::string domain = gaia::ExtractDomainName(user_name);
     if (domain == "google.com" || domain == "managedchrome.com") {
       return false;

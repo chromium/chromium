@@ -609,7 +609,7 @@ int OsIntegrationTestOverrideImpl::GetCountOfShortcutIconsCreated(
 
 bool OsIntegrationTestOverrideImpl::IsShortcutsMenuRegisteredForApp(
     const std::wstring& app_user_model_id) {
-  return base::Contains(jump_list_entry_map_, app_user_model_id);
+  return jump_list_entry_map_.contains(app_user_model_id);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -702,7 +702,7 @@ OsIntegrationTestOverrideImpl::IsUninstallRegisteredWithOs(
   }
   std::wstring expected_uninstall_substr =
       base::StrCat({L"--uninstall-app-id=", base::UTF8ToWide(app_id)});
-  if (!base::Contains(uninstall_string, expected_uninstall_substr)) {
+  if (!uninstall_string.contains(expected_uninstall_substr)) {
     return base::unexpected(base::StrCat({"Could not find uninstall flag: ",
                                           base::WideToUTF8(uninstall_string)}));
   }

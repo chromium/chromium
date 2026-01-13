@@ -95,8 +95,8 @@ void UsbServiceAndroid::RequestDevicePermission(
 }
 
 void UsbServiceAndroid::AddDevice(scoped_refptr<UsbDeviceAndroid> device) {
-  DCHECK(!base::Contains(devices_by_id_, device->device_id()));
-  DCHECK(!base::Contains(devices(), device->guid()));
+  DCHECK(!devices_by_id_.contains(device->device_id()));
+  DCHECK(!devices().contains(device->guid()));
   devices_by_id_[device->device_id()] = device;
   devices()[device->guid()] = device;
 

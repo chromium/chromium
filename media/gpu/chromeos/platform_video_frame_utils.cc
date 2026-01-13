@@ -11,7 +11,6 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
@@ -71,7 +70,7 @@ static std::unique_ptr<ui::GbmDevice> CreateGbmDevice(
         base::StrCat({drm_node_file_prefix, base::NumberToString(i)})));
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
-    const bool is_render_node = base::Contains(drm_node_file_prefix, "render");
+    const bool is_render_node = drm_node_file_prefix.contains("render");
 
     // TODO(b/313513760): don't guard base::File::FLAG_WRITE behind
     // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC) once the hardware video
@@ -176,7 +175,7 @@ class GbmDeviceWrapper {
           base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
               switches::kRenderNodeOverride));
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
-      const bool is_render_node = base::Contains(dev_path.value(), "render");
+      const bool is_render_node = dev_path.value().contains("render");
 
       // TODO(b/313513760): don't guard base::File::FLAG_WRITE behind
       // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC) once the hardware

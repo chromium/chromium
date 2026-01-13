@@ -84,7 +84,7 @@ class FakeRealm {
   // Saves copies of `child_decl` and `args` for subsequent validation by tests.
   void CreateChild(const fuchsia::component::decl::Child& child_decl,
                    const fuchsia::component::CreateChildArgs& args) {
-    ASSERT_TRUE(!base::Contains(instances_, child_decl.name()));
+    ASSERT_TRUE(!instances_.contains(child_decl.name()));
 
     auto& child = instances_[child_decl.name()];
     child.decl = std::make_unique<fuchsia::component::decl::Child>();
@@ -144,12 +144,12 @@ class FakeRealm {
 
   // Returns true if the realm has a child with the same name as `child`.
   bool HasChild(const fuchsia::component::decl::Child& child) {
-    return base::Contains(instances_, child.name());
+    return instances_.contains(child.name());
   }
 
   // Returns true if the realm has a child with the same name as `child`.
   bool HasChild(const fuchsia::component::decl::ChildRef& child) {
-    return base::Contains(instances_, child.name);
+    return instances_.contains(child.name);
   }
 
   // Returns the component declaration used to create the child named `name`.

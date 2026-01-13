@@ -13,7 +13,6 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"

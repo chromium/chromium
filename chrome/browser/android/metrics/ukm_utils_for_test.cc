@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/ukm/ukm_service.h"
@@ -29,7 +28,7 @@ bool UkmUtilsForTest::HasSourceWithId(SourceId source_id) {
   auto* service =
       g_browser_process->GetMetricsServicesManager()->GetUkmService();
   DCHECK(service);
-  return base::Contains(service->sources(), source_id);
+  return service->sources().contains(source_id);
 }
 
 // static

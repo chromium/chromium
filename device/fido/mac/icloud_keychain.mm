@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -493,7 +492,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       // please have macOS show its own error dialog.
       GetAssertionStatus response;
       if (error.code == 1001 &&
-          base::Contains(description, "No credentials available for login")) {
+          description.contains("No credentials available for login")) {
         response = GetAssertionStatus::kICloudKeychainNoCredentials;
       } else {
         // All other errors are currently mapped to

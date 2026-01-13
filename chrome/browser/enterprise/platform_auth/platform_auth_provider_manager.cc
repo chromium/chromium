@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -100,7 +99,7 @@ bool PlatformAuthProviderManager::IsEnabledFor(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return !supports_origin_filtering_ ||
-         base::Contains(origins_, url::Origin::Create(url));
+         origins_.contains(url::Origin::Create(url));
 }
 
 void PlatformAuthProviderManager::GetData(const GURL& url,

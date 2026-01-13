@@ -39,7 +39,7 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
             ->GetForBrowserContext(profile),
         kLanguageId);
     // Test configs. This allows test clients to reside in a separate target.
-  } else if (base::Contains(*GetConfigForTesting(), user_data_key)) {
+  } else if (GetConfigForTesting()->contains(user_data_key)) {
     return std::make_unique<PersistedTabDataConfigAndroid>(
         LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
             ->GetForBrowserContext(profile),

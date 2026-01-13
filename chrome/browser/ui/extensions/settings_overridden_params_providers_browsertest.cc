@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -148,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_LT(truncated_name.size(), extension_name.size());
 
   // The dialog message should contain the truncated name.
-  EXPECT_TRUE(base::Contains(params->dialog_message, truncated_name));
-  EXPECT_FALSE(base::Contains(params->dialog_message, extension_name));
+  EXPECT_TRUE(params->dialog_message.contains(truncated_name));
+  EXPECT_FALSE(params->dialog_message.contains(extension_name));
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,

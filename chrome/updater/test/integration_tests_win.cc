@@ -21,7 +21,6 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -2003,16 +2002,16 @@ void CloseInstallCompleteDialog(const std::u16string& bundle_name,
           base::win::EnumerateChildWindows(
               ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
                 if (!base::win::IsSystemDialog(hwnd) ||
-                    !base::Contains(base::win::GetWindowTextString(hwnd),
-                                    window_title)) {
+                    !base::win::GetWindowTextString(hwnd).contains(
+                        window_title)) {
                   return false;
                 }
                 // Enumerate the child windows to search for
                 // `child_window_text_to_find`. If found, close the dialog.
                 base::win::EnumerateChildWindows(
                     hwnd, base::BindLambdaForTesting([&](HWND hwnd) {
-                      if (!base::Contains(base::win::GetWindowTextString(hwnd),
-                                          child_window_text_to_find)) {
+                      if (!base::win::GetWindowTextString(hwnd).contains(
+                              child_window_text_to_find)) {
                         return false;
                       }
                       const HWND parent_hwnd = ::GetParent(hwnd);

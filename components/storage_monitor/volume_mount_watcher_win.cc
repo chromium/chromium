@@ -17,7 +17,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -368,7 +367,7 @@ void VolumeMountWatcherWin::AddDevicesOnUIThread(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (size_t i = 0; i < removable_devices.size(); i++) {
-    if (base::Contains(pending_device_checks_, removable_devices[i]))
+    if (pending_device_checks_.contains(removable_devices[i]))
       continue;
     pending_device_checks_.insert(removable_devices[i]);
     device_info_task_runner_->PostTask(

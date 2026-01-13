@@ -216,7 +216,7 @@ class AwPermissionManager::PendingRequest {
   }
 
   bool HasPermissionType(PermissionType type) {
-    return base::Contains(permission_index_map_, type);
+    return permission_index_map_.contains(type);
   }
 
   bool IsCompleted() const {

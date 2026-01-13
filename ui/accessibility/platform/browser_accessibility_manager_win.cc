@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -671,8 +670,8 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
 
 bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(
     const BrowserAccessibility* node) const {
-  return base::Contains(ignored_changed_nodes_,
-                        const_cast<BrowserAccessibility*>(node));
+  return ignored_changed_nodes_.contains(
+      const_cast<BrowserAccessibility*>(node));
 }
 
 void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(

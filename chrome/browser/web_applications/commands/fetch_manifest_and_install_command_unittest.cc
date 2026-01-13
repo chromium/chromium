@@ -11,7 +11,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1101,8 +1100,8 @@ class UniversalInstallComboTest
 #if BUILDFLAG(IS_MAC)
     if (IsDiyApp()) {
       if (GetIcon().has_value() &&
-          !base::Contains(GetIcon()->src.spec(), "not_found") &&
-          !base::Contains(GetIcon()->src.spec(), "Absent")) {
+          !GetIcon()->src.spec().contains("not_found") &&
+          !GetIcon()->src.spec().contains("Absent")) {
         gfx::Image test_icon = web_app::test::LoadTestImageFromDisk(
             base::FilePath(FILE_PATH_LITERAL(
                 "chrome/test/data/web_apps/diyapp_icon_image.png")));
@@ -1110,7 +1109,7 @@ class UniversalInstallComboTest
         return test_bitmap;
       }
       auto favicon_path = GetFaviconFilePath();
-      if (favicon_path && base::Contains(*favicon_path, "pattern3")) {
+      if (favicon_path && favicon_path->contains("pattern3")) {
         gfx::Image test_icon = web_app::test::LoadTestImageFromDisk(
             base::FilePath(FILE_PATH_LITERAL(
                 "chrome/test/data/web_apps/masked_pattern3-256.png")));

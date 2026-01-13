@@ -71,7 +71,7 @@ void AwContentsLifecycleNotifier::OnWebViewCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   has_aw_contents_ever_created_ = true;
   bool first_created = !HasAwContentsInstance();
-  DCHECK(!base::Contains(aw_contents_to_data_, aw_contents));
+  DCHECK(!aw_contents_to_data_.contains(aw_contents));
 
   aw_contents_to_data_.emplace(aw_contents, AwContentsData());
   UNSAFE_TODO(state_count_[ToIndex(AwContentsState::kDetached)])++;
@@ -214,7 +214,7 @@ bool AwContentsLifecycleNotifier::HasAwContentsInstance() const {
 
 AwContentsLifecycleNotifier::AwContentsData*
 AwContentsLifecycleNotifier::GetAwContentsData(const AwContents* aw_contents) {
-  DCHECK(base::Contains(aw_contents_to_data_, aw_contents));
+  DCHECK(aw_contents_to_data_.contains(aw_contents));
   return &aw_contents_to_data_.at(aw_contents);
 }
 

@@ -337,7 +337,7 @@ std::unique_ptr<PendingHidTransfer> HidConnectionWin::UnlinkTransfer(
 
 HANDLE HidConnectionWin::GetHandleForReportId(uint8_t report_id) const {
   for (const auto& entry : file_handles_) {
-    if (base::Contains(entry->report_ids, report_id))
+    if (entry->report_ids.contains(report_id))
       return entry->file_handle.Get();
   }
   return nullptr;

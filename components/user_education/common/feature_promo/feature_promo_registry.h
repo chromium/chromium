@@ -32,7 +32,7 @@ class FeatureRegistry {
 
   // Determines whether or not a particular `feature` is registered.
   bool IsFeatureRegistered(const base::Feature& feature) const {
-    return base::Contains(feature_data_, &feature);
+    return feature_data_.contains(&feature);
   }
 
   // Returns the specification for the given `feature`, or null if not found.
