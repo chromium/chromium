@@ -259,8 +259,9 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
              << swap_chain_info.shared_image->mailbox().ToDebugString();
     // Note: the sync token in mailbox_holder may not be accurate. See comment
     // in TransferFrame below.
-    sii->DestroySharedImage(swap_chain_info.sync_token,
-                            std::move(swap_chain_info.shared_image));
+    swap_chain_info.shared_image->UpdateDestructionSyncToken(
+        swap_chain_info.sync_token);
+    swap_chain_info.shared_image.reset();
   }
 
   // Remove reference to previous image (if any).

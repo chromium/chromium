@@ -130,7 +130,8 @@ void OpenXrCompositionLayer::DestroySwapchain(gpu::SharedImageInterface* sii) {
   // that may exist.
   for (OpenXrSwapchainInfo& info : GetSwapchainImages()) {
     if (sii && info.shared_image && info.sync_token.HasData()) {
-      sii->DestroySharedImage(info.sync_token, std::move(info.shared_image));
+      info.shared_image->UpdateDestructionSyncToken(info.sync_token);
+      info.shared_image.reset();
     }
     info.Clear();
   }

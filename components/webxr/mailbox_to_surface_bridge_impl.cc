@@ -173,9 +173,7 @@ void MailboxToSurfaceBridgeImpl::DestroySharedImage(
   DCHECK(IsConnected());
   DCHECK(shared_image);
 
-  auto* sii = context_provider_->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 std::unique_ptr<device::MailboxToSurfaceBridge>
