@@ -371,6 +371,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     @SuppressWarnings("NullAway")
+    public StatusMediator getMediatorForTesting() {
+        return mMediator;
+    }
+
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
         mLocationBarDataProvider.removeObserver(this);
