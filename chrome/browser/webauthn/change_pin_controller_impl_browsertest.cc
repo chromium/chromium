@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest, ChangePin) {
       AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
   observer.WaitForStep();
 
-  controller->OnReauthComplete("rapt");
+  controller->OnGPMReauthComplete("rapt");
 
   observer.SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMChangePin);
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest,
       AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
   observer.WaitForStep();
 
-  controller->OnRecoverSecurityDomainClosed();
+  controller->OnGPMRecoverSecurityDomainClosed();
 
   // The flow should have failed because the reauth was cancelled.
   EXPECT_FALSE(change_pin_future.Get());
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulating the concurrent unregistration of Enclave Manager.
   enclave_manager().ClearRegistrationForTesting();
 
-  controller->OnReauthComplete("rapt");
+  controller->OnGPMReauthComplete("rapt");
   observer.SetStepToObserve(AuthenticatorRequestDialogModel::Step::kGPMError);
   observer.WaitForStep();
 }
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(
   observer.SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
   observer.WaitForStep();
-  controller->OnReauthComplete("rapt");
+  controller->OnGPMReauthComplete("rapt");
   observer.SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMChangePin);
   observer.WaitForStep();

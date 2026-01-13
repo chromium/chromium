@@ -249,7 +249,7 @@ class ChromeAuthenticatorRequestDelegate
 
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
-  void OnReadyForUI() override;
+  void OnGPMReadyForUI() override;
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing

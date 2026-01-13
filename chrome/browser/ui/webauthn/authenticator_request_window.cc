@@ -273,7 +273,7 @@ class AuthenticatorRequestWindow
     }
     if (model_->step() == step_) {
       webauthn::user_actions::RecordRecoveryCancelled();
-      model_->OnRecoverSecurityDomainClosed();
+      model_->OnGPMRecoverSecurityDomainClosed();
     }
   }
 
@@ -300,13 +300,13 @@ class AuthenticatorRequestWindow
 
   void OnHaveToken(std::string rapt) {
     if (model_) {
-      model_->OnReauthComplete(std::move(rapt));
+      model_->OnGPMReauthComplete(std::move(rapt));
     }
   }
 
   void OnPasskeysReset(bool success) {
     if (model_) {
-      model_->OnGpmPasskeysReset(success);
+      model_->OnGPMPasskeysReset(success);
     }
   }
 

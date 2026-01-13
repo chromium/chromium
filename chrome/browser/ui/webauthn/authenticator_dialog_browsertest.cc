@@ -1046,8 +1046,8 @@ class QuitBrowserWhenReauthTokenReceived
   }
 
   // AuthenticatorRequestDialogModel::Observer
-  void OnReauthComplete(std::string token) override {
-    LOG(INFO) << "QuitBrowserWhenKeysStored::OnReauthComplete";
+  void OnGPMReauthComplete(std::string token) override {
+    LOG(INFO) << "QuitBrowserWhenReauthTokenReceived::OnGPMReauthComplete";
     CHECK_EQ(token, "RAPT");
     model_->observers.RemoveObserver(this);
     model_ = nullptr;

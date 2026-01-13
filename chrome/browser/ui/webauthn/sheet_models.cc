@@ -691,7 +691,7 @@ void AuthenticatorTouchIdSheetModel::OnAccept() {
   }
   webauthn::user_actions::RecordAcceptClick();
   touch_id_completed_ = true;
-  dialog_model()->OnTouchIDComplete(false);
+  dialog_model()->OnGPMTouchIDComplete(false);
 }
 
 void AuthenticatorTouchIdSheetModel::OnTouchIDSensorTapped(
@@ -709,7 +709,7 @@ void AuthenticatorTouchIdSheetModel::OnTouchIDSensorTapped(
   }
   touch_id_completed_ = true;
   dialog_model()->local_auth_token = std::move(local_auth_token);
-  dialog_model()->OnTouchIDComplete(true);
+  dialog_model()->OnGPMTouchIDComplete(true);
 }
 
 #endif  // IS_MAC
@@ -1652,7 +1652,7 @@ void AuthenticatorGpmPinSheetModelBase::OnCancel() {
 
 void AuthenticatorGpmPinSheetModelBase::OnForgotGPMPin() const {
   webauthn::user_actions::RecordGpmForgotPinClick();
-  dialog_model()->OnForgotGPMPinPressed();
+  dialog_model()->OnGPMForgotPinPressed();
 }
 
 void AuthenticatorGpmPinSheetModelBase::OnGPMPinOptionChosen(
@@ -1871,7 +1871,7 @@ std::u16string AuthenticatorTrustThisComputerAssertionSheetModel::
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnAccept() {
   webauthn::user_actions::RecordAcceptClick();
-  dialog_model()->OnTrustThisComputer();
+  dialog_model()->OnGPMTrustThisComputer();
 }
 
 // AuthenticatorCreateGpmPasskeySheetModel -------------------------------------
@@ -1924,7 +1924,7 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetAcceptButtonLabel()
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
   webauthn::user_actions::RecordAcceptClick();
-  dialog_model()->OnGPMCreatePasskey();
+  dialog_model()->OnGPMCreationConfirmed();
 }
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {
@@ -2046,7 +2046,7 @@ AuthenticatorTrustThisComputerCreationSheetModel::GetOtherMechanismButtonLabel()
 
 void AuthenticatorTrustThisComputerCreationSheetModel::OnAccept() {
   webauthn::user_actions::RecordAcceptClick();
-  dialog_model()->OnTrustThisComputer();
+  dialog_model()->OnGPMTrustThisComputer();
 }
 
 // AuthenticatorGPMLockedPinSheetModel ----------------------------------
@@ -2083,7 +2083,7 @@ std::u16string AuthenticatorGPMLockedPinSheetModel::GetAcceptButtonLabel()
 
 void AuthenticatorGPMLockedPinSheetModel::OnAccept() {
   webauthn::user_actions::RecordAcceptClick();
-  dialog_model()->OnForgotGPMPinPressed();
+  dialog_model()->OnGPMForgotPinPressed();
 }
 
 // CombinedSelectorSheetModel

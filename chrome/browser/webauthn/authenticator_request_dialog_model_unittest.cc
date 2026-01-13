@@ -1159,7 +1159,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       has_v2_cable_extension = false;
     }
     if (test.params.contains(TransportAvailabilityParam::kEnclaveCred)) {
-      model->EnclaveEnabledStatusChanged(EnclaveEnabledStatus::kEnabled);
+      model->OnGPMEnclaveEnabledStatusChanged(EnclaveEnabledStatus::kEnabled);
     }
 
     if (test.params.contains(
@@ -1199,7 +1199,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     }
 
     if (test.params.contains(TransportAvailabilityParam::kEnclaveNeedsSignIn)) {
-      controller.EnclaveEnabledStatusChanged(
+      controller.OnGPMEnclaveEnabledStatusChanged(
           EnclaveEnabledStatus::kEnabledAndReauthNeeded);
     }
 

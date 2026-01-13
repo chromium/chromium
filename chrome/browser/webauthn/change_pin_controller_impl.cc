@@ -68,7 +68,7 @@ void ChangePinControllerImpl::CancelAuthenticatorRequest() {
   RecordHistogram(ChangePinEvent::kNewPinCancelled);
 }
 
-void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
+void ChangePinControllerImpl::OnGPMReauthComplete(std::string rapt) {
   if (!enclave_manager_->IsRegistered()) {
     model_->SetStep(Step::kGPMError);
     RecordHistogram(ChangePinEvent::kFailed);
@@ -80,7 +80,7 @@ void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
   RecordHistogram(ChangePinEvent::kReauthCompleted);
 }
 
-void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
+void ChangePinControllerImpl::OnGPMRecoverSecurityDomainClosed() {
   // User closed the reauth window.
   Reset(/*success=*/false);
   RecordHistogram(ChangePinEvent::kReauthCancelled);

@@ -70,7 +70,7 @@ class AuthenticatorRequestDialogController
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void StartOver() override;
   void OnCreatePasskeyAccepted() override;
-  void OnRecoverSecurityDomainClosed() override;
+  void OnGPMRecoverSecurityDomainClosed() override;
   void ContinueWithFlowAfterBleAdapterPowered() override;
   void PowerOnBleAdapter() override;
   void OpenBlePreferences() override;
@@ -79,7 +79,7 @@ class AuthenticatorRequestDialogController
   void OnRequestComplete() override;
   void OnResidentCredentialConfirmed() override;
   void OnHavePIN(std::u16string pin) override;
-  void EnclaveEnabledStatusChanged(EnclaveEnabledStatus status) override;
+  void OnGPMEnclaveEnabledStatusChanged(EnclaveEnabledStatus status) override;
   void OnAccountSelected(size_t index) override;
   void OnAccountPreselectedIndex(size_t index) override;
   void OnBioEnrollmentDone() override;

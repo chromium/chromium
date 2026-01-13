@@ -538,7 +538,7 @@ void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
   HideDialogAndDispatchToPlatformAuthenticator();
 }
 
-void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
+void AuthenticatorRequestDialogController::OnGPMRecoverSecurityDomainClosed() {
   if (model_->step() == Step::kGPMReauthForPinReset) {
     ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCancelled);
   }
@@ -641,7 +641,7 @@ void AuthenticatorRequestDialogController::OnHavePIN(std::u16string pin) {
   std::move(pin_callback_).Run(pin);
 }
 
-void AuthenticatorRequestDialogController::EnclaveEnabledStatusChanged(
+void AuthenticatorRequestDialogController::OnGPMEnclaveEnabledStatusChanged(
     EnclaveEnabledStatus status) {
   enclave_enabled_status_ = status;
 }
@@ -1857,7 +1857,7 @@ void AuthenticatorRequestDialogController::StartICloudKeychain() {
 }
 
 void AuthenticatorRequestDialogController::StartEnclave() {
-  model_->OnGPMSelected();
+  model_->OnGPMCreationSelected();
 }
 
 void AuthenticatorRequestDialogController::ReauthForSyncRestore() {

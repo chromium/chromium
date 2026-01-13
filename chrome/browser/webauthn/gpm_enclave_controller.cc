@@ -97,17 +97,17 @@ using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 // create(), already enrolled
 //
 // digraph {
-//   OnGPMSelected -> kGPMCreatePasskey -> OnGPMCreatePasskey
-//   OnGPMCreatePasskey -> StartTransaction
-//   OnGPMCreatePasskey -> kGPMEnterPin -> OnGPMPinEntered ->
+//   OnGPMCreationSelected -> kGPMCreatePasskey -> OnGPMCreationConfirmed
+//   OnGPMCreationConfirmed -> StartTransaction
+//   OnGPMCreationConfirmed -> kGPMEnterPin -> OnGPMPinEntered ->
 //     StartTransaction
-//   OnGPMCreatePasskey -> kGPMTouchID -> OnTouchIDComplete ->
+//   OnGPMCreationConfirmed -> kGPMTouchID -> OnGPMTouchIDComplete ->
 //     StartTransaction
 // }
 //
-//                           +--------------------+
-//                           |   OnGPMSelected    |
-//                           +--------------------+
+//                           +-----------------------+
+//                           | OnGPMCreationSelected |
+//                           +-----------------------+
 //                             |
 //                             |
 //                             v
@@ -117,39 +117,39 @@ using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 //                             |
 //                             |
 //                             v
-// +-------------------+     +--------------------+
-// |    kGPMTouchID    | <-- | OnGPMCreatePasskey | -+
-// +-------------------+     +--------------------+  |
-//   |                         |                     |
-//   |                         |                     |
-//   v                         v                     |
-// +-------------------+     +--------------------+  |
-// | OnTouchIDComplete |     |    kGPMEnterPin    |  |
-// +-------------------+     +--------------------+  |
-//   |                         |                     |
-//   |                         |                     |
-//   |                         v                     |
-//   |                       +--------------------+  |
-//   |                       |  OnGPMPinEntered   |  |
-//   |                       +--------------------+  |
-//   |                         |                     |
-//   |                         |                     |
-//   |                         v                     |
-//   |                       +--------------------+  |
-//   +---------------------> |  StartTransaction  | <+
+// +-------------------+     +------------------------+
+// |    kGPMTouchID    | <-- | OnGPMCreationConfirmed | -+
+// +-------------------+     +------------------------+  |
+//   |                         |                         |
+//   |                         |                         |
+//   v                         v                         |
+// +--------------------+    +--------------------+      |
+// |OnGPMTouchIDComplete|    |    kGPMEnterPin    |      |
+// +--------------------+    +--------------------+      |
+//   |                         |                         |
+//   |                         |                         |
+//   |                         v                         |
+//   |                       +--------------------+      |
+//   |                       |  OnGPMPinEntered   |      |
+//   |                       +--------------------+      |
+//   |                         |                         |
+//   |                         |                         |
+//   |                         v                         |
+//   |                       +--------------------+      |
+//   +---------------------> |  StartTransaction  | <----+
 //                           +--------------------+
 
 // create(), empty security domain
 //
 // digraph {
-//   OnGPMSelected -> kGPMCreatePasskey -> kGPMCreatePin -> OnGPMPinEntered ->
-//     OnDeviceAdded
+//   OnGPMCreationSelected -> kGPMCreatePasskey -> kGPMCreatePin ->
+//     OnGPMPinEntered -> OnDeviceAdded
 //   OnDeviceAdded -> StartTransaction
-//   OnDeviceAdded -> kGPMTouchID -> OnTouchIDComplete -> StartTransaction
+//   OnDeviceAdded -> kGPMTouchID -> OnGPMTouchIDComplete -> StartTransaction
 // }
 //
 // +-------------------------+
-// |      OnGPMSelected      |
+// |  OnGPMCreationSelected  |
 // +-------------------------+
 //   |
 //   |
@@ -185,7 +185,7 @@ using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 //   |                          |
 //   v                          |
 // +-------------------------+  |
-// |    OnTouchIDComplete    |  |
+// |  OnGPMTouchIDComplete   |  |
 // +-------------------------+  |
 //   |                          |
 //   |                          |
@@ -200,7 +200,7 @@ using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 //   OnGPMPasskeySelected -> StartTransaction
 //   OnGPMPasskeySelected -> kGPMEnterPin -> OnGPMPinEntered ->
 //     StartTransaction
-//   OnGPMPasskeySelected -> kGPMTouchID -> OnTouchIDComplete ->
+//   OnGPMPasskeySelected -> kGPMTouchID -> OnGPMTouchIDComplete ->
 //     StartTransaction
 // }
 //
@@ -210,9 +210,9 @@ using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 //   |                         |                       |
 //   |                         |                       |
 //   v                         v                       |
-// +-------------------+     +----------------------+  |
-// | OnTouchIDComplete |     |     kGPMEnterPin     |  |
-// +-------------------+     +----------------------+  |
+// +--------------------+    +----------------------+  |
+// |OnGPMTouchIDComplete|    |     kGPMEnterPin     |  |
+// +--------------------+    +----------------------+  |
 //   |                         |                       |
 //   |                         |                       |
 //   |                         v                       |
@@ -716,8 +716,8 @@ void GPMEnclaveController::SetActive(EnclaveEnabledStatus status) {
     return;
   }
   ready_for_ui_ = true;
-  model_->EnclaveEnabledStatusChanged(status);
-  model_->OnReadyForUI();
+  model_->OnGPMEnclaveEnabledStatusChanged(status);
+  model_->OnGPMReadyForUI();
 }
 
 void GPMEnclaveController::RefreshStateAndRepeatOperation() {
@@ -727,7 +727,7 @@ void GPMEnclaveController::RefreshStateAndRepeatOperation() {
       request_type_ == device::FidoRequestType::kGetAssertion
           ? base::BindOnce(&GPMEnclaveController::OnGPMPasskeySelected,
                            weak_ptr_factory_.GetWeakPtr(), *selected_cred_id_)
-          : base::BindOnce(&GPMEnclaveController::OnGPMSelected,
+          : base::BindOnce(&GPMEnclaveController::OnGPMCreationSelected,
                            weak_ptr_factory_.GetWeakPtr());
   // Refreshing the state:
   SetAccountState(AccountState::kLoading);
@@ -1022,8 +1022,7 @@ void GPMEnclaveController::OnLoadingTimeout() {
   model_->SetStep(AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
 
-
-void GPMEnclaveController::OnGPMSelected() {
+void GPMEnclaveController::OnGPMCreationSelected() {
   if (ShouldRefreshState()) {
     RefreshStateAndRepeatOperation();
     return;
@@ -1038,8 +1037,8 @@ void GPMEnclaveController::OnGPMSelected() {
   }
 
   if (account_state_ != AccountState::kLoading) {
-    // `kLoading` will call `OnGPMSelected` again, therefore we don't emit in
-    // these states.
+    // `kLoading` will call `OnGPMCreationSelected` again, therefore we don't
+    // emit in these states.
     RecordGPMMakeCredentialEvent(
         webauthn::metrics::GPMMakeCredentialEvents::kStarted);
   }
@@ -1091,8 +1090,9 @@ void GPMEnclaveController::OnGPMSelected() {
       break;
 
     case AccountState::kLoading:
-      waiting_for_account_state_ = base::BindOnce(
-          &GPMEnclaveController::OnGPMSelected, weak_ptr_factory_.GetWeakPtr());
+      waiting_for_account_state_ =
+          base::BindOnce(&GPMEnclaveController::OnGPMCreationSelected,
+                         weak_ptr_factory_.GetWeakPtr());
       OnGpmSelectedWhileLoading();
       break;
 
@@ -1181,7 +1181,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
   }
 }
 
-void GPMEnclaveController::OnTrustThisComputer() {
+void GPMEnclaveController::OnGPMTrustThisComputer() {
   CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
         model_->step() == Step::kTrustThisComputerCreation);
   device::enclave::RecordEvent(device::enclave::Event::kOnboardingAccepted);
@@ -1205,7 +1205,7 @@ void GPMEnclaveController::OnGPMPinOptionChanged(bool is_arbitrary) {
   }
 }
 
-void GPMEnclaveController::OnGPMCreatePasskey() {
+void GPMEnclaveController::OnGPMCreationConfirmed() {
   if (ShouldRefreshState()) {
     RefreshStateAndRepeatOperation();
     return;
@@ -1243,7 +1243,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
 void GPMEnclaveController::OnGPMConfirmOffTheRecordCreate() {
   CHECK_EQ(model_->step(), Step::kGPMConfirmOffTheRecordCreate);
   off_the_record_confirmed_ = true;
-  OnGPMSelected();
+  OnGPMCreationSelected();
 }
 
 void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
@@ -1295,7 +1295,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
   }
 }
 
-void GPMEnclaveController::OnTouchIDComplete(bool success) {
+void GPMEnclaveController::OnGPMTouchIDComplete(bool success) {
   if (ShouldRefreshState()) {
     RefreshStateAndRepeatOperation();
     return;
@@ -1306,14 +1306,14 @@ void GPMEnclaveController::OnTouchIDComplete(bool success) {
   StartTransaction();
 }
 
-void GPMEnclaveController::OnForgotGPMPinPressed() {
+void GPMEnclaveController::OnGPMForgotPinPressed() {
   changing_gpm_pin_ = true;
   model_->SetStep(Step::kGPMReauthForPinReset);
   ChangePinControllerImpl::RecordHistogram(
       ChangePinEvent::kFlowStartedFromPinDialog);
 }
 
-void GPMEnclaveController::OnReauthComplete(std::string rapt) {
+void GPMEnclaveController::OnGPMReauthComplete(std::string rapt) {
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMChangePin);
@@ -1375,7 +1375,7 @@ bool GPMEnclaveController::BrowserIsApp() const {
   return browser && browser->is_type_app();
 }
 
-void GPMEnclaveController::OnGpmPasskeysReset(bool success) {
+void GPMEnclaveController::OnGPMPasskeysReset(bool success) {
   CHECK(model_->step() == Step::kRecoverSecurityDomain);
   if (!success ||
       model_->request_type != device::FidoRequestType::kMakeCredential) {

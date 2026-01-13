@@ -1007,7 +1007,7 @@ void ChromeAuthenticatorRequestDelegate::FinishMaybeShowUI(
   }
 }
 
-void ChromeAuthenticatorRequestDelegate::OnReadyForUI() {
+void ChromeAuthenticatorRequestDelegate::OnGPMReadyForUI() {
   TryToShowUI();
 }
 
