@@ -128,12 +128,12 @@ class UnloadTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    if (UNSAFE_TODO(strstr(test_info->name(),
-                           "BrowserCloseTabWhenOtherTabHasListener")) !=
-        nullptr) {
+    const std::string test_name = test_info->name();
+    if (test_name.find("BrowserCloseTabWhenOtherTabHasListener") !=
+        std::string::npos) {
       command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
-    } else if (UNSAFE_TODO(strstr(test_info->name(),
-                                  "BrowserTerminateBeforeUnload")) != nullptr) {
+    } else if (test_name.find("BrowserTerminateBeforeUnload") !=
+               std::string::npos) {
 #if BUILDFLAG(IS_POSIX)
       DisableSIGTERMHandling();
 #endif
