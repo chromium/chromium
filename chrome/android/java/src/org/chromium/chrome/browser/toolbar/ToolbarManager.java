@@ -1174,6 +1174,12 @@ public class ToolbarManager
         if (homeButtonDisplay != null) {
             browsingModeThemeColorProviderWithAdjustableTint.addTintObserver(homeButtonDisplay);
         }
+        mTabStripTopControlLayer =
+                new TabStripTopControlLayer(
+                        mToolbarLayout.getTabStripHeightFromResource(),
+                        mTopControlsStacker,
+                        mBrowserControlsSizer,
+                        mControlContainer);
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
@@ -1187,12 +1193,6 @@ public class ToolbarManager
                         historyDelegate,
                         topControlsStacker,
                         homeButtonDisplay);
-        mTabStripTopControlLayer =
-                new TabStripTopControlLayer(
-                        mToolbar.getTabStripHeight(),
-                        mTopControlsStacker,
-                        mBrowserControlsSizer,
-                        mControlContainer);
         mActionModeController =
                 new ActionModeController(
                         mActivity,
