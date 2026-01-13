@@ -369,13 +369,6 @@ cr-searchbox-icon,
   inset-inline-start: 16px;
 }
 
-search-animated-glow {
-  --search-animated-glow-background-z-index: 103;
-  --search-animated-glow-drag-drop-placeholder-z-index: 104;
-  --search-animated-glow-gradient-after-z-index: 101;
-  --search-animated-glow-gradient-z-index: 102;
-}
-
 :host([ntp-realbox-next-enabled]) :is(input, textarea)::placeholder {
   font-size: 18px;
   color: var(--cr-composebox-input-placeholder-color, var(--color-composebox-type-ahead));
