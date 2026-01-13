@@ -79,6 +79,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/test/test_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 
@@ -951,11 +952,13 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
   // Add two random views to the browser with the same element ID.
   browser_view()
       ->toolbar()
-      ->AddChildView(std::make_unique<views::View>())
+      ->AddChildView(
+          std::make_unique<views::StaticSizedView>(gfx::Size(10, 10)))
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
   browser_view()
       ->toolbar()
-      ->AddChildView(std::make_unique<views::View>())
+      ->AddChildView(
+          std::make_unique<views::StaticSizedView>(gfx::Size(10, 10)))
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
 
   ExpectPromoResult(kOneOffIPHFeature, FeaturePromoResult::Success(), false);
@@ -990,11 +993,13 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
   // Add two random views to the browser with the same element ID.
   browser_view()
       ->toolbar()
-      ->AddChildView(std::make_unique<views::View>())
+      ->AddChildView(
+          std::make_unique<views::StaticSizedView>(gfx::Size(10, 10)))
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
   browser_view()
       ->toolbar()
-      ->AddChildView(std::make_unique<views::View>())
+      ->AddChildView(
+          std::make_unique<views::StaticSizedView>(gfx::Size(10, 10)))
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
 
   // Create a second widget with an element with the target identifier.

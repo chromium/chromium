@@ -6,12 +6,11 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -21,13 +20,15 @@
 #include "ui/views/paint_info.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 TopContainerView::TopContainerView(BrowserView* browser_view)
     : browser_view_(browser_view) {
   SetProperty(views::kElementIdentifierKey, kTopContainerElementId);
+
+  // Note: The colors will be set during layout, so these don't matter.
+  auto background = std::make_unique<CustomCornersBackground>(
+      *this, *browser_view, kColorToolbar, kColorToolbar);
+  background->SetVisible(false);
+  SetBackground(std::move(background));
 }
 
 TopContainerView::~TopContainerView() = default;
@@ -84,35 +85,33 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
   View::PaintChildren(paint_info);
 }
 
-void TopContainerView::OnPaintBackground(gfx::Canvas* canvas) {
+void TopContainerView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
+
+  auto* const background =
+      static_cast<CustomCornersBackground*>(GetBackground());
+
   if (browser_view_->ShouldDrawVerticalTabStrip()) {
     // Top container draws an opaque background when in vertical tabstrip mode.
+    background->SetVisible(true);
+    background->SetPrimaryColor(CustomCornersBackground::TopContainerTheme());
 
     // Rounded corners are drawn when not maximized or fullscreen.
-    bool use_rounded_corners =
-        !browser_view_->IsMaximized() && !browser_view_->IsFullscreen();
-#if BUILDFLAG(IS_CHROMEOS)
-    if (!chromeos::features::IsRoundedWindowsEnabled()) {
-      use_rounded_corners = false;
+    CustomCornersBackground::Corners corners;
+    if (!browser_view_->IsMaximized() && !browser_view_->IsFullscreen()) {
+      corners.upper_trailing = CustomCornersBackground::GetWindowCorner();
     }
-#endif
-    gfx::ScopedCanvas scoped(canvas);
-    if (use_rounded_corners) {
-      const float radius =
-          GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
-      const SkVector radii[4] = {
-          {radius, radius}, {radius, radius}, {0, 0}, {0, 0}};
-      const SkPath path = SkPath::RRect(
-          SkRRect::MakeRectRadii(gfx::RectToSkRect(GetLocalBounds()), radii));
-      canvas->ClipPath(path, true);
-    }
-    TopContainerBackground::PaintBackground(canvas, this, browser_view_);
-
+    background->SetCorners(corners);
   } else if (browser_view_->IsFullscreen()) {
     // When in immersive mode, top container is painted with the frame color.
     // The color matches the active frame, allowing the tabstrip to paint
     // correctly.
-    canvas->DrawColor(GetColorProvider()->GetColor(ui::kColorFrameActive));
+    background->SetVisible(true);
+    background->SetPrimaryColor(ui::kColorFrameActive);
+    background->SetCorners(CustomCornersBackground::Corners());
+  } else {
+    // No need to paint otherwise.
+    background->SetVisible(false);
   }
 }
 

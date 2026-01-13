@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -88,7 +89,6 @@ class ToolbarView : public views::AccessiblePaneView,
   };
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarContainerElementId);
 
   ToolbarView(Browser* browser, BrowserView* browser_view);
   ToolbarView(const ToolbarView&) = delete;
@@ -274,29 +274,9 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void OnTouchUiChanged();
 
-  void UpdateClipPath(int leading_corner_radius, int trailing_corner_radius);
-
-  // Called when active state for the window changes.
-  void ActiveStateChanged();
-
   void NewTabButtonPressed(const ui::Event& event);
 
-  // Determines how corners are painted. Return value is how to paint leading
-  // and/or trailing corners, respectively. See comments on `leading_curve_` and
-  // `trailing_curve_` for more.
-  enum class CornerStyle {
-    // Hard corner. Used when tabstrip is next to other elements of the same
-    // color, or against a flat edge of the window.
-    kSquare,
-    // Curved corner. Used when tabstrip goes all the way to the upper corner of
-    // the browser window.
-    kRounded,
-    // Fake curved corner, with tabstrip color behind. Used when the toolbar is
-    // directly next to or below a background region of the tabstrip or the
-    // titlebar.
-    kTabstripCurve,
-  };
-  std::pair<CornerStyle, CornerStyle> GetCornerStyles() const;
+  CustomCornersBackground::Corners GetCorners() const;
 
   gfx::SlideAnimation size_animation_{this};
 
@@ -353,35 +333,10 @@ class ToolbarView : public views::AccessiblePaneView,
   // Whether this toolbar has been initialized.
   bool initialized_ = false;
 
-  // container_view_ is transparent with the same dimensions as ToolbarView.
-  // All children are added to container_view_ and layout_manager_ applies to
-  // container_view_. The reason for this layer of indirection is because
-  // container_view_ has a clip path set in UpdateClipPath() which adds rounded
-  // corners. This leaves some unpainted pixels, which are painted by
-  // leading_curve_ and trailing_curve_.
-  raw_ptr<ContainerView> container_view_ = nullptr;
-
   // A chevron button that indicates some toolbar elements have overflowed
   // due to small toolbar view width. Visibility controlled by
   // `toolbar_controller_`.
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
-
-  // The toolbar's top corners recede lower into the toolbar bounds, and need to
-  // have the frame's color painted into it. Similarly, in vertical tabstrip
-  // mode, the top of the tabstrip edge (when adjacent to the toolbar) curves
-  // int it.
-  //
-  // The `leading_curve_` and `trailing_curve_` are the area
-  // painted behind the toolbar which give the melding effect of the toolbar
-  // raising up into the tabstrip region or blending with the vertical tabstrip.
-  //
-  // These views will either be shown or hidden based on visual need.
-  raw_ptr<View> leading_curve_ = nullptr;
-  raw_ptr<View> trailing_curve_ = nullptr;
-
-  // Listens to changes to window active state to update trailing_curve_
-  // and leading_curve_, as their background depends on active state.
-  base::CallbackListSubscription active_state_subscription_;
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

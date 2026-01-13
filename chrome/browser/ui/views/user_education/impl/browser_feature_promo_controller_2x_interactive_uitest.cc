@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25OverflowUiTest,
                     browser_view->GetElementContext());
             auto* const container_view =
                 views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                    ToolbarView::kToolbarContainerElementId,
+                    ToolbarView::kToolbarElementId,
                     browser_view->GetElementContext());
             constexpr gfx::Size kButtonSize{16, 16};
             while (forward_button->GetVisible()) {
