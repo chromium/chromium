@@ -167,8 +167,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // - the `pending_refills_` list is destroyed.
   // In the first event, the callback's argument is `true`; in the other two
   // cases, it is `false`.
-  void RequestRefill(const FillId& fill_id,
-                     base::OnceCallback<void(bool)> callback);
+  // blink::WebAutofillClient override:
+  void RequestRefill(const base::UnguessableToken& fill_id,
+                     base::OnceCallback<void(bool)> callback) override;
 
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override;

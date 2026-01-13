@@ -67,6 +67,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -1038,8 +1039,9 @@ void AutofillAgent::UserGestureObserved() {
   password_autofill_agent_->UserGestureObserved();
 }
 
-void AutofillAgent::RequestRefill(const FillId& fill_id,
+void AutofillAgent::RequestRefill(const base::UnguessableToken& fill_id_token,
                                   base::OnceCallback<void(bool)> callback) {
+  FillId fill_id(fill_id_token);
   pending_refills_.Add(fill_id, std::move(callback));
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->RequestRefill(fill_id);
@@ -1079,6 +1081,12 @@ void AutofillAgent::ApplyFieldsAction(
                                      action_persistence, field_data_manager());
   } else {
     was_last_action_fill_ = true;
+
+    if (base::FeatureList::IsEnabled(blink::features::kAutofillEvent) &&
+        action_type == mojom::FormActionType::kFill) {
+      form_util::DispatchAutofillEvent(document, fields, fill_id,
+                                       supports_refill);
+    }
 
     std::vector<FieldRendererId> filled_element_ids = base::ToVector(
         form_util::ApplyFieldsAction(document, fields, action_type,

@@ -108,6 +108,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class UnguessableToken;
 }
 
 namespace cc {
@@ -917,6 +918,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info);
 
   void DispatchFreezeEvent();
+
+  void DispatchAutofillEvent(
+      HeapVector<std::pair<Member<Element>, String>> autofill_values,
+      const base::UnguessableToken& fill_id,
+      bool supports_refill);
 
   enum PageDismissalType {
     kNoDismissal,

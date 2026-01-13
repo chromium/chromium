@@ -205,7 +205,10 @@ static_library("test_support") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "otp_manager_browsertest.cc" ]
+  sources = [
+    "autofill_event_handler_browsertest.cc",
+    "otp_manager_browsertest.cc",
+  ]
 
   # TODO(crbug.com/449649023) Migrate these tests to PlatformBrowserTests.
   if (!is_android) {

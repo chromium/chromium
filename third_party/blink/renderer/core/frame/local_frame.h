@@ -162,6 +162,7 @@ class SystemClipboard;
 class TextFragmentHandler;
 class TextSuggestionController;
 class VirtualKeyboardOverlayChangedObserver;
+class WebAutofillClient;
 class WebContentSettingsClient;
 class WebInputEventAttribution;
 class WebPluginContainerImpl;
@@ -525,6 +526,8 @@ class CORE_EXPORT LocalFrame final
 
   WebContentSettingsClient* GetContentSettingsClient();
   const mojom::RendererContentSettingsPtr& GetContentSettings() const;
+
+  WebAutofillClient* GetAutofillClient();
 
   PluginData* GetPluginData() const;
 

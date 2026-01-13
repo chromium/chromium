@@ -2705,6 +2705,35 @@ std::vector<std::pair<FieldRendererId, WebAutofillState>> ApplyFieldsAction(
   return filled_fields;
 }
 
+void DispatchAutofillEvent(blink::WebDocument document,
+                           base::span<const FormFieldData::FillData> fields,
+                           const FillId& fill_id,
+                           bool supports_refill) {
+  if (fields.empty()) {
+    return;
+  }
+
+  std::vector<std::pair<WebFormControlElement, WebString>> autofill_values;
+  for (const FormFieldData::FillData& field : fields) {
+    WebFormControlElement control_element =
+        GetFormControlByRendererId(field.renderer_id);
+
+    if (control_element.IsNull()) {
+      continue;
+    }
+
+    autofill_values.emplace_back(control_element,
+                                 WebString::FromUTF16(field.value));
+  }
+
+  if (autofill_values.empty()) {
+    return;
+  }
+
+  document.DispatchAutofillEvent(std::move(autofill_values), *fill_id,
+                                 supports_refill);
+}
+
 void ClearPreviewedElements(
     base::span<std::pair<WebFormControlElement, WebAutofillState>>
         previewed_elements) {

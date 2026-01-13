@@ -94,6 +94,8 @@ blink_core_sources_html = [
   "fenced_frame/fenced_frame_config.h",
   "fenced_frame/html_fenced_frame_element.cc",
   "fenced_frame/html_fenced_frame_element.h",
+  "forms/autofill_event.cc",
+  "forms/autofill_event.h",
   "forms/base_button_input_type.cc",
   "forms/base_button_input_type.h",
   "forms/base_checkable_input_type.cc",

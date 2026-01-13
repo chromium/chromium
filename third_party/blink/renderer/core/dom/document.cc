@@ -235,6 +235,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
+#include "third_party/blink/renderer/core/html/forms/autofill_event.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -4708,6 +4709,20 @@ void Document::DispatchFreezeEvent() {
   DispatchEvent(*Event::Create(event_type_names::kFreeze));
   SetFreezingInProgress(false);
   UseCounter::Count(*this, WebFeature::kPageLifeCycleFreeze);
+}
+
+void Document::DispatchAutofillEvent(
+    HeapVector<std::pair<Member<Element>, String>> autofill_values,
+    const base::UnguessableToken& fill_id,
+    bool supports_refill) {
+  if (!RuntimeEnabledFeatures::AutofillEventEnabled()) {
+    return;
+  }
+
+  AutofillEvent* event = AutofillEvent::Create(event_type_names::kAutofill,
+                                               std::move(autofill_values),
+                                               fill_id, supports_refill);
+  DispatchEvent(*event);
 }
 
 Document::PageDismissalType Document::PageDismissalEventBeingDispatched()

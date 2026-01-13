@@ -352,6 +352,11 @@ interface AudioWorkletNode : AudioNode
     getter port
     method constructor
     setter onprocessorerror
+interface AutofillEvent : Event
+    attribute @@toStringTag
+    getter refill
+    method autofillValues
+    method constructor
 interface BackForwardCacheRestoration : PerformanceEntry
     attribute @@toStringTag
     getter pageshowEventEnd
