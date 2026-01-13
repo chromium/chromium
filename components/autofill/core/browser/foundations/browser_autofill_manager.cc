@@ -3039,41 +3039,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   return suggestions;
 }
 
-std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
-    const FormData& form,
-    const FormStructure& form_structure,
-    const FormFieldData& trigger_field,
-    const AutofillField& autofill_trigger_field) {
-  metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
-      metrics_->signin_state_for_metrics);
-
-  CreditCardSuggestionSummary summary;
-  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      form, form_structure, trigger_field, autofill_trigger_field, client(),
-      summary,
-      form_structure.IsCompleteCreditCardForm(
-          FormStructure::CreditCardFormCompleteness::
-              kCompleteCreditCardFormIncludingCvcAndName),
-      ShouldShowScanCreditCard(form_structure, autofill_trigger_field),
-      four_digit_combinations_in_dom_,
-      payments::AmountExtractionStatus{
-          .has_timed_out_for_page_load =
-              GetAmountExtractionManager().HasTimedOutForPageLoad(),
-          .seen_unsupported_currency_for_page_load =
-              GetAmountExtractionManager()
-                  .SeenUnsupportedCurrencyForPageLoad()});
-  bool is_virtual_card_standalone_cvc_field =
-      std::ranges::any_of(suggestions, [](Suggestion suggestion) {
-        return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
-      });
-
-  metrics_->credit_card_form_event_logger.OnDidFetchSuggestion(
-      suggestions, summary.with_cvc, summary.with_card_info_retrieval_enrolled,
-      is_virtual_card_standalone_cvc_field,
-      std::move(summary.metadata_logging_context));
-  return suggestions;
-}
-
 std::vector<Suggestion> BrowserAutofillManager::GetLoyaltyCardSuggestions(
     const FormData& form,
     const FormStructure* form_structure,
@@ -3318,8 +3283,21 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       if (client()
               .GetPaymentsAutofillClient()
               ->IsAutofillPaymentMethodsEnabled()) {
-        suggestions = GetCreditCardSuggestions(form, *form_structure, field,
-                                               *autofill_field);
+        suggestions = GetSuggestionsForCreditCards(
+            form, *form_structure, field, *autofill_field, client(),
+            form_structure->IsCompleteCreditCardForm(
+                FormStructure::CreditCardFormCompleteness::
+                    kCompleteCreditCardFormIncludingCvcAndName),
+            ShouldShowScanCreditCard(*form_structure, *autofill_field),
+            four_digit_combinations_in_dom_,
+            payments::AmountExtractionStatus{
+                .has_timed_out_for_page_load =
+                    GetAmountExtractionManager().HasTimedOutForPageLoad(),
+                .seen_unsupported_currency_for_page_load =
+                    GetAmountExtractionManager()
+                        .SeenUnsupportedCurrencyForPageLoad()},
+            metrics_->credit_card_form_event_logger,
+            metrics_->signin_state_for_metrics);
       }
       break;
     case FillingProduct::kLoyaltyCard:

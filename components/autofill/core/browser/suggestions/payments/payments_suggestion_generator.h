@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
@@ -31,11 +32,12 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     const AutofillField& autofill_trigger_field,
     AutofillClient& client,
-    CreditCardSuggestionSummary& summary,
     bool is_complete_form,
     bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const payments::AmountExtractionStatus& amount_extraction_status);
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
 // Helper function, that implements "Fetch" phase of the
 // GetSuggestionsForCreditCards function.
@@ -50,7 +52,9 @@ FetchCreditCardSuggestionDataSync(
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
-    const std::vector<std::string>& four_digit_combinations_in_dom);
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
 // Helper function, that implements "Generate" phase of the
 // GetSuggestionsForCreditCards function.
@@ -67,7 +71,8 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     const base::flat_map<SuggestionGenerator::SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>&
         suggestion_data,
-    const payments::AmountExtractionStatus& amount_extraction_status);
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger);
 
 // Fetches SuggestionData, used for credit card or cvc field suggestion
 // generation. Fetched data wil be used in

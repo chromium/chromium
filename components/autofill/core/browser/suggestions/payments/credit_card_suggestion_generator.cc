@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/common/form_data.h"
@@ -28,14 +29,17 @@ using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     bool should_show_scan_credit_card,
-    CreditCardSuggestionSummary& summary,
     bool is_complete_form,
-    const payments::AmountExtractionStatus& amount_extraction_status)
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics)
     : four_digit_combinations_in_dom_(four_digit_combinations_in_dom),
       should_show_scan_credit_card_(should_show_scan_credit_card),
-      summary_(summary),
+      summary_(CreditCardSuggestionSummary()),
       is_complete_form_(is_complete_form),
-      amount_extraction_status_(amount_extraction_status) {}
+      amount_extraction_status_(amount_extraction_status),
+      credit_card_form_event_logger_(credit_card_form_event_logger),
+      signin_state_for_metrics_(signin_state_for_metrics) {}
 
 CreditCardSuggestionGenerator::~CreditCardSuggestionGenerator() = default;
 
@@ -88,8 +92,9 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
   callback(FetchCreditCardSuggestionDataSync(
       form, trigger_field, *form_structure, *trigger_autofill_field,
       const_cast<AutofillClient&>(client),
-      trigger_autofill_field->Type().GetCreditCardType(), summary_.get(),
-      is_complete_form_, four_digit_combinations_in_dom_.get()));
+      trigger_autofill_field->Type().GetCreditCardType(), summary_,
+      is_complete_form_, four_digit_combinations_in_dom_.get(),
+      credit_card_form_event_logger_.get(), signin_state_for_metrics_));
 }
 
 void CreditCardSuggestionGenerator::GenerateSuggestions(
@@ -106,9 +111,10 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
        GenerateCreditCardSuggestionsSync(
            form, trigger_field, *form_structure, *trigger_autofill_field,
            const_cast<AutofillClient&>(client),
-           trigger_autofill_field->Type().GetCreditCardType(), summary_.get(),
+           trigger_autofill_field->Type().GetCreditCardType(), summary_,
            should_show_scan_credit_card_, four_digit_combinations_in_dom_.get(),
-           all_suggestion_data, amount_extraction_status_.get())});
+           all_suggestion_data, amount_extraction_status_.get(),
+           credit_card_form_event_logger_.get())});
 }
 
 }  // namespace autofill

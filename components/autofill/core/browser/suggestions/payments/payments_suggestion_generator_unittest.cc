@@ -2421,7 +2421,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
 
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2430,10 +2429,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2464,7 +2464,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
 
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2473,10 +2472,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2496,7 +2496,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        GenerateLocalSaveAndFillSuggestion_FlagDisabled) {
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2505,10 +2504,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   ASSERT_GE(suggestions.size(), 0ul);
 }
@@ -2529,7 +2529,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       .Times(1);
 
   payments_data().AddCreditCard(test::GetCreditCard());
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2538,10 +2537,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0],
@@ -2563,7 +2563,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                       kIncompleteCreditCardForm))
       .Times(1);
 
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2572,11 +2571,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary,
+      autofill_client(),
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2597,7 +2597,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                       kUserInIncognito))
       .Times(1);
 
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2606,10 +2605,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2619,7 +2619,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
 
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData field;
   field.set_value(u"1234");
@@ -2628,10 +2627,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2656,7 +2656,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       .Times(1);
 
   ASSERT_FALSE(autofill_client().IsOffTheRecord());
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2665,10 +2664,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2693,7 +2693,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   // Verify user is not in incognito mode.
   ASSERT_FALSE(autofill_client().IsOffTheRecord());
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_value(u"411");
@@ -2702,10 +2701,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                             CREDIT_CARD_NUMBER);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/true,
+      autofill_client(), /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(
       suggestions,
@@ -3652,14 +3652,14 @@ TEST_F(
   trigger_autofill_field.set_heuristic_type(
       HeuristicSource::kRegexes,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
-  CreditCardSuggestionSummary summary;
   FormData form;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/false,
+      autofill_client(), /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(
       suggestions,
@@ -4046,7 +4046,6 @@ INSTANTIATE_TEST_SUITE_P(PaymentsSuggestionGeneratorTest,
 // card suggestions when no VCN suggestions for a standalone cvc field.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
        GetSuggestionsForCreditCards) {
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   AutofillField trigger_autofill_field(trigger_field);
@@ -4055,10 +4054,11 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/false,
+      autofill_client(), /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
-      payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
       IsCvcSavingSupported()) {
@@ -4086,8 +4086,6 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 // affect suggestions.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
        GetSuggestionsForCreditCards_NormalCreditCardForm) {
-  CreditCardSuggestionSummary summary;
-
   FormData form =
       test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
                                      .value = u"4111111111111111",
@@ -4101,11 +4099,12 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary,
+      autofill_client(),
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1113"},
-      payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
   if (!IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
     return;
@@ -4126,7 +4125,6 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 // CVC field suggestions when there is no last four in DOM.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
        GetSuggestionsForCreditCards_NoDomLastFour) {
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   AutofillField trigger_autofill_field(trigger_field);
@@ -4135,11 +4133,12 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary,
+      autofill_client(),
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
-      /*four_digit_combinations_in_dom=*/{},
-      payments::AmountExtractionStatus());
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4148,7 +4147,6 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 // CVC field suggestion when there is last four match in the DOM.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
        GetSuggestionsForCreditCards_NoLastFourMatch) {
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   AutofillField trigger_autofill_field(trigger_field);
@@ -4157,11 +4155,12 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary,
+      autofill_client(),
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
-      payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4176,7 +4175,6 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   server_card_3.SetNumber(u"4111111111111234");
   server_card_3.set_cvc(u"");
   payments_data().AddServerCreditCard(server_card_3);
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   AutofillField trigger_autofill_field(trigger_field);
@@ -4185,11 +4183,12 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary,
+      autofill_client(),
       /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -4213,7 +4212,6 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   payments_data().AddServerCreditCard(virtual_card);
   payments_data().AddServerCreditCard(masked_server_card);
 
-  CreditCardSuggestionSummary summary;
   FormData form;
   FormFieldData trigger_field;
   trigger_field.set_origin(virtual_card_usage_data.merchant_origin());
@@ -4221,12 +4219,14 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   trigger_autofill_field.set_heuristic_type(
       HeuristicSource::kRegexes,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
+
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(), summary, /*is_complete_form=*/false,
+      autofill_client(), /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      payments::AmountExtractionStatus());
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown);
 
   EXPECT_THAT(
       suggestions,
