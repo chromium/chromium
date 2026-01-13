@@ -58,7 +58,6 @@ class GlicEnablingTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
-            features::kTabstripComboButton,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -89,12 +88,6 @@ TEST_F(GlicEnablingTest, GlicFeatureNotEnabledTest) {
   EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByFlags(), false);
 }
 
-TEST_F(GlicEnablingTest, TabStripComboButtonFeatureNotEnabledTest) {
-  // Turn tab strip combo button feature flag off
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures({}, {features::kTabstripComboButton});
-  EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByFlags(), false);
-}
 
 TEST_F(GlicEnablingTest, CountryFilteringNotEnabled) {
   base::test::ScopedFeatureList features;
@@ -207,7 +200,6 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
         /*enabled_features=*/
         {
             features::kGlic,
-            features::kTabstripComboButton,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)

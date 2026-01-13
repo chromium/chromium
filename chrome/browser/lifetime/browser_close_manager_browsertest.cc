@@ -1325,8 +1325,7 @@ class BrowserCloseManagerWithGlicBrowserTest
       const BrowserCloseManagerWithGlicBrowserTest&) = delete;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
+    feature_list_.InitWithFeatures({features::kGlic}, {});
     BrowserCloseManagerBrowserTest::SetUp();
   }
 

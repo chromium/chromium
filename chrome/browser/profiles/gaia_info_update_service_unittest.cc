@@ -531,8 +531,7 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicRollout},
+        {features::kGlic, features::kGlicRollout},
         /*disabled_features=*/{features::kGlicCountryFiltering,
                                features::kGlicLocaleFiltering});
 

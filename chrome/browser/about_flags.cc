@@ -2476,16 +2476,6 @@ const FeatureEntry::FeatureVariation kNumSrpZpsRelatedSearches[] = {
 };
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTabSearchToolbarButton[] = {
-    {"tab_search_toolbar_button", "true"}};
-
-const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
-    {" - toolbar button", kTabSearchToolbarButton,
-     std::size(kTabSearchToolbarButton)},
-};
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kShowSidePanelsOnSameSide[] = {
     {"side_panel_relative_alignment", "same"}};
 const FeatureEntry::FeatureParam kShowSidePanelsOnOppositeSide[] = {
@@ -7511,17 +7501,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "MBIMode")},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"tabsearch-toolbar-button",
-     flag_descriptions::kLaunchedTabSearchToolbarName,
-     flag_descriptions::kLaunchedTabSearchToolbarDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kLaunchedTabSearchToolbarButton)},
-
-    {flag_descriptions::kTabstripComboButtonFlagId,
-     flag_descriptions::kTabstripComboButtonName,
-     flag_descriptions::kTabstripComboButtonDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripComboButton,
-                                    kTabstripComboButtonVariations,
-                                    "TabstripComboButton")},
 
     {"tab-groups-focusing", flag_descriptions::kTabGroupsFocusingName,
      flag_descriptions::kTabGroupsFocusingDescription, kOsDesktop,

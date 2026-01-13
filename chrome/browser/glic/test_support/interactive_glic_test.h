@@ -138,7 +138,6 @@ class InteractiveGlicTestMixin : public T {
       : T(std::forward<Args>(args)...), glic_test_environment_(glic_config) {
     features_.InitWithFeaturesAndParameters(
         {{features::kGlic, glic_params},
-         {features::kTabstripComboButton, {}},
          {features::kGlicRollout, {}},
          {features::kGlicKeyboardShortcutNewBadge, {}},
 #if BUILDFLAG(IS_CHROMEOS)

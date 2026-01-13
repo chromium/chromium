@@ -1182,8 +1182,7 @@ class GlicInteractiveContextMenuTest
   GlicInteractiveContextMenuTest() {
     if (UseMultiInstance()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicShareImage,
+          /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
                                 features::kGlicMultiInstance,
                                 features::kGlicUnifiedFreScreen,
                                 glic::mojom::features::kGlicMultiTab,
@@ -1193,8 +1192,7 @@ class GlicInteractiveContextMenuTest
                                  blink::features::kSvgFallBackToContainerSize});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicShareImage},
+          /*enabled_features=*/{features::kGlic, features::kGlicShareImage},
           /*disabled_features=*/{features::kGlicWarming,
                                  features::kGlicFreWarming,
                                  blink::features::kSvgFallBackToContainerSize});

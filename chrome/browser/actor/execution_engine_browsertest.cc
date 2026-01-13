@@ -135,8 +135,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
             base::BindRepeating(&ExecutionEngineBrowserTest::web_contents,
                                 base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicActor,
+        /*enabled_features=*/{features::kGlic, features::kGlicActor,
                               kGlicExternalProtocolActionResultCode},
         /*disabled_features=*/{features::kGlicWarming});
   }

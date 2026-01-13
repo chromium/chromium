@@ -92,7 +92,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
             {features::kGlicActorUi,
              { {features::kGlicActorUiTaskIconName, "true"} }},
 #endif  // BUILDFLAG(ENABLE_GLIC)
-            {features::kTabstripComboButton, {}},
             {features::kTabstripDeclutter, {}},
             {contextual_cueing::kContextualCueing, {}},
         },
@@ -764,7 +763,6 @@ class GlicActorGlobalFlagEnabledBrowserTest
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
-            {features::kTabstripComboButton, {}},
             {features::kTabstripDeclutter, {}},
             {contextual_cueing::kContextualCueing, {}},
         },

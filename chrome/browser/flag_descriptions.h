@@ -3848,20 +3848,6 @@ inline constexpr char kTabbedBrowserUseNewLayoutName[] =
 inline constexpr char kTabbedBrowserUseNewLayoutDescription[] =
     "Use the new Tabbed Browser Layout. Visually nothing should change.";
 
-inline constexpr char kTabstripComboButtonFlagId[] = "tabstrip-combo-button";
-inline constexpr char kTabstripComboButtonName[] = "Tabstrip Combo Button";
-inline constexpr char kTabstripComboButtonDescription[] =
-    "Combines tab search and the new tab button into a single combo button. "
-    "Might require tab search toolbar flag to be disabled to take effect in "
-    "specific regions.";
-
-inline constexpr char kLaunchedTabSearchToolbarName[] =
-    "Tab Search Toolbar Button";
-inline constexpr char kLaunchedTabSearchToolbarDescription[] =
-    "Enables tab search button to be in toolbar area. "
-    "Might require enabling the tab strip combo button configuration to also "
-    "match to toolbar in specific regions.";
-
 inline constexpr char kSidePanelRelativeAlignmentName[] =
     "Side Panel Relative Alignment";
 inline constexpr char kSidePanelRelativeAlignmentDescription[] =

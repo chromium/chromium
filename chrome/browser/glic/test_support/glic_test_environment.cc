@@ -111,8 +111,7 @@ class GlicTestEnvironmentServiceFactory : public ProfileKeyedServiceFactory {
 }  // namespace internal
 
 std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
-  return {features::kGlic, features::kTabstripComboButton,
-          features::kGlicRollout,
+  return {features::kGlic, features::kGlicRollout,
 #if BUILDFLAG(IS_CHROMEOS)
           chromeos::features::kFeatureManagementGlic
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -81,7 +81,6 @@ class ExecutionEngineOriginGatingBrowserTestBase
         {
             {features::kGlic, {}},
             {features::kGlicActor, {}},
-            {features::kTabstripComboButton, {}},
             {kGlicCrossOriginNavigationGating,
              {{
                  {"confirm_navigation_to_new_origins", "true"},

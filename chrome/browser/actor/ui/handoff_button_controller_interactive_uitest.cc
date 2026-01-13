@@ -263,7 +263,6 @@ class ActorUiHandoffButtonVisibleInBothStatesInteractiveUiTest
             {features::kGlicURLConfig,
              { {features::kGlicGuestURL.name, "about:blank"} }},
             {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
 #endif
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
@@ -322,7 +321,6 @@ class ActorUiHandoffButtonSplitViewTest
         {features::kGlicURLConfig,
          { {features::kGlicGuestURL.name, "about:blank"} }},
         {features::kGlic, {}},
-        {features::kTabstripComboButton, {}},
 #endif
         {features::kGlicActor, {}},
         {features::kGlicHandoffButtonHiddenClientControl, {}},

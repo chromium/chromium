@@ -484,25 +484,8 @@ BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripBrowserApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabstripComboButton, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This serves as a "kill-switch" for migrating the Tab Search feature to be a
-// toolbar button for non-ChromeOS users in the US.
-BASE_FEATURE(kLaunchedTabSearchToolbarButton,
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
-BASE_FEATURE_PARAM(bool,
-                   kTabSearchToolbarButton,
-                   &kTabstripComboButton,
-                   "tab_search_toolbar_button",
-                   true);
-
-// TODO(crbug.com/471062209): Clean up all callers of this function.
+// This is left in case the tab search feature is moved back to the tab strip.
+// If that doesn't happen in 2026, this can be cleaned up.
 bool HasTabSearchToolbarButton() {
   return true;
 }

@@ -100,7 +100,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic, {}},
-        {features::kTabstripComboButton, {}},
         {features::kGlicActor, {}},
         {features::kGlicActorUi,
          {{features::kGlicActorUiTaskIconName, "true"}}}};

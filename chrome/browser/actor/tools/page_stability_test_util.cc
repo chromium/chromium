@@ -41,8 +41,7 @@ const char kFetchPath[] = "/fetchtarget.html";
 
 PageStabilityTest::PageStabilityTest() {
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                            features::kGlicActor},
+      /*enabled_features=*/{features::kGlic, features::kGlicActor},
       /*disabled_features=*/{features::kGlicWarming});
 }
 

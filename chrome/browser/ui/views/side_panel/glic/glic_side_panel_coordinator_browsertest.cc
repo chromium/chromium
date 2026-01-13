@@ -65,7 +65,6 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
         {
             features::kGlic,
             features::kGlicRollout,
-            features::kTabstripComboButton,
             features::kGlicMultiInstance,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,

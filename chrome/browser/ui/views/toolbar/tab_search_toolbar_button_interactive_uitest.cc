@@ -9,8 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,11 +29,6 @@ class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
   TabSearchToolbarButtonInteractiveUiTest() = default;
   ~TabSearchToolbarButtonInteractiveUiTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kTabstripComboButton);
-    InteractiveBrowserTest::SetUp();
-  }
-
   auto SendTabSearchKeyPress(ui::ElementIdentifier target) {
 #if BUILDFLAG(IS_MAC)
     return SendKeyPress(target, ui::VKEY_A,
@@ -45,9 +38,6 @@ class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
                         ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
 #endif
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This test verifies the TabSearch functionality when pinned.

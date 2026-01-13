@@ -11,8 +11,6 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/prefs/pref_service.h"
@@ -28,13 +26,6 @@
 namespace settings {
 class GlicHandlerBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(
@@ -54,7 +45,6 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<GlicHandler> glic_handler_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 

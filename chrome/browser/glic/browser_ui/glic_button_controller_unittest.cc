@@ -78,9 +78,7 @@ class GlicButtonControllerTest : public testing::Test {
   void SetUp() override {
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicRollout},
-        {});
+        {features::kGlic, features::kGlicRollout}, {});
 
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(

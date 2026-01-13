@@ -763,8 +763,7 @@ class BrowserCommandControllerBrowserTestGlicChromeOSGuest
     : public MixinBasedInProcessBrowserTest {
  public:
   BrowserCommandControllerBrowserTestGlicChromeOSGuest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
 
   BrowserCommandControllerBrowserTestGlicChromeOSGuest(

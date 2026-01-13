@@ -113,7 +113,6 @@ class GlicEnablingWithSeparateAccountCapabilityTest : public GlicEnablingTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
             {features::kGlicRollout, {}},
             {switches::kGlicEligibilitySeparateAccountCapability, {}},
 #if BUILDFLAG(IS_CHROMEOS)
@@ -272,7 +271,6 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
-            features::kTabstripComboButton,
             features::kGlicTieredRollout,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
@@ -341,7 +339,6 @@ class GlicEnablingSimultaneousRolloutTest
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
-            features::kTabstripComboButton,
             features::kGlicTieredRollout,
             features::kGlicRollout,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -411,7 +408,6 @@ class GlicMultiInstanceEnablingTestingFlagsBrowserTest
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
-            features::kTabstripComboButton,
             features::kGlicEnableMultiInstanceBasedOnTier,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
