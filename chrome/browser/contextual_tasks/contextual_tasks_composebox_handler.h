@@ -67,7 +67,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
-  void ClearFiles() override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
   void HandleFileUpload(bool is_image) override;
