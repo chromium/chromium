@@ -702,4 +702,6 @@ BASE_FEATURE(kUseQuicProxiesWithoutWaitingForConnectResponse,
 BASE_FEATURE(kEnableBootstrapIPRandomizationForDoh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseLockFreeX509Verification, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

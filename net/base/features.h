@@ -744,6 +744,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(
 // be randomized for better load balancing of the initial DoH URL lookups.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableBootstrapIPRandomizationForDoh);
 
+// Controls whether X509Util on Android (Cronet, and WebView only) should use
+// lock-free certificate verification mechanism.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeX509Verification);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

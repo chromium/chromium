@@ -26397,6 +26397,22 @@
             ]
         }
     ],
+    "UseLockFreeX509Verification": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseLockFreeX509Verification"
+                    ]
+                }
+            ]
+        }
+    ],
     "UsePersistentCacheForCodeCache": [
         {
             "platforms": [
