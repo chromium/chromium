@@ -1616,6 +1616,7 @@ deps = {
         'version': 'Y8DJK52u8vNA1Ugp2z2z2QdPJexDY_u8rjmbGFSNXAgC',
       },
     ],
+    'condition': 'non_git_source',
     'dep_type': 'cipd',
   },
 
