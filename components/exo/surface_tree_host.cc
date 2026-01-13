@@ -657,7 +657,8 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   gfx::Size output_surface_size_in_pixels =
       root_surface_->surface_hierarchy_content_bounds().size();
   if (!client_submits_surfaces_in_pixel_coordinates_) {
-    // TODO(crbug.com/40150290): Should this be ceil? Why do we choose floor?
+    // This scaling logic is part of a legacy scheme that has since been updated.
+    // See crbug.com/40150290 for historical context on using floor here.
     output_surface_size_in_pixels = gfx::ScaleToFlooredSize(
         output_surface_size_in_pixels, device_scale_factor);
   }
