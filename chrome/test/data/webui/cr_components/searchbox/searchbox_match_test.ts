@@ -261,4 +261,86 @@ suite('CrComponentsRealboxMatchTest', () => {
     ].map(action => action.classList.contains('selected')));
     assertTrue(!!matchEl.shadowRoot.querySelector('#remove.selected'));
   });
+
+  test('ContentsAndDescriptionWithClassifications', async () => {
+    const match = createAutocompleteMatch();
+    match.contents = 'test content';
+    match.contentsClass = [{offset: 0, style: 0}, {offset: 5, style: 2}];
+    match.description = 'test description';
+    match.descriptionClass = [{offset: 0, style: 0}, {offset: 5, style: 2}];
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const contentsEl = matchEl.shadowRoot.querySelector('#contents');
+    assertTrue(!!contentsEl);
+    // 'test ' is rendered unstyled. 'content' is rendered as a "match".
+    assertEquals(
+        '<span>test </span><span class="match">content</span>',
+        contentsEl.innerHTML);
+    const descriptionEl = matchEl.shadowRoot.querySelector('#description');
+    assertTrue(!!descriptionEl);
+    // 'test ' is rendered unstyled. 'description' is rendered as a "match".
+    assertEquals(
+        '<span>test </span><span class="match">description</span>',
+        descriptionEl.innerHTML);
+  });
+
+  test('ClassificationsNotStartingAtZeroIndex', async () => {
+    const match = createAutocompleteMatch();
+    match.contents = 'prefix content';
+    match.contentsClass = [{offset: 7, style: 2}];
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const contentsEl = matchEl.shadowRoot.querySelector('#contents');
+    assertTrue(!!contentsEl);
+    // 'prefix' is rendered unstyled.
+    assertEquals(
+        '<span>prefix </span><span class="match">content</span>',
+        contentsEl.innerHTML);
+  });
+
+  test('EscapesAnswerDescription', async () => {
+    const match = createAutocompleteMatch();
+    match.answer = {
+      firstLine: 'test@example.com',
+      secondLine: '<email>Contact Info</email>',
+    };
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const descriptionEl = matchEl.shadowRoot.querySelector('#description');
+    assertTrue(!!descriptionEl);
+    // `<email>` XHTML tag is escaped. Answer description is rendered unstyled.
+    assertEquals(
+        '<span>&lt;email&gt;Contact Info&lt;/email&gt;</span>',
+        descriptionEl.innerHTML);
+    assertEquals(0, descriptionEl.querySelectorAll('email').length);
+  });
+
+  test('EscapesContentsAndDescription', async () => {
+    const match = createAutocompleteMatch();
+    match.contents = '<script>alert("xss")</script>Safe Content';
+    match.contentsClass = [{offset: 0, style: 0}];
+    match.description = '<img src=x onerror=alert(1)>Safe Description';
+    match.descriptionClass = [{offset: 0, style: 0}];
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const contentsEl = matchEl.shadowRoot.querySelector('#contents');
+    assertTrue(!!contentsEl);
+    // `<script>` HTML tag is escaped. Contents is rendered unstyled.
+    assertEquals(
+        '<span>&lt;script&gt;alert("xss")&lt;/script&gt;Safe Content</span>',
+        contentsEl.innerHTML);
+    assertEquals(0, contentsEl.querySelectorAll('script').length);
+
+    const descriptionEl = matchEl.shadowRoot.querySelector('#description');
+    assertTrue(!!descriptionEl);
+    // `<img>` HTML tag is escaped. Description is rendered unstyled.
+    assertEquals(
+        '<span>&lt;img src=x onerror=alert(1)&gt;Safe Description</span>',
+        descriptionEl.innerHTML);
+    assertEquals(0, descriptionEl.querySelectorAll('img').length);
+  });
 });
