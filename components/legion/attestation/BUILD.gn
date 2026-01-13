@@ -9,5 +9,19 @@ source_set("attestation") {
     "server_verification_key.cc",
     "server_verification_key.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/legion:features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "server_verification_key_unittest.cc" ]
+  deps = [
+    ":attestation",
+    "//base/test:test_support",
+    "//components/legion:features",
+    "//testing/gtest",
+  ]
 }

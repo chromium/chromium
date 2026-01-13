@@ -11,9 +11,28 @@
 
 namespace legion {
 
-// Returns the server verification key. The steps to update this key are in
-// b/469921004.
-base::span<const uint8_t> GetDevServerVerificationKey();
+enum class OutputPrefixType : int {
+  LEGACY = 2,
+};
+
+struct ProcessedKey {
+  uint32_t id;
+  OutputPrefixType output_prefix_type;
+  const char* x;  // 32 bytes
+  const char* y;  // 32 bytes
+
+  bool operator==(const ProcessedKey& other) const;
+};
+
+// Returns the server verification key based on the current environment. The
+// steps to update this key are in b/469921004.
+base::span<const ProcessedKey> GetServerVerificationKey();
+
+// The following functions are for testing only and return the server
+// verification keys for the corresponding environment.
+base::span<const ProcessedKey> GetAutopushKeysForTesting();
+base::span<const ProcessedKey> GetDevKeysForTesting();
+base::span<const ProcessedKey> GetStagingKeysForTesting();
 
 }  // namespace legion
 
