@@ -262,6 +262,7 @@ class SymbolContext {
                            cstring_view prefix_string) {
     AutoLock lock(lock_);
 
+    IMAGEHLP_MODULE64 module_info{.SizeOfStruct = sizeof(IMAGEHLP_MODULE64)};
     for (size_t i = 0; (i < traces.size()) && os->good(); ++i) {
       const int kMaxNameLength = 256;
       DWORD_PTR frame = reinterpret_cast<DWORD_PTR>(traces[i]);
@@ -287,8 +288,17 @@ class SymbolContext {
       BOOL has_line = SymGetLineFromAddr64(GetCurrentProcess(), frame,
                                            &line_displacement, &line);
 
+      // Get the module information; setting the name field to an empty string
+      // on error.
+      if (!SymGetModuleInfo64(GetCurrentProcess(), frame, &module_info)) {
+        *module_info.ModuleName = L'\0';
+      }
+
       // Output the backtrace line.
       (*os) << prefix_string << "\t";
+      if (*module_info.ModuleName) {  // Start with the module name (if found).
+        (*os) << module_info.ModuleName << "!";
+      }
       if (has_symbol) {
         (*os) << symbol->Name << " "
               << base::StringPrintf("[%p+%x]", traces[i], sym_displacement);
