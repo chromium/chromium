@@ -13,6 +13,7 @@
 #include "base/android/device_info.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -238,12 +239,11 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       requested_device_(std::move(device)),
       stream_type_(stream_type),
       usage_(usage),
-      callback_(callback),
+      callback_(*callback),
       ns_per_frame_(base::Time::kNanosecondsPerSecond /
                     static_cast<double>(params.sample_rate())),
       destruction_helper_(std::make_unique<AAudioDestructionHelper>(this)) {
   CHECK(params.IsValid());
-  CHECK(callback_);
 
   switch (params.latency_tag()) {
     case AudioLatency::Type::kExactMS:
@@ -361,6 +361,7 @@ bool AAudioStreamWrapper::Open() {
   }
 
   CHECK_EQ(AAUDIO_FORMAT_PCM_FLOAT, AAudioStream_getFormat(aaudio_stream_));
+  CHECK_EQ(params_.channels(), AAudioStream_getChannelCount(aaudio_stream_));
 
   if (!requested_device_.GetId().IsDefault()) {
     // `AAudioStreamBuilder_setDeviceId` is not guaranteed to set the specified
@@ -549,7 +550,13 @@ base::TimeTicks AAudioStreamWrapper::GetCaptureTimestamp() {
 aaudio_data_callback_result_t AAudioStreamWrapper::OnAudioDataRequested(
     void* audio_data,
     int32_t num_frames) {
-  return callback_->OnAudioDataRequested(audio_data, num_frames)
+  // SAFETY: `audio_data` is provided by AAudio, and we CHECK that we are using
+  // `AAUDIO_FORMAT_PCM_FLOAT` and the right number of channels in `Open()`.
+  CHECK(base::IsAligned(audio_data, sizeof(float)));
+  auto data_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<float*>(audio_data),
+                 base::checked_cast<size_t>(num_frames * params_.channels())));
+  return callback_->OnAudioDataRequested(data_span)
              ? AAUDIO_CALLBACK_RESULT_CONTINUE
              : AAUDIO_CALLBACK_RESULT_STOP;
 }
