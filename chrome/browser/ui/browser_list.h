@@ -66,10 +66,6 @@ class BrowserList {
   static void AddObserver(BrowserListObserver* observer);
   static void RemoveObserver(BrowserListObserver* observer);
 
-  // Moves all the browsers that show on workspace |new_workspace| to the end of
-  // the browser list (i.e. the browsers that were "activated" most recently).
-  static void MoveBrowsersInWorkspaceToFront(const std::string& new_workspace);
-
   // Called by Browser objects when their window is activated (focused).  This
   // allows us to determine what the last active Browser was on each desktop.
   static void SetLastActive(Browser* browser);

@@ -43,7 +43,9 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -66,6 +68,10 @@
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/display/screen.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -117,6 +123,57 @@ void AppendTabs(const StartupTabs& from, StartupTabs* to) {
 // Prepends the contents of |from| to the beginning of |to|.
 void PrependTabs(const StartupTabs& from, StartupTabs* to) {
   to->insert(to->begin(), from.begin(), from.end());
+}
+
+Browser* GetExistingBrowserForOpenBehavior(
+    Profile* profile,
+    chrome::startup::IsProcessStartup process_startup) {
+  Browser* workspace_browser = chrome::FindLastActiveWithProfile(profile);
+
+#if BUILDFLAG(IS_LINUX)
+  const bool match_original_profiles =
+      process_startup == chrome::startup::IsProcessStartup::kYes;
+  display::Screen* const screen = display::Screen::Get();
+  const std::string current_workspace =
+      screen ? screen->GetCurrentWorkspace() : std::string();
+
+  if (!current_workspace.empty()) {
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [&, current_workspace,
+         match_original_profiles](BrowserWindowInterface* window) {
+          Browser* const candidate = window->GetBrowserForMigrationOnly();
+
+          Profile* const candidate_profile = window->GetProfile();
+          if (match_original_profiles) {
+            if (candidate_profile->GetOriginalProfile() !=
+                profile->GetOriginalProfile()) {
+              return true;
+            }
+          } else if (candidate_profile != profile) {
+            return true;
+          }
+
+          if (window->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
+            return true;
+          }
+
+          BrowserWindow* const browser_window = candidate->window();
+          if (!browser_window) {
+            return true;
+          }
+
+          if (!browser_window->IsVisibleOnAllWorkspaces() &&
+              browser_window->GetWorkspace() != current_workspace) {
+            workspace_browser = candidate;
+            return false;
+          }
+          return true;
+        },
+        BrowserCollection::Order::kActivation);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
+  return workspace_browser;
 }
 
 }  // namespace
@@ -631,8 +688,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
   } else if (behavior == BrowserOpenBehavior::USE_EXISTING ||
              behavior ==
                  BrowserOpenBehavior::USE_EXISTING_AND_OVERWRITE_ACTIVE_TAB) {
-    browser = chrome::FindTabbedBrowser(
-        profile_, process_startup == chrome::startup::IsProcessStartup::kYes);
+    browser = GetExistingBrowserForOpenBehavior(profile_, process_startup);
   }
 
   base::AutoReset<bool> synchronous_launch_resetter(

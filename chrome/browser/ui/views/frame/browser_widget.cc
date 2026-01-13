@@ -20,7 +20,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -53,7 +52,6 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/display/screen.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -342,17 +340,6 @@ void BrowserWidget::OnNativeWidgetWorkspaceChanged() {
   chrome::SaveWindowWorkspace(browser_view_->browser(), GetWorkspace());
   chrome::SaveWindowVisibleOnAllWorkspaces(browser_view_->browser(),
                                            IsVisibleOnAllWorkspaces());
-#if BUILDFLAG(IS_LINUX)
-  // If the window was sent to a different workspace, prioritize it if
-  // it was sent to the current workspace and deprioritize it
-  // otherwise.  This is done by MoveBrowsersInWorkspaceToFront()
-  // which reorders the browsers such that the ones in the current
-  // workspace appear before ones in other workspaces.
-  auto workspace = display::Screen::Get()->GetCurrentWorkspace();
-  if (!workspace.empty()) {
-    BrowserList::MoveBrowsersInWorkspaceToFront(workspace);
-  }
-#endif
   Widget::OnNativeWidgetWorkspaceChanged();
 }
 

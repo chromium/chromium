@@ -270,43 +270,6 @@ void BrowserList::PostTryToCloseBrowserWindow(
 }
 
 // static
-void BrowserList::MoveBrowsersInWorkspaceToFront(
-    const std::string& new_workspace) {
-  DCHECK(!new_workspace.empty());
-
-  BrowserList* instance = GetInstance();
-
-  BrowserWindowInterface* const old_last_active =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  BrowserVector& last_active_browsers =
-      instance->browsers_ordered_by_activation_;
-
-  // Perform a stable partition on the browsers in the list so that the browsers
-  // in the new workspace appear after the browsers in the other workspaces.
-  //
-  // For example, if we have a list of browser-workspace pairs
-  // [{b1, 0}, {b2, 1}, {b3, 0}, {b4, 1}]
-  // and we switch to workspace 1, we want the resulting browser list to look
-  // like [{b1, 0}, {b3, 0}, {b2, 1}, {b4, 1}].
-  std::stable_partition(
-      last_active_browsers.begin(), last_active_browsers.end(),
-      [&new_workspace](Browser* browser) {
-        return !browser->window()->IsVisibleOnAllWorkspaces() &&
-               browser->window()->GetWorkspace() != new_workspace;
-      });
-
-  BrowserWindowInterface* const new_last_active =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (old_last_active != new_last_active) {
-    for (BrowserListObserver& observer : observers_.Get()) {
-      observer.OnBrowserSetLastActive(
-          new_last_active ? new_last_active->GetBrowserForMigrationOnly()
-                          : nullptr);
-    }
-  }
-}
-
-// static
 void BrowserList::SetLastActive(Browser* browser) {
   BrowserList* instance = GetInstance();
   DCHECK(base::Contains(*instance, browser))
