@@ -59,8 +59,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     BrowserView* browser_view)
     : tab_strip_model_(browser->GetTabStripModel()),
       state_controller_(state_controller),
-      resize_animation_(this),
-      browser_view_(browser_view) {
+      resize_animation_(this) {
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
@@ -110,6 +109,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
                           base::Unretained(this)));
 
+  SetBackground(std::make_unique<TopContainerBackground>(
+      browser_view, TopContainerBackground::TopChromeArea::FRAME));
   UpdateBackgroundColors();
 }
 
@@ -450,17 +451,6 @@ void VerticalTabStripRegionView::ResizeToWidth(int width) {
 }
 
 void VerticalTabStripRegionView::UpdateBackgroundColors() {
-  TopContainerBackground::TopChromeArea top_chrome_area =
-      IsFrameActive() ? TopContainerBackground::TopChromeArea::FRAME_ACTIVE
-                      : TopContainerBackground::TopChromeArea::FRAME_INACTIVE;
-
-  auto* top_container_background =
-      static_cast<TopContainerBackground*>(GetBackground());
-  if (!top_container_background ||
-      top_chrome_area != top_container_background->GetTopChromeArea()) {
-    SetBackground(std::make_unique<TopContainerBackground>(browser_view_,
-                                                           top_chrome_area));
-  }
   top_button_separator_->SetColorId(IsFrameActive()
                                         ? kColorTabDividerFrameActive
                                         : kColorTabDividerFrameInactive);

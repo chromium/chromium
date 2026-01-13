@@ -20,7 +20,7 @@ class BrowserView;
 // TODO(crbug.com/473064096): Refactor to be More Extensible.
 class TopContainerBackground : public views::Background {
  public:
-  enum TopChromeArea { TOOLBAR, FRAME_ACTIVE, FRAME_INACTIVE };
+  enum TopChromeArea { TOOLBAR, FRAME };
   // Construct a themed background for the specified browser.
   explicit TopContainerBackground(BrowserView* browser_view,
                                   TopChromeArea top_chrome_area = TOOLBAR);

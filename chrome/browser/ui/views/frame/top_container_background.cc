@@ -23,15 +23,22 @@ bool WillPaintCustomImage(const views::View* view, int id) {
   return theme_provider->HasCustomImage(id);
 }
 
+bool IsFrameActive(const views::View* view) {
+  return view->GetWidget() ? view->GetWidget()->ShouldPaintAsActive() : true;
+}
+
 std::pair<int, ui::ColorId> GetTopChromeInfo(
-    TopContainerBackground::TopChromeArea top_chrome_area) {
+    TopContainerBackground::TopChromeArea top_chrome_area,
+    const views::View* view) {
   switch (top_chrome_area) {
     case TopContainerBackground::TopChromeArea::TOOLBAR:
       return {IDR_THEME_TOOLBAR, kColorToolbar};
-    case TopContainerBackground::TopChromeArea::FRAME_ACTIVE:
-      return {IDR_THEME_FRAME, ui::kColorFrameActive};
-    case TopContainerBackground::TopChromeArea::FRAME_INACTIVE:
-      return {IDR_THEME_FRAME_INACTIVE, ui::kColorFrameInactive};
+    case TopContainerBackground::TopChromeArea::FRAME:
+      if (IsFrameActive(view)) {
+        return {IDR_THEME_FRAME, ui::kColorFrameActive};
+      } else {
+        return {IDR_THEME_FRAME_INACTIVE, ui::kColorFrameInactive};
+      }
     default:
       NOTREACHED();
   }
@@ -53,7 +60,7 @@ bool TopContainerBackground::PaintThemeCustomImage(
     const views::View* view,
     const BrowserView* browser_view,
     TopChromeArea top_chrome_area) {
-  int theme_resource_id = GetTopChromeInfo(top_chrome_area).first;
+  int theme_resource_id = GetTopChromeInfo(top_chrome_area, view).first;
 
   if (!WillPaintCustomImage(view, theme_resource_id)) {
     return false;
@@ -102,7 +109,7 @@ void TopContainerBackground::PaintBackground(gfx::Canvas* canvas,
       PaintThemeCustomImage(canvas, view, browser_view, top_chrome_area);
   if (!painted) {
     canvas->DrawColor(view->GetColorProvider()->GetColor(
-        GetTopChromeInfo(top_chrome_area).second));
+        GetTopChromeInfo(top_chrome_area, view).second));
   }
 }
 
@@ -111,7 +118,7 @@ std::optional<SkColor> TopContainerBackground::GetBackgroundColor(
     const BrowserView* browser_view,
     TopChromeArea top_chrome_area) {
   std::pair<int, ui::ColorId> top_chrome_info =
-      GetTopChromeInfo(top_chrome_area);
+      GetTopChromeInfo(top_chrome_area, view);
   const bool will_be_painted =
       WillPaintCustomImage(view, top_chrome_info.first);
   if (!will_be_painted) {

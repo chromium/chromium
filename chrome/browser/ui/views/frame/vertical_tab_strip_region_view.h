@@ -190,8 +190,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // (GetCurrentValue() -> 1).
   gfx::SlideAnimation resize_animation_;
 
-  const raw_ptr<BrowserView> browser_view_ = nullptr;
-
   // The width of the exclusion zone. This is used to determine when to toggle
   // the collapse state of the state controller.
   std::optional<int> exclusion_width_ = std::nullopt;

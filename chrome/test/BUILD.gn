@@ -11854,6 +11854,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/frame/multi_contents_view_interactive_uitest.cc",
         "../browser/ui/views/frame/multi_contents_view_tab_drag_interactive_uitest.cc",
         "../browser/ui/views/frame/picture_in_picture_browser_frame_view_interactive_uitest.cc",
+        "../browser/ui/views/frame/vertical_tab_strip_region_view_interactive_uitest.cc",
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
         "../browser/ui/views/keyboard_access_interactive_uitest.cc",
         "../browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view_interactive_uitest.cc",
