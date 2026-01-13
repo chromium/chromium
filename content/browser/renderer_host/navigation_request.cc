@@ -6038,6 +6038,7 @@ void NavigationRequest::OnFailureChecksComplete(
 void NavigationRequest::OnWillProcessResponseChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
   DCHECK(result.action() != NavigationThrottle::DEFER);
+  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
 
   // If the NavigationThrottles allowed the navigation to continue, have the
   // processing of the response resume in the network stack.
@@ -6110,9 +6111,11 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
       error_navigation_trigger_ =
           ErrorNavigationTrigger::kShouldNotRenderResponse;
-      OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
-                              std::nullopt /*error_page_content*/,
-                              false /*collapse_frame*/);
+      if (this_ptr) {
+        OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
+                                std::nullopt /*error_page_content*/,
+                                false /*collapse_frame*/);
+      }
       // DO NOT ADD CODE after this. The previous call to OnRequestFailed has
       // destroyed the NavigationRequest.
       return;
@@ -7975,6 +7978,7 @@ void NavigationRequest::OnWillProcessResponseProcessed(
   DCHECK_NE(NavigationThrottle::BLOCK_REQUEST, result.action());
   DCHECK_NE(NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE, result.action());
   DCHECK(processing_navigation_throttle_);
+  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
   processing_navigation_throttle_ = false;
   if (result.action() != NavigationThrottle::PROCEED) {
     SetState(CANCELING);
@@ -7984,8 +7988,9 @@ void NavigationRequest::OnWillProcessResponseProcessed(
       std::move(complete_callback_for_testing_).Run(result)) {
     return;
   }
-  OnWillProcessResponseChecksComplete(result);
-
+  if (this_ptr) {
+    OnWillProcessResponseChecksComplete(result);
+  }
   // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
   // deleted by the previous calls.
 }

@@ -154,6 +154,11 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
   // Holds a reference to the NavigationRequest that owns this instance.
   const raw_ref<NavigationRequest> navigation_request_;
 
+  // WeakPtr version of `navigation_request_` to prevent calling in cases where
+  // the NavigationRequest is already deleted.
+  // TODO(crbug.com/470054231): Remove once this is confirmed to not be needed.
+  base::WeakPtr<NavigationRequest> weak_navigation_request_;
+
   // Owns the NavigationThrottles associated with this navigation, and is
   // responsible for notifying them about the various navigation events.
   std::unique_ptr<NavigationThrottleRunnerBase> navigation_throttle_runner_;
