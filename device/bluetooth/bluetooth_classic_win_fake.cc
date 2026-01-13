@@ -4,13 +4,15 @@
 
 #include "device/bluetooth/bluetooth_classic_win_fake.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 
-namespace device {
-namespace win {
+namespace device::win {
 
 BluetoothClassicWrapperFake::BluetoothClassicWrapperFake()
     : last_error_(ERROR_SUCCESS) {}
@@ -91,13 +93,16 @@ BluetoothRadio* BluetoothClassicWrapperFake::SimulateARadio(
     BLUETOOTH_ADDRESS address) {
   BluetoothRadio* radio = new BluetoothRadio();
   radio->is_connectable = true;  // set it connectable by default.
-  size_t length =
-      ((name.size() > BLUETOOTH_MAX_NAME_SIZE) ? BLUETOOTH_MAX_NAME_SIZE
-                                               : name.size());
-  UNSAFE_TODO(wcsncpy(radio->radio_info.szName, base::as_wcstr(name), length));
+
+  auto name_dest_span = base::span(radio->radio_info.szName);
+  std::ranges::fill(name_dest_span, L'\0');
+  auto name_src_span =
+      base::span(name).first(std::min(name.size(), name_dest_span.size() - 1));
+  base::as_writable_chars(name_dest_span)
+      .copy_prefix_from(base::as_chars(name_src_span));
+
   radio->radio_info.address = address;
   simulated_radios_.reset(radio);
   return radio;
 }
-}  // namespace device
-}  // namespace win
+}  // namespace device::win
