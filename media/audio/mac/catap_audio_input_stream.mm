@@ -1061,7 +1061,7 @@ void CatapAudioInputStreamSource::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log_callback_.Run("CatapAudioInputStreamSource::" +
-                    base::StringPrintV(format, args));
+                    UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 
@@ -1273,7 +1273,7 @@ void CatapAudioInputStream::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log_callback_.Run("CatapAudioInputStream::" +
-                    base::StringPrintV(format, args));
+                    UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 

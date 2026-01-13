@@ -37,11 +37,8 @@ TEST(MAYBE_PartitionAllocStringPrintfTest, TruncatingStringPrintfMisc) {
 // memory and returns an entire result.
 TEST(MAYBE_PartitionAllocStringPrintfTest,
      TruncatingStringPrintfTruncatesResult) {
-  std::vector<char> buffer;
-  buffer.resize(kMaxLengthOfTruncatingStringPrintfResult + 1);
-  std::fill(buffer.begin(), buffer.end(), 'a');
-  buffer.push_back('\0');
-  std::string result = TruncatingStringPrintf("%s", buffer.data());
+  std::string too_long(kMaxLengthOfTruncatingStringPrintfResult + 1, 'a');
+  std::string result = TruncatingStringPrintf("%s", too_long.c_str());
   EXPECT_EQ(kMaxLengthOfTruncatingStringPrintfResult, result.length());
   EXPECT_EQ(std::string::npos, result.find_first_not_of('a'));
 }

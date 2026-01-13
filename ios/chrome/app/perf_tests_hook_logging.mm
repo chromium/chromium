@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/474474271): Address use of unsafe formatting functions.
+#pragma allow_unsafe_buffers
+#endif
+
 // clang-format off
 #import "ios/chrome/app/tests_hook.h"
 // clang-format on

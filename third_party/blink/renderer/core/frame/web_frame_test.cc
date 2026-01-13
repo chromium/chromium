@@ -5313,8 +5313,9 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
     Range* result = main_frame->GetTextFinder()->ActiveMatch();
     ASSERT_TRUE(result);
     result->setEnd(result->endContainer(), result->endOffset() + 3);
-    EXPECT_EQ(result->GetText(),
-              String::Format("%s %02d", kFindString, result_index + 2));
+    EXPECT_EQ(
+        result->GetText(),
+        UNSAFE_TODO(String::Format("%s %02d", kFindString, result_index + 2)));
 
     // Verify that the expected match rect also matches the currently active
     // match.  Compare the enclosing rects to prevent precision issues caused by

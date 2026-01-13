@@ -173,10 +173,11 @@ TEST_F(WaylandProtocolLoggerTest, DISABLED_LogsObjectsAndStrings) {
   EXPECT_THAT(messages_, ::testing::IsEmpty());
 
   PostToClientAndWait([&](test::TestClient* client) {
-    wl_resource_post_error(test::server_util::LookUpResource(
-                               server_.get(), test::client_util::GetResourceKey(
-                                                  client->display())),
-                           fake_error_code, "%s", fake_error);
+    UNSAFE_TODO(wl_resource_post_error(
+        test::server_util::LookUpResource(
+            server_.get(),
+            test::client_util::GetResourceKey(client->display())),
+        fake_error_code, "%s", fake_error));
     display_id = ProxyId(client->display());
   });
 

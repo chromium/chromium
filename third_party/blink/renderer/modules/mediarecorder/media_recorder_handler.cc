@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -964,13 +965,13 @@ void MediaRecorderHandler::OnEncodedVideo(
         last_seen_codec_description_.size() &&
         last_seen_codec_description_ != codec_description.value() &&
         recorder_) {
-      const String& message = String::Format(
+      const String& message = UNSAFE_TODO(String::Format(
           "When using \"%s\" for mp4 encoding, the codec description is not "
           "supposed to change during the entire recording. Normally, a change "
           "in the encoding resolution may lead to this situation. "
           "Consider switching to \"%s\" instead to resolve this problem",
           video_codec == media::VideoCodec::kH264 ? "avc1" : "hvc1",
-          video_codec == media::VideoCodec::kH264 ? "avc3" : "hev1");
+          video_codec == media::VideoCodec::kH264 ? "avc3" : "hev1"));
       auto* context = recorder_->GetExecutionContext();
       if (context && !context->IsContextDestroyed()) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

@@ -11,6 +11,11 @@
 #include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/logging.h"
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
 extern const int64_t kJniZeroHashWhole;
 extern const int64_t kJniZeroHashPriority;

@@ -36,7 +36,7 @@ LogMessage::~LogMessage() = default;
 void LogMessage::Print(const char* format, ...) {
   va_list ap;
   va_start(ap, format);
-  log_message_.stream() << base::StringPrintV(format, ap);
+  log_message_.stream() << UNSAFE_TODO(base::StringPrintV(format, ap));
   va_end(ap);
 }
 

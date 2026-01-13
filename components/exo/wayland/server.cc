@@ -120,7 +120,7 @@ constexpr int kMaxPendingConnections = 128;
 Server::ServerGetter g_server_getter;
 
 void wayland_log(const char* fmt, va_list argp) {
-  LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
+  LOG(WARNING) << "libwayland: " << UNSAFE_TODO(base::StringPrintV(fmt, argp));
 }
 
 int GetTextInputExtensionV1Version() {

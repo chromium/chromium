@@ -834,8 +834,8 @@ void LogMessage::Flush() {
             return OS_LOG_TYPE_DEFAULT;
         }
       }(severity_);
-      os_log_with_type(log.get(), os_log_type, "%{public}s",
-                       str_newline.c_str());
+      UNSAFE_TODO(os_log_with_type(log.get(), os_log_type, "%{public}s",
+                                   str_newline.c_str()));
     }
 #elif BUILDFLAG(IS_ANDROID)
     android_LogPriority priority =

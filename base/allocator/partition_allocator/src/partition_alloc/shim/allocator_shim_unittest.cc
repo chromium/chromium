@@ -813,7 +813,7 @@ TEST_F(AllocatorShimTest, InterceptVasprintf) {
 
 TEST_F(AllocatorShimTest, InterceptLongVasprintf) {
   char* str = nullptr;
-  const char* lorem_ipsum =
+  std::string lorem_ipsum =
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. "
       "Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, "
       "ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula "
@@ -827,8 +827,8 @@ TEST_F(AllocatorShimTest, InterceptLongVasprintf) {
       "et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed "
       "pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales "
       "hendrerit.";
-  int err = asprintf(&str, "%s", lorem_ipsum);
-  EXPECT_EQ(err, static_cast<int>(strlen(lorem_ipsum)));
+  int err = asprintf(&str, "%s", lorem_ipsum.c_str());
+  EXPECT_EQ(err, static_cast<int>(lorem_ipsum.length()));
   EXPECT_TRUE(str);
   free(str);
 }

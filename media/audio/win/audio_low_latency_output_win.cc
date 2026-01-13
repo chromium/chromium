@@ -120,9 +120,10 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   DCHECK_NE(device_id_, AudioDeviceDescription::kDefaultDeviceId);
   DCHECK_NE(device_id_, AudioDeviceDescription::kCommunicationsDeviceId);
 
-  SendLogMessage("%s({device_id=%s}, {params=[%s]}, {role=%s})", __func__,
-                 device_id.c_str(), params.AsHumanReadableString().c_str(),
-                 RoleToString(device_role));
+  UNSAFE_TODO(SendLogMessage("%s({device_id=%s}, {params=[%s]}, {role=%s})",
+                             __func__, device_id.c_str(),
+                             params.AsHumanReadableString().c_str(),
+                             RoleToString(device_role)));
 
   // Load the Avrt DLL if not already loaded. Required to support MMCSS.
   bool avrt_init = avrt::Initialize();
@@ -168,7 +169,8 @@ WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
 
 bool WASAPIAudioOutputStream::Open() {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
-  SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false");
+  UNSAFE_TODO(
+      SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false"));
   if (opened_)
     return true;
 
@@ -356,8 +358,9 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   CHECK(callback);
   CHECK(opened_);
-  SendLogMessage("%s([opened=%s, started=%s])", __func__,
-                 opened_ ? "true" : "false", render_thread_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s([opened=%s, started=%s])", __func__,
+                             opened_ ? "true" : "false",
+                             render_thread_ ? "true" : "false"));
 
   if (render_thread_) {
     CHECK_EQ(callback, source_);
@@ -441,8 +444,8 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 void WASAPIAudioOutputStream::Stop() {
   DVLOG(1) << "WASAPIAudioOutputStream::Stop()";
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
-  SendLogMessage("%s([started=%s])", __func__,
-                 render_thread_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s([started=%s])", __func__,
+                             render_thread_ ? "true" : "false"));
 
   if (!render_thread_)
     return;
@@ -528,7 +531,7 @@ void WASAPIAudioOutputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_callback_.Run("WAOS::" + base::StringPrintV(format, args) +
+  log_callback_.Run("WAOS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
                     base::StringPrintf(" [this=0x%" PRIXPTR "]",
                                        reinterpret_cast<uintptr_t>(this)));
   va_end(args);

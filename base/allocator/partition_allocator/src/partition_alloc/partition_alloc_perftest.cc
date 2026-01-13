@@ -447,7 +447,7 @@ void LogResults(int thread_count,
 }
 
 std::string MakeTestName(int thread_count, AllocatorType alloc_type) {
-  char const* alloc_type_str;
+  std::string alloc_type_str;
   switch (alloc_type) {
     case AllocatorType::kSystem:
       alloc_type_str = "System";
@@ -468,7 +468,8 @@ std::string MakeTestName(int thread_count, AllocatorType alloc_type) {
 #endif
   }
 
-  return base::TruncatingStringPrintf("%s_%d", alloc_type_str, thread_count);
+  return base::TruncatingStringPrintf("%s_%d", alloc_type_str.c_str(),
+                                      thread_count);
 }
 
 void RunTest(int thread_count,
@@ -502,9 +503,9 @@ void RunTest(int thread_count,
   }
 
   std::string test_name = MakeTestName(thread_count, alloc_type);
-  std::string name =
+  std::string name = PA_UNSAFE_TODO(
       base::TruncatingStringPrintf("%s%s_%s", kMetricPrefixMemoryAllocation,
-                                   story_base_name, test_name.c_str());
+                                   story_base_name, test_name.c_str()));
 
   DisplayResults(name + "_total", total_laps_per_second);
   DisplayResults(name + "_worst", min_laps_per_second);

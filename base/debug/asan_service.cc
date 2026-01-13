@@ -9,6 +9,7 @@
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/task_trace.h"
 #include "base/environment.h"
@@ -179,7 +180,7 @@ NO_SANITIZE("address")
 void AsanService::Log(const char* format, ...) {
   va_list ap;
   va_start(ap, format);
-  auto formatted_message = StringPrintV(format, ap);
+  auto formatted_message = UNSAFE_TODO(StringPrintV(format, ap));
   va_end(ap);
 
   // Despite its name, the function just prints the input to the destination

@@ -158,8 +158,8 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
 // TODO(crbug.com/427252761): Support other data types in CoreML backend.
 #if BUILDFLAG(IS_MAC)
   if (data_type != webnn::OperandDataType::kFloat16) {
-    return base::unexpected(String::Format(
-        "Invalid operand data type: %s", ToBlinkDataType(data_type).AsCStr()));
+    return base::unexpected(UNSAFE_TODO(String::Format(
+        "Invalid operand data type: %s", ToBlinkDataType(data_type).AsCStr())));
   }
   // The only format supported by CoreML `MLMultiArray::initWithPixelBuffer`.
   return viz::SinglePlaneFormat::kR_F16;
