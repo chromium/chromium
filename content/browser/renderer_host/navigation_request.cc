@@ -3321,7 +3321,7 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
 
   navigation_visible_to_embedder_ = false;
 #if BUILDFLAG(IS_ANDROID)
-  if (navigation_visible_to_embedder_) {
+  if (navigation_handle_proxy_) {
     navigation_handle_proxy_.reset();
     navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
   }
