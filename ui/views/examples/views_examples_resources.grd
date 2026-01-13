@@ -293,6 +293,9 @@
       <message translateable="false" name="IDS_MENU_BUTTON_LABEL">
         Open a menu
       </message>
+      <message translateable="false" name="IDS_DRAGGABLE_MENU_BUTTON_LABEL">
+        Draggables
+      </message>
 
       <!-- message box example -->
       <message translateable="false" name="IDS_MESSAGE_SELECT_LABEL">
