@@ -334,7 +334,9 @@ TEST_P(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
 }
 
 // Tests privacy indicators tray item visibility across all status area widgets.
-TEST_P(PrivacyIndicatorsControllerTest, PrivacyIndicatorsTrayItemView) {
+// TODO(crbug.com/475195986): Re-enable flaky test.
+TEST_P(PrivacyIndicatorsControllerTest,
+       DISABLED_PrivacyIndicatorsTrayItemView) {
   // Uses normal animation duration so that the icons would not be immediately
   // hidden after the animation.
   gfx::ScopedAnimationDurationScaleMode animation_scale(
