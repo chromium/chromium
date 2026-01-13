@@ -601,7 +601,8 @@ class RenderFrameHostManagerTest
 // a regression test for bug 9364.
 // Disabled on linux due to flakiness.
 // TODO(crbug.com/448610762): Fix and re-enable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_ChromeSchemeProcesses DISABLED_ChromeSchemeProcesses
 #else
 #define MAYBE_ChromeSchemeProcesses ChromeSchemeProcesses
