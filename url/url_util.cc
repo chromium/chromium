@@ -7,13 +7,13 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <atomic>
 #include <ostream>
 #include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "url/url_canon_internal.h"
@@ -517,7 +517,8 @@ void DoAddSchemeWithHandler(std::string_view new_scheme,
   DCHECK(!new_scheme.empty());
   DCHECK(!handler.empty());
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
-  DCHECK(!base::Contains(*schemes, new_scheme, &SchemeWithHandler::scheme));
+  DCHECK(
+      !std::ranges::contains(*schemes, new_scheme, &SchemeWithHandler::scheme));
   schemes->push_back({std::string(new_scheme), std::string(handler)});
 }
 
@@ -527,7 +528,7 @@ void DoAddScheme(std::string_view new_scheme,
   DCHECK(schemes);
   DCHECK(!new_scheme.empty());
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
-  DCHECK(!base::Contains(*schemes, new_scheme));
+  DCHECK(!std::ranges::contains(*schemes, new_scheme));
   schemes->push_back(std::string(new_scheme));
 }
 
@@ -538,7 +539,7 @@ void DoAddSchemeWithType(std::string_view new_scheme,
   DCHECK(schemes);
   DCHECK(!new_scheme.empty());
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
-  DCHECK(!base::Contains(*schemes, new_scheme, &SchemeWithType::scheme));
+  DCHECK(!std::ranges::contains(*schemes, new_scheme, &SchemeWithType::scheme));
   schemes->push_back({std::string(new_scheme), type});
 }
 
