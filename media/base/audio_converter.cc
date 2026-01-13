@@ -10,9 +10,9 @@
 
 #include "media/base/audio_converter.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -88,12 +88,12 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
 AudioConverter::~AudioConverter() = default;
 
 void AudioConverter::AddInput(InputCallback* input) {
-  DCHECK(!base::Contains(transform_inputs_, input));
+  DCHECK(!std::ranges::contains(transform_inputs_, input));
   transform_inputs_.push_back(input);
 }
 
 void AudioConverter::RemoveInput(InputCallback* input) {
-  DCHECK(base::Contains(transform_inputs_, input));
+  DCHECK(std::ranges::contains(transform_inputs_, input));
   transform_inputs_.remove(input);
 
   if (transform_inputs_.empty())

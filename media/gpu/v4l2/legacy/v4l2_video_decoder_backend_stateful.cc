@@ -9,13 +9,13 @@
 
 #include "media/gpu/v4l2/legacy/v4l2_video_decoder_backend_stateful.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <optional>
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -768,7 +768,7 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }
-  return base::Contains(supported_profiles_, profile);
+  return std::ranges::contains(supported_profiles_, profile);
 }
 
 bool V4L2StatefulVideoDecoderBackend::StopInputQueueOnResChange() const {

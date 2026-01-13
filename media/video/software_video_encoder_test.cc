@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -886,7 +887,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
     size_t encoded_frame_index = 0;
     size_t decoded_frame_index = 0;
     for (size_t i = 0; i < frames_to_encode.size(); ++i) {
-      if (base::Contains(dropped_frame_indices, i)) {
+      if (std::ranges::contains(dropped_frame_indices, i)) {
         // Dropped
         continue;
       }

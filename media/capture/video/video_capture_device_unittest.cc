@@ -12,10 +12,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -392,8 +392,8 @@ class VideoCaptureDeviceTest
   bool IsCaptureSizeSupported(const VideoCaptureDeviceInfo& device_info,
                               const gfx::Size& size) {
     auto& supported_formats = device_info.supported_formats;
-    if (!base::Contains(supported_formats, size,
-                        &VideoCaptureFormat::frame_size)) {
+    if (!std::ranges::contains(supported_formats, size,
+                               &VideoCaptureFormat::frame_size)) {
       DVLOG(1) << "Size " << size.ToString() << " is not supported.";
       return false;
     }

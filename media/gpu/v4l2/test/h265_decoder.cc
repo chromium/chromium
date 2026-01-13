@@ -11,7 +11,6 @@
 
 #include <linux/videodev2.h>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"

@@ -17,12 +17,12 @@
 #include <va/va_str.h>
 #include <xf86drm.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <vector>
 
 #include "base/bits.h"
-#include "base/containers/contains.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
@@ -330,7 +330,7 @@ TEST_F(VaapiTest, GetSupportedDecodeProfiles) {
     const auto va_profile = ConvertToVAProfile(profile.profile);
     ASSERT_TRUE(va_profile.has_value());
 
-    EXPECT_TRUE(base::Contains(va_info.at(*va_profile), VAEntrypointVLD))
+    EXPECT_TRUE(std::ranges::contains(va_info.at(*va_profile), VAEntrypointVLD))
         << " profile: " << GetProfileName(profile.profile)
         << ", va profile: " << vaProfileStr(*va_profile);
     EXPECT_TRUE(VaapiWrapper::IsDecodeSupported(*va_profile))
@@ -357,10 +357,12 @@ TEST_F(VaapiTest, GetSupportedEncodeProfiles) {
     };
     // Check if VaapiWrapper reports a profile that is not supported by
     // VaapiVideoEncodeAccelerator.
-    ASSERT_TRUE(base::Contains(kSupportableVideoEncoderProfiles, va_profile));
+    ASSERT_TRUE(
+        std::ranges::contains(kSupportableVideoEncoderProfiles, va_profile));
 
-    EXPECT_TRUE(base::Contains(va_info.at(*va_profile), VAEntrypointEncSlice) ||
-                base::Contains(va_info.at(*va_profile), VAEntrypointEncSliceLP))
+    EXPECT_TRUE(
+        std::ranges::contains(va_info.at(*va_profile), VAEntrypointEncSlice) ||
+        std::ranges::contains(va_info.at(*va_profile), VAEntrypointEncSliceLP))
         << " profile: " << GetProfileName(profile.profile)
         << ", va profile: " << vaProfileStr(*va_profile);
   }
@@ -428,8 +430,8 @@ TEST_F(VaapiTest, VaapiProfileProtected) {
   if (impl == VAImplementation::kIntelIHD) {
     const auto va_info = RetrieveVAInfoOutput();
 
-    EXPECT_TRUE(base::Contains(va_info.at(VAProfileProtected),
-                               VAEntrypointProtectedContent))
+    EXPECT_TRUE(std::ranges::contains(va_info.at(VAProfileProtected),
+                                      VAEntrypointProtectedContent))
         << ", va profile: " << vaProfileStr(VAProfileProtected);
   } else {
     EXPECT_EQ(impl, VAImplementation::kMesaGallium);
@@ -444,10 +446,11 @@ TEST_F(VaapiTest, VaapiProfilesJPEG) {
   const auto va_info = RetrieveVAInfoOutput();
 
   EXPECT_EQ(VaapiWrapper::IsDecodeSupported(VAProfileJPEGBaseline),
-            base::Contains(va_info.at(VAProfileJPEGBaseline), VAEntrypointVLD));
+            std::ranges::contains(va_info.at(VAProfileJPEGBaseline),
+                                  VAEntrypointVLD));
   EXPECT_EQ(VaapiWrapper::IsJpegEncodeSupported(),
-            base::Contains(va_info.at(VAProfileJPEGBaseline),
-                           VAEntrypointEncPicture));
+            std::ranges::contains(va_info.at(VAProfileJPEGBaseline),
+                                  VAEntrypointEncPicture));
 }
 
 // Verifies that the default VAEntrypoint as per VaapiWrapper is indeed among
@@ -463,7 +466,8 @@ TEST_F(VaapiTest, DefaultEntrypointIsSupported) {
           VaapiWrapper::GetDefaultVaEntryPoint(wrapper_mode,
                                                profile_and_entrypoints.first);
       const auto& supported_entrypoints = profile_and_entrypoints.second;
-      EXPECT_TRUE(base::Contains(supported_entrypoints, default_entrypoint))
+      EXPECT_TRUE(
+          std::ranges::contains(supported_entrypoints, default_entrypoint))
           << "Default VAEntrypoint " << vaEntrypointStr(default_entrypoint)
           << " (VaapiWrapper mode = " << wrapper_mode
           << ") is not supported for "
@@ -574,7 +578,8 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       // supported and enabled). Query VaapiWrapper's mandated entry point.
       const VAEntrypoint entrypoint =
           VaapiWrapper::GetDefaultVaEntryPoint(codec_mode, va_profile);
-      ASSERT_TRUE(base::Contains(profile_and_entrypoints.second, entrypoint));
+      ASSERT_TRUE(
+          std::ranges::contains(profile_and_entrypoints.second, entrypoint));
 
       VAConfigAttrib attrib{};
       attrib.type = VAConfigAttribEncQualityRange;

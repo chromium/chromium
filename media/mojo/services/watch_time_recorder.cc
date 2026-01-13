@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
@@ -117,7 +116,7 @@ void WatchTimeRecorder::FinalizeWatchTime(
   // needed by for UKM and MTBR recording below.
   for (auto& kv : watch_time_info_) {
     if (!should_finalize_everything &&
-        !base::Contains(keys_to_finalize, kv.first)) {
+        !std::ranges::contains(keys_to_finalize, kv.first)) {
       continue;
     }
 

@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
@@ -113,7 +113,7 @@ class WatchTimeRecorderTest : public testing::Test {
           ConvertWatchTimeKeyToStringForUma(static_cast<WatchTimeKey>(i));
       if (test_key.empty())
         continue;
-      if (base::Contains(keys, test_key)) {
+      if (std::ranges::contains(keys, test_key)) {
         histogram_tester_->ExpectUniqueSample(test_key, value.InMilliseconds(),
                                               1);
       } else {
@@ -126,7 +126,7 @@ class WatchTimeRecorderTest : public testing::Test {
                     const std::vector<std::string_view>& keys,
                     int64_t value) {
     for (auto key : full_key_list) {
-      if (base::Contains(keys, key))
+      if (std::ranges::contains(keys, key))
         histogram_tester_->ExpectUniqueSample(key, value, 1);
       else
         histogram_tester_->ExpectTotalCount(key, 0);

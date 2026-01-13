@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "media/base/channel_mixer.h"
 
 namespace media {
@@ -272,7 +271,7 @@ void ChannelMixingMatrix::AccountFor(Channels ch) {
 }
 
 bool ChannelMixingMatrix::IsUnaccounted(Channels ch) const {
-  return base::Contains(unaccounted_inputs_, ch);
+  return std::ranges::contains(unaccounted_inputs_, ch);
 }
 
 bool ChannelMixingMatrix::IsMonoInputLayout() const {

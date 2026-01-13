@@ -13,7 +13,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -588,7 +587,7 @@ bool V4L2VideoDecoder::SetupInputFormat() {
   const auto v4l2_codecs_as_pix_fmts = EnumerateSupportedPixFmts(
       base::BindRepeating(&V4L2Device::Ioctl, device_),
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-  if (!base::Contains(v4l2_codecs_as_pix_fmts, input_format_fourcc_)) {
+  if (!std::ranges::contains(v4l2_codecs_as_pix_fmts, input_format_fourcc_)) {
     DVLOGF(1) << FourccToString(input_format_fourcc_)
               << " not recognised, skipping...";
     return false;

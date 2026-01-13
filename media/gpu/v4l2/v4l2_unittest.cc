@@ -13,8 +13,9 @@
 #include <string.h>
 #include <xf86drm.h>
 
+#include <algorithm>
+
 #include "base/bits.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/memory_mapped_file.h"
@@ -213,8 +214,8 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
                                 V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   int32_t chosen_v4l2_pixel_format = 0;
   for (const auto supported_v4l2_pixel_format : supported_v4l2_pixel_formats) {
-    if (base::Contains(desired_v4l2_pixel_formats,
-                       supported_v4l2_pixel_format)) {
+    if (std::ranges::contains(desired_v4l2_pixel_formats,
+                              supported_v4l2_pixel_format)) {
       chosen_v4l2_pixel_format = supported_v4l2_pixel_format;
       break;
     }

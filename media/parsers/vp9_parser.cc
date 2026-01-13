@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
@@ -390,11 +389,11 @@ bool Vp9FrameContext::IsValid() const {
     for (auto& ai : a) {
       for (auto& aj : ai) {
         auto [dc, ac] = base::span(aj).split_at<1u>();
-        if (base::Contains(base::as_byte_span(base::span(dc[0]).first<3u>()),
-                           0)) {
+        if (std::ranges::contains(
+                base::as_byte_span(base::span(dc[0]).first<3u>()), 0)) {
           return false;
         }
-        if (base::Contains(base::as_byte_span(ac), 0)) {
+        if (std::ranges::contains(base::as_byte_span(ac), 0)) {
           return false;
         }
       }

@@ -1490,7 +1490,7 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       VideoCodec::kAV1,
   };
-  if (!base::Contains(kCodecsHaveSWBRC, codec_)) {
+  if (!std::ranges::contains(kCodecsHaveSWBRC, codec_)) {
     return;
   }
 

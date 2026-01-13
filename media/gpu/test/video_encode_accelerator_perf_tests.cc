@@ -17,7 +17,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -816,7 +815,8 @@ class VideoEncoderTest : public ::testing::Test {
         }
       }
     }
-    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr,
+    LOG_ASSERT(
+        !std::ranges::contains(bitstream_processors, nullptr,
                                &std::unique_ptr<BitstreamProcessor>::get));
     return bitstream_processors;
   }
