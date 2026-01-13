@@ -39,17 +39,13 @@ impl<W: Write> ZlibEncoder<W> {
     /// When this encoder is dropped or unwrapped the final pieces of data will
     /// be flushed.
     pub fn new(w: W, level: crate::Compression) -> ZlibEncoder<W> {
-        ZlibEncoder {
-            inner: zio::Writer::new(w, Compress::new(level, true)),
-        }
+        ZlibEncoder { inner: zio::Writer::new(w, Compress::new(level, true)) }
     }
 
     /// Creates a new encoder which will write compressed data to the stream
     /// `w` with the given `compression` settings.
     pub fn new_with_compress(w: W, compression: Compress) -> ZlibEncoder<W> {
-        ZlibEncoder {
-            inner: zio::Writer::new(w, compression),
-        }
+        ZlibEncoder { inner: zio::Writer::new(w, compression) }
     }
 
     /// Acquires a reference to the underlying writer.
@@ -129,7 +125,7 @@ impl<W: Write> ZlibEncoder<W> {
     ///
     /// This will flush the underlying data stream and then return the contained
     /// writer if the flush succeeded.
-    /// The compressed stream will not closed but only flushed. This
+    /// The compressed stream will not be closed but only flushed. This
     /// means that obtained byte array can by extended by another deflated
     /// stream. To close the stream add the two bytes 0x3 and 0x0.
     ///
@@ -180,9 +176,10 @@ impl<W: Read + Write> Read for ZlibEncoder<W> {
 /// This structure implements a [`Write`] and will emit a stream of decompressed
 /// data when fed a stream of compressed data.
 ///
-/// After decoding a single member of the ZLIB data this writer will return the number of bytes up
-/// to the end of the ZLIB member and subsequent writes will return Ok(0) allowing the caller to
-/// handle any data following the ZLIB member.
+/// After decoding a single member of the ZLIB data this writer will return the
+/// number of bytes up to the end of the ZLIB member and subsequent writes will
+/// return Ok(0) allowing the caller to handle any data following the ZLIB
+/// member.
 ///
 /// [`Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
 ///
@@ -225,20 +222,16 @@ impl<W: Write> ZlibDecoder<W> {
     /// When this decoder is dropped or unwrapped the final pieces of data will
     /// be flushed.
     pub fn new(w: W) -> ZlibDecoder<W> {
-        ZlibDecoder {
-            inner: zio::Writer::new(w, Decompress::new(true)),
-        }
+        ZlibDecoder { inner: zio::Writer::new(w, Decompress::new(true)) }
     }
 
-    /// Creates a new decoder which will write uncompressed data to the stream `w`
-    /// using the given `decompression` settings.
+    /// Creates a new decoder which will write uncompressed data to the stream
+    /// `w` using the given `decompression` settings.
     ///
     /// When this decoder is dropped or unwrapped the final pieces of data will
     /// be flushed.
     pub fn new_with_decompress(w: W, decompression: Decompress) -> ZlibDecoder<W> {
-        ZlibDecoder {
-            inner: zio::Writer::new(w, decompression),
-        }
+        ZlibDecoder { inner: zio::Writer::new(w, decompression) }
     }
 
     /// Acquires a reference to the underlying writer.
@@ -354,8 +347,8 @@ mod tests {
         Hello World Hello World Hello World Hello World Hello World \
         Hello World Hello World Hello World Hello World Hello World";
 
-    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent writes, allowing any
-    // additional data to be consumed by the caller.
+    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent
+    // writes, allowing any additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let compressed = {

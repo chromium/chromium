@@ -3,9 +3,9 @@
 use std::convert::TryInto;
 use std::fmt;
 
-use miniz_oxide::deflate::core::CompressorOxide;
-use miniz_oxide::inflate::stream::InflateState;
-pub use miniz_oxide::*;
+use ::miniz_oxide::deflate::core::CompressorOxide;
+use ::miniz_oxide::inflate::stream::InflateState;
+pub use ::miniz_oxide::*;
 
 pub const MZ_NO_FLUSH: isize = MZFlush::None as isize;
 pub const MZ_PARTIAL_FLUSH: isize = MZFlush::Partial as isize;
@@ -64,11 +64,7 @@ impl InflateBackend for Inflate {
     fn make(zlib_header: bool, _window_bits: u8) -> Self {
         let format = format_from_bool(zlib_header);
 
-        Inflate {
-            inner: InflateState::new_boxed(format),
-            total_in: 0,
-            total_out: 0,
-        }
+        Inflate { inner: InflateState::new_boxed(format), total_in: 0, total_out: 0 }
     }
 
     fn decompress(
@@ -145,18 +141,15 @@ impl From<FlushCompress> for MZFlush {
 
 impl DeflateBackend for Deflate {
     fn make(level: Compression, zlib_header: bool, _window_bits: u8) -> Self {
-        // Check in case the integer value changes at some point.
+        // Check in case the integer value changes at some point. Unlike the other zlib
+        // implementations, miniz_oxide actually has a compression level 10.
         debug_assert!(level.level() <= 10);
 
         let mut inner: Box<CompressorOxide> = Box::default();
         let format = format_from_bool(zlib_header);
         inner.set_format_and_level(format, level.level().try_into().unwrap_or(1));
 
-        Deflate {
-            inner,
-            total_in: 0,
-            total_out: 0,
-        }
+        Deflate { inner, total_in: 0, total_out: 0 }
     }
 
     fn compress(

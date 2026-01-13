@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.67.0"
 name = "flate2"
-version = "1.1.5"
+version = "1.1.8"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -55,10 +55,11 @@ rustdoc-args = [
 ]
 
 [features]
+any_c_zlib = ["any_zlib"]
 any_impl = []
 any_zlib = ["any_impl"]
 cloudflare_zlib = [
-    "any_zlib",
+    "any_c_zlib",
     "cloudflare-zlib-sys",
 ]
 default = ["rust_backend"]
@@ -68,15 +69,15 @@ rust_backend = [
     "any_impl",
 ]
 zlib = [
-    "any_zlib",
+    "any_c_zlib",
     "libz-sys",
 ]
 zlib-default = [
-    "any_zlib",
+    "any_c_zlib",
     "libz-sys/default",
 ]
 zlib-ng = [
-    "any_zlib",
+    "any_c_zlib",
     "libz-ng-sys",
 ]
 zlib-ng-compat = [
@@ -85,7 +86,7 @@ zlib-ng-compat = [
 ]
 zlib-rs = [
     "any_zlib",
-    "libz-rs-sys",
+    "dep:zlib-rs",
 ]
 
 [lib]
@@ -185,6 +186,10 @@ name = "zlibencoder-write"
 path = "examples/zlibencoder-write.rs"
 
 [[test]]
+name = "capabilities"
+path = "tests/capabilities.rs"
+
+[[test]]
 name = "early-flush"
 path = "tests/early-flush.rs"
 
@@ -207,18 +212,13 @@ optional = true
 [dependencies.crc32fast]
 version = "1.2.0"
 
+[dependencies.document-features]
+version = "0.2"
+optional = true
+
 [dependencies.libz-ng-sys]
 version = "1.1.16"
 optional = true
-
-[dependencies.libz-rs-sys]
-version = "0.5.1"
-features = [
-    "std",
-    "rust-allocator",
-]
-optional = true
-default-features = false
 
 [dependencies.libz-sys]
 version = "1.1.20"
@@ -232,6 +232,19 @@ features = [
     "simd",
 ]
 optional = true
+default-features = false
+
+[dependencies.zlib-rs]
+version = "0.5.5"
+features = [
+    "std",
+    "rust-allocator",
+]
+optional = true
+default-features = false
+
+[dev-dependencies.futures]
+version = "0.3"
 default-features = false
 
 [dev-dependencies.quickcheck]
