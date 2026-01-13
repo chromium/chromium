@@ -1838,46 +1838,57 @@ bool DisassemblerDex::ParseHeader() {
   }
 
   // Make local copies of main map items.
-  if (map_item_map_.count(dex::kTypeStringIdItem)) {
-    string_map_item_ = *map_item_map_[dex::kTypeStringIdItem];
+  if (auto it = map_item_map_.find(dex::kTypeStringIdItem);
+      it != map_item_map_.end()) {
+    string_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeTypeIdItem)) {
-    type_map_item_ = *map_item_map_[dex::kTypeTypeIdItem];
+  if (auto it = map_item_map_.find(dex::kTypeTypeIdItem);
+      it != map_item_map_.end()) {
+    type_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeProtoIdItem)) {
-    proto_map_item_ = *map_item_map_[dex::kTypeProtoIdItem];
+  if (auto it = map_item_map_.find(dex::kTypeProtoIdItem);
+      it != map_item_map_.end()) {
+    proto_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeFieldIdItem)) {
-    field_map_item_ = *map_item_map_[dex::kTypeFieldIdItem];
+  if (auto it = map_item_map_.find(dex::kTypeFieldIdItem);
+      it != map_item_map_.end()) {
+    field_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeMethodIdItem)) {
-    method_map_item_ = *map_item_map_[dex::kTypeMethodIdItem];
+  if (auto it = map_item_map_.find(dex::kTypeMethodIdItem);
+      it != map_item_map_.end()) {
+    method_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeClassDefItem)) {
-    class_def_map_item_ = *map_item_map_[dex::kTypeClassDefItem];
+  if (auto it = map_item_map_.find(dex::kTypeClassDefItem);
+      it != map_item_map_.end()) {
+    class_def_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeCallSiteIdItem)) {
-    call_site_map_item_ = *map_item_map_[dex::kTypeCallSiteIdItem];
+  if (auto it = map_item_map_.find(dex::kTypeCallSiteIdItem);
+      it != map_item_map_.end()) {
+    call_site_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeMethodHandleItem)) {
-    method_handle_map_item_ = *map_item_map_[dex::kTypeMethodHandleItem];
+  if (auto it = map_item_map_.find(dex::kTypeMethodHandleItem);
+      it != map_item_map_.end()) {
+    method_handle_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeTypeList)) {
-    type_list_map_item_ = *map_item_map_[dex::kTypeTypeList];
+  if (auto it = map_item_map_.find(dex::kTypeTypeList);
+      it != map_item_map_.end()) {
+    type_list_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeAnnotationSetRefList)) {
-    annotation_set_ref_list_map_item_ =
-        *map_item_map_[dex::kTypeAnnotationSetRefList];
+  if (auto it = map_item_map_.find(dex::kTypeAnnotationSetRefList);
+      it != map_item_map_.end()) {
+    annotation_set_ref_list_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeAnnotationSetItem)) {
-    annotation_set_map_item_ = *map_item_map_[dex::kTypeAnnotationSetItem];
+  if (auto it = map_item_map_.find(dex::kTypeAnnotationSetItem);
+      it != map_item_map_.end()) {
+    annotation_set_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeCodeItem)) {
-    code_map_item_ = *map_item_map_[dex::kTypeCodeItem];
+  if (auto it = map_item_map_.find(dex::kTypeCodeItem);
+      it != map_item_map_.end()) {
+    code_map_item_ = *it->second;
   }
-  if (map_item_map_.count(dex::kTypeAnnotationsDirectoryItem)) {
-    annotations_directory_map_item_ =
-        *map_item_map_[dex::kTypeAnnotationsDirectoryItem];
+  if (auto it = map_item_map_.find(dex::kTypeAnnotationsDirectoryItem);
+      it != map_item_map_.end()) {
+    annotations_directory_map_item_ = *it->second;
   }
 
   // Iteratively parse variable length lists, annotations directory items, and
