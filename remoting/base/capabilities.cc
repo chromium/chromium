@@ -4,10 +4,10 @@
 
 #include "remoting/base/capabilities.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -17,7 +17,7 @@ namespace remoting {
 bool HasCapability(const std::string& capabilities, const std::string& key) {
   std::vector<std::string_view> caps = base::SplitStringPiece(
       capabilities, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::Contains(caps, std::string_view(key));
+  return std::ranges::contains(caps, std::string_view(key));
 }
 
 std::string IntersectCapabilities(const std::string& client_capabilities,

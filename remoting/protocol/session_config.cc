@@ -4,10 +4,10 @@
 
 #include "remoting/protocol/session_config.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -23,7 +23,7 @@ bool SelectCommonChannelConfig(const std::list<ChannelConfig>& host_configs,
   // over all of them is not a problem.
   std::list<ChannelConfig>::const_iterator it;
   for (it = client_configs.begin(); it != client_configs.end(); ++it) {
-    if (base::Contains(host_configs, *it)) {
+    if (std::ranges::contains(host_configs, *it)) {
       *config = *it;
       return true;
     }
@@ -203,10 +203,10 @@ bool CandidateSessionConfig::IsSupported(const SessionConfig& config) const {
   switch (config.protocol()) {
     case SessionConfig::Protocol::ICE:
       return ice_supported() &&
-             base::Contains(control_configs_, config.control_config()) &&
-             base::Contains(event_configs_, config.event_config()) &&
-             base::Contains(video_configs_, config.video_config()) &&
-             base::Contains(audio_configs_, config.audio_config());
+             std::ranges::contains(control_configs_, config.control_config()) &&
+             std::ranges::contains(event_configs_, config.event_config()) &&
+             std::ranges::contains(video_configs_, config.video_config()) &&
+             std::ranges::contains(audio_configs_, config.audio_config());
 
     case SessionConfig::Protocol::WEBRTC:
       return webrtc_supported();

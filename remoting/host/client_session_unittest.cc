@@ -5,6 +5,7 @@
 
 #include "remoting/host/client_session.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <memory>
@@ -14,7 +15,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -100,7 +100,7 @@ MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
                         base::SPLIT_WANT_NONEMPTY);
 
   for (const auto& word : words_expected) {
-    if (!base::Contains(words_args, word)) {
+    if (!std::ranges::contains(words_args, word)) {
       return false;
     }
   }

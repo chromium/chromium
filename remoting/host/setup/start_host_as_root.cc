@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -20,7 +21,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/process/launch.h"
@@ -70,7 +70,7 @@ bool CheckChromotingGroupMembership(const char* user_name,
   // Retrieve the groups.
   std::vector<gid_t> groups(group_count);
   getgrouplist(user_name, user_group_id, groups.data(), &group_count);
-  if (!base::Contains(groups, chromoting_group->gr_gid)) {
+  if (!std::ranges::contains(groups, chromoting_group->gr_gid)) {
     PrintGroupMembershipError(user_name);
     return false;
   }

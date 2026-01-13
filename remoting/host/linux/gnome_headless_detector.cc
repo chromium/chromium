@@ -4,9 +4,9 @@
 
 #include "remoting/host/linux/gnome_headless_detector.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_systemd1_Manager.h"
@@ -101,7 +101,7 @@ void GnomeHeadlessDetector::OnExecStartReply(
 
   auto args = exec_start.get<1>().Into<std::vector<std::string>>();
   constexpr char kHeadlessArg[] = "--headless";
-  if (!base::Contains(args, kHeadlessArg)) {
+  if (!std::ranges::contains(args, kHeadlessArg)) {
     HOST_LOG << "Did not find '" << kHeadlessArg << "' in gnome-shell args";
     std::move(callback_).Run(false);
     return;
