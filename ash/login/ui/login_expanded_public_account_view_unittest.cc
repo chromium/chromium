@@ -103,6 +103,13 @@ class LoginExpandedPublicAccountViewTest
     SetWidget(std::move(widget));
   }
 
+  void TearDown() override {
+    container_ = nullptr;
+    other_view_ = nullptr;
+    public_account_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
   // Add two fake language items, the first item is selected by default.
   void SetupLanguageInfo() {
     std::vector<LocaleItem> result;
@@ -158,10 +165,9 @@ class LoginExpandedPublicAccountViewTest
   LoginUserInfo user_;
 
   // Owned by test widget view hierarchy.
-  raw_ptr<views::BoxLayoutView, DanglingUntriaged> container_ = nullptr;
-  raw_ptr<LoginExpandedPublicAccountView, DanglingUntriaged> public_account_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged> other_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> container_ = nullptr;
+  raw_ptr<LoginExpandedPublicAccountView> public_account_ = nullptr;
+  raw_ptr<views::View> other_view_ = nullptr;
 };
 
 }  // namespace
