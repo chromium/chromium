@@ -3158,14 +3158,21 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       backdrop_rect = gfx::RectFToSkRect(params->visible_rect);
     }
 
-    // Besides ensuring the output of the backdrop filter doesn't go beyond its
-    // bounds, it should not read pixels outside of its bounds to prevent color
-    // bleeding. If it's a pixel-moving filter, we compose a kMirror-tiling Crop
-    // image filter to enforce this requirement. Mirror tiling avoids jarring
-    // discontinuities and flickering when content moves in and out of the
-    // background. See https://github.com/w3c/fxtf-drafts/issues/374.
-    // NOTE: The above comment refers to the intended ideal behavior. Originally
-    // the edge mode was kClamp and a feature controls the active mode.
+    // Sanity check: limit backdrop filter size to the current render pass
+    // output to prevent excessively large filter/texture sizes.
+    // TODO(crbug.com/448789651): This somewhat odd hack is only necessary
+    // because backdrop source image size is not computed correctly. Previously,
+    // both source and destination images would be clamped to the visible area,
+    // but continued disagreements over the bdfilter spec meant this behavior
+    // was contested. When there's more clarity on this subject, this should be
+    // replaced with a more sensible calculation.
+    backdrop_rect.intersect(gfx::RectToSkRect(MoveFromDrawToWindowSpace(
+        current_frame()->current_render_pass->output_rect)));
+
+    // TODO(crbug.com/471150365): Although the mirroring behavior is not without
+    // some issues (particularly with flickering) it's much better tolerated by
+    // users and has the support of WebKit and Gecko. This FF should probably be
+    // removed.
     SkIRect sk_crop_rect = backdrop_rect.roundOut();
     SkIRect sk_src_rect = rpdq_params.backdrop_filter->filterBounds(
         sk_crop_rect, SkMatrix::I(), SkImageFilter::kReverse_MapDirection,
