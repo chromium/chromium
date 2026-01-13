@@ -107,6 +107,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   const ExtensionId& extension_id() const { return extension_id_; }
   const base::Version& extension_version() const { return extension_version_; }
+  const base::FilePath& extension_root() const { return extension_root_; }
   const base::FilePath& relative_path() const { return relative_path_; }
 
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {

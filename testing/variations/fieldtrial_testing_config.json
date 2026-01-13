@@ -7100,24 +7100,6 @@
             ]
         }
     ],
-    "ContentVerifierCacheIncludesExtensionRoot": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentVerifierCacheIncludesExtensionRoot"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentVerifyJobUseJobVersionForHashing": [
         {
             "platforms": [
@@ -10519,6 +10501,24 @@
                     "name": "Disabled",
                     "disable_features": [
                         "ExtensionBrowserNamespaceAlternative"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ExtensionContentVerificationUsesExtensionRoot": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionContentVerificationUsesExtensionRoot"
                     ]
                 }
             ]

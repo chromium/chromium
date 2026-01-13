@@ -168,7 +168,7 @@ BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
 BASE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContentVerifierCacheIncludesExtensionRoot,
+BASE_FEATURE(kExtensionContentVerificationUsesExtensionRoot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContentVerifyJobUseJobVersionForHashing,

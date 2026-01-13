@@ -146,6 +146,7 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
   }
 
   result->version = extension->version();
+  result->extension_root = extension->path();
   result->manifest_version = extension->manifest_version();
   result->source_type = source_type;
 
@@ -154,7 +155,8 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
 
 base::FilePath GetExtensionRootToUse(const base::FilePath& extension_root) {
   return base::FeatureList::IsEnabled(
-             extensions_features::kContentVerifierCacheIncludesExtensionRoot)
+             extensions_features::
+                 kExtensionContentVerificationUsesExtensionRoot)
              ? extension_root
              : base::FilePath();
 }
@@ -918,6 +920,19 @@ void ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
     // has been loaded so let's not start the job since it'll try to check for a
     // non-existent `ContentHash` and/or create a `ContentHash` for an unloaded
     // extension version.
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::
+              kExtensionContentVerificationUsesExtensionRoot) &&
+      data->extension_root != job->extension_root()) {
+    // Since this extension version is the same this verify job must've
+    // started during an extension corruption repair (which changes the root
+    // directory but the extension version remains the same). This check
+    // prevents starting jobs for old root directories that could lead to
+    // memory leaks (stale cache entries) and false-positive corruption
+    // reports for the currently loaded extension.
     return;
   }
 
