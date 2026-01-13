@@ -111,7 +111,6 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
   tab_groups::TabGroupVisualData visual_data;
   std::string error;
-  // TODO(crbug.com/405219902): `visual_data` is empty on Android.
   if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
                                       include_incognito_information(), nullptr,
                                       &id, &visual_data, &error)) {

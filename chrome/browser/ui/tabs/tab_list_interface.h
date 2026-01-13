@@ -152,6 +152,7 @@ class TabListInterface {
   virtual void Ungroup(const std::set<tabs::TabHandle>& tabs) = 0;
 
   // Moves the tab group to `index`. The nearest valid index will be used.
+  // The index assumes the group has already been removed from the tab strip.
   virtual void MoveGroupTo(tab_groups::TabGroupId group_id, int index) = 0;
 
   // Moves `tab` from this TabListInterface to the TabListInterface associated

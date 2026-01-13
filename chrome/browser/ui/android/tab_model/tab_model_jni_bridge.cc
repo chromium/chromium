@@ -713,9 +713,26 @@ void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
 
 void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
                                     int index) {
-  LOG(ERROR) << "JAMES MoveGroupTo " << index;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  std::vector<int> range =
+      Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id.token());
+  if (range.empty()) {
+    LOG(ERROR) << "No tab group found to move.";
+    return;
+  }
+  CHECK_EQ(range.size(), 2u);
+
+  // range[1] is actually endIndex+1, so no final + 1 is required.
+  int tab_group_width = range[1] - range[0];
+
+  // Android assumes `index` includes the tab group. Win/Mac/Linux desktop
+  // assumes `index` is with the tab group removed. For compatibility with
+  // desktop, adjust the `index` past the tab group if it is at or to the right
+  // of the group's leftmost index.
+  if (index >= range[0]) {
+    index += tab_group_width - 1;
+  }
   Java_TabModelJniBridge_moveGroupToIndex(env, jobj, group_id.token(), index);
 }
 
