@@ -886,6 +886,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
   sources = [
     "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeIntentTest.java",
     "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeTest.java",
+    "src/org/chromium/chrome/browser/notifications/TipsNotificationsFeaturePromoTest.java",
     "src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManagerTest.java",
   ]
 
