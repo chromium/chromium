@@ -786,10 +786,10 @@ TEST_P(AesDecryptorTest, MultipleKeysAndFrames) {
           kIv2.data(),
           base::span<const uint8_t>(kIv2).subspan(std::size(kIv2)).data()),
       no_subsample_entries_);
-  UNSAFE_TODO(ASSERT_NO_FATAL_FAILURE(DecryptAndExpect(
+  ASSERT_NO_FATAL_FAILURE(DecryptAndExpect(
       encrypted_buffer,
       std::vector<uint8_t>(kOriginalData2.begin(), kOriginalData2.end()),
-      SUCCESS)));
+      SUCCESS));
 }
 
 TEST_P(AesDecryptorTest, CorruptedIv) {

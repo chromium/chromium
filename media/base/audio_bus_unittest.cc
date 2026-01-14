@@ -804,7 +804,7 @@ TEST_F(AudioBusTest, ToInterleavedSanitized_Unsafe) {
   std::array<float, std::size(kTestVectorFloat32Sanitized)> test_array;
   bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array.data());
   for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i) {
-    UNSAFE_TODO(ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]));
+    ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]);
   }
 
   // Verify that Float32SampleTypeTraitsNoClip applied no sanity. Note: We don't
@@ -814,9 +814,9 @@ TEST_F(AudioBusTest, ToInterleavedSanitized_Unsafe) {
                                                     test_array.data());
   for (size_t i = 0; i < kTotalFrames; ++i) {
     if (std::isnan(test_array[i])) {
-      UNSAFE_TODO(EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i])));
+      EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i]));
     } else {
-      UNSAFE_TODO(EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]));
+      EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]);
     }
   }
 }

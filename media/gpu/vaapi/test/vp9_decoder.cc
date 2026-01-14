@@ -244,12 +244,12 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
                  seg.FeatureEnabled(i, Vp9SegmentationParams::SEG_LVL_SKIP));
 #undef SEG_TO_SP_SF
 
-    SafeArrayMemcpy(seg_param.filter_level, UNSAFE_TODO(lf.lvl[i]));
+    SafeArrayMemcpy(seg_param.filter_level, lf.lvl[i]);
 
-    seg_param.luma_dc_quant_scale = UNSAFE_TODO(seg.y_dequant[i])[0];
-    seg_param.luma_ac_quant_scale = UNSAFE_TODO(seg.y_dequant[i])[1];
-    seg_param.chroma_dc_quant_scale = UNSAFE_TODO(seg.uv_dequant[i])[0];
-    seg_param.chroma_ac_quant_scale = UNSAFE_TODO(seg.uv_dequant[i])[1];
+    seg_param.luma_dc_quant_scale = seg.y_dequant[i][0];
+    seg_param.luma_ac_quant_scale = seg.y_dequant[i][1];
+    seg_param.chroma_dc_quant_scale = seg.uv_dequant[i][0];
+    seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
   }
 
   res = vaCreateBuffer(

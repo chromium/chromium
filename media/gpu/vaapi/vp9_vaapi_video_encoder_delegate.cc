@@ -547,7 +547,7 @@ VP9VaapiVideoEncoderDelegate::SetFrameHeader(
 
     for (size_t i = 0; i < picture_param.reference_frame_indices.size(); ++i) {
       (*ref_frames_used)[i] = true;
-      UNSAFE_TODO(picture->frame_hdr->ref_frame_idx[i]) =
+      picture->frame_hdr->ref_frame_idx[i] =
           picture_param.reference_frame_indices[i];
     }
   } else {
@@ -674,17 +674,14 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
     CHECK_LT(first_used_ref_frame, 3u);
 
     pic_param.ref_flags.bits.ref_last_idx =
-        ref_frames_used[0]
-            ? frame_header->ref_frame_idx[0]
-            : UNSAFE_TODO(frame_header->ref_frame_idx[first_used_ref_frame]);
+        ref_frames_used[0] ? frame_header->ref_frame_idx[0]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
     pic_param.ref_flags.bits.ref_gf_idx =
-        ref_frames_used[1]
-            ? frame_header->ref_frame_idx[1]
-            : UNSAFE_TODO(frame_header->ref_frame_idx[first_used_ref_frame]);
+        ref_frames_used[1] ? frame_header->ref_frame_idx[1]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
     pic_param.ref_flags.bits.ref_arf_idx =
-        ref_frames_used[2]
-            ? frame_header->ref_frame_idx[2]
-            : UNSAFE_TODO(frame_header->ref_frame_idx[first_used_ref_frame]);
+        ref_frames_used[2] ? frame_header->ref_frame_idx[2]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
   }
 
   pic_param.pic_flags.bits.frame_type = frame_header->frame_type;

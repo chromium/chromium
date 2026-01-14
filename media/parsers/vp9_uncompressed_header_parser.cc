@@ -796,17 +796,16 @@ void Vp9UncompressedHeaderParser::ReadLoopFilterParams() {
     loop_filter.delta_update = reader_.ReadBool();
     if (loop_filter.delta_update) {
       for (size_t i = 0; i < Vp9RefType::VP9_FRAME_MAX; i++) {
-        UNSAFE_TODO(loop_filter.update_ref_deltas[i]) = reader_.ReadBool();
-        if (UNSAFE_TODO(loop_filter.update_ref_deltas[i])) {
-          UNSAFE_TODO(loop_filter.ref_deltas[i]) = reader_.ReadSignedLiteral(6);
+        loop_filter.update_ref_deltas[i] = reader_.ReadBool();
+        if (loop_filter.update_ref_deltas[i]) {
+          loop_filter.ref_deltas[i] = reader_.ReadSignedLiteral(6);
         }
       }
 
       for (size_t i = 0; i < Vp9LoopFilterParams::kNumModeDeltas; i++) {
-        UNSAFE_TODO(loop_filter.update_mode_deltas[i]) = reader_.ReadBool();
-        if (UNSAFE_TODO(loop_filter.update_mode_deltas[i])) {
-          UNSAFE_TODO(loop_filter.mode_deltas[i]) =
-              reader_.ReadSignedLiteral(6);
+        loop_filter.update_mode_deltas[i] = reader_.ReadBool();
+        if (loop_filter.update_mode_deltas[i]) {
+          loop_filter.mode_deltas[i] = reader_.ReadSignedLiteral(6);
         }
       }
     }
@@ -863,8 +862,8 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
     for (size_t i = 0; i < Vp9SegmentationParams::kNumSegments; i++) {
       for (size_t j = 0; j < Vp9SegmentationParams::SEG_LVL_MAX; j++) {
         int16_t data = 0;
-        UNSAFE_TODO(segmentation.feature_enabled[i][j]) = reader_.ReadBool();
-        if (UNSAFE_TODO(segmentation.feature_enabled[i][j])) {
+        segmentation.feature_enabled[i][j] = reader_.ReadBool();
+        if (segmentation.feature_enabled[i][j]) {
           data = reader_.ReadLiteral(kFeatureDataBits[j]);
           if (kFeatureDataSigned[j])
             if (reader_.ReadBool()) {
@@ -877,7 +876,7 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
               data = -data;
             }
         }
-        UNSAFE_TODO(segmentation.feature_data[i][j]) = data;
+        segmentation.feature_data[i][j] = data;
       }
     }
   }
@@ -1010,18 +1009,17 @@ bool Vp9UncompressedHeaderParser::Parse(base::span<const uint8_t> stream,
                         Vp9RefType::VP9_FRAME_LAST + kVp9NumRefsPerFrame,
                     "ref_frame_sign_bias is not big enough");
       for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
-        UNSAFE_TODO(fhdr->ref_frame_idx[i]) =
-            reader_.ReadLiteral(kVp9NumRefFramesLog2);
-        UNSAFE_TODO(fhdr->ref_frame_sign_bias[Vp9RefType::VP9_FRAME_LAST + i]) =
+        fhdr->ref_frame_idx[i] = reader_.ReadLiteral(kVp9NumRefFramesLog2);
+        fhdr->ref_frame_sign_bias[Vp9RefType::VP9_FRAME_LAST + i] =
             reader_.ReadBool();
 
         // 8.2 Frame order constraints
         // ref_frame_idx[i] refers to an earlier decoded frame.
         const Vp9Parser::ReferenceSlot& ref =
-            context_->GetRefSlot(UNSAFE_TODO(fhdr->ref_frame_idx[i]));
+            context_->GetRefSlot(fhdr->ref_frame_idx[i]);
         if (!ref.initialized) {
-          DVLOG(1) << "ref_frame_idx[" << i << "]="
-                   << static_cast<int>(UNSAFE_TODO(fhdr->ref_frame_idx[i]))
+          DVLOG(1) << "ref_frame_idx[" << i
+                   << "]=" << static_cast<int>(fhdr->ref_frame_idx[i])
                    << " refers to unused frame";
           return false;
         }
