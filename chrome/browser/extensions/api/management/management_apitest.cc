@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -62,6 +63,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
+using web_app::WebAppFilter;
 
 namespace {
 
@@ -309,16 +311,16 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
 
     RunTest(manifest, web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(web_app_id),
-              web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
+    EXPECT_TRUE(provider->registrar_unsafe().AppMatches(
+        web_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
     EXPECT_EQ(1, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     // Call API again. It should launch the app.
     RunTest(std::move(manifest), web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(web_app_id),
-              web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
+    EXPECT_TRUE(provider->registrar_unsafe().AppMatches(
+        web_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
   }
