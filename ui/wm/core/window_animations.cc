@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -111,8 +110,9 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       CHECK(iter != window_->parent()->children().end());
       aura::Window* topmost_transient_child = nullptr;
       for (++iter; iter != window_->parent()->children().end(); ++iter) {
-        if (base::Contains(transient_children, *iter))
+        if (std::ranges::contains(transient_children, *iter)) {
           topmost_transient_child = *iter;
+        }
       }
       if (topmost_transient_child) {
         window_->parent()->layer()->StackAbove(

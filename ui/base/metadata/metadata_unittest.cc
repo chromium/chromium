@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -210,7 +210,7 @@ TEST_F(MetadataTest, TestTypeCacheContainsTestClass) {
   UM::ClassMetaData* test_class_meta = MetadataTestClass::MetaData();
 
   const auto& cache_meta = cache->GetCachedTypes();
-  EXPECT_TRUE(base::Contains(cache_meta, test_class_meta));
+  EXPECT_TRUE(std::ranges::contains(cache_meta, test_class_meta));
 }
 
 TEST_F(MetadataTest, TestMetaDataFile) {

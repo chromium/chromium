@@ -6,9 +6,9 @@
 
 #include <drm_fourcc.h>
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
@@ -365,7 +365,7 @@ bool WaylandBufferManagerGpu::AllowsImplicitModifierForFormat(
     viz::SharedImageFormat format) const {
   auto it = supported_formats_with_modifiers_.find(format);
   if (it != supported_formats_with_modifiers_.end()) {
-    return base::Contains(it->second, DRM_FORMAT_MOD_INVALID);
+    return std::ranges::contains(it->second, DRM_FORMAT_MOD_INVALID);
   }
   return false;
 }

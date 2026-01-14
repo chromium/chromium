@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -118,7 +117,7 @@ x11::RandR::Crtc X11CrtcResizer::GetCrtcForOutput(
   // but this should never occur with Xorg+video-dummy.
   auto iter =
       std::ranges::find_if(active_crtcs_, [output](const CrtcInfo& crtc_info) {
-        return base::Contains(crtc_info.outputs, output);
+        return std::ranges::contains(crtc_info.outputs, output);
       });
   if (iter == active_crtcs_.end()) {
     return kDisabledCrtc;

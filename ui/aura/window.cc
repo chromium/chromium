@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -548,7 +547,7 @@ void Window::AddChild(Window* child) {
 
   Window* old_root = child->GetRootWindow();
 
-  DCHECK(!base::Contains(children_, child));
+  DCHECK(!std::ranges::contains(children_, child));
   if (child->parent())
     child->parent()->RemoveChildImpl(child, this);
 
@@ -1015,7 +1014,7 @@ void Window::RemoveOrDestroyChildren() {
     if (child->owned_by_parent_) {
       delete child;
       // Deleting the child so remove it from out children_ list.
-      DCHECK(!base::Contains(children_, child));
+      DCHECK(!std::ranges::contains(children_, child));
     } else {
       // Even if we can't delete the child, we still need to remove it from the
       // parent so that relevant bookkeeping (parent_ back-pointers etc) are

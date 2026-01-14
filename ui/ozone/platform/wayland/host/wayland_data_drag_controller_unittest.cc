@@ -7,12 +7,12 @@
 #include <linux/input.h>
 #include <wayland-server.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/pickle.h"
@@ -358,7 +358,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
     auto mime_types = data_source->mime_types();
     EXPECT_EQ(3u, mime_types.size());
     for (auto format : kCustomFormats) {
-      EXPECT_TRUE(base::Contains(mime_types, format.GetName()))
+      EXPECT_TRUE(std::ranges::contains(mime_types, format.GetName()))
           << "Format '" << format.GetName() << "' should be offered.";
     }
   });
@@ -1525,7 +1525,7 @@ class PerSurfaceScaleWaylandDataDragControllerTest
       const PerSurfaceScaleWaylandDataDragControllerTest&) = delete;
 
   void SetUp() override {
-    CHECK(!base::Contains(
+    CHECK(!std::ranges::contains(
         enabled_features_,
         base::test::FeatureRef(features::kWaylandPerSurfaceScale)));
     enabled_features_.push_back(features::kWaylandPerSurfaceScale);

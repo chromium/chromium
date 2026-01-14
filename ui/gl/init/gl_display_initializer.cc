@@ -4,8 +4,9 @@
 
 #include "ui/gl/init/gl_display_initializer.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
@@ -20,7 +21,7 @@ namespace {
 void AddInitDisplay(std::vector<DisplayType>* init_displays,
                     DisplayType display_type) {
   // Make sure to not add the same display type twice.
-  if (!base::Contains(*init_displays, display_type)) {
+  if (!std::ranges::contains(*init_displays, display_type)) {
     init_displays->push_back(display_type);
   }
 }

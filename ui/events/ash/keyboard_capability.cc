@@ -19,7 +19,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
@@ -1333,10 +1332,10 @@ bool KeyboardCapability::HasTopRowActionKey(const KeyboardDevice& keyboard,
                                             TopRowActionKey action_key) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);
   if (!keyboard_info) {
-    return base::Contains(kLayout1TopRowActionKeys, action_key);
+    return std::ranges::contains(kLayout1TopRowActionKeys, action_key);
   }
 
-  return base::Contains(keyboard_info->top_row_action_keys, action_key);
+  return std::ranges::contains(keyboard_info->top_row_action_keys, action_key);
 }
 
 bool KeyboardCapability::HasTopRowActionKey(int device_id,

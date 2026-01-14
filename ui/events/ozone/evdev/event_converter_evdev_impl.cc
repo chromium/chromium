@@ -8,8 +8,9 @@
 #include <linux/input.h>
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/stylus_state.h"
@@ -293,7 +294,7 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
 
   // Block all modifiers from continuing down stream from this device if the
   // flag is set.
-  if (block_modifiers_ && base::Contains(kModifierEvdevCodes, key)) {
+  if (block_modifiers_ && std::ranges::contains(kModifierEvdevCodes, key)) {
     return;
   }
 

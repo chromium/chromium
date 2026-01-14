@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_switches.h"
@@ -26,7 +27,7 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   gl::SetGlWorkarounds(workarounds);
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_FALSE(base::Contains(displays, gl::ANGLE_D3D11));
+  EXPECT_FALSE(std::ranges::contains(displays, gl::ANGLE_D3D11));
 
   // Specifically requesting D3D11 should always return it if the extension is
   // available
@@ -35,7 +36,7 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_D3D11));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_D3D11));
   EXPECT_EQ(displays.size(), 1u);
 
   // Specifically requesting D3D11 should not return D3D11 if the extension is
@@ -43,7 +44,7 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(false, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_FALSE(base::Contains(displays, gl::ANGLE_D3D11));
+  EXPECT_FALSE(std::ranges::contains(displays, gl::ANGLE_D3D11));
 }
 
 TEST(EGLInitializationDisplaysTest, DefaultRenderers) {
@@ -82,7 +83,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGL));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_OPENGL));
   EXPECT_EQ(displays.size(), 1u);
 
   // OpenGLES
@@ -91,7 +92,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGLES));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_OPENGLES));
   EXPECT_EQ(displays.size(), 1u);
 
   // Null
@@ -100,7 +101,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_NULL));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_NULL));
   EXPECT_EQ(displays.size(), 1u);
 
   // Vulkan
@@ -109,7 +110,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_VULKAN));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_VULKAN));
   EXPECT_EQ(displays.size(), 1u);
 
   // Vulkan/SwiftShader
@@ -118,7 +119,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_SWIFTSHADER));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_SWIFTSHADER));
   EXPECT_EQ(displays.size(), 1u);
 
   // OpenGL EGL
@@ -127,7 +128,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGL_EGL));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_OPENGL_EGL));
   EXPECT_EQ(displays.size(), 1u);
 
   // OpenGLES EGL
@@ -136,7 +137,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGLES_EGL));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_OPENGLES_EGL));
   EXPECT_EQ(displays.size(), 1u);
 
   // Metal
@@ -145,7 +146,7 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   displays.clear();
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::ANGLE_METAL));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::ANGLE_METAL));
   EXPECT_EQ(displays.size(), 1u);
 }
 
@@ -158,7 +159,7 @@ TEST(EGLInitializationDisplaysTest, NoExtensions) {
   gl::init::GetEGLInitDisplaysForTesting(false, false, false, false, false,
                                          false, false, command_line.get(),
                                          &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::DEFAULT));
+  EXPECT_TRUE(std::ranges::contains(displays, gl::DEFAULT));
   EXPECT_EQ(displays.size(), 1u);
 }
 

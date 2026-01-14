@@ -8,7 +8,6 @@
 
 #include "base/at_exit.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "ui/display/types/display_constants.h"
@@ -113,8 +112,9 @@ void DeviceDataManager::UpdateTouchMap() {
       [this](const std::pair<int, TouchDeviceTransform>& map_entry) {
         // Remove the device identified by |map_entry| from |touch_map_| if it
         // is not present in the list of currently connected devices.
-        return !base::Contains(touchscreen_devices_, map_entry.second.device_id,
-                               &TouchscreenDevice::id);
+        return !std::ranges::contains(touchscreen_devices_,
+                                      map_entry.second.device_id,
+                                      &TouchscreenDevice::id);
       });
 }
 

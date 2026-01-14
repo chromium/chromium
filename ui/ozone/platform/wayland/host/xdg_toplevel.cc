@@ -8,10 +8,10 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-toplevel-icon-v1-client-protocol.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/bit_cast.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -83,7 +83,7 @@ bool CheckIfWlArrayHasValue(struct wl_array* wl_array, uint32_t value) {
   auto span =
       UNSAFE_BUFFERS(base::span(reinterpret_cast<uint32_t*>(wl_array->data),
                                 wl_array->size / sizeof(uint32_t)));
-  return base::Contains(span, value);
+  return std::ranges::contains(span, value);
 }
 
 }  // namespace

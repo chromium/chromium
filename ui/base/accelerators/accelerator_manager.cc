@@ -4,10 +4,10 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 
 namespace ui {
 
@@ -169,7 +169,7 @@ bool AcceleratorManager::AcceleratorTargetInfo::HasPriorityHandler() const {
 bool AcceleratorManager::AcceleratorTargetInfo::Contains(
     AcceleratorTarget* target) const {
   DCHECK(target);
-  return base::Contains(targets_, target);
+  return std::ranges::contains(targets_, target);
 }
 
 }  // namespace ui

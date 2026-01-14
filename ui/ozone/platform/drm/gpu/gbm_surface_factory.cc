@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"

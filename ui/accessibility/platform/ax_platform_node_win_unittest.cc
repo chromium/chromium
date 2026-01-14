@@ -17,7 +17,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util_win.h"
@@ -3032,8 +3031,8 @@ TEST_F(AXPlatformNodeWinTest, UnlabeledImageAttributes) {
 
     std::vector<std::wstring> attribute_vector = base::SplitString(
         attributes, L";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    EXPECT_TRUE(
-        base::Contains(attribute_vector, L"roledescription:Unlabeled image"));
+    EXPECT_TRUE(std::ranges::contains(attribute_vector,
+                                      L"roledescription:Unlabeled image"));
   }
 }
 

@@ -4,8 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
@@ -38,8 +39,9 @@ void WaylandDataOffer::Reject(uint32_t serial) {
 }
 
 base::ScopedFD WaylandDataOffer::Receive(const std::string& mime_type) {
-  if (!base::Contains(mime_types(), mime_type))
+  if (!std::ranges::contains(mime_types(), mime_type)) {
     return base::ScopedFD();
+  }
 
   base::ScopedFD read_fd;
   base::ScopedFD write_fd;

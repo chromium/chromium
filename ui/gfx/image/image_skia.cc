@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -13,7 +14,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -263,8 +263,8 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
     }
 
     // If the source returned the new image, store it.
-    if (!image.is_null() &&
-        !base::Contains(image_reps_, image.scale(), &ImageSkiaRep::scale)) {
+    if (!image.is_null() && !std::ranges::contains(image_reps_, image.scale(),
+                                                   &ImageSkiaRep::scale)) {
       mutable_this->image_reps_.push_back(image);
     }
 

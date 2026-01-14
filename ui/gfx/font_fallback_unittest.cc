@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <tuple>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -192,8 +192,8 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
 
   // Ensure the fallback font is a part of the validation fallback fonts list.
   if (!test_option_.skip_fallback_fonts_validation) {
-    if (!base::Contains(test_case_.fallback_fonts,
-                        fallback_font.GetFontName())) {
+    if (!std::ranges::contains(test_case_.fallback_fonts,
+                               fallback_font.GetFontName())) {
       ADD_FAILURE() << "GetFallbackFont failed for '" << script_name_
                     << "' invalid fallback font: "
                     << fallback_font.GetFontName()

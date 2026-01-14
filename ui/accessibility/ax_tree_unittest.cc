@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/ax_tree.h"
 
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -11,7 +13,6 @@
 #include <atk/atk.h>
 #endif  // BUILDFLAG(IS_LINUX)
 
-#include "base/containers/contains.h"
 #include "base/scoped_observation.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1121,9 +1122,9 @@ TEST(AXTreeTest, ReparentingDoesNotTriggerNodeCreated) {
       test_observer.subtree_reparented_finished_ids();
   std::vector<int> node_reparented =
       test_observer.node_reparented_finished_ids();
-  ASSERT_FALSE(base::Contains(created, 3));
-  ASSERT_TRUE(base::Contains(subtree_reparented, 3));
-  ASSERT_FALSE(base::Contains(node_reparented, 3));
+  ASSERT_FALSE(std::ranges::contains(created, 3));
+  ASSERT_TRUE(std::ranges::contains(subtree_reparented, 3));
+  ASSERT_FALSE(std::ranges::contains(node_reparented, 3));
 }
 
 TEST(AXTreeTest, MultipleIgnoredChangesDoesNotBreakCache) {

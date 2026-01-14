@@ -11,6 +11,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#include <algorithm>
 #include <bitset>
 #include <limits>
 #include <utility>
@@ -18,7 +19,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -560,7 +560,7 @@ bool IsX11WindowFullScreen(x11::Window window) {
     std::vector<x11::Atom> atom_properties;
     if (x11::Connection::Get()->GetArrayProperty(
             window, x11::GetAtom("_NET_WM_STATE"), &atom_properties)) {
-      return base::Contains(atom_properties, fullscreen_atom);
+      return std::ranges::contains(atom_properties, fullscreen_atom);
     }
   }
 

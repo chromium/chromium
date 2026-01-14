@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/ax_event_generator.h"
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"

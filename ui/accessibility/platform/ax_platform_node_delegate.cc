@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
+#include <algorithm>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -538,7 +540,8 @@ std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
 
   for (int32_t target_id : target_ids) {
     AXPlatformNode* target = GetFromNodeID(target_id);
-    if (IsValidRelationTarget(target) && !base::Contains(nodes, target)) {
+    if (IsValidRelationTarget(target) &&
+        !std::ranges::contains(nodes, target)) {
       nodes.push_back(target);
     }
   }

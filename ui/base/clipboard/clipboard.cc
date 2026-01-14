@@ -12,7 +12,6 @@
 #include <variant>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -352,7 +351,8 @@ base::PlatformThreadId Clipboard::GetAndValidateThreadID() {
   // clipboard. To prevented unbounded memory use, CHECK that the current thread
   // was allowlisted to use the clipboard. This is a CHECK rather than a DCHECK
   // to catch incorrect usage in production (e.g. https://crbug.com/872737).
-  CHECK(AllowedThreads().empty() || base::Contains(AllowedThreads(), id));
+  CHECK(AllowedThreads().empty() ||
+        std::ranges::contains(AllowedThreads(), id));
 
   return id;
 }

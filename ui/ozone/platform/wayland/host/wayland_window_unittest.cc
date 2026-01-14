@@ -10,13 +10,13 @@
 #include <wayland-server-core.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -4872,7 +4872,7 @@ class PerSurfaceScaleWaylandWindowTest : public WaylandWindowTest {
       const PerSurfaceScaleWaylandWindowTest&) = delete;
 
   void SetUp() override {
-    CHECK(!base::Contains(
+    CHECK(!std::ranges::contains(
         enabled_features_,
         base::test::FeatureRef(features::kWaylandPerSurfaceScale)));
     enabled_features_.push_back(features::kWaylandPerSurfaceScale);

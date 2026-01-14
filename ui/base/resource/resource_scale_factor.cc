@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 
 namespace ui {
 
@@ -124,7 +123,8 @@ bool IsScaleFactorSupported(ResourceScaleFactor scale_factor) {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
       << "ResourceBundle needs to be initialized.";
 
-  return base::Contains(*g_supported_resource_scale_factors, scale_factor);
+  return std::ranges::contains(*g_supported_resource_scale_factors,
+                               scale_factor);
 }
 
 namespace test {

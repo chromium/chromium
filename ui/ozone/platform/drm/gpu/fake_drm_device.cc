@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -135,7 +134,7 @@ uint32_t GetUniqueNumber() {
 }
 
 bool IsPropertyValueBlob(uint32_t prop_id) {
-  return base::Contains(kBlobPropertyIds, prop_id);
+  return std::ranges::contains(kBlobPropertyIds, prop_id);
 }
 
 }  // namespace
@@ -298,7 +297,7 @@ FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(
 
   size_t crtc_mask = 0u;
   for (size_t i = 0; i < drm_state_.crtc_properties.size(); ++i) {
-    if (base::Contains(crtc_ids, drm_state_.crtc_properties[i].id)) {
+    if (std::ranges::contains(crtc_ids, drm_state_.crtc_properties[i].id)) {
       crtc_mask |= (1 << i);
     }
   }
@@ -1090,8 +1089,9 @@ bool FakeDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
 
   std::vector<std::string> blob_properties = {"CTM", "DEGAMMA_LUT", "GAMMA_LUT",
                                               "PLANE_CTM"};
-  if (base::Contains(blob_properties, it->second))
+  if (std::ranges::contains(blob_properties, it->second)) {
     return allocated_blobs_.contains(value);
+  }
 
   return true;
 }

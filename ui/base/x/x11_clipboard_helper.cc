@@ -4,11 +4,11 @@
 
 #include "ui/base/x/x11_clipboard_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
@@ -116,7 +116,7 @@ class XClipboardHelper::TargetList {
 
   bool ContainsText() const {
     for (const auto& atom : GetTextAtomsFrom()) {
-      if (base::Contains(target_list_, atom)) {
+      if (std::ranges::contains(target_list_, atom)) {
         return true;
       }
     }
@@ -125,7 +125,7 @@ class XClipboardHelper::TargetList {
 
   bool ContainsFormat(const ClipboardFormatType& format_type) const {
     x11::Atom atom = x11::GetAtom(format_type.GetName().c_str());
-    return base::Contains(target_list_, atom);
+    return std::ranges::contains(target_list_, atom);
   }
 
  private:

@@ -4,7 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -225,7 +226,7 @@ std::vector<AXPropertyNode> AXTreeFormatterBase::PropertyFilterNodesFor(
 
     // Filter out if doesn't match line index (if specified).
     if (!property_node.line_indexes.empty() &&
-        !base::Contains(property_node.line_indexes, line_index)) {
+        !std::ranges::contains(property_node.line_indexes, line_index)) {
       continue;
     }
 

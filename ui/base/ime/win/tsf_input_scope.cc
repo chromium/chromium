@@ -13,9 +13,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 
@@ -29,8 +30,9 @@ void AppendNonTrivialInputScope(std::vector<InputScope>* input_scopes,
   if (input_scope == IS_DEFAULT)
     return;
 
-  if (base::Contains(*input_scopes, input_scope))
+  if (std::ranges::contains(*input_scopes, input_scope)) {
     return;
+  }
 
   input_scopes->push_back(input_scope);
 }

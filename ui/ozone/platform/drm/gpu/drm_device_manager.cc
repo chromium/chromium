@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
@@ -25,7 +24,7 @@ DrmDeviceManager::~DrmDeviceManager() {
 
 bool DrmDeviceManager::AddDrmDevice(const base::FilePath& path,
                                     base::ScopedFD fd) {
-  if (base::Contains(devices_, path, &DrmDevice::device_path)) {
+  if (std::ranges::contains(devices_, path, &DrmDevice::device_path)) {
     VLOG(2) << "Got request to add existing device: " << path.value();
     return false;
   }
