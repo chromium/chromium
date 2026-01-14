@@ -248,7 +248,7 @@ search-animated-glow {
 #input {
   background-color: inherit;
   border: none;
-  caret-color: var(--google-blue-500);
+  caret-color: var(--color-composebox-font-light);
   color: var(--color-composebox-font-light);
   field-sizing: content;
   mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
@@ -258,7 +258,8 @@ search-animated-glow {
   resize: none;
 }
 
-#input:focus {
+:host(:not([disable-caret-color-animation])) #input:focus {
+  caret-color: var(--google-blue-500);
   animation: color-change 5s infinite;
 }
 

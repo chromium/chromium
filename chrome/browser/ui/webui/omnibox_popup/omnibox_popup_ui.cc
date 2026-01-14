@@ -159,6 +159,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
               contextual_search::ContextualSearchSource::kOmnibox));
   source->AddBoolean("autoSubmitVoiceSearchQuery",
                      omnibox::kAutoSubmitVoiceSearchQuery.Get());
+  source->AddBoolean("caretColorAnimationDisabled",
+                     base::FeatureList::IsEnabled(
+                         omnibox::kWebUIOmniboxDisableCaretColorAnimation));
   source->AddBoolean("composeboxAnimationDisabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxAimPopupDisableAnimation));
