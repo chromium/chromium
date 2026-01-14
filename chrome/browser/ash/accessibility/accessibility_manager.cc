@@ -56,7 +56,6 @@
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -88,6 +87,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -376,6 +376,29 @@ std::optional<PumpkinData> CreatePumpkinData(base::FilePath base_pumpkin_path) {
   return data;
 }
 
+bool IsAnyAccessibilityFeatureEnabled(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kAccessibilityStickyKeysEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityLargeCursorEnabled) ||
+         prefs.GetBoolean(::prefs::kLiveCaptionEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilitySelectToSpeakEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilitySwitchAccessEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityHighContrastEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityAutoclickEnabled) ||
+         prefs.GetBoolean(prefs::kShouldAlwaysShowAccessibilityMenu) ||
+         prefs.GetBoolean(prefs::kAccessibilityScreenMagnifierEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityVirtualKeyboardEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityMonoAudioEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityCaretHighlightEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityCursorHighlightEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityFocusHighlightEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityDictationEnabled) ||
+         prefs.GetBoolean(prefs::kDockedMagnifierEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityColorCorrectionEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilityBounceKeysEnabled) ||
+         prefs.GetBoolean(prefs::kAccessibilitySlowKeysEnabled);
+}
+
 }  // namespace
 
 class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
@@ -650,33 +673,20 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
   // NOTE: This includes the login screen profile, so if a feature is turned on
   // at the login screen the menu will show even if the user has no features
   // enabled inside the session. http://crbug.com/755631
-  std::vector<Profile*> profiles =
-      g_browser_process->profile_manager()->GetLoadedProfiles();
-  for (Profile* profile : profiles) {
-    PrefService* prefs = profile->GetPrefs();
-    if (prefs->GetBoolean(prefs::kAccessibilityStickyKeysEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) ||
-        prefs->GetBoolean(::prefs::kLiveCaptionEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilitySelectToSpeakEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityHighContrastEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityAutoclickEnabled) ||
-        prefs->GetBoolean(prefs::kShouldAlwaysShowAccessibilityMenu) ||
-        prefs->GetBoolean(prefs::kAccessibilityScreenMagnifierEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityVirtualKeyboardEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityMonoAudioEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityCaretHighlightEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityCursorHighlightEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityDictationEnabled) ||
-        prefs->GetBoolean(prefs::kDockedMagnifierEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityColorCorrectionEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityBounceKeysEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilitySlowKeysEnabled)) {
+
+  if (IsAnyAccessibilityFeatureEnabled(CHECK_DEREF(user_prefs::UserPrefs::Get(
+          BrowserContextHelper::Get()->GetSigninBrowserContext())))) {
+    return true;
+  }
+
+  for (const auto& user :
+       user_manager::UserManager::Get()->GetLoggedInUsers()) {
+    if (IsAnyAccessibilityFeatureEnabled(
+            CHECK_DEREF(user->GetProfilePrefs()))) {
       return true;
     }
   }
+
   return false;
 }
 
