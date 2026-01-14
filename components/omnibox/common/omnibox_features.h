@@ -134,9 +134,6 @@ BASE_DECLARE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy);
 // Preconnect/prerender behavior for suggestions
 BASE_DECLARE_FEATURE(kPreconnectNonSearchOmniboxSuggestions);
 
-// Adds an aim shortcut shortcut in the typed state.
-BASE_DECLARE_FEATURE(kOmniboxAimShortcutTypedState);
-
 // When enabled, unblocks omnibox height on small form factor devices, allowing
 // users to type in multiline / longer text.
 BASE_DECLARE_FEATURE(kMultilineEditField);

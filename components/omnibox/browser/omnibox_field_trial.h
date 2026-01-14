@@ -22,8 +22,6 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 
-class AutocompleteProviderClient;
-
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -401,11 +399,6 @@ bool IsOnFocusZeroSuggestEnabledInContext(
 bool IsHideSuggestionGroupHeadersEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
-// Returns whether the deterministic AIM shortcut action in typed state is
-// enabled.
-bool IsDeterministicAimActionInTypedStateEnabled(
-    AutocompleteProviderClient* client);
-
 // Returns whether AIM page action in Omnibox is enabled.
 bool IsAimOmniboxEntrypointEnabled(
     const AimEligibilityService* aim_eligibility_service);
@@ -705,15 +698,6 @@ inline constexpr base::FeatureParam<bool> kMobileParityRetrieveBuiltinFavicon{
 inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
     &omnibox::kOmniboxMobileParityUpdate, "enable_feed_for_google_only", true};
 // <-- Mobile Parity update
-
-// Aim shortcut for typed state ->
-
-constexpr base::FeatureParam<int> kMinimumTypedCharactersToInvokeAimShortcut(
-    &omnibox::kOmniboxAimShortcutTypedState,
-    "MinimumTypedCharactersToInvokeAimShortcut",
-    1);
-
-// <- Aim shortcut for typed state
 
 #if BUILDFLAG(IS_ANDROID)
 // Omnibox Improvement for Large Form Factors -->

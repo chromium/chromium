@@ -649,19 +649,6 @@ bool IsHideSuggestionGroupHeadersEnabledInContext(
   }
 }
 
-bool IsDeterministicAimActionInTypedStateEnabled(
-    AutocompleteProviderClient* client) {
-  ui::DeviceFormFactor factor = ui::GetDeviceFormFactor();
-  if (!(factor == ui::DEVICE_FORM_FACTOR_PHONE ||
-        factor == ui::DEVICE_FORM_FACTOR_FOLDABLE)) {
-    return false;
-  }
-
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      client->GetAimEligibilityService(),
-      omnibox::kOmniboxAimShortcutTypedState);
-}
-
 bool IsAimOmniboxEntrypointEnabled(
     const AimEligibilityService* aim_eligibility_service) {
   return AimEligibilityService::GenericKillSwitchFeatureCheck(

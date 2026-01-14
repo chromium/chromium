@@ -3095,11 +3095,6 @@ inline constexpr char kOmniboxMiaZps[] = "Omnibox Mia ZPS on NTP";
 inline constexpr char kOmniboxMiaZpsDescription[] =
     "Enables Mia ZPS suggestions in NTP omnibox";
 
-inline constexpr char kOmniboxAimShortcutTypedStateName[] =
-    "AIM shortcut in typed state of omnibox";
-inline constexpr char kOmniboxAimShortcutTypedStateDescription[] =
-    "Enables AIM shortcut in typed state of omnibox";
-
 inline constexpr char kOmniboxMlLogUrlScoringSignalsName[] =
     "Log Omnibox URL Scoring Signals";
 inline constexpr char kOmniboxMlLogUrlScoringSignalsDescription[] =
