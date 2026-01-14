@@ -1038,42 +1038,49 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
                                    ]
                                  })"});
   }
-  const std::u16string_view text = clipboard_restricted_by_policy
-                                       ? u"42"
-                                       : u"This is some text with a link.";
+  const std::u16string kExpectedText = u"This is some text with a link.";
+  const std::u16string text =
+      clipboard_restricted_by_policy ? u"42" : kExpectedText;
 
   const GURL page_url = embedded_test_server()->GetURL("/a.html");
 
-  // Helper function to check if text is selected.
-  auto has_selected_text = [this]() {
-#if BUILDFLAG(IS_MAC)
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
-                                                false, false, true));
-
-#else
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, true,
-                                                false, false, false));
-
-#endif
-    WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    if (!web_contents) {
-      return false;
-    }
-    auto* host_view = web_contents->GetRenderWidgetHostView();
-    return host_view->GetSelectedText() == u"This is some text with a link.";
-  };
-
   RunTestSequence(
-      Init(page_url), WaitForWebContentsReady(kTabId), ShowFindBar(),
-      EnterText(FindBarView::kTextField, u"42"), HideFindBar(),
+      Init(page_url), WaitForWebContentsReady(kTabId),
+
+      CheckJsResult(kTabId, "() => document.body.innerText",
+                    testing::HasSubstr(base::UTF16ToUTF8(kExpectedText))),
+
+      ShowFindBar(), EnterText(FindBarView::kTextField, u"42"), HideFindBar(),
       Focus(ContentsWebView::kContentsWebViewElementId),
 
-      // Wait for the selection to be "text".
-      // This will poll after the last attempt.
-      PollState(kTextSelectedState, has_selected_text),
+      // Select all text.
+      Do([this]() {
+        browser()->tab_strip_model()->GetActiveWebContents()->SelectAll();
+      }),
 
+      // Verify the selection in the renderer.
+      WaitForJsResult(kTabId, "() => window.getSelection().toString()",
+                      base::UTF16ToUTF8(kExpectedText)),
+
+      // Wait for the browser to be aware of the selection.
+      PollState(kTextSelectedState,
+                [this, kExpectedText]() {
+                  WebContents* web_contents =
+                      browser()->tab_strip_model()->GetActiveWebContents();
+                  if (!web_contents) {
+                    return false;
+                  }
+                  auto* host_view = web_contents->GetRenderWidgetHostView();
+                  if (!host_view) {
+                    return false;
+                  }
+                  if (host_view->GetSelectedText() != kExpectedText) {
+                    return false;
+                  }
+                  return true;
+                }),
       WaitForState(kTextSelectedState, true),
+
       // Show the Find bar.
       ShowFindBar(), WaitForShow(FindBarView::kTextField),
       // Verify the text in the find bar.
