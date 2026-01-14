@@ -47,5 +47,29 @@ TEST_F(BrokerHelperWinTest, NotLocal) {
   EXPECT_FALSE(helper_.ShouldBroker(google_dns));
 }
 
+TEST_F(BrokerHelperWinTest, LinkLocal) {
+  helper_.InjectNetworkListForTesting(
+      net::NetworkInterfaceList{net::NetworkInterface(
+          "fake interface", "fake interface", /*interface_index=*/0, /*type=*/
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
+          net::IPAddress(192, 168, 0, 1), /*prefix_length=*/24,
+          /*ip_address_attributes=*/0, /*mac_address=*/std::nullopt)});
+  EXPECT_TRUE(helper_.ShouldBroker(net::IPAddress(192, 168, 0, 1)));
+  EXPECT_TRUE(helper_.ShouldBroker(net::IPAddress(192, 168, 0, 2)));
+  EXPECT_FALSE(helper_.ShouldBroker(net::IPAddress(192, 168, 1, 1)));
+}
+
+TEST_F(BrokerHelperWinTest, LinkLocalInvalidPrefix) {
+  helper_.InjectNetworkListForTesting(
+      net::NetworkInterfaceList{net::NetworkInterface(
+          "fake interface", "fake interface", /*interface_index=*/0, /*type=*/
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
+          net::IPAddress(192, 168, 0, 1), /*prefix_length=*/255,
+          /*ip_address_attributes=*/0, /*mac_address=*/std::nullopt)});
+  EXPECT_TRUE(helper_.ShouldBroker(net::IPAddress(192, 168, 0, 1)));
+  EXPECT_FALSE(helper_.ShouldBroker(net::IPAddress(192, 168, 0, 2)));
+  EXPECT_FALSE(helper_.ShouldBroker(net::IPAddress(192, 168, 1, 1)));
+}
+
 }  // namespace
 }  // namespace network
