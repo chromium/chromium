@@ -162,11 +162,6 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
         "Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationDuration",
         delta);
   }];
-
-  base::TimeDelta delta = base::Time::Now() - startTime;
-  base::UmaHistogramMicrosecondsTimes(
-      "Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay",
-      delta);
 }
 
 #pragma mark - Parent's functions
