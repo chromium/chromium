@@ -33,6 +33,7 @@
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -292,6 +293,16 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      cc::ScrollSourceType source_type,
                                      mojom::blink::ScrollBehavior behavior,
                                      bool targeted_scroll) {
+  return SetScrollOffsetInternal(offset, scroll_type, source_type, behavior,
+                                 targeted_scroll);
+}
+
+bool ScrollableArea::SetScrollOffsetInternal(
+    const ScrollOffset& offset,
+    mojom::blink::ScrollType scroll_type,
+    cc::ScrollSourceType source_type,
+    mojom::blink::ScrollBehavior behavior,
+    bool targeted_scroll) {
   ScrollableArea::ScrollCallback run_scroll_complete_callbacks(BindOnce(
       [](WeakPersistent<ScrollableArea> area, ScrollCompletionMode mode) {
         if (area) {

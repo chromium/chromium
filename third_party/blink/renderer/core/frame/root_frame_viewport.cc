@@ -314,7 +314,7 @@ void RootFrameViewport::ApplyPendingHistoryRestoreScrollOffset() {
   pending_view_state_.reset();
 }
 
-bool RootFrameViewport::SetScrollOffset(
+bool RootFrameViewport::SetScrollOffsetInternal(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
@@ -336,8 +336,9 @@ bool RootFrameViewport::SetScrollOffset(
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
-  return ScrollableArea::SetScrollOffset(clamped_offset, scroll_type,
-                                         source_type, scroll_behavior);
+  return ScrollableArea::SetScrollOffsetInternal(clamped_offset, scroll_type,
+                                                 source_type, scroll_behavior,
+                                                 /*targeted_scroll=*/false);
 }
 
 mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
@@ -465,10 +466,10 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   // is dispatched to the DOMWindow before the VisualViewport.
   bool did_scroll = LayoutViewport().SetScrollOffset(
       scroll_first == kLayoutViewport ? primary_offset : secondary_offset,
-      scroll_type, source_type, behavior, false);
+      scroll_type, source_type, behavior);
   did_scroll |= GetVisualViewport().SetScrollOffset(
       scroll_first == kVisualViewport ? primary_offset : secondary_offset,
-      scroll_type, source_type, behavior, false);
+      scroll_type, source_type, behavior);
   return did_scroll;
 }
 

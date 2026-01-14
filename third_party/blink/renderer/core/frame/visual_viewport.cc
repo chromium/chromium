@@ -755,14 +755,14 @@ ChromeClient* VisualViewport::GetChromeClient() const {
   return &GetPage().GetChromeClient();
 }
 
-bool VisualViewport::SetScrollOffset(
+bool VisualViewport::SetScrollOffsetInternal(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool targeted_scroll) {
   // We clamp the offset here, because the ScrollAnimator may otherwise be
-  // set to a non-clamped offset by ScrollableArea::setScrollOffset,
+  // set to a non-clamped offset by ScrollableArea::setScrollOffsetInternal,
   // which may lead to incorrect scrolling behavior in RootFrameViewport down
   // the line.
   // TODO(eseckler): Solve this instead by ensuring that ScrollableArea and
@@ -770,8 +770,9 @@ bool VisualViewport::SetScrollOffset(
   // stores fractional offsets and that truncation happens elsewhere, see
   // crbug.com/626315.
   ScrollOffset new_scroll_offset = ClampScrollOffset(offset);
-  return ScrollableArea::SetScrollOffset(new_scroll_offset, scroll_type,
-                                         source_type, scroll_behavior);
+  return ScrollableArea::SetScrollOffsetInternal(new_scroll_offset, scroll_type,
+                                                 source_type, scroll_behavior,
+                                                 /*targeted_scroll=*/false);
 }
 
 PhysicalOffset VisualViewport::LocalToScrollOriginOffset() const {

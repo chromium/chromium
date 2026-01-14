@@ -56,12 +56,6 @@ class CORE_EXPORT RootFrameViewport final
   void DidUpdateVisualViewport() override;
   PhysicalOffset LocalToScrollOriginOffset() const final;
   bool IsRootFrameViewport() const override { return true; }
-  bool SetScrollOffset(
-      const ScrollOffset&,
-      mojom::blink::ScrollType,
-      cc::ScrollSourceType,
-      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
-      bool targeted_scroll = false) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
@@ -180,6 +174,14 @@ class CORE_EXPORT RootFrameViewport final
   void SetTargetedSnapAreaId(const std::optional<cc::ElementId>&) override;
 
   void DropCompositorScrollDeltaNextCommit() override;
+
+ protected:
+  // ScrollableArea implementation
+  bool SetScrollOffsetInternal(const ScrollOffset&,
+                               mojom::blink::ScrollType,
+                               cc::ScrollSourceType,
+                               mojom::blink::ScrollBehavior,
+                               bool targeted_scroll) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RootFrameViewportTest, DistributeScrollOrder);

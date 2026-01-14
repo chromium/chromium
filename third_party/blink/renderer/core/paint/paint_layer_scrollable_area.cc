@@ -1261,10 +1261,9 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChangeInternal() {
     // marker is currently pinned.
     ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup();
     bool targeted_scroll = group && group->SelectedMarkerIsPinned();
-    ScrollableArea::SetScrollOffset(
-        GetScrollOffset(), mojom::blink::ScrollType::kClamping,
-        cc::ScrollSourceType::kStationaryScroll,
-        mojom::blink::ScrollBehavior::kInstant, targeted_scroll);
+    SetScrollOffset(GetScrollOffset(), mojom::blink::ScrollType::kClamping,
+                    cc::ScrollSourceType::kStationaryScroll,
+                    mojom::blink::ScrollBehavior::kInstant, targeted_scroll);
   }
 
   SetNeedsScrollOffsetClamp(false);
@@ -2581,12 +2580,13 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   if (params->is_for_scroll_sequence) {
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-    SetScrollOffset(new_scroll_offset, params->type,
-                    cc::ScrollSourceType::kAbsoluteScroll, behavior, true);
+    SetScrollOffsetInternal(new_scroll_offset, params->type,
+                            cc::ScrollSourceType::kAbsoluteScroll, behavior,
+                            true);
   } else {
-    SetScrollOffset(new_scroll_offset, params->type,
-                    cc::ScrollSourceType::kAbsoluteScroll,
-                    mojom::blink::ScrollBehavior::kInstant, true);
+    SetScrollOffsetInternal(new_scroll_offset, params->type,
+                            cc::ScrollSourceType::kAbsoluteScroll,
+                            mojom::blink::ScrollBehavior::kInstant, true);
   }
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.

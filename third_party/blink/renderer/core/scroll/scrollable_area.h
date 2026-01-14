@@ -123,12 +123,15 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                   cc::ScrollSourceType source_type,
                                   ScrollCallback on_finish);
 
-  virtual bool SetScrollOffset(
+  // A non-virtual wrapper that allows default arguments over the virtual method
+  // `SetScrollOffsetInternal`.
+  bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
       cc::ScrollSourceType,
       mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
       bool targeted_scroll = false);
+
   void ScrollBy(
       const ScrollOffset&,
       mojom::blink::ScrollType,
@@ -616,6 +619,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void DidUpdateVisualViewport() {}
 
  protected:
+  virtual bool SetScrollOffsetInternal(const ScrollOffset&,
+                                       mojom::blink::ScrollType,
+                                       cc::ScrollSourceType,
+                                       mojom::blink::ScrollBehavior,
+                                       bool targeted_scroll);
+
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
   // instant or smooth scroll.
