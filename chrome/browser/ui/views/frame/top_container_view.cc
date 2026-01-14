@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -48,8 +50,16 @@ void TopContainerView::OnImmersiveRevealUpdated() {
 
 bool TopContainerView::IsPositionInWindowCaption(
     const gfx::Point& test_point) const {
+  const ToolbarView* const toolbar = browser_view_->toolbar();
   for (auto& child : children()) {
     if (child->bounds().Contains(test_point)) {
+      if (child == toolbar) {
+        const auto in_toolbar =
+            views::View::ConvertPointToTarget(this, toolbar, test_point);
+        if (in_toolbar.y() < toolbar->location_bar()->y()) {
+          return true;
+        }
+      }
       return false;
     }
   }
