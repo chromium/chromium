@@ -404,19 +404,6 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (IsParentedTo(views().main_background_region, views().browser_view)) {
     layout.AddChild(views().main_background_region, params.visual_client_area,
                     has_toolbar_height_side_panel);
-    if (has_toolbar_height_side_panel) {
-      if (auto* const main_background =
-              views::AsViewClass<MainBackgroundRegionView>(
-                  views().main_background_region)) {
-        const bool supports_top_corners =
-            !layout_top_container_before_side_panels &&
-            !delegate().GetImmersiveModeController()->IsEnabled();
-        main_background->SetTrailingCornerVisible(supports_top_corners);
-        main_background->SetLeadingCornerVisible(
-            supports_top_corners &&
-            !delegate().IsActiveTabAtLeadingWindowEdge());
-      }
-    }
   }
 
   // The insets for main region and its containing views when the
@@ -811,12 +798,12 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   // Rounded corners are drawn when not maximized or fullscreen.
   CustomCornersBackground::Corners corners;
   if (delegate().GetBrowserWindowState() == WindowState::kNormal) {
-    corners.upper_trailing = CustomCornersBackground::GetWindowCorner();
+    corners.upper_trailing = background->GetWindowCorner(/*upper=*/true);
     const bool vertical_tab_strip_reaches_top =
         !delegate().IsVerticalTabStripCollapsed() ||
         params.leading_exclusion.IsEmpty();
     if (!vertical_tab_strip_reaches_top) {
-      corners.upper_leading = CustomCornersBackground::GetWindowCorner();
+      corners.upper_leading = background->GetWindowCorner(/*upper=*/true);
     }
   }
   background->SetCorners(corners);
@@ -824,9 +811,14 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
 
 void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const BrowserLayoutParams& params) {
+  const auto tab_strip_type = GetTabStripType();
+  const auto window_state = delegate().GetBrowserWindowState();
+
   // Set toolbar corners.
+  auto* const toolbar_background =
+      static_cast<CustomCornersBackground*>(views().toolbar->background());
   CustomCornersBackground::Corners toolbar_corners;
-  switch (GetTabStripType()) {
+  switch (tab_strip_type) {
     case TabStripType::kHorizontal: {
       // Trailing curve is always shown for normal horizontal tabstrip.
       toolbar_corners.upper_trailing.type =
@@ -842,7 +834,6 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       break;
     }
     case TabStripType::kVertical: {
-      const auto window_state = delegate().GetBrowserWindowState();
       if (window_state != WindowState::kFullscreen) {
         // Draw leading corner if vertical tabstrip is directly adjacent to
         // toolbar. This happens when the tabstrip is full sized or if there
@@ -856,7 +847,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
         // browser.
         if (params.trailing_exclusion.IsEmpty()) {
           toolbar_corners.upper_trailing =
-              CustomCornersBackground::GetWindowCorner();
+              toolbar_background->GetWindowCorner(/*upper=*/true);
         }
       }
       break;
@@ -869,6 +860,41 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       // Ideally this should not be reached.
       break;
   }
-  static_cast<CustomCornersBackground*>(views().toolbar->background())
-      ->SetCorners(toolbar_corners);
+  toolbar_background->SetCorners(toolbar_corners);
+
+  if (views().main_background_region &&
+      views().main_background_region->GetVisible()) {
+    auto* const background = static_cast<CustomCornersBackground*>(
+        views().main_background_region->background());
+    CustomCornersBackground::Corners main_background_corners;
+
+    // Frame-colored corners are shown at the top in horizontal tabstrip mode.
+    // This doesn't apply in fullscreen, as the tabstrip is not in the window.
+    if (tab_strip_type == TabStripType::kHorizontal &&
+        window_state != WindowState::kFullscreen) {
+      // If (due to narrow width) the top container is not laid out in the main
+      // area, it also doesn't get rounded corners.
+      if (views().main_background_region->y() <= views().top_container->y()) {
+        if (!delegate().IsActiveTabAtLeadingWindowEdge()) {
+          main_background_corners.upper_leading.type =
+              CustomCornersBackground::CornerType::kRoundedWithBackground;
+        }
+        main_background_corners.upper_trailing.type =
+            CustomCornersBackground::CornerType::kRoundedWithBackground;
+      }
+    }
+
+    // Need to ensure the bottom of the window is properly rounded for normal
+    // windows.
+    if (window_state == WindowState::kNormal) {
+      if (tab_strip_type != TabStripType::kVertical) {
+        main_background_corners.lower_leading =
+            background->GetWindowCorner(/*upper=*/false);
+      }
+      main_background_corners.lower_trailing =
+          background->GetWindowCorner(/*upper=*/false);
+    }
+
+    background->SetCorners(main_background_corners);
+  }
 }

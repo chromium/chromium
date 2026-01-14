@@ -8,7 +8,9 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -99,8 +101,8 @@ void CustomCornersBackground::SetCorners(const Corners& corners) {
   view_->SchedulePaint();
 }
 
-// static
-CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner() {
+CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
+    bool upper) const {
   Corner corner;
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsRoundedWindowsEnabled()) {
@@ -109,6 +111,17 @@ CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner() {
     corner.radius = chromeos::kRoundedWindowCornerRadius;
   } else {
     corner.type = CornerType::kSquare;
+  }
+#elif BUILDFLAG(IS_LINUX)
+  if (auto* const widget = browser_view_->browser_widget()) {
+    if (auto* const frame = widget->GetFrameView()) {
+      const auto rrect = frame->GetRestoredClipRegion();
+      const auto radii = rrect.radii(upper ? SkRRect::kUpperLeft_Corner
+                                           : SkRRect::kLowerLeft_Corner);
+      corner.radius = base::ClampRound((radii.x() + radii.y()) / 2);
+      corner.type =
+          corner.radius > 0 ? CornerType::kRounded : CornerType::kSquare;
+    }
   }
 #else
   corner.type = CornerType::kRounded;

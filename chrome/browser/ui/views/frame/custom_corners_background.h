@@ -88,7 +88,9 @@ class CustomCornersBackground : public views::Background,
   void SetCorners(const Corners& corners);
 
   // Returns an appropriate window corner for the current platform.
-  static Corner GetWindowCorner();
+  // Specify `upper` to switch between upper (true) and lower (false) corners,
+  // as they may be different on some platforms.
+  Corner GetWindowCorner(bool upper) const;
 
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
