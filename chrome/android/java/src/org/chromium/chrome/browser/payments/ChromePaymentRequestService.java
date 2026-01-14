@@ -62,7 +62,6 @@ import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
-import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.payments.mojom.SecurePaymentConfirmationRequest;
@@ -71,7 +70,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the Clank specific parts of {@link PaymentRequest}, with the parts shared with WebView
@@ -277,26 +275,6 @@ public class ChromePaymentRequestService
     public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
         mPaymentUiService.initialize(mSpec.getPaymentDetails());
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public boolean disconnectIfExtraValidationFails(
-            WebContents webContents,
-            Map<String, PaymentMethodData> methodData,
-            PaymentDetails details,
-            PaymentOptions options) {
-        assertNonNull(methodData);
-        assertNonNull(details);
-
-        if (!parseAndValidateDetailsFurtherIfNeeded(details)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_DETAILS,
-                    PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
-            return true;
-        }
-        return false;
     }
 
     // Implements BrowserPaymentRequest:

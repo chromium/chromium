@@ -554,11 +554,6 @@ public class PaymentRequestService
             return false;
         }
 
-        if (mBrowserPaymentRequest.disconnectIfExtraValidationFails(
-                mWebContents, methodData, details, mPaymentOptions)) {
-            return false;
-        }
-
         PaymentRequestSpec spec =
                 mDelegate.createPaymentRequestSpec(
                         mPaymentOptions,
@@ -1370,9 +1365,7 @@ public class PaymentRequestService
     private boolean isPaymentDetailsUpdateValid(PaymentDetails details) {
         assumeNonNull(mBrowserPaymentRequest);
         // ID cannot be updated. Updating the total is optional.
-        return details.id == null
-                && mDelegate.validatePaymentDetails(details)
-                && mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details);
+        return details.id == null && mDelegate.validatePaymentDetails(details);
     }
 
     private @Nullable String continueShowWithUpdatedDetails(@Nullable PaymentDetails details) {

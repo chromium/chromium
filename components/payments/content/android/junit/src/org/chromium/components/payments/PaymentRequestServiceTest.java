@@ -135,16 +135,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .when(mBrowserPaymentRequest)
                 .maybeOverrideHasEnrolledInstrumentResponse(Mockito.anyBoolean(), Mockito.any());
         Mockito.doReturn(true).when(mBrowserPaymentRequest).hasAvailableApps();
-        Mockito.doReturn(false)
-                .when(mBrowserPaymentRequest)
-                .disconnectIfExtraValidationFails(
-                        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
-        Mockito.doReturn(true)
-                .when(mBrowserPaymentRequest)
-                .parseAndValidateDetailsFurtherIfNeeded(Mockito.any());
         Mockito.doAnswer(
                         (args) -> {
                             List<PaymentApp> pendingApps = args.getArgument(0);
