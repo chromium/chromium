@@ -613,29 +613,30 @@ void AIManager::CreateProofreader(
 }
 
 blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
-  auto model_info = blink::mojom::AILanguageModelParams::New(
-      blink::mojom::AILanguageModelSamplingParams::New(),
-      blink::mojom::AILanguageModelSamplingParams::New());
-  model_info->max_sampling_params->top_k =
-      optimization_guide::features::GetOnDeviceModelMaxTopK();
-  model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
-
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
   if (!service) {
-    return model_info;
+    return nullptr;
   }
   auto sampling_params_config = service->GetSamplingParamsConfig(
       optimization_guide::mojom::OnDeviceFeature::kPromptApi);
 
   if (!sampling_params_config.has_value()) {
-    return model_info;
+    return nullptr;
   }
+
+  auto model_info = blink::mojom::AILanguageModelParams::New(
+      blink::mojom::AILanguageModelSamplingParams::New(),
+      blink::mojom::AILanguageModelSamplingParams::New());
 
   model_info->default_sampling_params->top_k =
       sampling_params_config->default_top_k;
   model_info->default_sampling_params->temperature =
       sampling_params_config->default_temperature;
+
+  model_info->max_sampling_params->top_k =
+      optimization_guide::features::GetOnDeviceModelMaxTopK();
+  model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
 
   auto metadata = service->GetFeatureMetadata(
       optimization_guide::mojom::OnDeviceFeature::kPromptApi);

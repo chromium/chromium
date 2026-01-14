@@ -275,4 +275,32 @@ TEST_F(AIManagerTest, CheckAndFixLanguagesProofreader) {
   EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
 }
 
+// Test that GetLanguageModelParams returns null when sampling config is
+// not available (model not downloaded yet).
+TEST_F(AIManagerTest, GetLanguageModelParamsReturnsNullWhenNotAvailable) {
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          GetSamplingParamsConfig(_))
+      .WillByDefault(testing::Return(std::nullopt));
+
+  EXPECT_TRUE(ai_manager_->GetLanguageModelParams().is_null());
+}
+
+// Test that GetLanguageModelParams returns params when config is available
+TEST_F(AIManagerTest, GetLanguageModelParamsReturnsValidParamsWhenAvailable) {
+  optimization_guide::SamplingParamsConfig config{
+      .default_top_k = 3,
+      .default_temperature = 1.0f,
+  };
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          GetSamplingParamsConfig(_))
+      .WillByDefault(testing::Return(config));
+
+  auto params = ai_manager_->GetLanguageModelParams();
+
+  ASSERT_TRUE(params);
+  ASSERT_TRUE(params->default_sampling_params);
+  EXPECT_EQ(3u, params->default_sampling_params->top_k);
+  EXPECT_FLOAT_EQ(1.0f, params->default_sampling_params->temperature);
+}
+
 }  // namespace
