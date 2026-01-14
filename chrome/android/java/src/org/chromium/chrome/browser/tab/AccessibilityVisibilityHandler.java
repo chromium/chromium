@@ -25,7 +25,7 @@ public class AccessibilityVisibilityHandler
         mActivityTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    public void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    public void onObservingDifferentTab(@Nullable Tab tab) {
                         if (mTab == tab) return;
                         if (mTab != null) {
                             updateObscured(false, false);

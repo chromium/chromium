@@ -301,7 +301,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         mActiveTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         mTab = tab;
                         setContentView(tab != null ? tab.getContentView() : null);
                         if (tab != null) {

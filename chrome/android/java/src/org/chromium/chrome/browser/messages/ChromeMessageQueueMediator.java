@@ -182,7 +182,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                     private int mToken = TokenHolder.INVALID_TOKEN;
 
                     @Override
-                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         if (mToken == TokenHolder.INVALID_TOKEN && tab == null) {
                             mToken = suspendQueue();
                         } else if (mToken != TokenHolder.INVALID_TOKEN && tab != null) {

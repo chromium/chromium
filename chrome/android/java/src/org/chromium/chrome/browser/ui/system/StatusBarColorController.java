@@ -249,7 +249,7 @@ public class StatusBarColorController
                     }
 
                     @Override
-                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         mCurrentTab = tab;
                         mShouldUpdateStatusBarColorForNtp = isStandardNtp();
 

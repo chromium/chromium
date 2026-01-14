@@ -243,7 +243,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mActiveTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         setTab(tab);
 
                         // The tab that's been switched away from is never going to update us that

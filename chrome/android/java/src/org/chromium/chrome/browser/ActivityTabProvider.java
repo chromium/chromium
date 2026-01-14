@@ -58,21 +58,7 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
         }
 
         @Override
-        protected void onObservingDifferentTab(@Nullable Tab tab) {
-            onObservingDifferentTab(tab, false);
-        }
-
-        /**
-         * A notification that the observer has switched to observing a different tab. This can be
-         * called a first time with the {@code hint} parameter set to true, indicating that a new
-         * tab is going to be selected.
-         *
-         * @param tab The tab that the observer is now observing. This can be null.
-         * @param hint Whether the change event is a hint that a tab change is likely. If true, the
-         *     provided tab may still be frozen and is not yet selected.
-         * @deprecated - hint is unused, override this method without the hint parameter.
-         */
-        protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {}
+        protected void onObservingDifferentTab(@Nullable Tab tab) {}
     }
 
     /** A handle to the {@link LayoutStateProvider} to get the active layout. */

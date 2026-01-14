@@ -54,7 +54,7 @@ public class ActivityTabProviderTest {
         }
 
         @Override
-        public void onObservingDifferentTab(Tab tab, boolean hint) {
+        public void onObservingDifferentTab(Tab tab) {
             mObservedTab = tab;
         }
 

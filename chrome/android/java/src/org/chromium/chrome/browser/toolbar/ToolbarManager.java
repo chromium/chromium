@@ -1327,7 +1327,7 @@ public class ToolbarManager
                     private long mLastNavigationTimestamp;
 
                     @Override
-                    public void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    public void onObservingDifferentTab(@Nullable Tab tab) {
                         // ActivityTabProvider will null out the tab passed to
                         // onObservingDifferentTab when the tab is non-interactive (e.g. when
                         // entering the TabSwitcher).
