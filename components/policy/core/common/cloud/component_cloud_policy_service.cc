@@ -53,8 +53,7 @@ bool NotInResponseMap(const ScopedResponseMap& map,
   return map.find(PolicyNamespace(domain, component_id)) == map.end();
 }
 
-bool ToPolicyNamespace(const CloudPolicyClientTypeParams& key,
-                       PolicyNamespace* ns) {
+bool ToPolicyNamespace(const PolicyTypeToFetch& key, PolicyNamespace* ns) {
   if (!ComponentCloudPolicyStore::GetPolicyDomain(key.policy_type(),
                                                   &ns->domain)) {
     return false;

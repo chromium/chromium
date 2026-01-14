@@ -75,7 +75,7 @@ device_management_storage::DMPolicyMap ToDMPolicyMap(
   device_management_storage::DMPolicyMap out;
   std::ranges::transform(
       in, std::inserter(out, out.end()),
-      [](const std::pair<policy::CloudPolicyClientTypeParams,
+      [](const std::pair<policy::PolicyTypeToFetch,
                          enterprise_management::PolicyFetchResponse>&
              response) {
         return std::make_pair(response.first.policy_type(),

@@ -40,7 +40,7 @@ struct POLICY_EXPORT ExtensionIdAndVersion {
   std::string ToString() const;
 };
 
-class POLICY_EXPORT CloudPolicyClientTypeParams {
+class POLICY_EXPORT PolicyTypeToFetch {
  public:
   class ExtensionsProvider {
    public:
@@ -61,22 +61,22 @@ class POLICY_EXPORT CloudPolicyClientTypeParams {
   //  -  When fetching for a single extension id and version,
   //  `settings_entity_id`
   //     must be also set to `{extension_id}@{extension_version}`.
-  CloudPolicyClientTypeParams(const std::string& policy_type,
-                              const std::string& settings_entity_id);
+  PolicyTypeToFetch(const std::string& policy_type,
+                    const std::string& settings_entity_id);
 
-  CloudPolicyClientTypeParams(const std::string& policy_type,
-                              ExtensionsProvider* extension_set_provider);
+  PolicyTypeToFetch(const std::string& policy_type,
+                    ExtensionsProvider* extension_set_provider);
 
-  CloudPolicyClientTypeParams(const CloudPolicyClientTypeParams&);
-  CloudPolicyClientTypeParams(CloudPolicyClientTypeParams&&);
+  PolicyTypeToFetch(const PolicyTypeToFetch&);
+  PolicyTypeToFetch(PolicyTypeToFetch&&);
 
-  ~CloudPolicyClientTypeParams();
+  ~PolicyTypeToFetch();
 
-  CloudPolicyClientTypeParams& operator=(const CloudPolicyClientTypeParams&);
-  CloudPolicyClientTypeParams& operator=(CloudPolicyClientTypeParams&&);
+  PolicyTypeToFetch& operator=(const PolicyTypeToFetch&);
+  PolicyTypeToFetch& operator=(PolicyTypeToFetch&&);
 
-  std::strong_ordering operator<=>(
-      const CloudPolicyClientTypeParams& other) const = default;
+  std::strong_ordering operator<=>(const PolicyTypeToFetch& other) const =
+      default;
 
   const std::string& policy_type() const { return policy_type_; }
   std::string settings_entity_id() const;

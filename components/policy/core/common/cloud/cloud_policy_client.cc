@@ -294,8 +294,7 @@ std::optional<std::string_view> HistogramVariantForType(std::string_view type) {
   return std::nullopt;
 }
 
-class SingleExtensionProvider
-    : public CloudPolicyClientTypeParams::ExtensionsProvider {
+class SingleExtensionProvider : public PolicyTypeToFetch::ExtensionsProvider {
  public:
   explicit SingleExtensionProvider(const ExtensionIdAndVersion& extension)
       : extension_(extension) {}
@@ -721,7 +720,7 @@ CloudPolicyClient::GetPolicyFetchRequestSignatureType() {
 
 em::PolicyFetchRequest* CloudPolicyClient::AddPolicyFetchRequest(
     em::DevicePolicyRequest* policy_request,
-    const CloudPolicyClientTypeParams& type_to_fetch) {
+    const PolicyTypeToFetch& type_to_fetch) {
   em::PolicyFetchRequest* fetch_request = policy_request->add_requests();
   fetch_request->set_policy_type(type_to_fetch.policy_type());
   VLOG_POLICY(2, POLICY_FETCHING)
@@ -769,7 +768,7 @@ em::PolicyFetchRequest* CloudPolicyClient::AddPolicyFetchRequest(
 
 void CloudPolicyClient::FetchPolicyInternal(
     PolicyFetchReason reason,
-    const CloudPolicyClientTypeParamsSet& types_to_fetch,
+    const PolicyTypeToFetchSet& types_to_fetch,
     base::OnceCallback<void(DMServerJobResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -871,8 +870,7 @@ void CloudPolicyClient::FetchExtensionInstallPolicy(
     const ExtensionIdAndVersion& extension_id_and_version,
     base::OnceCallback<void(DMServerJobResult)> callback) {
   SingleExtensionProvider provider(extension_id_and_version);
-  FetchPolicyInternal(reason,
-                      {CloudPolicyClientTypeParams(policy_type, &provider)},
+  FetchPolicyInternal(reason, {PolicyTypeToFetch(policy_type, &provider)},
                       std::move(callback));
 }
 
@@ -1488,12 +1486,10 @@ void CloudPolicyClient::AddPolicyTypeToFetch(
     const std::string& settings_entity_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  AddPolicyTypeToFetch(
-      CloudPolicyClientTypeParams(policy_type, settings_entity_id));
+  AddPolicyTypeToFetch(PolicyTypeToFetch(policy_type, settings_entity_id));
 }
 
-void CloudPolicyClient::AddPolicyTypeToFetch(
-    const CloudPolicyClientTypeParams& params) {
+void CloudPolicyClient::AddPolicyTypeToFetch(const PolicyTypeToFetch& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   types_to_fetch_.insert(params);
 }
@@ -1502,12 +1498,11 @@ void CloudPolicyClient::RemovePolicyTypeToFetch(
     const std::string& policy_type,
     const std::string& settings_entity_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemovePolicyTypeToFetch(
-      CloudPolicyClientTypeParams(policy_type, settings_entity_id));
+  RemovePolicyTypeToFetch(PolicyTypeToFetch(policy_type, settings_entity_id));
 }
 
 void CloudPolicyClient::RemovePolicyTypeToFetch(
-    const CloudPolicyClientTypeParams& params) {
+    const PolicyTypeToFetch& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   types_to_fetch_.erase(params);
 }
@@ -1525,7 +1520,7 @@ const em::PolicyFetchResponse* CloudPolicyClient::GetPolicyFor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = last_policy_fetch_responses_.find(
-      CloudPolicyClientTypeParams(policy_type, settings_entity_id));
+      PolicyTypeToFetch(policy_type, settings_entity_id));
   return it == last_policy_fetch_responses_.end() ? nullptr : &it->second;
 }
 
@@ -1782,7 +1777,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
       if (policy_data.has_settings_entity_id()) {
         entity_id = policy_data.settings_entity_id();
       }
-      CloudPolicyClientTypeParams key(type, entity_id);
+      PolicyTypeToFetch key(type, entity_id);
       if (last_policy_fetch_responses_.contains(key)) {
         LOG_POLICY(WARNING, CBCM_ENROLLMENT)
             << "Duplicate PolicyFetchResponse for type: " << type

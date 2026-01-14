@@ -201,9 +201,9 @@ TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
     // This EIPS should now be in types_to_fetch().
     EXPECT_THAT(manager->core()->client()->types_to_fetch(),
                 testing::UnorderedElementsAre(
-                    CloudPolicyClientTypeParams(
-                        dm_protocol::GetChromeUserPolicyType(), std::string()),
-                    CloudPolicyClientTypeParams(
+                    PolicyTypeToFetch(dm_protocol::GetChromeUserPolicyType(),
+                                      std::string()),
+                    PolicyTypeToFetch(
                         dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
                         &service)));
 
@@ -212,7 +212,7 @@ TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
         extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled,
         false);
     EXPECT_THAT(manager->core()->client()->types_to_fetch(),
-                testing::UnorderedElementsAre(CloudPolicyClientTypeParams(
+                testing::UnorderedElementsAre(PolicyTypeToFetch(
                     dm_protocol::GetChromeUserPolicyType(), std::string())));
 
     // Re-enable the feature, it should get re-added to types_to_fetch().
@@ -221,15 +221,15 @@ TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
         true);
     EXPECT_THAT(manager->core()->client()->types_to_fetch(),
                 testing::UnorderedElementsAre(
-                    CloudPolicyClientTypeParams(
-                        dm_protocol::GetChromeUserPolicyType(), std::string()),
-                    CloudPolicyClientTypeParams(
+                    PolicyTypeToFetch(dm_protocol::GetChromeUserPolicyType(),
+                                      std::string()),
+                    PolicyTypeToFetch(
                         dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
                         &service)));
   }
 
   EXPECT_THAT(manager->core()->client()->types_to_fetch(),
-              testing::UnorderedElementsAre(CloudPolicyClientTypeParams(
+              testing::UnorderedElementsAre(PolicyTypeToFetch(
                   dm_protocol::GetChromeUserPolicyType(), std::string())));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

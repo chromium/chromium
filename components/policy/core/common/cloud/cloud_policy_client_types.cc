@@ -50,35 +50,30 @@ std::string ExtensionIdAndVersion::ToString() const {
                             extension_version.c_str());
 }
 
-CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
-    const std::string& policy_type,
-    const std::string& settings_entity_id)
+PolicyTypeToFetch::PolicyTypeToFetch(const std::string& policy_type,
+                                     const std::string& settings_entity_id)
     : policy_type_(policy_type), extra_param_(settings_entity_id) {}
 
-CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
-    const std::string& policy_type,
-    ExtensionsProvider* extension_set_provider)
+PolicyTypeToFetch::PolicyTypeToFetch(const std::string& policy_type,
+                                     ExtensionsProvider* extension_set_provider)
     : policy_type_(policy_type),
       extra_param_(
           raw_ref<ExtensionsProvider>::from_ptr(extension_set_provider)) {
   CHECK(IsExtensionInstallPolicyType(policy_type));
 }
 
-CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
-    const CloudPolicyClientTypeParams&) = default;
+PolicyTypeToFetch::PolicyTypeToFetch(const PolicyTypeToFetch&) = default;
 
-CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
-    CloudPolicyClientTypeParams&&) = default;
+PolicyTypeToFetch::PolicyTypeToFetch(PolicyTypeToFetch&&) = default;
 
-CloudPolicyClientTypeParams::~CloudPolicyClientTypeParams() = default;
+PolicyTypeToFetch::~PolicyTypeToFetch() = default;
 
-CloudPolicyClientTypeParams& CloudPolicyClientTypeParams::operator=(
-    const CloudPolicyClientTypeParams&) = default;
+PolicyTypeToFetch& PolicyTypeToFetch::operator=(const PolicyTypeToFetch&) =
+    default;
 
-CloudPolicyClientTypeParams& CloudPolicyClientTypeParams::operator=(
-    CloudPolicyClientTypeParams&&) = default;
+PolicyTypeToFetch& PolicyTypeToFetch::operator=(PolicyTypeToFetch&&) = default;
 
-std::string CloudPolicyClientTypeParams::settings_entity_id() const {
+std::string PolicyTypeToFetch::settings_entity_id() const {
   if (std::holds_alternative<std::string>(extra_param_)) {
     return std::get<std::string>(extra_param_);
   }
@@ -91,11 +86,12 @@ std::string CloudPolicyClientTypeParams::settings_entity_id() const {
   return std::string();
 }
 
-std::set<ExtensionIdAndVersion>
-CloudPolicyClientTypeParams::extension_ids_and_version() const {
+std::set<ExtensionIdAndVersion> PolicyTypeToFetch::extension_ids_and_version()
+    const {
   if (std::holds_alternative<ExtensionsProviderRef>(extra_param_)) {
     return std::get<ExtensionsProviderRef>(extra_param_)->GetExtensions();
   }
   return std::set<ExtensionIdAndVersion>();
 }
+
 }  // namespace policy

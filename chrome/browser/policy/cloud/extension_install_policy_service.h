@@ -40,7 +40,7 @@ class ExtensionInstallPolicyService : public KeyedService {
 // A keyed service that provides access to the extension install policy.
 class ExtensionInstallPolicyServiceImpl
     : public ExtensionInstallPolicyService,
-      public CloudPolicyClientTypeParams::ExtensionsProvider {
+      public PolicyTypeToFetch::ExtensionsProvider {
  public:
   explicit ExtensionInstallPolicyServiceImpl(Profile* profile);
   ~ExtensionInstallPolicyServiceImpl() override;
@@ -57,7 +57,7 @@ class ExtensionInstallPolicyServiceImpl
   std::optional<bool> IsExtensionAllowed(
       const ExtensionIdAndVersion& extension_id_and_version) override;
 
-  // CloudPolicyClientTypeParams::ExtensionsProvider:
+  // PolicyTypeToFetch::ExtensionsProvider:
   std::set<ExtensionIdAndVersion> GetExtensions() override;
 
  private:

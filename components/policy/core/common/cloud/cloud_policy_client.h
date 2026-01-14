@@ -72,7 +72,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Maps a (policy type, settings entity ID) pair to its corresponding
   // PolicyFetchResponse.
   using ResponseMap =
-      base::flat_map<CloudPolicyClientTypeParams,
+      base::flat_map<PolicyTypeToFetch,
                      enterprise_management::PolicyFetchResponse>;
 
   // A callback which receives boolean status of an operation. If the
@@ -644,14 +644,14 @@ class POLICY_EXPORT CloudPolicyClient {
   void AddPolicyTypeToFetch(const std::string& policy_type,
                             const std::string& settings_entity_id);
 
-  void AddPolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
+  void AddPolicyTypeToFetch(const PolicyTypeToFetch& params);
 
   // FetchPolicy() calls won't request the given policy type and optional
   // |settings_entity_id| anymore.
   void RemovePolicyTypeToFetch(const std::string& policy_type,
                                const std::string& settings_entity_id);
 
-  void RemovePolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
+  void RemovePolicyTypeToFetch(const PolicyTypeToFetch& params);
 
   // Configures a set of device state keys to transfer to the server in the next
   // policy fetch. If the fetch is successful, the keys will be cleared so they
@@ -728,7 +728,7 @@ class POLICY_EXPORT CloudPolicyClient {
     return fetched_invalidation_version_;
   }
 
-  const base::flat_set<CloudPolicyClientTypeParams>& types_to_fetch() const {
+  const base::flat_set<PolicyTypeToFetch>& types_to_fetch() const {
     return types_to_fetch_;
   }
 
@@ -744,17 +744,16 @@ class POLICY_EXPORT CloudPolicyClient {
   // A map of (policy type, settings entity ID) pairs to fetch to the set of
   // settings entity IDs that should be fetched for the given policy type and
   // settings entity ID.
-  typedef base::flat_set<CloudPolicyClientTypeParams>
-      CloudPolicyClientTypeParamsSet;
+  typedef base::flat_set<PolicyTypeToFetch> PolicyTypeToFetchSet;
 
   void FetchPolicyInternal(
       PolicyFetchReason reason,
-      const CloudPolicyClientTypeParamsSet& types_to_fetch,
+      const PolicyTypeToFetchSet& types_to_fetch,
       base::OnceCallback<void(DMServerJobResult)> callback);
 
   enterprise_management::PolicyFetchRequest* AddPolicyFetchRequest(
       enterprise_management::DevicePolicyRequest* policy_request,
-      const CloudPolicyClientTypeParams& type_to_fetch);
+      const PolicyTypeToFetch& type_to_fetch);
 
   // Upload a certificate to the server.  Like FetchPolicy, this method
   // requires that the client is in a registered state.  |certificate_data| must
@@ -861,7 +860,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::string oidc_user_email_;
   bool is_dasherless_ = false;
 
-  CloudPolicyClientTypeParamsSet types_to_fetch_;
+  PolicyTypeToFetchSet types_to_fetch_;
   std::vector<std::string> state_keys_to_upload_;
 
   // OAuth token that if set is used as an additional form of authentication
