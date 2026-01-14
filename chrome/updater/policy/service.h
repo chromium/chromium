@@ -122,6 +122,29 @@ class PolicyStatus {
     return value;
   }
 
+  // Creates a base::Value::Dict representation of an individual policy adhering
+  // to the format defined by //docs/updater/history_log.md.
+  base::Value::Dict ToDict() const {
+    base::Value::Dict values_by_source;
+    for (const auto& entry : all_policies()) {
+      if constexpr (std::is_same_v<T, base::TimeDelta>) {
+        values_by_source.Set(entry.source,
+                             base::TimeDeltaToValue(entry.policy));
+      } else if constexpr (std::is_same_v<T, UpdatesSuppressedTimes>) {
+        values_by_source.Set(
+            entry.source, base::Value::Dict()
+                              .Set("StartHour", entry.policy.start_hour_)
+                              .Set("StartMinute", entry.policy.start_minute_)
+                              .Set("Duration", entry.policy.duration_minute_));
+      } else {
+        values_by_source.Set(entry.source, entry.policy);
+      }
+    }
+    return base::Value::Dict()
+        .Set("valuesBySource", std::move(values_by_source))
+        .Set("prevailingSource", effective_policy()->source);
+  }
+
   const std::optional<Entry>& effective_policy() const {
     return effective_policy_;
   }
