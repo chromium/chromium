@@ -855,6 +855,10 @@ WebNNTensorRepresentation::BeginScopedAccess() {
       base::PassKey<WebNNTensorRepresentation>(), this, AccessMode::kWrite);
 }
 
+bool WebNNTensorRepresentation::is_thread_safe() const {
+  return backing()->is_thread_safe();
+}
+
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D12Resource>
 WebNNTensorRepresentation::GetD3D12Buffer() const {

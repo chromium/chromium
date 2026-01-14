@@ -154,7 +154,8 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
-      std::string debug_label);
+      std::string debug_label,
+      bool is_thread_safe);
 
   bool CreateSwapChainInternal(
       Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,

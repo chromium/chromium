@@ -648,8 +648,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(!is_thread_safe);
-
   if (usage.Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
     gfx::Size buffer_size = size;
     // WebNN tensors have a valid height and format and must be converted to 1D
@@ -673,8 +671,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
     return CreateSharedBufferD3D12(mailbox, buffer_size, color_space,
                                    surface_origin, alpha_type, usage,
-                                   debug_label);
+                                   debug_label, is_thread_safe);
   }
+
+  // D3D11/Texture-based paths below do not yet support thread-safe access.
+  DCHECK(!is_thread_safe);
 
   // Without D3D11, we cannot do shared images. This will happen if we're
   // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
@@ -913,7 +914,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
-    std::string debug_label) {
+    std::string debug_label,
+    bool is_thread_safe) {
   if (!d3d12_device_) {
     // Lazily create a D3D12 Device by acquiring the DXGI adapter of the
     // existing D3D11 device.
@@ -1047,7 +1049,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
   }
 
   auto backing = D3DImageBacking::CreateFromD3D12Resource(
-      mailbox, size, usage, std::move(debug_label), std::move(resource));
+      mailbox, size, usage, std::move(debug_label), std::move(resource),
+      is_thread_safe);
 
   // CreateCommittedResource will zero the resource for us, which means we can
   // set it as cleared.

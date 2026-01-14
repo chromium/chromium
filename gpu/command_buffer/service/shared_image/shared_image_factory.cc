@@ -952,6 +952,12 @@ bool SharedImageFactory::IsSharedBetweenThreads(
     return true;
   }
 
+  // WebNN shared tensors will be accessed on both the GPU main thread and the
+  // sequence owning the WebNN tensor. Synchronization is done via SyncTokens.
+  if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+    return true;
+  }
+
   // DISPLAY is for gpu composition and SCANOUT for overlays.
   constexpr gpu::SharedImageUsageSet kDisplayCompositorUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |

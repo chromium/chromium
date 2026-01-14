@@ -457,9 +457,11 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromD3D12Resource(
     const gfx::Size& size,
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
-    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource) {
-  auto backing = base::WrapUnique(new D3DImageBacking(
-      mailbox, size, usage, std::move(debug_label), std::move(d3d12_resource)));
+    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+    bool is_thread_safe) {
+  auto backing = base::WrapUnique(
+      new D3DImageBacking(mailbox, size, usage, std::move(debug_label),
+                          std::move(d3d12_resource), is_thread_safe));
   return backing;
 }
 
@@ -550,7 +552,8 @@ D3DImageBacking::D3DImageBacking(
     const gfx::Size& size,
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
-    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource)
+    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+    bool is_thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
                                       viz::SharedImageFormat(),
                                       size,
@@ -560,7 +563,7 @@ D3DImageBacking::D3DImageBacking(
                                       usage,
                                       std::move(debug_label),
                                       size.width(),
-                                      /*is_thread_safe=*/false),
+                                      is_thread_safe),
       d3d12_resource_(std::move(d3d12_resource)),
       texture_target_(0),
       array_slice_(0),

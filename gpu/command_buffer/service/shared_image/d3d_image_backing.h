@@ -79,7 +79,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const gfx::Size& size,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
-      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+      bool is_thread_safe);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffers(
       const Mailbox& mailbox,
@@ -272,7 +273,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   const gfx::Size& size,
                   gpu::SharedImageUsageSet usage,
                   std::string debug_label,
-                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+                  bool is_thread_safe);
 
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed

@@ -934,6 +934,8 @@ class GPU_GLES2_EXPORT WebNNTensorRepresentation
 #endif
   };
 
+  bool is_thread_safe() const;
+
   std::unique_ptr<ScopedAccess> BeginScopedAccess();
 
 #if BUILDFLAG(IS_WIN)
