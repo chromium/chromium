@@ -9,8 +9,8 @@ default: 0
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:145-
 owners:
 - seblalancette@chromium.org
 - domfc@chromium.org
