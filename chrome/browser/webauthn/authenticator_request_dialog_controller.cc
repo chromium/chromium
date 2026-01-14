@@ -1345,11 +1345,6 @@ bool AuthenticatorRequestDialogController::OnHybridTransportError() {
   return true;
 }
 
-bool AuthenticatorRequestDialogController::OnEnclaveError() {
-  SetCurrentStep(Step::kGPMError);
-  return true;
-}
-
 bool AuthenticatorRequestDialogController::OnNoPasskeys() {
   SetCurrentStep(Step::kErrorNoPasskeys);
   return true;

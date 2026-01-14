@@ -501,6 +501,11 @@ GPMEnclaveController::creds() const {
   return creds_;
 }
 
+bool GPMEnclaveController::OnEnclaveError() {
+  model_->SetStep(Step::kGPMError);
+  return true;
+}
+
 void GPMEnclaveController::HandleEnclaveTransactionError() {
   model_->SetStep(Step::kGPMError);
 }

@@ -202,6 +202,10 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
     return enclave_request_callback_;
   }
 
+  // To be called when an enclave transaction fails. Returns true if the event
+  // was handled.
+  bool OnEnclaveError();
+
  private:
   // GPMEnclaveTransaction::Delegate:
   void HandleEnclaveTransactionError() override;

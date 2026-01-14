@@ -380,7 +380,8 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     case InterestingFailureReason::kNoPasskeys:
       return dialog_controller_->OnNoPasskeys();
     case InterestingFailureReason::kEnclaveError:
-      return dialog_controller_->OnEnclaveError();
+      return enclave_controller_ ? enclave_controller_->OnEnclaveError()
+                                 : false;
     case InterestingFailureReason::kEnclaveCancel:
       dialog_model_->CancelAuthenticatorRequest();
       break;
