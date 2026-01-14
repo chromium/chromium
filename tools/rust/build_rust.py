@@ -581,30 +581,31 @@ def RustTargetTriple():
 
 
 # Build the LLVM libraries and install them .
-def BuildLLVMLibraries(skip_build, llvm_force_head_revision):
-    if not skip_build:
-        print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
-        build_cmd = [
-            sys.executable,
-            os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
-            '--disable-asserts',
-            '--no-tools',
-            '--no-runtimes',
-            # PIC needed for Rust build (links LLVM into shared object)
-            '--pic',
-            '--with-ml-inliner-model=',
-            # Not using this in Rust yet, see also crbug.com/1476464.
-            '--without-zstd',
-        ]
-        if llvm_force_head_revision:
-            build_cmd.append('--llvm-force-head-revision')
-        if sys.platform.startswith('linux'):
-            build_cmd.append('--without-android')
-            build_cmd.append('--without-fuchsia')
-        RunCommand(build_cmd + [
-            '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
-            RUST_HOST_LLVM_INSTALL_DIR
-        ])
+def BuildLLVMLibraries(skip_checkout, llvm_force_head_revision):
+    print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
+    build_cmd = [
+        sys.executable,
+        os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
+        '--disable-asserts',
+        '--no-tools',
+        '--no-runtimes',
+        # PIC needed for Rust build (links LLVM into shared object)
+        '--pic',
+        '--with-ml-inliner-model=',
+        # Not using this in Rust yet, see also crbug.com/1476464.
+        '--without-zstd',
+    ]
+    if llvm_force_head_revision:
+        build_cmd.append('--llvm-force-head-revision')
+    elif skip_checkout:
+        build_cmd.append('--skip-checkout')
+    if sys.platform.startswith('linux'):
+        build_cmd.append('--without-android')
+        build_cmd.append('--without-fuchsia')
+    RunCommand(build_cmd + [
+        '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
+        RUST_HOST_LLVM_INSTALL_DIR
+    ])
 
 
 # Move a git submodule to point to a different branch.
@@ -907,7 +908,8 @@ def main():
         # the hash is valid.
         return 0
 
-    BuildLLVMLibraries(args.skip_llvm_build, args.llvm_force_head_revision)
+    if not args.skip_llvm_build:
+        BuildLLVMLibraries(args.skip_checkout, args.llvm_force_head_revision)
 
     AddCMakeToPath()
 
