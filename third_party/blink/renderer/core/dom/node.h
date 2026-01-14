@@ -225,8 +225,9 @@ class CORE_EXPORT Node : public EventTarget {
   Element* parentElement() const;
   ContainerNode* ParentElementOrShadowRoot() const;
   ContainerNode* ParentElementOrDocumentFragment() const;
-  Node* previousSibling() const { return previous_.Get(); }
-  bool HasPreviousSibling() const { return static_cast<bool>(previous_); }
+  inline Node* previousSibling() const;
+  Node* PreviousSiblingCircular() const { return previous_; }
+  bool HasPreviousSibling() const;
   Node* nextSibling() const { return next_.Get(); }
   bool HasNextSibling() const { return static_cast<bool>(next_); }
   NodeList* childNodes();
@@ -1361,6 +1362,10 @@ class CORE_EXPORT Node : public EventTarget {
   TaggedParentOrShadowHostNode parent_or_shadow_host_node_;
   // Compressed members and flags are after uncompressed members to minimize
   // padding.
+  //
+  // As a special case, previous_ on the first child of a node will return
+  // the last node (i.e., it is circular). previousSibling() knows this
+  // and will return nullptr. next_ has no similar behavior.
   Member<Node> previous_;
   Member<Node> next_;
   Member<LayoutObject> layout_object_;

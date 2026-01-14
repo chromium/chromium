@@ -2599,10 +2599,12 @@ class CORE_EXPORT Element : public ContainerNode {
   // scroll-marker due to a targeted scroll.
   void NotifyScrollMarkerGroupOfTargetedScroll();
 
+  // ContainerNode ends on a 32-bit member, so put this Member first
+  // to eliminate padding.
+
+  Member<const ComputedStyle> computed_style_;
+
   QualifiedName tag_name_;
-  // This `ComputedStyle` field is a hot accessed member. Keep uncompressed for
-  // performance reasons.
-  subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<ElementData> element_data_;
 
   // A tiny Bloom filter for which attribute names and class names exist
@@ -2616,7 +2618,7 @@ class CORE_EXPORT Element : public ContainerNode {
 
   // Do not add new members to Element without a good reason; prefer to
   // add to ElementRareData unless it is performance-critical. Element
-  // is 88 bytes on typical 64-bit platforms, and growing it can cause
+  // is 80 bytes on typical 64-bit platforms, and growing it can cause
   // both memory and performance regressions if you are not careful.
 };
 
@@ -2632,6 +2634,24 @@ inline bool IsDisabledFormControl(const Node* node) {
 
 inline Element* Node::parentElement() const {
   return DynamicTo<Element>(parentNode());
+}
+
+inline Node* Node::previousSibling() const {
+  if (parentNode() && parentNode()->firstChild() == this) {
+    // The previous pointer is used for lastChild(),
+    // so it cannot be trusted.
+    return nullptr;
+  } else {
+    return previous_.Get();
+  }
+}
+
+inline bool Node::HasPreviousSibling() const {
+  if (parentNode() && parentNode()->firstChild() == this) {
+    return false;
+  } else {
+    return previous_;
+  }
 }
 
 inline bool Element::FastHasAttribute(const QualifiedName& name) const {

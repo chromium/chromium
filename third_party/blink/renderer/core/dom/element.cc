@@ -635,9 +635,7 @@ const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
 Element::Element(const QualifiedName& tag_name,
                  Document* document,
                  ConstructionType type)
-    : ContainerNode(document, type),
-      tag_name_(tag_name),
-      computed_style_(nullptr) {}
+    : ContainerNode(document, type), tag_name_(tag_name) {}
 
 Element* Element::GetAnimationTarget() {
   return this;

@@ -102,7 +102,9 @@ class CORE_EXPORT ContainerNode : public Node {
                                       ExceptionState&);
 
   Node* firstChild() const { return first_child_.Get(); }
-  Node* lastChild() const { return last_child_.Get(); }
+  Node* lastChild() const {
+    return first_child_ ? first_child_->PreviousSiblingCircular() : nullptr;
+  }
   bool hasChildren() const { return static_cast<bool>(first_child_); }
   bool HasChildren() const { return static_cast<bool>(first_child_); }
 
@@ -499,8 +501,20 @@ class CORE_EXPORT ContainerNode : public Node {
                                            Element* attribute_owner_element,
                                            const ChildrenChange*);
 
-  void SetFirstChild(Node* child) { first_child_ = child; }
-  void SetLastChild(Node* child) { last_child_ = child; }
+  void SetFirstChild(Node* child) {
+    if (child) {
+      child->SetPreviousSibling(lastChild());
+    }
+    first_child_ = child;
+  }
+  void SetLastChild(Node* child) {
+    if (first_child_) {
+      first_child_->SetPreviousSibling(child);
+    } else if (child) {
+      // This is soon going to be the first and only child.
+      child->SetPreviousSibling(child);
+    }
+  }
 
   // Utility functions for NodeListsNodeData API.
   template <typename Collection>
@@ -582,7 +596,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                                      ExceptionState&) const;
 
   Member<Node> first_child_;
-  Member<Node> last_child_;
+  // We do not store lastChild() explicitly; it is stored in
+  // first_child_->previous_.
 };
 
 template <>
@@ -601,7 +616,7 @@ inline bool ContainerNode::HasChildCount(unsigned count) const {
 
 inline ContainerNode::ContainerNode(TreeScope* tree_scope,
                                     ConstructionType type)
-    : Node(tree_scope, type), first_child_(nullptr), last_child_(nullptr) {}
+    : Node(tree_scope, type), first_child_(nullptr) {}
 
 inline bool ContainerNode::NeedsAdjacentStyleRecalc() const {
   if (!ChildrenAffectedByDirectAdjacentRules() &&

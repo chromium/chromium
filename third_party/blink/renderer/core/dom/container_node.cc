@@ -558,19 +558,26 @@ void ContainerNode::InsertBeforeCommon(Node& next_child, Node& new_child) {
   DCHECK(!new_child.HasPreviousSibling());
   DCHECK(!new_child.IsShadowRoot());
 
+  Node* last_child = lastChild();
+
   Node* prev = next_child.previousSibling();
-  DCHECK_NE(last_child_, prev);
+  DCHECK_NE(lastChild(), prev);
   next_child.SetPreviousSibling(&new_child);
   if (prev) {
     DCHECK_NE(firstChild(), next_child);
     DCHECK_EQ(prev->nextSibling(), next_child);
     prev->SetNextSibling(&new_child);
+    new_child.SetPreviousSibling(prev);
   } else {
     DCHECK(firstChild() == next_child);
     SetFirstChild(&new_child);
+
+    // lastChild() is always stored in the firstChild()'s previous pointer,
+    // and now firstChild() has changed, so update the storage.
+    SetLastChild(last_child);
+    new_child.SetPreviousSibling(last_child);
   }
   new_child.SetParentNode(this);
-  new_child.SetPreviousSibling(prev);
   new_child.SetNextSibling(&next_child);
 }
 
@@ -581,9 +588,9 @@ void ContainerNode::AppendChildCommon(Node& child) {
   DCHECK(ScriptForbiddenScope::IsScriptForbidden());
 
   child.SetParentNode(this);
-  if (last_child_) {
-    child.SetPreviousSibling(last_child_);
-    last_child_->SetNextSibling(&child);
+  if (lastChild()) {
+    child.SetPreviousSibling(lastChild());
+    lastChild()->SetNextSibling(&child);
   } else {
     SetFirstChild(&child);
   }
@@ -900,7 +907,6 @@ bool ContainerNode::IsReadingFlowContainer() const {
 
 void ContainerNode::Trace(Visitor* visitor) const {
   visitor->Trace(first_child_);
-  visitor->Trace(last_child_);
   Node::Trace(visitor);
 }
 
@@ -1031,8 +1037,9 @@ void ContainerNode::RemoveBetween(Node* previous_child,
     previous_child->SetNextSibling(next_child);
   if (first_child_ == &old_child)
     SetFirstChild(next_child);
-  if (last_child_ == &old_child)
+  if (lastChild() == &old_child) {
     SetLastChild(previous_child);
+  }
 
   old_child.SetPreviousSibling(nullptr);
   old_child.SetNextSibling(nullptr);
