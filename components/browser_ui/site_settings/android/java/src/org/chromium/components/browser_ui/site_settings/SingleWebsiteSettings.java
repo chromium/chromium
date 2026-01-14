@@ -712,7 +712,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             fragmentArgs.putSerializable(EXTRA_SITE, mSite);
             getSettingsNavigation()
                     .startSettings(
-                            getActivity(), LocationPermissionSubpageSettings.class, fragmentArgs);
+                            getActivity(),
+                            LocationPermissionSubpageSettings.class,
+                            fragmentArgs,
+                            /* addToBackStack= */ true);
         } else if (mWebsiteSettingsObserver != null) {
             mWebsiteSettingsObserver.onLocationPermissionSubpageClicked();
         } else {
