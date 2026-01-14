@@ -363,7 +363,12 @@ class TouchToFillPaymentMethodProperties {
         static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_TITLE_STRING =
                 new PropertyModel.ReadableObjectPropertyKey<>("issuer_title_string");
 
-        static final PropertyKey[] ALL_KEYS = {ISSUER_IMAGE_DRAWABLE_ID, ISSUER_TITLE_STRING};
+        static final PropertyModel.ReadableIntPropertyKey ICON_CONTENT_DESCRIPTION_ID =
+                new PropertyModel.ReadableIntPropertyKey("icon_content_description_id");
+
+        static final PropertyKey[] ALL_KEYS = {
+            ISSUER_IMAGE_DRAWABLE_ID, ISSUER_TITLE_STRING, ICON_CONTENT_DESCRIPTION_ID
+        };
 
         private BnplTosHeaderProperties() {}
     }

@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
@@ -418,6 +419,10 @@ class TouchToFillPaymentMethodViewBinder {
                             view.getContext(), model.get(ISSUER_IMAGE_DRAWABLE_ID)));
         } else if (propertyKey == ISSUER_TITLE_STRING) {
             sheetHeaderTitle.setText(model.get(ISSUER_TITLE_STRING));
+        } else if (propertyKey == ICON_CONTENT_DESCRIPTION_ID) {
+            sheetHeaderImage.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            sheetHeaderImage.setContentDescription(
+                    view.getContext().getString(model.get(ICON_CONTENT_DESCRIPTION_ID)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

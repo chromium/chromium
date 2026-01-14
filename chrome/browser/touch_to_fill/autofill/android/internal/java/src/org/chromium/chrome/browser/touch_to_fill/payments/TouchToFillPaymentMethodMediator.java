@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
@@ -892,7 +893,6 @@ class TouchToFillPaymentMethodMediator {
 
         sheetItems.add(
                 buildHeaderForBnplIssuerTos(
-                        mBnplIssuerIdWithTosShown,
                         mContext.getString(
                                 bnplIssuerTosDetail.getIsLinkedIssuer()
                                         ? R.string.autofill_bnpl_tos_linked_title
@@ -1419,16 +1419,16 @@ class TouchToFillPaymentMethodMediator {
                 BNPL_SELECTION_PROGRESS_HEADER, bnplSelectionProgressHeaderBuilder.build());
     }
 
-    private ListItem buildHeaderForBnplIssuerTos(String issuerId, String title) {
+    private ListItem buildHeaderForBnplIssuerTos(String title) {
         @Nullable
         final TouchToFillResourceProvider resourceProvider =
                 ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
         @DrawableRes
         final int issuerImageId =
                 resourceProvider == null
-                        ? R.drawable.bnpl_icon_generic
+                        ? R.drawable.google_pay
                         : resourceProvider.getBnplIssuerTosDrawableId(
-                                issuerId,
+                                mBnplIssuerIdWithTosShown,
                                 /* isLightMode= */ !GlobalNightModeStateProviderHolder.getInstance()
                                         .isInNightMode());
         return new ListItem(
@@ -1436,6 +1436,7 @@ class TouchToFillPaymentMethodMediator {
                 new PropertyModel.Builder(BnplTosHeaderProperties.ALL_KEYS)
                         .with(ISSUER_IMAGE_DRAWABLE_ID, issuerImageId)
                         .with(ISSUER_TITLE_STRING, title)
+                        .with(ICON_CONTENT_DESCRIPTION_ID, getTosIconContentDescriptionId())
                         .build());
     }
 
@@ -1570,6 +1571,19 @@ class TouchToFillPaymentMethodMediator {
             default:
                 // Nothing is recorded for all other issuerId's.
                 break;
+        }
+    }
+
+    private @StringRes int getTosIconContentDescriptionId() {
+        switch (mBnplIssuerIdWithTosShown) {
+            case "affirm":
+                return R.string.autofill_google_pay_and_affirm_logo_accessible_name;
+            case "klarna":
+                return R.string.autofill_google_pay_and_klarna_logo_accessible_name;
+            case "zip":
+                return R.string.autofill_google_pay_and_zip_logo_accessible_name;
+            default:
+                return R.string.autofill_google_pay_logo_accessible_name;
         }
     }
 
