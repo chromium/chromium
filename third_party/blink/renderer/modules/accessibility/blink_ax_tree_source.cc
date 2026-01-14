@@ -249,7 +249,9 @@ AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
                  << "\nChild: " << child->ToString().Utf8();
   }
 
-  if (!child->IsIncludedInTree()) {
+  // Use CachedIsIncludedInTree() since this is called during serialization
+  // when cache is frozen and we should not trigger cached value updates.
+  if (!child->CachedIsIncludedInTree()) {
     NOTREACHED() << "Should not receive unincluded child."
                  << "\nChild: " << child->ToString().Utf8()
                  << "\nParent: " << node->ToString().Utf8();
