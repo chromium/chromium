@@ -730,11 +730,6 @@ PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameView implementations:
 
-gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  NOTREACHED() << "Web app toolbar should never be shown in PiP.";
-}
-
 bool PictureInPictureBrowserFrameView::ShouldShowWebAppFrameToolbar() const {
   return false;
 }

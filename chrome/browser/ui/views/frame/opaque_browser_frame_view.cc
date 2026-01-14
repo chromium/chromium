@@ -284,11 +284,6 @@ void OpaqueBrowserFrameView::MaybeAddAppIconToLayoutParams(
   }
 }
 
-gfx::Rect OpaqueBrowserFrameView::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  return layout_->GetBoundsForWebAppFrameToolbar(toolbar_preferred_size);
-}
-
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
   return layout_->NonClientTopHeight(restored);
 }

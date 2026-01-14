@@ -38,8 +38,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   // BrowserFrameView:
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
-  gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   void UpdateThrobber(bool running) override;

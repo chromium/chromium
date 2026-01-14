@@ -60,8 +60,6 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
 
   // BrowserFrameView:
   BrowserLayoutParams GetBrowserLayoutParams() const override;
-  gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;
   void UpdateThrobber(bool running) override;
   void WindowControlsOverlayEnabledChanged() override;

@@ -294,15 +294,6 @@ BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
   return params;
 }
 
-gfx::Rect BrowserFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  const int x = GetToolbarLeftInset();
-  const int available_width = caption_button_container_->x() - x;
-  int painted_height = GetTopInset(false);
-  painted_height += GetClientFrameElementInfo().tabstrip_preferred_height;
-  return gfx::Rect(x, 0, std::max(0, available_width), painted_height);
-}
-
 bool BrowserFrameViewChromeOS::ShouldShowWebAppFrameToolbar() const {
   if (!GetShowCaptionButtons()) {
     return false;

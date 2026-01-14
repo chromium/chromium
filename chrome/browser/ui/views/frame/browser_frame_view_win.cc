@@ -236,25 +236,6 @@ bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
          base::i18n::IsRTL();
 }
 
-gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  int x = display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME);
-  if (IsMaximized()) {
-    x += kMaximizedLeftMargin;
-  }
-  if (GetBrowserView()->IsWindowControlsOverlayEnabled()) {
-    x = 0;
-  } else if (window_icon_) {
-    // Add extra padding to the left of the toolbar to account for the window
-    // icon.
-    x += window_icon_->size().width() + kIconTitleSpacing;
-  }
-
-  int trailing_x = width() - CaptionButtonsRegionWidth();
-  return gfx::Rect(x, WindowTopY(), std::max(0, trailing_x - x),
-                   caption_button_container_->size().height());
-}
-
 int BrowserFrameViewWin::GetTopInset(bool restored) const {
   if (GetBrowserView()->GetTabStripVisible() || IsWebUITabStrip()) {
     return TopAreaHeight(restored);

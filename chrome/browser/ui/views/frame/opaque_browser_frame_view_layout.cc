@@ -88,20 +88,6 @@ const views::Button* OpaqueBrowserFrameViewLayout::GetFrameButton(
   }
 }
 
-gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  // Adding 2px of vertical padding puts at least 1 px of space on the top and
-  // bottom of the element.
-  constexpr int kVerticalPadding = 2;
-
-  const int x = available_space_leading_x_;
-  const int available_width = available_space_trailing_x_ - x;
-  return gfx::Rect(x, FrameEdgeInsets(false).top(),
-                   std::max(0, available_width),
-                   toolbar_preferred_size.height() + kVerticalPadding +
-                       kContentEdgeShadowThickness);
-}
-
 gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     const views::View* host) const {
   // Ensure that we can fit the main browser view.

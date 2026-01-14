@@ -176,19 +176,6 @@ bool BrowserFrameViewMac::CaptionButtonsOnLeadingEdge() const {
          (direction == NSUserInterfaceLayoutDirectionRightToLeft);
 }
 
-gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  gfx::Rect bounds(0, 0, width(),
-                   toolbar_preferred_size.height() + kWebAppMenuMargin * 2);
-
-  // Do not draw caption buttons on fullscreen.
-  if (!browser_widget()->IsFullscreen()) {
-    bounds.Inset(GetCaptionButtonInsets());
-  }
-
-  return bounds;
-}
-
 BrowserLayoutParams BrowserFrameViewMac::GetBrowserLayoutParams() const {
   auto params = BrowserFrameView::GetBrowserLayoutParams();
   if (GetBrowserView()->IsFullscreen()) {

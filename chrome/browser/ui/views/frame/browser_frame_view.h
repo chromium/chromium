@@ -92,11 +92,6 @@ class BrowserFrameView : public views::FrameView {
   // Default implementation for getting browser layout parameters.
   virtual BrowserLayoutParams GetBrowserLayoutParams() const;
 
-  // Returns the maximum bounds, in this view's coordinates, for
-  // the WebAppFrameToolbarView, which contains controls for a web app.
-  virtual gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const = 0;
-
   // Returns which alignment the title uses.
   virtual views::LayoutAlignment GetWindowTitleAlignment() const;
 
@@ -117,8 +112,7 @@ class BrowserFrameView : public views::FrameView {
   virtual bool ShouldHideTopUIInFullscreen() const;
 
   // Returns true if a toolbar should be shown in the current browser, false if
-  // not. If this returns false, there is no reason to call e.g.
-  // `GetBoundsForWebAppFrameToolbar()`.
+  // not.
   virtual bool ShouldShowWebAppFrameToolbar() const;
 
   // Determines whether the top of the frame is "condensed" (i.e., has less
