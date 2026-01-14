@@ -179,7 +179,8 @@ void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {ui::SetAlpha(
       kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.16f * 255.0f))};
 
-  mixer[kColorOmniboxContextEntrypointText] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxContextEntrypointText] =
+      ui::GetColorWithMaxContrast(kColorToolbarBackgroundSubtleEmphasis);
 }
 
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
