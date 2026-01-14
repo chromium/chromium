@@ -28,7 +28,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <string>
 
-#include "base/types/expected_macros.h"
 #include "services/webnn/dml/context_provider_dml.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/context_provider_ort.h"
@@ -190,6 +189,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       gpu::CommandBufferIdFromChannelAndRoute(client_id_,
                                               g_next_route_id.GetNext());
 
+  // TODO(crbug.com/474940915): Create the `gpu_sequence` with
+  // `owning_task_runner` instead of `main_thread_task_runner_` to avoid
+  // resetting it later.
   auto gpu_sequence = std::make_unique<ScopedGpuSequence>(
       *scheduler_, main_thread_task_runner_, command_buffer_id,
       kWebNNContextImplNamespaceId);
@@ -391,7 +393,7 @@ void WebNNContextProviderImpl::CreateTFLiteContext(
                        AsWeakPtr(), std::move(options),
                        std::move(write_tensor_consumer),
                        std::move(read_tensor_producer), std::move(gpu_sequence),
-                       std::move(memory_tracker_), task_runner,
+                       memory_tracker_, task_runner,
                        base::Unretained(shared_image_manager_.get()),
                        main_thread_task_runner_, std::move(scoped_trace)),
         base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
@@ -402,6 +404,63 @@ void WebNNContextProviderImpl::CreateTFLiteContext(
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 #if BUILDFLAG(IS_WIN)
+void WebNNContextProviderImpl::OnOrtEnvCreated(
+    ScopedTrace scoped_trace,
+    mojom::CreateContextOptionsPtr options,
+    mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+    mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+    gpu::CommandBufferId command_buffer_id,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingRemote<mojom::WebNNContext> remote,
+    CreateWebNNContextCallback callback,
+    base::expected<scoped_refptr<ort::Environment>, std::string>
+        env_creation_results) {
+  if (env_creation_results.has_value()) {
+    scoped_trace.AddStep("ort::ContextImplOrt::Create");
+    // Safe to use base::Unretained for shared_image_manager_ since it
+    // lives on the GPU service, which is guaranteed to outlive the provider
+    // and its contexts.
+    task_runner->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ort::ContextImplOrt::Create, std::move(receiver),
+                       AsWeakPtr(), std::move(options),
+                       std::move(write_tensor_consumer),
+                       std::move(read_tensor_producer),
+                       std::move(env_creation_results.value()),
+                       std::move(gpu_sequence), memory_tracker_, task_runner,
+                       base::Unretained(shared_image_manager_.get()),
+                       main_thread_task_runner_, std::move(scoped_trace)),
+        base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
+                       AsWeakPtr(), std::move(callback), std::move(remote),
+                       std::move(write_tensor_producer),
+                       std::move(read_tensor_consumer)));
+    return;
+  }
+
+  LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime environment: "
+             << env_creation_results.error();
+
+#if BUILDFLAG(WEBNN_USE_TFLITE)
+  CreateTFLiteContext(
+      std::move(scoped_trace), std::move(options),
+      std::move(write_tensor_producer), std::move(write_tensor_consumer),
+      std::move(read_tensor_producer), std::move(read_tensor_consumer),
+      command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
+      std::move(receiver), std::move(remote), std::move(callback));
+  return;
+#else
+  WebNNContextImplPtr context_impl(nullptr, OnTaskRunnerDeleter(task_runner));
+
+  OnCreateWebNNContextImpl(
+      std::move(callback), std::move(remote), std::move(write_tensor_producer),
+      std::move(read_tensor_consumer), std::move(context_impl));
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+}
+
 void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     ScopedTrace scoped_trace,
     mojom::CreateContextOptionsPtr options,
@@ -416,58 +475,26 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     mojo::PendingRemote<mojom::WebNNContext> remote,
     CreateWebNNContextCallback callback,
     base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info) {
-
   scoped_trace.AddStep("ort::Environment::GetInstance");
 
-  base::expected<scoped_refptr<ort::Environment>, std::string>
-      env_creation_results =
-          ort::Environment::GetInstance(gpu_feature_info_, ep_package_info);
-  if (env_creation_results.has_value()) {
-    // Re-create gpu sequence for the new task runner. Destroying the old
-    // gpu sequence is safe since it has no scheduled tasks yet.
-    gpu_sequence.reset();
-    gpu_sequence = std::make_unique<ScopedGpuSequence>(
-        *scheduler_, task_runner, command_buffer_id,
-        kWebNNContextImplNamespaceId);
+  // Re-create gpu sequence for the new task runner. Destroying the old
+  // gpu sequence is safe since it has no scheduled tasks yet.
+  gpu_sequence.reset();
+  gpu_sequence = std::make_unique<ScopedGpuSequence>(
+      *scheduler_, task_runner, command_buffer_id,
+      kWebNNContextImplNamespaceId);
 
-    // Safe to use base::Unretained for shared_image_manager_ since it
-    // lives on the GPU service, which is guaranteed to outlive the provider
-    // and its contexts.
-    task_runner->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(
-            &ort::ContextImplOrt::Create, std::move(receiver), AsWeakPtr(),
-            std::move(options), std::move(write_tensor_consumer),
-            std::move(read_tensor_producer),
-            std::move(env_creation_results.value()), std::move(gpu_sequence),
-            std::move(memory_tracker_), task_runner,
-            base::Unretained(shared_image_manager_.get()),
-            main_thread_task_runner_, std::move(scoped_trace)),
-        base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
-                       AsWeakPtr(), std::move(callback), std::move(remote),
-                       std::move(write_tensor_producer),
-                       std::move(read_tensor_consumer)));
-    return;
-  }
-
-  LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime environment: "
-             << env_creation_results.error();
-
-#if BUILDFLAG(WEBNN_USE_TFLITE)
-    CreateTFLiteContext(
-        std::move(scoped_trace), std::move(options),
-        std::move(write_tensor_producer), std::move(write_tensor_consumer),
-        std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
-        std::move(receiver), std::move(remote), std::move(callback));
-    return;
-#else
-  WebNNContextImplPtr context_impl(nullptr, OnTaskRunnerDeleter(task_runner));
-
-  OnCreateWebNNContextImpl(
-      std::move(callback), std::move(remote), std::move(write_tensor_producer),
-      std::move(read_tensor_consumer), std::move(context_impl));
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ort::Environment::GetInstance, gpu_feature_info_,
+                     std::move(ep_package_info)),
+      base::BindOnce(
+          &WebNNContextProviderImpl::OnOrtEnvCreated, AsWeakPtr(),
+          std::move(scoped_trace), std::move(options),
+          std::move(write_tensor_producer), std::move(write_tensor_consumer),
+          std::move(read_tensor_producer), std::move(read_tensor_consumer),
+          command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
+          std::move(receiver), std::move(remote), std::move(callback)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
