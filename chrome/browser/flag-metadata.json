@@ -1083,7 +1083,7 @@
   {
     "name": "background-resource-fetch",
     "owners": ["horo@chromium.org"],
-    "expiry_milestone": 133
+    "expiry_milestone": 160
   },
   {
     "name": "battery-charge-limit",
