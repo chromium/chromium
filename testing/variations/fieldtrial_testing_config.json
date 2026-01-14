@@ -8150,7 +8150,9 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "linux"
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
