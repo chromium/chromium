@@ -3,7 +3,6 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Create an Android application bundle from one or more bundle modules."""
 
 import argparse
@@ -28,7 +27,6 @@ from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
-
 # Location of language-based assets in bundle modules.
 _LOCALES_SUBDIR = 'assets/locales/'
 
@@ -39,7 +37,7 @@ _LOCALES_SUBDIR = 'assets/locales/'
 _FALLBACK_LOCALE = 'en-US'
 
 # List of split dimensions recognized by this tool.
-_ALL_SPLIT_DIMENSIONS = [ 'ABI', 'SCREEN_DENSITY', 'LANGUAGE' ]
+_ALL_SPLIT_DIMENSIONS = ['ABI', 'SCREEN_DENSITY', 'LANGUAGE']
 
 # Due to historical reasons, certain languages identified by Chromium with a
 # 3-letters ISO 639-2 code, are mapped to a nearly equivalent 2-letters
@@ -48,7 +46,7 @@ _ALL_SPLIT_DIMENSIONS = [ 'ABI', 'SCREEN_DENSITY', 'LANGUAGE' ]
 #
 # the same conversion as for Java resources.
 _SHORTEN_LANGUAGE_CODE_MAP = {
-  'fil': 'tl',  # Filipino to Tagalog.
+    'fil': 'tl',  # Filipino to Tagalog.
 }
 
 # A list of extensions corresponding to files that should never be compressed
@@ -83,26 +81,28 @@ _ALLOWLISTED_NON_BASE_SERVICES = {
 
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--out-bundle', required=True,
+  parser.add_argument('--out-bundle',
+                      required=True,
                       help='Output bundle zip archive.')
-  parser.add_argument('--module-zips', required=True,
+  parser.add_argument('--module-zips',
+                      required=True,
                       help='GN-list of module zip archives.')
-  parser.add_argument(
-      '--pathmap-in-paths',
-      action='append',
-      help='List of module pathmap files.')
-  parser.add_argument(
-      '--module-name',
-      action='append',
-      dest='module_names',
-      help='List of module names.')
-  parser.add_argument(
-      '--pathmap-out-path', help='Path to combined pathmap file for bundle.')
-  parser.add_argument(
-      '--rtxt-in-paths', action='append', help='GN-list of module R.txt files.')
-  parser.add_argument(
-      '--rtxt-out-path', help='Path to combined R.txt file for bundle.')
-  parser.add_argument('--uncompressed-assets', action='append',
+  parser.add_argument('--pathmap-in-paths',
+                      action='append',
+                      help='List of module pathmap files.')
+  parser.add_argument('--module-name',
+                      action='append',
+                      dest='module_names',
+                      help='List of module names.')
+  parser.add_argument('--pathmap-out-path',
+                      help='Path to combined pathmap file for bundle.')
+  parser.add_argument('--rtxt-in-paths',
+                      action='append',
+                      help='GN-list of module R.txt files.')
+  parser.add_argument('--rtxt-out-path',
+                      help='Path to combined R.txt file for bundle.')
+  parser.add_argument('--uncompressed-assets',
+                      action='append',
                       help='GN-list of uncompressed assets.')
   parser.add_argument('--compress-dex',
                       action='store_true',
@@ -113,12 +113,11 @@ def _ParseArgs(args):
       '--base-module-rtxt-path',
       help='Optional path to the base module\'s R.txt file, only used with '
       'language split dimension.')
-  parser.add_argument(
-      '--base-allowlist-rtxt-path',
-      help='Optional path to an R.txt file, string resources '
-      'listed there _and_ in --base-module-rtxt-path will '
-      'be kept in the base bundle module, even if language'
-      ' splitting is enabled.')
+  parser.add_argument('--base-allowlist-rtxt-path',
+                      help='Optional path to an R.txt file, string resources '
+                      'listed there _and_ in --base-module-rtxt-path will '
+                      'be kept in the base bundle module, even if language'
+                      ' splitting is enabled.')
   parser.add_argument('--rotation-config',
                       help='Path to a RotationConfig.textproto')
   parser.add_argument('--warnings-as-errors',
@@ -174,8 +173,8 @@ def _ParseArgs(args):
         options.split_dimensions)
     for dim in options.split_dimensions:
       if dim.upper() not in _ALL_SPLIT_DIMENSIONS:
-        parser.error('Invalid split dimension "%s" (expected one of: %s)' % (
-            dim, ', '.join(x.lower() for x in _ALL_SPLIT_DIMENSIONS)))
+        parser.error('Invalid split dimension "%s" (expected one of: %s)' %
+                     (dim, ', '.join(x.lower() for x in _ALL_SPLIT_DIMENSIONS)))
 
   # As a special case, --base-allowlist-rtxt-path can be empty to indicate
   # that the module doesn't need such a allowlist. That's because it is easier
@@ -220,8 +219,10 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
   #    'negate': Boolean, True to indicate that the bundle should *not* be
   #              split (unused at the moment by this script).
 
-  split_dimensions = [ _MakeSplitDimension(dim, dim in split_dimensions)
-                       for dim in _ALL_SPLIT_DIMENSIONS ]
+  split_dimensions = [
+      _MakeSplitDimension(dim, dim in split_dimensions)
+      for dim in _ALL_SPLIT_DIMENSIONS
+  ]
 
   # Locale-specific pak files stored in bundle splits need not be compressed.
   uncompressed_globs = [
@@ -338,7 +339,8 @@ def _SplitModuleForAssetTargeting(src_module_zip, tmp_dir, split_dimensions):
 
   with zipfile.ZipFile(src_module_zip, 'r') as src_zip:
     language_files = [
-      f for f in src_zip.namelist() if f.startswith(_LOCALES_SUBDIR)]
+        f for f in src_zip.namelist() if f.startswith(_LOCALES_SUBDIR)
+    ]
 
     if not language_files:
       # Not language-based assets to split in this module.
@@ -553,7 +555,6 @@ def main(args):
   split_dimensions = []
   if options.split_dimensions:
     split_dimensions = [x.upper() for x in options.split_dimensions]
-
 
   with build_utils.TempDir() as tmp_dir:
     logging.info('Splitting locale assets')

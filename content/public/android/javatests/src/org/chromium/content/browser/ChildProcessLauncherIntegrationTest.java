@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Integration test that starts the full shell and load pages to test ChildProcessLauncher
- * and related code.
+ * Integration test that starts the full shell and loads pages to test ChildProcessLauncher and
+ * related code.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ChildProcessLauncherIntegrationTest {

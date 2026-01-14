@@ -1109,9 +1109,9 @@ public final class ChildProcessLauncherHelperImpl {
     /**
      * Groups all currently tracked processes by type and returns a map of type -> list of PIDs.
      *
-     * @param callback The callback to notify with the process information.  {@code callback} will
-     *                 run on the same thread this method is called on.  That thread must support a
-     *                 {@link android.os.Looper}.
+     * @param callback The callback to notify with the process information. {@code callback} will
+     *     run on the same thread this method is called on. That thread must support a {@link
+     *     android.os.Looper}.
      */
     public static void getProcessIdsByType(Callback<Map<String, List<Integer>>> callback) {
         final Handler responseHandler = new Handler();
@@ -1168,7 +1168,9 @@ public final class ChildProcessLauncherHelperImpl {
         return launcherHelper;
     }
 
-    /** @return the count of services set-up and working. */
+    /**
+     * @return the count of services set-up and working.
+     */
     static int getConnectedServicesCountForTesting() {
         int count =
                 sPrivilegedChildConnectionAllocator == null
