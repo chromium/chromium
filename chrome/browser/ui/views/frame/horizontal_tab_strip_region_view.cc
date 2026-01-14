@@ -188,13 +188,7 @@ class TabSearchPositionMetricsLogger {
 
 HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     BrowserView* browser_view)
-    : HorizontalTabStripRegionView(CreateTabStrip(browser_view)) {}
-
-HorizontalTabStripRegionView::HorizontalTabStripRegionView(
-    std::unique_ptr<TabStrip> tab_strip)
-    : profile_(tab_strip->GetBrowserWindowInterface()
-                   ? tab_strip->GetBrowserWindowInterface()->GetProfile()
-                   : nullptr),
+    : profile_(browser_view->GetProfile()),
       render_tab_search_before_tab_strip_(
           tabs::GetTabSearchPosition(profile_) ==
           tabs::TabSearchPosition::kLeadingHorizontalTabstrip),
@@ -210,8 +204,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   GetViewAccessibility().SetIsMultiselectable(true);
 
-  tab_strip_ = tab_strip.get();
-  BrowserWindowInterface* browser = tab_strip->GetBrowserWindowInterface();
+  tab_strip_ = AddChildView(CreateTabStrip(browser_view));
+  BrowserWindowInterface* const browser = browser_view->browser();
 
   // Add and configure the TabSearchContainer, TabStripComboButton, and
   // ProductSpecificationsButton.
@@ -268,16 +262,13 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     }
   }
 
-  tab_strip_container_ = AddChildView(std::move(tab_strip));
-
-  // Allow the |tab_strip_container_| to grow into the free space available in
+  // Allow the |tab_strip_| to grow into the free space available in
   // the HorizontalTabStripRegionView.
-  const views::FlexSpecification tab_strip_container_flex_spec =
+  const views::FlexSpecification tab_strip_flex_spec =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred);
-  tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
-                                    tab_strip_container_flex_spec);
+  tab_strip_->SetProperty(views::kFlexBehaviorKey, tab_strip_flex_spec);
 
   if (ShouldShowNewTabButton(browser)) {
     std::unique_ptr<TabStripControlButton> tab_strip_control_button =
@@ -355,18 +346,17 @@ bool HorizontalTabStripRegionView::IsPositionInWindowCaption(
     return false;
   }
 
-  // Perform a hit test against the |tab_strip_container_| to ensure that the
+  // Perform a hit test against the |tab_strip_| to ensure that the
   // rect is within the visible portion of the |tab_strip_| before calling the
   // tab strip's |IsRectInWindowCaption()| for scrolling disabled. Defer to
   // scroll container if scrolling is enabled.
   // TODO(tluk): Address edge case where |rect| might partially intersect with
-  // the |tab_strip_container_| and the |tab_strip_| but not over the same
+  // the |tab_strip_| and the |tab_strip_| but not over the same
   // pixels. This could lead to this returning false when it should be returning
   // true.
-  if (IsHitInView(tab_strip_container_, point)) {
+  if (IsHitInView(tab_strip_, point)) {
     gfx::RectF rect_in_target_coords_f(gfx::Rect(point, gfx::Size(1, 1)));
-    View::ConvertRectToTarget(this, tab_strip_container_,
-                              &rect_in_target_coords_f);
+    View::ConvertRectToTarget(this, tab_strip_, &rect_in_target_coords_f);
     return tab_strip_->IsRectInWindowCaption(
         gfx::ToEnclosingRect(rect_in_target_coords_f));
   }
@@ -374,7 +364,7 @@ bool HorizontalTabStripRegionView::IsPositionInWindowCaption(
   // The child could have a non-rectangular shape, so if the rect is not in the
   // visual portions of the child view we treat it as a click to the caption.
   for (View* const child : children()) {
-    if (child != tab_strip_container_ && child != reserved_grab_handle_space_ &&
+    if (child != tab_strip_ && child != reserved_grab_handle_space_ &&
         child->GetVisible() && IsHitInView(child, point)) {
       return false;
     }
@@ -386,8 +376,8 @@ bool HorizontalTabStripRegionView::IsPositionInWindowCaption(
 views::View::Views HorizontalTabStripRegionView::GetChildrenInZOrder() {
   views::View::Views children;
 
-  if (tab_strip_container_) {
-    children.emplace_back(tab_strip_container_.get());
+  if (tab_strip_) {
+    children.emplace_back(tab_strip_.get());
   }
 
   if (new_tab_button_) {
@@ -450,7 +440,7 @@ void HorizontalTabStripRegionView::Layout(PassKey) {
 
     // The y position is measured from the bottom of the tabstrip, and then
     // padding and button height are removed.
-    int x = tab_strip_container_->bounds().right() -
+    int x = tab_strip_->bounds().right() -
             TabStyle::Get()->GetBottomCornerRadius() +
             GetLayoutConstant(LayoutConstant::kTabStripPadding) +
             GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
@@ -675,7 +665,7 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
     CHECK(tab_search_container_->GetProperty(views::kViewIgnoredByLayoutKey));
 
     // When tab search container shows before tab strip, add a margin to the
-    // tab_strip_container_ to leave the correct amount of space for UI
+    // tab_strip_ to leave the correct amount of space for UI
     // components showing before tab strip. Currently the components are
     // `tab_search_container_` and `product_specifications_button` if it's
     // available.
@@ -699,7 +689,7 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
   UpdateButtonBorders();
 
   if (tab_strip_left_margin.has_value() || tab_strip_right_margin.has_value()) {
-    tab_strip_container_->SetProperty(
+    tab_strip_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(0, tab_strip_left_margin.value_or(0), 0,
                           tab_strip_right_margin.value_or(0)));
@@ -709,8 +699,7 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
 void HorizontalTabStripRegionView::AdjustViewBoundsRect(View* view,
                                                         int offset) {
   const gfx::Size view_size = view->GetPreferredSize();
-  const int x = tab_strip_container_->x() +
-                TabStyle::Get()->GetBottomCornerRadius() -
+  const int x = tab_strip_->x() + TabStyle::Get()->GetBottomCornerRadius() -
                 GetLayoutConstant(LayoutConstant::kTabStripPadding) -
                 view_size.width() - offset;
   const gfx::Rect new_bounds = gfx::Rect(gfx::Point(x, 0), view_size);
