@@ -9,7 +9,7 @@
 #import "ios/web/public/lazy_web_state_user_data.h"
 #include "ios/web/public/web_state_observer.h"
 
-@protocol WebStatePrinter;
+@protocol PrintHandler;
 
 // Handles print requests from JavaScript window.print.
 class PrintTabHelper : public web::LazyWebStateUserData<PrintTabHelper> {
@@ -22,7 +22,7 @@ class PrintTabHelper : public web::LazyWebStateUserData<PrintTabHelper> {
   ~PrintTabHelper() override;
 
   // Sets the `printer`, which is held weakly by this object.
-  void set_printer(id<WebStatePrinter> printer);
+  void set_printer(id<PrintHandler> printer);
 
   // Prints `web_state_` using `printer_`. Does nothing if printing is
   // disabled, for example by policy.
@@ -32,7 +32,7 @@ class PrintTabHelper : public web::LazyWebStateUserData<PrintTabHelper> {
   friend class web::LazyWebStateUserData<PrintTabHelper>;
 
   raw_ptr<web::WebState> web_state_;
-  __weak id<WebStatePrinter> printer_ = nil;
+  __weak id<PrintHandler> printer_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_PRINT_PRINT_TAB_HELPER_H_

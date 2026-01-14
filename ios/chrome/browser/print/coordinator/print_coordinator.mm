@@ -8,7 +8,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
-#import "ios/web/public/web_state.h"
 
 @interface PrintCoordinator () <UIPrintInteractionControllerDelegate>
 // The view controller the system print dialog should be presented from.
@@ -21,6 +20,25 @@
 @implementation PrintCoordinator
 
 #pragma mark - Public Methods
+
+- (void)dismissAnimated:(BOOL)animated {
+  [[UIPrintInteractionController sharedPrintController]
+      dismissAnimated:animated];
+}
+
+#pragma mark - ChromeCoordinator
+
+- (void)stop {
+  self.defaultBaseViewController = nil;
+}
+
+#pragma mark - PrintHandler
+
+- (void)printView:(UIView*)view withTitle:(NSString*)title {
+  [self printView:view
+               withTitle:title
+      baseViewController:self.baseViewController];
+}
 
 - (void)printView:(UIView*)view
              withTitle:(NSString*)title
@@ -41,30 +59,6 @@
   [self printRenderer:nil
                   orItem:image
                withTitle:title
-      baseViewController:baseViewController];
-}
-
-- (void)dismissAnimated:(BOOL)animated {
-  [[UIPrintInteractionController sharedPrintController]
-      dismissAnimated:animated];
-}
-
-#pragma mark - ChromeCoordinator
-
-- (void)stop {
-  self.defaultBaseViewController = nil;
-}
-
-#pragma mark - WebStatePrinter
-
-- (void)printWebState:(web::WebState*)webState {
-  [self printWebState:webState baseViewController:self.baseViewController];
-}
-
-- (void)printWebState:(web::WebState*)webState
-    baseViewController:baseViewController {
-  [self printView:webState->GetView()
-               withTitle:tab_util::GetTabTitle(webState)
       baseViewController:baseViewController];
 }
 

@@ -2327,9 +2327,14 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - BrowserCoordinatorCommands
 
 - (void)printTabWithBaseViewController:(UIViewController*)baseViewController {
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
+  if (!activeWebState) {
+    return;
+  }
   DCHECK(self.printCoordinator);
-  [self.printCoordinator printWebState:self.activeWebStateOrReaderMode
-                    baseViewController:baseViewController];
+  [self.printCoordinator printView:activeWebState->GetView()
+                         withTitle:tab_util::GetTabTitle(activeWebState)
+                baseViewController:baseViewController];
 }
 
 - (void)printImage:(UIImage*)image

@@ -8,22 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/web/model/print/web_state_printer.h"
+#import "ios/chrome/browser/web/model/print/print_handler.h"
 
 // Interface for printing.
-@interface PrintCoordinator : ChromeCoordinator <WebStatePrinter>
-
-// Shows print UI for `view` with `title`.
-// Print preview will be presented on top of `baseViewController`.
-- (void)printView:(UIView*)view
-             withTitle:(NSString*)title
-    baseViewController:(UIViewController*)baseViewController;
-
-// Shows print UI for `image` with `title`.
-// Print preview will be presented on top of `baseViewController`.
-- (void)printImage:(UIImage*)image
-                 title:(NSString*)title
-    baseViewController:(UIViewController*)baseViewController;
+@interface PrintCoordinator : ChromeCoordinator <PrintHandler>
 
 // Dismisses the print dialog with animation if `animated`.
 - (void)dismissAnimated:(BOOL)animated;

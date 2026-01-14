@@ -7,14 +7,15 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/web/model/print/web_state_printer.h"
+#import "ios/chrome/browser/tabs/model/tab_title_util.h"
+#import "ios/chrome/browser/web/model/print/print_handler.h"
 
 PrintTabHelper::PrintTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}
 
 PrintTabHelper::~PrintTabHelper() = default;
 
-void PrintTabHelper::set_printer(id<WebStatePrinter> printer) {
+void PrintTabHelper::set_printer(id<PrintHandler> printer) {
   printer_ = printer;
 }
 
@@ -29,5 +30,6 @@ void PrintTabHelper::Print() {
     return;
   }
 
-  [printer_ printWebState:web_state_];
+  [printer_ printView:web_state_->GetView()
+            withTitle:tab_util::GetTabTitle(web_state_)];
 }

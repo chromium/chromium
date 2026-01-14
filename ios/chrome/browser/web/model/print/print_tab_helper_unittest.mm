@@ -9,23 +9,30 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/web/model/print/web_state_printer.h"
+#import "ios/chrome/browser/web/model/print/print_handler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-@interface PrintTabHelperTestPrinter : NSObject <WebStatePrinter>
+@interface PrintTabHelperTestPrinter : NSObject <PrintHandler>
 @property(nonatomic, readwrite) BOOL printInvoked;
 @end
 
 @implementation PrintTabHelperTestPrinter
-- (void)printWebState:(web::WebState*)webState {
+- (void)printView:(UIView*)view withTitle:(NSString*)title {
   self.printInvoked = YES;
 }
 
-- (void)printWebState:(web::WebState*)webState
+- (void)printView:(UIView*)view
+             withTitle:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController {
+  self.printInvoked = YES;
+}
+
+- (void)printImage:(UIImage*)image
+                 title:(NSString*)title
     baseViewController:(UIViewController*)baseViewController {
   self.printInvoked = YES;
 }
