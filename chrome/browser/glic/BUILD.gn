@@ -84,6 +84,7 @@ source_set("glic") {
     ":mojo_bindings",
     "//base",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
@@ -108,7 +109,6 @@ source_set("glic") {
   ]
   if (!is_android) {
     public_deps += [
-      "//chrome/browser/contextual_cueing",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/themes",
@@ -294,6 +294,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/actor",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/feedback",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/common",
@@ -342,7 +343,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/background/glic",
-      "//chrome/browser/contextual_cueing",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/media",
       "//chrome/browser/lens/region_search",

@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -297,7 +298,13 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     return false;
   }
 
-  auto* browser_window_interface = tab_interface->GetBrowserWindowInterface();
+  BrowserWindowInterface* browser_window_interface =
+#if !BUILDFLAG(IS_ANDROID)
+      tab_interface->GetBrowserWindowInterface();
+#else
+      // NEEDS_ANDROID_IMPL: GetBrowserWindowInterface will be available later
+      nullptr;
+#endif
   if (!browser_window_interface) {
     return false;
   }

@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/devtools",
     "//chrome/browser/gcm",
     "//chrome/browser/media/prefs",
@@ -309,7 +310,6 @@ source_set("impl") {
   } else {
     deps += [
       "//chrome/browser/actor/ui",
-      "//chrome/browser/contextual_cueing",
       "//chrome/browser/device_identity",
       "//chrome/browser/promos:utils",
       "//chrome/browser/screen_ai:prefs",
