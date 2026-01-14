@@ -1316,8 +1316,16 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       case VideoCodec::kH264:
         metadata.h264.emplace().temporal_idx = bits_md.temporal_id;
         break;
+      case VideoCodec::kAV1:
+      case VideoCodec::kVP9:
+        // TODO(b/432558680): We should query for this from the new temporal
+        // layer encoding API once it's available. Currently, the only encoders
+        // on Android that implement AV1 and VP9 temporal layer encoding are the
+        // cros-codecs ones, which we know to support SVC spec.
+        metadata.svc_generic.emplace().follow_svc_spec = true;
+        break;
       default:
-        NOTIMPLEMENTED() << "SVC is only supported for H.264.";
+        NOTIMPLEMENTED() << "SVC is only supported for AV1, H.264, and VP9.";
         break;
     }
     ++input_since_keyframe_count_;
