@@ -22,8 +22,6 @@ import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DimenRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
@@ -42,6 +40,7 @@ import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -841,9 +840,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                         new FragmentManager.FragmentLifecycleCallbacks() {
                             @Override
                             public void onFragmentAttached(
-                                    @NonNull FragmentManager fm,
-                                    @NonNull Fragment f,
-                                    @NonNull Context context) {
+                                    FragmentManager fm, Fragment f, Context context) {
                                 mHandler.post(() -> scrollAndHighlightItem(pf, key));
                                 fm.unregisterFragmentLifecycleCallbacks(this);
                             }
@@ -898,7 +895,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         listView.addOnChildAttachStateChangeListener(
                 new RecyclerView.OnChildAttachStateChangeListener() {
                     @Override
-                    public void onChildViewAttachedToWindow(@NonNull View view) {
+                    public void onChildViewAttachedToWindow(View view) {
                         // |attach| events for a preference view may be invoked multiple times,
                         // intertwined with |detach| in close succession. We should use the last
                         // event to highlight the corresponding preference view. The listener
@@ -919,7 +916,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     }
 
                     @Override
-                    public void onChildViewDetachedFromWindow(@NonNull View view) {}
+                    public void onChildViewDetachedFromWindow(View view) {}
                 });
         scrollToPref(fragment, key);
     }
@@ -952,11 +949,10 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         listView.addOnScrollListener(
                 new RecyclerView.OnScrollListener() {
                     @Override
-                    public void onScrollStateChanged(
-                            @NonNull RecyclerView recyclerView, int newState) {}
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
 
                     @Override
-                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         fragment.scrollToPreference(key);
                         if (mTurnOffHighlight != null) {
                             mTurnOffHighlight.run();
