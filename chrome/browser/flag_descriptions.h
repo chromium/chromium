@@ -4417,13 +4417,6 @@ inline constexpr char
         "Reintroduces the hybrid passkey entry point to the Autofill dropdown "
         "menu.";
 
-inline constexpr char kWebAuthnPasskeyUpgradeName[] =
-    "Enable automatic passkey upgrades in Google Password Manager";
-inline constexpr char kWebAuthnPasskeyUpgradeDescription[] =
-    "Enable the WebAuthn Conditional Create feature and let websites "
-    "automatically create passkeys in GPM if there is a matching password "
-    "credential for the same user.";
-
 inline constexpr char kWebAuthnImmediateGetName[] =
     "Enable immediate mediation for WebAuthn get requests";
 inline constexpr char kWebAuthnImmediateGetDescription[] =

@@ -9672,15 +9672,6 @@
     ],
     "expiry_milestone": 148
   },
-
-  {
-    "name": "web-authentication-passkey-upgrade",
-    "owners": [
-      "martinkr@google.com",
-      "chrome-webauthn@google.com"
-    ],
-    "expiry_milestone": 144
-  },
   {
     "name": "web-authentication-permit-enterprise-attestation",
     "owners": [ "chrome-webauthn@google.com" ],
