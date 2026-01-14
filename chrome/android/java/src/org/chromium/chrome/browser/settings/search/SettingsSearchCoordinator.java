@@ -236,6 +236,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
         queryEdit.setText("");
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
+        KeyboardUtils.showKeyboard(queryEdit);
     }
 
     private void initializeMultiColumnSearchUi() {
