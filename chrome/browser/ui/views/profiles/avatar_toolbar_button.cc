@@ -72,6 +72,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -127,7 +129,8 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
                                         base::Unretained(this),
                                         /*is_source_accelerator=*/false)),
       browser_(browser_view->browser()),
-      creation_time_(base::TimeTicks::Now()) {
+      creation_time_(base::TimeTicks::Now()),
+      slide_animation_(this) {
   CHECK(browser_);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
@@ -168,6 +171,9 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
   label()->SetSkipSubpixelRenderingOpacityCheck(true);
   label()->layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
+
+  // With default (EASE_OUT) tween type.
+  slide_animation_.SetSlideDuration(base::Milliseconds(200));
 }
 
 AvatarToolbarButton::~AvatarToolbarButton() = default;
@@ -245,6 +251,54 @@ void AvatarToolbarButton::Layout(PassKey) {
   image->SetSize(image_size);
 }
 
+void AvatarToolbarButton::AnimateTextChange(
+    StateProvider* state_provider,
+    const ui::ColorProvider* color_provider) {
+  const std::u16string new_text = state_provider->GetText();
+  const std::u16string_view current_text = GetText();
+
+  if (new_text == current_text) {
+    return;
+  }
+
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
+    SetHighlight(new_text, state_provider->GetHighlightColor(*color_provider));
+    return;
+  }
+
+  label()->SetElideBehavior(gfx::NO_ELIDE);
+
+  if (!current_text.empty() && new_text.empty()) {
+    // Defer SetHighlight() to AnimationEnded() to avoid text disappearing and
+    // collapsing the animation immediately.
+    slide_animation_.Hide();
+    return;
+  }
+
+  SetHighlight(new_text, state_provider->GetHighlightColor(*color_provider));
+
+  if (current_text.empty()) {
+    slide_animation_.Show();
+    return;
+  }
+
+  // Animate resizing between two non-empty texts.
+  UpdateLayoutInsets();
+  const int icon_width =
+      ::GetLayoutInsets(TOOLBAR_BUTTON).width() + GetIconSize();
+  const int target_width =
+      ToolbarButton::CalculatePreferredSize(views::SizeBounds(width(), {}))
+          .width();
+  double start_value = 1.0;
+  if (target_width > icon_width) {
+    start_value =
+        static_cast<double>(width() - icon_width) / (target_width - icon_width);
+  }
+
+  slide_animation_.Reset(std::clamp(start_value, 0.0, 1.0));
+  slide_animation_.Show();
+}
+
 void AvatarToolbarButton::UpdateText() {
   CHECK(state_manager_);
   StateProvider* state_provider = state_manager_->GetActiveStateProvider();
@@ -252,9 +306,9 @@ void AvatarToolbarButton::UpdateText() {
   const auto* const color_provider = GetColorProvider();
   CHECK(color_provider);
 
+  AnimateTextChange(state_provider, color_provider);
+
   SetTooltipText(state_provider->GetAvatarTooltipText());
-  SetHighlight(state_provider->GetText(),
-               state_provider->GetHighlightColor(*color_provider));
   UpdateAccessibilityLabel();
   // Update the layout insets after `SetHighlight()` since
   // text might be updated by setting the highlight.
@@ -320,13 +374,54 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
   GetViewAccessibility().SetDescription(description);
 }
 
+gfx::Size AvatarToolbarButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = ToolbarButton::CalculatePreferredSize(available_size);
+  if (slide_animation_.is_animating()) {
+    int icon_width = ::GetLayoutInsets(TOOLBAR_BUTTON).width() + GetIconSize();
+    size.set_width(icon_width + (size.width() - icon_width) *
+                                    slide_animation_.GetCurrentValue());
+  }
+  return size;
+}
+
+void AvatarToolbarButton::AnimationProgressed(const gfx::Animation* animation) {
+  CHECK_EQ(animation, &slide_animation_);
+  PreferredSizeChanged();
+}
+
+void AvatarToolbarButton::AnimationEnded(const gfx::Animation* animation) {
+  CHECK_EQ(animation, &slide_animation_);
+  label()->SetElideBehavior(gfx::ELIDE_TAIL);
+  if (slide_animation_.GetCurrentValue() == 0.0) {
+    SetHighlight(std::u16string(), std::nullopt);
+    // When animation finishes hiding the pill update the layout.
+    UpdateText();
+  }
+}
+
 std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
   CHECK(state_manager_);
   StateProvider* state_provider = state_manager_->GetActiveStateProvider();
   CHECK(state_provider);
   const auto* const color_provider = GetColorProvider();
   CHECK(color_provider);
-  return state_provider->GetHighlightTextColor(*color_provider);
+
+  // For the identity pill hiding animation, text color is default foreground
+  // color to avoid defaulting to background color and text disappearing
+  // immediately.
+  std::optional<SkColor> color =
+      state_provider->GetHighlightTextColor(*color_provider);
+  if (color.has_value()) {
+    return color;
+  }
+
+  if (!GetText().empty()) {
+    return color_provider->GetColor(
+        kColorAvatarButtonHighlightDefaultForeground);
+  }
+
+  return std::nullopt;
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
