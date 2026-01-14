@@ -129,7 +129,7 @@ const base::FeatureParam<int> kPageContentCacheMaxTabs{
     &kPageContentCache, "max_cache_tabs_count", 50};
 
 const base::FeatureParam<bool> kPageContentCacheEnableScreenshot{
-    &kPageContentCache, "enable_screenshot", true};
+    &kPageContentCache, "enable_screenshot", false};
 
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(

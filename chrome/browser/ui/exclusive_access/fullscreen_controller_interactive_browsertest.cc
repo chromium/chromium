@@ -484,8 +484,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 // Tests pointer lock then fullscreen.
 // TODO(crbug.com/40835508): Re-enable this test
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PointerLockThenFullscreen DISABLED_PointerLockThenFullscreen
+#else
+#define MAYBE_PointerLockThenFullscreen PointerLockThenFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       DISABLED_PointerLockThenFullscreen) {
+                       MAYBE_PointerLockThenFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
