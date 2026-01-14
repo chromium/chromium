@@ -120,8 +120,10 @@ void SqlPersistentStore::CreateEntry(const CacheEntryKey& key,
 
 void SqlPersistentStore::DoomEntry(const CacheEntryKey& key,
                                    ResId res_id,
+                                   bool accept_index_mismatch,
                                    ErrorCallback callback) {
-  GetShard(key).DoomEntry(key, res_id, std::move(callback));
+  GetShard(key).DoomEntry(key, res_id, accept_index_mismatch,
+                          std::move(callback));
 }
 
 void SqlPersistentStore::DeleteDoomedEntry(const CacheEntryKey& key,

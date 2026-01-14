@@ -85,6 +85,7 @@ void SqlPersistentStore::BackendShard::CreateEntry(
 
 void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
                                                  ResId res_id,
+                                                 bool accept_index_mismatch,
                                                  ErrorCallback callback) {
   bool need_recovery_on_failure = false;
   if (index_.has_value()) {
@@ -92,7 +93,7 @@ void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
     // the index.
     if (index_->Remove(key.hash(), res_id)) {
       need_recovery_on_failure = true;
-    } else {
+    } else if (!accept_index_mismatch) {
       RecordIndexMismatch(IndexMismatchLocation::kDoomEntry);
     }
   } else if (loading_index_) {

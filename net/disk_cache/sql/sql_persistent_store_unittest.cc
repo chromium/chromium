@@ -230,7 +230,8 @@ class SqlPersistentStoreTest : public testing::Test {
   SqlPersistentStore::Error DoomEntry(const CacheEntryKey& key,
                                       SqlPersistentStore::ResId res_id) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->DoomEntry(key, res_id, future.GetCallback());
+    store_->DoomEntry(key, res_id,
+                      /*accept_index_mismatch=*/false, future.GetCallback());
     return future.Get();
   }
 
@@ -3426,7 +3427,7 @@ TEST_F(SqlPersistentStoreTest, DoomEntryCallbackNotRunOnStoreDestruction) {
   const CacheEntryKey kKey("my-key");
   const auto res_id = CreateEntryAndGetResId(kKey);
   bool callback_run = false;
-  store_->DoomEntry(kKey, res_id,
+  store_->DoomEntry(kKey, res_id, /*accept_index_mismatch=*/false,
                     base::BindLambdaForTesting([&](SqlPersistentStore::Error) {
                       callback_run = true;
                     }));
@@ -4599,9 +4600,11 @@ TEST_F(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
 
   // 4. Doom two entries while index loading is in flight.
   base::test::TestFuture<SqlPersistentStore::Error> doom_future1;
-  store_->DoomEntry(kKey1, res_id1, doom_future1.GetCallback());
+  store_->DoomEntry(kKey1, res_id1, /*accept_index_mismatch=*/false,
+                    doom_future1.GetCallback());
   base::test::TestFuture<SqlPersistentStore::Error> doom_future3;
-  store_->DoomEntry(kKey3, res_id3, doom_future3.GetCallback());
+  store_->DoomEntry(kKey3, res_id3, /*accept_index_mismatch=*/false,
+                    doom_future3.GetCallback());
 
   // 5. Wait for index loading to complete.
   EXPECT_EQ(load_index_future.Get(), SqlPersistentStore::Error::kOk);

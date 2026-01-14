@@ -50,6 +50,7 @@ class SqlPersistentStore::BackendShard {
                    EntryInfoOrErrorCallback callback);
   void DoomEntry(const CacheEntryKey& key,
                  ResId res_id,
+                 bool accept_index_mismatch,
                  ErrorCallback callback);
   void DeleteDoomedEntry(const CacheEntryKey& key,
                          ResId res_id,
