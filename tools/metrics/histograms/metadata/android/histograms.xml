@@ -3509,24 +3509,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed"
-    enum="PreAssignedActivityState" expires_after="2026-02-11">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    When the TabWindowManager allocates a different tab model index than the
-    window Id selected by MultiInstanceManagerApi31, it means the requested tab
-    model Id was assigned to a different Activity.
-
-    When this mismatch happened, if an activity is found at the requested index,
-    track the state recorded in
-    &quot;Android.MultiWindowMode.AssertIndicesMatch&quot;, and attach a
-    ActivityStateListener. When the observed Activity's #onDestroy is called,
-    record the tracked state at the time the observer is attached.
-  </summary>
-</histogram>
-
-<histogram
     name="Android.MultiWindowMode.AssertIndicesMatch{ActivityIndexMismatchAssignmentState}"
     enum="PreAssignedActivityState" expires_after="2026-05-24">
   <owner>wenyufu@chromium.org</owner>
@@ -3589,37 +3571,6 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the source of inactive instance restoration in a new activity.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta"
-    units="ms" expires_after="2026-02-11">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    When the TabWindowManager allocates a different tab model index than the
-    window Id selected by MultiInstanceManagerApi31, it means the requested tab
-    model Id was assigned to a different Activity.
-
-    When this mismatch happened, record the difference in creation timestamps of
-    both activities that are attempting to use the same index.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.MultiWindowMode.MismatchedIndices.TimeToPreExistingActivityDestruction"
-    units="ms" expires_after="2026-02-11">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    When the TabWindowManager allocates a different tab model index than the
-    window Id selected by MultiInstanceManagerApi31, it means the requested tab
-    model Id was assigned to a different Activity.
-
-    When this mismatch happened, if #onDestroy is called for an activity found
-    at the requested index, record the time it took for this activity to get
-    destroyed after the mismatch was reported.
   </summary>
 </histogram>
 

@@ -7,8 +7,6 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.TabbedMismatchedIndicesHandler.HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
@@ -341,11 +339,6 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testHandleMismatchedIndices_ActivityFinishing() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
-                        .build();
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -368,19 +361,12 @@ public class ChromeTabbedActivityTest {
                         .getTabModelOrchestratorSupplier()
                         .get()
                         .getTabPersistentStoreDestroyedEarlyForTesting());
-        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testHandleMismatchedIndices_ActivityInSameTask() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
-                        .build();
-
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -403,20 +389,12 @@ public class ChromeTabbedActivityTest {
 
         // activity1 should be subsequently destroyed.
         ApplicationTestUtils.waitForActivityState(activity1, Stage.DESTROYED);
-
-        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testHandleMismatchedIndices_ActivityNotInAppTasks() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
-                        .build();
-
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -439,8 +417,6 @@ public class ChromeTabbedActivityTest {
 
         // activity1 should be subsequently destroyed.
         ApplicationTestUtils.waitForActivityState(activity1, Stage.DESTROYED);
-
-        histogramWatcher.assertExpected();
     }
 
     private ChromeTabbedActivity createActivityForMismatchedIndicesTest() {

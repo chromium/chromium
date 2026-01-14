@@ -20,7 +20,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
@@ -366,11 +365,6 @@ public class TabWindowManagerImpl implements TabWindowManager {
             @PreAssignedActivityState
             int state = getPreAssignedActivityState(isInAppTask, isSameTask, isFinishing);
             recordUmaForAssertIndicesMatch(state, assignedWindowId != originallyAssignedWindowId);
-
-            // Start actively listen to activity status once conflict at window id is found.
-            ApplicationStatus.registerStateListenerForActivity(
-                    getActivityStateListenerForPreAssignedActivity(state),
-                    activityAtRequestedWindowId);
         }
 
         assert BuildConfig.IS_FOR_TEST || requestedWindowId == assignedWindowId : message;
@@ -404,35 +398,6 @@ public class TabWindowManagerImpl implements TabWindowManager {
         String histogramName = ASSERT_INDICES_MATCH_HISTOGRAM_NAME + histogramSuffix;
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName, state, PreAssignedActivityState.NUM_ENTRIES);
-    }
-
-    private ActivityStateListener getActivityStateListenerForPreAssignedActivity(
-            @PreAssignedActivityState int state) {
-        long mismatchReportTime = TimeUtils.elapsedRealtimeMillis();
-        return (activityAtWindowId, newState) -> {
-            final int localTaskId = ApplicationStatus.getTaskId(activityAtWindowId);
-            Log.i(
-                    TAG_MULTI_INSTANCE,
-                    "ActivityAtRequestedWindowId "
-                            + activityAtWindowId
-                            + " taskId "
-                            + localTaskId
-                            + " newState "
-                            + newState
-                            + " state during indices mismatch "
-                            + state);
-
-            if (newState == ActivityState.DESTROYED) {
-                long timeToDestruction = TimeUtils.elapsedRealtimeMillis() - mismatchReportTime;
-                RecordHistogram.recordTimesHistogram(
-                        "Android.MultiWindowMode.MismatchedIndices.TimeToPreExistingActivityDestruction",
-                        timeToDestruction);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed",
-                        state,
-                        PreAssignedActivityState.NUM_ENTRIES);
-            }
-        };
     }
 
     private @WindowId int reassignWindowId(
