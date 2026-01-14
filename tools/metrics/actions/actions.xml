@@ -49470,6 +49470,9 @@ should be able to be added at any place in this file.
     <variant name=".MoveToGroup"
         summary="Recorded when the 'Move to group' option in the context menu
                  is selected."/>
+    <variant name=".MuteSite"
+        summary="Recorded when the 'Mute site' option in the context menu is
+                 selected."/>
     <variant name=".PinTab"
         summary="Recorded when the 'Pin Tab' option in the context menu is
                  selected."/>
@@ -49479,6 +49482,9 @@ should be able to be added at any place in this file.
     <variant name=".ShareTab"
         summary="Recorded when the 'Share' option in the context menu is
                  selected."/>
+    <variant name=".UnmuteSite"
+        summary="Recorded when the 'Unmute site' option in the context menu
+                 is selected."/>
     <variant name=".UnpinTab"
         summary="Recorded when the 'Unpin Tab' option in the context menu is
                  selected."/>

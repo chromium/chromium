@@ -29,6 +29,8 @@ found in the LICENSE file.
     <item type="id" name="pin_tab" />
     <item type="id" name="unpin_tab" />
     <item type="id" name="name_window" />
+    <item type="id" name="mute_site" />
+    <item type="id" name="unmute_site" />
 
     <!-- Presentation is the same as delete_tab_group, but helps handler impl. -->
     <item type="id" name="delete_shared_group" />

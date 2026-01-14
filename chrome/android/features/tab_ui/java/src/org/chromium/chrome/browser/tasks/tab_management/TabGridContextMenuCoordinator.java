@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import android.app.Activity;
 import android.content.res.Resources;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -221,6 +222,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                                 TabClosureParams.closeTab(tab).allowUndo(allowUndo).build(),
                                 /* allowDialog= */ true);
                 recordUserActionWithPrefix("CloseTab");
+            } else if (menuId == R.id.mute_site) {
+                tabModel.setMuteSetting(List.of(tab), /* mute= */ true);
+                recordUserActionWithPrefix("MuteSite");
+            } else if (menuId == R.id.unmute_site) {
+                tabModel.setMuteSetting(List.of(tab), /* mute= */ false);
+                recordUserActionWithPrefix("UnmuteSite");
             }
         };
     }
@@ -231,15 +238,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         if (tab == null) return;
 
         boolean isIncognito = tab.isIncognitoBranded();
-        if (ShareUtils.shouldEnableShare(tab)) {
-            itemList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.share)
-                            .withMenuId(R.id.share_tab)
-                            .withStartIconRes(R.drawable.tab_list_editor_share_icon)
-                            .withIsIncognito(isIncognito)
-                            .build());
-        }
 
         if (mTabGroupModelFilter.getTabGroupCount() == 0) {
             itemList.add(
@@ -282,6 +280,24 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                             .build());
         }
 
+        if (ShareUtils.shouldEnableShare(tab)) {
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.share)
+                            .withMenuId(R.id.share_tab)
+                            .withStartIconRes(R.drawable.tab_list_editor_share_icon)
+                            .withIsIncognito(isIncognito)
+                            .build());
+        }
+
+        if (shouldBuildPinTabMenuItem()) {
+            itemList.add(buildTogglePinStateItem(tab));
+        }
+
+        if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
+            itemList.add(buildMuteUnmuteSiteItem(tab, isIncognito));
+        }
+
         itemList.add(
                 new ListItemBuilder()
                         .withTitleRes(R.string.select_tab)
@@ -289,10 +305,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                         .withStartIconRes(R.drawable.ic_edit_24dp)
                         .withIsIncognito(isIncognito)
                         .build());
-
-        if (shouldBuildPinTabMenuItem()) {
-            itemList.add(buildTogglePinStateItem(tab));
-        }
 
         itemList.add(
                 new ListItemBuilder()
@@ -343,6 +355,21 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 .withMenuId(menuId)
                 .withStartIconRes(iconRes)
                 .withIsIncognito(tab.isIncognitoBranded())
+                .build();
+    }
+
+    private ListItem buildMuteUnmuteSiteItem(Tab tab, boolean isIncognito) {
+        boolean showUnmute = mTabGroupModelFilter.getTabModel().isMuted(tab);
+        @StringRes int titleRes = showUnmute ? R.string.unmute_site : R.string.mute_site;
+        @IdRes int menuId = showUnmute ? R.id.unmute_site : R.id.mute_site;
+        @DrawableRes
+        int iconRes = showUnmute ? R.drawable.volume_up_24dp : R.drawable.volume_off_24dp;
+
+        return new ListItemBuilder()
+                .withTitleRes(titleRes)
+                .withMenuId(menuId)
+                .withStartIconRes(iconRes)
+                .withIsIncognito(isIncognito)
                 .build();
     }
 }
