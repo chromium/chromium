@@ -43103,6 +43103,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromDevicesPage" not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the chrome://devices page.
@@ -43128,6 +43129,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromGoogleServicesSettings"
     not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
@@ -43136,6 +43138,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromKaleidoscope">
+  <obsolete>No longer recorded.</obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -43168,6 +43171,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTP" not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the new tab page.
@@ -43311,6 +43315,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromTabSwitcher" not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the tab switcher.
@@ -43943,6 +43948,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromDevicesPage">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -43988,6 +43994,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromEnterpriseSignoutSheet">
+  <obsolete>No longer recorded.</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
@@ -44039,6 +44046,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromGoogleServicesSettings">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
@@ -44169,6 +44177,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNtpIdentityDisc">
+  <obsolete>No longer recorded.</obsolete>
   <owner>treib@chromium.org</owner>
   <description>
     Recorded on signin start from access point
@@ -44342,6 +44351,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromSupervisedUser">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -44359,6 +44369,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromTabSwitcher">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded on sign in start from access point

@@ -19,23 +19,19 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kMenu,
     AccessPoint::kSettings,
     AccessPoint::kSettingsYourSavedInfo,
-    AccessPoint::kSupervisedUser,
     AccessPoint::kExtensionInstallBubble,
     AccessPoint::kExtensions,
     AccessPoint::kBookmarkBubble,
     AccessPoint::kBookmarkManager,
     AccessPoint::kAvatarBubbleSignIn,
     AccessPoint::kUserManager,
-    AccessPoint::kDevicesPage,
     AccessPoint::kFullscreenSigninPromo,
     AccessPoint::kRecentTabs,
     AccessPoint::kUnknown,
     AccessPoint::kPasswordBubble,
     AccessPoint::kAutofillDropdown,
     AccessPoint::kResigninInfobar,
-    AccessPoint::kTabSwitcher,
     AccessPoint::kMachineLogon,
-    AccessPoint::kGoogleServicesSettings,
     AccessPoint::kNtpFeedTopPromo,
     AccessPoint::kPostDeviceRestoreSigninPromo,
     AccessPoint::kNtpFeedCardMenuPromo,
@@ -66,13 +62,11 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kBookmarkBubble,
     AccessPoint::kBookmarkManager,
     AccessPoint::kAvatarBubbleSignIn,
-    AccessPoint::kDevicesPage,
     AccessPoint::kFullscreenSigninPromo,
     AccessPoint::kRecentTabs,
     AccessPoint::kPasswordBubble,
     AccessPoint::kAutofillDropdown,
     AccessPoint::kResigninInfobar,
-    AccessPoint::kTabSwitcher,
     AccessPoint::kNtpFeedTopPromo,
     AccessPoint::kPostDeviceRestoreSigninPromo,
     AccessPoint::kNtpFeedCardMenuPromo,
@@ -99,8 +93,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "Settings";
       case AccessPoint::kSettingsYourSavedInfo:
         return "YourSavedInfo";
-      case AccessPoint::kSupervisedUser:
-        return "SupervisedUser";
       case AccessPoint::kExtensionInstallBubble:
         return "ExtensionInstallBubble";
       case AccessPoint::kExtensions:
@@ -113,8 +105,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "AvatarBubbleSignin";
       case AccessPoint::kUserManager:
         return "UserManager";
-      case AccessPoint::kDevicesPage:
-        return "DevicesPage";
       case AccessPoint::kFullscreenSigninPromo:
         return "SigninPromo";
       case AccessPoint::kRecentTabs:
@@ -127,26 +117,14 @@ class SigninMetricsTest : public ::testing::Test {
         return "AutofillDropdown";
       case AccessPoint::kResigninInfobar:
         return "ReSigninInfobar";
-      case AccessPoint::kTabSwitcher:
-        return "TabSwitcher";
       case AccessPoint::kMachineLogon:
         return "MachineLogon";
-      case AccessPoint::kGoogleServicesSettings:
-        return "GoogleServicesSettings";
-      case AccessPoint::kSyncErrorCard:
-        return "SyncErrorCard";
       case AccessPoint::kForcedSignin:
         return "ForcedSignin";
-      case AccessPoint::kAccountRenamed:
-        return "AccountRenamed";
       case AccessPoint::kWebSignin:
         return "WebSignIn";
       case AccessPoint::kSafetyCheck:
         return "SafetyCheck";
-      case AccessPoint::kKaleidoscope:
-        return "Kaleidoscope";
-      case AccessPoint::kEnterpriseSignoutCoordinator:
-        return "EnterpriseSignoutResignSheet";
       case AccessPoint::kSigninInterceptFirstRunExperience:
         return "SigninInterceptFirstRunExperience";
       case AccessPoint::kSendTabToSelfPromo:
@@ -177,8 +155,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "ReauthInfoBar";
       case AccessPoint::kAccountConsistencyService:
         return "AccountConsistencyService";
-      case AccessPoint::kSearchCompanion:
-        return "SearchCompanion";
       case AccessPoint::kSetUpList:
         return "SetUpList";
       case AccessPoint::kSaveToDriveIos:
@@ -201,8 +177,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "ProfileMenuSignoutConfirmationPrompt";
       case AccessPoint::kSettingsSignoutConfirmationPrompt:
         return "SettingsSignoutConfirmationPrompt";
-      case AccessPoint::kNtpIdentityDisc:
-        return "NtpIdentityDisc";
       case AccessPoint::kOidcRedirectionInterception:
         return "OidcRedirectionInterception";
       case AccessPoint::kWebauthnModalDialog:

@@ -163,7 +163,7 @@ enum class AccessPoint : int {
   // Access point from the three dot app menu.
   kMenu = 2,
   kSettings = 3,
-  kSupervisedUser = 4,
+  // kSupervisedUser = 4, no longer used.
   kExtensionInstallBubble = 5,
   kExtensions = 6,
   // kAppsPageLink = 7, no longer used.
@@ -171,7 +171,7 @@ enum class AccessPoint : int {
   kBookmarkManager = 9,
   kAvatarBubbleSignIn = 10,
   kUserManager = 11,
-  kDevicesPage = 12,
+  // kDevicesPage = 12, no longer used.
   // kCloudPrint = 13, no longer used.
   // kContentArea = 14, no longer used.
   kFullscreenSigninPromo = 15,
@@ -182,19 +182,19 @@ enum class AccessPoint : int {
   kAutofillDropdown = 19,
   // kNtpContentSuggestions = 20, no longer used.
   kResigninInfobar = 21,
-  kTabSwitcher = 22,
+  // kTabSwitcher = 22, no longer used.
   // kForceSigninWarning = 23, no longer used.
   // kSaveCardBubble = 24, no longer used
   // kManageCardsBubble = 25, no longer used
   kMachineLogon = 26,
-  kGoogleServicesSettings = 27,
-  kSyncErrorCard = 28,
+  // kGoogleServicesSettings = 27, no longer used.
+  // kSyncErrorCard = 28, no longer used.
   kForcedSignin = 29,
-  kAccountRenamed = 30,
+  // kAccountRenamed = 30, no longer used.
   kWebSignin = 31,
   kSafetyCheck = 32,
-  kKaleidoscope = 33,
-  kEnterpriseSignoutCoordinator = 34,
+  // kKaleidoscope = 33, no longer used.
+  // kEnterpriseSignoutCoordinator = 34, no longer used.
   kSigninInterceptFirstRunExperience = 35,
   kSendTabToSelfPromo = 36,
   kNtpFeedTopPromo = 37,
@@ -217,8 +217,7 @@ enum class AccessPoint : int {
   kReauthInfoBar = 48,
   // Access point for the consistency service.
   kAccountConsistencyService = 49,
-  // Access point for the search companion sign-in promo.
-  kSearchCompanion = 50,
+  // kSearchCompanion = 50, no longer used.
   // Access point for the IOS Set Up List on the NTP.
   kSetUpList = 51,
   // Access point for the local password migration warning on Android.
@@ -246,7 +245,7 @@ enum class AccessPoint : int {
   kSettingsSignoutConfirmationPrompt = 62,
   // The identity disc (avatar) on the New Tab page. Note that this only covers
   // SignedIn avatars - interactions with the signed-out avatar are instead
-  kNtpIdentityDisc = 63,
+  // kNtpIdentityDisc = 63, no longer used.
   // The identity is received through an interception of a 3rd party OIDC auth
   // redirection.
   kOidcRedirectionInterception = 64,

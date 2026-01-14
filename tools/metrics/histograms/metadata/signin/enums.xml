@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(obsolete) NTP Link"/>
   <int value="2" label="Menu"/>
   <int value="3" label="Settings"/>
-  <int value="4" label="Supervised user"/>
+  <int value="4" label="(obsolete) Supervised user"/>
   <int value="5" label="Extension install bubble"/>
   <int value="6" label="Extensions"/>
   <int value="7" label="(obsolete) Apps page link"/>
@@ -925,7 +925,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Bookmark manager"/>
   <int value="10" label="Avatar bubble sign in"/>
   <int value="11" label="Profile picker"/>
-  <int value="12" label="Devices page"/>
+  <int value="12" label="(obsolete) Devices page"/>
   <int value="13" label="(obsolete) Cloud print"/>
   <int value="14" label="(obsolete) Content area"/>
   <int value="15" label="Fullscreen Signin promo shown on start-up"/>
@@ -933,21 +933,22 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Unknown"/>
   <int value="18" label="Password bubble"/>
   <int value="19" label="Autofill dropdown"/>
-  <int value="20" label="NTP Content Suggestions"/>
+  <int value="20" label="(obsolete) NTP Content Suggestions"/>
   <int value="21" label="Re-signin infobar"/>
-  <int value="22" label="Tab switcher"/>
+  <int value="22" label="(obsolete) Tab switcher"/>
   <int value="23" label="(obsolete) Force signin warning"/>
   <int value="24" label="(obsolete) Save card bubble"/>
   <int value="25" label="(obsolete) Manage cards bubble"/>
   <int value="26" label="Machine logon"/>
-  <int value="27" label="Sync and Google services settings"/>
-  <int value="28" label="Re-signin from sync error card in settings"/>
+  <int value="27" label="(obsolete) Sync and Google services settings"/>
+  <int value="28"
+      label="(obsolete) Re-signin from sync error card in settings"/>
   <int value="29" label="Forced sign-in"/>
-  <int value="30" label="Re-signin after an account rename"/>
+  <int value="30" label="(obsolete) Re-signin after an account rename"/>
   <int value="31" label="Web sign-in"/>
   <int value="32" label="Safety check settings page"/>
-  <int value="33" label="Kaleidoscope"/>
-  <int value="34" label="Enterprise sign-out coordinator"/>
+  <int value="33" label="(obsolete) Kaleidoscope"/>
+  <int value="34" label="(obsolete) Enterprise sign-out coordinator"/>
   <int value="35" label="Signin intercept first run experience"/>
   <int value="36" label="Send-tab-to-self promo"/>
   <int value="37" label="Sign-in promo on NTP feed top section."/>
@@ -966,7 +967,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Reading list"/>
   <int value="48" label="Reauth info bar"/>
   <int value="49" label="Account consistency service"/>
-  <int value="50" label="(Obsolete) Search companion"/>
+  <int value="50" label="(obsolete) Search companion"/>
   <int value="51" label="Set Up List (iOS only)"/>
   <int value="52" label="(obsolete) Password migration warning (Android only)"/>
   <int value="53" label="Save to photos (iOS only)"/>
@@ -979,7 +980,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="Sign-in choice remembered"/>
   <int value="61" label="Signout confirmation prompt in profile menu"/>
   <int value="62" label="Signout confirmation prompt in settings"/>
-  <int value="63" label="NTP Identity Disc"/>
+  <int value="63" label="(obsolete) NTP Identity Disc"/>
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
   <int value="66" label="Avatar bubble sign in with sync promo"/>

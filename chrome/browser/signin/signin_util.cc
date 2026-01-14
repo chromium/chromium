@@ -492,26 +492,18 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
-    case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkManager:
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
-    case signin_metrics::AccessPoint::kDevicesPage:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:
-    case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kMachineLogon:
-    case signin_metrics::AccessPoint::kGoogleServicesSettings:
-    case signin_metrics::AccessPoint::kSyncErrorCard:
     case signin_metrics::AccessPoint::kForcedSignin:
-    case signin_metrics::AccessPoint::kAccountRenamed:
     case signin_metrics::AccessPoint::kWebSignin:
     case signin_metrics::AccessPoint::kSafetyCheck:
-    case signin_metrics::AccessPoint::kKaleidoscope:
-    case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
     case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
     case signin_metrics::AccessPoint::kSendTabToSelfPromo:
     case signin_metrics::AccessPoint::kNtpFeedTopPromo:
@@ -527,7 +519,6 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kReadingList:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
-    case signin_metrics::AccessPoint::kSearchCompanion:
     case signin_metrics::AccessPoint::kSetUpList:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
@@ -539,7 +530,6 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kSigninChoiceRemembered:
     case signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
-    case signin_metrics::AccessPoint::kNtpIdentityDisc:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:

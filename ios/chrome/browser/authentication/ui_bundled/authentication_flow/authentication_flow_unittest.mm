@@ -498,7 +498,7 @@ TEST_P(AuthenticationFlowTest, TestFailFetchManagedStatus) {
 // confirmation dialog is shown.
 TEST_P(AuthenticationFlowTest,
        TestShowManagedConfirmationForSigninConsentLevel) {
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSettings);
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
       signin_metrics::SigninAccountType::kManaged, 1);
@@ -521,7 +521,7 @@ TEST_P(AuthenticationFlowTest,
           base::Value("hello"), nullptr);
   enterprise_policy_helper.GetPolicyProvider()->UpdateChromePolicy(map);
 
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSettings);
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
       signin_metrics::SigninAccountType::kManaged, 1);
@@ -549,7 +549,7 @@ TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
 
   // Signin from a different UI surface, show the dialog again.
   SignOutPersonalProfile();
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser,
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSettings,
          /*adds_history_screen_post_profile_switch=*/false);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
