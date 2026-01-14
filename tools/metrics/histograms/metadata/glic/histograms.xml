@@ -1273,8 +1273,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.MaybeReplaceNavigation.Result" enum="Boolean"
-    expires_after="2026-05-24">
+    expires_after="2026-07-10">
   <owner>liberato@chromium.org</owner>
+  <owner>chrome-bluefin@google.com</owner>
   <summary>
     Records the boolean result of calling MaybeReplaceNavigation. This is used
     to determine if a navigation was replaced with a media viewer.
@@ -1282,9 +1283,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Media.ContextLength" units="bytes"
-    expires_after="2026-01-15">
+    expires_after="2026-07-10">
   <owner>liberato@chromium.org</owner>
-  <owner>muyaoxu@google.com</owner>
+  <owner>chrome-bluefin@google.com</owner>
   <summary>
     Recorded when media context is collected by glic. Represents the total media
     context length for the page at the time it was requested, including any that
@@ -1293,9 +1294,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Media.TimestampRangeCount" units="count"
-    expires_after="2026-01-15">
+    expires_after="2026-07-10">
   <owner>liberato@chromium.org</owner>
-  <owner>chrome-media-ux@google.com</owner>
+  <owner>chrome-bluefin@google.com</owner>
   <summary>
     Recorded when a speech recognition result is received. Records the number of
     media timestamp ranges in the result. This can be greater than one, for
