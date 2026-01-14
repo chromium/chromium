@@ -4,6 +4,8 @@
 
 source_set("projects") {
   sources = [
+    "projects_panel_controller.cc",
+    "projects_panel_controller.h",
     "projects_panel_controls_view.cc",
     "projects_panel_controls_view.h",
     "projects_panel_view.cc",
@@ -19,8 +21,24 @@ source_set("projects") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs/projects",
     "//chrome/browser/ui/views/tabs/vertical",
+    "//components/saved_tab_groups/public",
     "//ui/actions",
     "//ui/base",
     "//ui/views",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "projects_panel_controller_unittest.cc" ]
+  deps = [
+    ":projects",
+    "//base/test:test_support",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
