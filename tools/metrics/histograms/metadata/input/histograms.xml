@@ -662,21 +662,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    DEPRECATED, please see
-    InputMethod.Assistive.MultiWord.SuggestionOpportunity. This histogram
-    records when the current text context could possibly show a suggestion. This
-    does not necessarily mean a suggestion was shown, only that the current text
-    context fulfills all constraints needed to trigger an attempt to generate
-    and display suggestions. It is recorded exactly once per surrounding text
-    update.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.MultiWord.EmptyCandidate"
     enum="IMEAssistiveMultiWordSuggestionType" expires_after="2026-12-01">
   <owner>curtismcmullan@google.com</owner>
