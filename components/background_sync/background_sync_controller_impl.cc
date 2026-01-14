@@ -4,7 +4,6 @@
 
 #include "components/background_sync/background_sync_controller_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

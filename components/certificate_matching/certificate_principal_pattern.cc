@@ -4,10 +4,10 @@
 
 #include "components/certificate_matching/certificate_principal_pattern.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
@@ -64,14 +64,14 @@ bool CertificatePrincipalPattern::Matches(
   }
 
   if (!organization_.empty()) {
-    if (!base::Contains(principal.organization_names, organization_)) {
+    if (!std::ranges::contains(principal.organization_names, organization_)) {
       return false;
     }
   }
 
   if (!organization_unit_.empty()) {
-    if (!base::Contains(principal.organization_unit_names,
-                        organization_unit_)) {
+    if (!std::ranges::contains(principal.organization_unit_names,
+                               organization_unit_)) {
       return false;
     }
   }

@@ -4,7 +4,8 @@
 
 #include "components/autofill/content/browser/suggestions/identity_credential_suggestion_generator.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,19 +28,21 @@ std::map<FieldType, std::u16string> CreateFederatedProfileFields(
   std::map<FieldType, std::u16string> fields;
 
   if (!account->email.empty() &&
-      base::Contains(account->identity_provider->disclosure_fields,
-                     content::IdentityRequestDialogDisclosureField::kEmail)) {
+      std::ranges::contains(
+          account->identity_provider->disclosure_fields,
+          content::IdentityRequestDialogDisclosureField::kEmail)) {
     fields[EMAIL_ADDRESS] = base::UTF8ToUTF16(account->email);
   }
 
   if (!account->name.empty() &&
-      base::Contains(account->identity_provider->disclosure_fields,
-                     content::IdentityRequestDialogDisclosureField::kName)) {
+      std::ranges::contains(
+          account->identity_provider->disclosure_fields,
+          content::IdentityRequestDialogDisclosureField::kName)) {
     fields[NAME_FULL] = base::UTF8ToUTF16(account->name);
   }
 
   if (!account->phone.empty() &&
-      base::Contains(
+      std::ranges::contains(
           account->identity_provider->disclosure_fields,
           content::IdentityRequestDialogDisclosureField::kPhoneNumber)) {
     fields[PHONE_HOME_WHOLE_NUMBER] = base::UTF8ToUTF16(account->phone);

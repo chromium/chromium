@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -273,7 +272,7 @@ bool FilterData::Matches(mojom::SourceType source_type,
 
           bool has_intersection = std::ranges::any_of(
               trigger_filter.second, [&](const std::string& value) {
-                return base::Contains(source_filter->second, value);
+                return std::ranges::contains(source_filter->second, value);
               });
           // Negating filters are considered matched if the intersection of
           // the filter values is empty.

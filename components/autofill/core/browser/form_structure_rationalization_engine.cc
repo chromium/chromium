@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include <algorithm>
 #include <array>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -146,7 +146,7 @@ namespace internal {
 bool IsEnvironmentConditionFulfilled(ParsingContext& context,
                                      const EnvironmentCondition& env) {
   if (!env.country_list.empty() &&
-      !base::Contains(env.country_list, context.client_country)) {
+      !std::ranges::contains(env.country_list, context.client_country)) {
     return false;
   }
 

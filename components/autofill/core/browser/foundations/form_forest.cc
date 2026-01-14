@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -194,8 +193,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     *old_form = std::move(*form);
     form = old_form;
   } else {
-    DCHECK(!base::Contains(frame->child_forms, form->renderer_id(),
-                           &FormData::renderer_id));
+    DCHECK(!std::ranges::contains(frame->child_forms, form->renderer_id(),
+                                  &FormData::renderer_id));
     form->set_fields({});
     child_frames_changed = false;
     frame->child_forms.push_back(std::move(*form));

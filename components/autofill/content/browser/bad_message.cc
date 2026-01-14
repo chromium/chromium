@@ -4,7 +4,8 @@
 
 #include "components/autofill/content/browser/bad_message.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -27,7 +28,8 @@ bool CheckSingleValidTriggerSource(
 }
 
 bool CheckFieldInForm(const FormData& form, FieldRendererId field_id) {
-  if (!base::Contains(form.fields(), field_id, &FormFieldData::renderer_id)) {
+  if (!std::ranges::contains(form.fields(), field_id,
+                             &FormFieldData::renderer_id)) {
     mojo::ReportBadMessage("Unexpected FormData/FieldRendererId pair received");
     return false;
   }

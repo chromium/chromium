@@ -5,11 +5,12 @@
 #include "components/cdm/common/cdm_manifest.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -102,7 +103,7 @@ void CheckVideoCodecs(const media::CdmCapability::VideoCodecMap& actual,
                       const std::vector<media::VideoCodec>& expected) {
   EXPECT_EQ(expected.size(), actual.size());
   for (const auto& [video_codec, video_codec_info] : actual) {
-    EXPECT_TRUE(base::Contains(expected, video_codec));
+    EXPECT_TRUE(std::ranges::contains(expected, video_codec));
 
     // As the manifest only specifies codecs and not profiles, the list of
     // profiles should be empty to indicate that all profiles are supported.

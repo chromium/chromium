@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -213,7 +212,8 @@ void AddOptimizationTypesForBnplIssuers(
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   auto bnpl_issuer_allowlist_can_be_loaded =
       [&bnpl_issuers](BnplIssuer::IssuerId issuer_id) {
-        return base::Contains(bnpl_issuers, issuer_id, &BnplIssuer::issuer_id);
+        return std::ranges::contains(bnpl_issuers, issuer_id,
+                                     &BnplIssuer::issuer_id);
       };
 
   if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplAffirm)) {

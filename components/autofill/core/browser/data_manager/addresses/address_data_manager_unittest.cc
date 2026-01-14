@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -603,8 +604,8 @@ TEST_F(AddressDataManagerTest, AddProfile_CrazyCharacters) {
   }
   ASSERT_EQ(profiles.size(), address_data_manager().GetProfiles().size());
   for (size_t i = 0; i < profiles.size(); ++i) {
-    EXPECT_TRUE(
-        base::Contains(profiles, *address_data_manager().GetProfiles()[i]));
+    EXPECT_TRUE(std::ranges::contains(
+        profiles, *address_data_manager().GetProfiles()[i]));
   }
 }
 

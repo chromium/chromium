@@ -79,9 +79,9 @@ std::u16string GetEntitySuggestionMainText(
 // Note that an AutofillField may have multiple AttributeTypes of distinct
 // EntityTypes assigned. That is, it may happen that both of the following are
 // true:
-//   base::Contains(assignment.Find(EntityType(kVehicle)),
+//   std::ranges::contains(assignment.Find(EntityType(kVehicle)),
 //                  {field, AttributeType(kVehicleOwner));
-//   base::Contains(assignment.Find(EntityType(kDriversLicense)),
+//   std::ranges::contains(assignment.Find(EntityType(kDriversLicense)),
 //                  {field, AttributeType(kDriversLicenseName));
 class AttributeTypeAssignment {
  public:

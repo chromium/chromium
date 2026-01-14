@@ -11,7 +11,6 @@
 
 #include "autofill_address_util.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
@@ -301,7 +300,7 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
                      EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER});
 
   std::erase_if(differences_for_ui, [](const ProfileValueDifference& diff) {
-    return !base::Contains(kPriorityOrder, diff.type);
+    return !std::ranges::contains(kPriorityOrder, diff.type);
   });
 
   auto get_priority = [](FieldType type) -> size_t {

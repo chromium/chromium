@@ -12,7 +12,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -212,13 +211,15 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
   auto more_recently_modified = [account_permanent_nodes_possibly_null,
                                  default_node](const BookmarkNode* n1,
                                                const BookmarkNode* n2) {
-    base::Time t1 = base::Contains(account_permanent_nodes_possibly_null, n1)
-                        ? std::max(n1->date_folder_modified(), n1->date_added())
-                        : n1->date_folder_modified();
+    base::Time t1 =
+        std::ranges::contains(account_permanent_nodes_possibly_null, n1)
+            ? std::max(n1->date_folder_modified(), n1->date_added())
+            : n1->date_folder_modified();
 
-    base::Time t2 = base::Contains(account_permanent_nodes_possibly_null, n2)
-                        ? std::max(n2->date_folder_modified(), n2->date_added())
-                        : n2->date_folder_modified();
+    base::Time t2 =
+        std::ranges::contains(account_permanent_nodes_possibly_null, n2)
+            ? std::max(n2->date_folder_modified(), n2->date_added())
+            : n2->date_folder_modified();
 
     // If no node has been modified more recently, choose a default folder.
     return t1 == t2 ? (n1 == default_node || n2 != default_node) : (t1 > t2);

@@ -4,9 +4,9 @@
 
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
+#include <algorithm>
 #include <ctime>
 
-#include "base/containers/contains.h"
 #include "base/containers/to_value_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
@@ -222,8 +222,8 @@ void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(
 #ifndef NDEBUG
   // Make sure the event is included in the kAllReportingEnabledEvents or the
   // kAllReportingOptInEvents array.
-  bool found = base::Contains(kAllReportingEnabledEvents, name) ||
-               base::Contains(kAllReportingOptInEvents, name);
+  bool found = std::ranges::contains(kAllReportingEnabledEvents, name) ||
+               std::ranges::contains(kAllReportingOptInEvents, name);
   DCHECK(found);
 #endif
 

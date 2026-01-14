@@ -12,7 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -73,7 +72,7 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
   static constexpr std::array kAirports = {
       AttributeType(kFlightReservationDepartureAirport),
       AttributeType(kFlightReservationArrivalAirport)};
-  if (base::Contains(kAirports, type)) {
+  if (std::ranges::contains(kAirports, type)) {
     // The label for flight airport information should be:
     // - Empty if no airport information is available.
     // - "DEPARTURE–ARRIVAL" if both the departure and arrival airports are

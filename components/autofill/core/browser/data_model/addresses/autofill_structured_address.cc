@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
@@ -230,7 +230,7 @@ void StreetAddressNode::CalculateAddressLines() {
 }
 
 bool StreetAddressNode::IsValueValid() const {
-  return !base::Contains(address_lines_, std::u16string());
+  return !std::ranges::contains(address_lines_, std::u16string());
 }
 
 std::u16string StreetAddressNode::GetValueForOtherSupportedType(

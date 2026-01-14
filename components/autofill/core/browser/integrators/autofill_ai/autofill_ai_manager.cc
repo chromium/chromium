@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
@@ -449,10 +448,10 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
   std::map<EntityType, DenseSet<AttributeType>> attributes_in_form;
   for (auto [entity, fields_and_types] : RationalizeAndDetermineAttributeTypes(
            form.fields(), focused_field->section())) {
-    if (base::Contains(fields_and_types, focused_field->global_id(),
-                       [](const AutofillFieldWithAttributeType& f) {
-                         return f.field->global_id();
-                       }) &&
+    if (std::ranges::contains(fields_and_types, focused_field->global_id(),
+                              [](const AutofillFieldWithAttributeType& f) {
+                                return f.field->global_id();
+                              }) &&
         MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn,
                                    entity)) {
       attributes_in_form[entity].insert_all(

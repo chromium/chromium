@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -225,7 +224,7 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
     return it->second.change_password_url;
   }
   auto requested_facet_uris = fetcher_manager_->GetRequestedFacetURIs();
-  if (base::Contains(requested_facet_uris, uri)) {
+  if (std::ranges::contains(requested_facet_uris, uri)) {
     LogFetchResult(GetChangePasswordUrlMetric::kNotFetchedYet);
   } else {
     LogFetchResult(GetChangePasswordUrlMetric::kNoUrlOverrideAvailable);

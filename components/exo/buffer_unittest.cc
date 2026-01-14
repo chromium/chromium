@@ -6,6 +6,8 @@
 
 #include <GLES2/gl2extchromium.h>
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -443,7 +445,7 @@ TEST_F(BufferTest, SurfaceTreeHostNotReclaimCachedFrameResources) {
   frame_sink_holder->set_pre_reclaim_callback(base::BindLambdaForTesting(
       [&](const std::vector<viz::ReturnedResource>& resources) {
         // Skip if it is not a notification for reclaiming `resource`.
-        if (!base::Contains(
+        if (!std::ranges::contains(
                 resources, resource->id,
                 [](const viz::ReturnedResource& r) { return r.id; })) {
           return;
@@ -603,7 +605,7 @@ TEST_F(BufferTest, SurfaceTreeHostDiscardFrameNotReclaimInUseResources) {
   frame_sink_holder->set_pre_reclaim_callback(base::BindLambdaForTesting(
       [&](const std::vector<viz::ReturnedResource>& resources) {
         // Skip if it is not a notification for reclaiming `resource`.
-        if (!base::Contains(
+        if (!std::ranges::contains(
                 resources, resource->id,
                 [](const viz::ReturnedResource& r) { return r.id; })) {
           return;

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
@@ -256,7 +255,7 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
     reported_format_modifier_map.clear();
     for (DmabufFeedbackTranche tranche : current_feedback_.tranches) {
       for (const auto& [format, modifiers] : tranche.format_modifier_map) {
-        if (!base::Contains(reported_formats, format)) {
+        if (!std::ranges::contains(reported_formats, format)) {
           reported_formats.push_back(format);
         }
         if (!reported_format_modifier_map.contains(format)) {
@@ -264,7 +263,8 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
         }
 
         for (uint64_t modifier : modifiers) {
-          if (!base::Contains(reported_format_modifier_map[format], modifier)) {
+          if (!std::ranges::contains(reported_format_modifier_map[format],
+                                     modifier)) {
             reported_format_modifier_map[format].push_back(modifier);
           }
         }
@@ -509,7 +509,7 @@ TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferModifiersLegacy) {
       }
     }
 
-    if (base::Contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
+    if (std::ranges::contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
       int res = client.GetNumSupportedFormatsAndModifier(
           format, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
       EXPECT_TRUE(res != -1);
@@ -577,7 +577,7 @@ TEST_F(BufferCheckerClientTest,
       }
     }
 
-    if (base::Contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
+    if (std::ranges::contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
       int res = client.GetNumSupportedFormatsAndModifier(
           format, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
       EXPECT_TRUE(res != -1);
@@ -645,7 +645,7 @@ TEST_F(BufferCheckerClientTest,
       }
     }
 
-    if (base::Contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
+    if (std::ranges::contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
       int res = client.GetNumSupportedFormatsAndModifier(
           format, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
       EXPECT_TRUE(res != -1);

@@ -4,9 +4,9 @@
 
 #include "components/browsing_data/content/browsing_data_helper.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -67,7 +67,7 @@ bool IsSameHost(const std::string& host, const std::string& top_frame_host) {
 
 bool IsWebScheme(const std::string& scheme) {
   const std::vector<std::string>& schemes = url::GetWebStorageSchemes();
-  return base::Contains(schemes, scheme);
+  return std::ranges::contains(schemes, scheme);
 }
 
 bool HasWebScheme(const GURL& origin) {

@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -96,7 +96,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   // Parses `parameter` can returns whether any of the country codes is contains
   // match `country_code`.
   auto contains_geo_ip = [&country_code](std::string_view parameter) {
-    return base::Contains(
+    return std::ranges::contains(
         base::SplitStringPiece(parameter, ",",
                                base::WhitespaceHandling::TRIM_WHITESPACE,
                                base::SplitResult::SPLIT_WANT_NONEMPTY),

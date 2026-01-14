@@ -6,7 +6,8 @@
 
 #include <stdio.h>
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/string_split.h"
 
 namespace {
@@ -43,7 +44,7 @@ ResponseHeaderVerificationResult ResponseHeaderVerifier::Verify(
       SplitString(embedder_ancestors_header_value, kNormalizedHeaderDelimiter,
                   base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (base::Contains(allowed_package_names, package_name)) {
+  if (std::ranges::contains(allowed_package_names, package_name)) {
     return ResponseHeaderVerificationResult::kAllow;
   }
 

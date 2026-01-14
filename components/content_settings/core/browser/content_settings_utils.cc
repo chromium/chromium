@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -314,7 +314,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
 
 bool ShouldTypeExpireActively(ContentSettingsType type) {
   return base::FeatureList::IsEnabled(features::kActiveContentSettingExpiry) &&
-         base::Contains(GetTypesWithTemporaryGrantsInHcsm(), type);
+         std::ranges::contains(GetTypesWithTemporaryGrantsInHcsm(), type);
 }
 
 PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,

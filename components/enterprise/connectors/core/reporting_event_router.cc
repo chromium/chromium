@@ -4,9 +4,9 @@
 
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,10 +32,10 @@ bool IsEventInReportingSettings(const std::string& event,
   if (!settings.has_value()) {
     return false;
   }
-  if (base::Contains(kAllReportingEnabledEvents, event)) {
+  if (std::ranges::contains(kAllReportingEnabledEvents, event)) {
     return settings->enabled_event_names.count(event) > 0;
   }
-  if (base::Contains(kAllReportingOptInEvents, event)) {
+  if (std::ranges::contains(kAllReportingOptInEvents, event)) {
     return settings->enabled_opt_in_events.count(event) > 0;
   }
   return false;

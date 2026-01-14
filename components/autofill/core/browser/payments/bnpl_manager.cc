@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -13,7 +14,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -196,8 +196,8 @@ void BnplManager::NotifyOfSuggestionGeneration(
 void BnplManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
-  if (base::Contains(suggestions, SuggestionType::kBnplEntry,
-                     &Suggestion::type) &&
+  if (std::ranges::contains(suggestions, SuggestionType::kBnplEntry,
+                            &Suggestion::type) &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableAiBasedAmountExtraction)) {
     payments_autofill_client()
@@ -217,8 +217,8 @@ void BnplManager::OnSuggestionsShown(
     case kNotifyUpdateCallbackOfSuggestionsShownResponse:
       // The update suggestions callback attempts to add a BNPL entry to the
       // list of suggestions if no BNPL entry exists in the list.
-      if (!base::Contains(suggestions, SuggestionType::kBnplEntry,
-                          &Suggestion::type)) {
+      if (!std::ranges::contains(suggestions, SuggestionType::kBnplEntry,
+                                 &Suggestion::type)) {
         update_suggestions_barrier_callback_->Run(SuggestionsShownResponse(
             std::vector<Suggestion>(std::begin(suggestions),
                                     std::end(suggestions)),

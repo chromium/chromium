@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
+#include <algorithm>
 #import <concepts>
 #import <functional>
 #import <optional>
@@ -12,7 +13,6 @@
 #import <variant>
 
 #import "base/check_deref.h"
-#import "base/containers/contains.h"
 #import "base/containers/to_vector.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -352,8 +352,9 @@ void AutofillDriverIOS::ExtractFormWithField(
                 }
                 auto it =
                     std::ranges::find_if(*forms, [&](const FormData& form) {
-                      return base::Contains(form.fields(), field_renderer_id,
-                                            &FormFieldData::renderer_id);
+                      return std::ranges::contains(form.fields(),
+                                                   field_renderer_id,
+                                                   &FormFieldData::renderer_id);
                     });
                 std::move(renderer_form_handler)
                     .Run(it == forms->end() ? std::nullopt

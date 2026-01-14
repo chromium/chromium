@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -136,7 +135,8 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
   std::erase_if(country_to_state_names_map,
                 [&country_codes](
                     const CountryToStateNamesListMapping::value_type& entry) {
-                  return !base::Contains(country_codes, entry.first.value());
+                  return !std::ranges::contains(country_codes,
+                                                entry.first.value());
                 });
 
   // If there is no valid country to be processed, return early.
@@ -153,7 +153,7 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
   for (const auto& [country_code, states] : country_to_state_names_map) {
     // This is a security check to ensure that we only attempt to read files
     // that match to known countries.
-    if (!base::Contains(country_codes, country_code.value())) {
+    if (!std::ranges::contains(country_codes, country_code.value())) {
       continue;
     }
 
