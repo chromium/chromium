@@ -382,11 +382,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/461258716): enable this flaky test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) &&
+        // defined(MEMORY_SANITIZER))
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideo) {
   if (!test_config_.should_prefer_current_tab &&
@@ -453,13 +456,15 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
+// TODO(crbug.com/461258716): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
-// On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// On linux asan and msan bots, it's flaky as well.
+#elif BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 #else
 #define MAYBE_ScreenCaptureVideoAndAudio ScreenCaptureVideoAndAudio
