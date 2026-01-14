@@ -9072,8 +9072,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.WebView.AutofillSessionWithBottomSheet"
-    enum="AutofillSessionStates" expires_after="2026-01-27">
-  <owner>jkeitel@chromium.org</owner>
+    enum="AutofillSessionStates" expires_after="2026-07-27">
+  <owner>jkeitel@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the state of an autofill session in the presence of a bottom sheet.
