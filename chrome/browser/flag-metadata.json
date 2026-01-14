@@ -8448,11 +8448,6 @@
     "expiry_milestone" : 115
   },
   {
-    "name": "segmentation-platform-tips-ephemeral-card",
-    "owners": [ "bmcclure@google.com", "bwwilliams@google.com", "bling-flags@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 134
-  },
-  {
     "name": "send-tab-ios-push-notifications",
     "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 137
