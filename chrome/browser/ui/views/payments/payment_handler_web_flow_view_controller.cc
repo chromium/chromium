@@ -208,7 +208,7 @@ class PaymentHandlerCloseButton : public views::ImageButton {
     // This view does not set its color using the browser theme color, as this
     // may differ from the header color, which is based on the web view theme.
     views::SetImageFromVectorIconWithColor(this, vector_icons::kCloseIcon,
-                                           enabled_color, disabled_color);
+                                           {enabled_color, disabled_color});
   }
 
   base::WeakPtr<PaymentHandlerCloseButton> GetWeakPtr() {

@@ -362,8 +362,8 @@ void CustomTabBarView::OnThemeChanged() {
       color_provider->GetColor(kColorPwaToolbarButtonIconDisabled);
   SetImageFromVectorIconWithColor(
       close_button_, vector_icons::kCloseRoundedIcon,
-      GetLayoutConstant(LayoutConstant::kLocationBarIconSize), foreground_color,
-      foreground_disabled_color);
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
+      {foreground_color, foreground_disabled_color});
 
   background_color_ = color_provider->GetColor(kColorPwaToolbarBackground);
   SetBackground(views::CreateSolidBackground(background_color_));

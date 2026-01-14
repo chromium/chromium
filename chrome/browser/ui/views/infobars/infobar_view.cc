@@ -197,11 +197,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   if (this->delegate()->IsCloseable()) {
     auto close_button = views::CreateVectorImageButton(base::BindRepeating(
         &InfoBarView::CloseButtonPressed, base::Unretained(this)));
-    // This is the wrong color, but allows the button's size to be computed
-    // correctly.  We'll reset this with the correct color in OnThemeChanged().
     views::SetImageFromVectorIconWithColor(
         close_button.get(), vector_icons::kCloseChromeRefreshIcon,
-        gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+        {kColorInfoBarButtonIcon, kColorInfoBarForeground});
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     close_button->SetProperty(views::kElementIdentifierKey,
                               kDismissButtonElementId);
@@ -358,15 +356,6 @@ void InfoBarView::OnThemeChanged() {
   }
 
   const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
-  const SkColor icon_color = cp->GetColor(kColorInfoBarButtonIcon);
-  const SkColor icon_disabled_color =
-      cp->GetColor(kColorInfoBarButtonIconDisabled);
-  if (close_button_) {
-    views::SetImageFromVectorIconWithColor(
-        close_button_, vector_icons::kCloseChromeRefreshIcon, icon_color,
-        icon_disabled_color);
-  }
-
   for (views::View* child : content_container_->children()) {
     auto* label = views::AsViewClass<views::Label>(child);
     if (label) {

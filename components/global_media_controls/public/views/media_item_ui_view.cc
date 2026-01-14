@@ -365,7 +365,7 @@ void MediaItemUIView::UpdateDismissButtonIcon() {
                                           : kDismissButtonIconSize;
   views::SetImageFromVectorIconWithColor(
       dismiss_button_, vector_icons::kCloseRoundedIcon, icon_size,
-      foreground_color_, foreground_disabled_color_);
+      {foreground_color_, foreground_disabled_color_});
 }
 
 void MediaItemUIView::UpdateDismissButtonBackground() {

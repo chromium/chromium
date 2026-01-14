@@ -247,8 +247,8 @@ std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
       AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
   SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
   auto button = views::CreateVectorImageButton(std::move(callback));
-  views::SetImageFromVectorIconWithColor(button.get(), icon, color,
-                                         disabled_color);
+  views::SetImageFromVectorIconWithColor(button.get(), icon,
+                                         {color, disabled_color});
 
   ash::StyleUtil::SetUpInkDropForButton(button.get(), gfx::Insets(),
                                         /*highlight_on_hover=*/false,

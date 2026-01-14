@@ -271,15 +271,15 @@ FindBarView::FindBarView(FindBarHost* host) {
   main_container->SetFlexForView(find_text_, 1, true);
 
   // Theme-aware image models.
-  views::SetImageFromVectorIconWithColorId(
+  views::SetImageFromVectorIconWithColor(
       find_previous_button_, kKeyboardArrowUpChromeRefreshIcon,
-      kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled);
-  views::SetImageFromVectorIconWithColorId(
+      {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
+  views::SetImageFromVectorIconWithColor(
       find_next_button_, kKeyboardArrowDownChromeRefreshIcon,
-      kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled);
-  views::SetImageFromVectorIconWithColorId(
-      close_button_, kCloseChromeRefreshIcon, kColorFindBarButtonIcon,
-      kColorFindBarButtonIconDisabled);
+      {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
+  views::SetImageFromVectorIconWithColor(
+      close_button_, kCloseChromeRefreshIcon,
+      {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetHost(host);

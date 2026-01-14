@@ -432,9 +432,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
           ? vector_icons::kThumbUpFilledIcon
           : vector_icons::kThumbUpIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
-      GetColorProvider()->GetColor(icon_color_id),
-      /* omnibox buttons are never disabled */
-      gfx::kPlaceholderColor);
+      {icon_color_id,
+       /* omnibox buttons are never disabled */
+       gfx::kPlaceholderColor});
   if (thumbs_up_button_->GetVisible()) {
     views::FocusRing::Get(thumbs_up_button_)->SchedulePaint();
   }
@@ -445,9 +445,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
           ? vector_icons::kThumbDownFilledIcon
           : vector_icons::kThumbDownIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
-      GetColorProvider()->GetColor(icon_color_id),
-      /* omnibox buttons are never disabled */
-      gfx::kPlaceholderColor);
+      {icon_color_id,
+       /* omnibox buttons are never disabled */
+       gfx::kPlaceholderColor});
   if (thumbs_down_button_->GetVisible()) {
     views::FocusRing::Get(thumbs_down_button_)->SchedulePaint();
   }
@@ -455,9 +455,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
-      GetColorProvider()->GetColor(icon_color_id),
-      /* omnibox buttons are never disabled */
-      gfx::kPlaceholderColor);
+      {icon_color_id,
+       /* omnibox buttons are never disabled */
+       gfx::kPlaceholderColor});
   if (remove_suggestion_button_->GetVisible()) {
     views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
   }

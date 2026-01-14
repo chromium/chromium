@@ -185,6 +185,13 @@ class CollapsibleListView : public views::View {
     button->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
+    views::SetImageFromVectorIconWithColor(
+        expand_collapse_button_, vector_icons::kCaretDownIcon,
+        ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
+    views::SetToggledImageFromVectorIconWithColor(
+        expand_collapse_button_, vector_icons::kCaretUpIcon,
+        ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
+
     if (model->RowCount() < 3) {
       expand_collapse_button_->SetVisible(false);
     }
@@ -215,21 +222,6 @@ class CollapsibleListView : public views::View {
   void ClearModel() {
     static_cast<views::TableView*>(table_view_parent_->contents())
         ->SetModel(nullptr);
-  }
-
-  // views::View
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    const auto* color_provider = GetColorProvider();
-    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
-    const SkColor disabled_icon_color =
-        color_provider->GetColor(ui::kColorIconDisabled);
-    views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretDownIcon,
-        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
-    views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretUpIcon,
-        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
   }
 
  private:

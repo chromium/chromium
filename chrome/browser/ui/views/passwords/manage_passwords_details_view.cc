@@ -240,10 +240,11 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   eye_icon->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kRevealPasswordButton));
-  views::SetImageFromVectorIconWithColorId(
-      eye_icon, views::kEyeIcon, ui::kColorIcon, ui::kColorIconDisabled);
-  views::SetToggledImageFromVectorIconWithColorId(
-      eye_icon, views::kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
+  views::SetImageFromVectorIconWithColor(
+      eye_icon, views::kEyeIcon, {ui::kColorIcon, ui::kColorIconDisabled});
+  views::SetToggledImageFromVectorIconWithColor(
+      eye_icon, views::kEyeCrossedIcon,
+      {ui::kColorIcon, ui::kColorIconDisabled});
   views::InstallCircleHighlightPathGenerator(eye_icon);
   eye_icon->SetCallback(
       base::BindRepeating(

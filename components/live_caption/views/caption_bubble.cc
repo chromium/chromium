@@ -1360,16 +1360,16 @@ void CaptionBubble::SetTextColor() {
 #endif
   views::SetImageFromVectorIconWithColor(
       back_to_tab_button_, vector_icons::kBackToTabChromeRefreshIcon,
-      kButtonDip, header_color, icon_disabled_color);
+      kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedIcon, kButtonDip, header_color,
-      icon_disabled_color);
+      close_button_, vector_icons::kCloseRoundedIcon, kButtonDip,
+      {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      expand_button_, vector_icons::kCaretDownIcon, kButtonDip, header_color,
-      icon_disabled_color);
+      expand_button_, vector_icons::kCaretDownIcon, kButtonDip,
+      {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(collapse_button_,
                                          vector_icons::kCaretUpIcon, kButtonDip,
-                                         header_color, icon_disabled_color);
+                                         {header_color, icon_disabled_color});
 }
 
 void CaptionBubble::SetBackgroundColor() {

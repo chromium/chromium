@@ -162,10 +162,10 @@ std::unique_ptr<views::Button> CreateButton(
     int message_id) {
   auto button = views::CreateVectorImageButton(std::move(callback));
 
-  views::SetImageFromVectorIconWithColorId(
+  views::SetImageFromVectorIconWithColor(
       button.get(), icon,
-      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
-      static_cast<ui::ColorId>(cros_tokens::kButtonIconColorPrimaryDisabled));
+      {cros_tokens::kCrosSysOnSurface,
+       cros_tokens::kButtonIconColorPrimaryDisabled});
   button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
   button->SizeToPreferredSize();
 

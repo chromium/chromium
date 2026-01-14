@@ -64,9 +64,10 @@ class DismissButton : public views::ImageButton {
 
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_CLOSE));
-    views::SetImageFromVectorIconWithColorId(
-        this, vector_icons::kCloseRoundedIcon, foreground_color_id,
-        foreground_disabled_color_id, kDismissButtonIconSize);
+    views::SetImageFromVectorIconWithColor(
+        this, vector_icons::kCloseRoundedIcon,
+        {foreground_color_id, foreground_disabled_color_id},
+        kDismissButtonIconSize);
   }
 };
 
