@@ -19,7 +19,6 @@ class IconLabelBubbleView;
 class IntentChipButton;
 class PageActionIconView;
 class ReloadButton;
-class ReloadButtonWebView;
 class ReloadControl;
 class ToolbarButton;
 class WebUIToolbarWebView;
@@ -100,7 +99,7 @@ class ToolbarButtonProvider {
   virtual ToolbarButton* GetBackButton() = 0;
 
   // Returns the reload button delegate, it can be either `ReloadButton` or
-  // `ReloadButtonWebView` depending on the enabled features.
+  // `WebUIToolbarWebView` depending on the enabled features.
   virtual ReloadControl* GetReloadButton() = 0;
 
   // Returns the intent chip button, if present.

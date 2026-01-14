@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -867,6 +868,13 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // Pump any pending events that were created as a result of creating a
   // browser.
   content::RunAllPendingInMessageLoop();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Wait for the initial WebUI to complete the painting and flush all the
+  // histograms, so the metrics from the initial WebUI will not affect the
+  // browser test that are checking some common histograms.
+  WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(browser_);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (browser_ && global_browser_set_up_function_) {
     ASSERT_TRUE(global_browser_set_up_function_(browser_));

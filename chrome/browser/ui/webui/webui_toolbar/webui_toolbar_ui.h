@@ -34,6 +34,10 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   WebUIToolbarPageHandler* webui_toolbar_page_handler_for_testing();
 
+  base::WeakPtr<WebUIToolbarUI> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // TopChromeWebUIController:
   // The controller uses `requesting_origin` to:
   // 1. Decide which resources to expose, e.g. only expose "chrome://theme"
@@ -64,6 +68,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   // Initialized only in tests by SetCommandUpdaterForTesting().
   raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;
+
+  base::WeakPtrFactory<WebUIToolbarUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
