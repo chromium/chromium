@@ -24,6 +24,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -75,6 +76,7 @@
 #include "components/update_client/utils.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
@@ -1583,6 +1585,12 @@ TEST_F(IntegrationTest, CheckForUpdateAndInstallAppViaMojo) {
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, GetUpdaterState) {
+#if !BUILDFLAG(IS_MAC)
+  ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterHigherVersion());
+#endif  // !BUILDFLAG(IS_MAC)
+
+  ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Minutes(1)));
   ASSERT_NO_FATAL_FAILURE(Install());
 
   {
@@ -1595,9 +1603,25 @@ TEST_F(IntegrationTest, GetUpdaterState) {
     base::RunLoop loop;
     update_service->GetUpdaterState(base::BindLambdaForTesting(
         [&](const UpdateService::UpdaterState& result) {
-          // TODO(crbug.com/456497861): add more comprehensive tests after
-          // adding older versions.
           EXPECT_EQ(result.active_version, kUpdaterVersion);
+
+#if !BUILDFLAG(IS_MAC)
+          std::vector<uint32_t> components =
+              base::Version(kUpdaterVersion).components();
+          const base::CheckedNumeric<uint32_t> new_version = components[0] + 1;
+          ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
+
+          EXPECT_THAT(result.inactive_versions,
+                      testing::ElementsAre(
+                          "100.0.0.0",
+                          base::Version(std::move(components)).GetString()));
+#endif  // !BUILDFLAG(IS_MAC)
+
+          EXPECT_THAT(result.last_checked,
+                      testing::AllOf(
+                          testing::Lt(base::Time::Now()),
+                          testing::Gt(base::Time::Now() - base::Minutes(2))));
+          EXPECT_GE(base::Time::Now(), result.last_started);
           loop.Quit();
         }));
     loop.Run();
@@ -1607,6 +1631,13 @@ TEST_F(IntegrationTest, GetUpdaterState) {
 }
 
 TEST_F(IntegrationTest, GetUpdaterPolicies) {
+  base::Value::Dict dict_policies;
+  dict_policies.Set("autoupdatecheckperiodminutes",
+                    base::Seconds(64800).InMinutes());
+  dict_policies.Set("updatessuppressedstarthour", 15);
+  dict_policies.Set("updatessuppressedstartmin", 0);
+  dict_policies.Set("updatessuppresseddurationmin", 120);
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ASSERT_NO_FATAL_FAILURE(Install());
 
   {
@@ -1616,16 +1647,20 @@ TEST_F(IntegrationTest, GetUpdaterPolicies) {
 #else   // BUILDFLAG(IS_WIN)
         CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
 #endif  // BUILDFLAG(IS_WIN)
+
     base::RunLoop loop;
     update_service->GetUpdaterPolicies(base::BindLambdaForTesting(
         [&](const base::flat_map<std::string, UpdateService::PolicyValue>&
                 result) {
-          // TODO(crbug.com/456497861): add more comprehensive tests after
-          // integrating dict policies.
           EXPECT_GT(result.size(), 0u);
-          EXPECT_GT(result.at("LastCheckPeriod").policy_value.length(), 0u);
+          EXPECT_EQ(result.at("LastCheckPeriod").policy_value, "64800 s");
           EXPECT_EQ(result.at("LastCheckPeriod").policy_source,
-                    UpdateService::PolicyValue::PolicySource::kSourceDefault);
+                    UpdateService::PolicyValue::PolicySource::
+                        kSourceExternalConstants);
+          EXPECT_EQ(result.at("UpdatesSuppressed").policy_value, "15, 0, 120");
+          EXPECT_EQ(result.at("UpdatesSuppressed").policy_source,
+                    UpdateService::PolicyValue::PolicySource::
+                        kSourceExternalConstants);
           loop.Quit();
         }));
     loop.Run();
@@ -1635,6 +1670,14 @@ TEST_F(IntegrationTest, GetUpdaterPolicies) {
 }
 
 TEST_F(IntegrationTest, GetAppPolicies) {
+  base::Value::Dict dict_policies;
+
+  // Set app policy for `test1` to force install.
+  dict_policies.Set("installtest1", 6);
+
+  // Set app policy for `test2` to allow automatic updates only.
+  dict_policies.Set("updatetest2", 3);
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ASSERT_NO_FATAL_FAILURE(Install());
 
   {
@@ -1649,9 +1692,18 @@ TEST_F(IntegrationTest, GetAppPolicies) {
         [&](const base::flat_map<
             std::string,
             base::flat_map<std::string, UpdateService::PolicyValue>>& result) {
-          // TODO(crbug.com/456497861): add more comprehensive tests after
-          // integrating dict policies.
-          EXPECT_GE(result.size(), 0u);
+          const base::flat_map<std::string, UpdateService::PolicyValue>
+              test1_result = result.at("test1");
+          EXPECT_EQ(test1_result.at("Install").policy_value, "6");
+          EXPECT_EQ(test1_result.at("Install").policy_source,
+                    UpdateService::PolicyValue::PolicySource::
+                        kSourceExternalConstants);
+          const base::flat_map<std::string, UpdateService::PolicyValue>
+              test2_result = result.at("test2");
+          EXPECT_EQ(test2_result.at("Update").policy_value, "3");
+          EXPECT_EQ(test2_result.at("Update").policy_source,
+                    UpdateService::PolicyValue::PolicySource::
+                        kSourceExternalConstants);
           loop.Quit();
         }));
     loop.Run();

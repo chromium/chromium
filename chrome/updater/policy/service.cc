@@ -579,34 +579,6 @@ PolicyService::GetUpdaterPolicies() const {
     policies.insert({"ProxyServer", proxy_server.ToPolicyValue()});
   }
 
-  for (const std::string& app_id : GetAppsWithPolicy()) {
-    base::flat_map<std::string, UpdateService::PolicyValue> app_policies;
-    const PolicyStatus<int> app_install = GetPolicyForAppInstalls(app_id);
-    if (app_install) {
-      app_policies.insert({"Install", app_install.ToPolicyValue()});
-    }
-
-    const PolicyStatus<int> app_update = GetPolicyForAppUpdates(app_id);
-    if (app_update) {
-      app_policies.insert({"Update", app_update.ToPolicyValue()});
-    }
-    const PolicyStatus<std::string> target_channel = GetTargetChannel(app_id);
-    if (target_channel) {
-      app_policies.insert({"TargetChannel", target_channel.ToPolicyValue()});
-    }
-    const PolicyStatus<std::string> target_version_prefix =
-        GetTargetVersionPrefix(app_id);
-    if (target_version_prefix) {
-      app_policies.insert(
-          {"TargetVersionPrefix", target_version_prefix.ToPolicyValue()});
-    }
-    const PolicyStatus<bool> rollback_allowed =
-        IsRollbackToTargetVersionAllowed(app_id);
-    if (rollback_allowed) {
-      app_policies.insert(
-          {"RollbackToTargetVersionAllowed", rollback_allowed.ToPolicyValue()});
-    }
-  }
   return policies;
 }
 
@@ -647,6 +619,7 @@ PolicyService::GetAppPolicies() const {
     }
     policies.insert({app_id, std::move(app_policies)});
   }
+
   return policies;
 }
 
