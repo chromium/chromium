@@ -10,7 +10,6 @@
 
 #include "base/base_paths.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
@@ -470,7 +469,7 @@ bool RlzValueStoreChromeOS::AddValueToList(const std::string& list_name,
              .SetByDottedPath(list_name, base::Value(base::Value::Type::LIST))
              ->GetList();
   }
-  if (!base::Contains(*list, value)) {
+  if (!std::ranges::contains(*list, value)) {
     list->Append(std::move(value));
   }
   return true;
@@ -494,7 +493,7 @@ bool RlzValueStoreChromeOS::ListContainsValue(const std::string& list_name,
   if (!list)
     return false;
 
-  return base::Contains(*list, value);
+  return std::ranges::contains(*list, value);
 }
 
 bool RlzValueStoreChromeOS::HasAccessPointRlz(AccessPoint access_point) const {
