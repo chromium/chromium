@@ -10,6 +10,10 @@ source_set("tab_groups") {
   sources = [
     "tab_groups_api.cc",
     "tab_groups_api.h",
+    "tab_groups_event_router.cc",
+    "tab_groups_event_router.h",
+    "tab_groups_event_router_factory.cc",
+    "tab_groups_event_router_factory.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -37,23 +41,16 @@ source_set("tab_groups") {
     "//ui/gfx/range",
   ]
 
-  # TODO(crbug.com/405219902): Move these to the main "tab_groups" block once
-  # they compile on desktop Android.
-  if (enable_extensions) {
-    sources += [
-      "tab_groups_event_router.cc",
-      "tab_groups_event_router.h",
-      "tab_groups_event_router_factory.cc",
-      "tab_groups_event_router_factory.h",
-    ]
-    public_deps += [
-      "//chrome/browser/ui:browser_tab_strip",
-      "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    ]
+  if (is_android) {
+    # TODDO(crbug.com/405219902): Add Android dependencies once the Android
+    # TabHelper is written.
+  } else {
     deps += [
+      "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/tabs/saved_tab_groups",
     ]
   }

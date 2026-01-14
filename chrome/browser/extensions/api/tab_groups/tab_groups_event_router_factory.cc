@@ -9,6 +9,8 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router_factory.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // static
