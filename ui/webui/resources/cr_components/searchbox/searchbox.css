@@ -95,6 +95,7 @@
   height: auto;
   min-height: var(--cr-searchbox-height);
   overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
@@ -363,11 +364,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   margin-bottom: unset;
   overflow: unset;
   padding-top: unset;
-}
-
-:host([ntp-realbox-next-enabled]) #inputWrapper {
-  height: auto;
-  min-height: var(--cr-searchbox-height);
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
