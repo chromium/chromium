@@ -4782,7 +4782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.LoggedInStateChanged" units="ms"
-    expires_after="2026-02-22">
+    expires_after="2027-02-01">
   <owner>hidehiko@chromium.org</owner>
   <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
