@@ -67,6 +67,7 @@ var ENTITY_INSTANCE = {
   ],
   guid: GUID,
   nickname: 'Personal car',
+  shouldAuthenticateToView: false,
 };
 
 var UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);
@@ -1450,6 +1451,79 @@ var availableTests = [
         await chrome.autofillPrivate.getWalletablePassDetectionOptInStatus());
     chrome.test.succeed();
   },
+
+  async function shouldAuthenticateToView() {
+    const obfuscatedEntityGuid = 'e4bbe384-ee63-45a4-8df3-713a58fdc188';
+    const nonObfuscatedEntityGuid = 'e4bbe384-ee63-45a4-8df3-713a58fdc189';
+
+    // Entity with obfuscated field.
+    const obfuscatedEntity = {
+      type: {
+        typeName: 0,
+        typeNameAsString: 'Passport',
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
+      },
+      attributeInstances: [{
+        type: {
+          typeName: 2,  // Passport Number (Obfuscated)
+          typeNameAsString: 'Number',
+          dataType: AttributeTypeDataType.STRING,
+        },
+        value: '123456',
+      }],
+      guid: obfuscatedEntityGuid,
+      nickname: 'Obfuscated Passport',
+    };
+
+    // Entity without obfuscated field
+    const nonObfuscatedEntity = {
+      type: {
+        typeName: 0,
+        typeNameAsString: 'Passport',
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
+      },
+      attributeInstances: [{
+        type: {
+          typeName: 0,  // Passport Name (Not obfuscated)
+          typeNameAsString: 'Name',
+          dataType: AttributeTypeDataType.STRING,
+        },
+        value: 'John Doe',
+      }],
+      guid: nonObfuscatedEntityGuid,
+      nickname: 'Clear Passport',
+    };
+
+    const addEntity = async (entity) => {
+      await new Promise(resolve => {
+        chrome.test.listenOnce(
+            chrome.autofillPrivate.onEntityInstancesChanged, resolve);
+        chrome.autofillPrivate.addOrUpdateEntityInstance(entity);
+      });
+    };
+
+    await addEntity(obfuscatedEntity);
+    const loadedObfuscated =
+        await chrome.autofillPrivate.getEntityInstanceByGuid(
+            obfuscatedEntityGuid);
+    chrome.test.assertTrue(!!loadedObfuscated);
+    chrome.test.assertTrue(loadedObfuscated.shouldAuthenticateToView);
+
+    await addEntity(nonObfuscatedEntity);
+    const loadedClear =
+        await chrome.autofillPrivate.
+          getEntityInstanceByGuid(nonObfuscatedEntityGuid);
+    chrome.test.assertTrue(!!loadedClear);
+    chrome.test.assertFalse(loadedClear.shouldAuthenticateToView);
+
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -1502,6 +1576,7 @@ var TESTS_FOR_CONFIG = {
   'loadFirstEntityInstance': ['loadFirstEntityInstance'],
   'loadUpdatedEntityInstance': ['loadUpdatedEntityInstance'],
   'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
+  'shouldAuthenticateToView': ['shouldAuthenticateToView'],
   'getWritableEntityTypes': ['getWritableEntityTypes'],
   'verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes':
       ['verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes'],

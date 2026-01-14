@@ -262,6 +262,7 @@ suite('AutofillAiEntriesListUiTest', function() {
       ],
       guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
       nickname: 'My license',
+      shouldAuthenticateToView: false,
     };
     // Initially not sorted. The production code should sort them
     // alphabetically and put entities with Wallet storage last.
@@ -897,6 +898,7 @@ suite('AutofillAiEntriesListAuthenticationTest', function() {
       attributeInstances: [],
       guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
       nickname: 'My license',
+      shouldAuthenticateToView: true,
     };
 
     const testEntityInstancesWithLabels:
@@ -976,5 +978,26 @@ suite('AutofillAiEntriesListAuthenticationTest', function() {
     const dialog =
         entriesList.shadowRoot!.querySelector('#addOrEditEntityInstanceDialog');
     assertFalse(!!dialog);
+  });
+
+  test('AuthenticationNotRequired_EntityNotSensitive', async function() {
+    await createEntriesList();
+    const nonSensitiveEntity = structuredClone(testEntityInstance);
+    nonSensitiveEntity.shouldAuthenticateToView = false;
+    entityDataManager.setGetEntityInstanceByGuidResponse(nonSensitiveEntity);
+    await clickEditMenu();
+
+    // Auth should NOT be called
+    assertEquals(
+        0,
+        entityDataManager.getCallCount(
+            'authenticateUserBeforeViewingEntityData'));
+    await flushTasks();
+
+    // Dialog should be open, which is always the case when it is part of the
+    // DOM.
+    const dialog =
+        entriesList.shadowRoot!.querySelector('#addOrEditEntityInstanceDialog');
+    assertTrue(!!dialog);
   });
 });

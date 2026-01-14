@@ -239,6 +239,7 @@ suite('AutofillAiSectionUiTest', function() {
       ],
       guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
       nickname: 'My license',
+      shouldAuthenticateToView: false,
     };
     // Initially not sorted alphabetically. The production code should sort them
     // alphabetically.

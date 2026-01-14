@@ -40,6 +40,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'removeEntityInstancesChangedListener',
       'setOptInStatus',
       'setWalletablePassDetectionOptInStatus',
+      'authenticateUserBeforeViewingEntityData',
     ]);
   }
 

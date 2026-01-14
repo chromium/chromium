@@ -209,6 +209,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const std::string& app_locale) {
   std::vector<autofill_private::AttributeInstance>
       private_api_attribute_instances;
+  bool should_authenticate_to_view = false;
   for (const AttributeInstance& attribute_instance :
        entity_instance.attributes()) {
     private_api_attribute_instances.emplace_back();
@@ -216,6 +217,11 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
         std::to_underlying(attribute_instance.type().name());
     private_api_attribute_instances.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
+
+    if (attribute_instance.type().is_obfuscated() &&
+        !attribute_instance.GetCompleteRawInfo().empty()) {
+      should_authenticate_to_view = true;
+    }
 
     AttributeType::DataType data_type = attribute_instance.type().data_type();
     private_api_attribute_instances.back().type.data_type =
@@ -265,6 +271,8 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       std::move(private_api_attribute_instances);
   private_api_entity_instance.guid = *entity_instance.guid();
   private_api_entity_instance.nickname = entity_instance.nickname();
+  private_api_entity_instance.should_authenticate_to_view =
+      should_authenticate_to_view;
   return private_api_entity_instance;
 }
 

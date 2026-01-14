@@ -273,6 +273,7 @@ declare global {
         attributeInstances: AttributeInstance[];
         guid: string;
         nickname: string;
+        shouldAuthenticateToView?: boolean;
       }
 
       export interface EntityInstanceWithLabels {

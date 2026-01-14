@@ -373,6 +373,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, MAYBE_EntityInstances) {
   ASSERT_TRUE(RunAutofillSubtest("removeEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
   ASSERT_TRUE(RunAutofillSubtest("testExpectedLabelsAreGenerated"));
+  ASSERT_TRUE(RunAutofillSubtest("shouldAuthenticateToView"));
   //  Test that retrieving general entity type information works.
   ASSERT_TRUE(RunAutofillSubtest("getWritableEntityTypes"));
   ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntityTypeName"));

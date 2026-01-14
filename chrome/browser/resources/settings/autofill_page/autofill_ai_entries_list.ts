@@ -317,11 +317,14 @@ export class SettingsAutofillAiEntriesListElement extends
    */
   private async onMenuEditEntityInstanceClick_(e: Event) {
     e.preventDefault();
-
-    const success =
-        await this.entityDataManager_.authenticateUserBeforeViewingEntityData();
-    if (!success) {
-      return;
+    const entityRequiresAuth =
+        this.activeEntityInstance_?.shouldAuthenticateToView;
+    if (entityRequiresAuth) {
+      const success = await this.entityDataManager_
+                          .authenticateUserBeforeViewingEntityData();
+      if (!success) {
+        return;
+      }
     }
 
     assert(this.activeEntityInstance_);

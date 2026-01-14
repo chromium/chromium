@@ -416,6 +416,8 @@ namespace autofillPrivate {
     DOMString guid;
     // The nickname of the entity instance.
     DOMString nickname;
+    // Whether the user should be authenticated to view the entity instance.
+    boolean? shouldAuthenticateToView;
   };
 
   // Contains the minimum amount of information needed to display an entity
