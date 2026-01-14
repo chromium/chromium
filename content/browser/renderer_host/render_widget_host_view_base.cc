@@ -175,6 +175,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& dst_size,
     float scale_factor,
+    base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!main_host || !main_frame_host) {
     if (base::FeatureList::IsEnabled(
@@ -193,7 +194,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
 #else
   if (!popup_host || !popup_frame_host) {
     // No popup - just call CopyFromCompositingSurface once.
-    main_frame_host->CopyFromCompositingSurface(src_subrect, dst_size,
+    main_frame_host->CopyFromCompositingSurface(src_subrect, dst_size, timeout,
                                                 std::move(callback));
     return;
   }
@@ -225,6 +226,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
          const gfx::Vector2d offset,
          base::WeakPtr<DelegatedFrameHost> popup_frame_host,
          const gfx::Rect src_subrect, const gfx::Size dst_size,
+         base::TimeDelta timeout,
          const content::CopyFromSurfaceResult& main_result) {
         if (!popup_frame_host) {
           if (base::FeatureList::IsEnabled(
@@ -267,20 +269,21 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
         // Second, request the popup image.
         gfx::Rect popup_subrect(src_subrect - offset);
         popup_frame_host->CopyFromCompositingSurface(
-            popup_subrect, dst_size, std::move(popup_done_callback));
+            popup_subrect, dst_size, timeout, std::move(popup_done_callback));
       },
       std::move(callback), offset_physical, popup_frame_host, src_subrect,
-      dst_size);
+      dst_size, timeout);
 
   // Request the main image (happens first).
   main_frame_host->CopyFromCompositingSurface(
-      src_subrect, dst_size, std::move(main_image_done_callback));
+      src_subrect, dst_size, timeout, std::move(main_image_done_callback));
 #endif
 }
 
 void RenderWidgetHostViewBase::CopyFromSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
+    base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();
   std::move(callback).Run(base::unexpected<std::string>(

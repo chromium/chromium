@@ -105,7 +105,7 @@ TEST_F(DelegatedFrameHostTest, NoCopyOutputRequestWithNoValidSurface) {
   base::RunLoop run_loop;
   dfh->CopyFromCompositingSurface(
       /*src_subrect=*/gfx::Rect(),
-      /*output_size=*/gfx::Size(),
+      /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindOnce(
           [](base::RepeatingClosure quit_closure,
              const content::CopyFromSurfaceResult& result) {

@@ -492,7 +492,7 @@ void HeadlessWebContentsImpl::BeginFrame(
         web_contents()->GetRenderWidgetHostView();
     if (view && view->IsSurfaceAvailableForCopy()) {
       view->CopyFromSurface(
-          gfx::Rect(), gfx::Size(),
+          gfx::Rect(), gfx::Size(), base::TimeDelta(),
           base::BindOnce(&PendingFrame::OnReadbackComplete, pending_frame));
     } else {
       LOG(WARNING) << "Surface not ready for screenshot.";

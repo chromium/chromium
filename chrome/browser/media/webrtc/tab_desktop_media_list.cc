@@ -244,7 +244,7 @@ void TabDesktopMediaList::TriggerScreenshot(
   }
 
   view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
+      gfx::Rect(), gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           content::GetUIThreadTaskRunner({}),
           base::BindOnce(&TabDesktopMediaList::ScreenshotReceived,

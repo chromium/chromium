@@ -806,7 +806,7 @@ void PermissionsAiUiSelector::TakeSnapshot(
     FinishRequest(Decision::UseNormalUiAndShowNoWarning());
   } else {
     host_view->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindOnce([](const content::CopyFromSurfaceResult& result) {
           // TODO(crbug.com/466199824): Update callsite to handle error
           // case.

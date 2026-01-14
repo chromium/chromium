@@ -929,7 +929,7 @@ void WebTestControlHost::EnqueueSurfaceCopyRequest() {
   }
 
   auto* rwhv = main_window_->web_contents()->GetRenderWidgetHostView();
-  rwhv->CopyFromSurface(gfx::Rect(), gfx::Size(),
+  rwhv->CopyFromSurface(gfx::Rect(), gfx::Size(), base::TimeDelta(),
                         base::BindOnce(&WebTestControlHost::OnPixelDumpCaptured,
                                        weak_factory_.GetWeakPtr()));
 }

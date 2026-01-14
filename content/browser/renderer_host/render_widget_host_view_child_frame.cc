@@ -869,6 +869,7 @@ uint64_t RenderWidgetHostViewChildFrame::GetNSViewId() const {
 void RenderWidgetHostViewChildFrame::CopyFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!IsSurfaceAvailableForCopy()) {
     std::move(callback).Run(base::unexpected<std::string>(
@@ -915,8 +916,9 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
 
-  GetHostFrameSinkManager()->RequestCopyOfOutput(GetCurrentSurfaceId(),
-                                                 std::move(request));
+  GetHostFrameSinkManager()->RequestCopyOfOutput(
+      GetCurrentSurfaceId(), std::move(request),
+      /*capture_exact_surface_id=*/false, timeout);
 }
 
 void RenderWidgetHostViewChildFrame::OnFirstSurfaceActivation(

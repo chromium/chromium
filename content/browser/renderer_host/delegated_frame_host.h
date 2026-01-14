@@ -146,6 +146,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
+      base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
   void CopyFromCompositingSurfaceAsTexture(
       const gfx::Rect& src_subrect,
@@ -248,6 +249,7 @@ class CONTENT_EXPORT DelegatedFrameHost
       const viz::SurfaceId& surface_id,
       viz::CopyOutputRequest::ResultFormat format,
       viz::CopyOutputRequest::ResultDestination destination,
+      base::TimeDelta timeout,
       viz::CopyOutputRequest::CopyOutputRequestCallback callback);
 
   void SetFrameEvictionStateAndNotifyObservers(

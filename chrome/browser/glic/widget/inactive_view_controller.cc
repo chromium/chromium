@@ -169,7 +169,7 @@ void InactiveViewController::CaptureScreenshot(
   }
 
   render_widget_host_view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
+      gfx::Rect(), gfx::Size(), base::TimeDelta(),
       base::BindOnce(
           [](base::WeakPtr<InactiveViewController> weak_ptr,
              const content::CopyFromSurfaceResult& result) {

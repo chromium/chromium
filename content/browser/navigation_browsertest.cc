@@ -9074,7 +9074,7 @@ class NavigationBrowserTestPaintHoldingSubframe
 
     constexpr gfx::Size kOutputSize(10, 10);
     view->CopyFromSurface(
-        gfx::Rect(), kOutputSize,
+        gfx::Rect(), kOutputSize, base::TimeDelta(),
         base::BindOnce(&NavigationBrowserTestPaintHoldingSubframe::OnCopyDone,
                        base::Unretained(this)));
 

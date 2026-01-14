@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTest,
     ++count_attempts;
     base::RunLoop run_loop;
     GetRenderWidgetHostView()->CopyFromSurface(
-        gfx::Rect(), frame_size(),
+        gfx::Rect(), frame_size(), base::TimeDelta(),
         base::BindOnce(&RenderWidgetHostViewBrowserTest::FinishCopyFromSurface,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTest,
 
   base::RunLoop run_loop;
   GetRenderWidgetHostView()->CopyFromSurface(
-      gfx::Rect(), frame_size(),
+      gfx::Rect(), frame_size(), base::TimeDelta(),
       base::BindOnce(&RenderWidgetHostViewBrowserTest::FinishCopyFromSurface,
                      base::Unretained(this), run_loop.QuitClosure()));
   shell()->web_contents()->Close();
@@ -1373,7 +1373,7 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
 
       base::RunLoop run_loop;
       rwhv->CopyFromSurface(
-          copy_rect, output_size,
+          copy_rect, output_size, base::TimeDelta(),
           base::BindOnce(&CompositingRenderWidgetHostViewBrowserTestTabCapture::
                              VerifyResult,
                          base::Unretained(this), run_loop.QuitClosure()));
@@ -1865,7 +1865,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
       std::nullopt, rwhv_android->GetCurrentSurfaceId());
   base::RunLoop run_loop;
   GetRenderViewHost()->GetWidget()->GetView()->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
+      gfx::Rect(), gfx::Size(), base::TimeDelta(),
       base::BindOnce(&CheckSurfaceRangeRemovedAfterCopy, range_for_copy,
                      compositor, run_loop.QuitClosure()));
 

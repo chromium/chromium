@@ -1082,7 +1082,7 @@ void TabDragController::RequestTabThumbnail() {
     // empty target size means no scaling (as we don't know the surface
     // size, it's easier to scale the bitmap to the correct size later).
     rwhv->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindOnce(&TabDragController::OnTabThumbnailAvailable,
                        weak_factory_.GetWeakPtr(), scale));
   }

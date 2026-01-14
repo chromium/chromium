@@ -2188,7 +2188,7 @@ void RenderWidgetHostImpl::GetSnapshotFromBrowser(
       // 3. Create a copy request from the newest surface. This
       // should wait until the requested repaint has arrived.
       GetView()->CopyFromSurface(
-          gfx::Rect(), gfx::Size(),
+          gfx::Rect(), gfx::Size(), base::TimeDelta(),
           base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
                          weak_factory_.GetWeakPtr(), snapshot_id, 0));
     } else {
@@ -3527,7 +3527,7 @@ void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
   // Snapshots from surface do not need to wait for the screen update.
   if (!pending_surface_browser_snapshots_.empty()) {
     GetView()->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
                        weak_factory_.GetWeakPtr(), snapshot_id, 0));
   }
@@ -3583,7 +3583,7 @@ void RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived(
   static constexpr int kMaxRetries = 5;
   if (!result.has_value() && retry_count < kMaxRetries) {
     GetView()->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
                        weak_factory_.GetWeakPtr(), snapshot_id,
                        retry_count + 1));

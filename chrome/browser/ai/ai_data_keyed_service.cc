@@ -553,6 +553,7 @@ void GetTabScreenshotForModelPrototyping(
   view->CopyFromSurface(
       gfx::Rect(),  // Copy entire surface area.
       gfx::Size(),  // Result contains device-level detail.
+      base::TimeDelta(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&OnGetTabScreenshotForModelPrototyping,
                          std::move(continue_callback)),
