@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -101,7 +101,7 @@ suite('SettingsMenuElement', () => {
         for (const item of menuItems) {
           item.dispatchEvent(new PointerEvent(
               'pointerenter', {bubbles: true, cancelable: true, view: window}));
-          timer.tick(MENU_SHOW_DELAY_MS + 10);
+          timer.tick(SUBMENU_SHOW_DELAY_MS + 10);
         }
         timer.uninstall();
 
@@ -154,5 +154,38 @@ suite('SettingsMenuElement', () => {
     actionMenu.dispatchEvent(new PointerEvent(
         'pointerenter', {bubbles: true, cancelable: true, view: window}));
     actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
+  });
+
+  test('mouse leave clears open timer', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
+    const targetItem = menuItems[0];
+    assertTrue(!!targetItem);
+
+    let submenuEvents = 0;
+    settingsMenu.addEventListener(
+        ToolbarEvent.OPEN_SETTINGS_SUBMENU, ((event: CustomEvent) => {
+                                              if (event.detail.id) {
+                                                submenuEvents++;
+                                              }
+                                            }) as EventListener);
+
+    const timer = new MockTimer();
+    timer.install();
+
+    // Hover over the item
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+
+    // Leave the item before the timer fires
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerleave', {bubbles: true, cancelable: true, view: window}));
+
+    // Advance the timer past the delay
+    timer.tick(MENU_SHOW_DELAY_MS + 10);
+    timer.uninstall();
+
+    assertEquals(0, submenuEvents, 'Submenu event should not have fired');
   });
 });
