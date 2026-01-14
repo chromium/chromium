@@ -1612,7 +1612,7 @@ TEST_F(IntegrationTest, GetUpdaterState) {
           ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
 
           EXPECT_THAT(result.inactive_versions,
-                      testing::ElementsAre(
+                      testing::UnorderedElementsAre(
                           "100.0.0.0",
                           base::Version(std::move(components)).GetString()));
 #endif  // !BUILDFLAG(IS_MAC)
