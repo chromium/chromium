@@ -12,6 +12,8 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_urls.h"
 
 namespace policy {
 
@@ -50,6 +53,17 @@ bool IsExtensionInstallBlocked(
           value_for_version->FindInt("action").value_or(
               enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW));
   return action == enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK;
+}
+
+bool HasNonDefaultInstallationMode(Profile* profile,
+                                   const std::string& extension_id) {
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+  CHECK(extension_management);
+  extensions::ManagedInstallationMode installation_mode =
+      extension_management->GetInstallationMode(
+          extension_id, extension_urls::GetWebstoreUpdateUrl().spec());
+  return installation_mode != extensions::ManagedInstallationMode::kAllowed;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -102,6 +116,14 @@ void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
 #else
   if (!profile_->GetPrefs()->GetBoolean(
           extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (HasNonDefaultInstallationMode(profile_,
+                                    extension_id_and_version.extension_id)) {
+    // Installation mode always takes priority over cloud-based blocking. Do
+    // not fetch policy.
     std::move(callback).Run(true);
     return;
   }
@@ -170,6 +192,17 @@ std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
   return std::nullopt;
 #else
+  if (!profile_->GetPrefs()->GetBoolean(
+          extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
+    return true;
+  }
+
+  if (HasNonDefaultInstallationMode(profile_,
+                                    extension_id_and_version.extension_id)) {
+    // Installation mode always takes priority over cloud-based blocking.
+    return true;
+  }
+
   auto* policy_service =
       profile_->GetProfilePolicyConnector()->policy_service();
   if (!policy_service) {

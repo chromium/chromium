@@ -6,11 +6,13 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/platform_browser_test.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -24,6 +26,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
@@ -35,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,7 +75,7 @@ ClientStorage::ClientInfo CreateTestClientInfo() {
 }  // namespace
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
+class ExtensionInstallPolicyServiceTest : public PolicyTest {
  public:
   ExtensionInstallPolicyServiceTest() {
     BrowserDMTokenStorage::SetForTesting(&storage_);
@@ -86,7 +90,7 @@ class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
       const ExtensionInstallPolicyServiceTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
-    PlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+    PolicyTest::SetUpInProcessBrowserTestFixture();
 
     test_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
     test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
@@ -105,13 +109,13 @@ class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
+    PolicyTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
   }
 #endif
 
   void SetUpOnMainThread() override {
-    PlatformBrowserTest::SetUpOnMainThread();
+    PolicyTest::SetUpOnMainThread();
 
     policy::BrowserPolicyConnector* connector =
         g_browser_process->browser_policy_connector();
@@ -411,6 +415,32 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                                                    /*expected_result=*/true));
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId2,
                                                    kExtensionVersion2,
+                                                   /*expected_result=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
+                       CanInstallExtensionBlockedByExtensionSettings) {
+  // Force-install `kExtensionId1`.
+  std::string webstore_update_url =
+      extension_urls::GetWebstoreUpdateUrl().spec();
+  base::Value::List force_list;
+  force_list.Append(base::StrCat({kExtensionId1, ";", webstore_update_url}));
+  PolicyMap policies;
+  policies.Set(key::kExtensionSettings, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(force_list)), nullptr);
+  UpdateProviderPolicy(policies);
+
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(extension_management);
+  // CanInstallExtension() returns true even though the extension is blocked by
+  // the ExtensionSettings policy. "true" here means "EIPS will not block it",
+  // but other things still can (in this case,
+  // StandardManagementPolicyProvider).
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
                                                    /*expected_result=*/true));
 }
 

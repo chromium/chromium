@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,15 +19,17 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_urls.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 namespace {
 
-constexpr char kExtensionId[] = "extension-id";
+constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kExtensionVersion[] = "1.0.0.0";
 
 base::Value GetPolicyValueForAction(
@@ -56,6 +60,9 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
     builder.SetUserCloudPolicyManager(BuildUserCloudPolicyManager());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
     profile_ = builder.Build();
+    profile_->GetPrefs()->SetBoolean(
+        extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled,
+        true);
 
 #if !BUILDFLAG(IS_CHROMEOS)
     client_ = std::make_unique<MockCloudPolicyClient>();
@@ -108,6 +115,9 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedUnknown) {
       .WillRepeatedly(testing::Return(false));
   builder.SetPolicyService(std::move(policy_service));
   auto test_profile = builder.Build();
+  test_profile->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
   ExtensionInstallPolicyServiceImpl service(test_profile.get());
   EXPECT_FALSE(service
                    .IsExtensionAllowed(
@@ -158,6 +168,37 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionBlockedByPolicy) {
 }
 
 TEST_F(ExtensionInstallPolicyServiceTest,
+       IsExtensionBlockedByExtensionSettings) {
+  // Force-install `kExtensionId`.
+  using ManagementPrefUpdater = extensions::ExtensionManagementPrefUpdater<
+      sync_preferences::TestingPrefServiceSyncable>;
+  std::string webstore_update_url =
+      extension_urls::GetWebstoreUpdateUrl().spec();
+  {
+    ManagementPrefUpdater pref(profile()->GetTestingPrefService());
+    // Mark good.crx for force-installation.
+    pref.SetIndividualExtensionAutoInstalled(kExtensionId, webstore_update_url,
+                                             true);
+  }
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile());
+  ASSERT_TRUE(extension_management);
+  ASSERT_EQ(extensions::ManagedInstallationMode::kForced,
+            extension_management->GetInstallationMode(kExtensionId,
+                                                      webstore_update_url));
+
+  ExtensionInstallPolicyServiceImpl service(profile());
+  // IsExtensionAllowed() returns true even though the extension is blocked by
+  // the ExtensionSettings policy. "true" here means "EIPS will not block it",
+  // but other things still can (in this case,
+  // StandardManagementPolicyProvider).
+  EXPECT_TRUE(service
+                  .IsExtensionAllowed(
+                      ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
+                  .value());
+}
+
+TEST_F(ExtensionInstallPolicyServiceTest,
        IsExtensionBlockedByConflictingPolicy) {
   PolicyMap policy;
   PolicyMap::Entry entry(
@@ -190,12 +231,8 @@ TEST_F(ExtensionInstallPolicyServiceTest,
 TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
   UserCloudPolicyManager* manager = profile()->GetUserCloudPolicyManager();
   ASSERT_TRUE(manager);
-
-  ASSERT_TRUE(manager->core());
   ASSERT_TRUE(manager->core()->client());
 
-  profile()->GetPrefs()->SetBoolean(
-      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
   {
     ExtensionInstallPolicyServiceImpl service(profile());
     // This EIPS should now be in types_to_fetch().
