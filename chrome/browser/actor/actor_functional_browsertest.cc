@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -166,6 +167,40 @@ class AsyncActionWaiter {
   std::string request_id_;
 };
 
+// Helper class to wait for a specific ActorTask to reach a certain state.
+// It subscribes to task state changes and quits a run loop when the
+// target task transitions to the `expected_state`.
+class ActorTaskStateWaiter {
+ public:
+  ActorTaskStateWaiter(ActorKeyedService* service,
+                       TaskId task_id,
+                       ActorTask::State expected_state)
+      : task_id_(task_id), expected_state_(expected_state) {
+    if (service->GetTask(task_id_)->GetState() == expected_state_) {
+      run_loop_.Quit();
+      return;
+    }
+    subscription_ =
+        service->AddTaskStateChangedCallback(base::BindLambdaForTesting(
+            [this](TaskId task_id, ActorTask::State state) {
+              if (task_id == task_id_ && state == expected_state_) {
+                run_loop_.Quit();
+              }
+            }));
+  }
+
+  // If the ActorTask has already reached the `expected_state` since this waiter
+  // was created, this returns immediately. Otherwise, it waits until the task
+  // reaches the `expected_state`.
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  const TaskId task_id_;
+  const ActorTask::State expected_state_;
+  base::RunLoop run_loop_;
+  base::CallbackListSubscription subscription_;
+};
+
 class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
  public:
   static constexpr base::TimeDelta kShortWaitTime = base::Milliseconds(10);
@@ -218,16 +253,6 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     ActorTask* task = actor_keyed_service()->GetTask(task_id);
     CHECK_NE(task, nullptr) << "ActorTask " << task_id << " not found.";
     return task->GetState();
-  }
-
-  // Waits for the relevant ActorTask to reach the expected state or times out.
-  void RunUntilActorTaskStateIs(TaskId task_id,
-                                ActorTask::State expected_state) {
-    // TODO(crbug.com/473858969): Replace with a helper class.
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return GetActorTaskState(task_id) == expected_state;
-    })) << "Timed out waiting for ActorTask "
-        << task_id << " to reach state " << ToString(expected_state);
   }
 
   // Common helper to run EvalJs in the Glic frame.
@@ -517,7 +542,9 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
   PauseActorTask(task_id, glic::mojom::ActorTaskPauseReason::kPausedByUser,
                  active_tab()->GetHandle());
   // Wait for the task to pause.
-  RunUntilActorTaskStateIs(task_id, ActorTask::State::kPausedByUser);
+  ActorTaskStateWaiter waiter(actor_keyed_service(), task_id,
+                              ActorTask::State::kPausedByUser);
+  waiter.Wait();
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
@@ -636,14 +663,17 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseActiveTask) {
   optimization_guide::proto::Actions wait_action =
       MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
 
-  std::unique_ptr<AsyncActionWaiter> waiter = PerformActionsAsync(wait_action);
+  std::unique_ptr<AsyncActionWaiter> action_waiter =
+      PerformActionsAsync(wait_action);
   PauseActorTask(task_id, glic::mojom::ActorTaskPauseReason::kPausedByUser,
                  active_tab()->GetHandle());
 
   // Verify the WaitAction was ended and the task was paused.
-  EXPECT_THAT(waiter->Wait(),
+  EXPECT_THAT(action_waiter->Wait(),
               ValueIs(HasResultCode(mojom::ActionResultCode::kTaskPaused)));
-  RunUntilActorTaskStateIs(task_id, ActorTask::State::kPausedByUser);
+  ActorTaskStateWaiter state_waiter(actor_keyed_service(), task_id,
+                                    ActorTask::State::kPausedByUser);
+  state_waiter.Wait();
 
   EXPECT_THAT(
       ResumeActorTask(task_id,
