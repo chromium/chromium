@@ -825,10 +825,12 @@ GraphBuilderTflite::GraphBuilderTflite(
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
-  // TFLite requires that offsets into the weights file are greater than 1 and
-  // we need anything we add to be aligned.
-  CHECK(weights_file_.Seek(base::File::FROM_CURRENT, kWeightsAlignment));
-  weights_file_.SetLength(kWeightsAlignment);
+  if (weights_file_.IsValid()) {
+    // TFLite requires that offsets into the weights file are greater than 1 and
+    // we need anything we add to be aligned.
+    CHECK(weights_file_.Seek(base::File::FROM_CURRENT, kWeightsAlignment));
+    weights_file_.SetLength(kWeightsAlignment);
+  }
 }
 
 GraphBuilderTflite::~GraphBuilderTflite() = default;
@@ -2886,7 +2888,8 @@ auto GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer)
     -> base::expected<BufferIndex, std::string> {
   const auto buffer_index = base::checked_cast<BufferIndex>(buffers_.size());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNTfliteDumpModel)) {
+          switches::kWebNNTfliteDumpModel) ||
+      !weights_file_.IsValid()) {
     buffers_.emplace_back(::tflite::CreateBuffer(
         builder_, builder_.CreateVector(buffer.data(), buffer.size())));
   } else {
