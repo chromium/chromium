@@ -2187,7 +2187,8 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
 // TODO(https://crbug.com/463490299): Enable the test.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
+    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CanGetFileResourceWithFileAccess \
   DISABLED_CanGetFileResourceWithFileAccess
 #else
