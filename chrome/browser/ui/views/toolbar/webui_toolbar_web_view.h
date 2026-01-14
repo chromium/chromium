@@ -53,9 +53,8 @@ class WebUIToolbarWebView : public views::View,
   friend WebUIReloadControl;
 
   chrome::BrowserCommandController* controller() { return controller_; }
-  base::WeakPtr<WebUIToolbarUI> webui_toolbar_ui() { return webui_toolbar_ui_; }
+  WebUIToolbarUI* GetWebUIToolbarUI();
 
-  base::WeakPtr<WebUIToolbarUI> webui_toolbar_ui_ = nullptr;
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
