@@ -800,6 +800,9 @@ class CrossbenchTest(object):
         '--disable-field-trial-config',
         action='store_true',
         help='Start Chrome with --disable-field-trial-config option')
+    parser.add_argument('--variations-test-seed-path',
+                        type=pathlib.Path,
+                        help='Specify location of a Finch variations seed file')
     parser.add_argument(
         '--extra-browser-args',
         dest='extra_browser_args_as_string',
@@ -950,6 +953,15 @@ class CrossbenchTest(object):
     if self.cb_options.extra_browser_args_as_string:
       extra_browser_args = ['--'] + shlex.split(
           self.cb_options.extra_browser_args_as_string, posix=(not IsWindows()))
+    if self.cb_options.variations_test_seed_path:
+      # Chrome is picky about how the path is specified. Must resolve it first.
+      resolved_path = self.cb_options.variations_test_seed_path.resolve()
+      if not extra_browser_args:
+        extra_browser_args = ['--']
+      extra_browser_args += [
+          f'--variations-test-seed-path={resolved_path}',
+          '--accept-empty-variations-seed-signature',
+      ]
     return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
             ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
             [self.browser] + self.driver_path_arg + self.network + self.env +
