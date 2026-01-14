@@ -7123,6 +7123,21 @@
             ]
         }
     ],
+    "ConsistentLogoDoodleHeight": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ConsistentLogoDoodleHeight"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentVerifyJobUseJobVersionForHashing": [
         {
             "platforms": [
