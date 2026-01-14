@@ -39,7 +39,6 @@ namespace blink {
 StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
                                      const CSSUrlData& url_data,
                                      const Document& document,
-                                     bool is_lazyload_possibly_deferred,
                                      const KURL& url,
                                      const float override_image_resolution)
     : url_data_(url_data),
@@ -47,7 +46,6 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
       url_(url),
       override_image_resolution_(override_image_resolution) {
   is_image_resource_ = true;
-  is_lazyload_possibly_deferred_ = is_lazyload_possibly_deferred;
 
   image_ = image;
   image_->AddObserver(this);
@@ -252,13 +250,6 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
 bool StyleFetchedImage::KnownToBeOpaque(const Document&,
                                         const ComputedStyle&) const {
   return image_->GetImage()->IsOpaque();
-}
-
-void StyleFetchedImage::LoadDeferredImage(const Document& document) {
-  DCHECK(is_lazyload_possibly_deferred_);
-  is_lazyload_possibly_deferred_ = false;
-  document_ = &document;
-  image_->LoadDeferredImage(document_->Fetcher());
 }
 
 RespectImageOrientationEnum StyleFetchedImage::ForceOrientationIfNecessary(

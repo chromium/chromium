@@ -181,11 +181,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   ALWAYS_INLINE bool IsPaintImage() const { return is_paint_image_; }
   ALWAYS_INLINE bool IsCrossfadeImage() const { return is_crossfade_; }
 
-  // TODO(crbug.com/473389267) This can never be true; it should be removed.
-  bool IsLazyloadPossiblyDeferred() const {
-    return is_lazyload_possibly_deferred_;
-  }
-
   virtual bool IsLoadedAfterMouseover() const { return false; }
 
   virtual void Trace(Visitor* visitor) const {}
@@ -198,8 +193,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
         is_image_resource_set_(false),
         is_crossfade_(false),
         is_mask_source_(false),
-        is_paint_image_(false),
-        is_lazyload_possibly_deferred_(false) {}
+        is_paint_image_(false) {}
   bool is_image_resource_ : 1;
   bool is_pending_image_ : 1;
   bool is_generated_image_ : 1;
@@ -207,7 +201,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   bool is_crossfade_ : 1;
   bool is_mask_source_ : 1;
   bool is_paint_image_ : 1;
-  bool is_lazyload_possibly_deferred_ : 1;
 
   virtual bool IsEqual(const StyleImage&) const = 0;
 

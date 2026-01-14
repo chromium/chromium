@@ -48,7 +48,6 @@ CSSImageValue::~CSSImageValue() = default;
 
 FetchParameters CSSImageValue::PrepareFetch(
     const Document& document,
-    FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) const {
   const CSSUrlData& url_data = UrlData();
   const Referrer& referrer = url_data.GetReferrer();
@@ -75,11 +74,6 @@ FetchParameters CSSImageValue::PrepareFetch(
                                        cross_origin);
   }
 
-  if (image_request_behavior ==
-      FetchParameters::ImageRequestBehavior::kDeferImageLoad) {
-    params.SetLazyImageDeferred();
-  }
-
   if (!url_data.IsFromOriginCleanStyleSheet()) {
     params.SetFromOriginDirtyStyleSheet(true);
   }
@@ -89,7 +83,6 @@ FetchParameters CSSImageValue::PrepareFetch(
 
 StyleImage* CSSImageValue::CacheImage(
     const Document& document,
-    FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin,
     const float override_image_resolution) {
   if (!cached_image_) {
@@ -98,15 +91,12 @@ StyleImage* CSSImageValue::CacheImage(
       url_data.ReResolveUrl(document);
     }
 
-    FetchParameters params =
-        PrepareFetch(document, image_request_behavior, cross_origin);
+    FetchParameters params = PrepareFetch(document, cross_origin);
     ImageResourceContent* image_content =
         document.GetStyleEngine().CacheImageContent(params);
     cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
         image_content, *url_data.MakeResolvedIfDanglingMarkup(document),
         document,
-        params.GetImageRequestBehavior() ==
-            FetchParameters::ImageRequestBehavior::kDeferImageLoad,
         params.Url(), override_image_resolution);
   }
   return cached_image_.Get();

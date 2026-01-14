@@ -2559,9 +2559,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // ::backdrop pseudo.
   bool IsRenderedInTopLayer(const Element& element) const;
 
-  // Load the images of CSS properties that were deferred by LazyLoad.
-  void LoadDeferredImages(Document&) const;
-
   static mojom::blink::ColorScheme UsedColorScheme(bool is_dark_color_scheme) {
     return is_dark_color_scheme ? mojom::blink::ColorScheme::kDark
                                 : mojom::blink::ColorScheme::kLight;

@@ -77,7 +77,6 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
-#include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
@@ -1431,19 +1430,6 @@ InterpolationQuality ComputedStyle::GetInterpolationQuality() const {
   }
 
   return GetDefaultInterpolationQuality();
-}
-
-void ComputedStyle::LoadDeferredImages(Document& document) const {
-  if (HasBackgroundImage()) {
-    for (const FillLayer* background_layer = &BackgroundLayers();
-         background_layer; background_layer = background_layer->Next()) {
-      if (StyleImage* image = background_layer->GetImage()) {
-        if (image->IsImageResource() && image->IsLazyloadPossiblyDeferred()) {
-          To<StyleFetchedImage>(image)->LoadDeferredImage(document);
-        }
-      }
-    }
-  }
 }
 
 ETransformBox ComputedStyle::UsedTransformBox(
