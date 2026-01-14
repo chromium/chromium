@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
@@ -55,9 +55,8 @@ constexpr int kRegionVerticalPadding = 5;
 VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
-    BrowserWindowInterface* browser,
     BrowserView* browser_view)
-    : tab_strip_model_(browser->GetTabStripModel()),
+    : tab_strip_model_(browser_view->browser()->GetTabStripModel()),
       state_controller_(state_controller),
       resize_animation_(this) {
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -77,7 +76,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
-          state_controller_, root_action_item, browser));
+          state_controller_, root_action_item, browser_view->browser()));
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
 
@@ -105,13 +104,16 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 
   root_node_ = std::make_unique<RootTabCollectionNode>(
-      browser->GetTabStripModel(),
+      tab_strip_model_.get(),
       base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
                           base::Unretained(this)));
 
-  SetBackground(std::make_unique<TopContainerBackground>(
-      browser_view, TopContainerBackground::ColorChoice::kFrameColor));
-  UpdateBackgroundColors();
+  SetBackground(std::make_unique<CustomCornersBackground>(
+      *this, *browser_view,
+      /*primary_color=*/CustomCornersBackground::FrameColor(),
+      /*corner_color=*/CustomCornersBackground::TopContainerTheme()));
+
+  UpdateColors();
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() {
@@ -124,8 +126,7 @@ VerticalTabStripRegionView::~VerticalTabStripRegionView() {
 void VerticalTabStripRegionView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-          &VerticalTabStripRegionView::UpdateBackgroundColors,
-          base::Unretained(this)));
+          &VerticalTabStripRegionView::UpdateColors, base::Unretained(this)));
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {
@@ -450,7 +451,7 @@ void VerticalTabStripRegionView::ResizeToWidth(int width) {
   SetPreferredSize(gfx::Size(width, 0));
 }
 
-void VerticalTabStripRegionView::UpdateBackgroundColors() {
+void VerticalTabStripRegionView::UpdateColors() {
   top_button_separator_->SetColorId(IsFrameActive()
                                         ? kColorTabDividerFrameActive
                                         : kColorTabDividerFrameInactive);

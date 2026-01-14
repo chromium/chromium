@@ -813,6 +813,45 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const BrowserLayoutParams& params) {
   const auto tab_strip_type = GetTabStripType();
   const auto window_state = delegate().GetBrowserWindowState();
+  bool vertical_tab_strip_reaches_top = false;
+
+  // Set vertical tabstrip corners.
+  if (tab_strip_type == TabStripType::kVertical) {
+    // Vertical tabstrip goes all the way to the top of the window if it is not
+    // collapsed or there are no caption buttons on the leading edge.
+    vertical_tab_strip_reaches_top =
+        !delegate().IsVerticalTabStripCollapsed() ||
+        params.leading_exclusion.IsEmpty();
+    auto* const vertical_tabs_background =
+        static_cast<CustomCornersBackground*>(
+            views().vertical_tab_strip_region_view->background());
+    CustomCornersBackground::Corners vertical_tabs_corners;
+    // Ensure that corners of the window remain rounded.
+    if (window_state == WindowState::kNormal) {
+      if (vertical_tab_strip_reaches_top) {
+        vertical_tabs_corners.upper_leading =
+            vertical_tabs_background->GetWindowCorner(/*upper=*/true);
+      }
+      vertical_tabs_corners.lower_leading =
+          vertical_tabs_background->GetWindowCorner(/*upper=*/false);
+    }
+    // When the vertical tabs are below the toolbar but next to the bookmarks
+    // bar, draw a curved corner.
+    if (!vertical_tab_strip_reaches_top &&
+        window_state != WindowState::kFullscreen) {
+      const auto* const toolbar_height_side_panel =
+          views().toolbar_height_side_panel.get();
+      const bool has_leading_side_panel =
+          toolbar_height_side_panel &&
+          toolbar_height_side_panel->GetVisible() &&
+          toolbar_height_side_panel->IsRightAligned() == base::i18n::IsRTL();
+      if (delegate().IsBookmarkBarVisible() || has_leading_side_panel) {
+        vertical_tabs_corners.upper_trailing.type =
+            CustomCornersBackground::CornerType::kRoundedWithBackground;
+      }
+    }
+    vertical_tabs_background->SetCorners(vertical_tabs_corners);
+  }
 
   // Set toolbar corners.
   auto* const toolbar_background =
@@ -836,10 +875,9 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     case TabStripType::kVertical: {
       if (window_state != WindowState::kFullscreen) {
         // Draw leading corner if vertical tabstrip is directly adjacent to
-        // toolbar. This happens when the tabstrip is full sized or if there
-        // are no caption buttons on the leading window edge.
-        if (!delegate().IsVerticalTabStripCollapsed() ||
-            params.leading_exclusion.IsEmpty()) {
+        // toolbar. This happens when the vertical tabstrip goes all the way to
+        // the top of the window.
+        if (vertical_tab_strip_reaches_top) {
           toolbar_corners.upper_leading.type =
               CustomCornersBackground::CornerType::kRoundedWithBackground;
         }

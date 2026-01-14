@@ -18,7 +18,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
 
-class BrowserWindowInterface;
+class BrowserView;
 class RootTabCollectionNode;
 class VerticalUnpinnedTabContainerView;
 class VerticalPinnedTabContainerView;
@@ -60,7 +60,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   explicit VerticalTabStripRegionView(
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,
-      BrowserWindowInterface* browser,
       BrowserView* browser_view);
   VerticalTabStripRegionView(const VerticalTabStripRegionView&) = delete;
   VerticalTabStripRegionView& operator=(const VerticalTabStripRegionView&) =
@@ -147,7 +146,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void UpdateCollapseState(tabs::VerticalTabStripState new_state);
   void ResizeToWidth(int width);
 
-  void UpdateBackgroundColors();
+  void UpdateColors();
 
   bool IsFrameActive() const;
 
