@@ -8271,7 +8271,7 @@
   {
     "name": "renderer-side-content-decoding",
     "owners": ["horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "replace-sync-promos-with-sign-in-promos-desktop",
