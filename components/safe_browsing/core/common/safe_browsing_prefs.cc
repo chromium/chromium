@@ -252,6 +252,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       ::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle, false);
   registry->RegisterBooleanPref(
       prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, false);
+  registry->RegisterBooleanPref(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites, false);
+
   // TODO(crbug.com/422747384): Implement correct logic to set bundle level
   // based on user's safe browsing status.
   registry->RegisterIntegerPref(

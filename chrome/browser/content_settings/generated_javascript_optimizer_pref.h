@@ -9,22 +9,13 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace content_settings {
 
 extern const char kGeneratedJavascriptOptimizerPref[];
-
-// Must be kept in sync with the JavascriptOptimizerSetting enum in
-// chrome/browser/resources/settings/site_settings/constants.ts
-// LINT.IfChange(JavascriptOptimizerSetting)
-enum class JavascriptOptimizerSetting {
-  kBlocked = 0,
-  kAllowed = 1,
-  kBlockedForUnfamiliarSites = 2,
-};
-// LINT.ThenChange(/chrome/browser/resources/settings/site_settings/constants.ts:JavascriptOptimizerSetting)
 
 // A generated preference that represents the javascript-optimizer state and
 // supports 3 states: allow, block for unfamiliar sites, and always block.

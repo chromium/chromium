@@ -6,9 +6,18 @@
 
 namespace safe_browsing {
 
+SafeBrowsingServiceInterface::SafeBrowsingServiceInterface() = default;
+
+SafeBrowsingServiceInterface::~SafeBrowsingServiceInterface() = default;
+
 SafeBrowsingServiceInterface*
 SafeBrowsingServiceInterface::CreateSafeBrowsingService() {
   return factory_ ? factory_->CreateSafeBrowsingService() : nullptr;
+}
+
+base::OnceClosure
+SafeBrowsingServiceInterface::TakeAddProfileTasksCompletedClosureForTesting() {
+  return std::move(add_profile_tasks_completed_closure_for_testing_);
 }
 
 // static

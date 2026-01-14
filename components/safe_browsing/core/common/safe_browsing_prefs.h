@@ -311,6 +311,14 @@ inline constexpr char kSecuritySettingsBundleMigrationToastState[] =
 inline constexpr char kJavascriptOptimizerBlockedForUnfamiliarSites[] =
     "safebrowsing.javascript_optimizer_blocked_for_unfamiliar_sites";
 
+// A boolean indicating whether this profile had the automatic JavaScript
+// optimizer control enabled by the kMigrateToBlockV8OptimizerOnUnfamiliarSites
+// feature. This preference value is used to ensure that a profile is only
+// migrated one time.
+inline constexpr char
+    kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites[] =
+        "safebrowsing.javascript_optimizer_setting_migration_complete";
+
 }  // namespace prefs
 
 namespace safe_browsing {

@@ -9,6 +9,7 @@ source_set("ui") {
     "cookie_controls_util.cc",
     "cookie_controls_util.h",
     "cookie_controls_view.h",
+    "javascript_optimizer_setting.h",
   ]
 
   deps = [
