@@ -57,6 +57,11 @@ bool GetIsItemComplete(SetUpListItemType type,
     }
     case SetUpListItemType::kAllSet:
       NOTREACHED();
+    case SetUpListItemType::kSafariImport:
+    case SetUpListItemType::kBackgroundCustomization:
+      // TODO(crbug.com/462437008): Determine if Safari data was imported or if
+      // background customization panel was opened.
+      NOTREACHED();
   }
 }
 

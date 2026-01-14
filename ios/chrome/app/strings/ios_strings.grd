@@ -6780,6 +6780,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set up Chrome's autofill settings.">
         Access your passwords across other apps.
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_BACKGROUND_CUSTOMIZATION_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set up background customization settings.">
+        Choose from themes, colors or upload an image
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_BACKGROUND_CUSTOMIZATION_TITLE" desc="Title for the Set Up List item that encourages the user to set up background customization settings.">
+        Customize your homepage
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_COLLAPSE" desc="Accessibility label for the button to expand the Set Up List.">
         Collapse list
       </message>
@@ -6797,6 +6803,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get notifications
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SAFARI_IMPORT_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set up Safari data import settings.">
+        Import passwords, history, bookmarks and more
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SAFARI_IMPORT_TITLE" desc="Title for the Set Up List item that encourages the user to set up Safari data import settings.">
+        Bring your data from Safari
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_ACCESSIBILITY_HINT" desc="Action hint for the Try button on the Set Up List view. This is spoken by VoiceOver. ">
         Double tap to try

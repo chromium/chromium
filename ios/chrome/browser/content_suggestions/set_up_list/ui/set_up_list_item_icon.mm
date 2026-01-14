@@ -274,6 +274,10 @@ UIView* IconInSquare(NSString* symbol,
           kCheckmarkSealFillSymbol, _compactLayout,
           @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
     }
+    case SetUpListItemType::kSafariImport:
+    case SetUpListItemType::kBackgroundCustomization:
+      NOTREACHED();
+      // TODO(crbug.com/462437008): Add proper icons to the setup list.
   }
 }
 

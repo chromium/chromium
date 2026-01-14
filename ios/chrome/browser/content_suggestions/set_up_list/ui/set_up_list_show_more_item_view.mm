@@ -198,6 +198,11 @@ NSAttributedString* Strikethrough(NSString* text) {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
+    case SetUpListItemType::kSafariImport:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_SAFARI_IMPORT_TITLE);
+    case SetUpListItemType::kBackgroundCustomization:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_BACKGROUND_CUSTOMIZATION_TITLE);
   }
 }
 
@@ -237,6 +242,12 @@ NSAttributedString* Strikethrough(NSString* text) {
               : IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION);
     case SetUpListItemType::kAllSet:
       NOTREACHED();
+    case SetUpListItemType::kSafariImport:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_SAFARI_IMPORT_DESCRIPTION);
+    case SetUpListItemType::kBackgroundCustomization:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_BACKGROUND_CUSTOMIZATION_DESCRIPTION);
   }
 }
 

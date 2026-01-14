@@ -18,6 +18,9 @@ const char kDefaultBrowserItemState[] =
 const char kAutofillItemState[] = "set_up_list.autofill_item.state";
 const char kNotificationsItemState[] =
     "set_up_list.content_notification_item.state";
+const char kSafariImportItemState[] = "set_up_list.safari_import_item.state";
+const char kBackgroundCustomizationItemState[] =
+    "set_up_list.background_customization_item.state";
 const char kAllItemsComplete[] = "set_up_list.all_items_complete";
 const char kLastInteraction[] = "set_up_list.last_interaction";
 
@@ -26,6 +29,8 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kDefaultBrowserItemState, unknown);
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kNotificationsItemState, unknown);
+  registry->RegisterIntegerPref(kSafariImportItemState, unknown);
+  registry->RegisterIntegerPref(kBackgroundCustomizationItemState, unknown);
   registry->RegisterBooleanPref(kAllItemsComplete, false);
   registry->RegisterTimePref(kLastInteraction, base::Time());
 }
@@ -40,6 +45,10 @@ const char* PrefNameForItem(SetUpListItemType type) {
       return kNotificationsItemState;
     case SetUpListItemType::kAllSet:
       NOTREACHED();
+    case SetUpListItemType::kSafariImport:
+      return kSafariImportItemState;
+    case SetUpListItemType::kBackgroundCustomization:
+      return kBackgroundCustomizationItemState;
   }
 }
 

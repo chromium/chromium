@@ -13,6 +13,8 @@ namespace set_up_list {
 extern NSString* const kDefaultBrowserItemID;
 extern NSString* const kAutofillItemID;
 extern NSString* const kContentNotificationItemID;
+extern NSString* const kSafariImportItemID;
+extern NSString* const kBackgroundCustomizationItemID;
 extern NSString* const kAllSetItemID;
 extern NSString* const kAccessibilityID;
 extern NSString* const kExpandButtonID;

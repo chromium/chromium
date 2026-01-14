@@ -1389,6 +1389,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Notifications"/>
   <int value="7" label="Obsolete in M138 - Docking"/>
   <int value="8" label="Obsolete in M138 - Address Bar"/>
+  <int value="9" label="Safari import"/>
+  <int value="10" label="Background customization"/>
 </enum>
 
 <enum name="IOSShareExtensionReceivedEntrySource">
