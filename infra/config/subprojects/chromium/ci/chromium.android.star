@@ -3219,7 +3219,7 @@ ci.builder(
                 # pending time is back to normal.
                 ci_only = True,
                 swarming = targets.swarming(
-                    shards = 4,
+                    shards = 7,
                 ),
             ),
             "cc_unittests": targets.mixin(
