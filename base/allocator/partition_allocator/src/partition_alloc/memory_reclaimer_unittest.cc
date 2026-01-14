@@ -113,19 +113,19 @@ PA_NOINLINE void FreeForTest(void* data) {
 
 TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   // Make sure the thread cache is enabled in the main partition.
-  internal::ThreadCacheProcessScopeForTesting scope(
-      allocator_shim::internal::PartitionAllocMalloc::Allocator());
+  auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
+  internal::ThreadCacheProcessScopeForTesting scope(root);
 
   for (size_t i = 0; i < ThreadCache::kDefaultSizeThreshold; i++) {
     void* data = malloc(i);
     FreeForTest(data);
   }
 
-  auto* tcache = ThreadCache::Get();
+  auto* tcache = root->thread_cache_for_testing();
   ASSERT_TRUE(tcache);
   // ThreadCache must not be tomestone. If so, tcache->CacheMemory() will
   // cause memory access violation.
-  ASSERT_TRUE(!ThreadCache::IsTombstone(tcache));
+  ASSERT_TRUE(!ThreadCache::IsTombstone());
   size_t cached_size = tcache->CachedMemory();
 
   Reclaim();

@@ -91,14 +91,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
  public:
   PA_ALWAYS_INLINE ScopedSchedulerLoopQuarantineDisallowScanlessPurge() {
-    ThreadCache* tcache = ThreadCache::EnsureAndGet();
+    ThreadCache* tcache = ThreadCache::EnsureAndGetForQuarantine();
     PA_CHECK(ThreadCache::IsValid(tcache));
 
     tcache->GetSchedulerLoopQuarantineBranch().DisallowScanlessPurge();
   }
 
   PA_ALWAYS_INLINE ~ScopedSchedulerLoopQuarantineDisallowScanlessPurge() {
-    ThreadCache* tcache = ThreadCache::EnsureAndGet();
+    ThreadCache* tcache = ThreadCache::EnsureAndGetForQuarantine();
     PA_CHECK(ThreadCache::IsValid(tcache));
 
     tcache->GetSchedulerLoopQuarantineBranch().AllowScanlessPurge();

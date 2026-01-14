@@ -144,6 +144,8 @@ bool Partitions::InitializeOnce() {
   // pay it when we don't have to.
 #if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   options.thread_cache = PartitionOptions::kEnabled;
+  options.thread_cache_index =
+      partition_alloc::internal::kDefaultRootThreadCacheIndex;
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       fast_malloc_allocator(options);
   fast_malloc_root_ = fast_malloc_allocator->root();

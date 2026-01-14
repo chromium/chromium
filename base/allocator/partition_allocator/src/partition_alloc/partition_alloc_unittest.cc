@@ -427,9 +427,35 @@ class PartitionAllocTest
   std::unique_ptr<PartitionRoot> CreateCustomTestRoot(
       PartitionOptions opts,
       PartitionTestOptions test_opts) {
+    PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled);
     auto root = std::make_unique<PartitionRoot>();
     InitializeTestRoot(root.get(), opts, test_opts);
     return root;
+  }
+
+  struct PartitionRootCustomDeleter {
+    void operator()(PartitionRoot* root) const {
+      if (root) {
+        // Cleanup the thread cache, especially `g_thread_cache_roots`, to
+        // prevent one PartitionRoot per index failure in `ThreadCache::Init()`.
+        ThreadCache::SwapForTesting(nullptr, root->settings.thread_cache_index);
+        root->settings.with_thread_cache = false;
+      }
+    }
+  };
+
+  std::unique_ptr<PartitionRoot, PartitionRootCustomDeleter>
+  CreateCustomTestRootWithThreadCache(PartitionOptions opts,
+                                      PartitionTestOptions test_opts,
+                                      size_t thread_cache_index) {
+    PA_CHECK(thread_cache_index != 0)
+        << "Thread cache index 0 is reserved for PartitionAllocatorForTesting.";
+    auto root = std::make_unique<PartitionRoot>();
+    opts.thread_cache = PartitionOptions::kEnabled;
+    opts.thread_cache_index = thread_cache_index;
+    InitializeTestRoot(root.get(), opts, test_opts);
+    return std::unique_ptr<PartitionRoot, PartitionRootCustomDeleter>(
+        root.release(), PartitionRootCustomDeleter());
   }
 
   PartitionOptions GetCommonPartitionOptions() {
@@ -6402,6 +6428,31 @@ TEST_P(PartitionAllocTest, SwitchBucketDistributionAfterAlloc) {
   root->Free(ptr);
 }
 
+TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
+  ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(1)));
+  ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(2)));
+  auto root1 =
+      CreateCustomTestRootWithThreadCache(GetCommonPartitionOptions(), {}, 1);
+  auto root2 =
+      CreateCustomTestRootWithThreadCache(GetCommonPartitionOptions(), {}, 2);
+  auto* ptr1 = root1->Alloc(kTestAllocSize);
+  auto* ptr2 = root2->Alloc(kTestAllocSize);
+  root1->Free(ptr1);
+  root2->Free(ptr2);
+
+  ThreadCache* tcache1 = ThreadCache::Get(1);
+  ThreadCache* tcache2 = ThreadCache::Get(2);
+  EXPECT_NE(tcache1, tcache2);
+  size_t bucket_index =
+      SizeToIndex(kTestAllocSize + kExtraAllocSizeWithoutMetadata);
+  size_t pos1, pos2;
+  EXPECT_TRUE(tcache1->IsInFreelist(
+      internal::SlotStart::Unchecked(ptr1).Untag(), bucket_index, pos1));
+  EXPECT_EQ(pos1, 0u);
+  EXPECT_TRUE(tcache2->IsInFreelist(
+      internal::SlotStart::Unchecked(ptr2).Untag(), bucket_index, pos2));
+  EXPECT_EQ(pos2, 0u);
+}
 }  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

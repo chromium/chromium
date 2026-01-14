@@ -217,6 +217,10 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "malloc/partitions/original",
         "malloc/sys_malloc",
         "malloc/win_heap",
+        "partition_alloc/partitions/buffer/",
+        "partition_alloc/partitions/buffer/scheduler_loop_quarantine",
+        "partition_alloc/partitions/buffer/thread_cache",
+        "partition_alloc/partitions/buffer/thread_cache/main_thread",
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         "media/webmediaplayer/audio/player_0x?",
         "media/webmediaplayer/data_source/player_0x?",
