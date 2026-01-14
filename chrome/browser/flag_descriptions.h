@@ -7221,12 +7221,6 @@ inline constexpr char kAccessibilityManifestV3GoogleTtsName[] =
 inline constexpr char kAccessibilityManifestV3GoogleTtsDescription[] =
     "Experimental migration of Google TTS from extension manifest v2 to v3.";
 
-inline constexpr char kAccessibilityManifestV3SelectToSpeakName[] =
-    "Changes accessibility extension Select to Speak manifest v2 to v3.";
-inline constexpr char kAccessibilityManifestV3SelectToSpeakDescription[] =
-    "Experimental migration of Select to Speak from extension manifest "
-    "v2 to v3.";
-
 inline constexpr char kAccessibilityManifestV3SwitchAccessName[] =
     "Changes accessibility extension Switch Access manifest v2 to v3.";
 inline constexpr char kAccessibilityManifestV3SwitchAccessDescription[] =

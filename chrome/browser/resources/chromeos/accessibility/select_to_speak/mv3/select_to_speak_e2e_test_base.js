@@ -29,10 +29,6 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
     super.testGenPreambleCommon('kSelectToSpeakExtensionId');
   }
 
-  get featureList() {
-    return {enabled: ['features::kAccessibilityManifestV3SelectToSpeak']};
-  }
-
   async setUpDeferred() {
     await super.setUpDeferred();
     await selectToSpeak.readyForTestingPromise;

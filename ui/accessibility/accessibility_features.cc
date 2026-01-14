@@ -320,13 +320,6 @@ bool IsAccessibilityManifestV3EnabledForAccessibilityCommon() {
       ::features::kAccessibilityManifestV3AccessibilityCommon);
 }
 
-BASE_FEATURE(kAccessibilityManifestV3SelectToSpeak,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForSelectToSpeak() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3SelectToSpeak);
-}
-
 BASE_FEATURE(kAccessibilityManifestV3SwitchAccess,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForSwitchAccess() {

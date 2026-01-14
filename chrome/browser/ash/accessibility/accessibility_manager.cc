@@ -598,22 +598,11 @@ AccessibilityManager::AccessibilityManager(
       base::BindRepeating(&AccessibilityManager::PostUnloadChromeVox,
                           weak_ptr_factory_.GetWeakPtr())));
 
-  const bool enable_select_to_speak_v3_manifest =
-      ::features::IsAccessibilityManifestV3EnabledForSelectToSpeak();
-  const base::FilePath::CharType* select_to_speak_manifest_filename =
-      enable_v3_manifest || enable_select_to_speak_v3_manifest
-          ? extension_misc::kSelectToSpeakManifestV3Filename
-          : extension_misc::kSelectToSpeakManifestFilename;
-  const base::FilePath::CharType* select_to_speak_guest_manifest_filename =
-      enable_v3_manifest || enable_select_to_speak_v3_manifest
-          ? extension_misc::kSelectToSpeakGuestManifestV3Filename
-          : extension_misc::kSelectToSpeakGuestManifestFilename;
-
   select_to_speak_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSelectToSpeakExtensionId,
       resources_path.Append(extension_misc::kSelectToSpeakExtensionPath),
-      select_to_speak_manifest_filename,
-      select_to_speak_guest_manifest_filename,
+      extension_misc::kSelectToSpeakManifestV3Filename,
+      extension_misc::kSelectToSpeakGuestManifestV3Filename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSelectToSpeak,
                           weak_ptr_factory_.GetWeakPtr())));
 
