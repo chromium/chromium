@@ -701,12 +701,6 @@ inline constexpr char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-inline constexpr char kAutofillAndPasswordsInSameSurfaceName[] =
-    "Allow Autofill and Passwords in the same dropdown";
-inline constexpr char kAutofillAndPasswordsInSameSurfaceDescription[] =
-    "Enables a refactoring allowing to add password/passkey suggestions into "
-    "Autofill dropdowns alongside addresses, etc.";
-
 inline constexpr char kAutofillAndroidDesktopSuppressAccessoryOnEmptyName[] =
     "Enable suppressing keyboard accessory on android desktop";
 inline constexpr char

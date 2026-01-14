@@ -12870,12 +12870,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaCodecLowDelayMode)},
 #endif
 
-    {"autofill-and-passwords-in-same-surface",
-     flag_descriptions::kAutofillAndPasswordsInSameSurfaceName,
-     flag_descriptions::kAutofillAndPasswordsInSameSurfaceDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAndPasswordsInSameSurface)},
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     {"contextual-suggestion-ui-improvements",
