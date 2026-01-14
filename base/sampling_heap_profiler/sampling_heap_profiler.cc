@@ -92,9 +92,8 @@ const char* GetAndLeakThreadName() {
         // BUILDFLAG(IS_ANDROID)
 
   // Use tid if we don't have a thread name.
-  UNSAFE_TODO(snprintf(
-      name, sizeof(name), "Thread %lu",
-      static_cast<unsigned long>(base::PlatformThread::CurrentId().raw())));
+  snprintf(name, sizeof(name), "Thread %lu",
+           static_cast<unsigned long>(base::PlatformThread::CurrentId().raw()));
   return UNSAFE_TODO(strdup(name));
 }
 

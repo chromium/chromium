@@ -42,20 +42,20 @@
 
 static inline void set_u32le(base::span<uint8_t> ptr, uint32_t val) {
   ptr[0] = val >> 0;
-  UNSAFE_TODO(ptr[1]) = val >> 8;
-  UNSAFE_TODO(ptr[2]) = val >> 16;
-  UNSAFE_TODO(ptr[3]) = val >> 24;
+  ptr[1] = val >> 8;
+  ptr[2] = val >> 16;
+  ptr[3] = val >> 24;
 }
 
 static inline void set_u64le(base::span<uint8_t> ptr, uint64_t val) {
   ptr[0] = val >> 0;
-  UNSAFE_TODO(ptr[1]) = val >> 8;
-  UNSAFE_TODO(ptr[2]) = val >> 16;
-  UNSAFE_TODO(ptr[3]) = val >> 24;
-  UNSAFE_TODO(ptr[4]) = val >> 32;
-  UNSAFE_TODO(ptr[5]) = val >> 40;
-  UNSAFE_TODO(ptr[6]) = val >> 48;
-  UNSAFE_TODO(ptr[7]) = val >> 56;
+  ptr[1] = val >> 8;
+  ptr[2] = val >> 16;
+  ptr[3] = val >> 24;
+  ptr[4] = val >> 32;
+  ptr[5] = val >> 40;
+  ptr[6] = val >> 48;
+  ptr[7] = val >> 56;
 }
 
 void write_nix_header(uint32_t magic_u32le, uint32_t width, uint32_t height) {

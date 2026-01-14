@@ -382,9 +382,9 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
 
     for (const auto& ordered_slot : slot_destruction_order) {
       size_t slot = ordered_slot.slot;
-      void* tls_value = UNSAFE_TODO(stack_allocated_tls_data[slot]).data;
+      void* tls_value = stack_allocated_tls_data[slot].data;
       if (!tls_value || tls_metadata[slot].status == TlsStatus::FREE ||
-          UNSAFE_TODO(stack_allocated_tls_data[slot]).version !=
+          stack_allocated_tls_data[slot].version !=
               tls_metadata[slot].version) {
         continue;
       }
@@ -394,8 +394,7 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
       if (!destructor) {
         continue;
       }
-      UNSAFE_TODO(stack_allocated_tls_data[slot]).data =
-          nullptr;  // pre-clear the slot.
+      stack_allocated_tls_data[slot].data = nullptr;  // pre-clear the slot.
       destructor(tls_value);
       // Any destructor might have called a different service, which then set a
       // different slot to a non-null value. Hence we need to check the whole
@@ -540,7 +539,7 @@ void* ThreadLocalStorage::Slot::Get() const {
   if (tls_data[slot_].version != version_) {
     return nullptr;
   }
-  return UNSAFE_TODO(tls_data[slot_]).data;
+  return tls_data[slot_].data;
 }
 
 void ThreadLocalStorage::Slot::Set(void* value) {

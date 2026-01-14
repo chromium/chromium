@@ -139,13 +139,13 @@ void IIRFilter::GetFrequencyResponse(base::span<const float> frequency,
   // 1/z.
 
   for (size_t k = 0; k < frequency.size(); ++k) {
-    if (UNSAFE_TODO(frequency[k]) < 0 || UNSAFE_TODO(frequency[k]) > 1) {
+    if (frequency[k] < 0 || frequency[k] > 1) {
       // Out-of-bounds frequencies should return NaN.
-      UNSAFE_TODO(mag_response[k]) = std::nanf("");
-      UNSAFE_TODO(phase_response[k]) = std::nanf("");
+      mag_response[k] = std::nanf("");
+      phase_response[k] = std::nanf("");
     } else {
       // zRecip = 1/z = exp(-j*frequency)
-      double omega = -kPiDouble * UNSAFE_TODO(frequency[k]);
+      double omega = -kPiDouble * frequency[k];
       std::complex<double> z_recip =
           std::complex<double>(fdlibm::cos(omega), fdlibm::sin(omega));
 
@@ -154,8 +154,8 @@ void IIRFilter::GetFrequencyResponse(base::span<const float> frequency,
       std::complex<double> denominator =
           EvaluatePolynomial(feedback_->Data(), z_recip, feedback_->size() - 1);
       std::complex<double> response = numerator / denominator;
-      UNSAFE_TODO(mag_response[k]) = static_cast<float>(abs(response));
-      UNSAFE_TODO(phase_response[k]) =
+      mag_response[k] = static_cast<float>(abs(response));
+      phase_response[k] =
           static_cast<float>(fdlibm::atan2(imag(response), real(response)));
     }
   }
