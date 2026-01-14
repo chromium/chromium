@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.os.Build;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.xr.runtime.internal.ActivitySpace;
 import androidx.xr.runtime.internal.Dimensions;
@@ -21,7 +22,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.ChromiumExecutorServiceFactory;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /**
@@ -46,7 +46,6 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         assert DeviceInfo.isXr();
         mActivity = activity;
         mJxrPlatformAdapter = createJxrPlatformAdapter(mActivity);
-        assert mJxrPlatformAdapter != null : "JxrPlatformAdapterAxr creation failed.";
         mJxrPlatformAdapter.getActivitySpace().addOnBoundsChangedListener(mBoundsChangedListener);
 
         // Initialize the supplier with the current mode.
