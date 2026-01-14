@@ -276,8 +276,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
     // the login URL.
     idp_info->has_failing_idp_signin_status =
         webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-            *render_frame_host_, identity_provider_config_url,
-            permission_delegate_);
+            identity_provider_config_url, permission_delegate_);
     if (idp_info->has_failing_idp_signin_status) {
       // If the user is logged out and we are in a active-mode, allow the
       // user to sign-in to the IdP and return early.
@@ -329,8 +328,8 @@ void AccountsFetcher::OnAccountsResponseReceived(
       permission_delegate_->GetIdpSigninStatus(
           url::Origin::Create(idp_config_url));
   webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
-      *render_frame_host_, idp_config_url, status,
-      idp_info->has_failing_idp_signin_status, permission_delegate_);
+      idp_config_url, status, idp_info->has_failing_idp_signin_status,
+      permission_delegate_);
 
   if (status.parse_status != ParseStatus::kSuccess) {
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =

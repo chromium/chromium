@@ -493,8 +493,7 @@ void RequestService::RequestToken(
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       bool has_failing_idp_signin_status =
           ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-              render_frame_host(), idp_ptr->config->config_url,
-              permission_delegate_);
+              idp_ptr->config->config_url, permission_delegate_);
 
       if (has_failing_idp_signin_status) {
         if (idp_get_params_ptr->mode == blink::mojom::RpMode::kPassive) {

@@ -144,7 +144,7 @@ void UserInfoRequest::SetCallbackAndStart(
   }
 
   if (ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          *render_frame_host_, idp_config_url_, permission_delegate_)) {
+          idp_config_url_, permission_delegate_)) {
     CompleteWithError(UserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
@@ -195,7 +195,7 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
   // false during the API call. e.g. by the login/logout HEADER.
   does_idp_have_failing_signin_status_ =
       ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          *render_frame_host_, idp_config_url_, permission_delegate_);
+          idp_config_url_, permission_delegate_);
   if (does_idp_have_failing_signin_status_) {
     CompleteWithError(UserInfoRequestResult::kNotSignedInWithIdp);
     return;
@@ -212,8 +212,8 @@ void UserInfoRequest::OnAccountsResponseReceived(
     FetchStatus fetch_status,
     IdpNetworkRequestManager::AccountsResponse accounts) {
   UpdateIdpSigninStatusForAccountsEndpointResponse(
-      *render_frame_host_, idp_config_url_, fetch_status,
-      does_idp_have_failing_signin_status_, permission_delegate_);
+      idp_config_url_, fetch_status, does_idp_have_failing_signin_status_,
+      permission_delegate_);
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     CompleteWithError(UserInfoRequestResult::kInvalidAccountsResponse);

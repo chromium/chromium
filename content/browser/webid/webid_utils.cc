@@ -119,7 +119,6 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
 }
 
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-    RenderFrameHost& host,
     const GURL& identity_provider_config_url,
     FederatedIdentityPermissionContextDelegate* permission_delegate) {
   const url::Origin idp_origin =
@@ -130,7 +129,6 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 }
 
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
-    RenderFrameHost& host,
     const GURL& identity_provider_config_url,
     FetchStatus fetch_status,
     bool does_idp_have_failing_signin_status,
