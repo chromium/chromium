@@ -1419,6 +1419,74 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithCaptureRegion) {
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
+TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
+  SetPreferCompositingToLCDText(false);
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="composited" style="width: 200px; height: 200px; overflow: scroll;
+                                background: white">
+      <div id="middle" style="width: 150px; height: 300px; overflow: scroll">
+        <div id="inner" style="width: 100px; height: 400px; overflow: scroll">
+          <div id="highlight" style="width: 50px; height: 500px"></div>
+          <div style="height: 1000px"></div>
+        </div>
+        <div style="height: 1000px"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto highlight_id = base::Token(1, 2);
+  auto highlight =
+      TrackedElementRect::CreateFull(TrackedElementId(highlight_id));
+  Document& document = *GetFrame()->GetDocument();
+  document.getElementById(AtomicString("highlight"))
+      ->SetTrackedElementRect(std::move(highlight));
+
+  ForceFullCompositingUpdate();
+
+  const cc::Layer* cc_layer =
+      ScrollingContentsLayerByDOMElementId("composited");
+  EXPECT_EQ(1, cc_layer->tracked_element_bounds().size());
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 300),
+            cc_layer->tracked_element_bounds().at(highlight_id).visible_bounds);
+
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("middle"))->setScrollTop(200);
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 200),
+            cc_layer->tracked_element_bounds().at(highlight_id).visible_bounds);
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("inner"))->setScrollTop(200);
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
+            cc_layer->tracked_element_bounds().at(highlight_id).visible_bounds);
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("highlight"))->ClearTrackedElementRect();
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(0, cc_layer->tracked_element_bounds().size());
+}
+
 TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithLayerSelection) {
   SetPreferCompositingToLCDText(false);
   LoadHTML(R"HTML(

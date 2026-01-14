@@ -94,8 +94,10 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
       ObjectPainter(layout_view).ShouldRecordSpecialHitTestData(paint_info);
 
   Element* element = DynamicTo<Element>(layout_view.GetNode());
-  bool paints_region_capture_data =
-      element && element->GetRegionCaptureCropId() &&
+
+  bool paints_element_tracking_id_or_region_capture_data =
+      element &&
+      (element->GetRegionCaptureCropId() || element->GetTrackedElementRect()) &&
       // TODO(wangxianzhu): This is to avoid the side-effect of
       // HitTestOpaqueness on region capture data. Verify if the side-effect
       // really matters.
@@ -112,7 +114,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
     return false;
   }();
   if (!layout_view.HasBoxDecorationBackground() && !paints_hit_test_data &&
-      !paints_scroll_hit_test && !paints_region_capture_data &&
+      !paints_scroll_hit_test &&
+      !paints_element_tracking_id_or_region_capture_data &&
       !is_represented_via_pseudo_elements) {
     return;
   }
@@ -220,11 +223,11 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                            *background_client);
   }
 
-  if (paints_region_capture_data) {
+  if (paints_element_tracking_id_or_region_capture_data) {
     BoxPainter(layout_view)
-        .RecordRegionCaptureData(paint_info,
-                                 PhysicalRect(pixel_snapped_background_rect),
-                                 *background_client);
+        .RecordTrackedElementAndRegionCaptureData(
+            paint_info, PhysicalRect(pixel_snapped_background_rect),
+            *background_client);
   }
 
   // Record the scroll hit test after the non-scrolling background so

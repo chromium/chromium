@@ -11750,5 +11750,98 @@ class LayerTreeHostTestTextureLayerOffscreenScroll : public LayerTreeTest {
 // This macro registers the test to be run.
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTextureLayerOffscreenScroll);
 
+class LayerTreeHostTestTrackedElementBounds
+    : public LayerTreeHostTest,
+      public RenderFrameMetadataObserver {
+ public:
+  // Provides a wrapper which can be passed to LayerTreeHost, but just forwards
+  // to the test class.
+  class ForwardingRenderFrameMetadataObserver
+      : public RenderFrameMetadataObserver {
+   public:
+    explicit ForwardingRenderFrameMetadataObserver(
+        RenderFrameMetadataObserver* target)
+        : target_(target) {}
+
+    // RenderFrameMetadataObserver implementation.
+    void BindToCurrentSequence() override { target_->BindToCurrentSequence(); }
+    void OnRenderFrameSubmission(
+        const RenderFrameMetadata& render_frame_metadata,
+        viz::CompositorFrameMetadata* compositor_frame_metadata,
+        bool force_send) override {
+      target_->OnRenderFrameSubmission(render_frame_metadata,
+                                       compositor_frame_metadata, force_send);
+    }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    void DidEndScroll() override { target_->DidEndScroll(); }
+#endif
+
+   private:
+    raw_ptr<RenderFrameMetadataObserver> target_ = nullptr;
+  };
+
+  const base::Token kId1 = base::Token(1, 2);
+  const base::Token kId2 = base::Token(2, 3);
+
+  LayerTreeHostTestTrackedElementBounds() { SetUseLayerLists(); }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(50, 50));
+    LayerTreeHostTest::SetupTree();
+    raw_ptr<Layer> root_ = layer_tree_host()->root_layer();
+
+    scoped_refptr<Layer> child_a_;
+    scoped_refptr<Layer> child_b_;
+
+    child_a_ = Layer::Create();
+    child_a_->SetBounds(gfx::Size(30, 20));
+    child_a_->SetIsDrawable(true);
+    CopyProperties(root_, child_a_.get());
+    CreateEffectNode(child_a_.get());
+    TrackedElementBounds trackedElementBound1;
+    trackedElementBound1[kId1] = {gfx::Rect(0, 0, 50, 50)};
+    child_a_->SetTrackedElementBounds(trackedElementBound1);
+    root_->AddChild(child_a_);
+
+    child_b_ = Layer::Create();
+    child_b_->SetBounds(gfx::Size(20, 5));
+    child_b_->SetIsDrawable(true);
+    CopyProperties(root_, child_b_.get());
+    CreateEffectNode(child_b_.get());
+    TrackedElementBounds trackedElementBound2;
+    trackedElementBound2[kId2] = {gfx::Rect(0, 0, 10, 20)};
+    child_b_->SetTrackedElementBounds(trackedElementBound2);
+    root_->AddChild(child_b_);
+  }
+
+  // LayerTreeHostTest implementation:
+  void BeginTest() override {
+    // Set up a basic render frame observer for the LTH/LTHI to forward to.
+    layer_tree_host()->SetRenderFrameObserver(
+        std::make_unique<ForwardingRenderFrameMetadataObserver>(this));
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void ExpectBoundsOnThread(const TrackedElementBounds& actual_bounds) {
+    EXPECT_EQ(actual_bounds.size(), 2u);
+    EXPECT_EQ(actual_bounds.at(kId1).visible_bounds, gfx::Rect(0, 0, 30, 20));
+    EXPECT_EQ(actual_bounds.at(kId2).visible_bounds, gfx::Rect(0, 0, 10, 5));
+    EndTest();
+  }
+
+  // RenderFrameMetadataObserver implementation.
+  void BindToCurrentSequence() override {}
+  void OnRenderFrameSubmission(
+      const RenderFrameMetadata& render_frame_metadata,
+      viz::CompositorFrameMetadata* compositor_frame_metadata,
+      bool force_send) override {
+    ExpectBoundsOnThread(render_frame_metadata.tracked_element_bounds);
+  }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  void DidEndScroll() override {}
+#endif
+};
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTrackedElementBounds);
+
 }  // namespace
 }  // namespace cc

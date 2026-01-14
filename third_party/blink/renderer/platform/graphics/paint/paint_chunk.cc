@@ -22,6 +22,7 @@ struct SameSizeAsPaintChunk {
   Member<HitTestData> hit_test_data;
   Member<RegionCaptureData> region_capture_data;
   Member<LayerSelectionData> layer_selection;
+  Member<TrackedElementData> tracked_element_data;
   gfx::Rect bounds;
   gfx::Rect drawable_bounds;
   gfx::Rect rect_known_to_be_opaque;
@@ -39,6 +40,8 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
          base::ValuesEquivalent(hit_test_data, other.hit_test_data) &&
          base::ValuesEquivalent(region_capture_data,
                                 other.region_capture_data) &&
+         base::ValuesEquivalent(tracked_element_data,
+                                other.tracked_element_data) &&
          drawable_bounds == other.drawable_bounds &&
          raster_effect_outset == other.raster_effect_outset &&
          hit_test_opaqueness == other.hit_test_opaqueness &&
@@ -61,6 +64,9 @@ size_t PaintChunk::MemoryUsageInBytes() const {
   }
   if (region_capture_data) {
     total_size += sizeof(*region_capture_data);
+  }
+  if (tracked_element_data) {
+    total_size += sizeof(*tracked_element_data);
   }
   if (layer_selection_data) {
     total_size += sizeof(*layer_selection_data);
@@ -91,6 +97,10 @@ static String ToStringImpl(const PaintChunk& c,
     if (c.region_capture_data) {
       sb.Append(" region_capture_data=");
       sb.Append(c.region_capture_data->ToString());
+    }
+    if (c.tracked_element_data) {
+      sb.Append(" tracked_element_data=");
+      sb.Append(c.tracked_element_data->ToString());
     }
   }
   sb.Append(')');

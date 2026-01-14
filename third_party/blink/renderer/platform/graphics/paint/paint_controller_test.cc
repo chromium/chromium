@@ -2169,6 +2169,26 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
   EXPECT_EQ(kBounds, chunks[0].region_capture_data->map.find(kCropId)->second);
 }
 
+TEST_P(PaintControllerTest, RecordTrackedElementData) {
+  static const auto kId = TrackedElementId(base::Token::CreateRandom());
+  static const gfx::Rect kBounds(1, 2, 640, 480);
+
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
+  {
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
+    paint_controller.RecordTrackedElementData(client, kId, kBounds);
+  }
+
+  ASSERT_EQ(1u, GetPersistentData().GetPaintChunks().size());
+  const auto& chunk = GetPersistentData().GetPaintChunks()[0];
+  ASSERT_TRUE(chunk.tracked_element_data);
+  ASSERT_EQ(1u, chunk.tracked_element_data->map.size());
+  EXPECT_EQ(kBounds, chunk.tracked_element_data->map.find(kId)->second);
+}
+
 // Death tests don't work properly on Android.
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 

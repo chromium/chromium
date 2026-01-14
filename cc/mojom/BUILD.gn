@@ -26,6 +26,7 @@ mojom("mojom") {
     "overscroll_behavior.mojom",
     "render_frame_metadata.mojom",
     "touch_action.mojom",
+    "tracked_element_bounds.mojom",
   ]
 
   public_deps = [
@@ -80,6 +81,16 @@ mojom("mojom") {
       ]
       traits_headers = [ "//cc/mojom/render_frame_metadata_mojom_traits.h" ]
       traits_public_deps = [ ":shared_mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.TrackedElementBounds"
+          cpp = "::cc::TrackedElementBounds"
+        },
+      ]
+      traits_headers = [ "//cc/mojom/tracked_element_bounds_mojom_traits.h" ]
+      traits_public_deps = [ "//cc/ipc" ]
     },
   ]
 

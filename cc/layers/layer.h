@@ -27,6 +27,7 @@
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/paint/node_id.h"
+#include "cc/trees/tracked_element_bounds.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
@@ -525,6 +526,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return viz::RegionCaptureBounds::Empty();
   }
 
+  // Set or get data for tracked elements on this layer. The geometry provided
+  // is in layer space.
+  void SetTrackedElementBounds(TrackedElementBounds bounds);
+  const TrackedElementBounds& tracked_element_bounds() const {
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {
+      return rare_inputs->tracked_element_bounds;
+    }
+    return TrackedElementBoundsEmpty();
+  }
+
   // Set or get the set of blocking wheel rects of this layer. The
   // |wheel_event_region| is the set of rects for which there is a non-passive
   // wheel event listener that paints into this layer. Mouse wheel messages
@@ -1019,6 +1030,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     ~RareInputs();
 
     viz::RegionCaptureBounds capture_bounds;
+    TrackedElementBounds tracked_element_bounds;
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_region;

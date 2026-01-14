@@ -222,6 +222,9 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
     if (element->MayBeImplicitAnchor()) {
       return true;
     }
+    if (element->GetTrackedElementRect()) {
+      return true;
+    }
   }
 
   return HasPaintedOutline(style, GetNode()) ||

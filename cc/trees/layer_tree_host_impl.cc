@@ -1737,6 +1737,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   bool output_frame_data =
       !settings_.TreesInVizInClientProcess() || dump_compositor_frame_;
 
+  // Avoid additional layer tree walk if there are not tracked elements
+  bool has_layers_with_tracked_element_bounds = false;
+
   for (EffectTreeLayerListIterator it(active_tree());
        it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
     RenderSurfaceImpl* target_render_surface = it.target_render_surface();
@@ -1787,6 +1790,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       }
     } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
       LayerImpl* layer = it.current_layer();
+
+      has_layers_with_tracked_element_bounds |=
+          layer->tracked_element_bounds() &&
+          !layer->tracked_element_bounds()->empty();
+
       if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
         DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
 
@@ -1865,6 +1873,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
           append_quads_data.has_shared_element_resources;
     }
   }
+
+  frame->has_layers_with_tracked_element =
+      has_layers_with_tracked_element_bounds;
 
   // If CommitsToActiveTree() is true, then we wait to draw until
   // NotifyReadyToDraw. That means we're in as good shape as is possible now,
@@ -2762,6 +2773,32 @@ void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {
   client_->OnCanDrawStateChanged(CanDraw());
 }
 
+TrackedElementBounds LayerTreeHostImpl::CollectTrackedElementBounds() {
+  TrackedElementBounds bounds;
+  // Get the drawable content rect of the root surface. This will be used to
+  // determine if a clip_rect is effectively the full viewport and can be
+  // omitted.
+  for (const auto* layer : base::Reversed(*active_tree())) {
+    if (!layer->tracked_element_bounds() ||
+        layer->tracked_element_bounds()->empty()) {
+      continue;
+    }
+
+    for (const auto& element_pair : *layer->tracked_element_bounds()) {
+      gfx::Rect visible_layer_rect =
+          layer->draw_properties().visible_layer_rect;
+      visible_layer_rect.Intersect(element_pair.second.visible_bounds);
+      gfx::Rect visible_element_bounds_in_screen_space =
+          MathUtil::ProjectEnclosingClippedRect(layer->ScreenSpaceTransform(),
+                                                visible_layer_rect);
+
+      // Set the element data with screen space visible bound
+      bounds[element_pair.first] = {visible_element_bounds_in_screen_space};
+    }
+  }
+  return bounds;
+}
+
 viz::RegionCaptureBounds LayerTreeHostImpl::CollectRegionCaptureBounds() {
   viz::RegionCaptureBounds bounds;
   for (const auto* layer : base::Reversed(*active_tree())) {
@@ -2995,6 +3032,10 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
 
   bool allocate_new_local_surface_id = false;
 
+  if (frame->has_layers_with_tracked_element) {
+    metadata.tracked_element_bounds = CollectTrackedElementBounds();
+  }
+
   if (last_draw_render_frame_metadata_) {
     const float last_root_scroll_offset_y =
         last_draw_render_frame_metadata_->root_scroll_offset
@@ -3026,7 +3067,9 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         last_draw_render_frame_metadata_->top_controls_height !=
             metadata.top_controls_height ||
         last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-            metadata.top_controls_shown_ratio;
+            metadata.top_controls_shown_ratio ||
+        last_draw_render_frame_metadata_->tracked_element_bounds !=
+            metadata.tracked_element_bounds;
 #elif BUILDFLAG(IS_ANDROID)
         last_draw_render_frame_metadata_->top_controls_height !=
             metadata.top_controls_height ||

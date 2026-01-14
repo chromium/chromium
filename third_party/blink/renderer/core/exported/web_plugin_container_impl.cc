@@ -186,6 +186,12 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
         visual_rect);
   }
 
+  if (element_->GetTrackedElementRect()) {
+    context.GetPaintController().RecordTrackedElementData(
+        *GetLayoutEmbeddedContent(), element_->GetTrackedElementRect()->id,
+        visual_rect);
+  }
+
   if (layer_) {
     layer_->SetBounds(Size());
     layer_->SetIsDrawable(true);

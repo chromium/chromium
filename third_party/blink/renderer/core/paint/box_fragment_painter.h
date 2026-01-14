@@ -205,6 +205,12 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
 
   bool ShouldRecordHitTestData(const PaintInfo&);
 
+  static void RecordRegionCaptureAndTrackedElementData(
+      Element* element,
+      const PaintInfo& paint_info,
+      const PhysicalRect& paint_rect,
+      const DisplayItemClient& display_item_client);
+
   // This struct has common data needed while traversing trees for the hit
   // testing.
   struct HitTestContext {

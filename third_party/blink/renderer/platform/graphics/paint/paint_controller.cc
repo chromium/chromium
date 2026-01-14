@@ -186,6 +186,21 @@ void PaintController::RecordRegionCaptureData(
     CheckNewChunk();
 }
 
+void PaintController::RecordTrackedElementData(
+    const DisplayItemClient& client,
+    const TrackedElementId& highlight_id,
+    const gfx::Rect& rect) {
+  DCHECK(!highlight_id->is_zero());
+  PaintChunk::Id id(client.Id(), DisplayItem::kTrackedElement,
+                    current_fragment_);
+  CheckNewChunkId(id);
+  ValidateNewChunkClient(client);
+  if (paint_chunker_.AddTrackedElementDataToCurrentChunk(id, client,
+                                                         highlight_id, rect)) {
+    CheckNewChunk();
+  }
+}
+
 void PaintController::RecordScrollHitTestData(
     const DisplayItemClient& client,
     DisplayItem::Type type,

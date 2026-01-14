@@ -357,7 +357,8 @@ void ReplacedPainter::PaintBoxDecorationBackground(
       .RecordHitTestData(paint_info, ToPixelSnappedRect(paint_rect),
                          *background_client);
   BoxPainter(layout_replaced_)
-      .RecordRegionCaptureData(paint_info, paint_rect, *background_client);
+      .RecordTrackedElementAndRegionCaptureData(paint_info, paint_rect,
+                                                *background_client);
 
   // Record the scroll hit test after the non-scrolling background so
   // background squashing is not affected. Hit test order would be equivalent

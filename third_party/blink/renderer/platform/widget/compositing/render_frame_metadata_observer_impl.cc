@@ -190,6 +190,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.top_controls_height != rfm2.top_controls_height ||
       rfm1.top_controls_shown_ratio != rfm2.top_controls_shown_ratio ||
       rfm1.local_surface_id != rfm2.local_surface_id ||
+      rfm1.tracked_element_bounds != rfm2.tracked_element_bounds ||
       rfm2.new_vertical_scroll_direction !=
           viz::VerticalScrollDirection::kNull ||
       (rfm2.primary_main_frame_item_sequence_number !=

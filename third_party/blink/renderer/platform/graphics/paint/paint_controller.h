@@ -179,6 +179,10 @@ class PLATFORM_EXPORT PaintController {
                                const RegionCaptureCropId& crop_id,
                                const gfx::Rect& rect);
 
+  void RecordTrackedElementData(const DisplayItemClient& client,
+                                const TrackedElementId& highlight_id,
+                                const gfx::Rect& rect);
+
   void RecordScrollHitTestData(
       const DisplayItemClient&,
       DisplayItem::Type,

@@ -305,7 +305,8 @@ void PaintArtifactCompositor::UpdatePaintedScrollTranslationsBeforeLayerization(
          // HitTestData of these types induce touch action regions.
          chunk.id.type == DisplayItem::Type::kScrollbarHitTest ||
          chunk.id.type == DisplayItem::Type::kResizerScrollHitTest)) ||
-       chunk.region_capture_data || chunk.layer_selection_data)) {
+       chunk.region_capture_data || chunk.tracked_element_data ||
+       chunk.layer_selection_data)) {
     const auto& transform = chunk.properties.Transform().Unalias();
     // Mark all non-composited scroll ancestors within the same direct
     // compositing boundary (ideally we should check for both direct and

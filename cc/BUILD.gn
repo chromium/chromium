@@ -489,6 +489,8 @@ cc_component("cc") {
     "trees/throttle_decider.h",
     "trees/trace_utils.cc",
     "trees/trace_utils.h",
+    "trees/tracked_element_bounds.cc",
+    "trees/tracked_element_bounds.h",
     "trees/transform_node.cc",
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",

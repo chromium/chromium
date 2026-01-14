@@ -96,6 +96,14 @@ class PLATFORM_EXPORT PaintChunker final {
 
   // The id will be used when we need to create a new current chunk.
   // Otherwise it's ignored. Returns true if a new chunk is added.
+  bool AddTrackedElementDataToCurrentChunk(
+      const PaintChunk::Id& id,
+      const DisplayItemClient& client,
+      const TrackedElementId& tracked_element_id,
+      const gfx::Rect& bounds);
+
+  // The id will be used when we need to create a new current chunk.
+  // Otherwise it's ignored. Returns true if a new chunk is added.
   void AddSelectionToCurrentChunk(std::optional<PaintedSelectionBound> start,
                                   std::optional<PaintedSelectionBound> end,
                                   String debug_info);

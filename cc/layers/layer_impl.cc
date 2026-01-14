@@ -406,6 +406,13 @@ void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   }
 }
 
+void LayerImpl::SetTrackedElementBounds(TrackedElementBounds bounds) {
+  if (rare_properties_ || !bounds.empty()) {
+    EnsureRareProperties().tracked_element_bounds = std::move(bounds);
+    SetNeedsPushProperties();
+  }
+}
+
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return LayerImpl::Create(tree_impl, layer_id_);

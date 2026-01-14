@@ -224,6 +224,7 @@
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -7023,6 +7024,46 @@ const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
     return data->GetRegionCaptureCropId();
   }
   return nullptr;
+}
+
+void Element::SetTrackedElementRect(std::unique_ptr<TrackedElementRect> rect) {
+  ElementRareDataVector& rare_data = EnsureElementRareData();
+  CHECK(!rare_data.GetTrackedElementRect());
+
+  rare_data.SetTrackedElementRect(std::move(rect));
+
+  // If a LayoutObject does not yet exist, this full paint invalidation
+  // will occur automatically after it is created.
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    // The highlight data needs to be propagated to the paint system.
+    layout_object->SetShouldDoFullPaintInvalidation();
+    if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
+      layout_inline->UpdateShouldCreateBoxFragment();
+    }
+  }
+}
+
+const TrackedElementRect* Element::GetTrackedElementRect() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetTrackedElementRect();
+  }
+  return nullptr;
+}
+
+void Element::ClearTrackedElementRect() {
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->ClearTrackedElementRect();
+  }
+
+  // If a LayoutObject does not yet exist, this full paint invalidation
+  // will occur automatically after it is created.
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    // The lack of highlight data needs to be propagated to the paint system.
+    layout_object->SetShouldDoFullPaintInvalidation();
+    if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
+      layout_inline->UpdateShouldCreateBoxFragment();
+    }
+  }
 }
 
 void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {

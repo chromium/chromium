@@ -412,6 +412,25 @@ void ElementRareDataVector::SetRestrictionTargetId(
       FieldId::kRestrictionTargetId, std::move(id));
 }
 
+const TrackedElementRect* ElementRareDataVector::GetTrackedElementRect() const {
+  auto* value = GetWrappedField<std::unique_ptr<TrackedElementRect>>(
+      FieldId::kTrackedElementRect);
+  return value ? value->get() : nullptr;
+}
+
+void ElementRareDataVector::ClearTrackedElementRect() {
+  fields_.EraseField(FieldId::kTrackedElementRect);
+}
+
+void ElementRareDataVector::SetTrackedElementRect(
+    std::unique_ptr<TrackedElementRect> rect) {
+  CHECK(!GetTrackedElementRect());
+  CHECK(rect);
+  CHECK(!rect->id.value().is_zero());
+  SetWrappedField<std::unique_ptr<TrackedElementRect>>(
+      FieldId::kTrackedElementRect, std::move(rect));
+}
+
 ElementRareDataVector::ResizeObserverDataMap*
 ElementRareDataVector::ResizeObserverData() const {
   return GetWrappedField<ElementRareDataVector::ResizeObserverDataMap>(

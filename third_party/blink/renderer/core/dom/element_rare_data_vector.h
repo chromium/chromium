@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/sparse_vector.h"
+#include "third_party/blink/renderer/platform/tracked_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
@@ -106,8 +107,8 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kOverscrollAreaTracker = 41,
     kAltContentData = 42,
     kOverscrollContainer = 43,
-
-    kNumFields = 44,
+    kTrackedElementRect = 44,
+    kNumFields = 45,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -269,6 +270,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   // Sets a crop-ID on the item. Must be called at most once. Cannot be used
   // to unset a previously set crop-ID.
   void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id);
+
+  const TrackedElementRect* GetTrackedElementRect() const;
+  void SetTrackedElementRect(std::unique_ptr<TrackedElementRect> rect);
+  void ClearTrackedElementRect();
 
   // Returns the ID backing a RestrictionTarget if one was set on the Element,
   // or nullptr otherwise.
