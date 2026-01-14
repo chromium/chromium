@@ -35,6 +35,8 @@ namespace sync_preferences {
 
 namespace {
 
+using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
+
 // Define constants used in the implementation for validation.
 constexpr char kValueKey[] = "value";
 constexpr char kUpdateTimeKey[] = "update_time";
@@ -1639,16 +1641,14 @@ TEST_F(CrossDevicePrefTrackerTest, RecordsTrackerAvailabilityMetricAvailable) {
 
   tracker_->GetValues(kTrackedProfilePref, {});
 
-  histogram_tester.ExpectUniqueSample(
-      kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::kAvailable, 1);
+  histogram_tester.ExpectUniqueSample(kAvailabilityAtQueryHistogram,
+                                      ServiceStatus::kAvailable, 1);
 
   tracker_->GetMostRecentValue(kTrackedProfilePref, {});
 
   histogram_tester.ExpectTotalCount(kAvailabilityAtQueryHistogram, 2);
-  histogram_tester.ExpectBucketCount(
-      kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::kAvailable, 2);
+  histogram_tester.ExpectBucketCount(kAvailabilityAtQueryHistogram,
+                                     ServiceStatus::kAvailable, 2);
 }
 
 // Verifies that the metric records `kSyncNotConfigured` when `DeviceInfo` is
@@ -1662,9 +1662,8 @@ TEST_F(CrossDevicePrefTrackerTest,
 
   tracker_->GetValues(kTrackedProfilePref, {});
 
-  histogram_tester.ExpectUniqueSample(
-      kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::kSyncNotConfigured, 1);
+  histogram_tester.ExpectUniqueSample(kAvailabilityAtQueryHistogram,
+                                      ServiceStatus::kSyncNotConfigured, 1);
 }
 
 // Verifies that the metric records `kLocalDeviceInfoMissing` when Sync is
@@ -1679,8 +1678,7 @@ TEST_F(CrossDevicePrefTrackerTest,
   tracker_->GetValues(kTrackedProfilePref, {});
 
   histogram_tester.ExpectUniqueSample(
-      kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::kLocalDeviceInfoMissing, 1);
+      kAvailabilityAtQueryHistogram, ServiceStatus::kLocalDeviceInfoMissing, 1);
 }
 
 // Verifies that the metric records the combined state when both `DeviceInfo` is
@@ -1698,9 +1696,7 @@ TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::
-          kSyncNotConfiguredAndLocalDeviceInfoMissing,
-      1);
+      ServiceStatus::kSyncNotConfiguredAndLocalDeviceInfoMissing, 1);
 }
 
 // Verifies that the `AvailabilityAtQuery` histogram correctly reflects the
@@ -1713,16 +1709,14 @@ TEST_F(CrossDevicePrefTrackerTest,
   base::HistogramTester histogram_tester;
 
   tracker_->GetValues(kTrackedProfilePref, {});
-  histogram_tester.ExpectBucketCount(
-      kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::kLocalDeviceInfoMissing, 1);
+  histogram_tester.ExpectBucketCount(kAvailabilityAtQueryHistogram,
+                                     ServiceStatus::kLocalDeviceInfoMissing, 1);
 
   InitializeLocalDeviceInfo();
 
   tracker_->GetValues(kTrackedProfilePref, {});
-  histogram_tester.ExpectBucketCount(
-      kAvailabilityAtQueryHistogram,
-      CrossDevicePrefTrackerAvailabilityAtQuery::kAvailable, 1);
+  histogram_tester.ExpectBucketCount(kAvailabilityAtQueryHistogram,
+                                     ServiceStatus::kAvailable, 1);
 
   histogram_tester.ExpectTotalCount(kAvailabilityAtQueryHistogram, 2);
 }

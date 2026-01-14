@@ -48,6 +48,8 @@ namespace sync_preferences {
 
 namespace {
 
+using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
+
 // Keys used for the cross-device syncable storage dictionary pref. For more
 // details on the design, see go/cross-device-pref-tracker.
 
@@ -68,6 +70,9 @@ constexpr char kUpdateTimeKey[] = "update_time";
 constexpr char kLastObservedChangeTimeKey[] = "last_observed_change_time";
 
 // Histogram name for tracking service availability at query time.
+//
+// Note: The UMA histogram is named
+// "Sync.CrossDevicePrefTracker.AvailabilityAtQuery" for legacy reasons.
 constexpr char kTrackerAvailabilityAtQueryHistogram[] =
     "Sync.CrossDevicePrefTracker.AvailabilityAtQuery";
 
@@ -84,28 +89,27 @@ bool IsDeviceExpired(const syncer::DeviceInfo& device_info,
 }
 
 // Helper to determine the current service availability state.
-CrossDevicePrefTrackerAvailabilityAtQuery GetAvailabilityState(
+ServiceStatus GetAvailabilityState(
     const syncer::DeviceInfoTracker* device_info_tracker,
     bool is_local_device_info_ready,
     bool is_sync_configured_for_writes) {
   if (!device_info_tracker) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kDeviceInfoTrackerMissing;
+    return ServiceStatus::kDeviceInfoTrackerMissing;
   }
 
   if (is_local_device_info_ready && is_sync_configured_for_writes) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kAvailable;
+    return ServiceStatus::kAvailable;
   }
 
   if (is_local_device_info_ready && !is_sync_configured_for_writes) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kSyncNotConfigured;
+    return ServiceStatus::kSyncNotConfigured;
   }
 
   if (!is_local_device_info_ready && is_sync_configured_for_writes) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kLocalDeviceInfoMissing;
+    return ServiceStatus::kLocalDeviceInfoMissing;
   }
 
-  return CrossDevicePrefTrackerAvailabilityAtQuery::
-      kSyncNotConfiguredAndLocalDeviceInfoMissing;
+  return ServiceStatus::kSyncNotConfiguredAndLocalDeviceInfoMissing;
 }
 
 // Helper to record the Tracker's service availability metric.
@@ -113,7 +117,7 @@ void LogTrackerServiceAvailability(
     const syncer::DeviceInfoTracker* device_info_tracker,
     bool is_local_device_info_ready,
     bool is_sync_configured_for_writes) {
-  CrossDevicePrefTrackerAvailabilityAtQuery availability =
+  ServiceStatus availability =
       GetAvailabilityState(device_info_tracker, is_local_device_info_ready,
                            is_sync_configured_for_writes);
 

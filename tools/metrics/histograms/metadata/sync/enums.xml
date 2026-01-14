@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:CrossDevicePrefTrackerAvailabilityAtQuery) -->
+<!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:ServiceStatus) -->
 
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 

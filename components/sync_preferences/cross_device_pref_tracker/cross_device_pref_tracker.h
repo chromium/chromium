@@ -22,30 +22,6 @@
 
 namespace sync_preferences {
 
-// Service availability state of the `CrossDevicePrefTracker` when the Query API
-// (`GetValues()` or `GetMostRecentValue()`) is called. This logs how often the
-// Tracker is being used before it's fully ready.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(CrossDevicePrefTrackerAvailabilityAtQuery)
-enum class CrossDevicePrefTrackerAvailabilityAtQuery {
-  // The tracker is fully operational.
-  kAvailable = 0,
-  // `DeviceInfoTracker` is not available.
-  kDeviceInfoTrackerMissing = 1,
-  // Sync is not configured for writes (e.g., user is signed out or Prefs sync
-  // disabled).
-  kSyncNotConfigured = 2,
-  // `LocalDeviceInfo` (Cache GUID) is not yet initialized.
-  kLocalDeviceInfoMissing = 3,
-  // Both `LocalDeviceInfo` is missing and Sync is not configured for writes.
-  kSyncNotConfiguredAndLocalDeviceInfoMissing = 4,
-  kMaxValue = kSyncNotConfiguredAndLocalDeviceInfoMissing,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossDevicePrefTrackerAvailabilityAtQuery)
-
 // Abstract interface for a keyed service responsible for querying the values of
 // select non-syncing prefs across all of a user's syncing devices. It allows
 // clients to observe how a particular non-syncing pref value differs across
@@ -65,6 +41,30 @@ enum class CrossDevicePrefTrackerAvailabilityAtQuery {
 // For more details on the design, see go/cross-device-pref-tracker.
 class CrossDevicePrefTracker : public KeyedService {
  public:
+  // The current service status for `CrossDevicePrefTracker`.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ServiceStatus)
+  enum class ServiceStatus {
+    // The tracker is fully operational and available for use.
+    kAvailable = 0,
+    // `DeviceInfoTracker` is not available.
+    kDeviceInfoTrackerMissing = 1,
+    // Sync is not configured for writes (e.g., user is signed out or Prefs sync
+    // disabled).
+    kSyncNotConfigured = 2,
+    // `LocalDeviceInfo` (Cache GUID) is not yet initialized.
+    kLocalDeviceInfoMissing = 3,
+    // Both `LocalDeviceInfo` is missing and Sync is not configured for writes.
+    kSyncNotConfiguredAndLocalDeviceInfoMissing = 4,
+    kMaxValue = kSyncNotConfiguredAndLocalDeviceInfoMissing,
+  };
+  // Note: The UMA XML enum is named "CrossDevicePrefTrackerAvailabilityAtQuery"
+  // for legacy reasons.
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossDevicePrefTrackerAvailabilityAtQuery)
+
   // Observer interface for remote changes.
   class Observer : public base::CheckedObserver {
    public:
