@@ -248,7 +248,7 @@ inline constexpr char kSelectToSpeakGuestManifestFilename[] =
     "select_to_speak_manifest_guest.json";
 // The guest manifest v3 filename of the Select to Speak extension.
 inline constexpr char kSelectToSpeakGuestManifestV3Filename[] =
-    "select_to_speak_manifest_v3_guest.json";
+    "select_to_speak_manifest_guest_v3.json";
 // The extension id of the Switch Access extension.
 inline constexpr char kSwitchAccessExtensionId[] =
     "pmehocpgjmkenlokgjfkaichfjdhpeol";
