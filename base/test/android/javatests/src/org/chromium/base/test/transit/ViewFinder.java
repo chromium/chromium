@@ -125,4 +125,9 @@ public class ViewFinder {
     public static ViewPresence<View> waitForView(Matcher<View> matcher) {
         return waitForView(View.class, matcher);
     }
+
+    /** Waits for a View that matches |matcher| to no longer be displayed. */
+    public static void waitForNoView(Matcher<View> matcher) {
+        noopTo().waitFor(new NotDisplayedAnymoreCondition(/* viewElement= */ null, matcher));
+    }
 }

@@ -16,6 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.content.Intent;
@@ -504,7 +505,7 @@ public class LocationBarTest {
                     mUrlBar.clearFocus();
                 });
 
-        ViewUtils.waitForViewCheckingState(withId(R.id.delete_button), ViewUtils.VIEW_GONE);
+        waitForNoView(withId(R.id.delete_button));
     }
 
     @Test
@@ -547,7 +548,7 @@ public class LocationBarTest {
                     mUrlBar.clearFocus();
                 });
 
-        ViewUtils.waitForViewCheckingState(withId(R.id.delete_button), ViewUtils.VIEW_GONE);
+        waitForNoView(withId(R.id.delete_button));
     }
 
     @Test
@@ -606,7 +607,7 @@ public class LocationBarTest {
                 () -> {
                     mUrlBar.requestFocus();
                 });
-        ViewUtils.waitForViewCheckingState(withId(R.id.lens_camera_button), ViewUtils.VIEW_GONE);
+        waitForNoView(withId(R.id.lens_camera_button));
         ViewUtils.waitForVisibleView(withId(R.id.mic_button));
         assertLocationBarButtonsAre(R.id.mic_button);
 
@@ -647,7 +648,7 @@ public class LocationBarTest {
                 () -> {
                     mUrlBar.requestFocus();
                 });
-        ViewUtils.waitForViewCheckingState(withId(R.id.lens_camera_button), ViewUtils.VIEW_GONE);
+        waitForNoView(withId(R.id.lens_camera_button));
         ViewUtils.waitForVisibleView(withId(R.id.mic_button));
         assertLocationBarButtonsAre(R.id.mic_button);
 

@@ -9,14 +9,16 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import org.hamcrest.Matchers;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -51,8 +53,8 @@ class WebsiteParentApprovalTestUtils {
 
     private static void checkParentApprovalBottomSheetVisible(
             BottomSheetTestSupport bottomSheetTestSupport) {
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.local_parent_approval_layout), ViewUtils.VIEW_VISIBLE);
+        waitForView(
+                withId(R.id.local_parent_approval_layout), ViewElement.displayingAtLeastOption(1));
         // Ensure all animations have ended before allowing interaction with the view.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

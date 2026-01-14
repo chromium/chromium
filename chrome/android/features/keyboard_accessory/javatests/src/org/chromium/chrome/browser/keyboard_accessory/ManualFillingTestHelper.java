@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_FIELD;
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
@@ -18,9 +19,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
@@ -74,7 +72,6 @@ import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapp
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -615,7 +612,7 @@ public class ManualFillingTestHelper {
     }
 
     public static void waitToBeHidden(Matcher<View> matcher) {
-        ViewUtils.waitForViewCheckingState(matcher, VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE);
+        waitForNoView(matcher);
     }
 
     public String getAttribute(String node, String attribute)
