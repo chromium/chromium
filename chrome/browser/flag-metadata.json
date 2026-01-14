@@ -3693,6 +3693,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-new-startup-flow",
+    "owners": [ "fedegermi@google.com", "bling-fundamentals@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-ntp-browser-promos",
     "owners": [
       "cjgrant@chromium.org",

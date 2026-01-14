@@ -1067,3 +1067,9 @@ BASE_FEATURE(kComposeboxAIMDisabled, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsComposeboxAIMDisabled() {
   return base::FeatureList::IsEnabled(kComposeboxAIMDisabled);
 }
+
+BASE_FEATURE(kEnableNewStartupFlow, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsEnableNewStartupFlowEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNewStartupFlow);
+}

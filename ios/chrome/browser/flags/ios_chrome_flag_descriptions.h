@@ -351,6 +351,9 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableLensOverlayName[];
 extern const char kEnableLensOverlayDescription[];
 
+extern const char kEnableNewStartupFlowName[];
+extern const char kEnableNewStartupFlowDescription[];
+
 extern const char kEnableReadingListAccountStorageName[];
 extern const char kEnableReadingListAccountStorageDescription[];
 

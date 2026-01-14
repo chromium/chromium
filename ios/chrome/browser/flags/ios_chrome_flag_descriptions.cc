@@ -585,6 +585,10 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
 const char kEnableLensOverlayName[] = "Enable Lens Overlay";
 const char kEnableLensOverlayDescription[] = "Enables lens overlay UI";
 
+const char kEnableNewStartupFlowName[] = "EnableNewStartupFlow";
+const char kEnableNewStartupFlowDescription[] =
+    "Enables the EnableNewStartupFlow feature.";
+
 const char kEnableReadingListAccountStorageName[] =
     "Enable Reading List Account Storage";
 const char kEnableReadingListAccountStorageDescription[] =

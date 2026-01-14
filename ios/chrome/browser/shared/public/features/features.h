@@ -972,4 +972,10 @@ BASE_DECLARE_FEATURE(kComposeboxAIMDisabled);
 // Returns true if the ComposeboxAIMDisabled feature is enabled.
 bool IsComposeboxAIMDisabled();
 
+// Enables the EnableNewStartupFlow feature.
+BASE_DECLARE_FEATURE(kEnableNewStartupFlow);
+
+// Returns true if the EnableNewStartupFlow feature is enabled.
+bool IsEnableNewStartupFlowEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
