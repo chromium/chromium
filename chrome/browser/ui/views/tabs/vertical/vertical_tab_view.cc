@@ -497,7 +497,7 @@ void VerticalTabView::OnDataChanged() {
   icon_->SetData(tab_data_);
   icon_->SetActiveState(tab->IsActivated());
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
-                      tab->IsActivated() && tab->IsBlocked());
+                      !tab->IsActivated() && tab->IsBlocked());
 
   title_->SetText(tab_data_.title);
   title_->SetVisible(!pinned_);

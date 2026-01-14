@@ -85,8 +85,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
       kTabIconElementId);
 
   // Expect the favicon to be in the active state and not be loading initially.
-  EXPECT_TRUE(icon->GetActiveStateForTesting());
-  EXPECT_FALSE(icon->GetShowingLoadingAnimation());
+  ASSERT_TRUE(icon->GetActiveStateForTesting());
+  ASSERT_FALSE(icon->GetShowingLoadingAnimation());
+  ASSERT_FALSE(icon->GetShowingAttentionIndicator());
 
   // After changing network state, expect the favicon to be loading.
   content::WebContents* web_contents =
@@ -102,12 +103,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   run_loop.Run();
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
 
+  // After setting the tab as blocked, expect the attention indicator to not be
+  // showing because the tab is active.
+  browser()->tab_strip_model()->SetTabBlocked(0, true);
+  EXPECT_FALSE(icon->GetShowingAttentionIndicator());
+
   // After adding a new tab, the old tab is no longer activated so the icon
-  // should not be active.
+  // should not be active, and the attention indicator should be showing.
   NavigateToURLWithDisposition(browser(), GURL(url::kAboutBlankURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(icon->GetActiveStateForTesting());
+  EXPECT_TRUE(icon->GetShowingAttentionIndicator());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
