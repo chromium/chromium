@@ -7539,6 +7539,7 @@ shown properly on the user-facing crash UI.
   <int value="8" label="NoContent"/>
   <int value="9" label="NoResponse"/>
   <int value="10" label="Timeout"/>
+  <int value="11" label="ClientAttestationFailed"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/legion/error_code.h:ErrorCode) -->

@@ -58,7 +58,7 @@ std::unique_ptr<Client> Client::CreateWithUrl(
       url, base::Unretained(network_context));
 
   // Raw `new` is used here because the constructor is private.
-  return base::WrapUnique(new ClientImpl(std::move(factory)));
+  return base::WrapUnique(new ClientImpl(std::move(factory), token_manager));
 }
 
 // static

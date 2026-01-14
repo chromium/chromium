@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//components/legion/attestation:unit_tests",
     "//components/legion/crypto:unit_tests",
     "//components/legion/mojom",
+    "//components/legion/phosphor",
     "//components/legion/phosphor:unit_tests",
     "//components/legion/proto_utils:unit_tests",
     "//mojo/public/cpp/system",

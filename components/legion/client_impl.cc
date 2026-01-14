@@ -4,6 +4,7 @@
 
 #include "components/legion/client_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/proto_utils/generate_content_response_utils.h"
 
@@ -63,10 +65,31 @@ void OnRequestSent(
   std::move(cb).Run(legion_response.generate_content_response());
 }
 
+ClientImpl::BinaryEncodedProtoRequest CreateClientAttestationRequest(
+    phosphor::BlindSignedAuthToken blind_token,
+    int32_t request_id) {
+  proto::LegionRequest request_proto;
+
+  request_proto.set_request_id(request_id);
+  request_proto.mutable_anonymous_token_request()->set_anonymous_token(
+      blind_token.token);
+  request_proto.mutable_anonymous_token_request()->set_encoded_extensions(
+      blind_token.encoded_extensions);
+
+  std::string serialized_request;
+  request_proto.SerializeToString(&serialized_request);
+  return ClientImpl::BinaryEncodedProtoRequest(serialized_request.begin(),
+                                               serialized_request.end());
+}
+
 }  // namespace
 
-ClientImpl::ClientImpl(SecureChannelFactory channel_factory)
-    : secure_channel_factory_(std::move(channel_factory)) {}
+ClientImpl::ClientImpl(SecureChannelFactory channel_factory,
+                       phosphor::TokenManager* token_manager)
+    : secure_channel_factory_(std::move(channel_factory)),
+      token_manager_(token_manager) {
+  CHECK(token_manager_);
+}
 
 ClientImpl::~ClientImpl() = default;
 
@@ -82,8 +105,55 @@ SecureChannel* ClientImpl::GetOrCreateSecureChannel() {
     secure_channel_ = secure_channel_factory_.Run();
     secure_channel_->SetResponseCallback(base::BindRepeating(
         &ClientImpl::OnResponseReceived, base::Unretained(this)));
+    TrySendClientAttestationRequest();
   }
   return secure_channel_.get();
+}
+
+int32_t ClientImpl::CreateRequestId() {
+  int32_t request_id = next_request_id_;
+  next_request_id_++;
+  return request_id;
+}
+
+void ClientImpl::TrySendClientAttestationRequest() {
+  // TODO(b/469382780): Make GetAuthToken() async.
+  // TODO(b/475513974): Make it possible to get a token without a feature name.
+  std::optional<phosphor::BlindSignedAuthToken> auth_token =
+      token_manager_->GetAuthToken(
+          proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
+
+  if (!auth_token.has_value()) {
+    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+                                  ErrorCode::kClientAttestationFailed);
+    LOG(ERROR) << "Failed to get anonymous auth token.";
+    return;
+  }
+
+  int32_t request_id = CreateRequestId();
+
+  BinaryEncodedProtoRequest request =
+      CreateClientAttestationRequest(auth_token.value(), request_id);
+
+  // This must be true because `TrySendClientAttestationRequest()` is called
+  // right after `secure_channel_` creation.
+  CHECK(secure_channel_);
+  if (secure_channel_->Write(std::move(request))) {
+    pending_requests_.emplace(
+        request_id, base::BindOnce(&ClientImpl::OnClientAttestationRequest,
+                                   base::Unretained(this)));
+  }
+}
+
+void ClientImpl::OnClientAttestationRequest(
+    base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
+  // If `result` is error, then this function was called from
+  // `FailAllPendingRequests()`, therefore all pending requests will fail
+  // anyway, so no-op here.
+  if (!result.has_value()) {
+    LOG(ERROR) << "Client attestation request failed.";
+    return;
+  }
 }
 
 void ClientImpl::SendRequest(int32_t request_id,
@@ -98,6 +168,8 @@ void ClientImpl::SendRequest(int32_t request_id,
       &ClientImpl::OnRequestCompleted, weak_factory_.GetWeakPtr(),
       std::move(callback), base::TimeTicks::Now());
 
+  // TODO(b/475215692): Make it possible to buffer requests until client
+  // attestation response is received.
   if (GetOrCreateSecureChannel()->Write(std::move(request))) {
     pending_requests_.emplace(request_id, std::move(wrapped_callback));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -138,8 +210,7 @@ void ClientImpl::SendGenerateContentRequest(
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback,
     const RequestOptions& options) {
-  int32_t request_id = next_request_id_;
-  next_request_id_++;
+  int32_t request_id = CreateRequestId();
 
   proto::LegionRequest request_proto;
   request_proto.set_feature_name(feature_name);
