@@ -36,7 +36,8 @@ OSExchangeDataProviderFactory::CreateProvider() {
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<OSExchangeDataProviderWin>();
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/42050646): Implement OSExchangeDataProvider for Fuchsia.
+  // Fuchsia uses OSExchangeDataProviderNonBacked since a platform-specific
+  // implementation is not planned. See crbug.com/42050646 for context.
   return std::make_unique<OSExchangeDataProviderNonBacked>();
 #else
 #error "Unknown operating system"
