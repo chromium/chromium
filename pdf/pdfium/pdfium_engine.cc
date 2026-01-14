@@ -404,18 +404,16 @@ struct AdjustedPageTextData {
   std::vector<size_t> removed_indices;
 };
 
-AdjustedPageTextData GetAdjustedPageTextData(
-    PDFiumPage* page,
-    int character_to_start_searching_from,
-    int text_length) {
+AdjustedPageTextData GetAdjustedPageTextData(PDFiumPage* page,
+                                             int char_to_start_searching_from,
+                                             int char_count) {
   std::u16string page_text;
   PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(
-      &page_text, text_length, false);
+      &page_text, char_count, false);
   unsigned short* data =
       reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
-  int written =
-      FPDFText_GetText(page->GetTextPage(), character_to_start_searching_from,
-                       text_length, data);
+  int written = FPDFText_GetText(
+      page->GetTextPage(), char_to_start_searching_from, char_count, data);
   api_string_adapter.Close(written);
 
   const gfx::RectF page_bounds = page->GetCroppedRect();
@@ -431,7 +429,7 @@ AdjustedPageTextData GetAdjustedPageTextData(
   for (size_t i = 0; i < page_text.size(); i++) {
     // Filter out characters outside the page bounds, which are semantically not
     // part of the page.
-    if (!page->IsCharInPageBounds(character_to_start_searching_from + i,
+    if (!page->IsCharInPageBounds(char_to_start_searching_from + i,
                                   page_bounds)) {
       removed_indices.push_back(adjusted_page_text.size());
       continue;
@@ -1267,13 +1265,13 @@ void PDFiumEngine::RemoveTextFragments() {
 
 void PDFiumEngine::SearchForFragment(
     const std::u16string& term,
-    int character_to_start_searching_from,
-    int last_character_index_to_search,
+    int char_to_start_searching_from,
+    int last_char_index_to_search,
     int page_to_search,
     AddSearchResultCallback add_result_callback) {
   SearchUsingICU(term, /*case_sensitive=*/false, /*first_search=*/false,
-                 character_to_start_searching_from,
-                 last_character_index_to_search, page_to_search, page_to_search,
+                 char_to_start_searching_from, last_char_index_to_search,
+                 page_to_search, page_to_search,
                  std::move(add_result_callback));
 }
 
@@ -2272,7 +2270,7 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
 #endif
 
   bool first_search = (current_find_text_ != text);
-  int character_to_start_searching_from = 0;
+  int char_to_start_searching_from = 0;
   if (first_search) {
     // Do not move `selection_` here, as StopFind() expects to start with the
     // existing selection.
@@ -2284,12 +2282,12 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
       // Start searching from the beginning of the document.
       next_page_to_search_ = 0;
       last_page_to_search_ = pages_.size() - 1;
-      last_character_index_to_search_ = -1;
+      last_char_index_to_search_ = -1;
     } else {
       // There's a current selection, so start from it.
       next_page_to_search_ = old_selection[0].page_index();
-      last_character_index_to_search_ = old_selection[0].char_index();
-      character_to_start_searching_from = old_selection[0].char_index();
+      last_char_index_to_search_ = old_selection[0].char_index();
+      char_to_start_searching_from = old_selection[0].char_index();
       last_page_to_search_ = next_page_to_search_;
     }
     search_in_progress_ = true;
@@ -2298,11 +2296,11 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   int current_page = next_page_to_search_;
 
   if (pages_[current_page]->available()) {
-    SearchUsingICU(
-        text, case_sensitive, first_search, character_to_start_searching_from,
-        last_character_index_to_search_, current_page, last_page_to_search_,
-        base::BindRepeating(&PDFiumEngine::AddFindResult,
-                            weak_factory_.GetWeakPtr()));
+    SearchUsingICU(text, case_sensitive, first_search,
+                   char_to_start_searching_from, last_char_index_to_search_,
+                   current_page, last_page_to_search_,
+                   base::BindRepeating(&PDFiumEngine::AddFindResult,
+                                       weak_factory_.GetWeakPtr()));
 
     if (!IsPageVisible(current_page)) {
       pages_[current_page]->Unload();
@@ -2310,7 +2308,7 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   }
 
   if (next_page_to_search_ != last_page_to_search_ ||
-      (first_search && last_character_index_to_search_ != -1)) {
+      (first_search && last_char_index_to_search_ != -1)) {
     ++next_page_to_search_;
   }
 
@@ -2322,7 +2320,7 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   bool end_of_search =
       next_page_to_search_ == last_page_to_search_ &&
       // Only one page but didn't start midway.
-      ((pages_.size() == 1 && last_character_index_to_search_ == -1) ||
+      ((pages_.size() == 1 && last_char_index_to_search_ == -1) ||
        // Started midway, but only 1 page and we already looped around.
        (pages_.size() == 1 && !first_search) ||
        // Started midway, and we've just looped around.
@@ -2351,8 +2349,8 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
 void PDFiumEngine::SearchUsingICU(const std::u16string& term,
                                   bool case_sensitive,
                                   bool first_search,
-                                  int character_to_start_searching_from,
-                                  int last_character_index_to_search,
+                                  int char_to_start_searching_from,
+                                  int last_char_index_to_search,
                                   int current_page,
                                   int last_page_to_search,
                                   AddSearchResultCallback add_result_callback) {
@@ -2366,20 +2364,20 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
   }
 
   PDFiumPage* page = pages_[current_page].get();
-  const int original_text_length = page->GetCharCount();
-  int text_length = original_text_length;
-  if (character_to_start_searching_from) {
-    text_length -= character_to_start_searching_from;
-  } else if (!first_search && last_character_index_to_search != -1 &&
+  const int original_char_count = page->GetCharCount();
+  int char_count = original_char_count;
+  if (char_to_start_searching_from) {
+    char_count -= char_to_start_searching_from;
+  } else if (!first_search && last_char_index_to_search != -1 &&
              current_page == last_page_to_search) {
-    text_length = last_character_index_to_search;
+    char_count = last_char_index_to_search;
   }
-  if (text_length <= 0) {
+  if (char_count <= 0) {
     return;
   }
 
-  AdjustedPageTextData adjusted_page_text_data = GetAdjustedPageTextData(
-      page, character_to_start_searching_from, text_length);
+  AdjustedPageTextData adjusted_page_text_data =
+      GetAdjustedPageTextData(page, char_to_start_searching_from, char_count);
   if (adjusted_page_text_data.page_text.empty()) {
     return;
   }
@@ -2412,24 +2410,27 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
     // Need to map the indexes from the page text, which may have generated
     // characters like space etc, to character indices from the page.
     int text_to_start_searching_from = FPDFText_GetTextIndexFromCharIndex(
-        text_page, character_to_start_searching_from);
-    int temp_start =
+        text_page, char_to_start_searching_from);
+    int text_start =
         page_text_result_start_index + text_to_start_searching_from;
-    int temp_end = temp_start + page_text_result_length;
-    int start = FPDFText_GetTextIndexFromCharIndex(text_page, temp_start);
-    int end = FPDFText_GetTextIndexFromCharIndex(text_page, temp_end);
+    int text_end = text_start + page_text_result_length;
+    int char_start = FPDFText_GetCharIndexFromTextIndex(text_page, text_start);
+    int char_end = FPDFText_GetCharIndexFromTextIndex(text_page, text_end);
 
-    // If `term` occurs at the end of a page, then `end` will be -1 due to the
-    // index being out of bounds. Compensate for this case so the range
+    // If `term` occurs at the end of a page, then `char_end` will be -1 due to
+    // the index being out of bounds. Compensate for this case so the range
     // character count calculation below works out.
-    if (temp_end == original_text_length) {
-      DCHECK_EQ(-1, end);
-      end = original_text_length;
+    int text_last_char =
+        FPDFText_GetTextIndexFromCharIndex(text_page, original_char_count - 1);
+    if (text_end == text_last_char + 1) {
+      DCHECK_EQ(-1, char_end);
+      char_end = original_char_count;
     }
-    DCHECK_LT(start, end);
-    DCHECK_EQ(term.size() + term_removed_count,
-              static_cast<size_t>(end - start));
-    add_result_callback.Run(PDFiumRange(page, start, end - start));
+    DCHECK_GT(char_end, char_start);
+    DCHECK_LE(term.size() + term_removed_count,
+              static_cast<size_t>(char_end - char_start));
+    add_result_callback.Run(
+        PDFiumRange(page, char_start, char_end - char_start));
   }
 }
 
@@ -2509,7 +2510,7 @@ void PDFiumEngine::StopFind() {
   find_results_.clear();
   next_page_to_search_ = -1;
   last_page_to_search_ = -1;
-  last_character_index_to_search_ = -1;
+  last_char_index_to_search_ = -1;
   current_find_index_.reset();
   current_find_text_.clear();
 

@@ -11,7 +11,9 @@
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
@@ -359,6 +361,14 @@ std::u16string PDFiumRange::GetText() const {
   std::erase_if(result, IsIgnorableCharacter);
 
   return result;
+}
+
+std::ostream& operator<<(std::ostream& os, const PDFiumRange& range) {
+  // Use hex encoding to make non-printable characters visible.
+  return (os << "page_index: " << range.page_index()
+             << ", char_index: " << range.char_index()
+             << ", char_count: " << range.char_count() << ", text: "
+             << base::HexEncode(base::UTF16ToUTF8(range.GetText())));
 }
 
 }  // namespace chrome_pdf
