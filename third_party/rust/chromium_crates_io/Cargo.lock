@@ -138,7 +138,7 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.51"
+version = "1.2.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "find-msvc-tools",

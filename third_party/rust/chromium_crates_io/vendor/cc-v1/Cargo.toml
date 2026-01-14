@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `cc-1.2.51` crate.
+# `cc-1.2.52` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "cc"
-version = "1.2.51"
+version = "1.2.52"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -22,7 +22,7 @@ is_placeholder = true
 "parallel" = []
 
 [dependencies.find-msvc-tools]
-version = "^0.1.6"
+version = "^0.1.7"
 default_features = false
 [dependencies.shlex]
 version = "^1.3.0"
