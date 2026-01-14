@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -149,7 +148,7 @@ class ImageTransferCacheEntryTest
     } else {
       NOTREACHED();
     }
-    if (!base::Contains(plane_images, nullptr)) {
+    if (!std::ranges::contains(plane_images, nullptr)) {
       return plane_images;
     }
     return {};

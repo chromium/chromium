@@ -12,7 +12,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -253,7 +252,7 @@ void InsertNodeForTask(TaskGraph* graph,
                        bool has_external_dependency = false) {
   TRACE_EVENT("cc", __PRETTY_FUNCTION__, "category", category, "deps",
               dependencies);
-  DCHECK(!base::Contains(graph->nodes, task, &TaskGraph::Node::task));
+  DCHECK(!std::ranges::contains(graph->nodes, task, &TaskGraph::Node::task));
   graph->nodes.emplace_back(task, category, priority, dependencies,
                             has_external_dependency);
 }

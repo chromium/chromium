@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -58,7 +58,7 @@ static bool LayerWillPushProperties(const LayerTreeImpl* tree,
   return tree->LayersThatShouldPushProperties().contains(layer) ||
          // TODO(crbug.com/40335690): Stop always pushing PictureLayerImpl
          // properties.
-         base::Contains(tree->picture_layers(), layer);
+         std::ranges::contains(tree->picture_layers(), layer);
 }
 #endif
 

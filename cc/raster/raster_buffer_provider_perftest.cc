@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
@@ -267,8 +267,8 @@ class RasterBufferProviderPerfTestBase {
 
       for (auto& decode_task : raster_task->dependencies()) {
         // Add decode task if it doesn't already exist in graph.
-        if (!base::Contains(graph->nodes, decode_task,
-                            &TaskGraph::Node::task)) {
+        if (!std::ranges::contains(graph->nodes, decode_task,
+                                   &TaskGraph::Node::task)) {
           graph->nodes.push_back(
               TaskGraph::Node(decode_task.get(), 0u /* group */, priority, 0u));
         }

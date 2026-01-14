@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -906,7 +905,7 @@ void AnimationHost::HandleRemovedScrollAnimatingElements(
 }
 
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
-  DCHECK(!base::Contains(ticking_animations_.Read(*this), animation));
+  DCHECK(!std::ranges::contains(ticking_animations_.Read(*this), animation));
   ticking_animations_.Write(*this).push_back(animation);
 }
 

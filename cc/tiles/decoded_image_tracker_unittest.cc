@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/paint/paint_image_builder.h"
@@ -45,7 +44,8 @@ class TestImageController : public ImageController {
     SoftwareImageDecodeCache::CacheKey key =
         SoftwareImageDecodeCache::CacheKey::FromDrawImage(
             image, kRGBA_8888_SkColorType);
-    return base::Contains(locked_ids_, key, &LockedIds::value_type::second);
+    return std::ranges::contains(locked_ids_, key,
+                                 &LockedIds::value_type::second);
   }
 
   size_t num_locked_images() { return locked_ids_.size(); }

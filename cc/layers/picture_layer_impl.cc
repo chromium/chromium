@@ -14,7 +14,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -2128,7 +2127,7 @@ void PictureLayerImpl::InvalidatePaintWorklets(
     // If the PaintWorklet depends on the property whose value was changed by
     // the animation system, then invalidate its associated PaintRecord so that
     // we can repaint the PaintWorklet during impl side invalidation.
-    if (base::Contains(prop_ids, key) &&
+    if (std::ranges::contains(prop_ids, key) &&
         entry.first->ValueChangeShouldCauseRepaint(prev, next)) {
       entry.second.second = std::nullopt;
     }

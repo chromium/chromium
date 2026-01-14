@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -8151,7 +8150,7 @@ class LayerTreeTestPageScaleFlags : public LayerTreeTest {
       const std::vector<int>& list = layer->IsAffectedByPageScale()
                                          ? this->affected_by_page_scale_
                                          : this->not_affected_by_page_scale_;
-      EXPECT_TRUE(base::Contains(list, layer->id()));
+      EXPECT_TRUE(std::ranges::contains(list, layer->id()));
     }
 
     EndTest();
