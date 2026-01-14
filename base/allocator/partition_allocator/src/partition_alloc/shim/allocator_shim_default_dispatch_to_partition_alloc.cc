@@ -773,7 +773,7 @@ void ConfigurePartitions(
 // to in `PartitionRoot::Init()`.
 uint32_t GetMainPartitionRootExtrasSize() {
 #if PA_CONFIG(EXTRAS_REQUIRED)
-  return g_root.Get()->settings.extras_size;
+  return g_root.Get()->settings_.extras_size;
 #else
   return 0;
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)

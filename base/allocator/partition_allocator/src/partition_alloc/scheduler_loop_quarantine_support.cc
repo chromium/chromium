@@ -66,14 +66,14 @@ namespace internal {
 ScopedSchedulerLoopQuarantineBranchAccessorForTesting::
     ScopedSchedulerLoopQuarantineBranchAccessorForTesting(
         PartitionRoot* allocator_root) {
-  if (allocator_root->settings.with_thread_cache) {
+  if (allocator_root->settings_.with_thread_cache) {
     ThreadCache* tcache = ThreadCache::Get();
     if (ThreadCache::IsValid(tcache)) {
       branch_ = &tcache->GetSchedulerLoopQuarantineBranch();
       return;
     }
   }
-  branch_ = &allocator_root->scheduler_loop_quarantine;
+  branch_ = &allocator_root->scheduler_loop_quarantine_;
 }
 
 ScopedSchedulerLoopQuarantineBranchAccessorForTesting::

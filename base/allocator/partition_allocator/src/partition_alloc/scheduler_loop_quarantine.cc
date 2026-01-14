@@ -155,8 +155,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   largest_bucket_index_ =
       BucketIndexLookup::GetIndexForDenserBuckets(config.max_quarantine_size);
   PA_CHECK(largest_bucket_index_ < BucketIndexLookup::kNumBuckets);
-  PA_UNSAFE_TODO(PA_CHECK(&allocator_root_->buckets[largest_bucket_index_] <=
-                          &allocator_root_->sentinel_bucket));
+  PA_UNSAFE_TODO(PA_CHECK(&allocator_root_->buckets_[largest_bucket_index_] <=
+                          &allocator_root_->sentinel_bucket_));
 }
 
 template <bool thread_bound>
@@ -216,9 +216,9 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
   }
   PA_DCHECK(!allocator_root_->IsDirectMapped(slot_span));
   PA_DCHECK(
-      slot_span->bucket >= PA_UNSAFE_TODO(&allocator_root_->buckets[0]) &&
+      slot_span->bucket >= PA_UNSAFE_TODO(&allocator_root_->buckets_[0]) &&
       slot_span->bucket <=
-          PA_UNSAFE_TODO(&allocator_root_->buckets[largest_bucket_index_]));
+          PA_UNSAFE_TODO(&allocator_root_->buckets_[largest_bucket_index_]));
 
   const size_t slot_size = size_details.slot_size;
   const size_t capacity_in_bytes =
