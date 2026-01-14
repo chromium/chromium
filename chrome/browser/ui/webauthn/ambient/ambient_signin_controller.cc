@@ -140,11 +140,10 @@ void AmbientSigninController::ShowBubble() {
   auto* browser = chrome::FindBrowserWithTab(web_contents);
   ToolbarButtonProvider* button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
-  auto* anchor_view = button_provider->GetAnchorView(std::nullopt);
+  auto anchor = button_provider->GetBubbleAnchor(std::nullopt);
 
   if (!ambient_signin_bubble_view_) {
-    ambient_signin_bubble_view_ =
-        new AmbientSigninBubbleView(anchor_view, this);
+    ambient_signin_bubble_view_ = new AmbientSigninBubbleView(anchor, this);
     ambient_signin_bubble_view_->ShowCredentials(passkey_credentials_,
                                                  password_forms_);
   }

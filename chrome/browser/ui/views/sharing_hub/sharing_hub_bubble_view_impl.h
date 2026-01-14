@@ -26,8 +26,8 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   METADATA_HEADER(SharingHubBubbleViewImpl, LocationBarBubbleDelegateView)
 
  public:
-  // Bubble will be anchored to |anchor_view|.
-  SharingHubBubbleViewImpl(views::View* anchor_view,
+  // Bubble will be anchored to `anchor`.
+  SharingHubBubbleViewImpl(views::BubbleAnchor anchor,
                            share::ShareAttempt attempt,
                            SharingHubBubbleController* controller);
 

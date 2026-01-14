@@ -50,9 +50,9 @@ constexpr int kDeviceButtonGroup = 0;
 }  // namespace
 
 SendTabToSelfDevicePickerBubbleView::SendTabToSelfDevicePickerBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents)
-    : SendTabToSelfBubbleView(anchor_view, web_contents),
+    : SendTabToSelfBubbleView(anchor, web_contents),
       controller_(SendTabToSelfBubbleController::CreateOrGetFromWebContents(
                       web_contents)
                       ->AsWeakPtr()) {

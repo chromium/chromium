@@ -68,7 +68,7 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
   // Updates the visibility state of the bubble in the action item framework.
   void UpdateBubbleVisibilityState(bool is_bubble_visible);
 
-  FileSystemAccessUsageBubbleView(views::View* anchor_view,
+  FileSystemAccessUsageBubbleView(views::BubbleAnchor anchor,
                                   content::WebContents* web_contents,
                                   const url::Origin& origin,
                                   Usage usage);

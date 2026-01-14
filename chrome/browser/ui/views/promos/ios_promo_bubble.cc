@@ -513,7 +513,7 @@ void IOSPromoBubble::ShowPromoBubble(Anchor anchor,
   }
 
   auto promo_bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_model_builder.Build(), anchor.view, anchor.arrow);
+      dialog_model_builder.Build(), anchor.anchor_base, anchor.arrow);
 
   if (ios_promo_config.with_header) {
     promo_bubble->SetFootnoteView(CreateContentView(

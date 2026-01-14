@@ -25,10 +25,10 @@
 namespace send_tab_to_self {
 
 SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     bool show_signin_button)
-    : SendTabToSelfBubbleView(anchor_view, web_contents),
+    : SendTabToSelfBubbleView(anchor, web_contents),
       controller_(SendTabToSelfBubbleController::CreateOrGetFromWebContents(
                       web_contents)
                       ->AsWeakPtr()) {

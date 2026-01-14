@@ -91,7 +91,7 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
 // static
 views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
     Browser* browser,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     MemorySaverBubbleObserver* observer) {
   auto bubble_delegate_unique =
       std::make_unique<MemorySaverBubbleDelegate>(browser, observer);
@@ -143,7 +143,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto dialog_model = dialog_model_builder.Build();
 
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
   auto* const toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();

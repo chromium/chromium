@@ -81,12 +81,12 @@ gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size, SkColor color) {
 namespace qrcode_generator {
 
 QRCodeGeneratorBubble::QRCodeGeneratorBubble(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure on_closing,
     base::OnceClosure on_back_button_pressed,
     const GURL& url)
-    : LocationBarBubbleDelegateView(anchor_view, nullptr),
+    : LocationBarBubbleDelegateView(anchor, nullptr),
       url_(url),
       on_closing_(std::move(on_closing)),
       on_back_button_pressed_(std::move(on_back_button_pressed)),

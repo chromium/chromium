@@ -23,8 +23,8 @@ enum class SharingDialogType;
 class SharingDialogView : public SharingDialog,
                           public LocationBarBubbleDelegateView {
  public:
-  // Bubble will be anchored to |anchor_view|.
-  SharingDialogView(views::View* anchor_view,
+  // Bubble will be anchored to `anchor`.
+  SharingDialogView(views::BubbleAnchor anchor,
                     content::WebContents* web_contents,
                     SharingDialogData data);
 

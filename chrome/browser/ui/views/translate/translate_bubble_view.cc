@@ -135,12 +135,12 @@ void OpenLanguageSettings(TranslateBubbleModel* model_,
 }  // namespace
 
 TranslateBubbleView::TranslateBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     std::unique_ptr<TranslateBubbleModel> model,
     translate::TranslateErrors error_type,
     content::WebContents* web_contents,
     base::OnceClosure on_closing)
-    : LocationBarBubbleDelegateView(anchor_view,
+    : LocationBarBubbleDelegateView(anchor,
                                     web_contents,
                                     /*autosize=*/true),
       model_(std::move(model)),

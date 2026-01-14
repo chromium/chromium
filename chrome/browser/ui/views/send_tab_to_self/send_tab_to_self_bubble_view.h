@@ -12,10 +12,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace views {
-class View;
-}  // namespace views
-
 namespace send_tab_to_self {
 
 // The cross-platform UI interface which displays the share bubble.
@@ -31,7 +27,7 @@ class SendTabToSelfBubbleView : public LocationBarBubbleDelegateView {
   virtual void Hide() = 0;
 
  protected:
-  SendTabToSelfBubbleView(views::View* anchor_view,
+  SendTabToSelfBubbleView(views::BubbleAnchor anchor,
                           content::WebContents* web_contents);
 };
 

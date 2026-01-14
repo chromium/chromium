@@ -52,9 +52,9 @@ void JsOptimizationsPageActionController::UpdateIconVisibility() {
 }
 
 void JsOptimizationsPageActionController::ShowBubble(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     actions::ActionItem* action_item) {
-  bubble_ = CreateBubble(anchor_view, action_item);
+  bubble_ = CreateBubble(anchor, action_item);
   action_item->SetIsShowingBubble(true);
 }
 
@@ -65,7 +65,7 @@ void JsOptimizationsPageActionController::OnBubbleHidden(
 }
 
 views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     actions::ActionItem* action_item) {
   auto dialog_model_builder = ui::DialogModel::Builder();
   dialog_model_builder
@@ -102,7 +102,7 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
 
   auto dialog_model = dialog_model_builder.Build();
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
   // TODO(crbug.com/464011395): Refactor to use CLIENT_OWNS_WIDGET.
   views::Widget* const widget =

@@ -40,11 +40,11 @@ namespace send_tab_to_self {
 // static
 SendTabToSelfToolbarBubbleView* SendTabToSelfToolbarBubbleView::CreateBubble(
     BrowserWindowInterface& browser,
-    View* parent,
+    views::BubbleAnchor anchor,
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback) {
   SendTabToSelfToolbarBubbleView* bubble_view =
-      new SendTabToSelfToolbarBubbleView(browser, parent, entry,
+      new SendTabToSelfToolbarBubbleView(browser, anchor, entry,
                                          std::move(navigate_callback));
   // The widget is owned by the views system.
   views::Widget* widget =
@@ -57,10 +57,10 @@ SendTabToSelfToolbarBubbleView::~SendTabToSelfToolbarBubbleView() = default;
 
 SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     BrowserWindowInterface& browser,
-    View* parent,
+    views::BubbleAnchor anchor,
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback)
-    : views::BubbleDialogDelegateView(parent, views::BubbleBorder::TOP_RIGHT),
+    : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       navigate_callback_(std::move(navigate_callback)),
       browser_(browser),
       title_(entry.GetTitle()),

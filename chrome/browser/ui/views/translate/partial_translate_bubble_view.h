@@ -62,7 +62,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
 
-  PartialTranslateBubbleView(views::View* anchor_view,
+  PartialTranslateBubbleView(views::BubbleAnchor anchor,
                              std::unique_ptr<PartialTranslateBubbleModel> model,
                              content::WebContents* web_contents,
                              base::OnceClosure on_closing);

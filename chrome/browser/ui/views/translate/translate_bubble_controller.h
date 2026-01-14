@@ -34,7 +34,7 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   // bubble is not created.
   views::Widget* ShowTranslateBubble(
       content::WebContents* web_contents,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       views::Button* highlighted_button,
       translate::TranslateStep step,
       const std::string& source_language,
@@ -45,7 +45,7 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   // Initiates the Partial Translate request, showing the bubble after a delay
   // dependent on the Partial Translate response.
   void StartPartialTranslate(content::WebContents* web_contents,
-                             views::View* anchor_view,
+                             views::BubbleAnchor anchor,
                              views::Button* highlighted_button,
                              const std::string& source_language,
                              const std::string& target_language,
@@ -93,7 +93,7 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   // exists.
   void CreatePartialTranslateBubble(
       content::WebContents* web_contents,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       views::Button* highlighted_button,
       PartialTranslateBubbleModel::ViewState view_state,
       const std::string& source_language,

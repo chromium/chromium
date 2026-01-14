@@ -3091,11 +3091,11 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
     on_back_button_pressed = controller->GetOnBackButtonPressedCallback();
   }
 
-  views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(kActionQrCodeGenerator);
+  auto anchor =
+      toolbar_button_provider()->GetBubbleAnchor(kActionQrCodeGenerator);
 
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
-      anchor_view, contents->GetWeakPtr(), std::move(on_closing),
+      anchor, contents->GetWeakPtr(), std::move(on_closing),
       std::move(on_back_button_pressed), url);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
@@ -3107,7 +3107,7 @@ sharing_hub::ScreenshotCapturedBubble*
 BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
                                           const gfx::Image& image) {
   auto* bubble = new sharing_hub::ScreenshotCapturedBubble(
-      toolbar_button_provider()->GetAnchorView(std::nullopt), contents, image,
+      toolbar_button_provider()->GetBubbleAnchor(std::nullopt), contents, image,
       browser_->GetProfile());
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
@@ -3122,7 +3122,7 @@ SharingDialog* BrowserView::ShowSharingDialog(
   // be hardcoded to anchor off the shared clipboard bubble, but that bubble is
   // now gone altogether.
   auto* dialog_view = new SharingDialogView(
-      toolbar_button_provider()->GetAnchorView(std::nullopt), web_contents,
+      toolbar_button_provider()->GetBubbleAnchor(std::nullopt), web_contents,
       std::move(data));
 
   views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();
@@ -3133,10 +3133,10 @@ SharingDialog* BrowserView::ShowSharingDialog(
 send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* web_contents) {
-  views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(kActionSendTabToSelf);
+  auto anchor =
+      toolbar_button_provider()->GetBubbleAnchor(kActionSendTabToSelf);
   auto* bubble = new send_tab_to_self::SendTabToSelfDevicePickerBubbleView(
-      anchor_view, web_contents);
+      anchor, web_contents);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. this method's
@@ -3148,10 +3148,10 @@ BrowserView::ShowSendTabToSelfDevicePickerBubble(
 send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
                                           bool show_signin_button) {
-  views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(kActionSendTabToSelf);
+  auto anchor =
+      toolbar_button_provider()->GetBubbleAnchor(kActionSendTabToSelf);
   auto* bubble = new send_tab_to_self::SendTabToSelfPromoBubbleView(
-      anchor_view, web_contents, show_signin_button);
+      anchor, web_contents, show_signin_button);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. method documentation.
@@ -3175,7 +3175,7 @@ void BrowserView::ToggleMultitaskMenu() {
 sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
     share::ShareAttempt attempt) {
   auto* bubble = new sharing_hub::SharingHubBubbleViewImpl(
-      toolbar_button_provider()->GetAnchorView(std::nullopt), attempt,
+      toolbar_button_provider()->GetBubbleAnchor(std::nullopt), attempt,
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           attempt.web_contents.get()));
   PageActionIconView* icon_view =
@@ -3249,7 +3249,7 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
   CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
       .StartPartialTranslate(
           GetActiveWebContents(),
-          toolbar_button_provider()->GetAnchorView(kActionShowTranslate),
+          toolbar_button_provider()->GetBubbleAnchor(kActionShowTranslate),
           translate_icon, source_language, target_language, text_selection);
 }
 

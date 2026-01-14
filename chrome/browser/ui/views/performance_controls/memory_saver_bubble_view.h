@@ -23,7 +23,7 @@ class MemorySaverBubbleView {
 
   static views::BubbleDialogModelHost* ShowBubble(
       Browser* browser,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       MemorySaverBubbleObserver* observer);
 
  private:

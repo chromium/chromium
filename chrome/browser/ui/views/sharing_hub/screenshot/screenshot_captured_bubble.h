@@ -35,7 +35,7 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   METADATA_HEADER(ScreenshotCapturedBubble, LocationBarBubbleDelegateView)
 
  public:
-  ScreenshotCapturedBubble(views::View* anchor_view,
+  ScreenshotCapturedBubble(views::BubbleAnchor anchor,
                            content::WebContents* web_contents,
                            const gfx::Image& image,
                            Profile* profile);

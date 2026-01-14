@@ -59,10 +59,9 @@ BEGIN_METADATA(AmbientSigninBubbleView)
 END_METADATA
 
 AmbientSigninBubbleView::AmbientSigninBubbleView(
-    View* anchor_view,
+    views::BubbleAnchor anchor,
     AmbientSigninController* controller)
-    : BubbleDialogDelegateView(anchor_view,
-                               views::BubbleBorder::Arrow::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor, views::BubbleBorder::Arrow::TOP_RIGHT),
       controller_(controller) {
   SetShowCloseButton(true);
   UseCompactMargins();

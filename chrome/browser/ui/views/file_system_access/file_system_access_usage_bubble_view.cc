@@ -342,7 +342,7 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   // TODO(crbug.com/376282751): An action ID should be created and used here
   // when File System Access is migrated to the new page actions framework.
   bubble_ = new FileSystemAccessUsageBubbleView(
-      button_provider->GetAnchorView(std::nullopt), web_contents, origin,
+      button_provider->GetBubbleAnchor(std::nullopt), web_contents, origin,
       std::move(usage));
 
   bubble_->SetHighlightedButton(
@@ -368,11 +368,11 @@ FileSystemAccessUsageBubbleView* FileSystemAccessUsageBubbleView::GetBubble() {
 }
 
 FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     const url::Origin& origin,
     Usage usage)
-    : LocationBarBubbleDelegateView(anchor_view,
+    : LocationBarBubbleDelegateView(anchor,
                                     web_contents,
                                     /*autosize=*/true),
       origin_(origin),

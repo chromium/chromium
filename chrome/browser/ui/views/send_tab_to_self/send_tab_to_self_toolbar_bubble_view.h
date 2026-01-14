@@ -24,7 +24,7 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
  public:
   SendTabToSelfToolbarBubbleView(
       BrowserWindowInterface& browser,
-      View* parent,
+      views::BubbleAnchor anchor,
       const SendTabToSelfEntry& entry,
       base::OnceCallback<void(NavigateParams*)> navigate_callback);
 
@@ -33,7 +33,7 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   // Creates and shows the bubble.
   static SendTabToSelfToolbarBubbleView* CreateBubble(
       BrowserWindowInterface& browser,
-      View* parent,
+      views::BubbleAnchor anchor,
       const SendTabToSelfEntry& entry,
       base::OnceCallback<void(NavigateParams*)> navigate_callback);
 

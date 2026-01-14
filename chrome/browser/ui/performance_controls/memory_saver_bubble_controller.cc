@@ -37,10 +37,10 @@ void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(bwi->GetBrowserForMigrationOnly());
   CHECK_NE(browser_view, nullptr);
-  views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
+  auto anchor =
+      browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
   bubble_ = MemorySaverBubbleView::ShowBubble(bwi->GetBrowserForMigrationOnly(),
-                                              anchor_view, this);
+                                              anchor, this);
 }
 
 void MemorySaverBubbleController::OnBubbleShown() {

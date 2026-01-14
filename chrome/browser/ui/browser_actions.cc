@@ -405,16 +405,16 @@ void BrowserActions::InitializeBrowserActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  views::View* anchor_view =
+                  auto anchor =
                       bwi->GetBrowserForMigrationOnly()
                           ->GetBrowserView()
                           .toolbar_button_provider()
-                          ->GetAnchorView(kActionShowJsOptimizationsIcon);
+                          ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
 
                   bwi->GetActiveTabInterface()
                       ->GetTabFeatures()
                       ->js_optimizations_page_action_controller()
-                      ->ShowBubble(anchor_view, item);
+                      ->ShowBubble(anchor, item);
                 },
                 bwi))
             .SetActionId(kActionShowJsOptimizationsIcon)

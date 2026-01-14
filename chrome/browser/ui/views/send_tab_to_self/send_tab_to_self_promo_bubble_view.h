@@ -28,8 +28,8 @@ class SendTabToSelfBubbleController;
 // another device.
 class SendTabToSelfPromoBubbleView : public SendTabToSelfBubbleView {
  public:
-  // Bubble will be anchored to |anchor_view|.
-  SendTabToSelfPromoBubbleView(views::View* anchor_view,
+  // Bubble will be anchored to `anchor`.
+  SendTabToSelfPromoBubbleView(views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                bool show_signin_button);
 

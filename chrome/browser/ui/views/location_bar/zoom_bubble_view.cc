@@ -162,10 +162,10 @@ void ZoomBubbleView::Refresh() {
 }
 
 ZoomBubbleView::ZoomBubbleView(Browser* browser,
-                               views::View* anchor_view,
+                               views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                DisplayReason reason)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor, web_contents),
       browser_(browser),
       auto_close_duration_(kBubbleCloseDelayDefault),
       auto_close_(reason == AUTOMATIC) {
