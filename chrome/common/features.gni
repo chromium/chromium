@@ -46,7 +46,7 @@ declare_args() {
   enable_chrome_notifications = is_mac || is_win || is_linux
 
   # Enables inclusion of glic in the build.
-  enable_glic = is_mac || is_win || is_linux || is_chromeos
+  enable_glic = is_mac || is_win || is_linux || is_chromeos || is_android
 
   # Enables inclusion of glic in the build on Android.
   # This is temporary, and will eventually be replaced by enable_glic.

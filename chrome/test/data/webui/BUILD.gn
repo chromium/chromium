@@ -138,7 +138,7 @@ source_set("browser_tests") {
     sources += [ "certificate_manager/certificate_manager_browsertest.cc" ]
   }
 
-  if (enable_glic) {
+  if (enable_glic && !is_android) {
     sources += [ "glic/glic_browsertest.cc" ]
     deps += [ "//chrome/browser/glic/test_support" ]
   }

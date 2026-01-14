@@ -283,30 +283,35 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Do not discard Desktop PWA windows. Preserve native-app experience.
-  content::WebContents* web_contents = page_node->GetWebContents().get();
-  if (web_contents) {
-    web_app::WebAppTabHelper* tab_helper =
-        web_app::WebAppTabHelper::FromWebContents(web_contents);
-    if (tab_helper && tab_helper->is_in_app_window()) {
-      add_reason_and_update_result(CannotDiscardReason::kWebApp,
-                                   CanDiscardResult::kProtected);
+  {
+    // Do not discard Desktop PWA windows. Preserve native-app experience.
+    content::WebContents* web_contents = page_node->GetWebContents().get();
+    if (web_contents) {
+      web_app::WebAppTabHelper* tab_helper =
+          web_app::WebAppTabHelper::FromWebContents(web_contents);
+      if (tab_helper && tab_helper->is_in_app_window()) {
+        add_reason_and_update_result(CannotDiscardReason::kWebApp,
+                                     CanDiscardResult::kProtected);
+      }
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_GLIC)
-  // Do not discard pages that are pin-shared with Glic.
-  if (web_contents && is_proactive_or_suggested) {
-    auto* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents);
-    if (tab_interface) {
-      auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          web_contents->GetBrowserContext());
-      if (glic_service && glic_service->sharing_manager().IsTabPinned(
-                              tab_interface->GetHandle())) {
-        add_reason_and_update_result(CannotDiscardReason::kGlicShared,
-                                     CanDiscardResult::kProtected);
+  {
+    content::WebContents* web_contents = page_node->GetWebContents().get();
+    // Do not discard pages that are pin-shared with Glic.
+    if (web_contents && is_proactive_or_suggested) {
+      auto* tab_interface =
+          tabs::TabInterface::MaybeGetFromContents(web_contents);
+      if (tab_interface) {
+        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            web_contents->GetBrowserContext());
+        if (glic_service && glic_service->sharing_manager().IsTabPinned(
+                                tab_interface->GetHandle())) {
+          add_reason_and_update_result(CannotDiscardReason::kGlicShared,
+                                       CanDiscardResult::kProtected);
+        }
       }
     }
   }

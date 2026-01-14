@@ -5444,12 +5444,6 @@ static_library("ui") {
   if (enable_glic) {
     sources += [
       "views/tabs/glic_actor_constants.h",
-      "views/tabs/glic_actor_task_icon.cc",
-      "views/tabs/glic_actor_task_icon.h",
-      "views/tabs/glic_and_actor_buttons_container.cc",
-      "views/tabs/glic_and_actor_buttons_container.h",
-      "views/tabs/glic_button.cc",
-      "views/tabs/glic_button.h",
       "webui/settings/glic_handler.cc",
       "webui/settings/glic_handler.h",
     ]
@@ -5460,6 +5454,14 @@ static_library("ui") {
     ]
     allow_circular_includes_from += [ "//chrome/browser/glic/fre" ]
     if (!is_android) {
+      sources += [
+        "views/tabs/glic_actor_task_icon.cc",
+        "views/tabs/glic_actor_task_icon.h",
+        "views/tabs/glic_and_actor_buttons_container.cc",
+        "views/tabs/glic_and_actor_buttons_container.h",
+        "views/tabs/glic_button.cc",
+        "views/tabs/glic_button.h",
+      ]
       deps += [
         "//chrome/browser/actor/ui/task_list_bubble:controller",
         "//chrome/browser/background/glic",

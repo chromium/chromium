@@ -37,10 +37,12 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/fre/glic_fre_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "content/public/browser/render_process_host.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/fre/glic_fre_ui.h"
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -97,13 +99,16 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
   if (glic::GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
     // Register binders for all eligible profiles.
+
     if (glic::GlicEnabling::IsUnifiedFreEnabled(Profile::FromBrowserContext(
             render_frame_host->GetProcess()->GetBrowserContext()))) {
       RegisterWebUIControllerInterfaceBinder<glic::mojom::FrePageHandlerFactory,
                                              glic::GlicUI>(map);
     } else {
+#if !BUILDFLAG(IS_ANDROID)
       RegisterWebUIControllerInterfaceBinder<glic::mojom::FrePageHandlerFactory,
                                              glic::GlicFreUI>(map);
+#endif
     }
     // For GlicUI, the WebUI page will check whether Glic is policy-enabled and
     // restrict access if needed. This isn't required for the GlicFreUI.

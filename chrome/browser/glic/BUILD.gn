@@ -17,9 +17,12 @@ assert(enable_glic || enable_glic_android)
 source_set("glic") {
   sources = [
     "gemini_act_on_web_settings_policy_handler.h",
+    "glic_hotkey.h",
     "glic_metrics.h",
     "glic_net_log.h",
     "glic_pref_names.h",
+    "glic_profile_manager.h",
+    "glic_settings_util.h",
     "glic_user_status_code.h",
     "glic_user_status_fetcher.h",
     "glic_user_status_request.h",
@@ -27,13 +30,16 @@ source_set("glic") {
     "host/auth_controller.h",
     "host/context/glic_focused_browser_manager.h",
     "host/context/glic_focused_tab_manager_interface.h",
+    "host/context/glic_page_context_fetcher.h",
     "host/context/glic_pinned_tab_manager.h",
     "host/context/glic_sharing_manager_provider.h",
     "host/context/glic_tab_data.h",
+    "host/glic_annotation_manager.h",
     "host/glic_cookie_synchronizer.h",
     "host/glic_page_handler.h",
     "host/glic_ui.h",
     "host/glic_web_client_access.h",
+    "host/guest_util.h",
     "host/host.h",
     "host/host_metrics.h",
     "public/context/glic_sharing_manager.h",
@@ -61,17 +67,13 @@ source_set("glic") {
       "browser_ui/glic_vector_icon_manager.h",
       "browser_ui/scoped_glic_button_indicator.h",
       "fre/glic_fre_ui.h",
-      "glic_profile_manager.h",
-      "glic_settings_util.h",
-      "host/context/glic_page_context_fetcher.h",
-      "host/glic_annotation_manager.h",
-      "host/guest_util.h",
+      "host/context/glic_focused_tab_manager.h",
+      "public/glic_keyed_service.h",
       "widget/glic_window_controller.h",
     ]
 
     # Desktop-only sources
     sources += [
-      "glic_hotkey.h",
       "widget/glic_view.h",
       "widget/glic_widget.h",
       "widget/local_hotkey_manager.h",
@@ -150,11 +152,14 @@ source_set("enum") {
 source_set("impl") {
   sources = [
     "gemini_act_on_web_settings_policy_handler.cc",
+    "glic_hotkey.cc",
     "glic_metrics.cc",
     "glic_metrics_provider.cc",
     "glic_metrics_provider.h",
     "glic_net_log.cc",
     "glic_pref_names.cc",
+    "glic_profile_manager.cc",
+    "glic_settings_util.cc",
     "glic_user_status_fetcher.cc",
     "glic_user_status_request.cc",
     "glic_zero_state_suggestions_manager.cc",
@@ -172,10 +177,13 @@ source_set("impl") {
     "host/context/glic_empty_focused_tab_manager.h",
     "host/context/glic_empty_pinned_tab_manager.cc",
     "host/context/glic_empty_pinned_tab_manager.h",
+    "host/context/glic_page_context_fetcher.cc",
     "host/context/glic_pin_candidate_comparator.cc",
     "host/context/glic_pin_candidate_comparator.h",
     "host/context/glic_pinned_tab_manager_impl.cc",
     "host/context/glic_pinned_tab_manager_impl.h",
+    "host/context/glic_share_image_handler.cc",
+    "host/context/glic_share_image_handler.h",
     "host/context/glic_sharing_manager_impl.cc",
     "host/context/glic_sharing_manager_impl.h",
     "host/context/glic_sharing_utils.cc",
@@ -183,6 +191,7 @@ source_set("impl") {
     "host/context/glic_tab_data.cc",
     "host/context/glic_tab_data_observer.cc",
     "host/context/glic_tab_data_observer.h",
+    "host/glic_annotation_manager.cc",
     "host/glic_cookie_synchronizer.cc",
     "host/glic_cookie_synchronizer.h",
     "host/glic_page_handler.cc",
@@ -202,12 +211,22 @@ source_set("impl") {
     "public/glic_enabling.cc",
     "public/glic_keyed_service.cc",
     "public/glic_keyed_service_factory.cc",
+    "service/glic_instance_coordinator_impl.cc",
+    "service/glic_instance_coordinator_impl.h",
+    "service/glic_instance_impl.cc",
+    "service/glic_instance_impl.h",
     "service/glic_state_tracker.cc",
     "service/glic_state_tracker.h",
     "service/glic_ui_embedder.h",
     "service/glic_ui_types.cc",
     "service/glic_ui_types.h",
+    "service/metrics/glic_instance_coordinator_metrics.cc",
+    "service/metrics/glic_instance_coordinator_metrics.h",
     "service/metrics/glic_instance_helper_metrics.cc",
+    "service/metrics/glic_instance_metrics.cc",
+    "service/metrics/glic_instance_metrics.h",
+    "service/metrics/glic_metrics_session_manager.cc",
+    "service/metrics/glic_metrics_session_manager.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
   ]
@@ -216,29 +235,12 @@ source_set("impl") {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
     sources += [
-      "glic_profile_manager.cc",
-      "glic_settings_util.cc",
-      "host/context/glic_page_context_fetcher.cc",
       "host/context/glic_screenshot_capturer.cc",
       "host/context/glic_screenshot_capturer.h",
-      "host/context/glic_share_image_handler.cc",
-      "host/context/glic_share_image_handler.h",
-      "host/glic_annotation_manager.cc",
-      "service/glic_instance_coordinator_impl.cc",
-      "service/glic_instance_coordinator_impl.h",
-      "service/glic_instance_impl.cc",
-      "service/glic_instance_impl.h",
-      "service/metrics/glic_instance_coordinator_metrics.cc",
-      "service/metrics/glic_instance_coordinator_metrics.h",
-      "service/metrics/glic_instance_metrics.cc",
-      "service/metrics/glic_instance_metrics.h",
-      "service/metrics/glic_metrics_session_manager.cc",
-      "service/metrics/glic_metrics_session_manager.h",
     ]
 
     # Desktop only
     sources += [
-      "glic_hotkey.cc",
       "glic_occlusion_notifier.cc",
       "glic_occlusion_notifier.h",
       "host/context/glic_focused_browser_manager_impl.cc",
@@ -316,6 +318,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/application_locale_storage",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
@@ -326,6 +329,7 @@ source_set("impl") {
     "//components/language/core/common",
     "//components/metrics",
     "//components/metrics_services_manager",
+    "//components/pdf/common:constants",
     "//components/pref_registry",
     "//components/prefs",
     "//components/sessions",
@@ -379,10 +383,7 @@ source_set("impl") {
     deps += [ "//ui/ozone" ]
   }
   if (enable_pdf) {
-    deps += [
-      "//components/pdf/browser",
-      "//components/pdf/common:constants",
-    ]
+    deps += [ "//components/pdf/browser" ]
   }
 }
 

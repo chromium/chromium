@@ -24,14 +24,14 @@
 #include "media/base/media_switches.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
-#include "chrome/browser/glic/glic_profile_manager.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
 #include "chrome/browser/glic/public/glic_enabling.h"               // nogncheck
 #endif
@@ -108,8 +108,8 @@ void GlobalFeatures::PostBrowserProcessInit() {
 
 #if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
-#if !BUILDFLAG(ENABLE_GLIC_ANDROID)
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
+#if !BUILDFLAG(IS_ANDROID)
     glic_background_mode_manager_ =
         std::make_unique<glic::GlicBackgroundModeManager>(
             g_browser_process->status_tray());
@@ -188,17 +188,17 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 }
 
 void GlobalFeatures::PostMainMessageLoopRun() {
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   if (glic_background_mode_manager_) {
     glic_background_mode_manager_->Shutdown();
     glic_background_mode_manager_.reset();
   }
+#endif
+#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
   if (glic_profile_manager_) {
     glic_profile_manager_->Shutdown();
     glic_profile_manager_.reset();
   }
-#endif
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
   synthetic_trial_manager_.reset();
 #endif
   audio_process_ml_model_forwarder_.reset();

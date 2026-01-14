@@ -128,7 +128,8 @@ class GlobalFeatures {
   glic::GlicProfileManager* glic_profile_manager() {
     return glic_profile_manager_.get();
   }
-
+#endif
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
   }
@@ -211,6 +212,8 @@ class GlobalFeatures {
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
+#endif
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
 #endif
