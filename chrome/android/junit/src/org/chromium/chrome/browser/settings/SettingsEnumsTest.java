@@ -115,24 +115,16 @@ public class SettingsEnumsTest {
     private void processJarFile(
             String path, ClassLoader classLoader, Set<String> fragmentSimpleNames)
             throws IOException {
-        long start = System.currentTimeMillis();
-        int count = 0;
-        int found = 0;
         try (JarFile jarFile = new JarFile(path)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
                 if (jarEntry.getName().endsWith(".class")) {
                     String className = jarEntry.getName().replace('/', '.').replace(".class", "");
-                    if (checkAndAddClass(className, classLoader, fragmentSimpleNames)) {
-                        found++;
-                    }
-                    count++;
+                    checkAndAddClass(className, classLoader, fragmentSimpleNames);
                 }
             }
         }
-        long duration = System.currentTimeMillis() - start;
-        Log.i(TAG, duration + " ms " + count + " " + found + " " + path);
     }
 
     private boolean checkAndAddClass(
