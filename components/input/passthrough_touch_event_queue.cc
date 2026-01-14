@@ -17,6 +17,7 @@
 #include "components/input/touch_timeout_handler.h"
 #include "components/input/web_touch_event_traits.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -489,7 +490,13 @@ PassthroughTouchEventQueue::FilterBeforeForwardingImpl(
     }
   }
 
-  return PreFilterResult::kFilteredNoNonstationaryPointers;
+  // If SendEmptyGestureScrollUpdate is enabled, GestureScrollUpdates will be
+  // generated from zero delta touch moves. We need to send these events to the
+  // renderer so that we don't generate unnecessary scrolls if the touch moves
+  // were consumed (e.g. preventDefault() was called).
+  return base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate)
+             ? PreFilterResult::kUnfiltered
+             : PreFilterResult::kFilteredNoNonstationaryPointers;
 }
 
 void PassthroughTouchEventQueue::UpdateTouchConsumerStates(
