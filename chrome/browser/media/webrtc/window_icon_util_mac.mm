@@ -6,99 +6,53 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/feature_list.h"
+#include "base/check_op.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-// TODO(crbug.com/465028835): Remove these includes and the fallback code once
-// kUseGfxImageForMacWindowIcons is stable and the feature flag is removed
-#include "third_party/libyuv/include/libyuv/convert_argb.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-
-BASE_FEATURE(kUseGfxImageForMacWindowIcons,
-             "UseGfxImageForMacWindowIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
-  DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);
+  DCHECK_EQ(content::DesktopMediaID::TYPE_WINDOW, id.type);
 
-  CGWindowID ids[1];
-  ids[0] = id.id;
-  base::apple::ScopedCFTypeRef<CFArrayRef> window_id_array(CFArrayCreate(
-      nullptr, reinterpret_cast<const void**>(&ids), std::size(ids), nullptr));
-  base::apple::ScopedCFTypeRef<CFArrayRef> window_array(
-      CGWindowListCreateDescriptionFromArray(window_id_array.get()));
-  if (!window_array || 0 == CFArrayGetCount(window_array.get())) {
+  // CGWindowListCreateDescriptionFromArray takes a CFArray that contains raw
+  // CGWindowID values (not NS/CFNumbers), so create an array that has null
+  // callbacks rather than the usual kCFTypeArrayCallBacks.
+  CGWindowID window_id = id.id;
+  base::apple::ScopedCFTypeRef<CFArrayRef> window_ids(CFArrayCreate(
+      /*allocator=*/nullptr,
+      /*values=*/reinterpret_cast<const void**>(&window_id), /*numValues=*/1,
+      /*callBacks=*/nullptr));
+
+  base::apple::ScopedCFTypeRef<CFArrayRef> windows_cf(
+      CGWindowListCreateDescriptionFromArray(window_ids.get()));
+  NSArray* windows = base::apple::CFToNSPtrCast(windows_cf.get());
+
+  NSDictionary* window_dictionary =
+      base::apple::ObjCCast<NSDictionary>(windows.firstObject);
+
+  NSNumber* pid = base::apple::ObjCCast<NSNumber>(
+      window_dictionary[base::apple::CFToNSPtrCast(kCGWindowOwnerPID)]);
+  if (!pid) {
+    // This file relies heavily on the "send a message to nil and get a zero
+    // back" behavior of Objective-C, to avoid constant nil-checks. However,
+    // will NSRunningApplication return an empty image if given a zero/error
+    // pid? Explicitly nil-check for paranoia's sake.
     return gfx::ImageSkia();
   }
-
-  CFDictionaryRef window = base::apple::CFCastStrict<CFDictionaryRef>(
-      CFArrayGetValueAtIndex(window_array.get(), 0));
-  CFNumberRef pid_ref = base::apple::GetValueFromDictionary<CFNumberRef>(
-      window, kCGWindowOwnerPID);
-
-  int pid;
-  CFNumberGetValue(pid_ref, kCFNumberIntType, &pid);
 
   NSImage* icon_image =
-      [[NSRunningApplication runningApplicationWithProcessIdentifier:pid] icon];
-
-  // TODO(crbug.com/465028835): Remove this feature check and the fallback
-  // path once kUseGfxImageForMacWindowIcons is stable and the flag is removed
-  if (base::FeatureList::IsEnabled(kUseGfxImageForMacWindowIcons)) {
-    // The app may have terminated, resulting in a nil icon.
-    if (!icon_image) {
-      return gfx::ImageSkia();
-    }
-
-    return gfx::Image(icon_image).AsImageSkia();
-  }
-
-  // TODO(crbug.com/465028835): Remove the code below this line once
-  // kUseGfxImageForMacWindowIcons is stable and the flag is removed.
-
-  // Icon's NSImage defaults to the smallest which can be only 32x32.
-  NSRect proposed_rect = NSMakeRect(0, 0, 128, 128);
-  CGImageRef cg_icon_image =
-      [icon_image CGImageForProposedRect:&proposed_rect context:nil hints:nil];
-
-  // 4 components of 8 bits each.
-  if (CGImageGetBitsPerPixel(cg_icon_image) != 32 ||
-      CGImageGetBitsPerComponent(cg_icon_image) != 8) {
+      [NSRunningApplication
+          runningApplicationWithProcessIdentifier:pid.intValue]
+          .icon;
+  // Something has gone wrong; theoretically the app (and window) could have
+  // terminated while getting the icon, or perhaps there is some other issue
+  // with Launch Services. These icons are low-stakes, so an early return is
+  // fine.
+  if (!icon_image) {
     return gfx::ImageSkia();
   }
 
-  // Premultiplied alpha and last (alpha channel is next to the blue channel)
-  if (CGImageGetAlphaInfo(cg_icon_image) != kCGImageAlphaPremultipliedLast) {
-    return gfx::ImageSkia();
-  }
-
-  // Ensure BGR like.
-  CGBitmapInfo byte_order =
-      CGImageGetBitmapInfo(cg_icon_image) & kCGBitmapByteOrderInfoMask;
-  if (byte_order != kCGImageByteOrderDefault &&
-      byte_order != kCGImageByteOrder32Big) {
-    return gfx::ImageSkia();
-  }
-
-  CGDataProviderRef provider = CGImageGetDataProvider(cg_icon_image);
-  base::apple::ScopedCFTypeRef<CFDataRef> cf_data(
-      CGDataProviderCopyData(provider));
-
-  int width = CGImageGetWidth(cg_icon_image);
-  int height = CGImageGetHeight(cg_icon_image);
-  int src_stride = CGImageGetBytesPerRow(cg_icon_image);
-  const uint8_t* src_data = CFDataGetBytePtr(cf_data.get());
-
-  SkBitmap result;
-  result.allocN32Pixels(width, height, false /* no-premultiplied */);
-
-  uint8_t* pixels_data = reinterpret_cast<uint8_t*>(result.getPixels());
-
-  libyuv::ABGRToARGB(src_data, src_stride, pixels_data, result.rowBytes(),
-                     width, height);
-
-  return gfx::ImageSkia::CreateFrom1xBitmap(result);
+  return gfx::Image(icon_image).AsImageSkia();
 }
