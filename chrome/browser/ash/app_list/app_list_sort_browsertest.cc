@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -1463,8 +1464,9 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     const sk_sp<SkImage> image = SkImages::RasterFromBitmap(*icon.bitmap());
     const sk_sp<SkData> png_data =
         skia::EncodePngAsSkData(nullptr, image.get());
-    UNSAFE_TODO(
-        icon_file.Write(0, (const char*)png_data->data(), png_data->size()));
+    // SAFETY: png_data->bytes() points to a buffer of size png_data->size().
+    icon_file.Write(0, base::as_bytes(UNSAFE_BUFFERS(
+                           base::span(png_data->bytes(), png_data->size()))));
     icon_file.Close();
 
     // Prepare the app manifest file.
@@ -1479,10 +1481,10 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     base::strings::SafeSPrintf(json_buffer, icon_json, icon_size,
                                icon_file_name);
     char manifest_buffer[300];
-    int count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
-                                           app_name.c_str(), json_buffer);
-    UNSAFE_TODO(
-        EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count)));
+    size_t count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
+                                              app_name.c_str(), json_buffer);
+    EXPECT_TRUE(manifest_file.WriteAndCheck(
+        0, base::as_byte_span(manifest_buffer).first(count)));
     manifest_file.Close();
 
     return extension_path;

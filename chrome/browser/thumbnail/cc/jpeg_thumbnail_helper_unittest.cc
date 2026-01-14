@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -149,8 +150,7 @@ TEST_F(JpegThumbnailHelperTest, ReadThumbnail) {
   base::FilePath file_path = GetFile(tab_id);
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  UNSAFE_TODO(file.Write(0, reinterpret_cast<const char*>(data.value().data()),
-                         data.value().size()));
+  ASSERT_TRUE(file.WriteAndCheck(0, base::as_byte_span(data.value())));
 
   // Read the image
   base::RunLoop loop1;
@@ -187,8 +187,7 @@ TEST_F(JpegThumbnailHelperTest, DeleteThumbnail) {
   base::FilePath file_path = GetFile(tab_id);
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  UNSAFE_TODO(
-      file.Write(0, reinterpret_cast<const char*>(data->data()), data->size()));
+  ASSERT_TRUE(file.WriteAndCheck(0, base::as_byte_span(data.value())));
 
   // Delete the image
   GetInterface().Delete(tab_id);

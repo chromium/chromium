@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -129,9 +130,8 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
     ASSERT_TRUE(base::Base64Decode(base64_encoded_video, &recorded_video));
     base::File video_file(webm_video_filename,
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    size_t written = UNSAFE_TODO(
-        video_file.Write(0, recorded_video.c_str(), recorded_video.length()));
-    ASSERT_EQ(recorded_video.length(), written);
+    ASSERT_TRUE(
+        video_file.WriteAndCheck(0, base::as_byte_span(recorded_video)));
   }
 
   // Runs ffmpeg on the captured webm video and writes it to a yuv video file.
