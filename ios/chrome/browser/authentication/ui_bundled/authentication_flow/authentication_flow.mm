@@ -755,8 +755,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
           ? ChangeProfileReason::kSwitchAccounts
           : ChangeProfileReason::kManagedAccountSignIn;
 
-  // Calling switchToProfileWithIdentity will shutdown the BrowserViewWrangler
-  // and clear the browser.
+  // Calling switchToProfileWithIdentity will shutdown the
+  // BrowserLifecycleManager and clear the browser.
   _browser = nullptr;
   _browserForAuthenticationFlowInProfile = nullptr;
   _presentingViewController = nil;

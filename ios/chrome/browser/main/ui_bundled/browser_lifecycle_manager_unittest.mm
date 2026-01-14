@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
+#import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
 
 #import <UIKit/UIKit.h>
 
@@ -39,9 +39,9 @@
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
-class BrowserViewWranglerTest : public PlatformTest {
+class BrowserLifecycleManagerTest : public PlatformTest {
  protected:
-  BrowserViewWranglerTest() {
+  BrowserLifecycleManagerTest() {
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
                                                          appState:nil];
@@ -144,15 +144,15 @@ class BrowserViewWranglerTest : public PlatformTest {
       scoped_browser_list_observation_{&browser_list_observer_};
 };
 
-TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
+TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
   // `task_environment_` must outlive all objects created by BVC, because those
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
-    BrowserViewWrangler* wrangler =
-        [[BrowserViewWrangler alloc] initWithProfile:profile()
-                                          sceneState:scene_state()
-                                 applicationEndpoint:nil
-                                    settingsEndpoint:nil];
+    BrowserLifecycleManager* wrangler =
+        [[BrowserLifecycleManager alloc] initWithProfile:profile()
+                                              sceneState:scene_state()
+                                     applicationEndpoint:nil
+                                        settingsEndpoint:nil];
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -181,12 +181,12 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
   }
 }
 
-TEST_F(BrowserViewWranglerTest, TestBrowserList) {
-  BrowserViewWrangler* wrangler =
-      [[BrowserViewWrangler alloc] initWithProfile:profile()
-                                        sceneState:scene_state()
-                               applicationEndpoint:nil
-                                  settingsEndpoint:nil];
+TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
+  BrowserLifecycleManager* wrangler =
+      [[BrowserLifecycleManager alloc] initWithProfile:profile()
+                                            sceneState:scene_state()
+                                   applicationEndpoint:nil
+                                      settingsEndpoint:nil];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -194,7 +194,7 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   // to the Browser via the -mainInterface/-incognitoInterface providers.
   [wrangler createMainCoordinatorAndInterface];
 
-  // The BrowserViewWrangler creates all browser in its initializer. The
+  // The BrowserLifecycleManager creates all browser in its initializer. The
   // first created CL is the main Browser, the second one the inactive
   // Browser, and then the OTR Browser.
   EXPECT_EQ(2UL,
@@ -248,12 +248,12 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
             browser_list_observer().GetLastRemovedIncognitoBrowser());
 }
 
-TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
-  BrowserViewWrangler* wrangler =
-      [[BrowserViewWrangler alloc] initWithProfile:profile()
-                                        sceneState:scene_state()
-                               applicationEndpoint:nil
-                                  settingsEndpoint:nil];
+TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
+  BrowserLifecycleManager* wrangler =
+      [[BrowserLifecycleManager alloc] initWithProfile:profile()
+                                            sceneState:scene_state()
+                                   applicationEndpoint:nil
+                                      settingsEndpoint:nil];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -274,12 +274,12 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
 }
 
 // Tests the session restoration logic.
-TEST_F(BrowserViewWranglerTest, TestSessionRestorationLogic) {
-  BrowserViewWrangler* wrangler =
-      [[BrowserViewWrangler alloc] initWithProfile:profile()
-                                        sceneState:scene_state()
-                               applicationEndpoint:nil
-                                  settingsEndpoint:nil];
+TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
+  BrowserLifecycleManager* wrangler =
+      [[BrowserLifecycleManager alloc] initWithProfile:profile()
+                                            sceneState:scene_state()
+                                   applicationEndpoint:nil
+                                      settingsEndpoint:nil];
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.

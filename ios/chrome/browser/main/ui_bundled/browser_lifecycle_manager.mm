@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
+#import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
 
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 
-@implementation BrowserViewWrangler {
+@implementation BrowserLifecycleManager {
   raw_ptr<ProfileIOS> _profile;
 
   __weak SceneState* _sceneState;

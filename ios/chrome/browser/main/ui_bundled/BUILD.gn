@@ -65,8 +65,8 @@ source_set("scene") {
 
 source_set("ui_bundled") {
   sources = [
-    "browser_view_wrangler.h",
-    "browser_view_wrangler.mm",
+    "browser_lifecycle_manager.h",
+    "browser_lifecycle_manager.mm",
     "bvc_container_view_controller.h",
     "bvc_container_view_controller.mm",
     "wrangled_browser.h",
@@ -111,7 +111,7 @@ source_set("ui_bundled") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "browser_view_wrangler_unittest.mm",
+    "browser_lifecycle_manager_unittest.mm",
     "default_browser_promo_scene_agent_unittest.mm",
     "incognito_blocker_scene_agent_unittest.mm",
   ]

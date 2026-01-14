@@ -2,27 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BROWSER_VIEW_WRANGLER_H_
-#define IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BROWSER_VIEW_WRANGLER_H_
+#ifndef IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BROWSER_LIFECYCLE_MANAGER_H_
+#define IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BROWSER_LIFECYCLE_MANAGER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
-class Browser;
 class ProfileIOS;
 @protocol SceneCommands;
 @class SceneState;
 @protocol SettingsCommands;
 @class WrangledBrowser;
 
-// Wrangler (a class in need of further refactoring) for handling the creation
-// and ownership of Browser instances and their associated
-// BrowserViewControllers.
-// TODO(crbug.com/429356457): Rename this class to "BrowserLifecycleManager" or
-// something and reduce scope.
-@interface BrowserViewWrangler : NSObject <BrowserProviderInterface>
+// Manager for handling the creation and ownership of Browser instances and
+// their associated coordinators.
+@interface BrowserLifecycleManager : NSObject <BrowserProviderInterface>
 
 // Initialize a new instance of this class using `profile` as the primary
 // browser state for the tab models and BVCs. The Browser objects are created
@@ -82,4 +77,4 @@ class ProfileIOS;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BROWSER_VIEW_WRANGLER_H_
+#endif  // IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BROWSER_LIFECYCLE_MANAGER_H_

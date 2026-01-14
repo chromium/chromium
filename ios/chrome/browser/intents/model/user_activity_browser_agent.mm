@@ -907,7 +907,7 @@ void UserActivityBrowserAgent::HandleMultipleUrlsOpening(
   // some cases (SceneController). This retains the object while the block
   // exists. Then this block is passed around and in some cases it ends up
   // stored in BrowserViewController. This results in a memory leak that looks
-  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
+  // like this: SceneController -> BrowserLifecycleManager -> BrowserCoordinator
   // -> BrowserViewController -> SceneController
   base::OnceClosure closure =
       base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,

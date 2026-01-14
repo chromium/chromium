@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
-#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
+#import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -51,8 +51,7 @@
 @property(nonatomic, assign) ProfileIOS* profile;
 // Mocked currentInterface.
 @property(nonatomic, strong) WrangledBrowser* currentInterface;
-// BrowserViewWrangler to provide test setup for main coordinator and interface.
-@property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
+@property(nonatomic, strong) BrowserLifecycleManager* browserLifecycleManager;
 // Argument for
 // -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:.
@@ -139,12 +138,13 @@ class SceneControllerTest : public PlatformTest {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
 
-    scene_controller_.browserViewWrangler =
-        [[BrowserViewWrangler alloc] initWithProfile:profile_.get()
-                                          sceneState:scene_state_
-                                 applicationEndpoint:nil
-                                    settingsEndpoint:nil];
-    [scene_controller_.browserViewWrangler createMainCoordinatorAndInterface];
+    scene_controller_.browserLifecycleManager =
+        [[BrowserLifecycleManager alloc] initWithProfile:profile_.get()
+                                              sceneState:scene_state_
+                                     applicationEndpoint:nil
+                                        settingsEndpoint:nil];
+    [scene_controller_
+            .browserLifecycleManager createMainCoordinatorAndInterface];
 
     scene_controller_.browser = browser_.get();
     scene_controller_.profile = profile_.get();

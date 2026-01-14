@@ -96,7 +96,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
-#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
+#import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
 #import "ios/chrome/browser/main/ui_bundled/default_browser_promo_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/ui_blocker_scene_agent.h"
@@ -475,13 +475,8 @@ void OnListFamilyMembersResponse(
 // SceneActivationLevelForegroundActive.
 @property(nonatomic, assign) BOOL backgroundedSinceLastActivated;
 
-// Wrangler to handle BVC and tab model creation, access, and related logic.
-// Implements features exposed from this object through the
-// BrowserViewInformation protocol.
-// TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
-// TODO(crbug.com/429356457): Rename this to "BrowserLifecycleManager" or
-// something and reduce scope.
-@property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
+// Manages the browser lifecycle.
+@property(nonatomic, strong) BrowserLifecycleManager* browserLifecycleManager;
 
 // The coordinator used to present the Incognito interstitial on Incognito
 // third-party intents. Created in
@@ -554,7 +549,7 @@ void OnListFamilyMembersResponse(
 
 // TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
 - (WrangledBrowser*)mainInterface {
-  return self.browserViewWrangler.mainInterface;
+  return self.browserLifecycleManager.mainInterface;
 }
 
 - (ProfileIOS*)profile {
@@ -562,15 +557,15 @@ void OnListFamilyMembersResponse(
 }
 
 - (WrangledBrowser*)currentInterface {
-  return self.browserViewWrangler.currentInterface;
+  return self.browserLifecycleManager.currentInterface;
 }
 
 - (WrangledBrowser*)incognitoInterface {
-  return self.browserViewWrangler.incognitoInterface;
+  return self.browserLifecycleManager.incognitoInterface;
 }
 
 - (id<BrowserProviderInterface>)browserProviderInterface {
-  return self.browserViewWrangler;
+  return self.browserLifecycleManager;
 }
 
 - (void)setStartupParameters:(AppStartupParameters*)parameters {
@@ -1253,30 +1248,30 @@ void OnListFamilyMembersResponse(
 
 // Starts up a single chrome window and its UI.
 - (void)startUpChromeUI {
-  DCHECK(!self.browserViewWrangler);
+  DCHECK(!self.browserLifecycleManager);
   DCHECK(_sceneURLLoadingService.get());
   DCHECK(self.profile);
 
   SceneState* sceneState = self.sceneState;
   ProfileIOS* profile = self.profile;
 
-  self.browserViewWrangler =
-      [[BrowserViewWrangler alloc] initWithProfile:profile
-                                        sceneState:sceneState
-                               applicationEndpoint:self
-                                  settingsEndpoint:self];
+  self.browserLifecycleManager =
+      [[BrowserLifecycleManager alloc] initWithProfile:profile
+                                            sceneState:sceneState
+                                   applicationEndpoint:self
+                                      settingsEndpoint:self];
 
   // Create and start the BVC.
-  [self.browserViewWrangler createMainCoordinatorAndInterface];
+  [self.browserLifecycleManager createMainCoordinatorAndInterface];
 
   [self addAgents];
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
-      initWithBrowserProviderInterface:self.browserViewWrangler];
+      initWithBrowserProviderInterface:self.browserLifecycleManager];
   [sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
 
   [self activateBVCAndMakeCurrentBVCPrimary];
-  [self.browserViewWrangler loadSession];
+  [self.browserLifecycleManager loadSession];
   [self createInitialUI:[self initialUIMode]];
 
   // Make sure the GeolocationManager is created to observe permission events.
@@ -1444,8 +1439,8 @@ void OnListFamilyMembersResponse(
   // agent).
   self.sceneState.UIEnabled = NO;
 
-  [self.browserViewWrangler shutdown];
-  self.browserViewWrangler = nil;
+  [self.browserLifecycleManager shutdown];
+  self.browserLifecycleManager = nil;
 
   [self.sceneState.profileState removeObserver:self];
   _sceneURLLoadingService.reset();
@@ -1727,7 +1722,7 @@ void OnListFamilyMembersResponse(
 - (void)addAgents {
   SceneState* sceneState = self.sceneState;
   ProfileIOS* profile = self.profile;
-  Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
+  Browser* mainBrowser = self.browserLifecycleManager.mainInterface.browser;
 
   PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
 
@@ -3424,7 +3419,7 @@ using UserFeedbackDataCallback =
 // expectNewForegroundTab on the BVC first to avoid extra work and possible page
 // load side-effects for the tab being replaced.
 - (void)setCurrentInterfaceForMode:(ApplicationMode)mode {
-  DCHECK(self.browserViewWrangler);
+  DCHECK(self.browserLifecycleManager);
   BOOL incognito = mode == ApplicationMode::INCOGNITO;
   WrangledBrowser* currentInterface = self.currentInterface;
   WrangledBrowser* newInterface =
@@ -3438,7 +3433,7 @@ using UserFeedbackDataCallback =
   // application mode.
   [self updateActiveWebStateSnapshot];
 
-  self.browserViewWrangler.currentInterface = newInterface;
+  self.browserLifecycleManager.currentInterface = newInterface;
 
   if (!self.activatingBrowser) {
     [self displayCurrentBVCAndFocusOmnibox:NO];
@@ -4236,11 +4231,11 @@ using UserFeedbackDataCallback =
   }
 
   _incognitoWebStateObserver.reset();
-  [self.browserViewWrangler willDestroyIncognitoProfile];
+  [self.browserLifecycleManager willDestroyIncognitoProfile];
 }
 
 - (void)incognitoProfileCreated {
-  [self.browserViewWrangler incognitoProfileCreated];
+  [self.browserLifecycleManager incognitoProfileCreated];
 
   // There should be a new URL loading browser agent for the incognito browser,
   // so set the scene URL loading service on it.
