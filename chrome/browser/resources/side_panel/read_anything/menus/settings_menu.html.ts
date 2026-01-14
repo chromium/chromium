@@ -13,7 +13,7 @@ export function getHtml(this: SettingsMenuElement) {
 <cr-lazy-render-lit id="lazyMenu" .template='${() => html`
   <cr-action-menu id="settings-menu-dialog" non-modal>
     ${this.options_.map((item, index) => html`
-      <button class="menu-row ${item.className || ''}"
+      <button class="menu-row dropdown-item ${item.className || ''}"
           id="${item.id}"
           role="menuitem"
           data-index="${index}"

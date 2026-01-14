@@ -186,4 +186,55 @@ suite('Toolbar Settings Menu', () => {
 
     assertTrue(settingsMenu.$.lazyMenu.get().open);
   });
+
+  test('sending a key event cancels open timer', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
+    assertTrue(!!targetItem);
+    const timer = new MockTimer();
+    timer.install();
+
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    const elapsedTime = MENU_SHOW_DELAY_MS - 10;
+    timer.tick(elapsedTime);
+
+    settingsMenu.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      bubbles: true,
+      composed: true,
+    }));
+    timer.tick(elapsedTime + 20);
+    assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    timer.uninstall();
+  });
+
+  test('sending a arrow event opens submenu of focused element', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
+    assertTrue(!!targetItem);
+    targetItem.focus();
+
+    settingsMenu.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      bubbles: true,
+      composed: true,
+    }));
+    assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+  });
+
+  test('sending a arrow event does nothing on toggle items', () => {
+    const targetItem = getMenuItem(SettingsOption.LINKS);
+    assertTrue(!!targetItem);
+    targetItem.focus();
+
+    let didToggleLinks = false;
+    chrome.readingMode.onLinksEnabledToggled = () => {
+      didToggleLinks = true;
+    };
+    settingsMenu.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      bubbles: true,
+      composed: true,
+    }));
+    assertFalse(didToggleLinks);
+  });
 });

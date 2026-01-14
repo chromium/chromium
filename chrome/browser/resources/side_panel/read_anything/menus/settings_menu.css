@@ -25,7 +25,18 @@
   --iron-icon-height: 16px;
 }
 
-.menu-row:hover, .active {
+.menu-row:hover,
+.menu-row:focus-visible,
+.active {
+  background-color: var(--cr-hover-background-color);
+}
+
+/* Prevent double highlighting (hover + focus) during keyboard navigation. */
+#settings-menu-dialog.keyboard-nav .menu-row:hover {
+  background-color: transparent;
+}
+
+#settings-menu-dialog.keyboard-nav .menu-row:focus:hover {
   background-color: var(--cr-hover-background-color);
 }
 

@@ -31,7 +31,7 @@ export type {MenuStateItem} from './menus/menu_util.js';
 export type {PresentationMenuElement} from './menus/presentation_menu.js';
 export type {RateMenuElement} from './menus/rate_menu.js';
 export type {SettingsMenuElement} from './menus/settings_menu.js';
-export {MENU_SHOW_DELAY_MS} from './menus/settings_menu.js';
+export {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS} from './menus/settings_menu.js';
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export type {LanguageMenuElement} from './read_aloud/language_menu.js';
@@ -61,7 +61,7 @@ export type {VoiceSelectionMenuElement} from './read_aloud/voice_selection_menu.
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 export {WordBoundaries} from './read_aloud/word_boundaries.js';
 export {getWordCount, isRectMostlyVisible, isRectVisible, LOG_EMPTY_DELAY_MS, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout} from './shared/common.js';
-export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from './shared/keyboard_util.js';
+export {getNewIndex, isActivationKey, isArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from './shared/keyboard_util.js';
 export type {MetricsBrowserProxy} from './shared/metrics_browser_proxy.js';
 export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './shared/metrics_browser_proxy.js';
 export {ReadAnythingLogger, SpeechControls, TimeFrom} from './shared/read_anything_logger.js';

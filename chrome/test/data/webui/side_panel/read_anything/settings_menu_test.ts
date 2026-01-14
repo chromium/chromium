@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -144,5 +144,15 @@ suite('SettingsMenuElement', () => {
     targetItem.click();
     assertTrue(imagesEventWasFired);
     assertTrue(imagesEnabledTogled);
+  });
+
+  test('moving the mouse removes keyboard-nav class', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    actionMenu.classList.add(KEYBOARD_NAV_CLASS);
+    assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+    actionMenu.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
   });
 });
