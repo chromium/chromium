@@ -152,7 +152,7 @@ std::optional<size_t> Aead::Seal(base::span<const uint8_t> plaintext,
   return out_len;
 }
 
-std::optional<size_t> Aead::Open(base::span<const uint8_t> plaintext,
+std::optional<size_t> Aead::Open(base::span<const uint8_t> ciphertext,
                                  base::span<const uint8_t> nonce,
                                  base::span<const uint8_t> additional_data,
                                  base::span<uint8_t> out) const {
@@ -164,8 +164,8 @@ std::optional<size_t> Aead::Open(base::span<const uint8_t> plaintext,
   if (!EVP_AEAD_CTX_init(ctx.get(), aead_, key_->data(), key_->size(),
                          EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr) ||
       !EVP_AEAD_CTX_open(ctx.get(), out.data(), &out_len, out.size(),
-                         nonce.data(), nonce.size(), plaintext.data(),
-                         plaintext.size(), additional_data.data(),
+                         nonce.data(), nonce.size(), ciphertext.data(),
+                         ciphertext.size(), additional_data.data(),
                          additional_data.size())) {
     return std::nullopt;
   }
