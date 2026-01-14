@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.0.1...chromium-bidi-v12.1.0) (2026-01-14)
+
+
+### Features
+
+* implement `emulation.setTouchOverride` ([#3952](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3952)) ([0a69424](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0a69424946e11b03891a38585b33a6fdae9cc0a2))
+
 ## [12.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.0.0...chromium-bidi-v12.0.1) (2025-12-15)
 
 
