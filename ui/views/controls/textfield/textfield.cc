@@ -2966,25 +2966,48 @@ void Textfield::OnAfterUserAction() {
 }
 
 bool Textfield::Cut() {
-  if (!GetReadOnly() && text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD &&
-      model_->Cut()) {
-    if (controller_) {
-      controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
-    }
-    UpdateAccessibleTextSelection();
-    return true;
+  if (GetReadOnly() || text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    return false;
   }
-  return false;
+
+  bool cut = false;
+  std::u16string text;
+  if (controller_ && controller_->OnBeforeCutOrCopy(this, &text)) {
+    cut = model_->Cut(std::move(text));
+  } else {
+    cut = model_->Cut();
+  }
+  if (!cut) {
+    return false;
+  }
+
+  if (controller_) {
+    controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
+  }
+  UpdateAccessibleTextSelection();
+  return true;
 }
 
 bool Textfield::Copy() {
-  if (text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD && model_->Copy()) {
-    if (controller_) {
-      controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
-    }
-    return true;
+  if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    return false;
   }
-  return false;
+
+  bool copied = false;
+  std::u16string text;
+  if (controller_ && controller_->OnBeforeCutOrCopy(this, &text)) {
+    copied = model_->Copy(std::move(text));
+  } else {
+    copied = model_->Copy();
+  }
+  if (!copied) {
+    return false;
+  }
+
+  if (controller_) {
+    controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
+  }
+  return true;
 }
 
 bool Textfield::Paste() {

@@ -642,24 +642,36 @@ bool TextfieldModel::Redo() {
 }
 
 bool TextfieldModel::Cut() {
-  if (!HasCompositionText() && HasSelection(true) &&
-      !render_text_->obscured()) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteText(GetSelectedText());
-    DeleteSelection();
-    return true;
+  if (!CutOrCopyAllowed()) {
+    return false;
   }
-  return false;
+  return Cut(std::u16string(GetSelectedText()));
+}
+
+bool TextfieldModel::Cut(std::u16string text) {
+  if (!CutOrCopyAllowed()) {
+    return false;
+  }
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(std::move(text));
+  DeleteSelection();
+  return true;
 }
 
 bool TextfieldModel::Copy() {
-  if (!HasCompositionText() && HasSelection(true) &&
-      !render_text_->obscured()) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteText(GetSelectedText());
-    return true;
+  if (!CutOrCopyAllowed()) {
+    return false;
   }
-  return false;
+  return Copy(std::u16string(GetSelectedText()));
+}
+
+bool TextfieldModel::Copy(std::u16string text) {
+  if (!CutOrCopyAllowed()) {
+    return false;
+  }
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(std::move(text));
+  return true;
 }
 
 bool TextfieldModel::Paste() {
@@ -1043,6 +1055,11 @@ void TextfieldModel::ModifyText(
 void TextfieldModel::SetRenderTextText(std::u16string text) {
   render_text_->SetText(std::move(text));
   delegate_->OnTextChanged();
+}
+
+bool TextfieldModel::CutOrCopyAllowed() const {
+  return !HasCompositionText() && HasSelection(true) &&
+         !render_text_->obscured();
 }
 
 // static

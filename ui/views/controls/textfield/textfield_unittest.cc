@@ -131,15 +131,27 @@ class TextfieldDestroyerController : public TextfieldController {
   std::unique_ptr<Textfield> target_;
 };
 
-// Controller that intercepts paste and optionally supplies text for insertion.
-// Used to verify TextfieldController::OnBeforePaste() and OnAfterPaste().
-class TextfieldPasteInterceptController : public TextfieldController {
+// Base class used to test clipboard functionality of TextfieldController.
+class TextfieldClipboardControllerBase : public TextfieldController {
  public:
-  explicit TextfieldPasteInterceptController(std::u16string text_to_inject)
+  explicit TextfieldClipboardControllerBase(std::u16string text_to_inject)
       : text_to_inject_(std::move(text_to_inject)) {}
 
   bool on_before_called() const { return on_before_called_; }
   bool on_after_called() const { return on_after_called_; }
+
+ protected:
+  std::u16string text_to_inject_;
+  bool on_before_called_ = false;
+  bool on_after_called_ = false;
+};
+
+// Controller that intercepts paste and optionally supplies text for insertion.
+// Used to verify TextfieldController::OnBeforePaste() and OnAfterPaste().
+class TextfieldPasteInterceptController
+    : public TextfieldClipboardControllerBase {
+ public:
+  using TextfieldClipboardControllerBase::TextfieldClipboardControllerBase;
 
   bool OnBeforePaste(Textfield* sender, std::u16string* text) override {
     on_before_called_ = true;
@@ -148,11 +160,25 @@ class TextfieldPasteInterceptController : public TextfieldController {
   }
 
   void OnAfterPaste() override { on_after_called_ = true; }
+};
 
- private:
-  std::u16string text_to_inject_;
-  bool on_before_called_ = false;
-  bool on_after_called_ = false;
+// Controller that intercepts copying/cutting and optionally supplies text for
+// writing to the clipboard. Used to verify
+// TextfieldController::OnBeforeCutOrCopy() and OnAfterCutOrCopy().
+class TextfieldCutOrCopyInterceptController
+    : public TextfieldClipboardControllerBase {
+ public:
+  using TextfieldClipboardControllerBase::TextfieldClipboardControllerBase;
+
+  bool OnBeforeCutOrCopy(Textfield* sender, std::u16string* text) override {
+    on_before_called_ = true;
+    *text = text_to_inject_;
+    return true;
+  }
+
+  void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_type) override {
+    on_after_called_ = true;
+  }
 };
 
 // Class that focuses a textfield when it sees a KeyDown event.
@@ -5813,6 +5839,74 @@ TEST_F(TextfieldTest, OnBeforePasteFallbackToClipboard) {
   textfield_->ExecuteCommand(Textfield::kPaste, 0);
 
   EXPECT_EQ(textfield_->GetText(), u"hello world");
+}
+
+// Intercept copy via controller, supplying text; calls both OnBeforeCutOrCopy()
+// and OnAfterCutOrCopy().
+TEST_F(TextfieldTest, OnBeforeCopyIntercepts) {
+  InitTextfield();
+
+  TextfieldCutOrCopyInterceptController controller(u"hello world");
+  textfield_->set_controller(&controller);
+  textfield_->SetText(u"foo");
+  textfield_->SelectWord();
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"");
+
+  textfield_->ExecuteCommand(Textfield::kCopy, 0);
+  EXPECT_TRUE(controller.on_before_called());
+  EXPECT_TRUE(controller.on_after_called());
+  EXPECT_EQ(GetClipboardText(ui::ClipboardBuffer::kCopyPaste), u"hello world");
+  EXPECT_EQ(textfield_->GetText(), u"foo");
+}
+
+// When controller does not intercept, Textfield falls back to its regular
+// implementation of putting selected text in the clipboard.
+TEST_F(TextfieldTest, OnBeforeCopyFallbackToSelection) {
+  InitTextfield();
+
+  textfield_->SetText(u"foo");
+  textfield_->SelectWord();
+  EXPECT_EQ(textfield_->GetSelectedText(), u"foo");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"bar");
+  textfield_->ExecuteCommand(Textfield::kCopy, 0);
+
+  EXPECT_EQ(textfield_->GetText(), u"foo");
+  EXPECT_EQ(GetClipboardText(ui::ClipboardBuffer::kCopyPaste), u"foo");
+}
+
+// Intercept cut via controller, supplying text; calls both OnBeforeCutOrCopy()
+// and OnAfterCutOrCopy().
+TEST_F(TextfieldTest, OnBeforeCutIntercepts) {
+  InitTextfield();
+
+  TextfieldCutOrCopyInterceptController controller(u"hello world");
+  textfield_->set_controller(&controller);
+  textfield_->SetText(u"foo bar");
+  textfield_->SetEditableSelectionRange(gfx::Range(0));
+  textfield_->SelectWord();
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"");
+
+  textfield_->ExecuteCommand(Textfield::kCut, 0);
+  EXPECT_TRUE(controller.on_before_called());
+  EXPECT_TRUE(controller.on_after_called());
+  EXPECT_EQ(GetClipboardText(ui::ClipboardBuffer::kCopyPaste), u"hello world");
+  EXPECT_EQ(textfield_->GetText(), u" bar");
+}
+
+// When controller does not intercept, Textfield falls back to its regular
+// implementation of putting selected text in the clipboard and deleting the
+// selection.
+TEST_F(TextfieldTest, OnBeforeCutFallbackToClipboard) {
+  InitTextfield();
+
+  textfield_->SetText(u"foo bar");
+  textfield_->SetEditableSelectionRange(gfx::Range(0));
+  textfield_->SelectWord();
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"baz");
+  textfield_->ExecuteCommand(Textfield::kCut, 0);
+
+  EXPECT_EQ(textfield_->GetText(), u" bar");
+  EXPECT_EQ(GetClipboardText(ui::ClipboardBuffer::kCopyPaste), u"foo");
 }
 
 }  // namespace views::test
