@@ -1378,9 +1378,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // Transition to this state happens only from kActive and kPrerendering
     // states. Note that eviction from BackForwardCache does not wait for unload
     // handlers, and kInBackForwardCache moves to kReadyToBeDeleted.
-    // TODO(crbug.com/40187396): Omit unload handling on canceling
-    // prerendering, and making kPrerendering move to kReadyToBeDeleted
-    // directly.
     kRunningUnloadHandlers,
 
     // This state corresponds to when RenderFrameHost has completed running the
