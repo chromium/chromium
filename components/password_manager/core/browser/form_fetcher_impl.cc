@@ -379,8 +379,6 @@ void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
 void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
-  // TODO(crbug.com/40239372): Handle errors coming from the account
-  // store.
   if (store == client_->GetProfilePasswordStore()) {
     profile_store_backend_error_.reset();
     if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
