@@ -214,9 +214,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsSignInBrowserTest,
   // syncing for extensions is enabled.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
   EXPECT_TRUE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
 
   // Due to the long delay, the old extensions should not be promoted to an
@@ -254,8 +251,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogViewUtilsSignInBrowserTest,
   // extensions should not be syncing.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
 
   // Now simulate signing into chrome via the extension promo for the given

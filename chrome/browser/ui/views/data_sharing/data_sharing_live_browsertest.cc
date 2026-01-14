@@ -127,7 +127,7 @@ class DataSharingLiveTest : public signin::test::LiveTest {
         browser()->profile());
   }
 
-  void SignInAndTurnOnSync() {
+  void SignIn() {
     signin::test::SignInFunctions sign_in_functions =
         signin::test::SignInFunctions(
             base::BindLambdaForTesting(
@@ -142,13 +142,12 @@ class DataSharingLiveTest : public signin::test::LiveTest {
         GetTestAccounts()->GetAccount("DATA_SHARING_1");
     CHECK(test_account);
     sign_in_functions.SignInFromSettings(*test_account, 0);
-    sign_in_functions.TurnOnSync(*test_account, 0);
 
     const CoreAccountInfo& primary_account =
-        identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+        identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
     EXPECT_FALSE(primary_account.IsEmpty());
     EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
-    EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   }
 
   std::optional<tab_groups::TabGroupId> OpenTabGroupByTitle(
@@ -198,7 +197,7 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 
 // Open the share dialog of a unshared the tab group.
 IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
-  SignInAndTurnOnSync();
+  SignIn();
 
   const std::u16string unshared_group_title = u"TEST UNSHARED GROUP";
   SavedTabGroupServiceWaiter waiter(tab_group_service(), unshared_group_title);
@@ -217,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
 // Open the manage dialog of a shared tab group.
 // TODO(crbug.com/451733093): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, DISABLED_ManageSharedTabGroup) {
-  SignInAndTurnOnSync();
+  SignIn();
 
   const std::u16string shared_group_title = u"TEST SHARED GROUP";
   SavedTabGroupServiceWaiter waiter(tab_group_service(), shared_group_title);
