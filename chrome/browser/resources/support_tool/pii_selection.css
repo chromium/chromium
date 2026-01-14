@@ -1,0 +1,67 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./support_tool_shared_lit.css.js
+ * #include=cr-shared-style-lit support-tool-shared-lit
+ * #css_wrapper_metadata_end */
+
+#pii-warning-text {
+  width: 520px;
+}
+
+#radio-group {
+  width: 520px;
+}
+
+cr-radio-button {
+  color: var(--cr-title-text-color);
+  /* Override the padding to align the buttons to the text start.*/
+  padding: 8px;
+  padding-inline-start: 0;
+}
+
+#privacy-disclaimer {
+  color: var(--cr-title-text-color);
+  margin-inline-start: 24px;
+  /* Add negative margin to override the padding of the radio-button on top
+    so the disclaimer text looks connected to the radio button text.*/
+  margin-top: -16px;
+}
+
+#detected-pii-container {
+  margin-inline-start: 36px;
+  width: 520px;
+}
+
+.detected-pii-item {
+  max-width: 520px;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+
+cr-expand-button {
+  height: var(--cr-expand-button-icon-size, 20px);
+}
+
+.pii-item-collapse {
+  color: var(--cr-title-text-color);
+  margin-bottom: 4px;
+  margin-inline-start: 36px;
+  margin-top: 4px;
+}
+
+.pii-details {
+  border: none;
+  border-radius: var(--cr-card-border-radius, 4px);
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+
+cr-button {
+  margin-inline-start: 12px;
+}

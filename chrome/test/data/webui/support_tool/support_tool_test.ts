@@ -22,9 +22,10 @@ import {BrowserProxyImpl} from 'chrome://support-tool/browser_proxy.js';
 import type {DataExportResult, SupportToolElement} from 'chrome://support-tool/support_tool.js';
 import {SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import type {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 const EMAIL_ADDRESSES: string[] =
     ['testemail1@test.com', 'testemail2@test.com'];
@@ -209,7 +210,7 @@ suite('SupportToolTest', function() {
     await waitAfterNextRender(supportTool);
   });
 
-  test('support tool pages navigation', () => {
+  test('support tool pages navigation', async () => {
     const pages = supportTool.shadowRoot!.querySelector('cr-page-selector');
     assertTrue(!!pages);
 
@@ -225,13 +226,10 @@ suite('SupportToolTest', function() {
     assertEquals(pages.selected, SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     // Click on continue button to start data collection.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
-    browserProxy.whenCalled('startDataCollection').then(function([
-      issueDetails,
-      selectedDataCollectors,
-    ]) {
-      assertEquals(issueDetails.caseId, 'testcaseid');
-      assertEquals(selectedDataCollectors, DATA_COLLECTORS);
-    });
+    const [issueDetails, selectedDataCollectors] =
+        await browserProxy.whenCalled('startDataCollection');
+    assertEquals(issueDetails.caseId, 'testcaseid');
+    assertDeepEquals(selectedDataCollectors, DATA_COLLECTORS);
   });
 
   test('issue details page', () => {
@@ -247,49 +245,49 @@ suite('SupportToolTest', function() {
 
   test('data collector selection page', async () => {
     // Check the contents of data collectors page.
-    const ironListItems =
-        supportTool.$.dataCollectors.shadowRoot!.querySelector(
-                                                    'dom-repeat')!.items!;
-    assertEquals(ironListItems.length, DATA_COLLECTORS.length);
-    for (let i = 0; i < ironListItems.length; i++) {
-      const listItem = ironListItems[i];
-      assertEquals(listItem.name, DATA_COLLECTORS[i]!.name);
-      assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
-      assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
+    const dataCollectorsElement = supportTool.$.dataCollectors;
+    const checkboxElements =
+        dataCollectorsElement.shadowRoot.querySelectorAll<CrCheckboxElement>(
+            'cr-checkbox.data-collector-checkbox');
+    assertEquals(checkboxElements.length, DATA_COLLECTORS.length);
+
+    for (let i = 0; i < checkboxElements.length; i++) {
+      const checkbox = checkboxElements[i]!;
+      const dataCollector = DATA_COLLECTORS[i]!;
+      assertEquals(checkbox.textContent.trim(), dataCollector.name);
+      assertEquals(checkbox.checked, dataCollector.isIncluded);
     }
 
     const selectAllCheckbox =
-        supportTool.$.dataCollectors.shadowRoot!.getElementById(
-            'selectAllCheckbox')! as CrCheckboxElement;
+        dataCollectorsElement.shadowRoot.querySelector<CrCheckboxElement>(
+            '#selectAllCheckbox')!;
 
-    // Verify that the select all functionality works.
     selectAllCheckbox.click();
-    await selectAllCheckbox.updateComplete;
-    for (let i = 0; i < ironListItems.length; i++) {
-      assertTrue(ironListItems[i].isIncluded);
+    await microtasksFinished();
+    for (const checkbox of checkboxElements) {
+      assertTrue(checkbox.checked);
     }
 
     // Verify that the unselect all functionality works.
     selectAllCheckbox.click();
-    await selectAllCheckbox.updateComplete;
-    for (let i = 0; i < ironListItems.length; i++) {
-      assertFalse(ironListItems[i].isIncluded);
+    await microtasksFinished();
+    for (const checkbox of checkboxElements) {
+      assertFalse(checkbox.checked);
     }
   });
 
-  test('spinner page', () => {
+  test('spinner page', async () => {
     // Check the contents of spinner page.
     const spinner = supportTool.$.spinnerPage;
     spinner.shadowRoot!.getElementById('cancelButton')!.click();
-    browserProxy.whenCalled('cancelDataCollection').then(function() {
-      webUIListenerCallback('data-collection-cancelled');
-      flush();
-      // Make sure the issue details page is displayed after cancelling data
-      // collection.
-      assertEquals(
-          supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
-          SupportToolPageIndex.ISSUE_DETAILS);
-    });
+    await browserProxy.whenCalled('cancelDataCollection');
+    webUIListenerCallback('data-collection-cancelled');
+    flush();
+    // Make sure the issue details page is displayed after cancelling data
+    // collection.
+    assertEquals(
+        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
+        SupportToolPageIndex.ISSUE_DETAILS);
     assertEquals(browserProxy.getCallCount('cancelDataCollection'), 1);
   });
 
@@ -304,15 +302,15 @@ suite('SupportToolTest', function() {
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     // Check the contents of PII selection page.
     const piiSelection = supportTool.$.piiSelection;
-    browserProxy.whenCalled('startDataCollection').then(function() {
-      webUIListenerCallback('data-collection-completed', PII_ITEMS);
-      flush();
-      const items =
-          piiSelection.shadowRoot!.querySelector('dom-repeat')!.items!;
-      assertEquals(items, PII_ITEMS);
-    });
+    await browserProxy.whenCalled('startDataCollection');
+    webUIListenerCallback('data-collection-completed', PII_ITEMS);
+    flush();
+    await microtasksFinished();
+    const items =
+        piiSelection.shadowRoot.querySelectorAll('.detected-pii-item');
+    assertEquals(items.length, PII_ITEMS.length);
     assertEquals(browserProxy.getCallCount('startDataCollection'), 1);
-    piiSelection.shadowRoot!.getElementById('exportButton')!.click();
+    piiSelection.shadowRoot.getElementById('exportButton')!.click();
     await browserProxy.whenCalled('startDataExport');
     webUIListenerCallback('support-data-export-started');
     flush();

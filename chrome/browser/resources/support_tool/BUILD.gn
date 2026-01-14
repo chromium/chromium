@@ -15,9 +15,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
-    "data_collectors.ts",
     "data_export_done.ts",
-    "pii_selection.ts",
     "spinner_page.ts",
     "support_tool.ts",
     "url_generator.ts",
@@ -25,16 +23,22 @@ build_webui("build") {
 
   ts_files = [
     "browser_proxy.ts",
+    "data_collectors.html.ts",
+    "data_collectors.ts",
+    "issue_details.html.ts",
+    "issue_details.ts",
+    "pii_selection.html.ts",
+    "pii_selection.ts",
     "support_tool_page_mixin.ts",
     "support_tool_page_mixin_lit.ts",
-    "issue_details.ts",
-    "issue_details.html.ts",
   ]
 
   css_files = [
+    "data_collectors.css",
+    "issue_details.css",
+    "pii_selection.css",
     "support_tool_shared.css",
     "support_tool_shared_lit.css",
-    "issue_details.css",
   ]
 
   icons_html_files = [ "icons.html" ]
