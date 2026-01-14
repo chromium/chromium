@@ -146,10 +146,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 
   Node* NodeForHitTest() const final;
-  bool HitTestChildren(HitTestResult&,
-                       const HitTestLocation&,
-                       const PhysicalOffset& accumulated_offset,
-                       HitTestPhase) override;
 
   void AddOutlineRects(OutlineRectCollector&,
                        LayoutObject::OutlineInfo*,

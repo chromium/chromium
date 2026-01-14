@@ -456,59 +456,6 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
   return false;
 }
 
-bool LayoutBlock::HitTestChildren(HitTestResult& result,
-                                  const HitTestLocation& hit_test_location,
-                                  const PhysicalOffset& accumulated_offset,
-                                  HitTestPhase phase) {
-  NOT_DESTROYED();
-  DCHECK(!ChildrenInline());
-
-  if (PhysicalFragmentCount() && CanTraversePhysicalFragments()) {
-    DCHECK(!Parent()->CanTraversePhysicalFragments());
-    DCHECK_LE(PhysicalFragmentCount(), 1u);
-    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
-    DCHECK(fragment);
-    DCHECK(!fragment->HasItems());
-    return BoxFragmentPainter(*fragment).NodeAtPoint(result, hit_test_location,
-                                                     accumulated_offset, phase);
-  }
-
-  PhysicalOffset scrolled_offset = accumulated_offset;
-  if (IsScrollContainer())
-    scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
-  HitTestPhase child_hit_test = phase;
-  if (phase == HitTestPhase::kDescendantBlockBackgrounds)
-    child_hit_test = HitTestPhase::kSelfBlockBackground;
-  for (LayoutBox* child = LastChildBox(); child;
-       child = child->PreviousSiblingBox()) {
-    if (child->HasSelfPaintingLayer() || child->IsColumnSpanAll())
-      continue;
-
-    PhysicalOffset child_accumulated_offset =
-        scrolled_offset + child->PhysicalLocation();
-    bool did_hit;
-    if (child->IsFloating()) {
-      if (phase != HitTestPhase::kFloat) {
-        continue;
-      }
-      // Hit-test the floats in regular tree order if this is LayoutNG. Only
-      // legacy layout uses the FloatingObjects list.
-      did_hit = child->HitTestAllPhases(result, hit_test_location,
-                                        child_accumulated_offset);
-    } else {
-      did_hit = child->NodeAtPoint(result, hit_test_location,
-                                   child_accumulated_offset, child_hit_test);
-    }
-    if (did_hit) {
-      UpdateHitTestResult(result,
-                          hit_test_location.Point() - accumulated_offset);
-      return true;
-    }
-  }
-
-  return false;
-}
-
 PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();

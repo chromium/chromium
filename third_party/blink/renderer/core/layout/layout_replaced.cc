@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -43,11 +45,13 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -116,6 +120,100 @@ void LayoutReplaced::NaturalSizeChanged() {
   NOT_DESTROYED();
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
+}
+
+bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
+                                 const HitTestLocation& hit_test_location,
+                                 const PhysicalOffset& accumulated_offset,
+                                 HitTestPhase phase) {
+  NOT_DESTROYED();
+  if (!MayIntersect(result, hit_test_location, accumulated_offset)) {
+    return false;
+  }
+
+  if (phase == HitTestPhase::kForeground && !HasSelfPaintingLayer() &&
+      HitTestOverflowControl(result, hit_test_location, accumulated_offset)) {
+    return true;
+  }
+
+  bool skip_children = (result.GetHitTestRequest().GetStopNode() == this) ||
+                       ChildPaintBlockedByDisplayLock();
+  if (!skip_children && ShouldClipOverflowAlongEitherAxis()) {
+    // PaintLayer::HitTestFragmentsWithPhase() checked the fragments'
+    // foreground rect for intersection if a layer is self painting,
+    // so only do the overflow clip check here for non-self-painting layers.
+    if (!HasSelfPaintingLayer() &&
+        !hit_test_location.Intersects(OverflowClipRect(
+            accumulated_offset, kExcludeOverlayScrollbarSizeForHitTesting))) {
+      skip_children = true;
+    }
+    if (!skip_children && StyleRef().HasBorderRadius()) {
+      PhysicalRect bounds_rect(accumulated_offset, StitchedSize());
+      skip_children = !hit_test_location.Intersects(
+          ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+              StyleRef(), bounds_rect));
+    }
+  }
+
+  if (!skip_children &&
+      HitTestChildren(result, hit_test_location, accumulated_offset, phase)) {
+    return true;
+  }
+
+  if (StyleRef().HasBorderRadius() &&
+      HitTestClippedOutByBorder(hit_test_location, accumulated_offset)) {
+    return false;
+  }
+
+  // Now hit test ourselves.
+  if (IsInSelfHitTestingPhase(phase) &&
+      VisibleToHitTestRequest(result.GetHitTestRequest())) {
+    PhysicalRect bounds_rect;
+    if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
+      bounds_rect = VisualOverflowRectIncludingFilters();
+    } else {
+      bounds_rect = PhysicalBorderBoxRect();
+    }
+    bounds_rect.Move(accumulated_offset);
+    if (hit_test_location.Intersects(bounds_rect)) {
+      UpdateHitTestResult(result,
+                          hit_test_location.Point() - accumulated_offset);
+      if (result.AddNodeToListBasedTestResult(NodeForHitTest(),
+                                              hit_test_location,
+                                              bounds_rect) == kStopHitTesting) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+bool LayoutReplaced::HitTestChildren(HitTestResult& result,
+                                     const HitTestLocation& hit_test_location,
+                                     const PhysicalOffset& accumulated_offset,
+                                     HitTestPhase phase) const {
+  NOT_DESTROYED();
+
+  for (LayoutObject* child = SlowLastChild(); child;
+       child = child->PreviousSibling()) {
+    if (child->HasLayer() &&
+        To<LayoutBoxModelObject>(child)->Layer()->IsSelfPaintingLayer()) {
+      continue;
+    }
+
+    PhysicalOffset child_accumulated_offset = accumulated_offset;
+    if (auto* box = DynamicTo<LayoutBox>(child)) {
+      child_accumulated_offset += box->PhysicalLocation();
+    }
+
+    if (child->NodeAtPoint(result, hit_test_location, child_accumulated_offset,
+                           phase)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void LayoutReplaced::Paint(const PaintInfo& paint_info) const {

@@ -675,30 +675,6 @@ Node* LayoutBlockFlow::NodeForHitTest() const {
   return LayoutBlock::NodeForHitTest();
 }
 
-bool LayoutBlockFlow::HitTestChildren(HitTestResult& result,
-                                      const HitTestLocation& hit_test_location,
-                                      const PhysicalOffset& accumulated_offset,
-                                      HitTestPhase phase) {
-  NOT_DESTROYED();
-  PhysicalOffset scrolled_offset = accumulated_offset;
-  if (IsScrollContainer())
-    scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
-
-  // TODO(1229581): Layout objects that don't allow fragment traversal for paint
-  // and hit-testing (see CanTraversePhysicalFragments()) still end up here. We
-  // may even end up here if ChildrenInline(). That's just the initial state of
-  // a block, though. As soon as a non-fragment-traversale object gets children,
-  // they will be blocks, and *they* will be fragment-traversable.
-  DCHECK(!ChildrenInline() || !FirstChild());
-  if (!ChildrenInline() &&
-      LayoutBlock::HitTestChildren(result, hit_test_location,
-                                   accumulated_offset, phase)) {
-    return true;
-  }
-
-  return false;
-}
-
 void LayoutBlockFlow::AddOutlineRects(
     OutlineRectCollector& collector,
     LayoutObject::OutlineInfo* info,

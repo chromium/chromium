@@ -536,15 +536,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HitTestAllPhases(HitTestResult&,
                         const HitTestLocation&,
                         const PhysicalOffset& accumulated_offset) final;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
-  bool HasHitTestableOverflow() const;
+
   // Fast check if |NodeAtPoint| may find a hit.
   bool MayIntersect(const HitTestResult& result,
                     const HitTestLocation& hit_test_location,
                     const PhysicalOffset& accumulated_offset) const;
+  bool HasHitTestableOverflow() const;
 
   LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
   bool HasOverrideContainingBlockContentLogicalWidth() const;
@@ -1289,11 +1286,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       unsigned max_depth_to_test) const;
   virtual bool ComputeBackgroundIsKnownToBeObscured() const;
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override;
-
-  virtual bool HitTestChildren(HitTestResult&,
-                               const HitTestLocation&,
-                               const PhysicalOffset& accumulated_offset,
-                               HitTestPhase);
 
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 
