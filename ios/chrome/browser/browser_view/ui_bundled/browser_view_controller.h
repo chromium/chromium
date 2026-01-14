@@ -25,6 +25,7 @@
 
 @class BookmarksCoordinator;
 @class BrowserContentViewController;
+@protocol BWGCommands;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -63,6 +64,7 @@ typedef struct {
   id<PopupMenuCommands> popupMenuCommandsHandler;
   id<SceneCommands> sceneHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
+  id<BWGCommands> geminiHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
   raw_ptr<UrlLoadingBrowserAgent> urlLoadingBrowserAgent;

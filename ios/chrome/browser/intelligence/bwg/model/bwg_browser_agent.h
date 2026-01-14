@@ -18,15 +18,11 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
 class Browser;
 
 enum class PageContextWrapperError;
-
-namespace ios::provider {
-enum class BWGPageContextComputationState;
-enum class BWGPageContextAttachmentState;
-}  // namespace ios::provider
 
 namespace optimization_guide::proto {
 class PageContext;
@@ -102,6 +98,14 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Dismisses the floaty and resets the Gemini flow.
   void DismissFloaty();
 
+  // Hide Gemini floaty. When in a hidden state, the floaty view is dismissed
+  // but still persists in memory and needs to be properly cleaned up. Properly
+  // cleaning up the floaty can be done by resetting the Gemini instance.
+  void HideFloatyIfInvoked();
+
+  // Show Gemini floaty. Used to re-show an invoked Gemini floaty.
+  void ShowFloatyIfInvoked();
+
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;
@@ -161,6 +165,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   void FullscreenControllerWillShutDown(
       FullscreenController* controller) override;
 
+  // Returns true if the user has completed the FRE.
+  bool HasCompletedFirstRun();
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -186,8 +193,17 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // updates related to the Gemini overlay.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
 
-  // Returns true if the user has completed the FRE.
-  bool HasCompletedFirstRun();
+  // Used to track the last view state of an invoked floaty. Used to show a
+  // hidden floaty with the previous view state.
+  ios::provider::GeminiViewState last_view_state_ =
+      ios::provider::GeminiViewState::kUnknown;
+
+  // Whether the floaty is currently invoked.
+  bool is_floaty_invoked_ = false;
+
+  // Whether the floaty is temporarily hidden. Used to hide the floaty without
+  // triggering logic related to ending floaty persistence.
+  bool is_floaty_temporarily_hidden_ = false;
 
   // Weak pointer factory.
   base::WeakPtrFactory<BwgBrowserAgent> weak_factory_{this};

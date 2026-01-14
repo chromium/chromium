@@ -131,6 +131,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
@@ -1433,6 +1434,8 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(_dispatcher, SceneCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
+  _viewControllerDependencies.geminiHandler =
+      HandlerForProtocol(_dispatcher, BWGCommands);
   _viewControllerDependencies.isOffTheRecord = profile->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent = _urlLoadingBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
@@ -3269,6 +3272,26 @@ const char kChromeAppStoreUrl[] =
                   fromEntryPoint:entryPoint
                completionHandler:completion];
   [_geminiFirstRunCoordinator start];
+}
+
+- (void)hideFloatyIfInvoked {
+  BwgBrowserAgent* geminiBrowserAgent =
+      BwgBrowserAgent::FromBrowser(self.browser);
+  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
+    return;
+  }
+
+  geminiBrowserAgent->HideFloatyIfInvoked();
+}
+
+- (void)showFloatyIfInvoked {
+  BwgBrowserAgent* geminiBrowserAgent =
+      BwgBrowserAgent::FromBrowser(self.browser);
+  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
+    return;
+  }
+
+  geminiBrowserAgent->ShowFloatyIfInvoked();
 }
 
 #pragma mark - PromosManagerCommands

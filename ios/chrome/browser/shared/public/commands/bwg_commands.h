@@ -14,7 +14,7 @@ enum class EntryPoint;
 }
 
 // Commands relating to the BWG flow.
-@protocol BWGCommands
+@protocol BWGCommands <NSObject>
 
 // Starts the Gemini flow with an entry point.
 - (void)startGeminiFlowWithEntryPoint:(gemini::EntryPoint)entryPoint;
@@ -29,6 +29,13 @@ enum class EntryPoint;
 // Attempts to display the automatic BWG promo depending on whether the active
 // web state is eligible. If the page is ineligible, does nothing.
 - (void)showBWGPromoIfPageIsEligible;
+
+// Hide Gemini floaty. When in a hidden state, the floaty still persists in
+// memory and needs to be properly cleaned up.
+- (void)hideFloatyIfInvoked;
+
+// Show Gemini floaty. Used to re-show an invoked Gemini floaty.
+- (void)showFloatyIfInvoked;
 
 // Starts the FRE flow with a completion block.
 - (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion

@@ -314,7 +314,34 @@ void BwgBrowserAgent::DismissFloaty() {
   if (gemini_tab_helper) {
     gemini_tab_helper->SetBwgUiShowing(false);
   }
+
+  // If the floaty is temporarily hidden i.e. as part of a view controller being
+  // shown underneath the Gemini floaty, don't clean up and reset internal
+  // Gemini properties. Clean up should occur if a user taps the floaty to
+  // dismiss it or the browser agent destructing.
+  if (is_floaty_temporarily_hidden_) {
+    return;
+  }
+
+  is_floaty_invoked_ = false;
   ios::provider::ResetGemini();
+}
+
+void BwgBrowserAgent::HideFloatyIfInvoked() {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+  is_floaty_temporarily_hidden_ = true;
+  last_view_state_ = ios::provider::GetCurrentGeminiViewState();
+  ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden);
+}
+
+void BwgBrowserAgent::ShowFloatyIfInvoked() {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+  is_floaty_temporarily_hidden_ = false;
+  ios::provider::UpdateGeminiViewState(last_view_state_);
 }
 
 #pragma mark - TabsDependencyInstaller
@@ -458,6 +485,8 @@ void BwgBrowserAgent::PresentFloatyWithState(
   // Start the overlay and update the tab helper to reflect this.
   ios::provider::StartBwgOverlay(config);
   gemini_tab_helper->SetBwgUiShowing(true);
+  last_view_state_ = ios::provider::GetCurrentGeminiViewState();
+  is_floaty_invoked_ = true;
 }
 
 UIImage* BwgBrowserAgent::FetchPageFavicon() {

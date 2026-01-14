@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_broadcasting_util.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -100,6 +102,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -316,6 +319,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // Command handler for find in page commands.
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
 
+// Command handler for Gemini commands.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -388,6 +394,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
     self.sceneHandler = dependencies.sceneHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
+    self.geminiHandler = dependencies.geminiHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _visibilityState = BrowserViewVisibilityState::kNotInViewHierarchy;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
@@ -1121,6 +1128,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                            completion:(void (^)())completion {
   self.dismissingModal = YES;
   self.visibilityState = BrowserViewVisibilityState::kVisible;
+
   __weak BrowserViewController* weakSelf = self;
   [super dismissViewControllerAnimated:flag
                             completion:^{
@@ -1129,6 +1137,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                               if (completion) {
                                 completion();
                               }
+                              [strongSelf showGeminiFloatyIfInvoked];
                             }];
 }
 
@@ -1198,15 +1207,19 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // would be changed back to `kVisible` afterwards. Fix the bug and update the
   // visibility state.
 
+  __weak BrowserViewController* weakSelf = self;
   void (^superCall)() = ^{
+    if (weakSelf) {
+      [weakSelf.geminiHandler hideFloatyIfInvoked];
+    }
     [super presentViewController:viewControllerToPresent
                         animated:flag
                       completion:finalCompletionHandler];
   };
   // TODO(crbug.com/40628488): The Default Browser Promo is
   // currently the only presented controller that allows interaction with the
-  // rest of the App while they are being presented. Dismiss it in case the user
-  // or system has triggered another presentation.
+  // rest of the App while they are being presented. Dismiss it in case the
+  // user or system has triggered another presentation.
   if ([self.nonModalPromoPresentationDelegate defaultNonModalPromoIsShowing]) {
     self.visibilityState = BrowserViewVisibilityState::kVisible;
     [self.nonModalPromoPresentationDelegate
@@ -1669,6 +1682,18 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
         [self.typingShield setHidden:YES];
       }];
+}
+
+// Helper method for dismissal block when attempting to show the Gemini floaty
+// if invoked.
+- (void)showGeminiFloatyIfInvoked {
+  // The dispatcher may not be fully connected during shutdown, so selectors may
+  // be unrecognized.
+  if (![self.geminiHandler respondsToSelector:@selector(showFloatyIfInvoked)]) {
+    return;
+  }
+
+  [self.geminiHandler showFloatyIfInvoked];
 }
 
 #pragma mark - Private Methods: UI Configuration, update and Layout
