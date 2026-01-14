@@ -107,6 +107,8 @@ static_library("lzma_sdk") {
     "C/LzHash.h",
     "C/Lzma2Dec.c",
     "C/Lzma2Dec.h",
+    "C/Lzma2Enc.c",
+    "C/Lzma2Enc.h",
     "C/LzmaDec.c",
     "C/LzmaDec.h",
     "C/LzmaEnc.c",
@@ -143,6 +145,8 @@ static_library("lzma_sdk_xz") {
     "C/XzCrc64.h",
     "C/XzCrc64Opt.c",
     "C/XzDec.c",
+    "C/XzEnc.c",
+    "C/XzEnc.h",
     "C/XzIn.c",
   ]
 

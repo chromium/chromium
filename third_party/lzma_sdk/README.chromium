@@ -11,7 +11,7 @@ Shipped: yes
 CPEPrefix: cpe:2.3:a:7-zip:7-zip:25.01:*:*:*:*:*:*:*
 
 Description:
-This contains a part of LZMA SDK 25.01.
+This contains a part of LZMA SDK 25.01. It builds only in single-threaded mode.
 
 Local Modifications:
 The original code can be found at https://www.7-zip.org/a/lzma2501.7z.
