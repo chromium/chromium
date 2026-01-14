@@ -158,6 +158,9 @@ BASE_FEATURE(kUseSurfaceLayerForVideoDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebViewNewInvalidateHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebViewNewInvalidateHeuristicForTV,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled and the device's SOC manufacturer is in the allowlist, WebView
 // reports the set of threads involved in frame production to HWUI, and they're
 // included in the HWUI ADPF session.
@@ -417,7 +420,7 @@ bool ShouldWebRtcLogCapturePipeline() {
 bool UseWebViewNewInvalidateHeuristic() {
   // For Android TVs we bundle this with WebViewSurfaceControlForTV.
   if (base::android::device_info::is_tv()) {
-    return base::FeatureList::IsEnabled(kWebViewSurfaceControlForTV);
+    return base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristicForTV);
   }
 
   return base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristic);
