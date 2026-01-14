@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
@@ -40,7 +42,8 @@ BitmapImageMetrics::StringToDecodedImageType(const String& type) {
     return BitmapImageMetrics::DecodedImageType::kAVIF;
 #endif
 #if BUILDFLAG(ENABLE_JXL_DECODER)
-  if (type == "jxl") {
+  if (type == "jxl" &&
+      base::FeatureList::IsEnabled(features::kJXLImageFormat)) {
     return BitmapImageMetrics::DecodedImageType::kJXL;
   }
 #endif
@@ -62,7 +65,8 @@ void BitmapImageMetrics::CountDecodedImageType(const String& type,
       use_counter->CountUse(WebFeature::kAVIFImage);
 #endif
 #if BUILDFLAG(ENABLE_JXL_DECODER)
-    } else if (type == "jxl") {
+    } else if (type == "jxl" &&
+               base::FeatureList::IsEnabled(features::kJXLImageFormat)) {
       use_counter->CountWebDXFeature(WebDXFeature::kJpegxl);
 #endif
     }
