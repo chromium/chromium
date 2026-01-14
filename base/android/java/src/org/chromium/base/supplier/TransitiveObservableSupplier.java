@@ -37,17 +37,18 @@ class TransitiveObservableSupplier<
     // referenced by mCurrentTargetSupplier. When this value is changed, the observer must be
     // removed.
     private @Nullable NullableObservableSupplier<ChildT> mCurrentTargetSupplier;
-    private boolean mHasNonDefaultValue;
+    private final @Nullable ChildT mDefaultValue;
 
     // Create using ObservableSuppliers.createTransitive().
     TransitiveObservableSupplier(
             NullableObservableSupplier<ParentT> parentSupplier,
             Function<ParentT, FuncT> unwrapFunction,
-            ChildT initialValue,
+            ChildT defaultValue,
             boolean allowSetToNull) {
-        super(initialValue, allowSetToNull);
+        super(defaultValue, allowSetToNull);
         mParentSupplier = parentSupplier;
         mUnwrapFunction = unwrapFunction;
+        mDefaultValue = defaultValue;
         assertCompatibleSupplier(parentSupplier);
     }
 
@@ -76,7 +77,8 @@ class TransitiveObservableSupplier<
     @Override
     public ChildT get() {
         // If we have no observers, our copy of the value is not kept current.
-        if (!super.hasObservers()) {
+        // Also - do not call any delegates after destroy(), since it might not be safe to do so.
+        if (mObservers != null && mObservers.isEmpty()) {
             ChildT ret = null;
             ParentT parentValue = mParentSupplier.get();
             if (parentValue != null) {
@@ -87,13 +89,13 @@ class TransitiveObservableSupplier<
                     ret = targetSupplier.get();
                 }
             }
-            // Special case: Monotonic supplier that has not yet transitioned from null.
-            if (ret == null && !mHasNonDefaultValue && Boolean.FALSE.equals(mAllowSetToNull)) {
-                return super.get();
+            if (ret == null) {
+                ret = mDefaultValue;
             }
-            // Call super.set() for null checks.
-            mHasNonDefaultValue = true;
-            set(ret);
+            // Call set to run null check.
+            if (ret != mObject) {
+                set(ret);
+            }
         }
         // Call super.get() for thread checks.
         return super.get();
@@ -102,7 +104,8 @@ class TransitiveObservableSupplier<
     private void assertCompatibleSupplier(NullableObservableSupplier<?> other) {
         // Ensure that if we are non-null or monotonic, that the transitive supplier is non-null or
         // monotonic.
-        assert !Boolean.FALSE.equals(mAllowSetToNull)
+        assert mDefaultValue != null
+                        || !Boolean.FALSE.equals(mAllowSetToNull)
                         || !Boolean.TRUE.equals(BaseObservableSupplierImpl.allowsSetToNull(other))
                 : "Root supplier set as non-null, but the transitive one is not.";
     }
@@ -115,19 +118,15 @@ class TransitiveObservableSupplier<
      */
     @NullUnmarked // Needs to work where ChildT is non-null or nullable.
     private void onParentSupplierChange(ParentT parentValue) {
-        ChildT targetValue = null;
         if (mCurrentTargetSupplier != null) {
             mCurrentTargetSupplier.removeObserver(mOnTargetSupplierChangeCallback);
-            targetValue = null;
-        } else if (!mHasNonDefaultValue) {
-            // Use default value if there was one.
-            targetValue = super.get();
         }
 
         // Keep track of the current target supplier, because if this ever changes, we'll need to
         // remove our observer from it.
         mCurrentTargetSupplier = parentValue == null ? null : mUnwrapFunction.apply(parentValue);
 
+        ChildT targetValue = null;
         if (mCurrentTargetSupplier != null) {
             assertCompatibleSupplier(mCurrentTargetSupplier);
 
@@ -138,8 +137,10 @@ class TransitiveObservableSupplier<
             // our delegate eagerly we avoid both problems.
             targetValue = mCurrentTargetSupplier.addSyncObserver(mOnTargetSupplierChangeCallback);
         }
+        if (targetValue == null) {
+            targetValue = mDefaultValue;
+        }
         if (targetValue != mObject) {
-            mHasNonDefaultValue = true;
             set(targetValue);
         }
     }

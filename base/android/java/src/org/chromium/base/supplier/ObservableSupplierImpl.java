@@ -10,6 +10,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -33,7 +34,7 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
                 SettableObservableSupplier<T>,
                 SettableNonNullObservableSupplier<T> {
     protected final ThreadChecker mThreadChecker = new ThreadChecker();
-    protected final ObserverList<Callback<T>> mObservers = new ObserverList<>();
+    protected @Nullable ObserverList<Callback<T>> mObservers = new ObserverList<>();
 
     @Deprecated // Migrate to ObservableSuppliers.*
     public ObservableSupplierImpl() {
@@ -54,6 +55,7 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
 
     @Override
     public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
+        assert mObservers != null; // Check not destroyed.
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
@@ -78,11 +80,15 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
 
     @Override
     public void removeObserver(Callback<T> obs) {
-        mObservers.removeObserver(obs);
+        // Check not destroyed.
+        if (mObservers != null) {
+            mObservers.removeObserver(obs);
+        }
     }
 
     @Override
     public void set(T object) {
+        assert mObservers != null; // Check not destroyed.
         mThreadChecker.assertOnValidThread();
         assert object != null || !Boolean.FALSE.equals(mAllowSetToNull)
                 : "set(null) called on a non-nullable supplier";
@@ -94,11 +100,12 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
-        mObservers.clear();
+        mObservers = null;
         mObject = null;
     }
 
-    protected final void callObservers(T prevValue) {
+    @RequiresNonNull("mObservers")
+    private void callObservers(T prevValue) {
         T value = mObject;
         if (Objects.equals(prevValue, value)) {
             return;
@@ -119,7 +126,7 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
     /** Returns if there are any observers currently. */
     @Override
     public int getObserverCount() {
-        return mObservers.size();
+        return mObservers == null ? 0 : mObservers.size();
     }
 
     /** Returns whether the observer should be notified on being added. */
