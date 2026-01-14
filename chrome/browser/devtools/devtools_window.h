@@ -23,13 +23,12 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #endif
 
 class Browser;
 class BrowserWindowInterface;
-class BrowserList;
 class BrowserWindow;
 class DevToolsWindowTesting;
 class DevToolsEventForwarder;
@@ -95,7 +94,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                        public content::WebContentsDelegate,
                        public content::WebContentsObserver,
 #if !BUILDFLAG(IS_ANDROID)
-                       public BrowserListObserver,
+                       public BrowserCollectionObserver,
 #endif
                        public infobars::InfoBarManager::Observer,
                        public policy::PolicyService::Observer {
@@ -491,8 +490,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       content::NavigationHandle* navigation_handle) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 #endif
 
   // infobars::InfoBarManager::Observer
@@ -600,8 +599,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   int checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
 #if !BUILDFLAG(IS_ANDROID)
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 #endif
 
   PrefChangeRegistrar pref_change_registrar_;

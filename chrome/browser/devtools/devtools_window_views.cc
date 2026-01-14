@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -136,7 +137,8 @@ void DevToolsWindow::RegisterModalDialogManager(
 
   // Observer `browser` destruction/removal to reset `SetDelegate(nullptr)`
   // before the dialog manager's `raw_ptr` becomes dangling.
-  if (!browser_list_observation_.IsObserving()) {
-    browser_list_observation_.Observe(BrowserList::GetInstance());
+  if (!browser_collection_observation_.IsObserving()) {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 }

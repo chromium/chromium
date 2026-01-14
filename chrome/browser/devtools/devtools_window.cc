@@ -517,7 +517,7 @@ DevToolsWindow::~DevToolsWindow() {
   capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
 #if !BUILDFLAG(IS_ANDROID)
-  browser_list_observation_.Reset();
+  browser_collection_observation_.Reset();
 #endif
 
   DevToolsWindows& instances = GetDevToolsWindowInstances();
@@ -2158,13 +2158,14 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void DevToolsWindow::OnBrowserRemoved(Browser* browser) {
+void DevToolsWindow::OnBrowserClosed(BrowserWindowInterface* browser) {
   // If the modal dialog manager has this browser as its delegate, clear the
-  // reference.
+  // reference before it becomes dangling.
   web_modal::WebContentsModalDialogManager* dialog_manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(
           main_web_contents_);
-  if (dialog_manager && dialog_manager->delegate() == browser) {
+  if (dialog_manager &&
+      dialog_manager->delegate() == browser->GetBrowserForMigrationOnly()) {
     dialog_manager->SetDelegate(nullptr);
   }
 }
