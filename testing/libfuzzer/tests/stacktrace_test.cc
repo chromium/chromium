@@ -64,7 +64,8 @@ TEST(FuzzerStacktraceTest, SymbolizesUAF) {
       R"(ERROR: AddressSanitizer: heap-use-after-free on address 0x[0-9a-f]+.*)",
       R"(READ of size 4 at 0x[0-9a-f]+ thread T[0-9]+)",
 #if BUILDFLAG(IS_WIN)
-      R"(#0 0x[0-9a-f]+ in TriggerUAF [A-Z]:\\.*testing\\libfuzzer\\tests\\stacktrace_test_fuzzer.cc:[0-9]+)",
+      R"(#0 0x[0-9a-f]+ in TriggerUAF(\(void\))? [A-Z]:\\.*testing\\libfuzzer)"
+      R"(\\tests\\stacktrace_test_fuzzer.cc:[0-9]+)",
 #elif BUILDFLAG(IS_MAC)
       R"(#0 0x[0-9a-f]+ in TriggerUAF\(\) \(.*/stacktrace_test_fuzzer:arm64\+0x[0-9a-f]+\))",
 #else
@@ -171,12 +172,24 @@ std::string CheckFailureStackRegexChromeOs() {
   });
 }
 
+// module!TriggerCheck [0x7ff71967114b+ab] (${PATH}stacktrace_test_fuzzer.cc:24)
+constexpr std::string_view kWinTriggerCheckRegex =
+    R"((\w+!)?TriggerCheck\s+\[0x[0-9a-f]+\+[0-9a-f]+\].*)";
+// module!LLVMFuzzerTestOneInput [0x7ff719671731+461]
+// ${PATH}stacktrace_test_fuzzer.cc:30)
+constexpr std::string_view kWinLLVMEntryRegex =
+    R"((\w+!)?LLVMFuzzerTestOneInput\s+\[0x[0-9a-f]+\+[0-9a-f]+\].*)";
+// RtlUserThreadStart [0x7ff8f3bac53c+2c]
+constexpr std::string_view kWinTopOfStackRegex =
+    R"((\w+!)?RtlUserThreadStart.*)";
 std::string CheckFailureStackRegexWin() {
   return JoinRegexLines({
       kCheckFailedLineRegex,
-      // TODO(https:/crbug.com/40948553): Expect symbols instead.
-      R"(Symbols not available\. Dumping unresolved backtrace:)",
-      R"(0x[0-9a-f]+)",
+      kSkipLines,
+      kWinTriggerCheckRegex,
+      kWinLLVMEntryRegex,
+      kSkipLines,
+      kWinTopOfStackRegex,
   });
 }
 
