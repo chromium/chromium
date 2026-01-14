@@ -23,6 +23,7 @@ using device::CoseAlgorithmIdentifier;
 using device::PublicKeyCredentialParams;
 using testing::_;
 using testing::DoAll;
+using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
 using testing::Return;
@@ -130,7 +131,7 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
 
 TEST_F(BrowserBoundKeyStoreDesktopTest, DeleteBrowserBoundKey) {
   EXPECT_CALL(*key_provider(),
-              DeleteSigningKeySlowly(base::span<const uint8_t>(kCredentialId)));
+              DeleteSigningKeysSlowly(ElementsAre(kCredentialId)));
   key_store()->DeleteBrowserBoundKey(kCredentialId);
 }
 
@@ -138,7 +139,7 @@ TEST_F(BrowserBoundKeyStoreDesktopTest, DeleteBrowserBoundKey_NullKeyProvider) {
   scoped_refptr<BrowserBoundKeyStore> key_store =
       base::MakeRefCounted<BrowserBoundKeyStoreDesktop>(nullptr);
 
-  EXPECT_CALL(*key_provider(), DeleteSigningKeySlowly(_)).Times(0);
+  EXPECT_CALL(*key_provider(), DeleteSigningKeysSlowly).Times(0);
   key_store->DeleteBrowserBoundKey(kCredentialId);
 }
 

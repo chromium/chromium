@@ -50,10 +50,6 @@ class MockUnexportableKeyProvider
               GetAllSigningKeysSlowly,
               (),
               (override));
-  MOCK_METHOD(bool,
-              DeleteSigningKeySlowly,
-              (base::span<const uint8_t> wrapped_key),
-              (override));
   MOCK_METHOD(std::optional<size_t>,
               DeleteSigningKeysSlowly,
               (base::span<const base::span<const uint8_t>> wrapped_keys),

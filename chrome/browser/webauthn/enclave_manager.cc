@@ -586,10 +586,6 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINWrappingEnclaveRequest(
   return requests;
 }
 
-
-
-
-
 // Build an enclave request for recovery_key_store/wrap_pin_and_secret, which
 // wraps a PIN with the security domain secret, and creates Vault parameters for
 // the PIN, wrapping the security domain secret.
@@ -4216,8 +4212,8 @@ void EnclaveManager::ClearRegistration() {
             if (crypto::StatefulUnexportableKeyProvider* stateful_provider =
                     provider ? provider->AsStatefulUnexportableKeyProvider()
                              : nullptr) {
-              stateful_provider->DeleteSigningKeySlowly(
-                  wrapped_identity_private_key);
+              stateful_provider->DeleteSigningKeysSlowly(
+                  {wrapped_identity_private_key});
             }
           },
           ToVector(user_->wrapped_identity_private_key())));

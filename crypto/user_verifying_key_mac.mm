@@ -98,7 +98,7 @@ class UserVerifyingSigningKeyMac : public UserVerifyingSigningKey {
     return key_name_;
   }
 
-  bool IsHardwareBacked() const override  { return true; }
+  bool IsHardwareBacked() const override { return true; }
 
  private:
   // The key's wrapped key as a binary string.
@@ -154,7 +154,8 @@ bool DoDeleteKey(std::vector<uint8_t> wrapped_key,
   StatefulUnexportableKeyProvider* stateful_key_provider =
       key_provider->AsStatefulUnexportableKeyProvider();
   return !stateful_key_provider ||
-         stateful_key_provider->DeleteSigningKeySlowly(wrapped_key);
+         stateful_key_provider->DeleteSigningKeysSlowly({wrapped_key})
+             .value_or(0);
 }
 
 class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {

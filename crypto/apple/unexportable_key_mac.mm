@@ -527,13 +527,6 @@ UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
       });
 }
 
-bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
-    base::span<const uint8_t> wrapped_key) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  return static_cast<bool>(DeleteSigningKeySlowlyImpl(wrapped_key).value_or(0));
-}
-
 std::optional<size_t> UnexportableKeyProviderMac::DeleteSigningKeysSlowly(
     base::span<const base::span<const uint8_t>> wrapped_keys) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

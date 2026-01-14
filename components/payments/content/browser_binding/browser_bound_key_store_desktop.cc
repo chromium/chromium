@@ -106,7 +106,7 @@ void BrowserBoundKeyStoreDesktop::DeleteBrowserBoundKey(
   if (crypto::StatefulUnexportableKeyProvider* stateful_provider =
           key_provider_ ? key_provider_->AsStatefulUnexportableKeyProvider()
                         : nullptr) {
-    stateful_provider->DeleteSigningKeySlowly(bbk_id);
+    stateful_provider->DeleteSigningKeysSlowly({bbk_id});
   }
 }
 
