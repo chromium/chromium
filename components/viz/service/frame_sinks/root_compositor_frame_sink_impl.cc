@@ -472,14 +472,27 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
 }
 
 void RootCompositorFrameSinkImpl::SetAdaptiveRefreshRateInfo(
-    bool has_support,
-    float suggested_high,
-    float device_scale_factor) {
+    mojom::AdaptiveRefreshRateInfoPtr info) {
   supports_adaptive_refresh_rate_ =
-      has_support && base::FeatureList::IsEnabled(
-                         features::kUseFrameIntervalDeciderAdaptiveFrameRate);
-  suggested_frame_interval_high_ = base::Hertz(suggested_high);
-  device_scale_factor_ = device_scale_factor;
+      info->has_support &&
+      base::FeatureList::IsEnabled(
+          features::kUseFrameIntervalDeciderAdaptiveFrameRate);
+  suggested_frame_interval_high_ = base::Hertz(info->suggested_high);
+  device_scale_factor_ = info->device_scale_factor;
+  adaptive_refresh_rate_velocity_points_.clear();
+  if (!info->velocity_mapping.empty()) {
+    adaptive_refresh_rate_velocity_points_.reserve(
+        info->velocity_mapping.size());
+    for (auto& point : info->velocity_mapping) {
+      adaptive_refresh_rate_velocity_points_.push_back(*point);
+    }
+  } else {
+    // The hard-coded values are copied from AOSP
+    // View.convertVelocityToFrameRate.
+    adaptive_refresh_rate_velocity_points_.emplace_back(120, 300);
+    adaptive_refresh_rate_velocity_points_.emplace_back(80, 125);
+    adaptive_refresh_rate_velocity_points_.emplace_back(60, 0);
+  }
   UpdateFrameIntervalDeciderSettings();
 }
 
@@ -664,8 +677,10 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 #if BUILDFLAG(IS_ANDROID)
   if (supports_adaptive_refresh_rate_) {
     matchers.push_back(std::make_unique<UserInputBoostMatcher>());
-    matchers.push_back(
-        std::make_unique<SlowScrollThrottleMatcher>(device_scale_factor_));
+    if (!adaptive_refresh_rate_velocity_points_.empty()) {
+      matchers.push_back(std::make_unique<SlowScrollThrottleMatcher>(
+          device_scale_factor_, adaptive_refresh_rate_velocity_points_));
+    }
   } else {
     matchers.push_back(std::make_unique<InputBoostMatcher>());
   }

@@ -25,6 +25,7 @@ import android.view.WindowManager;
 import androidx.annotation.RequiresApi;
 import androidx.core.os.BuildCompat;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -438,7 +439,14 @@ import java.util.function.Consumer;
                 suggestedFrameRateHigh =
                         display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_HIGH);
             }
-            arrInfo = new AdaptiveRefreshRateInfo(hasArrSupport, suggestedFrameRateHigh);
+            List<AconfigFlaggedApiDelegate.FrameRateVelocityPoint> velocityMapping = null;
+            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate != null) {
+                velocityMapping = delegate.getFrameRateVelocityMapping(display);
+            }
+            arrInfo =
+                    new AdaptiveRefreshRateInfo(
+                            hasArrSupport, suggestedFrameRateHigh, velocityMapping);
         }
 
         super.update(

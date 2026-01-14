@@ -5,7 +5,9 @@
 #include "components/viz/service/display/frame_interval_matchers.h"
 
 #include <optional>
+#include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/time/time.h"
 #include "perfetto/test/traced_value_test_support.h"
@@ -508,17 +510,23 @@ TEST(FrameIntervalMatchersTest, UserInputBoostMatcher) {
 TEST(FrameIntervalMatchersTest, SlowScrollThrottleSlowSpeedThrottle) {
   Settings settings;
   Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
-  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f);
+  std::vector<mojom::FrameRateVelocityPoint> velocity_points;
+  velocity_points.emplace_back(60, 0);
+  velocity_points.emplace_back(80, 125);
+  velocity_points.emplace_back(120, 300);
+  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f,
+                                    std::move(velocity_points));
 
   FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
   interval_input.content_interval_info.push_back(
       {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
   interval_input.has_only_content_frame_interval_updates = true;
 
-  interval_input.major_scroll_speed_in_pixels_per_second = 1000.0f;
-  ExpectResult(matcher.Match(inputs), FrameIntervalClass::kBoost);
+  interval_input.major_scroll_speed_in_pixels_per_second = 400.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(120),
+               ResultIntervalType::kAtLeast);
 
-  interval_input.major_scroll_speed_in_pixels_per_second = 250.0f;
+  interval_input.major_scroll_speed_in_pixels_per_second = 200.0f;
   ExpectResult(matcher.Match(inputs), base::Hertz(80),
                ResultIntervalType::kAtLeast);
 
@@ -530,25 +538,15 @@ TEST(FrameIntervalMatchersTest, SlowScrollThrottleSlowSpeedThrottle) {
   ExpectNullResult(matcher.Match(inputs));
 }
 
-TEST(FrameIntervalMatchersTest, SlowScrollThrottleInputSlowScroll) {
-  Settings settings;
-  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
-  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f);
-
-  FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
-  interval_input.content_interval_info.push_back(
-      {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
-  interval_input.has_only_content_frame_interval_updates = true;
-
-  interval_input.major_scroll_speed_in_pixels_per_second = 10.0f;
-  ExpectResult(matcher.Match(inputs), base::Hertz(60),
-               ResultIntervalType::kAtLeast);
-}
-
 TEST(FrameIntervalMatchersTest, SlowScrollThrottleIgnoreOneOffUpdate) {
   Settings settings;
   Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
-  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f);
+  std::vector<mojom::FrameRateVelocityPoint> velocity_points;
+  velocity_points.emplace_back(60, 0);
+  velocity_points.emplace_back(80, 125);
+  velocity_points.emplace_back(120, 300);
+  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f,
+                                    std::move(velocity_points));
 
   FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
   interval_input.content_interval_info.push_back(

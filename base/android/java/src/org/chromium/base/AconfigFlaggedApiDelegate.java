@@ -29,6 +29,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /** Interface to call unreleased Android APIs that are guarded by aconfig flags. */
@@ -380,5 +381,28 @@ public interface AconfigFlaggedApiDelegate {
      */
     default Promise<Boolean> isInstalled(String title) {
         return Promise.fulfilled(false);
+    }
+
+    static class FrameRateVelocityPoint {
+        private final float mFramePerSecond;
+        private final float mDpPerSecond;
+
+        public FrameRateVelocityPoint(float framePerSecond, float dpPerSecond) {
+            mFramePerSecond = framePerSecond;
+            mDpPerSecond = dpPerSecond;
+        }
+
+        public float getFramePerSecond() {
+            return mFramePerSecond;
+        }
+
+        public float getDpPerSecond() {
+            return mDpPerSecond;
+        }
+    }
+
+    /** Calls Display.getFrameRateVelocityMapping if supported; returns null otherwise. */
+    default @Nullable List<FrameRateVelocityPoint> getFrameRateVelocityMapping(Display display) {
+        return null;
     }
 }

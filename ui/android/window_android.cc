@@ -228,11 +228,20 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
 void WindowAndroid::OnAdaptiveRefreshRateInfoChanged(
     JNIEnv* env,
     bool supports_adaptive_refresh_rate,
-    jfloat suggested_frame_rate_high) {
+    jfloat suggested_frame_rate_high,
+    const std::vector<jfloat> frame_per_second,
+    const std::vector<jfloat> dp_per_second) {
   adaptive_refresh_rate_info_.supports_adaptive_refresh_rate =
       supports_adaptive_refresh_rate;
   adaptive_refresh_rate_info_.suggested_frame_rate_high =
       suggested_frame_rate_high;
+
+  adaptive_refresh_rate_info_.velocity_mapping.clear();
+  CHECK_EQ(frame_per_second.size(), dp_per_second.size());
+  for (size_t i = 0; i < frame_per_second.size(); ++i) {
+    adaptive_refresh_rate_info_.velocity_mapping.push_back(
+        {frame_per_second[i], dp_per_second[i]});
+  }
 }
 
 void WindowAndroid::OnOverlayTransformUpdated(JNIEnv* env) {

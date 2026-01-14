@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <variant>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -18,6 +19,7 @@
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/viz_service_export.h"
+#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace viz {
@@ -182,12 +184,15 @@ DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(UserInputBoostMatcher);
 class VIZ_SERVICE_EXPORT SlowScrollThrottleMatcher
     : public FrameIntervalMatcher {
  public:
-  explicit SlowScrollThrottleMatcher(float device_scale_factor);
+  SlowScrollThrottleMatcher(
+      float device_scale_factor,
+      std::vector<mojom::FrameRateVelocityPoint> velocity_points);
   ~SlowScrollThrottleMatcher() override;
   std::optional<Result> Match(const Inputs& matcher_inputs) override;
 
  private:
   const float device_scale_factor_;
+  std::vector<mojom::FrameRateVelocityPoint> velocity_points_;
   uint64_t last_frame_id_matched_without_extra_update_ = 0u;
 };
 

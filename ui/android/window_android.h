@@ -54,10 +54,16 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
     raw_ptr<WindowAndroid> window_;
   };
 
+  struct FrameRateVelocityPoint {
+    float frame_per_second;
+    float dp_per_second;
+  };
+
   struct AdaptiveRefreshRateInfo {
     bool supports_adaptive_refresh_rate = false;
     // Fields below are valid only if `supports_adaptive_refresh_rate` is true.
     float suggested_frame_rate_high = 0.f;
+    std::vector<FrameRateVelocityPoint> velocity_mapping;
 
     AdaptiveRefreshRateInfo();
     AdaptiveRefreshRateInfo(const AdaptiveRefreshRateInfo& other);
@@ -109,9 +115,12 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   void OnSupportedRefreshRatesUpdated(
       JNIEnv* env,
       const base::android::JavaRef<jfloatArray>& supported_refresh_rates);
-  void OnAdaptiveRefreshRateInfoChanged(JNIEnv* env,
-                                        bool supports_adaptive_refresh_rate,
-                                        jfloat suggested_frame_rate_high);
+  void OnAdaptiveRefreshRateInfoChanged(
+      JNIEnv* env,
+      bool supports_adaptive_refresh_rate,
+      jfloat suggested_frame_rate_high,
+      const std::vector<jfloat> frame_per_second,
+      const std::vector<jfloat> dp_per_second);
   void OnOverlayTransformUpdated(JNIEnv* env);
   void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, jlong begin_time);
 

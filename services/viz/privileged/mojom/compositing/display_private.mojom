@@ -19,6 +19,18 @@ import "services/viz/privileged/mojom/compositing/begin_frame_observer.mojom";
 import "services/viz/privileged/mojom/compositing/layered_window_updater.mojom";
 import "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom";
 
+struct FrameRateVelocityPoint {
+  float frame_per_second;
+  float dp_per_second;
+};
+
+struct AdaptiveRefreshRateInfo {
+  bool has_support;
+  float suggested_high;
+  array<FrameRateVelocityPoint> velocity_mapping;
+  float device_scale_factor;
+};
+
 // The DisplayPrivate is used by privileged clients to talk to Display.
 [DirectReceiver]
 interface DisplayPrivate {
@@ -65,9 +77,7 @@ interface DisplayPrivate {
 
   // Updates adaptive refresh rate information of the associated Display.
   [EnableIf=is_android]
-  SetAdaptiveRefreshRateInfo(bool has_support,
-                           float suggested_high,
-                           float device_scale_factor);
+  SetAdaptiveRefreshRateInfo(AdaptiveRefreshRateInfo info);
 
   // Updates the list of refresh rates supported by the associated Display.
   [EnableIf=can_set_refresh_rate]

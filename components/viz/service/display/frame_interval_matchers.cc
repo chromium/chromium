@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/containers/adapters.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
@@ -411,9 +412,18 @@ std::optional<FrameIntervalMatcher::Result> UserInputBoostMatcher::Match(
   return std::nullopt;
 }
 
-SlowScrollThrottleMatcher::SlowScrollThrottleMatcher(float device_scale_factor)
+SlowScrollThrottleMatcher::SlowScrollThrottleMatcher(
+    float device_scale_factor,
+    std::vector<mojom::FrameRateVelocityPoint> velocity_points)
     : FrameIntervalMatcher(FrameIntervalMatcherType::kSlowScrollThrottle),
-      device_scale_factor_(device_scale_factor) {}
+      device_scale_factor_(device_scale_factor),
+      velocity_points_(std::move(velocity_points)) {
+  // Sort by decreasing velocity.
+  std::sort(velocity_points_.begin(), velocity_points_.end(),
+            [](const auto& a, const auto& b) {
+              return a.dp_per_second > b.dp_per_second;
+            });
+}
 SlowScrollThrottleMatcher::~SlowScrollThrottleMatcher() = default;
 
 std::optional<FrameIntervalMatcher::Result> SlowScrollThrottleMatcher::Match(
@@ -462,14 +472,14 @@ std::optional<FrameIntervalMatcher::Result> SlowScrollThrottleMatcher::Match(
     last_frame_id_matched_without_extra_update_ = matcher_inputs.frame_id;
   }
   float speed_dps = scroll_speed / device_scale_factor_;
-  // The hard-coded values are copied from AOSP View.convertVelocityToFrameRate.
-  if (speed_dps > 300) {
-    return FrameIntervalClass::kBoost;
-  } else if (speed_dps > 125) {
-    return ResultInterval{base::Hertz(80), ResultIntervalType::kAtLeast};
-  } else {
-    return ResultInterval{base::Hertz(60), ResultIntervalType::kAtLeast};
+
+  for (const auto& velocity_point : velocity_points_) {
+    if (speed_dps >= velocity_point.dp_per_second) {
+      return ResultInterval{base::Hertz(velocity_point.frame_per_second),
+                            ResultIntervalType::kAtLeast};
+    }
   }
+  return std::nullopt;
 }
 
 }  // namespace viz

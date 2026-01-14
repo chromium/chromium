@@ -704,12 +704,17 @@ void CompositorImpl::OnAdaptiveRefreshRateInfoChanged() {
   if (root_window_ && display_private_) {
     ui::WindowAndroid::AdaptiveRefreshRateInfo arr_info =
         root_window_->adaptive_refresh_rate_info();
-    display_private_->SetAdaptiveRefreshRateInfo(
-        arr_info.supports_adaptive_refresh_rate,
-        arr_info.suggested_frame_rate_high,
-        display::Screen::Get()
-            ->GetDisplayNearestWindow(root_window_)
-            .device_scale_factor());
+    auto info = viz::mojom::AdaptiveRefreshRateInfo::New();
+    info->has_support = arr_info.supports_adaptive_refresh_rate;
+    info->suggested_high = arr_info.suggested_frame_rate_high;
+    info->device_scale_factor = display::Screen::Get()
+                                    ->GetDisplayNearestWindow(root_window_)
+                                    .device_scale_factor();
+    for (const auto& point : arr_info.velocity_mapping) {
+      info->velocity_mapping.push_back(viz::mojom::FrameRateVelocityPoint::New(
+          point.frame_per_second, point.dp_per_second));
+    }
+    display_private_->SetAdaptiveRefreshRateInfo(std::move(info));
   }
 }
 

@@ -95,7 +95,7 @@ public class PhysicalDisplayAndroidTest {
     private static final int DEFAULT_BITS_PER_COMPONENT = 8;
 
     private static final DisplayAndroid.AdaptiveRefreshRateInfo DEFAULT_ADAPTIVE_REFRESH_RATE_INFO =
-            new DisplayAndroid.AdaptiveRefreshRateInfo(false, 0.0f);
+            new DisplayAndroid.AdaptiveRefreshRateInfo(false, 0.0f, null);
 
     private static final boolean DEFAULT_IS_WIDE_COLOR_GAMUT = false;
     private static final boolean DEFAULT_DISPLAY_IS_HDR = false;
