@@ -67,7 +67,7 @@ ReaderModeEligibilityDecider::~ReaderModeEligibilityDecider() = default;
 void ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult(
     ReaderModeHeuristicResult result) {
   if (result == ReaderModeHeuristicResult::kReaderModeEligible &&
-      optimization_guide_decider_ &&
+      optimization_guide_decider_ && eligibility_heuristic_url_.has_value() &&
       IsReaderModeOptimizationGuideEligibilityAvailable()) {
     // Do additional checks.
     optimization_guide_decider_->CanApplyOptimization(
