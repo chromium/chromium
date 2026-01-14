@@ -10,8 +10,8 @@ build_webui("build") {
   static_files = [ "index.html" ]
 
   ts_files = [
-    "app_service_internals.ts",
     "app_service_internals.html.ts",
+    "app_service_internals.ts",
   ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/app_service_internals:mojo_bindings_ts__generator" ]

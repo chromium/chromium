@@ -10,9 +10,9 @@ build_webui("build") {
   grd_prefix = "omnibox_popup"
   static_files = [
     "images/create_images.png",
+    "omnibox_popup.html",
     "omnibox_popup_aim.html",
     "omnibox_popup_full.html",
-    "omnibox_popup.html",
   ]
   ts_files = [
     "aim_app.html.ts",
@@ -53,10 +53,10 @@ build_webui("build") {
     optimize_webui_in_files = [ "omnibox_popup.js" ]
     optimize_webui_excludes = [
       "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-      "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
       "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+      "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
       "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
     ]
   }

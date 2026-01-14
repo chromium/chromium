@@ -19,8 +19,8 @@ build_webui("build") {
   webui_context_type = "trusted"
 
   ts_files = [
-    "tab_strip_observer.ts",
     "tab_strip_observation.ts",
+    "tab_strip_observer.ts",
   ]
 
   ts_composite = true
@@ -31,12 +31,12 @@ build_webui("build") {
   ]
 
   mojo_files = [
-    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api.mojom-webui.ts",
     "$root_gen_dir/components/browser_apis/tab_strip/node_id_converter.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api.mojom-webui.ts",
     "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_data_model.mojom-webui.ts",
     "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_events.mojom-webui.ts",
-    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-webui.ts",
     "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-converters.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-webui.ts",
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
   ]
 

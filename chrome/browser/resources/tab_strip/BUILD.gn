@@ -30,19 +30,19 @@ build_webui("build") {
   web_component_files = [
     "alert_indicator.ts",
     "alert_indicators.ts",
+    "playground/split_tab_playground.ts",
     "tab.ts",
     "tab_group.ts",
     "tab_list.ts",
-    "playground/split_tab_playground.ts",
   ]
 
   ts_files = [
     "drag_manager.ts",
-    "tab_swiper.ts",
-    "tabs_api_proxy.ts",
+    "playground/tab_group_playground.ts",
     "playground/tab_list_playground.ts",
     "playground/tab_playground.ts",
-    "playground/tab_group_playground.ts",
+    "tab_swiper.ts",
+    "tabs_api_proxy.ts",
   ]
 
   mojo_files_deps = [

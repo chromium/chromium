@@ -12,8 +12,8 @@ build_webui("build") {
   static_files = [ "unexportable_keys_internals.html" ]
 
   ts_files = [
-    "app.ts",
     "app.html.ts",
+    "app.ts",
     "browser_proxy.ts",
   ]
 

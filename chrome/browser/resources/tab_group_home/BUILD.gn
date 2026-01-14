@@ -18,9 +18,9 @@ build_webui("build") {
   ts_files = [
     "tab_group_home_app.html.ts",
     "tab_group_home_app.ts",
-    "url_item_grid/url_item_delegate.ts",
     "url_item_grid/url_item.html.ts",
     "url_item_grid/url_item.ts",
+    "url_item_grid/url_item_delegate.ts",
     "url_item_grid/url_item_grid.html.ts",
     "url_item_grid/url_item_grid.ts",
   ]

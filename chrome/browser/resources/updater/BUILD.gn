@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "updater"
 
   static_files = [
-    "updater.html",
     "updater.css",
+    "updater.html",
   ]
 
   ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]

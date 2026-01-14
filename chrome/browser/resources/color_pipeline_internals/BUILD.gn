@@ -12,9 +12,9 @@ build_webui("build") {
   static_files = [ "index.html" ]
 
   ts_files = [
-    "color_data.ts",
     "app.html.ts",
     "app.ts",
+    "color_data.ts",
   ]
 
   css_files = [ "app.css" ]

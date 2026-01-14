@@ -15,9 +15,9 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "app/app_style_updater.ts",
     "app/app.html.ts",
     "app/app.ts",
+    "app/app_style_updater.ts",
     "app/immersive_mode_header.html.ts",
     "app/immersive_mode_header.ts",
     "app/read_anything_toolbar.html.ts",

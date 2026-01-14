@@ -10,6 +10,8 @@ build_webui("build") {
 
   static_files = [
     "history.html",
+    "images/avatar_surrounding_illustration_dark.svg",
+    "images/avatar_surrounding_illustration_light.svg",
     "images/compare_sync_promo.svg",
     "images/compare_sync_promo_dark.svg",
     "images/history_embeddings_promo.svg",
@@ -19,8 +21,6 @@ build_webui("build") {
     "images/sign_in_promo_dark.svg",
     "images/sync_history_promo.svg",
     "images/sync_history_promo_dark.svg",
-    "images/avatar_surrounding_illustration_light.svg",
-    "images/avatar_surrounding_illustration_dark.svg",
   ]
 
   ts_files = [

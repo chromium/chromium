@@ -15,8 +15,8 @@ build_webui("build") {
   static_files = [ "zero_state_promo.html" ]
 
   ts_files = [
-    "zero_state_promo_app.ts",
     "zero_state_promo_app.html.ts",
+    "zero_state_promo_app.ts",
     "zero_state_promo_browser_proxy.ts",
   ]
 

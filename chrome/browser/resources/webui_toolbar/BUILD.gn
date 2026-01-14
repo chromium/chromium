@@ -12,10 +12,10 @@ build_webui("build") {
   static_files = [ "webui_toolbar.html" ]
 
   ts_files = [
-    "reload_button.ts",
-    "reload_button.html.ts",
     "browser_proxy.ts",
     "metrics_recorder.ts",
+    "reload_button.html.ts",
+    "reload_button.ts",
     "webui_toolbar.ts",
   ]
   css_files = [ "reload_button.css" ]
