@@ -92,11 +92,11 @@ absl::Status TestTraceProcessorImpl::ParseTrace(
   return status.ok() ? absl::OkStatus() : absl::UnknownError(status.message());
 }
 
-absl::Status TestTraceProcessorImpl::OverrideSqlModule(
-    const std::string& module_name,
-    const TestTraceProcessorImpl::PerfettoSQLModule& module) {
+absl::Status TestTraceProcessorImpl::OverrideSqlPackage(
+    const std::string& package_name,
+    const TestTraceProcessorImpl::PerfettoSQLPackage& package) {
   auto status =
-      trace_processor_->RegisterSqlModule({module_name, module, true});
+      trace_processor_->RegisterSqlPackage({package_name, package, true});
   return status.ok() ? absl::OkStatus() : absl::UnknownError(status.message());
 }
 

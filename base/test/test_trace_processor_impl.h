@@ -68,11 +68,11 @@ class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
   // vector of strings.
   QueryResultOrError ExecuteQuery(const std::string& sql) const;
 
-  using PerfettoSQLModule = std::vector<std::pair<std::string, std::string>>;
-  // Overrides PerfettoSQL module with |name| and |files| containing pairs of
+  using PerfettoSQLPackage = std::vector<std::pair<std::string, std::string>>;
+  // Overrides PerfettoSQL package with |name| and |files| containing pairs of
   // strings {include_key, sql_file_contents}.
-  absl::Status OverrideSqlModule(const std::string& name,
-                                 const PerfettoSQLModule& module);
+  absl::Status OverrideSqlPackage(const std::string& name,
+                                  const PerfettoSQLPackage& package);
 
  private:
   std::unique_ptr<perfetto::trace_processor::Config> config_;

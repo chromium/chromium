@@ -188,7 +188,9 @@ void TraceNetLogObserver::AddEntryVerbose(
   // This will work as long as a given Track doesn't have two NetLog events that
   // are the same type *and* overlap in time. If this assumption breaks, we will
   // need to revisit this approach; we may need to track additional state.
-  const auto thread_event_name_str = base::StringPrintf(
+  // Note: the separate variable is load-bearing, as DynamicString will not
+  // retain the std::string. See https://crbug.com/417982839.
+  std::string thread_event_name_str = base::StringPrintf(
       "%s: %s%s/%s", root_track_name_.value,
       [&] {
         switch (entry.phase) {
@@ -201,9 +203,6 @@ void TraceNetLogObserver::AddEntryVerbose(
         }
       }(),
       source_type_string.value, entry_type_string.value);
-  // Note: the separate variable is load-bearing, as DynamicString will not
-  // retain the std::string. See https://crbug.com/417982839.
-  const perfetto::DynamicString thread_event_name(thread_event_name_str);
   const uint64_t thread_flow_id =
       entry.phase == NetLogEventPhase::NONE
           ? base::RandUint64()
@@ -211,11 +210,12 @@ void TraceNetLogObserver::AddEntryVerbose(
                              base::byte_span_from_ref(entry.type)));
 
   if (entry.phase != NetLogEventPhase::END) {
-    TRACE_EVENT_INSTANT(kNetLogTracingCategory, thread_event_name,
+    TRACE_EVENT_INSTANT(kNetLogTracingCategory,
+                        perfetto::DynamicString(thread_event_name_str),
                         perfetto::Flow::ProcessScoped(thread_flow_id));
   } else {
     TRACE_EVENT_INSTANT(
-        kNetLogTracingCategory, thread_event_name,
+        kNetLogTracingCategory, perfetto::DynamicString(thread_event_name_str),
         perfetto::TerminatingFlow::ProcessScoped(thread_flow_id));
   }
   const auto add_thread_flow = [&](perfetto::EventContext& event_context) {
