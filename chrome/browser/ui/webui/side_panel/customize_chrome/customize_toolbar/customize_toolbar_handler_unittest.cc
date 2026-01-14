@@ -410,6 +410,72 @@ TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
   handler().ResetToDefault();
 }
 
+TEST_F(CustomizeToolbarHandlerTest, GetIsCustomizedForNonPinnedActions) {
+  EXPECT_CALL(mock_pinned_toolbar_actions_model(), ResetToDefault())
+      .WillRepeatedly([this]() {
+        mock_pinned_toolbar_actions_model()
+            .PinnedToolbarActionsModel::ResetToDefault();
+      });
+
+  // Initially, everything is default.
+  // Home: False, Forward: True, SplitTab: False, ContextualTasks: True
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
+  ASSERT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+
+  {
+    base::MockCallback<CustomizeToolbarHandler::GetIsCustomizedCallback>
+        callback;
+    EXPECT_CALL(callback, Run(false)).Times(1);
+    handler().GetIsCustomized(callback.Get());
+  }
+
+  // Toggle all to non-default values.
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kHome,
+                      true);
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kForward,
+                      false);
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kSplitTab,
+                      true);
+  handler().PinAction(
+      side_panel::customize_chrome::mojom::ActionId::kContextualTasks, false);
+
+  // Verify all prefs changed.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+
+  // Verify GetIsCustomized returns true.
+  {
+    base::MockCallback<CustomizeToolbarHandler::GetIsCustomizedCallback>
+        callback;
+    EXPECT_CALL(callback, Run(true)).Times(1);
+    handler().GetIsCustomized(callback.Get());
+  }
+
+  // Reset to default.
+  handler().ResetToDefault();
+
+  // Verify all reset to default.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+
+  // Verify GetIsCustomized returns false.
+  {
+    base::MockCallback<CustomizeToolbarHandler::GetIsCustomizedCallback>
+        callback;
+    EXPECT_CALL(callback, Run(false)).Times(1);
+    handler().GetIsCustomized(callback.Get());
+  }
+}
+
 TEST_F(CustomizeToolbarHandlerTest, ActionsUpdatedOnVisibilityChange) {
   std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
   base::MockCallback<CustomizeToolbarHandler::ListActionsCallback> callback;

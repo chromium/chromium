@@ -216,6 +216,8 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
 void PinnedToolbarActionsModel::ResetToDefault() {
   pref_service_->ClearPref(prefs::kShowHomeButton);
   pref_service_->ClearPref(prefs::kShowForwardButton);
+  pref_service_->ClearPref(prefs::kPinSplitTabButton);
+  pref_service_->ClearPref(prefs::kPinContextualTaskButton);
   pref_service_->ClearPref(prefs::kPinnedActions);
 }
 
@@ -223,13 +225,20 @@ bool PinnedToolbarActionsModel::IsDefault() const {
   const bool action_are_default =
       pref_service_->GetDefaultPrefValue(prefs::kPinnedActions)->GetList() ==
       pref_service_->GetList(prefs::kPinnedActions);
-  const bool home_is_default =
-      pref_service_->GetDefaultPrefValue(prefs::kShowHomeButton)->GetBool() ==
-      pref_service_->GetBoolean(prefs::kShowHomeButton);
+
+  auto is_default_pref_value = [&](const std::string pref_path) {
+    return pref_service_->GetDefaultPrefValue(pref_path)->GetBool() ==
+           pref_service_->GetBoolean(pref_path);
+  };
+  const bool home_is_default = is_default_pref_value(prefs::kShowHomeButton);
   const bool forward_is_default =
-      pref_service_->GetDefaultPrefValue(prefs::kShowForwardButton)
-          ->GetBool() == pref_service_->GetBoolean(prefs::kShowForwardButton);
-  return action_are_default && home_is_default && forward_is_default;
+      is_default_pref_value(prefs::kShowForwardButton);
+  const bool open_split_is_default =
+      is_default_pref_value(prefs::kPinSplitTabButton);
+  const bool contextual_task_is_default =
+      is_default_pref_value(prefs::kPinContextualTaskButton);
+  return action_are_default && home_is_default && forward_is_default &&
+         open_split_is_default && contextual_task_is_default;
 }
 
 void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
