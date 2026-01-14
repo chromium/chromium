@@ -432,6 +432,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "test-tablet",
+)
+
+chrome_internal_verifier(
     builder = "win-arm64-bluebird-rel",
 )
 
