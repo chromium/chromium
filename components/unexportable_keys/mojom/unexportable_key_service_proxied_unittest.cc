@@ -118,17 +118,6 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
     }
   }
 
-  void DeleteKey(const UnexportableKeyId& key_id,
-                 BackgroundTaskPriority priority,
-                 DeleteKeyCallback callback) override {
-    if (delete_key_response_) {
-      std::move(callback).Run(std::move(delete_key_response_.value()));
-      delete_key_response_.reset();
-    } else {
-      std::move(callback).Run(std::nullopt);
-    }
-  }
-
   void DeleteKeys(const std::vector<UnexportableKeyId>& key_ids,
                   BackgroundTaskPriority priority,
                   DeleteKeysCallback callback) override {
@@ -413,49 +402,6 @@ TEST_F(UnexportableKeyServiceProxiedTest, GettersKeyNotFound) {
   EXPECT_THAT(proxied_service_.GetAlgorithm(unknown_key_id),
               ErrorIs(ServiceError::kKeyNotFound));
 }
-TEST_F(UnexportableKeyServiceProxiedTest, DeleteKeySuccess) {
-  UnexportableKeyId key_id = GenerateKeyOrDie();
-  ASSERT_TRUE(proxied_service_.GetSubjectPublicKeyInfo(key_id).has_value());
-
-  // Empty optional returned in success.
-  fake_service_.SetDeleteKeyResponse(std::nullopt);
-
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  proxied_service_.DeleteKeySlowlyAsync(key_id,
-                                        BackgroundTaskPriority::kUserVisible,
-                                        delete_future.GetCallback());
-
-  ASSERT_TRUE(delete_future.Get().has_value());
-  EXPECT_THAT(proxied_service_.GetSubjectPublicKeyInfo(key_id),
-              ErrorIs(ServiceError::kKeyNotFound));
-}
-
-TEST_F(UnexportableKeyServiceProxiedTest, DeleteKeyNotFoundInCache) {
-  UnexportableKeyId unknown_key_id(base::UnguessableToken::Create());
-
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  proxied_service_.DeleteKeySlowlyAsync(unknown_key_id,
-                                        BackgroundTaskPriority::kUserVisible,
-                                        delete_future.GetCallback());
-
-  EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
-}
-
-TEST_F(UnexportableKeyServiceProxiedTest, DeleteKeyErrorFromService) {
-  UnexportableKeyId key_id = GenerateKeyOrDie();
-  ASSERT_TRUE(proxied_service_.GetSubjectPublicKeyInfo(key_id).has_value());
-
-  fake_service_.SetDeleteKeyResponse(ServiceError::kCryptoApiFailed);
-
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  proxied_service_.DeleteKeySlowlyAsync(key_id,
-                                        BackgroundTaskPriority::kUserVisible,
-                                        delete_future.GetCallback());
-
-  EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
-  EXPECT_FALSE(proxied_service_.GetSubjectPublicKeyInfo(key_id).has_value());
-}
-
 TEST_F(UnexportableKeyServiceProxiedTest, DeleteKeysSuccess) {
   UnexportableKeyId key_id1 = GenerateKeyOrDie();
   UnexportableKeyId key_id2 = GenerateKeyOrDie();

@@ -233,37 +233,6 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
   task_scheduler_.PostTask(std::move(task));
 }
 
-void UnexportableKeyTaskManager::DeleteSigningKeySlowlyAsync(
-    BackgroundTaskOrigin origin,
-    crypto::UnexportableKeyProvider::Config config,
-    std::vector<uint8_t> wrapped_key,
-    BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
-  auto callback_wrapper = WrapCallbackWithMetrics(
-      BackgroundTaskType::kDeleteKey, origin, std::move(callback));
-
-  std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
-      GetUnexportableKeyProvider(std::move(config));
-
-  if (!key_provider) {
-    std::move(callback_wrapper)
-        .Run(base::unexpected(ServiceError::kNoKeyProvider), /*retry_count=*/0);
-    return;
-  }
-
-  if (!key_provider->AsStatefulUnexportableKeyProvider()) {
-    std::move(callback_wrapper)
-        .Run(base::unexpected(ServiceError::kOperationNotSupported),
-             /*retry_count=*/0);
-    return;
-  }
-
-  auto task = std::make_unique<DeleteKeyTask>(std::move(key_provider),
-                                              std::move(wrapped_key), priority,
-                                              std::move(callback_wrapper));
-  task_scheduler_.PostTask(std::move(task));
-}
-
 void UnexportableKeyTaskManager::DeleteSigningKeysSlowlyAsync(
     BackgroundTaskOrigin origin,
     crypto::UnexportableKeyProvider::Config config,

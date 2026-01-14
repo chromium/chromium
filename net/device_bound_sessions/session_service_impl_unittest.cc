@@ -2577,13 +2577,9 @@ TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
       std::move(session2);
 
   // Finish loading the sessions, and wait for the stale key to be deleted.
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kWrappedKey1)))
-      .Times(0);
-  EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kWrappedKey2)))
-      .Times(0);
-  EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kStaleWrappedKey)))
-      .WillOnce(Return(true));
+  EXPECT_CALL(mock_key_provider,
+              DeleteSigningKeysSlowly(ElementsAre(kStaleWrappedKey)))
+      .WillOnce(Return(1));
 
   FinishLoadingSessions(std::move(session_map));
   // Advance time to allow StartGarbageCollection to run.

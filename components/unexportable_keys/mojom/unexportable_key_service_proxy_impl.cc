@@ -63,15 +63,6 @@ ServiceErrorOr<mojom::NewKeyDataPtr> PopulateNewKeyData(
   return new_key_data;
 }
 
-std::optional<ServiceError> AdaptErrorOrVoid(
-    const ServiceErrorOr<void> result) {
-  if (result.has_value()) {
-    return std::nullopt;
-  } else {
-    return result.error();
-  }
-}
-
 ServiceErrorOr<uint64_t> AdaptSizeType(ServiceErrorOr<size_t> result) {
   return result.transform(
       [](size_t r) { return base::strict_cast<uint64_t>(r); });
@@ -126,15 +117,6 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::
         GetAllSigningKeysForGarbageCollectionCallback callback) {
   unexportable_key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
       priority, std::move(callback));
-}
-
-void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKey(
-    const UnexportableKeyId& key_id,
-    BackgroundTaskPriority priority,
-    DeleteKeyCallback callback) {
-  unexportable_key_service_->DeleteKeySlowlyAsync(
-      key_id, priority,
-      base::BindOnce(&AdaptErrorOrVoid).Then(std::move(callback)));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKeys(

@@ -152,22 +152,14 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
       base::StrCat({kObsoleteProfilesHistogramPrefix, "ObsoleteKeyCount"}),
       key_ids.size());
 
-  const auto barrier_callback = base::BarrierCallback<ServiceErrorOr<void>>(
-      key_ids.size(),
-      base::BindOnce([](std::vector<ServiceErrorOr<void>> results) {
+  user_data_dir_service_->DeleteKeysSlowlyAsync(
+      key_ids, BackgroundTaskPriority::kBestEffort,
+      base::BindOnce([](ServiceErrorOr<size_t> result) {
         base::UmaHistogramCounts100(
             base::StrCat(
                 {kObsoleteProfilesHistogramPrefix, "ObsoleteKeyDeletionCount"}),
-            std::ranges::count_if(
-                results, [](auto result) { return result.has_value(); }));
+            result.value_or(0));
       }));
-
-  // Schedule the rest for deletion.
-  // TODO(crbug.com/455538832): Add a bulk deletion API to the service.
-  for (UnexportableKeyId key_id : key_ids) {
-    user_data_dir_service_->DeleteKeySlowlyAsync(
-        key_id, BackgroundTaskPriority::kBestEffort, barrier_callback);
-  }
 }
 
 }  // namespace unexportable_keys

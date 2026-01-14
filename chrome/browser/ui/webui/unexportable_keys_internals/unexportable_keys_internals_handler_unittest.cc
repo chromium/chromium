@@ -339,7 +339,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest, GetUnexportableKeysInfoSucceeds) {
 }
 
 TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeyFails) {
-  EXPECT_CALL(mock_key_service(), DeleteKeySlowlyAsync)
+  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync)
       .WillOnce(RunOnceCallback<2>(
           base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
 
@@ -351,8 +351,8 @@ TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeyFails) {
 }
 
 TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeySucceeds) {
-  EXPECT_CALL(mock_key_service(), DeleteKeySlowlyAsync)
-      .WillOnce(RunOnceCallback<2>(unexportable_keys::ServiceErrorOr<void>()));
+  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync)
+      .WillOnce(RunOnceCallback<2>(1));
 
   base::test::TestFuture<bool> delete_future;
   handler().DeleteKey(unexportable_keys::UnexportableKeyId(),

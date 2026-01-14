@@ -42,6 +42,8 @@ constexpr char kObsoleteProfileName[] = "obsolete";
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::Test;
@@ -128,7 +130,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
               GetAllSigningKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector<UnexportableKeyId>()));
   EXPECT_CALL(*user_data_dir_service(), GetKeyTag).Times(0);
-  EXPECT_CALL(*user_data_dir_service(), DeleteKeySlowlyAsync).Times(0);
+  EXPECT_CALL(*user_data_dir_service(), DeleteKeysSlowlyAsync).Times(0);
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
 
@@ -152,7 +154,9 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 
   EXPECT_CALL(*user_data_dir_service(), GetKeyTag(key_id))
       .WillOnce(Return(profile_tag));
-  EXPECT_CALL(*user_data_dir_service(), DeleteKeySlowlyAsync).Times(0);
+  EXPECT_CALL(*user_data_dir_service(), DeleteKeysSlowlyAsync(IsEmpty(), _, _))
+      .WillOnce(
+          RunOnceCallback<2>(base::unexpected(ServiceError::kKeyNotFound)));
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
 
@@ -221,21 +225,8 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
       .WillOnce(Return(system_profile_tag));
 
   EXPECT_CALL(*user_data_dir_service(),
-              DeleteKeySlowlyAsync(obsolete_key_id,
-                                   BackgroundTaskPriority::kBestEffort, _))
-      .WillOnce(RunOnceCallback<2>(base::ok()));
-  EXPECT_CALL(*user_data_dir_service(),
-              DeleteKeySlowlyAsync(active_key_id,
-                                   BackgroundTaskPriority::kBestEffort, _))
-      .Times(0);
-  EXPECT_CALL(*user_data_dir_service(),
-              DeleteKeySlowlyAsync(guest_key_id,
-                                   BackgroundTaskPriority::kBestEffort, _))
-      .Times(0);
-  EXPECT_CALL(*user_data_dir_service(),
-              DeleteKeySlowlyAsync(system_key_id,
-                                   BackgroundTaskPriority::kBestEffort, _))
-      .Times(0);
+              DeleteKeysSlowlyAsync(ElementsAre(obsolete_key_id), _, _))
+      .WillOnce(RunOnceCallback<2>(1));
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
 
@@ -269,7 +260,10 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
       .WillOnce(Return(base::unexpected(ServiceError::kKeyNotFound)));
 
   // If GetKeyTag fails, the key is assumed safe and not deleted.
-  EXPECT_CALL(*user_data_dir_service(), DeleteKeySlowlyAsync).Times(0);
+  EXPECT_CALL(*user_data_dir_service(), DeleteKeysSlowlyAsync(IsEmpty(), _, _))
+      .WillOnce(
+          RunOnceCallback<2>(base::unexpected(ServiceError::kKeyNotFound)));
+
   task_environment().FastForwardBy(kGarbageCollectionDelay);
 
   histogram_tester().ExpectUniqueSample(

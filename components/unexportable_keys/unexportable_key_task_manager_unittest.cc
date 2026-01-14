@@ -53,7 +53,6 @@ constexpr std::string_view kTaskRetriesFailureHistogramNameFormat =
 constexpr std::string_view kGenerateKeyTaskType = "GenerateKey";
 constexpr std::string_view kFromWrappedKeyTaskType = "FromWrappedKey";
 constexpr std::string_view kSignTaskType = "Sign";
-constexpr std::string_view kDeleteKeyTaskType = "DeleteKey";
 constexpr std::string_view kDeleteKeysTaskType = "DeleteKeys";
 constexpr std::string_view kGetAllKeysTaskType = "GetAllKeys";
 constexpr std::string_view kDeleteAllKeysTaskType = "DeleteAllKeys";
@@ -493,111 +492,6 @@ TEST_P(UnexportableKeyTaskManagerTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
                   kTaskRetriesFailureHistogramNameFormat, kSignTaskType)),
               ElementsAre(base::Bucket(3, 1)));
-}
-
-TEST_P(UnexportableKeyTaskManagerTest, DeleteKeyAsync) {
-  // First, generate a new signing key to get a valid wrapped_key.
-  base::test::TestFuture<
-      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
-      generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
-  task_manager().GenerateSigningKeySlowlyAsync(
-      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      supported_algorithm, BackgroundTaskPriority::kBestEffort,
-      generate_key_future.GetCallback());
-  RunBackgroundTasks();
-  ASSERT_OK_AND_ASSIGN(scoped_refptr<RefCountedUnexportableSigningKey> key,
-                       generate_key_future.Get());
-  std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
-
-  // Second, delete the key.
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
-      .WillOnce(Return(true));
-  task_manager().DeleteSigningKeySlowlyAsync(
-      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      std::move(wrapped_key), BackgroundTaskPriority::kBestEffort,
-      delete_future.GetCallback());
-  EXPECT_FALSE(delete_future.IsReady());
-  RunBackgroundTasks();
-
-  EXPECT_TRUE(delete_future.IsReady());
-  EXPECT_OK(delete_future.Get());
-  VerifyResultHistograms(histogram_tester, kDeleteKeyTaskType,
-                         kNoServiceErrorForMetrics);
-  EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
-                  kTaskRetriesSuccessHistogramNameFormat, kDeleteKeyTaskType)),
-              ElementsAre(base::Bucket(0, 1)));
-}
-
-TEST_P(UnexportableKeyTaskManagerTest, DeleteKeyAsyncFailureCryptoApiFailed) {
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  std::vector<uint8_t> wrapped_key = {1, 2, 3};
-
-  // Delete the key, but fail to do so.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
-      .WillOnce(Return(false));
-  task_manager().DeleteSigningKeySlowlyAsync(
-      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      std::move(wrapped_key), BackgroundTaskPriority::kBestEffort,
-      delete_future.GetCallback());
-  EXPECT_FALSE(delete_future.IsReady());
-  RunBackgroundTasks();
-
-  EXPECT_TRUE(delete_future.IsReady());
-  EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
-  VerifyResultHistograms(histogram_tester, kDeleteKeyTaskType,
-                         ServiceError::kCryptoApiFailed);
-  EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
-                  kTaskRetriesFailureHistogramNameFormat, kDeleteKeyTaskType)),
-              ElementsAre(base::Bucket(0, 1)));
-}
-
-TEST_P(UnexportableKeyTaskManagerTest, DeleteKeyAsyncFailureNoKeyProvider) {
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  std::vector<uint8_t> wrapped_key = {1, 2, 3};
-
-  DisableKeyProvider();
-  task_manager().DeleteSigningKeySlowlyAsync(
-      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      std::move(wrapped_key), BackgroundTaskPriority::kBestEffort,
-      delete_future.GetCallback());
-  RunBackgroundTasks();
-
-  EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
-  VerifyResultHistograms(histogram_tester, kDeleteKeyTaskType,
-                         ServiceError::kNoKeyProvider);
-  EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
-                  kTaskRetriesFailureHistogramNameFormat, kDeleteKeyTaskType)),
-              ElementsAre(base::Bucket(0, 1)));
-}
-
-TEST_P(UnexportableKeyTaskManagerTest,
-       DeleteKeyAsyncFailureOperationNotSupported) {
-  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
-                ->AsStatefulUnexportableKeyProvider(),
-            nullptr);
-
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
-  std::vector<uint8_t> wrapped_key = {1, 2, 3};
-
-  task_manager().DeleteSigningKeySlowlyAsync(
-      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      std::move(wrapped_key), BackgroundTaskPriority::kBestEffort,
-      delete_future.GetCallback());
-  RunBackgroundTasks();
-
-  EXPECT_THAT(delete_future.Get(),
-              ErrorIs(ServiceError::kOperationNotSupported));
-  VerifyResultHistograms(histogram_tester, kDeleteKeyTaskType,
-                         ServiceError::kOperationNotSupported);
-  EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
-                  kTaskRetriesFailureHistogramNameFormat, kDeleteKeyTaskType)),
-              ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_P(UnexportableKeyTaskManagerTest, DeleteKeysAsync) {

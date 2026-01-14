@@ -57,6 +57,10 @@ constexpr base::TimeDelta kSigningQuotaInterval = base::Minutes(9);
 // browser.
 constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
 
+// Histogram name for the garbage collection of unexportable keys.
+constexpr std::string_view kGarbageCollectionHistogramPrefix =
+    "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions.";
+
 bool SessionMatchesFilter(
     const SchemefulSite& site,
     const Session& session,
@@ -460,8 +464,7 @@ void SessionServiceImpl::DoGarbageCollection(
     std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
   const size_t key_count = all_key_ids.size();
   base::UmaHistogramCounts100(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "TotalKeyCount",
+      base::StrCat({kGarbageCollectionHistogramPrefix, "TotalKeyCount"}),
       key_count);
 
   absl::flat_hash_set<unexportable_keys::UnexportableKeyId> known_key_ids;
@@ -481,35 +484,22 @@ void SessionServiceImpl::DoGarbageCollection(
   });
 
   base::UmaHistogramCounts100(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "UsedKeyCount",
+      base::StrCat({kGarbageCollectionHistogramPrefix, "UsedKeyCount"}),
       key_count - all_key_ids.size());
 
   base::UmaHistogramCounts100(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "ObsoleteKeyCount",
+      base::StrCat({kGarbageCollectionHistogramPrefix, "ObsoleteKeyCount"}),
       all_key_ids.size());
 
-  const auto barrier_callback =
-      base::BarrierCallback<unexportable_keys::ServiceErrorOr<void>>(
-          all_key_ids.size(),
-          base::BindOnce([](std::vector<unexportable_keys::ServiceErrorOr<void>>
-                                results) {
-            base::UmaHistogramCounts100(
-                "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-                "ObsoleteKeyDeletionCount",
-                std::ranges::count_if(
-                    results, [](auto result) { return result.has_value(); }));
-          }));
-
   // Delete all remaining keys.
-  std::ranges::for_each(
-      all_key_ids, [&](unexportable_keys::UnexportableKeyId unknown_key_id) {
-        key_service_->DeleteKeySlowlyAsync(
-            unknown_key_id,
-            unexportable_keys::BackgroundTaskPriority::kBestEffort,
-            barrier_callback);
-      });
+  key_service_->DeleteKeysSlowlyAsync(
+      all_key_ids, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      base::BindOnce([](unexportable_keys::ServiceErrorOr<size_t> result) {
+        base::UmaHistogramCounts100(
+            base::StrCat({kGarbageCollectionHistogramPrefix,
+                          "ObsoleteKeyDeletionCount"}),
+            result.value_or(0));
+      }));
 }
 
 void SessionServiceImpl::OnRegistrationComplete(

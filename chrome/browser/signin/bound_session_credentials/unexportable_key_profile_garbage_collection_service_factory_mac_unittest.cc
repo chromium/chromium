@@ -42,6 +42,7 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::Test;
@@ -126,10 +127,9 @@ TEST_F(UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest,
           orphaned_key_id,
       })));
 
-  EXPECT_CALL(*created_service, DeleteKeySlowlyAsync(orphaned_key_id, _, _))
-      .WillOnce(RunOnceCallback<2>(base::ok()));
-  EXPECT_CALL(*created_service, DeleteKeySlowlyAsync(active_key_id, _, _))
-      .Times(0);
+  EXPECT_CALL(*created_service,
+              DeleteKeysSlowlyAsync(ElementsAre(orphaned_key_id), _, _))
+      .WillOnce(RunOnceCallback<2>(1));
 
   // Fast forward to trigger garbage collection.
   task_environment().FastForwardBy(kGarbageCollectionDelay);

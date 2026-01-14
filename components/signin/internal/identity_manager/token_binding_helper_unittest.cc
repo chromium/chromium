@@ -41,6 +41,7 @@ namespace {
 
 using GenerateAssertionFuture = base::test::TestFuture<std::string>;
 using ::base::test::ErrorIs;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Return;
 
@@ -306,21 +307,9 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
                          used_wrapped_key_in_memory);
   helper().StartGarbageCollection({used_wrapped_key_in_db});
 
-  EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(unused_wrapped_key1)))
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(unused_wrapped_key2)))
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(used_wrapped_key_in_memory)))
-      .Times(0);
-  EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(used_wrapped_key_in_db)))
-      .Times(0);
-  EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(unused_wrapped_key_new)))
-      .Times(0);
+  EXPECT_CALL(mock_key_provider, DeleteSigningKeysSlowly(ElementsAre(
+                                     unused_wrapped_key1, unused_wrapped_key2)))
+      .WillOnce(Return(2));
   RunBackgroundTasks();
 
   histogram_tester().ExpectUniqueSample(

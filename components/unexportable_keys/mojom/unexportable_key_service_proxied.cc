@@ -25,14 +25,6 @@
 
 namespace unexportable_keys {
 namespace {
-ServiceErrorOr<void> AdaptErrorOrVoid(
-    const std::optional<ServiceError> result) {
-  if (result.has_value()) {
-    return base::unexpected(*result);
-  } else {
-    return base::ok();
-  }
-}
 
 ServiceErrorOr<size_t> AdaptSizeType(ServiceErrorOr<uint64_t> result) {
   return result.transform(
@@ -188,20 +180,6 @@ ServiceErrorOr<base::Time> UnexportableKeyServiceProxied::GetCreationTime(
     return base::unexpected(ServiceError::kKeyNotFound);
   }
   return it->second.creation_time;
-}
-
-void UnexportableKeyServiceProxied::DeleteKeySlowlyAsync(
-    UnexportableKeyId key_id,
-    BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
-  if (!key_cache_.erase(key_id)) {
-    std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
-    return;
-  }
-
-  remote_->DeleteKey(
-      key_id, priority,
-      base::BindOnce(&AdaptErrorOrVoid).Then(std::move(callback)));
 }
 
 void UnexportableKeyServiceProxied::DeleteKeysSlowlyAsync(

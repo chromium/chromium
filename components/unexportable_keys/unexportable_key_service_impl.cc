@@ -182,24 +182,6 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
                      std::move(callback)));
 }
 
-void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
-    UnexportableKeyId key_id,
-    BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
-  ASSIGN_OR_RETURN(std::vector<uint8_t> wrapped_key, DeleteKeyFromMaps(key_id),
-                   [&](ServiceError error) {
-                     std::move(callback).Run(base::unexpected(error));
-                   });
-
-  // The type expected by the callback
-  using ArgType = ServiceErrorOr<void>;
-  task_manager_->DeleteSigningKeySlowlyAsync(
-      task_origin_, config_, std::move(wrapped_key), priority,
-      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     service_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
-}
-
 void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
     base::span<const UnexportableKeyId> key_ids,
     BackgroundTaskPriority priority,

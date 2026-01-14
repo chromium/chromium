@@ -63,12 +63,12 @@ void UnexportableKeysInternalsHandler::GetUnexportableKeysInfo(
 void UnexportableKeysInternalsHandler::DeleteKey(
     const unexportable_keys::UnexportableKeyId& key_id,
     DeleteKeyCallback callback) {
-  key_service_->DeleteKeySlowlyAsync(
-      key_id, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+  key_service_->DeleteKeysSlowlyAsync(
+      {key_id}, unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(
           [](DeleteKeyCallback callback,
-             unexportable_keys::ServiceErrorOr<void> result) {
-            std::move(callback).Run(result.has_value());
+             unexportable_keys::ServiceErrorOr<size_t> result) {
+            std::move(callback).Run(static_cast<bool>(result.value_or(0)));
           },
           std::move(callback)));
 }

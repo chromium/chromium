@@ -273,25 +273,12 @@ void TokenBindingHelper::OnGetAllKeysForGarbageCollection(
       base::StrCat({kGarbageCollectionHistogramPrefix, "ObsoleteKeyCount"}),
       all_key_ids.size());
 
-  auto barrier_callback =
-      base::BarrierCallback<unexportable_keys::ServiceErrorOr<void>>(
-          all_key_ids.size(),
-          base::BindOnce(
-              [](std::vector<unexportable_keys::ServiceErrorOr<void>> results) {
-                base::UmaHistogramCounts100(
-                    base::StrCat({kGarbageCollectionHistogramPrefix,
-                                  "ObsoleteKeyDeletionCount"}),
-                    std::ranges::count_if(results, [](auto result) {
-                      return result.has_value();
-                    }));
-              }));
-
-  // TODO(crbug.com/443931937): Add a bulk deletion API to
-  // `UnexportableKeyService` and use it here.
-  std::ranges::for_each(
-      all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
-        unexportable_key_service_->DeleteKeySlowlyAsync(
-            key_id, unexportable_keys::BackgroundTaskPriority::kBestEffort,
-            barrier_callback);
-      });
+  unexportable_key_service_->DeleteKeysSlowlyAsync(
+      all_key_ids, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      base::BindOnce([](unexportable_keys::ServiceErrorOr<size_t> result) {
+        base::UmaHistogramCounts100(
+            base::StrCat({kGarbageCollectionHistogramPrefix,
+                          "ObsoleteKeyDeletionCount"}),
+            result.value_or(0));
+      }));
 }

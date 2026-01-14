@@ -20,7 +20,6 @@ enum class BackgroundTaskType {
   kGenerateKey,
   kFromWrappedKey,
   kSign,
-  kDeleteKey,
   kDeleteKeys,
   kDeleteAllKeys,
 };
