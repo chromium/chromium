@@ -108,6 +108,11 @@ JavaScript and does not respond to a ping within 30 seconds. When a SW is not
 running, Developer Tools and chrome://serviceworker-internals show its status as
 STOPPED.
 
+An exception to this is a Service Worker registered as a Payment Handler. It
+may continue running as long as its payment handler window is open. This is
+based on the assumption that users will not keep the window open
+indefinitely, making the potential risk negligible.
+
 ## How can I see Service Workers in Chrome?
 
 You can see them in the **Service Workers** field in the **Application** tab of
