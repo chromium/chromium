@@ -112,7 +112,7 @@ struct TabInfo {
 
 // LINT.IfChange(ToolMode)
 // See also:
-// https://crsrc.org/c/third_party/omnibox_proto/aim_tools_and_models.proto
+// https://crsrc.org/c/third_party/omnibox_proto/aim_tools.proto
 enum ToolMode {
   kDefault = 0,
   kDeepSearch = 1,

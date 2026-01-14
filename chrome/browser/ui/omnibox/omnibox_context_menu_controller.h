@@ -37,7 +37,7 @@ class ImageModel;
 }  // namespace ui
 
 namespace omnibox {
-enum ChromeAimToolsAndModels : int;
+enum ToolMode : int;
 }  // namespace omnibox
 
 namespace content {
@@ -109,7 +109,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   // unit testing easier.
   static bool IsCommandIdEnabledHelper(
       int command_id,
-      omnibox::ChromeAimToolsAndModels aim_tool_mode,
+      omnibox::ToolMode aim_tool_mode,
       const std::vector<contextual_search::FileInfo>& file_infos,
       int max_num_files,
       OmniboxPopupState page_type);

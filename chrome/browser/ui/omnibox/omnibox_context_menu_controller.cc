@@ -435,7 +435,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 
 bool OmniboxContextMenuController::IsCommandIdEnabledHelper(
     int command_id,
-    omnibox::ChromeAimToolsAndModels aim_tool_mode,
+    omnibox::ToolMode aim_tool_mode,
     const std::vector<contextual_search::FileInfo>& file_infos,
     int max_num_files,
     OmniboxPopupState page_type) {
@@ -443,7 +443,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabledHelper(
                                  ? kClassicContextTypeHistogramPrefix
                                  : kAimContextTypeHistogramPrefix;
   const std::string sliced_prefix = base::StrCat({prefix, ".Shown"});
-  if (aim_tool_mode == omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN) {
+  if (aim_tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
     const bool command_enabled =
         command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE && file_infos.empty();
     if (command_enabled) {
@@ -497,7 +497,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
-  const omnibox::ChromeAimToolsAndModels aim_tool_mode =
+  const omnibox::ToolMode aim_tool_mode =
       omnibox_popup_ui->composebox_handler()->GetAimToolMode();
 
   auto* session_handle = omnibox_popup_ui->GetOrCreateContextualSessionHandle();

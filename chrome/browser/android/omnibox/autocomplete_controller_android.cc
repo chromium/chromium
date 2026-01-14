@@ -156,7 +156,7 @@ void AutocompleteControllerAndroid::Start(
     const JavaRef<jstring>& j_desired_tld,
     const JavaRef<jstring>& j_current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
-    ::omnibox::ChromeAimToolsAndModels tool_mode,
+    ::omnibox::ToolMode tool_mode,
     bool prevent_inline_autocomplete,
     bool prefer_keyword,
     bool allow_exact_keyword_match,
@@ -245,7 +245,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
     const JavaRef<jstring>& j_omnibox_text,
     const JavaRef<jstring>& j_current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
-    ::omnibox::ChromeAimToolsAndModels tool_mode,
+    ::omnibox::ToolMode tool_mode,
     const JavaRef<jstring>& j_current_title) {
   using OFT = metrics::OmniboxFocusType;
 

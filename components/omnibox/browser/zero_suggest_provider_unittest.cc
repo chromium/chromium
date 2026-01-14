@@ -636,8 +636,7 @@ TEST_F(ZeroSuggestProviderTest, SendRequestWithoutLensInteractionResponse) {
 
 TEST_F(ZeroSuggestProviderTest, SendRequestWithAimToolMode) {
   AutocompleteInput input = ZeroPrefixInputForComposebox();
-  input.set_aim_tool_mode(
-      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH);
+  input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the

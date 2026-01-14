@@ -16,7 +16,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
+import org.chromium.components.omnibox.AimToolsProto.ToolMode;
 
 import java.util.List;
 import java.util.Map;
@@ -319,11 +319,11 @@ public class AutocompleteInputUnitTest {
 
     @Test
     public void toolMode() {
-        assertEquals(ChromeAimToolsAndModels.TOOL_MODE_UNSPECIFIED_VALUE, mInput.getToolMode());
+        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE, mInput.getToolMode());
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        assertEquals(ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
+        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
         mInput.setHasAttachments(true);
         assertEquals(
-                ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, mInput.getToolMode());
+                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, mInput.getToolMode());
     }
 }

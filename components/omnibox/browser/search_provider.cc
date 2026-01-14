@@ -106,10 +106,8 @@ bool ShouldOnlyShowVerbatimMatches(const AutocompleteInput& input) {
       input.lens_overlay_suggest_inputs().has_value() &&
       !base::FeatureList::IsEnabled(omnibox::kComposeboxAttachmentsTypedState);
   const bool is_image_gen_mode =
-      input.aim_tool_mode() ==
-          omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD ||
-      input.aim_tool_mode() ==
-          omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN;
+      input.aim_tool_mode() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD ||
+      input.aim_tool_mode() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
 
   // When contextual typed state suggestions are disabled for composebox, or
   // when in image generation mode, do not query suggest and only show

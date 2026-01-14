@@ -342,7 +342,7 @@ class OmniboxClient {
   virtual bool IsAimPopupEnabled() const;
 
   // Returns the current enabled tool mode if any.
-  virtual omnibox::ChromeAimToolsAndModels AimToolMode() const;
+  virtual omnibox::ToolMode AimToolMode() const;
 
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };

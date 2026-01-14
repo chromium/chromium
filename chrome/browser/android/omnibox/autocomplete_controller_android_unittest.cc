@@ -19,7 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
-#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
+#include "third_party/omnibox_proto/aim_tools.pb.h"
 #include "url/gurl.h"
 
 namespace {

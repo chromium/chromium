@@ -4178,8 +4178,7 @@ TEST_F(SearchProviderRequestTest, SendRequestWithAimToolMode) {
   // Start a query.
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  input.set_aim_tool_mode(
-      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH);
+  input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   input.set_current_url(GURL("https://www.example.com"));
   provider_->Start(input, false);
 

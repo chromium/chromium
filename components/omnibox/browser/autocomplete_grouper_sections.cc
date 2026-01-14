@@ -228,20 +228,17 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
 }
 
 /* static */ size_t AndroidComposeboxNonZPSSection::num_attachments_;
-/* static */ omnibox::ChromeAimToolsAndModels
-    AndroidComposeboxNonZPSSection::tool_mode_;
+/* static */ omnibox::ToolMode AndroidComposeboxNonZPSSection::tool_mode_;
 
 AndroidComposeboxNonZPSSection::AndroidComposeboxNonZPSSection(
     const omnibox::GroupConfigMap& group_configs)
-    : Section(
-          tool_mode_ ==
-                      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED &&
-                  num_attachments_ == 0
-              ? 15
-              : 1,
-          {// Default match Group only, unless no attachments
-           Group(15, {{omnibox::GROUP_SEARCH, 15}})},
-          group_configs) {}
+    : Section(tool_mode_ == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
+                      num_attachments_ == 0
+                  ? 15
+                  : 1,
+              {// Default match Group only, unless no attachments
+               Group(15, {{omnibox::GROUP_SEARCH, 15}})},
+              group_configs) {}
 
 AndroidHubZPSSection::AndroidHubZPSSection(
     const omnibox::GroupConfigMap& group_configs)

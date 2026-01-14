@@ -354,6 +354,6 @@ base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-omnibox::ChromeAimToolsAndModels ComposeboxOmniboxClient::AimToolMode() const {
+omnibox::ToolMode ComposeboxOmniboxClient::AimToolMode() const {
   return [delegate_ composeboxToolMode];
 }

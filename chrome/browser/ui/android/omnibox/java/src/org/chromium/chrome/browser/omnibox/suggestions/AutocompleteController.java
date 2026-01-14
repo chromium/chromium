@@ -429,7 +429,7 @@ public class AutocompleteController {
                 @Nullable String desiredTld,
                 String currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
-                @JniType("omnibox::ChromeAimToolsAndModels") int toolMode,
+                @JniType("omnibox::ToolMode") int toolMode,
                 boolean preventInlineAutocomplete,
                 boolean preferKeyword,
                 boolean allowExactKeywordMatch,
@@ -464,7 +464,7 @@ public class AutocompleteController {
                 String omniboxText,
                 String currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
-                @JniType("omnibox::ChromeAimToolsAndModels") int toolMode,
+                @JniType("omnibox::ToolMode") int toolMode,
                 String currentTitle);
 
         void deleteMatchElement(

@@ -43,6 +43,6 @@ include_rules = [
   "+ios/chrome/browser/variations/model/client",
   "+ios/chrome/browser/web/model",
   "+mojo/public/cpp/base/big_buffer.h",
-  "+third_party/omnibox_proto/aim_tools_and_models.pb.h"
+  "+third_party/omnibox_proto/aim_tools.pb.h"
   # go/keep-sorted end
 ]

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@ option java_outer_classname = 'AimModelsProto';
 
 package omnibox;
 
-// The AIM model mode that is applied to a query (e.g. on the input plate or
-// fusebox).
+// The AIM model mode that is applied to a query.
 // Next ID: 4
 enum ModelMode {
   // Unspecified model mode.
@@ -20,4 +19,6 @@ enum ModelMode {
   MODEL_MODE_GEMINI_REGULAR = 1;
   // Gemini pro model mode.
   MODEL_MODE_GEMINI_PRO = 2;
+  // Autoroute mode.
+  MODEL_MODE_GEMINI_PRO_AUTOROUTE = 3;
 }
