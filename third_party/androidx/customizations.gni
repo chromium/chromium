@@ -73,9 +73,6 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_mediarouter_mediarouter_java") {
       # https://crbug.com/1000382
       proguard_configs = [ "androidx_mediarouter.flags" ]
-    } else if (target_name == "androidx_biometric_biometric_java") {
-      # Temporary workaround until upstream flags fixed.
-      proguard_configs = [ "androidx_biometric.flags" ]
     } else if (target_name == "androidx_preference_preference_java") {
       proguard_configs = [ "androidx_preferences.flags" ]
 

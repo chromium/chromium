@@ -11,14 +11,6 @@
   @androidx.annotation.Keep <methods>;
 }
 
-# File: ../../third_party/androidx/androidx_biometric.flags
-# Copyright 2026 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Temporary fix until this change is landed upstream in AndroidX.
--dontwarn android.hardware.fingerprint.FingerprintManager**
-
 # File: ../../third_party/androidx/androidx_fragment.flags
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
