@@ -33,37 +33,6 @@ using AccessTokenInfo = DeviceAccountsProvider::AccessTokenInfo;
 using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
-// Match the way Chromium handles authentication errors in
-// google_apis/gaia/oauth2_access_token_fetcher.cc:
-GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
-    AuthenticationErrorCategory error) {
-  switch (error) {
-    case kAuthenticationErrorCategoryUnknownErrors:
-      // Treat all unknown error as unexpected service response errors.
-      // This may be too general and may require a finer grain filtering.
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
-    case kAuthenticationErrorCategoryAuthorizationErrors:
-      return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER);
-    case kAuthenticationErrorCategoryAuthorizationForbiddenErrors:
-      // HTTP_FORBIDDEN (403) is treated as temporary error, because it may be
-      // '403 Rate Limit Exceeded.' (for more details, see
-      // google_apis/gaia/oauth2_access_token_fetcher.cc).
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::SERVICE_UNAVAILABLE);
-    case kAuthenticationErrorCategoryNetworkServerErrors:
-      // Just set the connection error state to FAILED.
-      return GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
-    case kAuthenticationErrorCategoryUserCancellationErrors:
-      return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
-    case kAuthenticationErrorCategoryUnknownIdentityErrors:
-      return GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
-  }
-  NOTREACHED() << "unsupported error: " << static_cast<int>(error);
-}
-
 // Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
 AccountInfo AccountInfoFromDeviceAccount(
     const DeviceAccountsProvider::AccountInfo& account) {
@@ -152,9 +121,7 @@ void SSOAccessTokenFetcher::OnAccessTokenResponse(AccessTokenResult result) {
                               .WithExpirationTime(info.expiration_time)
                               .build());
   } else {
-    FireOnGetTokenFailure(
-        GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
-            result.error()));
+    FireOnGetTokenFailure(result.error());
   }
 }
 
@@ -355,10 +322,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::GetRefreshTokenFromDevice(
                   signin::AccessTokenInfo(info.token, info.expiration_time,
                                           std::string()));
             } else {
-              std::move(callback).Run(
-                  GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
-                      result.error()),
-                  signin::AccessTokenInfo());
+              std::move(callback).Run(result.error(),
+                                      signin::AccessTokenInfo());
             }
           },
           std::move(callback)));

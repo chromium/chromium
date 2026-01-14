@@ -82,7 +82,10 @@ void FakeDeviceAccountsProvider::IssueAccessTokenForAllRequests() {
 void FakeDeviceAccountsProvider::IssueAccessTokenErrorForAllRequests() {
   for (auto& pair : requests_) {
     std::move(pair.second)
-        .Run(base::unexpected(kAuthenticationErrorCategoryAuthorizationErrors));
+        .Run(base::unexpected(
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_SERVER)));
   }
   requests_.clear();
 }

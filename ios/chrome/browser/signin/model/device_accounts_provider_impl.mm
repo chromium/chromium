@@ -26,45 +26,59 @@ namespace {
 using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
 using AccountInfo = DeviceAccountsProvider::AccountInfo;
 
-// Helper function converting `error` for `identity` to an
-// AuthenticationErrorCategory.
-AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
+// Helper function converting `error` for `identity` to a
+// GoogleServiceAuthError.
+GoogleServiceAuthError GoogleServiceAuthErrorFromError(
     id<SystemIdentity> identity,
     NSError* error) {
   DCHECK(error);
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+
+  if (system_identity_manager->IsMDMError(identity, error)) {
+    // TODO (crbug.com/448358350): This is temporary as there are changes
+    // ongoing to improve the way MDM errors are handled.
+    return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+            CREDENTIALS_REJECTED_BY_SERVER);
+  }
+
   if ([error.domain isEqualToString:kSystemIdentityManagerErrorDomain]) {
     SystemIdentityManagerErrorCode error_code =
         static_cast<SystemIdentityManagerErrorCode>(error.code);
     switch (error_code) {
       case SystemIdentityManagerErrorCode::kNoAuthenticatedIdentity:
-        return kAuthenticationErrorCategoryUnknownIdentityErrors;
+        return GoogleServiceAuthError(
+            GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
       case SystemIdentityManagerErrorCode::kClientIDMismatch:
-        return kAuthenticationErrorCategoryUnknownIdentityErrors;
+        return GoogleServiceAuthError(
+            GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
       case SystemIdentityManagerErrorCode::kInvalidTokenIdentity:
-        return kAuthenticationErrorCategoryAuthorizationErrors;
+        return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
     }
-  }
-
-  SystemIdentityManager* system_identity_manager =
-      GetApplicationContext()->GetSystemIdentityManager();
-  if (system_identity_manager->IsMDMError(identity, error)) {
-    return kAuthenticationErrorCategoryAuthorizationErrors;
   }
 
   switch (ios::provider::GetSigninErrorCategory(error)) {
     case ios::provider::SigninErrorCategory::kUnknownError:
-      return kAuthenticationErrorCategoryUnknownErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
     case ios::provider::SigninErrorCategory::kAuthorizationError:
-      return kAuthenticationErrorCategoryAuthorizationErrors;
+      return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
     case ios::provider::SigninErrorCategory::kAuthorizationForbiddenError:
-      return kAuthenticationErrorCategoryAuthorizationForbiddenErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::SERVICE_UNAVAILABLE);
     case ios::provider::SigninErrorCategory::kNetworkError:
-      return kAuthenticationErrorCategoryNetworkServerErrors;
+      return GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
     case ios::provider::SigninErrorCategory::kUserCancellationError:
-      return kAuthenticationErrorCategoryUserCancellationErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::REQUEST_CANCELED);
   }
 
-  NOTREACHED() << "unexpected error: "
+  NOTREACHED() << "Unexpected error: "
                << base::SysNSStringToUTF8([error description]);
 }
 
@@ -76,8 +90,7 @@ AccessTokenResult AccessTokenResultFrom(
     std::optional<SystemIdentityManager::AccessTokenInfo> access_token,
     NSError* error) {
   if (error) {
-    return base::unexpected(
-        AuthenticationErrorCategoryFromError(identity, error));
+    return base::unexpected(GoogleServiceAuthErrorFromError(identity, error));
   } else {
     DCHECK(access_token.has_value());
     DeviceAccountsProvider::AccessTokenInfo info = {
@@ -160,11 +173,11 @@ void DeviceAccountsProviderImpl::GetAccessToken(
   // If the identity is unknown, there is no need to try to fetch the access
   // token as it will fail immediately. Post the callback with a failure.
   if (!identity) {
+    GoogleServiceAuthError auth_error(
+        GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       base::unexpected(
-                           kAuthenticationErrorCategoryUnknownIdentityErrors)));
+        base::BindOnce(std::move(callback), base::unexpected(auth_error)));
     return;
   }
 

@@ -14,22 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/gaia/gaia_id.h"
-
-enum AuthenticationErrorCategory {
-  // Unknown errors.
-  kAuthenticationErrorCategoryUnknownErrors,
-  // Authorization errors.
-  kAuthenticationErrorCategoryAuthorizationErrors,
-  // Authorization errors with HTTP_FORBIDDEN (403) error code.
-  kAuthenticationErrorCategoryAuthorizationForbiddenErrors,
-  // Network server errors includes parsing error and should be treated as
-  // transient/offline errors.
-  kAuthenticationErrorCategoryNetworkServerErrors,
-  // User cancellation errors should be handled by treating them as a no-op.
-  kAuthenticationErrorCategoryUserCancellationErrors,
-  // User identity not found errors.
-  kAuthenticationErrorCategoryUnknownIdentityErrors,
-};
+#include "google_apis/gaia/google_service_auth_error.h"
 
 // Interface that provides a mechanism for interacting with the underlying
 // device accounts support.
@@ -84,7 +69,7 @@ class DeviceAccountsProvider {
   // Result of GetAccessToken() passed to the callback. Contains either
   // a valid AccessTokenInfo or the error.
   using AccessTokenResult =
-      base::expected<AccessTokenInfo, AuthenticationErrorCategory>;
+      base::expected<AccessTokenInfo, GoogleServiceAuthError>;
 
   // Callback invoked when access token have been fetched.
   using AccessTokenCallback =

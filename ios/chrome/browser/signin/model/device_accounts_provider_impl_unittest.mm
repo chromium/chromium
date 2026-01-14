@@ -80,7 +80,8 @@ TEST_F(DeviceAccountsProviderImplTest, TestFetchWithUnknownIdentity) {
          DeviceAccountsProvider::AccessTokenResult result) {
         EXPECT_FALSE(result.has_value());
         EXPECT_EQ(result.error(),
-                  kAuthenticationErrorCategoryUnknownIdentityErrors);
+                  GoogleServiceAuthError(
+                      GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
         run_loop->Quit();
       },
       &run_loop);
