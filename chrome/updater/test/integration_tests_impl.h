@@ -428,17 +428,17 @@ void DeleteScheduledTask(const std::string& task_name,
 // links, or dot dot.
 int CountDirectoryFiles(const base::FilePath& dir);
 
-void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
+void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer& test_server);
 
 void ExpectPing(UpdaterScope scope,
-                ScopedServer* test_server,
+                ScopedServer& test_server,
                 int event_type,
                 std::optional<GURL> target_url);
 void ExpectInstallSource(UpdaterScope scope,
-                         ScopedServer* test_server,
+                         ScopedServer& test_server,
                          const std::string& install_source);
 void ExpectAppCommandPing(UpdaterScope scope,
-                          ScopedServer* test_server,
+                          ScopedServer& test_server,
                           const std::string& appid,
                           const std::string& appcommandid,
                           int errorcode,
@@ -447,10 +447,10 @@ void ExpectAppCommandPing(UpdaterScope scope,
                           const base::Version& version,
                           const base::Version& updater_version);
 
-void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server);
+void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer& test_server);
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,
-                               ScopedServer* test_server,
+                               ScopedServer& test_server,
                                const std::string& app_id,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
@@ -459,7 +459,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
 
 void ExpectUpdateSequence(
     UpdaterScope scope,
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const std::string& app_id,
     const std::string& install_data_index,
     UpdateService::Priority priority,
@@ -472,7 +472,7 @@ void ExpectUpdateSequence(
     bool use_xz = false);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
-                                 ScopedServer* test_server,
+                                 ScopedServer& test_server,
                                  const std::string& app_id,
                                  const std::string& install_data_index,
                                  UpdateService::Priority priority,
@@ -480,7 +480,7 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  const base::Version& to_version);
 
 void ExpectInstallSequence(UpdaterScope scope,
-                           ScopedServer* test_server,
+                           ScopedServer& test_server,
                            const std::string& app_id,
                            const std::string& install_data_index,
                            UpdateService::Priority priority,
@@ -491,11 +491,11 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& updater_version,
                            const std::string& event_regex);
 
-void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
+void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server);
 
 void ExpectAppsUpdateSequence(
     UpdaterScope scope,
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const base::Value::Dict& request_attributes,
     const std::vector<AppUpdateExpectation>& apps,
     const base::Version& updater_version = base::Version(kUpdaterVersion));
@@ -607,7 +607,7 @@ void SetAppAllowsUsageStats(UpdaterScope scope,
 void ClearAppAllowsUsageStats(UpdaterScope scope,
                               const std::string& identifier);
 
-void ExpectDeviceManagementRequest(ScopedServer* test_server,
+void ExpectDeviceManagementRequest(ScopedServer& test_server,
                                    const std::string& request_type,
                                    const std::string& authorization_type,
                                    const std::string& authorization_token,
@@ -615,21 +615,21 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
                                    const std::string& response,
                                    std::optional<GURL> target_url = {});
 void ExpectDeviceManagementRegistrationRequest(
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const std::string& enrollment_token,
     const std::string& dm_token);
 void ExpectDeviceManagementPolicyFetchRequest(
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const std::string& dm_token,
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings,
     bool first_request = true,
     bool rotate_public_key = false,
     std::optional<GURL> target_url = std::nullopt);
-void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
+void ExpectDeviceManagementTokenDeletionRequest(ScopedServer& test_server,
                                                 const std::string& dm_token,
                                                 bool invalidate_token);
-void ExpectProxyPacScriptRequest(ScopedServer* test_server);
+void ExpectProxyPacScriptRequest(ScopedServer& test_server);
 
 #if BUILDFLAG(IS_MAC)
 

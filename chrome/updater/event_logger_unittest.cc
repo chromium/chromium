@@ -136,13 +136,13 @@ class EventLoggerTest : public ::testing::Test {
             /*prefs_dir=*/base::FilePath(), /*lock=*/nullptr, std::move(pref)),
         CreateExternalConstants(), scope);
     persisted_data_ = configurator_->GetUpdaterPersistedData();
-    test_server_->RegisterRequestHandler(base::BindRepeating(
+    test_server_.RegisterRequestHandler(base::BindRepeating(
         &EventLoggerTest::HandleRequest, base::Unretained(this)));
-    ASSERT_TRUE((test_server_handle_ = test_server_->StartAndReturnHandle()));
+    ASSERT_TRUE((test_server_handle_ = test_server_.StartAndReturnHandle()));
     auto test_clock = std::make_unique<base::SimpleTestClock>();
     test_clock_ = test_clock.get();
     delegate_ = std::make_unique<RemoteLoggingDelegate>(
-        scope, test_server_->GetURL("/event-logging"),
+        scope, test_server_.GetURL("/event-logging"),
         /*is_cloud_managed=*/false, configurator_, std::move(test_clock));
   }
 
@@ -156,8 +156,7 @@ class EventLoggerTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<EmbeddedTestServer> test_server_ =
-      std::make_unique<EmbeddedTestServer>();
+  EmbeddedTestServer test_server_;
   scoped_refptr<Configurator> configurator_;
   scoped_refptr<PersistedData> persisted_data_;
   EmbeddedTestServerHandle test_server_handle_;
@@ -227,7 +226,7 @@ TEST_F(EventLoggerTest, SerializesMetadata) {
 TEST_F(EventLoggerTest, DoPostRequest) {
   SetRequestHandler(base::BindLambdaForTesting(
       [this](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
-        GURL absolute_url = test_server_->GetURL(request.relative_url);
+        GURL absolute_url = test_server_.GetURL(request.relative_url);
         if (absolute_url.GetPath() != "/event-logging") {
           return nullptr;
         }

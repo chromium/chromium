@@ -198,25 +198,25 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("managed", BoolToString(is_managed_device))});
   }
 
-  void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
+  void ExpectSelfUpdateSequence(ScopedServer& test_server) const override {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
-  void ExpectPing(ScopedServer* test_server,
+  void ExpectPing(ScopedServer& test_server,
                   int event_type,
                   std::optional<GURL> target_url) const override {
     updater::test::ExpectPing(updater_scope_, test_server, event_type,
                               target_url);
   }
 
-  void ExpectInstallSource(ScopedServer* test_server,
+  void ExpectInstallSource(ScopedServer& test_server,
                            const std::string& install_source) const override {
     updater::test::ExpectInstallSource(updater_scope_, test_server,
                                        install_source);
   }
 
   void ExpectAppCommandPing(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& appid,
       const std::string& appcommandid,
       int errorcode,
@@ -229,12 +229,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                                         event_type, version, updater_version);
   }
 
-  void ExpectUpdateCheckRequest(ScopedServer* test_server) const override {
+  void ExpectUpdateCheckRequest(ScopedServer& test_server) const override {
     updater::test::ExpectUpdateCheckRequest(updater_scope_, test_server);
   }
 
   void ExpectUpdateCheckSequence(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& app_id,
       UpdateService::Priority priority,
       const base::Version& from_version,
@@ -245,7 +245,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                                              to_version, updater_version);
   }
 
-  void ExpectUpdateSequence(ScopedServer* test_server,
+  void ExpectUpdateSequence(ScopedServer& test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,
                             UpdateService::Priority priority,
@@ -263,7 +263,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void ExpectUpdateSequenceBadHash(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& app_id,
       const std::string& install_data_index,
       UpdateService::Priority priority,
@@ -274,7 +274,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         from_version, to_version);
   }
 
-  void ExpectInstallSequence(ScopedServer* test_server,
+  void ExpectInstallSequence(ScopedServer& test_server,
                              const std::string& app_id,
                              const std::string& install_data_index,
                              UpdateService::Priority priority,
@@ -291,7 +291,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void ExpectEnterpriseCompanionAppOTAInstallSequence(
-      ScopedServer* test_server) const override {
+      ScopedServer& test_server) const override {
     updater::test::ExpectEnterpriseCompanionAppOTAInstallSequence(test_server);
   }
 

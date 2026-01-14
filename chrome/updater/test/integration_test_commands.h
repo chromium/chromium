@@ -64,14 +64,14 @@ class IntegrationTestCommands
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
-  virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
-  virtual void ExpectPing(ScopedServer* test_server,
+  virtual void ExpectSelfUpdateSequence(ScopedServer& test_server) const = 0;
+  virtual void ExpectPing(ScopedServer& test_server,
                           int event_type,
                           std::optional<GURL> target_url) const = 0;
-  virtual void ExpectInstallSource(ScopedServer* test_server,
+  virtual void ExpectInstallSource(ScopedServer& test_server,
                                    const std::string& install_source) const = 0;
   virtual void ExpectAppCommandPing(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& appid,
       const std::string& appcommandid,
       int errorcode,
@@ -79,15 +79,15 @@ class IntegrationTestCommands
       int event_type,
       const base::Version& version,
       const base::Version& updater_version) const = 0;
-  virtual void ExpectUpdateCheckRequest(ScopedServer* test_server) const = 0;
+  virtual void ExpectUpdateCheckRequest(ScopedServer& test_server) const = 0;
   virtual void ExpectUpdateCheckSequence(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& app_id,
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version,
       const base::Version& updater_version) const = 0;
-  virtual void ExpectUpdateSequence(ScopedServer* test_server,
+  virtual void ExpectUpdateSequence(ScopedServer& test_server,
                                     const std::string& app_id,
                                     const std::string& install_data_index,
                                     UpdateService::Priority priority,
@@ -99,13 +99,13 @@ class IntegrationTestCommands
                                     const std::string& event_regex,
                                     bool use_xz) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& app_id,
       const std::string& install_data_index,
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const = 0;
-  virtual void ExpectInstallSequence(ScopedServer* test_server,
+  virtual void ExpectInstallSequence(ScopedServer& test_server,
                                      const std::string& app_id,
                                      const std::string& install_data_index,
                                      UpdateService::Priority priority,
@@ -116,7 +116,7 @@ class IntegrationTestCommands
                                      const base::Version& updater_version,
                                      const std::string& event_regex) const = 0;
   virtual void ExpectEnterpriseCompanionAppOTAInstallSequence(
-      ScopedServer* test_server) const = 0;
+      ScopedServer& test_server) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;
