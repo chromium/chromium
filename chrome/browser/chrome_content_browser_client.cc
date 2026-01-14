@@ -268,6 +268,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -985,13 +986,24 @@ GetRendererConfiguration(content::RenderProcessHost* render_process_host) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 bool ShouldHonorPolicies() {
+  bool management_check_required = false;
+
 #if BUILDFLAG(IS_WIN)
-  return policy::ManagementServiceFactory::GetForPlatform()
-             ->GetManagementAuthorityTrustworthiness() >=
-         policy::ManagementAuthorityTrustworthiness::TRUSTED;
-#else
-  return true;
+  management_check_required = true;
+#elif BUILDFLAG(IS_MAC)
+  if (base::FeatureList::GetInstance() &&
+      base::FeatureList::IsEnabled(
+          policy::features::kUseManagementServiceForSensitivePolicies)) {
+    management_check_required = true;
+  }
 #endif
+
+  if (management_check_required) {
+    return policy::ManagementServiceFactory::GetForPlatform()
+               ->GetManagementAuthorityTrustworthiness() >=
+           policy::ManagementAuthorityTrustworthiness::TRUSTED;
+  }
+  return true;
 }
 
 // Used by Enterprise policy. Disable blocking of navigations toward external

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/policy/policy_export.h"
 
 namespace policy::features {
@@ -47,6 +48,13 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kSafeSitesCaptivePortalCheck);
 
 // Used to enable extension install policy support.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kEnableExtensionInstallPolicyFetching);
+
+// When enabled, uses ManagementService to determine whether to honor sensitive
+// policies. When disabled, falls back to the original ShouldHonorPolicies()
+// behavior. This flag allows reverting if the new approach causes issues.
+// Note: Only has an effect on Mac and Windows where ShouldHonorPolicies()
+// performs platform-specific checks.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kUseManagementServiceForSensitivePolicies);
 
 }  // namespace policy::features
 
