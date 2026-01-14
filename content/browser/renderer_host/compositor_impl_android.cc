@@ -57,6 +57,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -759,6 +760,9 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   renderer_settings.allow_antialiasing = false;
   renderer_settings.highp_threshold_min = 2048;
   renderer_settings.requires_alpha_channel = requires_alpha_channel_;
+  if (base::FeatureList::IsEnabled(features::kDisableAutoResizeOutputSurface)) {
+    renderer_settings.auto_resize_output_surface = false;
+  }
 
   root_params->frame_sink_id = frame_sink_id_;
   root_params->widget = surface_handle_;
