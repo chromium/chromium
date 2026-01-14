@@ -316,6 +316,10 @@
 # removed due to being unused.
 -dontwarn org.chromium.chrome.modules.on_demand.OnDemandModuleEntryPointsImpl
 
+# Test APK targets do not include the XR bundle code, but do include XrModule.java,
+# which references XrModuleProvider via an @IdentifierNameString.
+-dontwarn org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl
+
 # File: ../../third_party/android_deps/material_design.flags
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be

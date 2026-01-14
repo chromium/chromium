@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="xr"
+    package="org.chromium.chrome.stable"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16"
+    android:versionCode="OFFSET=33"
+    android:versionName="#.#.#.#">
+  <dist:module dist:title="@string/xr_module_title">  # DIFF-ANCHOR: 3f74a994
+    <dist:delivery>  # DIFF-ANCHOR: 350ac64d
+      <dist:install-time>  # DIFF-ANCHOR: b5ab795d
+        <dist:conditions>  # DIFF-ANCHOR: c68e9d58
+          <dist:device-feature dist:name="android.hardware.xr.input.hand_tracking"/>
+        </dist:conditions>  # DIFF-ANCHOR: c68e9d58
+      </dist:install-time>  # DIFF-ANCHOR: b5ab795d
+      <dist:on-demand/>
+    </dist:delivery>  # DIFF-ANCHOR: 350ac64d
+    <dist:fusing dist:include="false"/>
+  </dist:module>  # DIFF-ANCHOR: 3f74a994
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
+  <uses-split android:name="chrome"/>
+  <application>
+    <uses-library android:name="com.android.extensions.xr" android:required="false"/>
+  </application>
+</manifest>

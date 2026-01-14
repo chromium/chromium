@@ -288,6 +288,7 @@ if (_is_default_toolchain) {
       ":java_overlay_resources",
       ":system_ai_service_proto_java",
       ":usage_stats_proto_java",
+      ":xr_java",
       "$google_play_services_package:google_play_services_auth_base_java",
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
@@ -774,8 +775,6 @@ if (_is_default_toolchain) {
       "//third_party/androidx:androidx_viewpager2_viewpager2_java",
       "//third_party/androidx:androidx_viewpager_viewpager_java",
       "//third_party/androidx:androidx_window_window_java",
-      "//third_party/androidx:androidx_xr_runtime_runtime_java",
-      "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
       "//third_party/blink/public:blink_headers_java",
       "//third_party/blink/public/common:common_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
@@ -1207,6 +1206,24 @@ if (_is_default_toolchain) {
     if (enable_extensions_core) {
       deps += [ "//chrome/browser/ui/android/extensions:junit" ]
     }
+  }
+
+  android_library("xr_java") {
+    sources = [ "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProvider.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/android/lifecycle:java",
+      "//components/module_installer/android:module_installer_java",
+      "//components/module_installer/android:module_interface_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//ui/android:ui_java",
+    ]
+
+    annotation_processor_deps =
+        [ "//components/module_installer/android:module_interface_processor" ]
   }
 
   # Files used by chrome integration and unit javatests.

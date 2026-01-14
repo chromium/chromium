@@ -317,8 +317,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionInitializerImpl;
-import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionManagerImpl;
+import org.chromium.chrome.browser.xr.scenecore.XrModule;
 import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -4884,8 +4883,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private void maybeInitializeXrSceneCoreSession() {
         if (DeviceInfo.isXr()) {
+            assert XrModule.isInstalled() : "XR module must be installed on XR devices. ";
             mXrSceneCoreSessionInitializer =
-                    new XrSceneCoreSessionInitializerImpl(
+                    XrModule.getImpl().getXrSceneCoreSessionInitializer(
                             getLifecycleDispatcher(), mXrSceneCoreSessionManagerSupplier.get());
             mXrSceneCoreSessionInitializer.initialize(INITIAL_XR_FULL_SPACE_MODE);
         }
@@ -4897,7 +4897,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         XrSceneCoreSessionManager xrSceneCoreSessionManager = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             if (DeviceInfo.isXr()) {
-                xrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
+                assert XrModule.isInstalled() : "XR module must be installed on XR devices. ";
+                xrSceneCoreSessionManager = XrModule.getImpl().getXrSceneCoreSessionManager(this);
                 xrSceneCoreSessionManager
                         .getXrSpaceModeObservableSupplier()
                         .addSyncObserver(mOnXrSpaceModeChanged);

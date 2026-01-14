@@ -1273,8 +1273,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebappLauncherActivity.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
   "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
-  "java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImpl.java",
-  "java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
 ]
 
 if (enable_screen_capture) {
