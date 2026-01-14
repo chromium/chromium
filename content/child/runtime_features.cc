@@ -531,8 +531,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
       ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
 #endif
   WebRuntimeFeatures::EnableFluentScrollbars(ui::IsFluentScrollbarEnabled());
-  WebRuntimeFeatures::EnableFluentOverlayScrollbars(
-      ui::IsFluentOverlayScrollbarEnabled());
 
   // TODO(rodneyding): This is a rare case for a stable feature
   // Need to investigate more to determine whether to refactor it.
