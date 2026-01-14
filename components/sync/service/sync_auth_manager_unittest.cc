@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -34,7 +35,9 @@ class MockDelegate : public SyncAuthManager::Delegate {
   MOCK_METHOD(void, SyncAuthCredentialsChanged, (), (override));
 };
 
-class SyncAuthManagerTest : public testing::Test {
+class SyncAuthManagerTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<signin::ConsentLevel> {
  protected:
   SyncAuthManagerTest() : identity_env_(&test_url_loader_factory_) {}
 
@@ -59,7 +62,12 @@ class SyncAuthManagerTest : public testing::Test {
   testing::NiceMock<MockDelegate> delegate_;
 };
 
-TEST_F(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
+INSTANTIATE_TEST_SUITE_P(Dice_Mirror,
+                         SyncAuthManagerTest,
+                         ::testing::Values(signin::ConsentLevel::kSignin,
+                                           signin::ConsentLevel::kSync));
+
+TEST_P(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
   std::unique_ptr<SyncAuthManager> auth_manager =
       CreateAuthManagerForLocalSync();
   EXPECT_TRUE(auth_manager->GetActiveAccountInfo().account_info.IsEmpty());
@@ -71,7 +79,7 @@ TEST_F(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
   // methods is illegal in local Sync mode, so we don't test that.
 }
 
-TEST_F(SyncAuthManagerTest, IgnoresEventsIfNotRegistered) {
+TEST_P(SyncAuthManagerTest, IgnoresEventsIfNotRegistered) {
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
   EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
 
@@ -82,7 +90,7 @@ TEST_F(SyncAuthManagerTest, IgnoresEventsIfNotRegistered) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   // Without RegisterForAuthNotifications, the active account should always be
   // reported as empty.
@@ -102,12 +110,12 @@ TEST_F(SyncAuthManagerTest, IgnoresEventsIfNotRegistered) {
 
 // ChromeOS doesn't support sign-out.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
+TEST_P(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
@@ -134,18 +142,18 @@ TEST_F(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
   CoreAccountId second_account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
             second_account_id);
 }
 
-TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
+TEST_P(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
@@ -176,8 +184,11 @@ TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Unconsented primary accounts are only supported on Win/Mac/Linux.
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
+TEST_P(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
   EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
@@ -209,12 +220,12 @@ TEST_F(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
 
 // ChromeOS doesn't support sign-out.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(SyncAuthManagerTest, ClearsAuthErrorOnSignoutWithRefreshTokenRemoval) {
+TEST_P(SyncAuthManagerTest, ClearsAuthErrorOnSignoutWithRefreshTokenRemoval) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
@@ -244,13 +255,13 @@ TEST_F(SyncAuthManagerTest, ClearsAuthErrorOnSignoutWithRefreshTokenRemoval) {
             GoogleServiceAuthError::NONE);
 }
 
-TEST_F(SyncAuthManagerTest,
+TEST_P(SyncAuthManagerTest,
        ClearsAuthErrorOnSignoutWithoutRefreshTokenRemoval) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
@@ -275,12 +286,12 @@ TEST_F(SyncAuthManagerTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(SyncAuthManagerTest, DoesNotClearAuthErrorOnSyncDisable) {
+TEST_P(SyncAuthManagerTest, DoesNotClearAuthErrorOnSyncDisable) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
@@ -307,12 +318,12 @@ TEST_F(SyncAuthManagerTest, DoesNotClearAuthErrorOnSyncDisable) {
             GoogleServiceAuthError::NONE);
 }
 
-TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
+TEST_P(SyncAuthManagerTest, ForwardsCredentialsEvents) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
@@ -355,11 +366,11 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
 }
 
-TEST_F(SyncAuthManagerTest, RequestsAccessTokenOnSyncStartup) {
+TEST_P(SyncAuthManagerTest, RequestsAccessTokenOnSyncStartup) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -374,12 +385,12 @@ TEST_F(SyncAuthManagerTest, RequestsAccessTokenOnSyncStartup) {
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 }
 
-TEST_F(SyncAuthManagerTest,
+TEST_P(SyncAuthManagerTest,
        RetriesAccessTokenFetchWithBackoffOnTransientFailure) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -398,12 +409,12 @@ TEST_F(SyncAuthManagerTest,
             GoogleServiceAuthError::AuthErrorNone());
 }
 
-TEST_F(SyncAuthManagerTest,
+TEST_P(SyncAuthManagerTest,
        RetriesAccessTokenFetchWithoutBackoffOnceOnFirstCancelTransientFailure) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -426,12 +437,12 @@ TEST_F(SyncAuthManagerTest,
   EXPECT_TRUE(auth_manager->IsRetryingAccessTokenFetchForTest());
 }
 
-TEST_F(SyncAuthManagerTest,
+TEST_P(SyncAuthManagerTest,
        RetriesAccessTokenFetchOnFirstCancelTransientFailure) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -455,11 +466,11 @@ TEST_F(SyncAuthManagerTest,
   EXPECT_FALSE(auth_manager->IsRetryingAccessTokenFetchForTest());
 }
 
-TEST_F(SyncAuthManagerTest, AbortsAccessTokenFetchOnPersistentFailure) {
+TEST_P(SyncAuthManagerTest, AbortsAccessTokenFetchOnPersistentFailure) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -480,11 +491,11 @@ TEST_F(SyncAuthManagerTest, AbortsAccessTokenFetchOnPersistentFailure) {
   EXPECT_EQ(auth_manager->GetLastAuthError(), auth_error);
 }
 
-TEST_F(SyncAuthManagerTest, FetchesNewAccessTokenWithBackoffOnServerError) {
+TEST_P(SyncAuthManagerTest, FetchesNewAccessTokenWithBackoffOnServerError) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -507,11 +518,11 @@ TEST_F(SyncAuthManagerTest, FetchesNewAccessTokenWithBackoffOnServerError) {
             GoogleServiceAuthError::AuthErrorNone());
 }
 
-TEST_F(SyncAuthManagerTest, DoesNotExposeServerError) {
+TEST_P(SyncAuthManagerTest, DoesNotExposeServerError) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -532,11 +543,11 @@ TEST_F(SyncAuthManagerTest, DoesNotExposeServerError) {
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 }
 
-TEST_F(SyncAuthManagerTest, ClearsServerErrorOnSyncDisable) {
+TEST_P(SyncAuthManagerTest, ClearsServerErrorOnSyncDisable) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -568,11 +579,11 @@ TEST_F(SyncAuthManagerTest, ClearsServerErrorOnSyncDisable) {
             GoogleServiceAuthError::AuthErrorNone());
 }
 
-TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnExpiry) {
+TEST_P(SyncAuthManagerTest, RequestsNewAccessTokenOnExpiry) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -601,11 +612,11 @@ TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnExpiry) {
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 }
 
-TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnRefreshTokenUpdate) {
+TEST_P(SyncAuthManagerTest, RequestsNewAccessTokenOnRefreshTokenUpdate) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -634,11 +645,11 @@ TEST_F(SyncAuthManagerTest, RequestsNewAccessTokenOnRefreshTokenUpdate) {
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 }
 
-TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenAutonomously) {
+TEST_P(SyncAuthManagerTest, DoesNotRequestAccessTokenAutonomously) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -664,11 +675,11 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenAutonomously) {
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
 }
 
-TEST_F(SyncAuthManagerTest, ClearsCredentialsOnRefreshTokenRemoval) {
+TEST_P(SyncAuthManagerTest, ClearsCredentialsOnRefreshTokenRemoval) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -704,11 +715,11 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnRefreshTokenRemoval) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
+TEST_P(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -726,8 +737,8 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
   ASSERT_EQ(auth_manager->GetLastAuthError(),
             GoogleServiceAuthError::AuthErrorNone());
 
-  // But now an invalid refresh token gets set, i.e. we enter the "Sync paused"
-  // state. No new access token should get requested due to this.
+  // But now an invalid refresh token gets set, i.e. we enter the "Sync/Signin
+  // paused" state. No new access token should get requested due to this.
   base::MockCallback<base::OnceClosure> access_token_requested;
   EXPECT_CALL(access_token_requested, Run()).Times(0);
   identity_env()->SetCallbackForNextAccessTokenRequest(
@@ -748,11 +759,11 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(SyncAuthManagerTest, EntersPausedStateOnPersistentAuthError) {
+TEST_P(SyncAuthManagerTest, EntersPausedStateOnPersistentAuthError) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -781,12 +792,12 @@ TEST_F(SyncAuthManagerTest, EntersPausedStateOnPersistentAuthError) {
   EXPECT_TRUE(auth_manager->IsSyncPaused());
 }
 
-TEST_F(SyncAuthManagerTest,
+TEST_P(SyncAuthManagerTest,
        RequestsAccessTokenWhenInvalidRefreshTokenResolved) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -803,8 +814,8 @@ TEST_F(SyncAuthManagerTest,
   ASSERT_EQ(auth_manager->GetLastAuthError(),
             GoogleServiceAuthError::AuthErrorNone());
 
-  // But now an invalid refresh token gets set, i.e. we enter the "Sync paused"
-  // state.
+  // But now an invalid refresh token gets set, i.e. we enter the "Sync/Signin
+  // paused" state.
   identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
   ASSERT_TRUE(auth_manager->GetCredentials().access_token.empty());
   ASSERT_TRUE(auth_manager->IsSyncPaused());
@@ -817,11 +828,11 @@ TEST_F(SyncAuthManagerTest,
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
 }
 
-TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
+TEST_P(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
 
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
@@ -833,8 +844,8 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
 
   // Sync is *not* enabled; in particular we don't call ConnectionOpened().
 
-  // An invalid refresh token gets set, i.e. we enter the "Sync paused" state
-  // (only from SyncAuthManager's point of view - Sync as a whole is still
+  // An invalid refresh token gets set, i.e. we enter the "Sync/Signin paused"
+  // state (only from SyncAuthManager's point of view - Sync as a whole is still
   // disabled).
   // Note: Depending on the exact sequence of IdentityManager::Observer calls
   // (refresh token changed and/or auth error changed), the credentials-changed
@@ -864,7 +875,7 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Primary account with no sync consent is not supported on Android and iOS.
-TEST_F(SyncAuthManagerTest, PrimaryAccountWithNoSyncConsent) {
+TEST_P(SyncAuthManagerTest, PrimaryAccountWithNoSyncConsent) {
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
 
@@ -886,7 +897,7 @@ TEST_F(SyncAuthManagerTest, PrimaryAccountWithNoSyncConsent) {
 // Primary account with no sync consent is not supported on Android and iOS.
 // On CrOS the unconsented primary account can't be changed or removed, but can
 // be granted sync consent.
-TEST_F(SyncAuthManagerTest, PicksNewPrimaryAccountWithSyncConsent) {
+TEST_P(SyncAuthManagerTest, PicksNewPrimaryAccountWithSyncConsent) {
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
 
@@ -904,12 +915,12 @@ TEST_F(SyncAuthManagerTest, PicksNewPrimaryAccountWithSyncConsent) {
   // primary account should be overridden.
   AccountInfo primary_account_info =
       identity_env()->MakePrimaryAccountAvailable("primary@email.com",
-                                                  signin::ConsentLevel::kSync);
+                                                  /*consent_level=*/GetParam());
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
             primary_account_info.account_id);
 }
 
-TEST_F(SyncAuthManagerTest,
+TEST_P(SyncAuthManagerTest,
        DropsAccountWhenPrimaryAccountWithNoSyncConsentGoesAway) {
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
@@ -927,13 +938,13 @@ TEST_F(SyncAuthManagerTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_IOS)
 
-TEST_F(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
+TEST_P(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
   // There is a primary account, but it has an invalid refresh token (with a
   // persistent auth error).
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
-                                        signin::ConsentLevel::kSync)
+                                        /*consent_level=*/GetParam())
           .account_id;
   identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
 

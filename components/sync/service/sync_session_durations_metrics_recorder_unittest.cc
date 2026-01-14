@@ -136,7 +136,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedIn) {
   ExpectNoSession(ht, {"WithoutAccount"});
 }
 
-TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync) {
+TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync_SignedOut) {
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
 
@@ -148,6 +148,38 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync) {
        "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
+TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync_SignedIn) {
+  SignIn(signin::ConsentLevel::kSignin);
+
+  base::HistogramTester ht;
+  StartAndEndSession(kSessionTime);
+
+  ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccount"},
+                               kSessionTime);
+  ExpectNoSession(
+      ht, {"NotOptedInToSyncWithAccountInAuthError",
+           "NotOptedInToSyncWithoutAccount", "OptedInToSyncWithoutAccount",
+           "OptedInToSyncWithAccount"});
+}
+
+TEST_F(SyncSessionDurationsMetricsRecorderTest,
+       SyncDisabled_PrimaryAccountInAuthError) {
+  SignIn(signin::ConsentLevel::kSignin);
+  SetInvalidCredentialsAuthError();
+
+  base::HistogramTester ht;
+  StartAndEndSession(kSessionTime);
+
+  ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccountInAuthError"},
+                               kSessionTime);
+  ExpectNoSession(
+      ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+           "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
+}
+
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
   SignIn(signin::ConsentLevel::kSync);
 
@@ -161,6 +193,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
            "OptedInToSyncWithoutAccount"});
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        OptedInToSync_SyncDisabledByEnterprisePolicy) {
   SignIn(signin::ConsentLevel::kSync);
@@ -179,6 +214,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
                    "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        OptedInToSync_PrimaryAccountInAuthError) {
   SignIn(signin::ConsentLevel::kSync);
@@ -195,21 +233,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
        "NotOptedInToSyncWithAccountInAuthError", "OptedInToSyncWithAccount"});
 }
 
-TEST_F(SyncSessionDurationsMetricsRecorderTest,
-       SyncDisabled_PrimaryAccountInAuthError) {
-  SignIn(signin::ConsentLevel::kSignin);
-  SetInvalidCredentialsAuthError();
-
-  base::HistogramTester ht;
-  StartAndEndSession(kSessionTime);
-
-  ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccountInAuthError"},
-                               kSessionTime);
-  ExpectNoSession(
-      ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
-           "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
-}
-
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        NotOptedInToSync_SecondaryAccountInAuthError) {
   AccountInfo account =
@@ -231,6 +257,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
        "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest, SyncUnknownOnStartup) {
   SignIn(signin::ConsentLevel::kSync);
 
@@ -249,6 +278,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, SyncUnknownOnStartup) {
            "OptedInToSyncWithoutAccount", "OptedInToSyncWithoutAccount"});
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        SyncUnknownOnStartupThenStarts) {
   SignIn(signin::ConsentLevel::kSync);
@@ -290,6 +322,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   }
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
   SyncSessionDurationsMetricsRecorder metrics_recorder(
       &sync_service_, identity_test_env_.identity_manager());
@@ -339,6 +374,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
   }
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
   SignIn(signin::ConsentLevel::kSync);
   SyncSessionDurationsMetricsRecorder metrics_recorder(
@@ -365,6 +403,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
   }
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(SyncSessionDurationsMetricsRecorderTest, FixedAuthError) {
   SignIn(signin::ConsentLevel::kSync);
   SetInvalidCredentialsAuthError();

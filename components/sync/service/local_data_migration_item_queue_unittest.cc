@@ -227,6 +227,9 @@ TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveAfterSyncServicePaused) {
   EXPECT_EQ(0u, queue()->GetItemsCountForTesting());
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveAfterConsentToSync) {
   sync_service()->SetMaxTransportState(
       SyncService::TransportState::CONFIGURING);
