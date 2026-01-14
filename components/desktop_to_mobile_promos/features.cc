@@ -24,10 +24,6 @@ bool MobilePromoOnDesktopEnabled() {
 }
 
 bool IsMobilePromoOnDesktopRecordActiveDaysEnabled() {
-  if (!base::FeatureList::IsEnabled(
-          sync_preferences::features::kEnableCrossDevicePrefTracker)) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(kMobilePromoOnDesktopRecordActiveDays);
 }
 
