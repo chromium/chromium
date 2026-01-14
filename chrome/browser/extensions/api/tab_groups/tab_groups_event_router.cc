@@ -16,54 +16,101 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "extensions/browser/event_router.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/405219902): Implement PlatformDelegate for Android.
+class TabGroupsEventRouter::PlatformDelegate {
+ public:
+  PlatformDelegate(TabGroupsEventRouter* owner, Profile* profile) {}
+  PlatformDelegate(const PlatformDelegate&) = delete;
+  PlatformDelegate& operator=(const PlatformDelegate&) = delete;
+  ~PlatformDelegate() = default;
+};
+
+#else
+
+class TabGroupsEventRouter::PlatformDelegate
+    : public TabStripModelObserver,
+      public BrowserTabStripTrackerDelegate {
+ public:
+  PlatformDelegate(TabGroupsEventRouter* owner, Profile* profile)
+      : owner_(owner),
+        profile_(profile),
+        browser_tab_strip_tracker_(/*tab_strip_model_observer=*/this,
+                                   /*delegate=*/this) {
+    CHECK(profile_);
+    browser_tab_strip_tracker_.Init();
+  }
+  PlatformDelegate(const PlatformDelegate&) = delete;
+  PlatformDelegate& operator=(const PlatformDelegate&) = delete;
+  ~PlatformDelegate() override = default;
+
+  // TabStripModelObserver:
+  void OnTabGroupChanged(const TabGroupChange& change) override {
+    switch (change.type) {
+      case TabGroupChange::kCreated: {
+        owner_->DispatchGroupCreated(change.group);
+        // Synthesize the initial kVisualsChanged notification while detaching
+        // and reattaching groups.
+        // TODO(crbug.com/398256328): Remove after fixing initial
+        // kVisualsChanged case.
+        if (change.GetCreateChange()->reason() ==
+            TabGroupChange::TabGroupCreationReason::
+                kInsertedFromAnotherTabstrip) {
+          owner_->DispatchGroupUpdated(change.group);
+        }
+        break;
+      }
+      case TabGroupChange::kClosed: {
+        owner_->DispatchGroupRemoved(change.group);
+        break;
+      }
+      case TabGroupChange::kMoved: {
+        owner_->DispatchGroupMoved(change.group);
+        break;
+      }
+      case TabGroupChange::kVisualsChanged: {
+        owner_->DispatchGroupUpdated(change.group);
+        break;
+      }
+      case TabGroupChange::kEditorOpened:
+        break;
+    }
+
+    return;
+  }
+
+  // BrowserTabStripTrackerDelegate:
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override {
+    return profile_ == browser->GetProfile() &&
+           ExtensionTabUtil::BrowserSupportsTabs(browser);
+  }
+
+ private:
+  const raw_ptr<TabGroupsEventRouter> owner_;
+  const raw_ptr<Profile> profile_;
+  BrowserTabStripTracker browser_tab_strip_tracker_;
+};
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TabGroupsEventRouter::TabGroupsEventRouter(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       event_router_(EventRouter::Get(context)),
-      browser_tab_strip_tracker_(this, this) {
-  browser_tab_strip_tracker_.Init();
-}
+      platform_delegate_(std::make_unique<PlatformDelegate>(this, profile_)) {}
 
-void TabGroupsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
-  switch (change.type) {
-    case TabGroupChange::kCreated: {
-      DispatchGroupCreated(change.group);
-      // Synthesize the initial kVisualsChanged notification while detaching and
-      // reattaching groups.
-      // TODO(crbug.com/398256328): Remove after fixing initial kVisualsChanged
-      // case.
-      if (change.GetCreateChange()->reason() ==
-          TabGroupChange::TabGroupCreationReason::
-              kInsertedFromAnotherTabstrip) {
-        DispatchGroupUpdated(change.group);
-      }
-      break;
-    }
-    case TabGroupChange::kClosed: {
-      DispatchGroupRemoved(change.group);
-      break;
-    }
-    case TabGroupChange::kMoved: {
-      DispatchGroupMoved(change.group);
-      break;
-    }
-    case TabGroupChange::kVisualsChanged: {
-      DispatchGroupUpdated(change.group);
-      break;
-    }
-    case TabGroupChange::kEditorOpened:
-      break;
-  }
-
-  return;
-}
-
-bool TabGroupsEventRouter::ShouldTrackBrowser(BrowserWindowInterface* browser) {
-  return profile_ == browser->GetProfile() &&
-         ExtensionTabUtil::BrowserSupportsTabs(browser);
-}
+TabGroupsEventRouter::~TabGroupsEventRouter() = default;
 
 void TabGroupsEventRouter::DispatchGroupCreated(tab_groups::TabGroupId group) {
   auto args(api::tab_groups::OnCreated::Create(
