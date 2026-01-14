@@ -274,7 +274,7 @@ error-page {
 
 .thread-header {
   color: var(--color-zero-state-greeting);
-  font-family: inherit;
+  font-family: Google Sans, Roboto, Arial, sans-serif;
   font-size: 32px;
   font-weight: 500;
   inset-inline-start: 20px;
