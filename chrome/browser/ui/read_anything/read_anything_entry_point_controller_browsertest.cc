@@ -26,15 +26,10 @@
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 
-class ReadAnythingEntryPointControllerBrowserTest
+class ReadAnythingEntryPointControllerTestBase
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  ReadAnythingEntryPointControllerBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kImmersiveReadAnything,
-                                              IsImmersiveEnabled());
-  }
-
   bool IsImmersiveEnabled() const { return GetParam(); }
 
   void VerifyUIState() {
@@ -52,12 +47,41 @@ class ReadAnythingEntryPointControllerBrowserTest
     }
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerBrowserTest,
-                       ShowSidePanelFromOmnibox_DoesNothingWithFlagDisabled) {
+class ReadAnythingEntryPointControllerBrowserTest
+    : public ReadAnythingEntryPointControllerTestBase {
+ public:
+  ReadAnythingEntryPointControllerBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kImmersiveReadAnything,
+                                              IsImmersiveEnabled());
+  }
+};
+
+class ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest
+    : public ReadAnythingEntryPointControllerTestBase {
+ public:
+  ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    disabled_features.push_back(features::kReadAnythingOmniboxChip);
+
+    if (IsImmersiveEnabled()) {
+      enabled_features.push_back(features::kImmersiveReadAnything);
+    } else {
+      disabled_features.push_back(features::kImmersiveReadAnything);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest,
+    ShowSidePanelFromOmnibox_DoesNothingWithFlagDisabled) {
   base::HistogramTester histogram_tester;
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
@@ -71,8 +95,9 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerBrowserTest,
   histogram_tester.ExpectTotalCount("SidePanel.ReadAnything.ShowTriggered", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerBrowserTest,
-                       OnPageActionIgnored_DoesNothingWithFlagDisabled) {
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest,
+    OnPageActionIgnored_DoesNothingWithFlagDisabled) {
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
@@ -148,6 +173,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ReadAnythingEntryPointControllerBrowserTest,
                          testing::Bool());
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest,
+    testing::Bool());
+
 class ReadAnythingEntryPointControllerOmniboxBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -222,3 +252,4 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   EXPECT_EQ(4, browser()->GetProfile()->GetPrefs()->GetInteger(
                    prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount));
 }
+
