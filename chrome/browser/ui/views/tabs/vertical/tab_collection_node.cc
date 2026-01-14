@@ -43,11 +43,6 @@ TabCollectionNode::Type GetTypeFromNode(tabs::ConstChildPtr node_data_) {
   return TabCollectionNode::Type::TAB;
 }
 
-TabCollectionNode::ViewFactory& GetViewFactory() {
-  static base::NoDestructor<TabCollectionNode::ViewFactory> factory;
-  return *factory;
-}
-
 class CollectionTestViewImpl : public views::View {
  public:
   explicit CollectionTestViewImpl(TabCollectionNode* node) {
@@ -87,11 +82,6 @@ void TabCollectionNode::NotifyDataChanged() {
   on_data_changed_callback_list_.Notify();
 }
 
-// static
-void TabCollectionNode::SetViewFactoryForTesting(ViewFactory factory) {
-  GetViewFactory() = std::move(factory);
-}
-
 void TabCollectionNode::SetController(VerticalTabStripController* controller) {
   tab_strip_controller_ = controller;
   for (const auto& child : children_) {
@@ -102,9 +92,6 @@ void TabCollectionNode::SetController(VerticalTabStripController* controller) {
 // static
 std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
     TabCollectionNode* node_for_view) {
-  if (GetViewFactory()) {
-    return GetViewFactory().Run(node_for_view);
-  }
   switch (node_for_view->type()) {
     case Type::TABSTRIP:
       return std::make_unique<VerticalTabStripView>(node_for_view);

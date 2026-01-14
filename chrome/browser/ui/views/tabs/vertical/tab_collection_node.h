@@ -41,9 +41,6 @@ class TabCollectionNode {
       CustomAttachChildViewCallback;
   typedef std::vector<std::unique_ptr<TabCollectionNode>> NodeChildren;
 
-  using ViewFactory =
-      base::RepeatingCallback<std::unique_ptr<views::View>(TabCollectionNode*)>;
-
   explicit TabCollectionNode(tabs::ConstChildPtr node_data);
   virtual ~TabCollectionNode();
 
@@ -114,7 +111,6 @@ class TabCollectionNode {
 
   void NotifyDataChanged();
 
-  static void SetViewFactoryForTesting(ViewFactory factory);
   views::View* get_view_for_testing() { return node_view_; }
   void SetController(VerticalTabStripController* controller);
   VerticalTabStripController* GetController() { return tab_strip_controller_; }
