@@ -124,7 +124,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
         feature_engagement::events::kIOSGeminiFlowStartedNonPromo);
   }
 
-  // TODO(crbug.com/414768296): Move business logic to the mediator.
   BOOL showConsent = [self shouldShowBWGConsent];
   if (!showConsent) {
     return NO;

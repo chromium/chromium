@@ -480,11 +480,6 @@ bool IsIOSKeyboardAccessoryDefaultViewEnabled();
 // enabled.
 bool IsIOSKeyboardAccessoryTwoBubbleEnabled();
 
-// A parameter to indicate whether the native UI is enabled for the discover
-// feed.
-// TODO(crbug.com/40246814): Remove this.
-extern const char kDiscoverFeedIsNativeUIEnabled[];
-
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);

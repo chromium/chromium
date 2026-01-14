@@ -1041,7 +1041,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)handlePageActionMenuEntrypointTapped {
-  // TODO(crbug.com/402827015): Log opens.
   if (_pageActionMenuEntrypointView.newBadgeVisible) {
     RecordAIHubNewBadgeTapped();
     [self.delegate locationBarDidTapAIHubNewBadge];

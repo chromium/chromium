@@ -65,13 +65,9 @@
 @property(nonatomic, weak) NewTabPageMetricsRecorder* NTPMetricsRecorder;
 
 // Identity disc shown in this ViewController.
-// TODO(crbug.com/40165977): Remove once the Feed header properly supports
-// ContentSuggestions.
 @property(nonatomic, strong, readonly) UIButton* identityDiscButton;
 
 // Customization menu button shown in this ViewController.
-// TODO(crbug.com/40165977): Remove once the Feed header properly supports
-// ContentSuggestions.
 @property(nonatomic, readonly) UIButton* customizationMenuButton;
 
 // Should be set to YES if an animation will run that requires animating the

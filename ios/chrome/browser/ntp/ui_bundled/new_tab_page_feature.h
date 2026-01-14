@@ -68,16 +68,6 @@ BASE_DECLARE_FEATURE(kConsistentLogoDoodleHeight);
 
 #pragma mark - Feature parameters
 
-// A parameter to indicate whether Reconstructed Templates is enabled for static
-// resource serving.
-// TODO(crbug.com/40246814): Remove this.
-extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
-
-// A parameter to indicate whether Preload Templates is enabled for static
-// resource serving.
-// TODO(crbug.com/40246814): Remove this.
-extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
-
 // A parameter value for the feed's refresh threshold when the feed has already
 // been seen by the user.
 extern const char kFeedSettingRefreshThresholdInSeconds[];

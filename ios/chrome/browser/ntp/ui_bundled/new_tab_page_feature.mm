@@ -33,12 +33,6 @@ BASE_FEATURE(kConsistentLogoDoodleHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
 
-const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
-    "DiscoverFeedSRSReconstructedTemplatesEnabled";
-
-const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
-    "DiscoverFeedSRSPreloadTemplatesEnabled";
-
 // Feature parameters for `kOverrideFeedSettings`.
 const char kFeedSettingRefreshThresholdInSeconds[] =
     "RefreshThresholdInSeconds";
