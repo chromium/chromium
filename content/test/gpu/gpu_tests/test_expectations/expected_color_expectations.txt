@@ -141,6 +141,7 @@ crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFrom
 # Renderer Hangs
 crbug.com/467247264 [ win11 nvidia-0x2184 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/467247264 [ win11 nvidia-0x2783 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/467247264 [ win11 amd-0x7340 angle-d3d11 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
