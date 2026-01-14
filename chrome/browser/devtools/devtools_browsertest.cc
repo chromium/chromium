@@ -1903,20 +1903,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectChromeScheme) {
           base::StrCat({kArbitraryPage, "#chrome://version/"}));
 }
 
-// TODO(crbug.com/417938496): Flaky on Linux ASAN, MSAN and debug builds.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CantInspectDevtoolsScheme DISABLED_CantInspectDevtoolsScheme
-#else
-#define MAYBE_CantInspectDevtoolsScheme CantInspectDevtoolsScheme
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectDevtoolsScheme) {
-  LoadExtension("can_inspect_url");
-  RunTest(
-      "waitForTestResultsAsMessage",
-      base::StrCat({kArbitraryPage,
-                    "#devtools://devtools/bundled/devtools_compatibility.js"}));
-}
-
 // TODO(crbug.com/369074885): Flaky on Linux and slow builders like MSAN/debug.
 #if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_CantInspectViewSourceDevtoolsScheme \

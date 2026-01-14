@@ -74,7 +74,10 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   // The transform from the view to the reference space requested by
   // XRFrame::getViewerPose.
   Member<XRRigidTransform> ref_space_from_view_;
-  NotShared<DOMFloat32Array> projection_matrix_;
+  // This is just a cached/converted version of the projection matrix from the
+  // view_data. It's mutable so that we can update it when queried if it was
+  // detached.
+  mutable NotShared<DOMFloat32Array> projection_matrix_;
   Member<XRViewport> viewport_;
 };
 

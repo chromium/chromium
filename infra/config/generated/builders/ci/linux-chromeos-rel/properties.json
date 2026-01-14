@@ -51,7 +51,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-chromeos-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/linux-chromeos-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

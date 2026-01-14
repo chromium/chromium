@@ -23,13 +23,8 @@ NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
 }
 
 gfx::Transform DOMFloat32ArrayToTransform(NotShared<DOMFloat32Array> m) {
-  DCHECK_EQ(m->length(), 16u);
+  CHECK_EQ(m->length(), 16u);
   return gfx::Transform::ColMajorF(m->Data());
-}
-
-gfx::Transform WTFFloatVectorToTransform(const Vector<float>& m) {
-  DCHECK_EQ(m.size(), 16u);
-  return gfx::Transform::ColMajorF(m.data());
 }
 
 // Normalize to have length = 1.0

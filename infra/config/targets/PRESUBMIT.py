@@ -46,3 +46,16 @@ def CheckBundlesOrder(input_api, output_api):
     else:
       return [output_api.PresubmitPromptWarning(error_message)]
   return []
+
+
+def CheckLucicfgLint(input_api, output_api):
+  """Checks if infra/config/targets/*.star files have lint issue or not."""
+  d = input_api.PresubmitLocalPath()
+  return input_api.RunTests([
+      input_api.Command(
+          name=f'lucicfg lint {d}',
+          cmd=['lucicfg', 'lint', d],
+          kwargs={},
+          message=output_api.PresubmitError,
+      )
+  ])

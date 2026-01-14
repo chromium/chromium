@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+"""Mixin declarations
+
+Mixins are used to define common properties that can be applied to multiple
+tests.
+"""
+
 load("@chromium-luci//targets.star", "targets")
 
 targets.mixin(

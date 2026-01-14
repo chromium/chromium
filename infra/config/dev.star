@@ -61,6 +61,9 @@ chromium_luci.configure_project(
     name = settings.project,
     is_main = settings.is_main,
     platforms = settings.platforms,
+    experiments = [
+        "builder_config.targets_spec_directory_relative_to_source_dir",
+    ],
 )
 
 chromium_luci.configure_per_builder_outputs(

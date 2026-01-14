@@ -20,6 +20,8 @@ import os
 import string
 import sys
 
+import dataclasses
+
 # //testing/buildbot imports.
 import buildbot_json_magic_substitutions as magic_substitutions
 
@@ -260,6 +262,65 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.gn_isolate_map = None
     self.variants = None
 
+  class _ArgsNamespace(argparse.Namespace):
+
+    def _pyl_dir_path(self, filename):
+      return os.path.join(self.pyl_files_dir, filename)
+
+    @property
+    def waterfalls_pyl_path(self):
+      return self._pyl_dir_path('waterfalls.pyl')
+
+    @property
+    def test_suite_exceptions_pyl_path(self):
+      return self._pyl_dir_path('test_suite_exceptions.pyl')
+
+    @property
+    def autoshard_exceptions_json_path(self):
+      return os.path.join(self.infra_config_dir, 'autoshard_exceptions.json')
+
+    # gn_isolate_map.pyl, mixins.pyl, test_suites.pyl and variants.pyl can
+    # either be generated to the generated/testing subdirectory of the infra
+    # config directory, or they can be legacy-style files located within the pyl
+    # files directory
+    @dataclasses.dataclass(frozen=True)
+    class _MigratedPylPath:
+
+      _args: 'BBJSONGenerator._ArgsNamespace'
+      _filename: str
+
+      @property
+      def legacy_path(self):
+        return self._args._pyl_dir_path(  # pylint: disable=protected-access
+            self._filename)
+
+      @property
+      def generated_path(self):
+        return os.path.join(self._args.infra_config_dir, 'generated', 'testing',
+                            self._filename)
+
+      @property
+      def actual_path(self):
+        if os.path.exists(self.legacy_path):
+          return self.legacy_path
+        return self.generated_path
+
+    @functools.cached_property
+    def gn_isolate_map_pyl(self):
+      return self._MigratedPylPath(self, 'gn_isolate_map.pyl')
+
+    @functools.cached_property
+    def mixins_pyl(self):
+      return self._MigratedPylPath(self, 'mixins.pyl')
+
+    @functools.cached_property
+    def test_suites_pyl(self):
+      return self._MigratedPylPath(self, 'test_suites.pyl')
+
+    @functools.cached_property
+    def variants_pyl(self):
+      return self._MigratedPylPath(self, 'variants.pyl')
+
   @staticmethod
   def parse_args(argv):
 
@@ -331,7 +392,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         '--pyl-files-dir',
         type=os.path.abspath,
         help=('Path to the directory containing the input .pyl files.'
-              ' By default the directory containing this script will be used.'))
+              ' By default the directory containing this script will be used.'
+              ' gn_isolate_map.pyl, mixins.pyl, test_suites.pyl and'
+              ' variants.pyl will be looked for in the generated/testing'
+              ' subdirectory of the path provided with --infra-config-dir'
+              ' first'))
     parser.add_argument(
         '--output-dir',
         type=os.path.abspath,
@@ -351,39 +416,15 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         default=os.path.join(os.path.dirname(__file__), '..', '..', 'infra',
                              'config'))
 
-    args = parser.parse_args(argv)
+    args = parser.parse_args(argv, namespace=BBJSONGenerator._ArgsNamespace())
     if args.json and not args.query:
       parser.error(
           'The --json flag can only be used with --query.')  # pragma: no cover
 
+    # pylint: disable=attribute-defined-outside-init
     args.pyl_files_dir = args.pyl_files_dir or THIS_DIR
     args.output_dir = args.output_dir or args.pyl_files_dir
-
-    def pyl_dir_path(filename):
-      return os.path.join(args.pyl_files_dir, filename)
-
-    args.waterfalls_pyl_path = pyl_dir_path('waterfalls.pyl')
-    args.test_suite_exceptions_pyl_path = pyl_dir_path(
-        'test_suite_exceptions.pyl')
-    args.autoshard_exceptions_json_path = os.path.join(
-        args.infra_config_dir, 'targets', 'autoshard_exceptions.json')
-
-    if args.pyl_files_dir == THIS_DIR:
-
-      def infra_config_testing_path(filename):
-        return os.path.join(args.infra_config_dir, 'generated', 'testing',
-                            filename)
-
-      args.gn_isolate_map_pyl_path = infra_config_testing_path(
-          'gn_isolate_map.pyl')
-      args.mixins_pyl_path = infra_config_testing_path('mixins.pyl')
-      args.test_suites_pyl_path = infra_config_testing_path('test_suites.pyl')
-      args.variants_pyl_path = infra_config_testing_path('variants.pyl')
-    else:
-      args.gn_isolate_map_pyl_path = pyl_dir_path('gn_isolate_map.pyl')
-      args.mixins_pyl_path = pyl_dir_path('mixins.pyl')
-      args.test_suites_pyl_path = pyl_dir_path('test_suites.pyl')
-      args.variants_pyl_path = pyl_dir_path('variants.pyl')
+    # pylint: enable=attribute-defined-outside-init
 
     return args
 
@@ -1239,11 +1280,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def load_configuration_files(self):
     self.waterfalls = self.load_pyl_file(self.args.waterfalls_pyl_path)
-    self.test_suites = self.load_pyl_file(self.args.test_suites_pyl_path)
+    self.test_suites = self.load_pyl_file(self.args.test_suites_pyl.actual_path)
     self.exceptions = self.load_pyl_file(
         self.args.test_suite_exceptions_pyl_path)
-    self.mixins = self.load_pyl_file(self.args.mixins_pyl_path)
-    self.gn_isolate_map = self.load_pyl_file(self.args.gn_isolate_map_pyl_path)
+    self.mixins = self.load_pyl_file(self.args.mixins_pyl.actual_path)
+    self.gn_isolate_map = self.load_pyl_file(
+        self.args.gn_isolate_map_pyl.actual_path)
     for isolate_map in self.args.isolate_map_files:
       isolate_map = self.load_pyl_file(isolate_map)
       duplicates = set(isolate_map).intersection(self.gn_isolate_map)
@@ -1252,7 +1294,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                        ', '.join(duplicates))
       self.gn_isolate_map.update(isolate_map)
 
-    self.variants = self.load_pyl_file(self.args.variants_pyl_path)
+    self.variants = self.load_pyl_file(self.args.variants_pyl.actual_path)
 
   def resolve_configuration_files(self):
     self.resolve_mixins()
@@ -1904,8 +1946,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       bad_files.add(self.args.waterfalls_pyl_path)
 
     for file_path in (
-        self.args.mixins_pyl_path,
-        self.args.test_suites_pyl_path,
+        self.args.mixins_pyl.actual_path,
+        self.args.test_suites_pyl.actual_path,
         self.args.test_suite_exceptions_pyl_path,
     ):
       value = parse_file(file_path)
@@ -1915,7 +1957,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       if not self.check_ast_dict_formatted(value, file_path, verbose):
         bad_files.add(file_path)
 
-      if file_path == self.args.test_suites_pyl_path:
+      if file_path == self.args.test_suites_pyl.actual_path:
         expected_keys = ['basic_suites',
                          'compound_suites',
                          'matrix_compound_suites']
