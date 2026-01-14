@@ -923,6 +923,8 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
     private void scrollAndHighlightDynamicPref(PreferenceFragmentCompat fragment, String key) {
         RecyclerView listView = fragment.getListView();
+        if (listView == null) return;
+
         var listAdapter = (PreferencePositionCallback) listView.getAdapter();
         int pos = assumeNonNull(listAdapter).getPreferenceAdapterPosition(key);
         var viewHolder = listView.findViewHolderForAdapterPosition(pos);
@@ -982,5 +984,6 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (mIndexData != null) {
             SettingsIndexData.reset();
         }
+        mHandler.removeCallbacksAndMessages(null);
     }
 }
