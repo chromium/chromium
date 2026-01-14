@@ -561,10 +561,6 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
                  buffer_size, buffer_usage, kDefaultQueryType,
                  kDefaultUseZeroCopy, is_overlay_candidate, kDefaultYInvert));
 
-  // Destroy the |shared_image| as it will no longer be used. Note that the
-  // underlying handle is already cloned above and will not be destroyed by
-  // destroying the |shared_image|.
-  sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
   return buffer;
 }
 
@@ -841,8 +837,6 @@ SkBitmap Buffer::CreateBitmap() {
   bitmap.setImmutable();
   mapping.reset();
 
-  // Destroy this shared image as we no longer need it.
-  sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
   return bitmap;
 }
 
