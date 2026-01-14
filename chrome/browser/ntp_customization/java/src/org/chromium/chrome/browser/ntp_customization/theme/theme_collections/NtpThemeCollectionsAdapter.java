@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -129,6 +130,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                         collectionItem.id.equals(mSelectedThemeCollectionId));
                 viewHolder.mTitle.setText(collectionItem.label);
                 fetchImageWithPlaceholder(viewHolder, collectionItem.previewImageUrl);
+                viewHolder.mView.setOnClickListener(mOnClickListener);
                 break;
 
             case SINGLE_THEME_COLLECTION_ITEM:
@@ -138,13 +140,30 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                                 && imageItem.imageUrl.equals(mSelectedThemeCollectionImageUrl));
                 viewHolder.mTitle.setVisibility(View.GONE);
                 fetchImageWithPlaceholder(viewHolder, imageItem.previewImageUrl);
+                View.OnClickListener clickListener =
+                        view -> {
+                            // If the item view is the current selected item, early exits now. It
+                            // is because the click has been handled.
+                            if (viewHolder.itemView.isActivated()) return;
+
+                            viewHolder.mIsHandlingClick = true;
+                            // When the image is selected by the user and waiting for the results
+                            // from native service, shows the spinner and reduces opacity of image
+                            // to highlight the spinner.
+                            viewHolder.mSpinner.setVisibility(View.VISIBLE);
+                            viewHolder.mImage.setAlpha(0.5f);
+                            // Disables the image click so they can't be clicked while loading.
+                            viewHolder.mView.setClickable(false);
+                            if (mOnClickListener != null) {
+                                mOnClickListener.onClick(view);
+                            }
+                        };
+                viewHolder.mView.setOnClickListener(clickListener);
                 break;
 
             default:
                 assert false : "Theme collections item type not supported!";
         }
-
-        viewHolder.mView.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -216,6 +235,14 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                     // supposed to display this image.
                     if (imageUrl.equals(viewHolder.mImage.getTag()) && bitmap != null) {
                         viewHolder.mImage.setImageBitmap(bitmap);
+                        if (viewHolder.mIsHandlingClick) {
+                            viewHolder.mIsHandlingClick = false;
+                            // Restores the image state.
+                            viewHolder.mImage.setAlpha(1.0f);
+                            viewHolder.mView.setClickable(true);
+                            // Hides the spinner.
+                            viewHolder.mSpinner.setVisibility(View.GONE);
+                        }
                     }
                 });
     }
@@ -223,14 +250,18 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     /** ViewHolder for items that include an image and an optional title. */
     public static class ThemeCollectionViewHolder extends RecyclerView.ViewHolder {
         final View mView;
-        ImageView mImage;
         final TextView mTitle;
+        final ProgressBar mSpinner;
+        ImageView mImage;
+        // When the click has been handled and is waiting for the reply from the native service.
+        boolean mIsHandlingClick;
 
         public ThemeCollectionViewHolder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
             mImage = itemView.findViewById(R.id.theme_collection_image);
             mTitle = itemView.findViewById(R.id.theme_collection_title);
+            mSpinner = itemView.findViewById(R.id.spinner);
         }
     }
 }

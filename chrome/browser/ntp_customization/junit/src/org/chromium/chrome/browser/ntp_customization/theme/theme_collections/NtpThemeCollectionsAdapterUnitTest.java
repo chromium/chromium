@@ -405,4 +405,39 @@ public class NtpThemeCollectionsAdapterUnitTest {
         assertEquals(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, paramsWithoutTitle.height);
         assertEquals("1:1", paramsWithoutTitle.dimensionRatio);
     }
+
+    @Test
+    public void testSpinnerVisibilityOnClick() throws Exception {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mImageItems, SINGLE_THEME_COLLECTION_ITEM, mOnClickListener, mImageFetcher);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, SINGLE_THEME_COLLECTION_ITEM);
+        Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
+        itemViewTypeField.setAccessible(true);
+        itemViewTypeField.set(viewHolder, SINGLE_THEME_COLLECTION_ITEM);
+        adapter.onBindViewHolder(viewHolder, 0);
+
+        // Before clicking the view.
+        assertEquals(View.GONE, viewHolder.mSpinner.getVisibility());
+        assertEquals(1.0f, viewHolder.mImage.getAlpha(), 0.0f);
+        assertTrue(viewHolder.mView.isClickable());
+
+        // Clicks the view.
+        viewHolder.mView.performClick();
+
+        assertEquals(View.VISIBLE, viewHolder.mSpinner.getVisibility());
+        assertEquals(0.5f, viewHolder.mImage.getAlpha(), 0.0f);
+        assertFalse(viewHolder.mView.isClickable());
+
+        // The callback is called.
+        verify(mImageFetcher).fetchImage(any(), mCallbackCaptor.capture());
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mCallbackCaptor.getValue().onResult(bitmap);
+
+        assertEquals(View.GONE, viewHolder.mSpinner.getVisibility());
+        assertEquals(1.0f, viewHolder.mImage.getAlpha(), 0.0f);
+        assertTrue(viewHolder.mView.isClickable());
+    }
 }

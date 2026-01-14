@@ -28,6 +28,18 @@ found in the LICENSE file.
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
 
+  <ProgressBar
+      android:id="@+id/spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:indeterminate="true"
+      android:visibility="gone"
+      android:elevation="@dimen/ntp_customization_theme_collections_spinner_elevation"
+      app:layout_constraintBottom_toBottomOf="@id/theme_collection_image"
+      app:layout_constraintEnd_toEndOf="@id/theme_collection_image"
+      app:layout_constraintStart_toStartOf="@id/theme_collection_image"
+      app:layout_constraintTop_toTopOf="@id/theme_collection_image" />
+
   <TextView
       android:id="@+id/theme_collection_title"
       android:layout_width="0dp"
