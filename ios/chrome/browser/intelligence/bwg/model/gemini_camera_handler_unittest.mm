@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 
+#import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
 #import "components/prefs/testing_pref_service.h"
@@ -29,6 +30,11 @@ TEST_F(GeminiCameraHandlerTest, TestConformsToProtocol) {
 
 // Tests that openCameraFromViewController can be called without crashing.
 TEST_F(GeminiCameraHandlerTest, TestOpenCamera) {
+  // Mock AVCaptureDevice to simulate an authorized state.
+  id mockDevice = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
   UIViewController* mockViewController = OCMClassMock([UIViewController class]);
   [handler_ openCameraFromViewController:mockViewController withCompletion:nil];
 }

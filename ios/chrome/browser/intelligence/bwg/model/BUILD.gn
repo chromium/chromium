@@ -35,7 +35,10 @@ source_set("model") {
     "//ios/web/public",
   ]
   public_deps = [ "//base" ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "AVFoundation.framework",
+  ]
 }
 
 source_set("browser_agent") {
