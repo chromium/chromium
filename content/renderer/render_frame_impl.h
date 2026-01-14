@@ -1592,6 +1592,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // handling a CDP command.
   ClientNavigationThrottler client_navigation_throttler_;
 
+  // Set to true if the RenderFrameImpl committed an initial WebUI, which is a
+  // subset of topchrome WebUIs that are loaded and shown from the initial
+  // browser startup, e.g. the reload button.
+  bool is_initial_webui_ = false;
+
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
 };
 

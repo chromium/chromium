@@ -4446,7 +4446,15 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*should_skip_screentshot=*/false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
-          /*commit_target_frame_token=*/std::nullopt);
+          /*commit_target_frame_token=*/std::nullopt,
+  /*is_initial_webui=*/
+#if !BUILDFLAG(IS_ANDROID)
+          GetContentClient()->browser()->IsInitialWebUIURL(common_params->url)
+#else
+          false
+#endif
+      );
+
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->as_string();

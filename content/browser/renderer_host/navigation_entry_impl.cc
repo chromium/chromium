@@ -1036,7 +1036,14 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*should_skip_screenshot*/ false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
-          /*commit_target_frame_token=*/std::nullopt);
+          /*commit_target_frame_token=*/std::nullopt,
+  /*is_initial_webui=*/
+#if !BUILDFLAG(IS_ANDROID)
+          GetContentClient()->browser()->IsInitialWebUIURL(frame_entry.url())
+#else
+          false
+#endif
+      );
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

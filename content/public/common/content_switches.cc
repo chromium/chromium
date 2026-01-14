@@ -623,12 +623,6 @@ const char kRendererClientId[] = "renderer-client-id";
 // Useful values might be "valgrind" or "xterm -e gdb --args".
 const char kRendererCmdPrefix[]             = "renderer-cmd-prefix";
 
-#if !BUILDFLAG(IS_ANDROID)
-// Indicates that the renderer process was launched to host the initial WebUI
-// as part of WaaP (Webium-as-a-Product).
-const char kRendererForInitialWebUI[] = "renderer-for-initial-webui";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // Causes the process to run as renderer instead of as browser.
 const char kRendererProcess[]               = "renderer";
 

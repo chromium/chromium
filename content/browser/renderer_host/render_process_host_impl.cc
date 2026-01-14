@@ -3630,12 +3630,6 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   command_line->AppendSwitchASCII(switches::kRendererClientId,
                                   base::NumberToString(GetDeprecatedID()));
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (IsForInitialWebUI()) {
-    command_line->AppendSwitch(switches::kRendererForInitialWebUI);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // Synchronize unix/monotonic clocks across consistent processes.
   if (base::TimeTicks::IsConsistentAcrossProcesses()) {
     command_line->AppendSwitchASCII(

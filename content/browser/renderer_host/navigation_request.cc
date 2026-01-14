@@ -1452,7 +1452,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*should_skip_screenshot=*/false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
-          /*commit_target_frame_token=*/std::nullopt);
+          /*commit_target_frame_token=*/std::nullopt,
+          /*is_initial_webui=*/false);
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(!GetContentClient()->browser()->IsInitialWebUIURL(common_params->url));
+#endif
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1604,7 +1608,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*should_skip_screenshot=*/false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
-          /*commit_target_frame_token=*/std::nullopt);
+          /*commit_target_frame_token=*/std::nullopt,
+          /*is_initial_webui=*/false);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
