@@ -3,6 +3,7 @@ include_rules = [
   "+media/capture/mojom/image_capture.mojom-blink-forward.h",
 
   "+cc/paint/skia_paint_canvas.h",
+  "+components/viz/common/gpu/raster_context_provider.h",
   "+media",
   "+skia/ext/legacy_display_globals.h",
   "+skia/ext/platform_canvas.h",
