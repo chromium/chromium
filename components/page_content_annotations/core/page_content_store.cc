@@ -21,6 +21,11 @@
 
 namespace optimization_guide {
 
+PageContentResult::PageContentResult() = default;
+PageContentResult::~PageContentResult() = default;
+PageContentResult::PageContentResult(PageContentResult&&) = default;
+PageContentResult& PageContentResult::operator=(PageContentResult&&) = default;
+
 PageContentStore::PageContentStore(const base::FilePath& db_path)
     : db_path_(db_path), db_("PageContentStore") {
   db_initialized_ = InitializeDb();
@@ -206,21 +211,38 @@ std::optional<proto::PageContext> PageContentStore::GetPageContent(
   return GetPageContentFromStatement(&statement);
 }
 
-std::optional<proto::PageContext> PageContentStore::GetPageContentForTab(
-    int64_t tab_id) {
+std::optional<optimization_guide::PageContentResult>
+PageContentStore::GetPageContentForTab(int64_t tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_initialized_ || !encryptor_.has_value()) {
     return std::nullopt;
   }
 
   static const char kSelectSql[] =
-      "SELECT pc.value FROM page_content pc "
+      "SELECT pc.value, pm.url, pm.visit_timestamp, pm.extraction_timestamp "
+      "FROM page_content pc "
       "JOIN page_metadata pm ON pc.id = pm.content_id "
       "WHERE pm.tab_id = ?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindInt64(0, tab_id);
 
-  return GetPageContentFromStatement(&statement);
+  return GetPageContentAndMetadataFromStatement(&statement);
+}
+
+std::optional<optimization_guide::PageContentResult>
+PageContentStore::GetPageContentAndMetadataFromStatement(
+    sql::Statement* statement) {
+  optimization_guide::PageContentResult result;
+  std::optional<proto::PageContext> page_context =
+      GetPageContentFromStatement(statement);
+  if (!page_context.has_value()) {
+    return std::nullopt;
+  }
+  result.page_context = std::move(*page_context);
+  result.url = GURL(statement->ColumnString(1));
+  result.navigation_timestamp = statement->ColumnTime(2);
+  result.extraction_time = statement->ColumnTime(3);
+  return result;
 }
 
 std::optional<proto::PageContext> PageContentStore::GetPageContentFromStatement(

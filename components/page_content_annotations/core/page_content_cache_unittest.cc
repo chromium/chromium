@@ -58,9 +58,11 @@ class PageContentCacheTest : public testing::Test {
         base::BindOnce(
             [](base::RunLoop* run_loop,
                std::optional<optimization_guide::proto::PageContext>* result,
-               std::optional<optimization_guide::proto::PageContext>
-                   page_context) {
-              *result = std::move(page_context);
+               std::optional<optimization_guide::PageContentResult>
+                   page_result) {
+              if (page_result) {
+                *result = std::move(page_result->page_context);
+              }
               run_loop->Quit();
             },
             &run_loop, &result));
@@ -96,8 +98,7 @@ TEST_F(PageContentCacheTest, Remove) {
   const auto kApc = TestContent("test title");
 
   GetOrCreateCache()->CachePageContent(kTabId, kUrl, base::Time::Now(),
-                                       base::Time::Now(),
-                                       TestContent("test title"));
+                                       base::Time::Now(), kApc);
 
   ASSERT_TRUE(GetContentForTab(kTabId));
 

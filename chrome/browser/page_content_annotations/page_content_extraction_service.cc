@@ -127,6 +127,12 @@ void PageContentExtractionService::OnTabClosed(int64_t tab_id) {
   }
 }
 
+void PageContentExtractionService::TabClosureCommitted(int64_t tab_id) {
+  if (is_page_content_cache_enabled_) {
+    page_content_cache_handler_->TabClosureCommitted(tab_id);
+  }
+}
+
 void PageContentExtractionService::OnTabCloseUndone(int64_t tab_id) {
   if (is_page_content_cache_enabled_) {
     page_content_cache_handler_->OnTabCloseUndone(tab_id);

@@ -48,6 +48,7 @@ class PageContentExtractionTabModelObserverAndroid
   // TabModelObserver:
   void WillCloseTab(TabAndroid* tab) override;
   void TabClosureUndone(TabAndroid* tab) override;
+  void TabClosureCommitted(TabAndroid* tab) override;
 
   // tab_window::TabWindowManagerObserver:
   void OnTabStateInitialized() override;

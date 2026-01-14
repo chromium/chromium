@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/core/page_content_store.h"
 
 class GURL;
 
@@ -31,7 +32,7 @@ class PageContentCache;
 class PageContentCacheService : public KeyedService {
  public:
   using GetPageContentCallback = base::OnceCallback<void(
-      std::optional<optimization_guide::proto::PageContext>)>;
+      std::optional<optimization_guide::PageContentResult>)>;
 
   PageContentCacheService(os_crypt_async::OSCryptAsync* os_crypt_async,
                           const base::FilePath& storage_path,

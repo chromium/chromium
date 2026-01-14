@@ -15,6 +15,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
+#import "components/page_content_annotations/core/page_content_store.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
@@ -328,19 +329,17 @@ int GetPersistedWebStateCountForProfile(ProfileIOS* profile) {
 }
 
 // Helper function to adapt the GetPageContentCache callback to the one used in
-// this component, which uses unique_ptr.
+// this component.
 void OnGetPageContent(
-    base::OnceCallback<void(
-        std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
-        callback,
-    std::optional<optimization_guide::proto::PageContext> page_context) {
-  if (!page_context) {
+    base::OnceCallback<
+        void(std::optional<optimization_guide::proto::PageContext>)> callback,
+    std::optional<optimization_guide::PageContentResult> page_content) {
+  if (!page_content) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::move(callback).Run(
-      std::make_unique<optimization_guide::proto::PageContext>(*page_context));
+  std::move(callback).Run(std::move(page_content->page_context));
 }
 
 }  // namespace
@@ -684,8 +683,23 @@ void PersistTabContextBrowserAgent::ReadAndParseContextFromContentCache(
       },
       std::move(callback), start_time);
 
+  auto callback_adapter = base::BindOnce(
+      [](base::OnceCallback<void(std::optional<std::unique_ptr<
+                                     optimization_guide::proto::PageContext>>)>
+             original_callback,
+         std::optional<optimization_guide::proto::PageContext> result) {
+        if (!result) {
+          std::move(original_callback).Run(std::nullopt);
+          return;
+        }
+        std::move(original_callback)
+            .Run(std::make_unique<optimization_guide::proto::PageContext>(
+                std::move(*result)));
+      },
+      std::move(wrapped_callback));
+
   page_content_cache_service_->GetPageContentForTab(
-      tab_id, base::BindOnce(&OnGetPageContent, std::move(wrapped_callback)));
+      tab_id, base::BindOnce(&OnGetPageContent, std::move(callback_adapter)));
 }
 
 void PersistTabContextBrowserAgent::DeleteContextFromContentCache(

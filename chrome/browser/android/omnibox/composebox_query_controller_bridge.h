@@ -15,15 +15,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/page_content_annotations/core/page_content_store.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace content {
 class WebContents;
 }  //  namespace content
-
-namespace optimization_guide::proto {
-class PageContext;
-}  // namespace optimization_guide::proto
 
 class Profile;
 class GURL;
@@ -82,7 +79,7 @@ class ComposeboxQueryControllerBridge
   void OnGetPageContentFromCache(
       JNIEnv* env,
       const base::UnguessableToken& context_token,
-      std::optional<optimization_guide::proto::PageContext> page_context);
+      std::optional<optimization_guide::PageContentResult> page_context);
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
   CreateSearchUrlRequestInfoFromUrl(GURL url);
