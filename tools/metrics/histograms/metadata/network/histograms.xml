@@ -1837,6 +1837,26 @@ chromium-metrics-reviews@google.com.
       variants="ContentDecodingInterceptorClientType"/>
 </histogram>
 
+<histogram
+    name="Network.ContentDecodingInterceptor.CreateDataPipeSuccessTime.{ContentDecodingInterceptorClientType}"
+    units="microseconds" expires_after="2026-04-26">
+  <owner>horo@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time taken to create the Mojo data pipe used between the decoding thread
+    and the data receiving thread for the RendererSideContentDecoding feature.
+    Recorded whenever the renderer process successfully creates the data pipe
+    for a resource that needs to be decoded, or content decoding is intercepted
+    for downloads initiated via navigation or for Signed Exchange (SXG)
+    responses and when RendererSideContentDecoding feature is enabled.
+
+    The histogram is not reported on Windows machines without high resolution
+    clocks.
+  </summary>
+  <token key="ContentDecodingInterceptorClientType"
+      variants="ContentDecodingInterceptorClientType"/>
+</histogram>
+
 <histogram name="Network.DnsProxy.DnsOverHttpsMode"
     enum="DnsProxy.DnsOverHttpsMode" expires_after="2026-12-31">
   <owner>garrick@chromium.org</owner>
