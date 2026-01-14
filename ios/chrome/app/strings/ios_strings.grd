@@ -3350,6 +3350,15 @@
       <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
       </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_FIX_NOW_BUTTON" desc="Button label on an infobar prompting the user to take action to fix an account issue. [iOS only]">
+        Fix now
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_LEARN_MORE_BUTTON" desc="Button label on an infobar allowing the user to get more information about an issue. [iOS only]">
+        Learn more
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_SERVICES_UNAVAILABLE_MESSAGE" desc="Message body of the identity error info bar when device management policies restrict access to some services. [iOS only]">
+        Some services aren’t available for your account
+      </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" meaning="An on-screen button that enters the user's input" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
         Enter
       </message>
