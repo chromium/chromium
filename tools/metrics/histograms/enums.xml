@@ -8344,6 +8344,8 @@ from previous Chrome versions.
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
+  <int value="-2046010475"
+      label="TabStripEmptySpaceContextMenuAndroid:enabled"/>
   <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
   <int value="-2044917076" label="WebXRDepthPerformance:enabled"/>
   <int value="-2044252895"
@@ -8755,6 +8757,8 @@ from previous Chrome versions.
   <int value="-1913484012" label="IsNameEnabled:disabled"/>
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
+  <int value="-1911816830"
+      label="TabStripEmptySpaceContextMenuAndroid:disabled"/>
   <int value="-1911659621" label="OverscrollEffectOnNonRootScrollers:enabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
   <int value="-1911212842"
