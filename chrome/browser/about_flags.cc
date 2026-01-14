@@ -36,6 +36,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -11802,6 +11803,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDbdRevampDesktopDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(browsing_data::features::kDbdRevampDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    {"default-browser-changed-os-notification",
+     flag_descriptions::kDefaultBrowserChangedOsNotificationName,
+     flag_descriptions::kDefaultBrowserChangedOsNotificationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserChangedOsNotification)},
+
+    {"default-browser-framework",
+     flag_descriptions::kDefaultBrowserFrameworkName,
+     flag_descriptions::kDefaultBrowserFrameworkDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserFramework)},
+#endif  // !BUILDFLAG(IS_ANDROID) && ! BUILDFLAG(IS_CHROMEOS)
 
     {"privacy-sandbox-ad-topics-content-parity",
      flag_descriptions::kPrivacySandboxAdTopicsContentParityName,

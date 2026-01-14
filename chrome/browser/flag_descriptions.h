@@ -440,6 +440,17 @@ inline constexpr char kDbdRevampDesktopDescription[] =
     "UI changes and removal of the bulk password deletion option from the "
     "dialog.";
 
+inline constexpr char kDefaultBrowserChangedOsNotificationDescription[] =
+    "Enables the framework to show OS Notification when Chrome is no longer "
+    "the default browser.";
+inline constexpr char kDefaultBrowserChangedOsNotificationName[] =
+    "Default Browser Changed OS Notification";
+
+inline constexpr char kDefaultBrowserFrameworkDescription[] =
+    "Enables the default browser framework.";
+inline constexpr char kDefaultBrowserFrameworkName[] =
+    "Default Browser Framework";
+
 inline constexpr char kDefaultSearchEnginePrewarmName[] =
     "Default search engine prewarm";
 inline constexpr char kDefaultSearchEnginePrewarmDescription[] =

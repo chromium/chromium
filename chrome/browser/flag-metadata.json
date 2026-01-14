@@ -2079,6 +2079,22 @@
     "expiry_milestone": 150
   },
   {
+    "name": "default-browser-changed-os-notification",
+    "owners": [
+      "top-chrome-desktop-ui@google.com",
+      "//chrome/browser/default_browser/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "default-browser-framework",
+    "owners": [
+      "top-chrome-desktop-ui@google.com",
+      "//chrome/browser/default_browser/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "default-browser-off-cycle-promo",
     "owners": [ "gujen@google.com", "bling-mony-pod@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 143

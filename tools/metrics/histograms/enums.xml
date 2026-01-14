@@ -8485,6 +8485,7 @@ from previous Chrome versions.
   <int value="-2009624021" label="RemoveUPMUnenrollment:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
+  <int value="-2008476454" label="DefaultBrowserFramework:disabled"/>
   <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
   <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
   <int value="-2007080863" label="CrosContentAdjustedRefreshRate:disabled"/>
@@ -11824,6 +11825,7 @@ from previous Chrome versions.
   <int value="-855130893" label="enable-touch-calibration-setting"/>
   <int value="-854716639" label="TranslateAndroidManualTrigger:enabled"/>
   <int value="-854519621" label="PointerLockOptions:disabled"/>
+  <int value="-854117156" label="DefaultBrowserChangedOsNotification:disabled"/>
   <int value="-853594220" label="disable-new-avatar-menu"/>
   <int value="-853455968"
       label="OmniboxDefaultTypedNavigationsToHttps:disabled"/>
@@ -16214,6 +16216,7 @@ from previous Chrome versions.
   <int value="675427884" label="EnableFakeMouseHeuristic:enabled"/>
   <int value="675918824" label="AndroidPinnedTabs:disabled"/>
   <int value="675963233" label="EsbDownloadRowPromo:disabled"/>
+  <int value="676130009" label="DefaultBrowserChangedOsNotification:enabled"/>
   <int value="676197393"
       label="ProfileCreationFrictionReductionExperimentPrefillNameRequirement:disabled"/>
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
@@ -16297,6 +16300,7 @@ from previous Chrome versions.
   <int value="699177589"
       label="EnableSupervisedUserReauthenticationForSubframes:enabled"/>
   <int value="699632009" label="NewTabPageTilesTitleWrapAround:enabled"/>
+  <int value="699641785" label="DefaultBrowserFramework:enabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="700926106" label="OmniboxPedalsBatch3NonEnglish:enabled"/>
   <int value="701766325" label="PerNavigationMojoInterface:enabled"/>
