@@ -51,7 +51,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -1445,19 +1444,20 @@ public class ImeAdapterImpl
         }
 
         // Request view system keeps focused element on screen.
-        if (ContentFeatureList.sAccessibilityMagnificationFollowsFocus.isEnabled()) {
+        // Note: `SDK_INT_FULL` added in `BAKLAVA`, hence two checks.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
+                && ContentFeatureList.sAccessibilityMagnificationFollowsFocus.isEnabled()) {
             Rect nodePix = fromCssToDevicePix(nodeLeftDip, nodeTopDip, nodeRightDip, nodeBottomDip);
             if (!nodePix.isEmpty()) {
-                // TODO(crbug.com/464269649): when Baklava 36.1 support lands in Clank, remove
-                // delegate indirection and inline `requestInputFocusOnScreen()` call.
-                AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-                if (delegate != null) {
-                    delegate.requestInputFocusOnScreen(containerView, nodePix);
-                }
-                // Do nothing if new 36.1 `requestRectangleOnScreen()` API with request source
-                // parameter is unavailable.
+                containerView.requestRectangleOnScreen(
+                        nodePix,
+                        /* immediate= */ false,
+                        View.RECTANGLE_ON_SCREEN_REQUEST_SOURCE_INPUT_FOCUS);
             }
         }
+        // Do nothing if new 36.1 `requestRectangleOnScreen()` API with request source
+        // parameter is unavailable.
     }
 
     @CalledByNative
@@ -1663,11 +1663,13 @@ public class ImeAdapterImpl
                             caretCss.x + caretCss.width,
                             caretCss.y + caretCss.height);
 
-            // TODO(crbug.com/464269649): when Baklava 36.1 support lands in Clank, remove delegate
-            // indirection and inline `requestRectangleOnScreen()` call.
-            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-            if (delegate != null && delegate.requestTextCursorOnScreen(containerView, caretPix)) {
-                // Action is performed in condition.
+            // Note: `SDK_INT_FULL` added in `BAKLAVA`, hence two checks.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                    && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+                containerView.requestRectangleOnScreen(
+                        caretPix,
+                        /* immediate= */ false,
+                        View.RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR);
             } else {
                 // Fallback to previous API (where `requestRectangleOnScreen()` calls are assumed
                 // to come from text cursor moves).
