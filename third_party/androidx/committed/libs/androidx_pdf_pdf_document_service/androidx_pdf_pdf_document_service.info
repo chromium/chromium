@@ -8,6 +8,7 @@ aidl = [
   "aidl/androidx/pdf/DraftEditOperation.aidl",
   "aidl/androidx/pdf/DraftEditResult.aidl",
   "aidl/androidx/pdf/annotation/KeyedPdfAnnotation.aidl",
+  "aidl/androidx/pdf/annotation/models/PdfObject.aidl",
   "aidl/androidx/pdf/annotation/models/PdfAnnotation.aidl",
   "aidl/androidx/pdf/annotation/models/PaginatedAnnotations.aidl",
   "aidl/androidx/pdf/RenderParams.aidl"
