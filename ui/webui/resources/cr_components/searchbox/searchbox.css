@@ -493,7 +493,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 :host([searchbox-layout-mode^='Tall']) input {
   height: 44px;
-  padding-top: var(--cr-searchbox-input-padding-top_);
+  padding-top: 14px;
 }
 
 :host([multi-line-enabled][searchbox-layout-mode^='Tall']) textarea {
@@ -518,10 +518,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 :host-context([searchbox-layout-mode^='Tall']) #composeButton {
   --cr-button-height: 36px;
-}
-
-:host([searchbox-layout-mode='TallBottomContext'][dropdown-is-visible]) contextual-entrypoint-and-carousel::part(context-menu-and-tools) {
-  margin-top: 10px;
 }
 
 :host-context([searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(carousel-divider) {
