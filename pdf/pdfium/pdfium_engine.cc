@@ -1266,11 +1266,10 @@ void PDFiumEngine::RemoveTextFragments() {
 void PDFiumEngine::SearchForFragment(
     const std::u16string& term,
     int char_to_start_searching_from,
-    int last_char_index_to_search,
     int page_to_search,
     AddSearchResultCallback add_result_callback) {
   SearchUsingICU(term, /*case_sensitive=*/false, /*first_search=*/false,
-                 char_to_start_searching_from, last_char_index_to_search,
+                 char_to_start_searching_from, /*last_char_index_to_search=*/-1,
                  page_to_search, page_to_search,
                  std::move(add_result_callback));
 }

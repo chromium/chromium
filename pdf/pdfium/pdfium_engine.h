@@ -595,7 +595,6 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Searches for a text fragment within the text of the PDF.
   void SearchForFragment(const std::u16string& term,
                          int char_to_start_searching_from,
-                         int last_char_index_to_search,
                          int page_to_search,
                          AddSearchResultCallback add_result_callback);
 

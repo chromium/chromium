@@ -66,12 +66,11 @@ std::optional<PDFiumRange> FindTextFragmentSuffix(
     PDFiumEngine* engine,
     const shared_highlighting::TextFragment& fragment,
     const PDFiumRange& end_range) {
-  std::optional<PDFiumRange> text_fragment_suffix = std::nullopt;
+  std::optional<PDFiumRange> text_fragment_suffix;
   engine->SearchForFragment(
       base::UTF8ToUTF16(fragment.suffix()),
       /*char_to_start_searching_from=*/end_range.char_index() +
           end_range.char_count(),
-      /*last_char_index_to_search=*/-1,
       /*page_to_search=*/end_range.page_index(),
       base::BindRepeating(&AddTextFragmentSuffixResult, engine,
                           std::ref(text_fragment_suffix), std::ref(end_range)));
@@ -196,8 +195,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentPrefix(
     last_unsearched_page_ = current_page + 1;
     engine_->SearchForFragment(
         prefix_unicode,
-        /*char_to_start_searching_from=*/0,
-        /*last_char_index_to_search=*/-1, current_page,
+        /*char_to_start_searching_from=*/0, current_page,
         base::BindRepeating(&AddTextFragmentPrefixResult,
                             std::ref(text_fragment_prefixes_)));
 
@@ -220,8 +218,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentStart(
          current_page++) {
       engine_->SearchForFragment(
           start_unicode,
-          /*char_to_start_searching_from=*/0,
-          /*last_char_index_to_search=*/-1, current_page,
+          /*char_to_start_searching_from=*/0, current_page,
           base::BindRepeating(&AddTextFragmentStartResult, engine_,
                               std::ref(text_fragment_starts_),
                               std::ref(text_fragment_suffix_), fragment,
@@ -247,7 +244,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentStart(
     engine_->SearchForFragment(
         start_unicode,
         /*char_to_start_searching_from=*/prefix_range.char_index(),
-        /*last_char_index_to_search=*/-1, prefix_range.page_index(),
+        prefix_range.page_index(),
         base::BindRepeating(&AddTextFragmentStartResult, engine_,
                             std::ref(text_fragment_starts_),
                             std::ref(text_fragment_suffix_), fragment,
@@ -289,7 +286,6 @@ void PDFiumTextFragmentFinder::FindTextFragmentEnd(
         end_unicode,
         /*char_to_start_searching_from=*/start_range.char_index() +
             start_range.char_count(),
-        /*last_char_index_to_search=*/-1,
         /*page_to_search=*/start_range.page_index(),
         base::BindRepeating(&AddTextFragmentEndResult, engine_,
                             std::ref(text_fragment_end_),
