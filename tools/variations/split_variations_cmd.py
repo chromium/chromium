@@ -236,16 +236,67 @@ def _BuildFeaturesSwitchValue(features):
   ) for feature in features)
 
 
-def _SplitFeatures(features):
+def _SplitFeatures(features, field_trials_splits=None):
   """Splits a list of _Features objects into two lists.
 
+  This function ensures that if a feature is associated with a specific field
+  trial (by value), it stays in the same split group as that trial.
+
+  Args:
+      features: A list of _Feature objects to be split.
+      field_trials_splits: A list of <=2 dictionaries, each having key
+          _FORCE_FIELD_TRIALS_SWITCH_NAME mapping to a list of _Trial objects.
+          This is used to keep features associated with field trials in the
+          same split.
+
   Note that either returned list could be empty, depending on the number of
-  elements in the input list.
+  elements in the input list, and the organized input field_trials_splits.
   """
-  # Split a list of size N into two list: one of size middle, the other of size
-  # N - middle. This works even when N is 0 or 1, resulting in empty list(s).
-  middle = (len(features) + 1) // 2
-  return features[:middle], features[middle:]
+  # Format: [ [_Feature1, _Feature2, ...], [_Feature3, ...], ... ]
+  feature_groups = []
+  # Format: { feature_value1:group_index1, feature_value2: group_index2, ... }
+  value_to_group_index = {}
+
+  # Group features by value, those without value gets assigned to a new group.
+  for feature in features:
+    if feature.value is None:
+      feature_groups.append([feature])
+    else:
+      if feature.value in value_to_group_index:
+        feature_groups[value_to_group_index[feature.value]].append(feature)
+      else:
+        feature_groups.append([feature])
+        value_to_group_index[feature.value] = len(feature_groups) - 1
+
+  # Extract trial names from the split field trials.
+  trials_splits = []
+  if field_trials_splits:
+    trials_splits.append(
+        set(t.trial_name for t in field_trials_splits[0].get(
+            _FORCE_FIELD_TRIALS_SWITCH_NAME, [])))
+    trials_splits.append(
+        set(t.trial_name for t in field_trials_splits[1].get(
+            _FORCE_FIELD_TRIALS_SWITCH_NAME, [])))
+  else:
+    trials_splits = [set(), set()]
+
+  results = [[], []]
+
+  # Assign features into the same split with associated field_trials.
+  for group in feature_groups:
+    value = group[0].value
+    for i in range(2):
+      if value in trials_splits[i]:
+        results[i].extend(group)
+        feature_groups.remove(group)
+        break
+
+  # The rest of features are split into results, balancing with best-effort.
+  for group in feature_groups:
+    i = 0 if results[0] <= results[1] else 1
+    results[i].extend(group)
+
+  return results[0], results[1]
 
 
 def ParseCommandLineSwitchesString(data):
@@ -384,9 +435,10 @@ def SplitVariationsCmd(results):
   disable_features = results.get(_DISABLE_FEATURES_SWITCH_NAME, [])
   field_trials = results.get(_FORCE_FIELD_TRIALS_SWITCH_NAME, [])
   field_trial_params = results.get(_FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME, [])
-  enable_features_splits = _SplitFeatures(enable_features)
-  disable_features_splits = _SplitFeatures(disable_features)
   field_trials_splits = _SplitFieldTrials(field_trials, field_trial_params)
+  enable_features_splits = _SplitFeatures(enable_features, field_trials_splits)
+  disable_features_splits = _SplitFeatures(disable_features,
+                                           field_trials_splits)
   splits = []
   for index in range(2):
     cmd_line = {}
