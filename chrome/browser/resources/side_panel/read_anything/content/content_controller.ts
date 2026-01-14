@@ -207,8 +207,7 @@ export class ContentController {
 
     this.nodeStore_.clearDomNodes();
 
-    if (chrome.readingMode.isReadabilityEnabled &&
-        !chrome.readingMode.htmlContent) {
+    if (chrome.readingMode.isReadabilityEnabled) {
       return this.updateContentForReadability();
     }
     return this.updateContentForScreen2x(shadowRoot);

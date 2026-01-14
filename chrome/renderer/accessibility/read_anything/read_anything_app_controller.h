@@ -155,6 +155,9 @@ class ReadAnythingAppController
   void OnReadingModeHidden(bool tab_active) override;
   void OnTabWillDetach() override;
   void OnTabMuteStateChange(bool muted) override;
+  void UpdateContent(const std::string& title,
+                     const std::string& content) override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDeviceLocked() override;
 #else
@@ -526,15 +529,11 @@ class ReadAnythingAppController
   // change. Used for logging.
   int distillationsCompleted_;
 
-  // TODO(crbug.com/459144991): implement updating this variable to show
-  // distilled title in the WebUI. The distilled title result of DOM distiller
-  // distillation.
-  std::string dom_distiller_title_ = "";
+  // The distilled title result of DOM distiller distillation.
+  std::string dom_distiller_title_;
 
-  // TODO(crbug.com/459144991): implement updating this variable to show
-  // distilled content in the WebUI. The distilled content result of DOM
-  // distiller distillation.
-  std::string dom_distiller_content_html_ = "";
+  // The distilled content result of DOM distiller distillation.
+  std::string dom_distiller_content_html_;
 
   // As a subclass of RenderFrameObserver, all objects of this class are stored
   // in data structure and should not get deallocated as long as the object is

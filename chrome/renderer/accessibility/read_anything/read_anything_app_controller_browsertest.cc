@@ -3234,6 +3234,54 @@ TEST_F(ReadAnythingAppControllerTest, ImmersiveReadAnythingTogglesPinState) {
   EXPECT_CALL(page_handler_, TogglePinState()).Times(1);
 }
 
+TEST_F(ReadAnythingAppControllerTest, ReadAloudStateResetsOnNewPageNavigation) {
+  // Create two distinct "web pages" as AXTreeUpdate objects.
+  const std::u16string first_page_sentence = u"Hello world.";
+  auto const first_page_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate first_page_update;
+  test::SetUpdateTreeID(&first_page_update, first_page_tree_id);
+  ui::AXNodeData first_page_node = test::TextNode(kId1, first_page_sentence);
+  first_page_update.root_id = first_page_node.id;
+  first_page_update.nodes = {std::move(first_page_node)};
+
+  const std::u16string second_page_sentence = u"This is the second page.";
+  auto const second_page_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate second_page_update;
+  test::SetUpdateTreeID(&second_page_update, second_page_tree_id);
+  ui::AXNodeData second_page_node = test::TextNode(kId1, second_page_sentence);
+  second_page_update.root_id = second_page_node.id;
+  second_page_update.nodes = {std::move(second_page_node)};
+
+  // Simulate loading Page 1 and initializing Read Aloud.
+
+  AccessibilityEventReceived({std::move(first_page_update)});
+  controller().OnActiveAXTreeIDChanged(first_page_tree_id,
+                                       ukm::kInvalidSourceId, false);
+  controller().OnAXTreeDistilled(first_page_tree_id, {kId1});
+  controller().InitAXPositionWithNode(kId1);
+
+  ASSERT_TRUE(controller().IsSpeechTreeInitialized());
+  ASSERT_EQ(controller().GetCurrentTextContent(), first_page_sentence);
+
+  // Simulate navigating to Page 2.
+
+  AccessibilityEventReceived({std::move(second_page_update)});
+  controller().OnActiveAXTreeIDChanged(second_page_tree_id,
+                                       ukm::kInvalidSourceId, false);
+  controller().OnAXTreeDistilled(second_page_tree_id, {kId1});
+
+  // Verify model state has been reset.
+  ASSERT_FALSE(controller().IsSpeechTreeInitialized());
+  ASSERT_EQ(controller().GetCurrentTextContent(), u"");
+
+  // Simulate the UI re-initializing speech for Page 2.
+
+  controller().InitAXPositionWithNode(kId1);
+
+  ASSERT_TRUE(controller().IsSpeechTreeInitialized());
+  ASSERT_EQ(controller().GetCurrentTextContent(), second_page_sentence);
+}
+
 class ReadAnythingAppControllerV8SegmentationTest
     : public ReadAnythingAppControllerTest {
  public:

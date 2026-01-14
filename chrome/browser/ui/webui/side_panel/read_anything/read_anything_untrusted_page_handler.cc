@@ -1258,6 +1258,11 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
       full_html.append(page.html());
     }
     dom_distiller_content_ = full_html;
+
+    if (dom_distiller_title() && dom_distiller_content()) {
+      page_->UpdateContent(dom_distiller_title().value(),
+                           dom_distiller_content().value());
+    }
   }
 }
 

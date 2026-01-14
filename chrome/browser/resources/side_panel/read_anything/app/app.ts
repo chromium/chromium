@@ -471,8 +471,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   onIsSpeechActiveChange(): void {
     this.isSpeechActive_ = this.speechController_.isSpeechActive();
+    // TODO (crbug.com/475223538): Implement updateLinks for Readability flag.
     if (chrome.readingMode.linksEnabled &&
-        !this.speechController_.isTemporaryPause()) {
+        !this.speechController_.isTemporaryPause() &&
+        !chrome.readingMode.isReadabilityEnabled) {
       this.updateLinks_();
     }
   }

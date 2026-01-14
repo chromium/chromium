@@ -527,6 +527,9 @@ void ReadAnythingAppController::OnTreeDataChanged(
     ui::AXTree* tree,
     const ui::AXTreeData& old_data,
     const ui::AXTreeData& new_data) {
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    return;
+  }
   VLOG(1) << "Tree data changed for tree ID: " << tree->GetAXTreeID()
           << "\n---- OLD DATA: " << old_data.tree_id << ": "
           << old_data.ToString() << "\n---- NEW DATA: " << new_data.tree_id
@@ -588,6 +591,9 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
 void ReadAnythingAppController::SendEventUpdates() {
   if (model_.requires_distillation()) {
+    if (features::IsReadAnythingWithReadabilityEnabled()) {
+      return;
+    }
     Distill();
   }
 
@@ -695,6 +701,12 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.ClearPendingUpdates();
   model_.set_requires_distillation(false);
   model_.set_page_finished_loading(false);
+
+  // TODO(crbug.com/459144990): Handle showLoading scenario for readability
+  // path.
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    return;
+  }
 
   ExecuteJavaScript("chrome.readingMode.showLoading();");
 
@@ -946,6 +958,9 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // `requires_distillation()` state below).
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
+    if (features::IsReadAnythingWithReadabilityEnabled()) {
+      return;
+    }
     Distill();
   }
 }
@@ -1934,6 +1949,10 @@ const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
 }
 
 bool ReadAnythingAppController::RequiresDistillation() {
+  // DOM distiller distillation doesn't queue distillations so return false.
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    return false;
+  }
   return model_.requires_distillation();
 }
 
@@ -1972,6 +1991,9 @@ void ReadAnythingAppController::OnCopy() const {
 }
 
 void ReadAnythingAppController::OnNoTextContent() {
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    return;
+  }
   Distill();
 }
 
@@ -2598,4 +2620,20 @@ std::string ReadAnythingAppController::GetDomDistillerTitle() const {
 
 std::string ReadAnythingAppController::GetDomDistillerContentHtml() const {
   return dom_distiller_content_html_;
+}
+
+void ReadAnythingAppController::UpdateContent(const std::string& title,
+                                              const std::string& content) {
+  if (!features::IsReadAnythingWithReadabilityEnabled()) {
+    return;
+  }
+  dom_distiller_title_ = title;
+  dom_distiller_content_html_ = content;
+
+  // For Google Docs, do not show any text before the doc finishing loading.
+  if (IsGoogleDocs() && !model_.page_finished_loading()) {
+    return;
+  }
+
+  ExecuteJavaScript("chrome.readingMode.updateContent();");
 }
