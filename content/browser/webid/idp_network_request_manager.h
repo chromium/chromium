@@ -149,7 +149,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     AccountsResponse& operator=(const AccountsResponse&);
 
     std::vector<IdentityRequestAccountPtr> PotentialAccountsForOrigin(
-        const url::Origin& origin);
+        const url::Origin& origin) const;
 
     std::vector<IdentityRequestAccountPtr> accounts;
     std::string origin_salt;

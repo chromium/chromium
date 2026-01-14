@@ -520,6 +520,7 @@ source_set("browser_sources") {
     "webid/federated_identity_api_permission_context_delegate.h",
     "webid/federated_identity_auto_reauthn_permission_context_delegate.h",
     "webid/federated_identity_permission_context_delegate.h",
+    "webid/identity_credential_source.h",
     "webid/identity_request_account.cc",
     "webid/identity_request_account.h",
     "webid/identity_request_dialog_controller.cc",

@@ -964,7 +964,7 @@ IdpNetworkRequestManager::AccountsResponse::operator=(
 
 std::vector<IdentityRequestAccountPtr>
 IdpNetworkRequestManager::AccountsResponse::PotentialAccountsForOrigin(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   std::string salted_origin(origin_salt + origin.Serialize());
   auto hash = crypto::hash::Sha256(salted_origin);
   std::string hashed_origin = base::HexEncode(hash);

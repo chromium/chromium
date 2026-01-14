@@ -2436,6 +2436,8 @@ source_set("browser") {
     "webid/fake_identity_request_dialog_controller.h",
     "webid/flags.cc",
     "webid/flags.h",
+    "webid/identity_credential_source_impl.cc",
+    "webid/identity_credential_source_impl.h",
     "webid/identity_provider_info.cc",
     "webid/identity_provider_info.h",
     "webid/identity_registry.cc",
