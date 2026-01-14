@@ -34,7 +34,7 @@ template <class T>
   requires(std::is_unsigned_v<T> && std::is_integral_v<T>)
 inline constexpr T FromLittleEndian(std::span<const uint8_t, sizeof(T)> bytes) {
   T val;
-  if (std::is_constant_evaluated()) {
+  if consteval {
     val = T{0};
     for (size_t i = 0u; i < sizeof(T); i += 1u) {
       // SAFETY: `i < sizeof(T)` (the number of bytes in T), so `(8 * i)` is
@@ -60,7 +60,7 @@ template <class T>
   requires(std::is_unsigned_v<T> && std::is_integral_v<T>)
 inline constexpr std::array<uint8_t, sizeof(T)> ToLittleEndian(T val) {
   auto bytes = std::array<uint8_t, sizeof(T)>();
-  if (std::is_constant_evaluated()) {
+  if consteval {
     for (size_t i = 0u; i < sizeof(T); i += 1u) {
       const auto last_byte = static_cast<uint8_t>(val & 0xff);
       // The low bytes go to the front of the array in little endian.

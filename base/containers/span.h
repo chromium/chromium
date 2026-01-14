@@ -568,7 +568,7 @@ class GSL_POINTER span {
   constexpr void copy_from(span<const element_type, extent> other)
     requires(!std::is_const_v<element_type>)
   {
-    if (std::is_constant_evaluated()) {
+    if consteval {
       // Comparing pointers to different objects at compile time yields
       // unspecified behavior, which would halt compilation. Instead,
       // unconditionally use a separate buffer in the constexpr context. This
@@ -643,7 +643,7 @@ class GSL_POINTER span {
     // unspecified behavior, which would halt compilation. Instead implement in
     // terms of the guaranteed-safe behavior; performance is irrelevant in the
     // constexpr context.
-    if (std::is_constant_evaluated()) {
+    if consteval {
       copy_from(other);
       return;
     }
@@ -1109,7 +1109,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     requires(!std::is_const_v<element_type>)
   {
     CHECK(size() == other.size());
-    if (std::is_constant_evaluated()) {
+    if consteval {
       // Comparing pointers to different objects at compile time yields
       // unspecified behavior, which would halt compilation. Instead,
       // unconditionally use a separate buffer in the constexpr context. This
@@ -1175,7 +1175,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // unspecified behavior, which would halt compilation. Instead implement in
     // terms of the guaranteed-safe behavior; performance is irrelevant in the
     // constexpr context.
-    if (std::is_constant_evaluated()) {
+    if consteval {
       copy_from(other);
       return;
     }

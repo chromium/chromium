@@ -1759,6 +1759,26 @@ The following C++23 language features are allowed in the Chromium codebase.
 **Notes:**
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/V6YD6hOjnE8)
+
+### if consteval <sup>[allowed]</sup>
+
+```c++
+if consteval {
+  ...
+}
+```
+
+**Description:** consteval if statement. This removes some gotchas with
+[std::is_constant_evaluated()](https://en.cppreference.com/w/cpp/types/is_constant_evaluated.html#Notes),
+which needs to be used with a runtime if (rather than constexpr if) to be
+meaningful.
+
+**Documentation:**
+[if statement](https://en.cppreference.com/w/cpp/language/if)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/1e90vNHYVFc)
 ***
 
 ## C++23 Allowed Library Features {#library-allowlist-23}
@@ -1846,24 +1866,6 @@ Migration from `base::to_underlying` is tracked in https://crbug.com/470039537.
 The following C++23 language features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
-
-### if consteval <sup>[tbd]</sup>
-
-```c++
-if consteval {
-  ...
-}
-```
-
-**Description:** consteval if statement.
-
-**Documentation:**
-[if statement](https://en.cppreference.com/w/cpp/language/if)
-
-**Notes:**
-*** promo
-None
-***
 
 ### Static operators () and [] <sup>[tbd]</sup>
 

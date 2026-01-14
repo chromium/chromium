@@ -69,7 +69,7 @@ class PA_TRIVIAL_ABI InstanceTracer {
   PA_COMPONENT_EXPORT(RAW_PTR) static void UntraceImpl(uint64_t owner_id);
 
   constexpr uint64_t CreateOwnerId() {
-    if (std::is_constant_evaluated()) {
+    if consteval {
       return 0;
     }
     return ++counter_;

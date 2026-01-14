@@ -38,7 +38,7 @@ struct RawPtrAsanUnownedImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* wrapped_ptr) {
-    if (!std::is_constant_evaluated()) {
+    if !consteval {
       ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
     }
   }
@@ -57,7 +57,7 @@ struct RawPtrAsanUnownedImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
-    if (!std::is_constant_evaluated()) {
+    if !consteval {
       ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
     }
     return wrapped_ptr;
