@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
@@ -284,6 +287,12 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     // Navigate to a valid URL.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
+    if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+      if (auto* tracker =
+              tab->GetTabFeatures()->contextual_tasks_tab_visit_tracker()) {
+        tracker->SetClockForTesting(&test_clock_);
+      }
+    }
     content::NavigateToURLBlockUntilNavigationsComplete(web_contents,
                                                         valid_url(), 1);
   }
@@ -522,7 +531,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
+  // Navigates to a page with title "Test Page"
   NavigateToValidURL();
+  // Simulate a long time spent on the tab.
+  test_clock_.Advance(base::Seconds(60));
+  // Simulate a short time passed since the tab has been hidden.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(3));
 
   NotifyEmbedderMetadata();
 
@@ -536,15 +551,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
 
-  test_clock_.Advance(base::Seconds(10));
-
   base::test::TestFuture<void> logging_future;
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
       {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "some text",
+      "summarize the test page",
       /*explicit_urls=*/{GURL("https://notinrelevantset.com")},
       future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -581,12 +594,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_EQ(uploaded_quality_log.eligible_tabs().size(), 1);
   EXPECT_GT(uploaded_quality_log.eligible_tabs()[0].best_embedding_score(),
             0.99f);
-  EXPECT_GE(uploaded_quality_log.eligible_tabs()[0].seconds_since_last_active(),
-            10);
+  EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].seconds_since_last_active(),
+            3);
+  EXPECT_GE(uploaded_quality_log.eligible_tabs()[0].seconds_of_last_visit(),
+            60);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].number_of_common_words(),
-            0);
-  EXPECT_FLOAT_EQ(uploaded_quality_log.eligible_tabs()[0].aggregate_tab_score(),
-                  1.0f);
+            2);
+  EXPECT_NEAR(uploaded_quality_log.eligible_tabs()[0].aggregate_tab_score(),
+                  1.0f, 0.001f);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].was_explicitly_chosen(),
             false);
 }
@@ -597,6 +612,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();
+  // Simulate low time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a long time passed since the tab has been hidden.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(1800));
 
   NotifyEmbedderMetadata();
 
@@ -610,9 +630,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
        CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
-
-  // Tab got old.
-  test_clock_.Advance(base::Seconds(1800));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
@@ -636,11 +653,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighRecencyScoreQualifiesTab) {
+                       HighRecencyLongDurationQualifiesTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();
+  // Simulate a long time spent on the tab.
+  test_clock_.Advance(base::Seconds(60));
+  // Simulate a short time passed since the tab has been hidden.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(3));
 
   NotifyEmbedderMetadata();
 
@@ -655,9 +677,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
 
-  // Recently active tab.
-  test_clock_.Advance(base::Seconds(5));
-
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
       {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
@@ -669,11 +688,52 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       HighRecencyShortDurationDoesNotQualifyTab) {
+  base::HistogramTester histogram_tester;
+
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+  // Simulate a short time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a short time passed since the tab has been hidden.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(3));
+
+  NotifyEmbedderMetadata();
+
+  // None of the passages have high embeddings score.
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+      "some text", /*explicit_urls=*/{}, future.GetCallback());
+  EXPECT_EQ(0u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                        HighLexicalMatchScoreQualifiesTab) {
   base::HistogramTester histogram_tester;
 
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
   // Navigates to a page with title "Test Page"
   NavigateToValidURL();
+  // Simulate a short time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a long time passed since the tab has been hidden.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(1800));
 
   NotifyEmbedderMetadata();
 
@@ -696,6 +756,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();
+  // Simulate a short time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a long time passed since the tab has been hidden.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(1800));
 
   NotifyEmbedderMetadata();
 

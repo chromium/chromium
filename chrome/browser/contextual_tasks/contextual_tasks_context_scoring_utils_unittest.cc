@@ -20,14 +20,35 @@ TEST(GetTabScoreTest, OnlyEmbeddingScore) {
   EXPECT_DOUBLE_EQ(GetTabScore(signals), 0.5);
 }
 
-TEST(GetTabScoreTest, OnlyRecencyScore) {
+TEST(GetTabScoreTest, BehavioralSignals_MissingRequired) {
   TabSignals signals;
   signals.duration_since_last_active = base::Seconds(0);
-  // ProbOr(0, 0.7^(0/180)) = ProbOr(0, 1) = 1.0
+  EXPECT_DOUBLE_EQ(GetTabScore(signals), 0.0);
+
+  signals.duration_since_last_active.reset();
+  signals.duration_of_last_visit = base::Seconds(100);
+  EXPECT_DOUBLE_EQ(GetTabScore(signals), 0.0);
+}
+
+TEST(GetTabScoreTest, BehavioralSignals) {
+  TabSignals signals;
+  signals.duration_since_last_active = base::Seconds(0);
+  // High duration score ~1.0
+  signals.duration_of_last_visit = base::Seconds(100);
+
+  // Recency: 0.7^(0/180) = 1.0. Duration: 1.0.
+  // HarmonicMean(1, 1) = 1.
   EXPECT_NEAR(GetTabScore(signals), 1.0, 0.001);
 
   signals.duration_since_last_active = base::Seconds(180);
-  // ProbOr(0, 0.7^(180/180)) = ProbOr(0, 0.7) = 0.7
+  // Recency: 0.7^(180/180) = 0.7. Duration: ~1.0.
+  // HarmonicMean(0.7, 1.0) = 1.4 / 1.7 = 0.8235...
+  EXPECT_NEAR(GetTabScore(signals), 0.8235, 0.001);
+
+  signals.duration_of_last_visit = base::Seconds(5);
+  // Recency: 0.7.
+  // Duration: 1 - 0.3^(5/5) = 0.7.
+  // HarmonicMean(0.7, 0.7) = 0.7.
   EXPECT_NEAR(GetTabScore(signals), 0.7, 0.001);
 }
 
@@ -45,21 +66,29 @@ TEST(GetTabScoreTest, OnlyLexicalMatchScore) {
 TEST(GetTabScoreTest, CombinedScores) {
   TabSignals signals;
   signals.embedding_score = 0.5;
-  signals.duration_since_last_active = base::Seconds(180);  // score 0.7
+  signals.duration_since_last_active = base::Seconds(180);
+  signals.duration_of_last_visit = base::Seconds(5);
 
-  // ProbOr(0.5, 0.7) = 1 - (0.5 * 0.3) = 1 - 0.15 = 0.85
+  // Recency: 0.7. Duration: 0.7. Behavioral: 0.7.
+  // Static: 0.5.
+  // Total: ProbOr(0.5, 0.7) = 1 - (0.5 * 0.3) = 0.85.
   EXPECT_NEAR(GetTabScore(signals), 0.85, 0.001);
 }
 
 TEST(GetTabScoreTest, RecencyScoreStepFunction) {
   TabSignals signals;
+  // Duration score ~1.0
+  signals.duration_of_last_visit = base::Seconds(100);
+
   signals.duration_since_last_active = base::Seconds(179);
   // 179 / 180 = 0. pow(0.7, 0) = 1.
-  EXPECT_DOUBLE_EQ(GetTabScore(signals), 1.0);
+  // HarmonicMean(1, 1) = 1.
+  EXPECT_NEAR(GetTabScore(signals), 1.0, 0.001);
 
   signals.duration_since_last_active = base::Seconds(359);
   // 359 / 180 = 1. pow(0.7, 1) = 0.7.
-  EXPECT_NEAR(GetTabScore(signals), 0.7, 0.001);
+  // HarmonicMean(0.7, 1) = 0.8235
+  EXPECT_NEAR(GetTabScore(signals), 0.8235, 0.001);
 }
 
 }  // namespace contextual_tasks
