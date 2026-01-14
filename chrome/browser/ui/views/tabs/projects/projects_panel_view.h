@@ -17,6 +17,7 @@ namespace views {
 class ActionViewController;
 }  // namespace views
 
+class ProjectsPanelTabGroupsView;
 class ProjectsPanelStateController;
 
 // Parent view of the Projects Panel - holds together the views
@@ -40,6 +41,7 @@ class ProjectsPanelView : public views::View {
  private:
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
+  raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };

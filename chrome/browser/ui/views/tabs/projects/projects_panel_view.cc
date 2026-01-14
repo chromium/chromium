@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -45,6 +46,9 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item)
   SetPaintToLayer();
 
   controls_view_ = AddChildView(std::make_unique<ProjectsPanelControlsView>(
+      root_action_item_.get(), action_view_controller_.get()));
+
+  tab_groups_view_ = AddChildView(std::make_unique<ProjectsPanelTabGroupsView>(
       root_action_item_.get(), action_view_controller_.get()));
 
   SetVisible(false);

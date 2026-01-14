@@ -10419,6 +10419,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_HIDE_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that hides the projects panel.">
             Hide Projects
           </message>
+          <message name="IDS_TAB_GROUPS_TITLE" desc="In Title Case: The title for the tab groups container in the projects panel.">
+            Tab Groups
+          </message>
         </then>
         <else>
           <message name="IDS_VIEW_PROJECTS_PANEL" desc="The tooltip for the button in the top container that shows the projects panel.">
@@ -10426,6 +10429,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
           <message name="IDS_HIDE_PROJECTS_PANEL" desc="The tooltip for the button in the top container that hides the projects panel.">
             Hide projects
+          </message>
+          <message name="IDS_TAB_GROUPS_TITLE" desc="The title for the tab groups container in the projects panel.">
+            Tab groups
           </message>
         </else>
       </if>
