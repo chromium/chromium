@@ -104,7 +104,7 @@ class AppInstallControllerImpl : public AppInstallController {
 
 scoped_refptr<App> MakeAppInstall(bool /*is_silent_install*/) {
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating([]() -> scoped_refptr<AppInstallController> {
+      base::BindRepeating([] -> scoped_refptr<AppInstallController> {
         return base::MakeRefCounted<AppInstallControllerImpl>();
       }));
 }

@@ -553,7 +553,7 @@ HResultOr<bool> IsCOMCallerAdmin() {
     return base::ok(::IsUserAnAdmin());
   }
 
-  HResultOr<ScopedKernelHANDLE> token = []() -> decltype(token) {
+  HResultOr<ScopedKernelHANDLE> token = [] -> decltype(token) {
     ScopedKernelHANDLE token;
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
