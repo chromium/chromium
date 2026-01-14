@@ -30,6 +30,7 @@ try_.defaults.set(
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     # Downloading with "minimum" strategy doesn't work
     # well for the win builder because some steps are missing inputs.
     # e.g. mini_installer.exe

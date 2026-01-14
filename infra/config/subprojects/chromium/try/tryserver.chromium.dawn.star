@@ -34,6 +34,7 @@ try_.defaults.set(
         "chromium_tests.resultdb_module": 100,
     },
     service_account = gpu.try_.SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )

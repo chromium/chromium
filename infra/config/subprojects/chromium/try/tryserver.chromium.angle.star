@@ -27,6 +27,7 @@ try_.defaults.set(
     },
     max_concurrent_builds = 5,
     service_account = gpu.try_.SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
