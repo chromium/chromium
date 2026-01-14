@@ -204,7 +204,7 @@ constexpr viz::SharedImageFormat kSupportedFormats[7]{
 // static mechanism like this. We probably need something like
 // gpu::SharedImageCapabilities.texture_target_exception_list.
 bool AHardwareBufferSupportedFormat(viz::SharedImageFormat format) {
-  return base::Contains(kSupportedFormats, format);
+  return std::ranges::contains(kSupportedFormats, format);
 }
 
 // Returns the corresponding AHardwareBuffer format.

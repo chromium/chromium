@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -12,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -1177,8 +1177,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   // Force adapters to report their limits in predetermined tiers unless the
   // adapter_limit_tiers toggle is explicitly disabled.
-  tiered_adapter_limits_ =
-      !base::Contains(require_disabled_toggles_, "tiered_adapter_limits");
+  tiered_adapter_limits_ = !std::ranges::contains(require_disabled_toggles_,
+                                                  "tiered_adapter_limits");
 
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
@@ -1635,8 +1635,9 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
 bool WebGPUDecoderImpl::use_blocklist() const {
   // Enable the blocklist unless --enable-unsafe-webgpu or
   // --disable-dawn-features=adapter_blocklist
-  return !(safety_level_ == webgpu::SafetyLevel::kUnsafe ||
-           base::Contains(require_disabled_toggles_, "adapter_blocklist"));
+  return !(
+      safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+      std::ranges::contains(require_disabled_toggles_, "adapter_blocklist"));
 }
 
 wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(

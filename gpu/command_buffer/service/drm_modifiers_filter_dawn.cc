@@ -4,8 +4,9 @@
 
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -55,8 +56,8 @@ GetDawnModifierMap(wgpu::Adapter adapter) {
     std::vector<uint64_t> modifiers;
     modifiers.reserve(drmCapabilities.propertiesCount);
     for (size_t j = 0; j < drmCapabilities.propertiesCount; j++) {
-      if (!base::Contains(kModifierBlocklist,
-                          drmCapabilities.properties[j].modifier)) {
+      if (!std::ranges::contains(kModifierBlocklist,
+                                 drmCapabilities.properties[j].modifier)) {
         modifiers.push_back(drmCapabilities.properties[j].modifier);
       }
     }
@@ -95,7 +96,7 @@ std::vector<uint64_t> DrmModifiersFilterDawn::Filter(
 
   std::vector<uint64_t> intersection;
   for (const auto& modifier : modifiers) {
-    if (base::Contains(modifier_set, modifier)) {
+    if (std::ranges::contains(modifier_set, modifier)) {
       intersection.push_back(modifier);
     }
   }
