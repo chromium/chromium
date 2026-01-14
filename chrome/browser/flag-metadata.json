@@ -1848,8 +1848,8 @@
   },
   {
     "name": "cpe-passkey-largeblob-support",
-    "owners": ["rgod@google.com", "ambikaraj@google.com", "bling-transactions-eng@google.com"],
-    "expiry_milestone": 145
+    "owners": ["rgod@google.com", "bling-transactions-eng@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "cpe-passkey-prf-support",
