@@ -797,6 +797,10 @@ bool Transaction::CreateExternalObjects(
         total_blob_size += info->size;
 
         if (info->file) {
+          if (info->file->last_modified.ToDeltaSinceWindowsEpoch() <
+              base::TimeDelta()) {
+            return false;
+          }
           (*external_objects)[i] = IndexedDBExternalObject(
               std::move(info->blob), info->file->name, info->mime_type,
               info->file->last_modified, info->size);
