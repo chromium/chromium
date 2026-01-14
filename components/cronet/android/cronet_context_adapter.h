@@ -81,7 +81,7 @@ class CronetContextAdapter : public CronetContext::Callback {
   void StartNetLogToDisk(JNIEnv* env,
                          const base::android::JavaRef<jstring>& jdir_name,
                          bool jlog_all,
-                         jint jmax_size);
+                         int32_t jmax_size);
 
   // Stops NetLog logging to file. This can be called on any thread. This will
   // flush any remaining writes to disk.

@@ -79,15 +79,15 @@ void PrefServiceAndroid::SetBoolean(JNIEnv* env,
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }
 
-jint PrefServiceAndroid::GetInteger(JNIEnv* env,
-                                    const JavaRef<jstring>& j_preference) {
+int32_t PrefServiceAndroid::GetInteger(JNIEnv* env,
+                                       const JavaRef<jstring>& j_preference) {
   return pref_service_->GetInteger(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
 void PrefServiceAndroid::SetInteger(JNIEnv* env,
                                     const JavaRef<jstring>& j_preference,
-                                    const jint j_value) {
+                                    const int32_t j_value) {
   pref_service_->SetInteger(
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }

@@ -38,7 +38,7 @@ void CurrencyFormatterAndroid::Destroy(JNIEnv* env) {
 
 void CurrencyFormatterAndroid::SetMaxFractionalDigits(
     JNIEnv* env,
-    jint jmax_fractional_digits) {
+    int32_t jmax_fractional_digits) {
   currency_formatter_->SetMaxFractionalDigits(jmax_fractional_digits);
 }
 

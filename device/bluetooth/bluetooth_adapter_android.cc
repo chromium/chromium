@@ -249,7 +249,7 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
                              service_data_values_vector[i]});
   }
 
-  std::vector<jint> manufacturer_data_keys_vector;
+  std::vector<int32_t> manufacturer_data_keys_vector;
   std::vector<std::vector<uint8_t>> manufacturer_data_values_vector;
   JavaIntArrayToIntVector(env, manufacturer_data_keys,
                           &manufacturer_data_keys_vector);

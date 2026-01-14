@@ -155,9 +155,8 @@ RenderFrameHostAndroid::GetAllRenderFrameHosts(JNIEnv* env) const {
   return ret;
 }
 
-bool RenderFrameHostAndroid::IsFeatureEnabled(
-    JNIEnv* env,
-    jint feature) const {
+bool RenderFrameHostAndroid::IsFeatureEnabled(JNIEnv* env,
+                                              int32_t feature) const {
   return render_frame_host_->IsFeatureEnabled(
       static_cast<network::mojom::PermissionsPolicyFeature>(feature));
 }
@@ -206,7 +205,7 @@ void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
 
 void RenderFrameHostAndroid::TerminateRendererDueToBadMessage(
     JNIEnv* env,
-    jint reason) const {
+    int32_t reason) const {
   DCHECK_LT(reason, bad_message::BAD_MESSAGE_MAX);
   ReceivedBadMessage(render_frame_host_->GetProcess(),
                      static_cast<bad_message::BadMessageReason>(reason));
@@ -241,7 +240,7 @@ void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
                 callback,
                 Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
                     base::android::AttachCurrentThread(),
-                    static_cast<jint>(status), is_cross_origin));
+                    static_cast<int32_t>(status), is_cross_origin));
           },
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
@@ -271,7 +270,7 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
                 callback,
                 Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
                     base::android::AttachCurrentThread(),
-                    static_cast<jint>(status), is_cross_origin));
+                    static_cast<int32_t>(status), is_cross_origin));
           },
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
@@ -291,19 +290,19 @@ void RenderFrameHostAndroid::PerformReportWebAuthSecurityChecks(
                 callback,
                 Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
                     base::android::AttachCurrentThread(),
-                    static_cast<jint>(status), is_cross_origin));
+                    static_cast<int32_t>(status), is_cross_origin));
           },
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
-jint RenderFrameHostAndroid::GetLifecycleState(JNIEnv* env) const {
-  return static_cast<jint>(render_frame_host_->GetLifecycleState());
+int32_t RenderFrameHostAndroid::GetLifecycleState(JNIEnv* env) const {
+  return static_cast<int32_t>(render_frame_host_->GetLifecycleState());
 }
 
 void RenderFrameHostAndroid::ExecuteJavaScriptInIsolatedWorld(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jscript,
-    jint jworldId,
+    int32_t jworldId,
     const base::android::JavaRef<jobject>& jcallback) {
   if (!jcallback) {
     render_frame_host()->ExecuteJavaScriptInIsolatedWorld(

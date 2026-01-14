@@ -148,7 +148,7 @@ bool NavigationControllerAndroid::CanGoForward(JNIEnv* env) {
   return navigation_controller_->CanGoForward();
 }
 
-bool NavigationControllerAndroid::CanGoToOffset(JNIEnv* env, jint offset) {
+bool NavigationControllerAndroid::CanGoToOffset(JNIEnv* env, int32_t offset) {
   return navigation_controller_->CanGoToOffsetWithSkipping(offset);
 }
 
@@ -160,8 +160,7 @@ void NavigationControllerAndroid::GoForward(JNIEnv* env) {
   navigation_controller_->GoForward();
 }
 
-void NavigationControllerAndroid::GoToOffset(JNIEnv* env,
-                                             jint offset) {
+void NavigationControllerAndroid::GoToOffset(JNIEnv* env, int32_t offset) {
   navigation_controller_->GoToOffsetWithSkipping(offset);
 }
 
@@ -202,18 +201,19 @@ void NavigationControllerAndroid::CancelPendingReload(JNIEnv* env) {
   navigation_controller_->CancelPendingReload();
 }
 
-void NavigationControllerAndroid::GoToNavigationIndex(JNIEnv* env, jint index) {
+void NavigationControllerAndroid::GoToNavigationIndex(JNIEnv* env,
+                                                      int32_t index) {
   navigation_controller_->GoToIndex(index);
 }
 
 base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     JNIEnv* env,
     const JavaRef<jstring>& url,
-    jint load_url_type,
-    jint transition_type,
+    int32_t load_url_type,
+    int32_t transition_type,
     const JavaRef<jstring>& j_referrer_url,
-    jint referrer_policy,
-    jint ua_override_option,
+    int32_t referrer_policy,
+    int32_t ua_override_option,
     const JavaRef<jstring>& extra_headers,
     const JavaRef<jobject>& j_post_data,
     const JavaRef<jstring>& base_url_for_data_url,
@@ -334,7 +334,7 @@ void NavigationControllerAndroid::ClearHistory(JNIEnv* env) {
     navigation_controller_->PruneAllButLastCommitted();
 }
 
-jint NavigationControllerAndroid::GetNavigationHistory(
+int32_t NavigationControllerAndroid::GetNavigationHistory(
     JNIEnv* env,
     const JavaRef<jobject>& history) {
   // Iterate through navigation entries to populate the list
@@ -351,7 +351,7 @@ void NavigationControllerAndroid::GetDirectedNavigationHistory(
     JNIEnv* env,
     const JavaRef<jobject>& history,
     bool is_forward,
-    jint max_entries) {
+    int32_t max_entries) {
   // Iterate through navigation entries to populate the list
   int count = navigation_controller_->GetEntryCount();
   int num_added = 0;
@@ -476,14 +476,15 @@ NavigationControllerAndroid::GetPendingEntry(JNIEnv* env) {
       env, entry, navigation_controller_->GetPendingEntryIndex());
 }
 
-jint NavigationControllerAndroid::GetLastCommittedEntryIndex(JNIEnv* env) {
+int32_t NavigationControllerAndroid::GetLastCommittedEntryIndex(JNIEnv* env) {
   return navigation_controller_->GetLastCommittedEntryIndex();
 }
 
 bool NavigationControllerAndroid::CanViewSource(JNIEnv* env) {
   return navigation_controller_->CanViewSource();
 }
-bool NavigationControllerAndroid::RemoveEntryAtIndex(JNIEnv* env, jint index) {
+bool NavigationControllerAndroid::RemoveEntryAtIndex(JNIEnv* env,
+                                                     int32_t index) {
   return navigation_controller_->RemoveEntryAtIndex(index);
 }
 
@@ -493,7 +494,7 @@ void NavigationControllerAndroid::PruneForwardEntries(JNIEnv* env) {
 
 ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
     JNIEnv* env,
-    jint index,
+    int32_t index,
     const JavaRef<jstring>& jkey) {
   if (index < 0 || index >= navigation_controller_->GetEntryCount())
     return ScopedJavaLocalRef<jstring>();
@@ -508,7 +509,7 @@ ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
 
 void NavigationControllerAndroid::SetEntryExtraData(
     JNIEnv* env,
-    jint index,
+    int32_t index,
     const JavaRef<jstring>& jkey,
     const JavaRef<jstring>& jvalue) {
   if (index < 0 || index >= navigation_controller_->GetEntryCount())

@@ -37,8 +37,8 @@ void MidiInputPortAndroid::Close() {
 
 void MidiInputPortAndroid::OnData(JNIEnv* env,
                                   const JavaRef<jbyteArray>& data,
-                                  jint offset,
-                                  jint size,
+                                  int32_t offset,
+                                  int32_t size,
                                   jlong timestamp) {
   std::vector<uint8_t> bytes;
   base::android::JavaByteArrayToByteVector(env, data, &bytes);

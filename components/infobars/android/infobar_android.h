@@ -48,8 +48,7 @@ class InfoBarAndroid : public InfoBar {
 
   int GetInfoBarIdentifier(JNIEnv* env);
   virtual void OnLinkClicked(JNIEnv* env) {}
-  void OnButtonClicked(JNIEnv* env,
-                       jint action);
+  void OnButtonClicked(JNIEnv* env, int32_t action);
   void OnCloseButtonClicked(JNIEnv* env);
 
   void CloseJavaInfoBar();

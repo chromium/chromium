@@ -67,8 +67,8 @@ void ContentViewRenderView::SetCurrentWebContents(
 void ContentViewRenderView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint width,
-    jint height) {
+    int32_t width,
+    int32_t height) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
@@ -93,9 +93,9 @@ void ContentViewRenderView::SurfaceDestroyed(JNIEnv* env) {
 
 std::optional<int> ContentViewRenderView::SurfaceChanged(
     JNIEnv* env,
-    jint format,
-    jint width,
-    jint height,
+    int32_t format,
+    int32_t width,
+    int32_t height,
     const JavaRef<jobject>& surface,
     const JavaRef<jobject>& browser_input_token) {
   std::optional<int> surface_handle = std::nullopt;

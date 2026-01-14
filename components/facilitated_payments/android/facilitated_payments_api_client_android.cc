@@ -112,7 +112,7 @@ void FacilitatedPaymentsApiClientAndroid::OnGetClientToken(
 
 void FacilitatedPaymentsApiClientAndroid::OnPurchaseActionResultEnum(
     JNIEnv* env,
-    jint purchase_action_result) {
+    int32_t purchase_action_result) {
   if (!purchase_action_callback_ ||
       purchase_action_result <
           static_cast<int>(PurchaseActionResult::kCouldNotInvoke) ||

@@ -102,7 +102,7 @@ static void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
     jlong j_group_ptr,
     const JavaRef<jobject>& j_group_id,
     const JavaRef<jstring>& j_title,
-    jint j_color) {
+    int32_t j_color) {
   // Set visuals on the given SavedTabGroup.
   SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);
   if (j_group_id) {
@@ -120,7 +120,7 @@ static void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
 static void JNI_TabGroupSyncConversionsBridge_AddTab(
     JNIEnv* env,
     jlong j_group_ptr,
-    jint j_tab_id,
+    int32_t j_tab_id,
     const JavaRef<jstring>& j_title,
     const JavaRef<jobject>& j_url) {
   SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);

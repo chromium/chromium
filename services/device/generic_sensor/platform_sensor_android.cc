@@ -37,7 +37,7 @@ scoped_refptr<PlatformSensorAndroid> PlatformSensorAndroid::Create(
       type, reading_buffer, std::move(provider));
   JNIEnv* env = AttachCurrentThread();
   sensor->j_object_.Reset(
-      Java_PlatformSensor_create(env, java_provider, static_cast<jint>(type),
+      Java_PlatformSensor_create(env, java_provider, static_cast<int32_t>(type),
                                  reinterpret_cast<jlong>(sensor.get())));
   if (!sensor->j_object_) {
     return nullptr;
@@ -133,7 +133,7 @@ void PlatformSensorAndroid::UpdatePlatformSensorReading(JNIEnv*,
 
 void PlatformSensorAndroid::SimulateSensorEventFromJavaForTesting(
     base::android::ScopedJavaGlobalRef<jobject> j_object_,
-    jint reading_values_length) {
+    int32_t reading_values_length) {
   Java_PlatformSensor_simulateSensorEventForTesting(  // IN-TEST
       AttachCurrentThread(), j_object_, reading_values_length);
 }

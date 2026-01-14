@@ -149,8 +149,8 @@ ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
 bool AutocompleteResult::VerifyCoherency(
     JNIEnv* env,
     const JavaRef<jlongArray>& j_matches_array,
-    jint match_index,
-    jint verification_point) {
+    int32_t match_index,
+    int32_t verification_point) {
   DCHECK(j_matches_array);
 
   std::vector<jlong> j_matches;

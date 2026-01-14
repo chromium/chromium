@@ -49,8 +49,7 @@ void UsbServiceAndroid::DeviceAttached(JNIEnv* env,
   NotifyDeviceAdded(device);
 }
 
-void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
-                                       jint device_id) {
+void UsbServiceAndroid::DeviceDetached(JNIEnv* env, int32_t device_id) {
   auto it = devices_by_id_.find(device_id);
   if (it == devices_by_id_.end())
     return;
@@ -67,7 +66,7 @@ void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
 }
 
 void UsbServiceAndroid::DevicePermissionRequestComplete(JNIEnv* env,
-                                                        jint device_id,
+                                                        int32_t device_id,
                                                         bool granted) {
   const auto it = devices_by_id_.find(device_id);
   if (it == devices_by_id_.end()) {

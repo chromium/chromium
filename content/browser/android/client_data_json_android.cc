@@ -49,7 +49,7 @@ void DeserializePaymentOptionsFromJavaByteBuffer(
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_ClientDataJsonImpl_BuildClientDataJson(
     JNIEnv* env,
-    jint jclient_data_request_type,
+    int32_t jclient_data_request_type,
     const base::android::JavaRef<jstring>& jcaller_origin,
     const base::android::JavaRef<jbyteArray>& jchallenge,
     bool jis_cross_origin,

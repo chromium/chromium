@@ -70,7 +70,7 @@ void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievedInternal(
 
 void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalError(
     JNIEnv* env,
-    jint api_error_code) {
+    int32_t api_error_code) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -79,7 +79,7 @@ void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalError(
 }
 
 void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalErrorInternal(
-    jint api_error_code) {
+    int32_t api_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   if (!consumer_) {

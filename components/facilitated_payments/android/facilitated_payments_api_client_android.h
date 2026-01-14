@@ -53,7 +53,7 @@ class FacilitatedPaymentsApiClientAndroid
   void OnGetClientToken(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& jclient_token_byte_array);
-  void OnPurchaseActionResultEnum(JNIEnv* env, jint purchase_action_result);
+  void OnPurchaseActionResultEnum(JNIEnv* env, int32_t purchase_action_result);
 
  private:
   bool IsAnyCallbackPending() const;

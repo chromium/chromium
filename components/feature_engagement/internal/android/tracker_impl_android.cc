@@ -132,7 +132,7 @@ bool TrackerImplAndroid::HasEverTriggered(
   return tracker_->HasEverTriggered(*features_[feature], j_from_window);
 }
 
-jint TrackerImplAndroid::GetTriggerState(
+int32_t TrackerImplAndroid::GetTriggerState(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jfeature) {
   std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
@@ -153,7 +153,7 @@ void TrackerImplAndroid::Dismissed(
 void TrackerImplAndroid::DismissedWithSnooze(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jfeature,
-    const jint snooze_action) {
+    const int32_t snooze_action) {
   std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
   DCHECK(features_.find(feature) != features_.end());
 

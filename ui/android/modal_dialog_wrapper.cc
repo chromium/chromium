@@ -386,7 +386,7 @@ void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, bool is_checked) {
       ->OnChecked(DialogModelFieldHost::GetPassKey(), is_checked);
 }
 
-void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, jint index) {
+void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, int32_t index) {
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), menu_items_.size());
   menu_items_[index]->OnActivated(DialogModelFieldHost::GetPassKey(), 0);

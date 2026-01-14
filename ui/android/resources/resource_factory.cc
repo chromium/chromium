@@ -18,14 +18,14 @@ static jlong JNI_ResourceFactory_CreateBitmapResource(JNIEnv* env) {
 
 static jlong JNI_ResourceFactory_CreateNinePatchBitmapResource(
     JNIEnv* env,
-    jint padding_left,
-    jint padding_top,
-    jint padding_right,
-    jint padding_bottom,
-    jint aperture_left,
-    jint aperture_top,
-    jint aperture_right,
-    jint aperture_bottom) {
+    int32_t padding_left,
+    int32_t padding_top,
+    int32_t padding_right,
+    int32_t padding_bottom,
+    int32_t aperture_left,
+    int32_t aperture_top,
+    int32_t aperture_right,
+    int32_t aperture_bottom) {
   gfx::Rect padding(padding_left, padding_top, padding_right - padding_left,
                     padding_bottom - padding_top);
   gfx::Rect aperture(aperture_left, aperture_top,

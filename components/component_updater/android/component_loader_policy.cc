@@ -192,7 +192,7 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
 }
 
 void AndroidComponentLoaderPolicy::ComponentLoadFailed(JNIEnv* env,
-                                                       jint error_code) {
+                                                       int32_t error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(error_code > static_cast<int>(ComponentLoadResult::kComponentLoaded));
   DCHECK(error_code <= static_cast<int>(ComponentLoadResult::kMaxValue));

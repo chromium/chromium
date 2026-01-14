@@ -93,7 +93,7 @@ static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatStringUrlForSecurityDisplay(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& url,
-    jint scheme_display) {
+    int32_t scheme_display) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
@@ -103,7 +103,7 @@ JNI_UrlFormatter_FormatStringUrlForSecurityDisplay(
 static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForSecurityDisplay(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_gurl,
-    jint scheme_display) {
+    int32_t scheme_display) {
   DCHECK(j_gurl);
   GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   return base::android::ConvertUTF16ToJavaString(
@@ -115,7 +115,7 @@ static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatOriginForSecurityDisplay(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_origin,
-    jint scheme_display) {
+    int32_t scheme_display) {
   DCHECK(j_origin);
   url::Origin origin = url::Origin::FromJavaObject(env, j_origin);
   return base::android::ConvertUTF16ToJavaString(

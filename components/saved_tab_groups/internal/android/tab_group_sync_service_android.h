@@ -55,7 +55,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   void UpdateVisualData(JNIEnv* env,
                         const JavaRef<jobject>& j_group_id,
                         const JavaRef<jstring>& j_title,
-                        jint j_color);
+                        int32_t j_color);
 
   void MakeTabGroupShared(JNIEnv* env,
                           const JavaRef<jobject>& j_group_id,
@@ -73,30 +73,30 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   // Mutator methods that result in tab metadata mutation.
   void AddTab(JNIEnv* env,
               const JavaRef<jobject>& j_group_id,
-              jint j_tab_id,
+              int32_t j_tab_id,
               const JavaRef<jstring>& j_title,
               const JavaRef<jobject>& j_url,
-              jint j_position);
+              int32_t j_position);
 
   void UpdateTab(JNIEnv* env,
                  const JavaRef<jobject>& j_group_id,
-                 jint j_tab_id,
+                 int32_t j_tab_id,
                  const JavaRef<jstring>& j_title,
                  const JavaRef<jobject>& j_url,
-                 jint j_position);
+                 int32_t j_position);
 
   void RemoveTab(JNIEnv* env,
                  const JavaRef<jobject>& j_group_id,
-                 jint j_tab_id);
+                 int32_t j_tab_id);
 
   void MoveTab(JNIEnv* env,
                const JavaRef<jobject>& j_group_id,
-               jint j_tab_id,
+               int32_t j_tab_id,
                int j_new_index_in_group);
 
   void SetTabSelected(JNIEnv* env,
                       const JavaRef<jobject>& j_group_id,
-                      jint j_tab_id,
+                      int32_t j_tab_id,
                       const JavaRef<jstring>& j_tab_title);
 
   // Accessor methods.
@@ -116,25 +116,25 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   void UpdateLocalTabGroupMapping(JNIEnv* env,
                                   const JavaRef<jstring>& j_sync_id,
                                   const JavaRef<jobject>& j_local_id,
-                                  jint j_opening_source);
+                                  int32_t j_opening_source);
   void RemoveLocalTabGroupMapping(JNIEnv* env,
                                   const JavaRef<jobject>& j_local_id,
-                                  jint j_closing_source);
+                                  int32_t j_closing_source);
   void UpdateLocalTabId(JNIEnv* env,
                         const JavaRef<jobject>& j_group_id,
                         const JavaRef<jstring>& j_sync_tab_id,
-                        jint j_local_tab_id);
+                        int32_t j_local_tab_id);
   bool WasTabGroupClosedLocally(JNIEnv* env,
                                 const JavaRef<jstring>& j_sync_tab_group_id);
 
   // Helper methods for attributions.
   bool IsRemoteDevice(JNIEnv* env, const JavaRef<jstring>& j_sync_cache_guid);
   void RecordTabGroupEvent(JNIEnv* env,
-                           jint j_event_type,
+                           int32_t j_event_type,
                            const JavaRef<jobject>& j_local_group_id,
-                           jint j_local_tab_id,
-                           jint j_opening_source,
-                           jint j_closing_source);
+                           int32_t j_local_tab_id,
+                           int32_t j_opening_source,
+                           int32_t j_closing_source);
 
   void UpdateArchivalStatus(JNIEnv* env,
                             const JavaRef<jstring>& j_sync_group_id,

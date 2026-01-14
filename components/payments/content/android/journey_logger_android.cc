@@ -31,8 +31,8 @@ void JourneyLoggerAndroid::Destroy(JNIEnv* env) {
 
 void JourneyLoggerAndroid::SetNumberOfSuggestionsShown(
     JNIEnv* env,
-    jint jsection,
-    jint jnumber,
+    int32_t jsection,
+    int32_t jnumber,
     bool jhas_complete_suggestion) {
   DCHECK_GE(jsection, 0);
   DCHECK_LT(jsection, JourneyLogger::Section::SECTION_MAX);
@@ -62,7 +62,7 @@ void JourneyLoggerAndroid::SetPayClicked(JNIEnv* env) {
 }
 
 void JourneyLoggerAndroid::SetSelectedMethod(JNIEnv* env,
-                                             jint jPaymentMethodCategory) {
+                                             int32_t jPaymentMethodCategory) {
   DCHECK_GE(jPaymentMethodCategory, 0);
   DCHECK_LE(static_cast<unsigned int>(jPaymentMethodCategory),
             static_cast<unsigned int>(
@@ -98,7 +98,7 @@ void JourneyLoggerAndroid::SetCompleted(JNIEnv* env) {
   journey_logger_.SetCompleted();
 }
 
-void JourneyLoggerAndroid::SetAborted(JNIEnv* env, jint jreason) {
+void JourneyLoggerAndroid::SetAborted(JNIEnv* env, int32_t jreason) {
   DCHECK_GE(jreason, 0);
   DCHECK_LT(jreason, JourneyLogger::AbortReason::ABORT_REASON_MAX);
   journey_logger_.SetAborted(static_cast<JourneyLogger::AbortReason>(jreason));
@@ -112,7 +112,7 @@ void JourneyLoggerAndroid::SetNoMatchingCredentialsShown(JNIEnv* env) {
   journey_logger_.SetNoMatchingCredentialsShown();
 }
 
-void JourneyLoggerAndroid::RecordCheckoutStep(JNIEnv* env, jint jstep) {
+void JourneyLoggerAndroid::RecordCheckoutStep(JNIEnv* env, int32_t jstep) {
   journey_logger_.RecordCheckoutStep(
       static_cast<JourneyLogger::CheckoutFunnelStep>(jstep));
 }

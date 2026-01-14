@@ -289,8 +289,8 @@ void VideoCaptureDeviceAndroid::SetPhotoOptions(
 void VideoCaptureDeviceAndroid::OnFrameAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& data,
-    jint length,
-    jint rotation) {
+    int32_t length,
+    int32_t rotation) {
   if (!IsClientConfigured())
     return;
 
@@ -329,14 +329,14 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
 void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& y_buffer,
-    jint y_stride,
+    int32_t y_stride,
     const base::android::JavaRef<jobject>& u_buffer,
     const base::android::JavaRef<jobject>& v_buffer,
-    jint uv_row_stride,
-    jint uv_pixel_stride,
-    jint width,
-    jint height,
-    jint rotation,
+    int32_t uv_row_stride,
+    int32_t uv_pixel_stride,
+    int32_t width,
+    int32_t height,
+    int32_t rotation,
     jlong timestamp) {
   if (!IsClientConfigured())
     return;
@@ -383,7 +383,7 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
 
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
     base::android::ScopedHardwareBufferHandle ahb_handle,
-    jint rotation,
+    int32_t rotation,
     jlong timestamp) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -465,7 +465,7 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& hardware_buffer,
-    jint rotation,
+    int32_t rotation,
     jlong timestamp) {
   if (!IsClientConfigured()) {
     return;

@@ -35,8 +35,7 @@ class ColorPickerBridge : public content::ColorChooser {
 
   ~ColorPickerBridge() override;
 
-  void OnColorChosen(JNIEnv* env,
-                     jint color);
+  void OnColorChosen(JNIEnv* env, int32_t color);
 
   // ColorPicker interface
   void End() override;

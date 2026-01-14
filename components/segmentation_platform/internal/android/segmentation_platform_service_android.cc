@@ -148,7 +148,7 @@ void SegmentationPlatformServiceAndroid::GetInputKeysForModel(
 
 void SegmentationPlatformServiceAndroid::CollectTrainingData(
     JNIEnv* env,
-    jint j_segment_id,
+    int32_t j_segment_id,
     jlong j_request_id,
     jlong j_ukm_source_id,
     const JavaRef<jobject>& j_param,

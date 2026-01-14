@@ -37,8 +37,8 @@ SharedDictionaryWithByteBuffer::MaybeCreate(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& dictionary_sha256_hash,
     const base::android::JavaRef<jobject>& dictionary_content_byte_buffer,
-    jint dictionary_content_position,
-    jint dictionary_content_limit,
+    int32_t dictionary_content_position,
+    int32_t dictionary_content_limit,
     const base::android::JavaRef<jstring>& dictionary_id) {
   if (dictionary_sha256_hash.obj() == nullptr ||
       dictionary_content_byte_buffer.obj() == nullptr) {
@@ -53,8 +53,8 @@ SharedDictionaryWithByteBuffer::SharedDictionaryWithByteBuffer(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& dictionary_sha256_hash,
     const base::android::JavaRef<jobject>& dictionary_content_byte_buffer,
-    jint dictionary_content_position,
-    jint dictionary_content_limit,
+    int32_t dictionary_content_position,
+    int32_t dictionary_content_limit,
     const base::android::JavaRef<jstring>& dictionary_id)
     : hash_(ByteArrayToSHA256(env, dictionary_sha256_hash)),
       content_(base::MakeRefCounted<IOBufferWithByteBuffer>(

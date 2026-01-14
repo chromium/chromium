@@ -51,7 +51,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
   bool CreateTranslateMessage(JNIEnv* env,
                               content::WebContents* web_contents,
                               TranslateMessage* native_translate_message,
-                              jint dismissal_duration_seconds) override {
+                              int32_t dismissal_duration_seconds) override {
     DCHECK(!java_translate_message_);
     java_translate_message_ = Java_TranslateMessage_create(
         env, web_contents->GetJavaWebContents(),
@@ -341,7 +341,7 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
   }
 }
 
-void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
+void TranslateMessage::HandleDismiss(JNIEnv* env, int32_t dismiss_reason) {
   switch (static_cast<messages::DismissReason>(dismiss_reason)) {
     case messages::DismissReason::GESTURE:
       ui_delegate_->OnUIClosedByUser();
@@ -513,7 +513,7 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jobjectArray>
 TranslateMessage::HandleSecondaryMenuItemClicked(
     JNIEnv* env,
-    jint overflow_menu_item_id,
+    int32_t overflow_menu_item_id,
     const base::android::JavaRef<jstring>& language_code,
     bool had_checkmark) {
   has_been_interacted_with_ = true;

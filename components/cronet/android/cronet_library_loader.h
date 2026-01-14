@@ -9,7 +9,7 @@
 
 namespace cronet {
 
-jint CronetOnLoad(JavaVM* vm, void* reserved);
+int32_t CronetOnLoad(JavaVM* vm, void* reserved);
 void CronetOnUnLoad(JavaVM* jvm, void* reserved);
 
 }  // namespace cronet

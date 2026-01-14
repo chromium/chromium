@@ -29,10 +29,10 @@ class RenderFrameHostTestExt : public base::SupportsUserData::Data {
                          const base::android::JavaRef<jobject>& jcallback);
 
   void NotifyVirtualKeyboardOverlayRect(JNIEnv* env,
-                                        jint x,
-                                        jint y,
-                                        jint width,
-                                        jint height);
+                                        int32_t x,
+                                        int32_t y,
+                                        int32_t width,
+                                        int32_t height);
 
  private:
   const raw_ptr<RenderFrameHostImpl> render_frame_host_;

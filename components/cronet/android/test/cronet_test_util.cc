@@ -41,8 +41,9 @@ SequenceManager* g_sequence_manager = nullptr;
 
 }  // namespace
 
-static jint JNI_CronetTestUtil_GetLoadFlags(JNIEnv* env,
-                                            const jlong jurl_request_adapter) {
+static int32_t JNI_CronetTestUtil_GetLoadFlags(
+    JNIEnv* env,
+    const jlong jurl_request_adapter) {
   return TestUtil::GetURLRequest(jurl_request_adapter)->load_flags();
 }
 
@@ -190,7 +191,7 @@ static bool JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {
 }
 
 static jlong JNI_CronetTestUtil_GetTaggedBytes(JNIEnv* env,
-                                               jint jexpected_tag) {
+                                               int32_t jexpected_tag) {
   return net::GetTaggedBytes(jexpected_tag);
 }
 

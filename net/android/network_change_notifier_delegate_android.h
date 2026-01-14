@@ -79,23 +79,23 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // by this class and forwards the notification to the observers that
   // subscribed through RegisterObserver().
   void NotifyConnectionTypeChanged(JNIEnv* env,
-                                   jint new_connection_type,
+                                   int32_t new_connection_type,
                                    jlong default_netid);
-  jint GetConnectionType(JNIEnv* env, jobject obj) const;
+  int32_t GetConnectionType(JNIEnv* env, jobject obj) const;
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
   // the connection cost changes. This updates the current connection cost seen
   // by this class and forwards the notification to the observers that
   // subscribed through RegisterObserver().
-  void NotifyConnectionCostChanged(JNIEnv* env, jint new_connection_cost);
-  jint GetConnectionCost(JNIEnv* env, jobject obj);
+  void NotifyConnectionCostChanged(JNIEnv* env, int32_t new_connection_cost);
+  int32_t GetConnectionCost(JNIEnv* env, jobject obj);
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
   // the connection subtype changes. This updates the current
   // max bandwidth and connection subtype seen by this class and forwards the
   // max bandwidth change to the observers that subscribed through
   // RegisterObserver().
-  void NotifyConnectionSubtypeChanged(JNIEnv* env, jint subtype);
+  void NotifyConnectionSubtypeChanged(JNIEnv* env, int32_t subtype);
 
   // Called from NetworkChangeNotifier.java on the JNI thread to push
   // down notifications of network connectivity events. These functions in
@@ -108,7 +108,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // NetworkChangeNotifierAutoDetect.Observer functions of the same names.
   void NotifyOfNetworkConnect(JNIEnv* env,
                               jlong net_id,
-                              jint connection_type);
+                              int32_t connection_type);
   void NotifyOfNetworkSoonToDisconnect(JNIEnv* env, jlong net_id);
   void NotifyOfNetworkDisconnect(JNIEnv* env, jlong net_id);
   void NotifyPurgeActiveNetworkList(

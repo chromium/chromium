@@ -36,7 +36,7 @@ class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
 
   void OnReceive(JNIEnv*,
                  const base::android::JavaRef<jstring>& message,
-                 jint backend);
+                 int32_t backend);
   void OnTimeout(JNIEnv* env);
   void OnCancel(JNIEnv* env);
   void OnNotAvailable(JNIEnv* env);

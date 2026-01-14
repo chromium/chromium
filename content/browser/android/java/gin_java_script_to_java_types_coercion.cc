@@ -60,15 +60,15 @@ jlong RoundDoubleToLong(const double& x) {
   return static_cast<jlong>(intermediate);
 }
 
-// Rounds to jint using Java's type conversion rules.
-jint RoundDoubleToInt(const double& x) {
+// Rounds to int32_t using Java's type conversion rules.
+int32_t RoundDoubleToInt(const double& x) {
   double intermediate = RoundDoubleTowardsZero(x);
   // The int32_t limits cast exactly to double values.
   intermediate = std::min(
       intermediate, static_cast<double>(std::numeric_limits<int32_t>::max()));
   intermediate = std::max(
       intermediate, static_cast<double>(std::numeric_limits<int32_t>::min()));
-  return static_cast<jint>(intermediate);
+  return static_cast<int32_t>(intermediate);
 }
 
 jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
@@ -94,7 +94,7 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
       result.s = static_cast<jshort>(integer_value);
       break;
     case JavaType::TypeInt:
-      result.i = static_cast<jint>(integer_value);
+      result.i = static_cast<int32_t>(integer_value);
       break;
     case JavaType::TypeLong:
       result.j = integer_value;

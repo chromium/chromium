@@ -288,18 +288,19 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
 }
 
 void PermissionDialogDelegate::OnGeolocationAccuracySelected(JNIEnv* env,
-                                                             jint accuracy) {
+                                                             int32_t accuracy) {
   CHECK(permission_prompt_);
 
   permission_prompt_->SetPromptOptions(GeolocationPromptOptions{
       .selected_accuracy = static_cast<GeolocationAccuracy>(accuracy)});
 }
 
-static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
+static int32_t JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(
+    JNIEnv* env) {
   return static_cast<int>(RequestType::kMaxValue) + 1;
 }
 
-jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
+int32_t PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
     JNIEnv* env) const {
   CHECK(permission_prompt_);
   CHECK_EQ(permission_prompt_->PermissionCount(), 1u);

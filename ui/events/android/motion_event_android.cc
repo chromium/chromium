@@ -126,7 +126,8 @@ int ToEventFlags(int meta_state, int button_state) {
          EventFlagsFromAndroidButtonState(button_state);
 }
 
-size_t ToValidHistorySize(jint history_size, ui::MotionEvent::Action action) {
+size_t ToValidHistorySize(int32_t history_size,
+                          ui::MotionEvent::Action action) {
   DCHECK_GE(history_size, 0);
   // While the spec states that only Action::MOVE events should contain
   // historical entries, it's possible that an embedder could repurpose an
@@ -139,7 +140,7 @@ size_t ToValidHistorySize(jint history_size, ui::MotionEvent::Action action) {
 
 }  // namespace
 
-MotionEventAndroid::Pointer::Pointer(jint id,
+MotionEventAndroid::Pointer::Pointer(int32_t id,
                                      jfloat pos_x_pixels,
                                      jfloat pos_y_pixels,
                                      jfloat touch_major_pixels,
@@ -147,7 +148,7 @@ MotionEventAndroid::Pointer::Pointer(jint id,
                                      jfloat pressure,
                                      jfloat orientation_rad,
                                      jfloat tilt_rad,
-                                     jint tool_type)
+                                     int32_t tool_type)
     : id(id),
       pos_x_pixels(pos_x_pixels),
       pos_y_pixels(pos_y_pixels),

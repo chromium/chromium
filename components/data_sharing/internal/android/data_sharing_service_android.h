@@ -63,7 +63,7 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
                                 const JavaRef<jobject>& j_callback);
   ScopedJavaLocalRef<jobject> GetUiDelegate(JNIEnv* env);
   void Log(JNIEnv* env,
-           /*logger_common::mojom::LogSource*/ jint source,
+           /*logger_common::mojom::LogSource*/ int32_t source,
            const JavaRef<jstring>& message);
 
   void SetSharedEntitiesPreviewForTesting(JNIEnv* env,

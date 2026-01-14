@@ -44,17 +44,16 @@ class MessagingBackendServiceBridge
   bool IsInitialized(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForTab(
       JNIEnv* env,
-      jint j_local_tab_id,
+      int32_t j_local_tab_id,
       const base::android::JavaRef<jstring>& j_sync_tab_id,
-      jint j_type);
+      int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForGroup(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_local_group_id,
       const base::android::JavaRef<jstring>& j_sync_group_id,
-      jint j_type);
-  base::android::ScopedJavaLocalRef<jobject> GetMessages(
-      JNIEnv* env,
-      jint j_type);
+      int32_t j_type);
+  base::android::ScopedJavaLocalRef<jobject> GetMessages(JNIEnv* env,
+                                                         int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetActivityLog(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_collaboration_id);
@@ -64,7 +63,7 @@ class MessagingBackendServiceBridge
   void ClearPersistentMessage(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_message_id,
-      jint j_type);
+      int32_t j_type);
 
   void RunInstantaneousMessageSuccessCallback(JNIEnv* env,
                                               jlong j_callback,

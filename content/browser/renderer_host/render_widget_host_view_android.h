@@ -457,17 +457,17 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   // Returns an int equivalent to an Optional<SKColor>, with a value of 0
   // indicating SKTransparent for not set.
-  jint GetBackgroundColor(JNIEnv* env);
+  int32_t GetBackgroundColor(JNIEnv* env);
 
-  void ShowContextMenuAtTouchHandle(JNIEnv* env, jint x, jint y);
+  void ShowContextMenuAtTouchHandle(JNIEnv* env, int32_t x, int32_t y);
 
   // Notifies that the Visual Viewport's inset bottom has changed.
   void OnViewportInsetBottomChanged(JNIEnv* env);
 
   void WriteContentBitmapToDiskAsync(
       JNIEnv* env,
-      jint width,
-      jint height,
+      int32_t width,
+      int32_t height,
       const jni_zero::JavaRef<jstring>& jpath,
       const jni_zero::JavaRef<jobject>& jcallback);
 

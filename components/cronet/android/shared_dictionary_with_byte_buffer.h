@@ -23,8 +23,8 @@ class SharedDictionaryWithByteBuffer final : public net::SharedDictionary {
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& dictionary_sha256_hash,
       const base::android::JavaRef<jobject>& dictionary_content_byte_buffer,
-      jint dictionary_content_position,
-      jint dictionary_content_limit,
+      int32_t dictionary_content_position,
+      int32_t dictionary_content_limit,
       const base::android::JavaRef<jstring>& dictionary_id);
 
   int ReadAll(base::OnceCallback<void(int)> callback) override;
@@ -38,8 +38,8 @@ class SharedDictionaryWithByteBuffer final : public net::SharedDictionary {
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& dictionary_sha256_hash,
       const base::android::JavaRef<jobject>& dictionary_content_byte_buffer,
-      jint dictionary_content_position,
-      jint dictionary_content_limit,
+      int32_t dictionary_content_position,
+      int32_t dictionary_content_limit,
       const base::android::JavaRef<jstring>& dictionary_id);
   ~SharedDictionaryWithByteBuffer() override;
 

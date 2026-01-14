@@ -45,8 +45,8 @@ class ContentUiEventHandler {
   void SendMouseEvent(JNIEnv* env,
                       const base::android::JavaRef<jobject>& event,
                       jlong time_ns,
-                      jint android_action_button,
-                      jint android_tool_type);
+                      int32_t android_action_button,
+                      int32_t android_tool_type);
   void SendScrollEvent(JNIEnv* env,
                        jlong time_ms,
                        jfloat delta_x,

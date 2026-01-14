@@ -178,7 +178,7 @@ void SubKeyRequester::LoadRulesForSubKeys(
 void SubKeyRequester::StartRegionSubKeysRequest(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jregion_code,
-    jint jtimeout_seconds,
+    int32_t jtimeout_seconds,
     const base::android::JavaRef<jobject>& jdelegate) {
   const std::string region_code =
       base::android::ConvertJavaStringToUTF8(env, jregion_code);

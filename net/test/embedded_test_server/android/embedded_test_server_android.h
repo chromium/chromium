@@ -33,7 +33,7 @@ class EmbeddedTestServerAndroid {
 
   void Destroy(JNIEnv* env);
 
-  bool Start(JNIEnv* env, jint port);
+  bool Start(JNIEnv* env, int32_t port);
 
   base::android::ScopedJavaLocalRef<jstring> GetRootCertPemPath(
       JNIEnv* jenv) const;
@@ -60,7 +60,7 @@ class EmbeddedTestServerAndroid {
       JNIEnv* jenv,
       const base::android::JavaRef<jstring>& jdirectory_path);
 
-  void SetSSLConfig(JNIEnv* jenv, jint jserver_certificate);
+  void SetSSLConfig(JNIEnv* jenv, int32_t jserver_certificate);
 
   void RegisterRequestHandler(JNIEnv* jenv, jlong handler);
 

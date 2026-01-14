@@ -698,17 +698,17 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   const auto num_subsamples =
       std::max(static_cast<size_t>(1), decrypt_config.subsamples().size());
 
-  // Decompose SubsampleEntry objects into two jint arrays since there's no way
-  // to set the values directly into a jintArray :|
-  auto native_clear_array = base::HeapArray<jint>::Uninit(num_subsamples);
-  auto native_cypher_array = base::HeapArray<jint>::Uninit(num_subsamples);
+  // Decompose SubsampleEntry objects into two int32_t arrays since there's no
+  // way to set the values directly into a jintArray :|
+  auto native_clear_array = base::HeapArray<int32_t>::Uninit(num_subsamples);
+  auto native_cypher_array = base::HeapArray<int32_t>::Uninit(num_subsamples);
   if (decrypt_config.subsamples().empty()) {
     native_clear_array[0] = 0;
     native_cypher_array[0] = data.size();
   } else {
     for (size_t i = 0; i < decrypt_config.subsamples().size(); ++i) {
       const auto& subsamples = decrypt_config.subsamples()[i];
-      if (subsamples.cypher_bytes > std::numeric_limits<jint>::max()) {
+      if (subsamples.cypher_bytes > std::numeric_limits<int32_t>::max()) {
         return {MediaCodecResult::Codes::kError,
                 "Subsample size is too large."};
       }

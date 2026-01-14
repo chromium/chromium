@@ -53,7 +53,7 @@ ScopedJavaLocalRef<jstring> FindInPageBridge::GetPreviousFindText(JNIEnv* env) {
 }
 
 void FindInPageBridge::RequestFindMatchRects(JNIEnv* env,
-                                             jint current_version) {
+                                             int32_t current_version) {
   find_in_page::FindTabHelper::FromWebContents(web_contents_)
       ->RequestFindMatchRects(current_version);
 }

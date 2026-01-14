@@ -50,7 +50,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   static int GetAndroidToolType(ToolType tool_type);
 
   struct Pointer {
-    Pointer(jint id,
+    Pointer(int32_t id,
             jfloat pos_x_pixels,
             jfloat pos_y_pixels,
             jfloat touch_major_pixels,
@@ -58,8 +58,8 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
             jfloat pressure,
             jfloat orientation_rad,
             jfloat tilt_rad,
-            jint tool_type);
-    jint id;
+            int32_t tool_type);
+    int32_t id;
     jfloat pos_x_pixels;
     jfloat pos_y_pixels;
     jfloat touch_major_pixels;
@@ -69,7 +69,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
     // Unlike the tilt angles in motion_event.h, this field matches the
     // MotionEvent spec because we get this values from Java.
     jfloat tilt_rad;
-    jint tool_type;
+    int32_t tool_type;
   };
 
   MotionEventAndroid(float pix_to_dip,

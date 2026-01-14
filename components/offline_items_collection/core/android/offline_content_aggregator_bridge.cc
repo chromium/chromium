@@ -132,7 +132,7 @@ OfflineContentAggregatorBridge::~OfflineContentAggregatorBridge() {
 
 void OfflineContentAggregatorBridge::OpenItem(
     JNIEnv* env,
-    jint launch_location,
+    int32_t launch_location,
     bool j_open_in_incognito,
     const JavaRef<jstring>& j_namespace,
     const JavaRef<jstring>& j_id) {

@@ -351,7 +351,7 @@ static void JNI_Benchmark_SendLargeObjectList(JNIEnv* env,
   }
 }
 
-static void JNI_Benchmark_SendSingleInt(JNIEnv* env, jint param) {
+static void JNI_Benchmark_SendSingleInt(JNIEnv* env, int32_t param) {
   DoNotOptimize(param);
 }
 
@@ -361,16 +361,16 @@ static void JNI_Benchmark_SendSingleInteger(JNIEnv* env,
 }
 
 static void JNI_Benchmark_Send10Ints(JNIEnv* env,
-                                     jint a,
-                                     jint b,
-                                     jint c,
-                                     jint d,
-                                     jint e,
-                                     jint f,
-                                     jint g,
-                                     jint h,
-                                     jint i,
-                                     jint j) {
+                                     int32_t a,
+                                     int32_t b,
+                                     int32_t c,
+                                     int32_t d,
+                                     int32_t e,
+                                     int32_t f,
+                                     int32_t g,
+                                     int32_t h,
+                                     int32_t i,
+                                     int32_t j) {
   DoNotOptimize(a + b + c + d + e + f + g + h + i + j);
 }
 

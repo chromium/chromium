@@ -112,12 +112,12 @@ class CronetBidirectionalStreamAdapter
   // Returns -1 if |jmethod| is not valid HTTP method name.
   // Returns position of invalid header value in |jheaders| if header name is
   // not valid.
-  jint Start(JNIEnv* env,
-             const base::android::JavaRef<jstring>& jurl,
-             jint jpriority,
-             const base::android::JavaRef<jstring>& jmethod,
-             const base::android::JavaRef<jobjectArray>& jheaders,
-             bool jend_of_stream);
+  int32_t Start(JNIEnv* env,
+                const base::android::JavaRef<jstring>& jurl,
+                int32_t jpriority,
+                const base::android::JavaRef<jstring>& jmethod,
+                const base::android::JavaRef<jobjectArray>& jheaders,
+                bool jend_of_stream);
 
   // Sends request headers to server.
   // When |send_request_headers_automatically_| is
@@ -136,8 +136,8 @@ class CronetBidirectionalStreamAdapter
   // is not modified by the application during read.
   bool ReadData(JNIEnv* env,
                 const base::android::JavaRef<jobject>& jbyte_buffer,
-                jint jposition,
-                jint jlimit);
+                int32_t jposition,
+                int32_t jlimit);
 
   // Writes more data from |jbyte_buffers|. For the i_th buffer in
   // |jbyte_buffers|, bytes to write start from i_th position in |jpositions|

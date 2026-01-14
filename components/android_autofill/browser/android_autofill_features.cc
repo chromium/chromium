@@ -59,7 +59,8 @@ BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
 BASE_FEATURE(kAndroidAutofillSupportForHttpAuth,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
+static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,
+                                                    int32_t ordinal) {
   return reinterpret_cast<jlong>(UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
 }
 

@@ -107,7 +107,7 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
   apiClient.OnIsAvailable(env, false);
   apiClient.OnGetClientToken(env, nullptr);
   apiClient.OnPurchaseActionResultEnum(
-      env, static_cast<jint>(PurchaseActionResult::kResultOk));
+      env, static_cast<int32_t>(PurchaseActionResult::kResultOk));
 }
 
 }  // namespace

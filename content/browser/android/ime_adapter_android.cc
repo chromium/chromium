@@ -85,9 +85,9 @@ static jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
 static void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(
     JNIEnv*,
     jlong ime_text_spans_ptr,
-    jint start,
-    jint end,
-    jint background_color) {
+    int32_t start,
+    int32_t end,
+    int32_t background_color) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
   // Do not check |background_color|.
@@ -106,9 +106,9 @@ static void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(
 static void JNI_ImeAdapterImpl_AppendForegroundColorSpan(
     JNIEnv*,
     jlong ime_text_spans_ptr,
-    jint start,
-    jint end,
-    jint foreground_color) {
+    int32_t start,
+    int32_t end,
+    int32_t foreground_color) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
   // Do not check |foreground_color|.
@@ -127,12 +127,12 @@ static void JNI_ImeAdapterImpl_AppendForegroundColorSpan(
 static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     JNIEnv* env,
     jlong ime_text_spans_ptr,
-    jint start,
-    jint end,
+    int32_t start,
+    int32_t end,
     bool is_misspelling,
     bool remove_on_finish_composing,
-    jint underline_color,
-    jint suggestion_highlight_color,
+    int32_t underline_color,
+    int32_t suggestion_highlight_color,
     const JavaRef<jobjectArray>& suggestions,
     bool should_hide_suggestion_menu) {
   DCHECK_GE(start, 0);
@@ -161,8 +161,8 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
 static void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
                                                    jlong ime_text_spans_ptr,
-                                                   jint start,
-                                                   jint end) {
+                                                   int32_t start,
+                                                   int32_t end) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
   std::vector<ui::ImeTextSpan>* ime_text_spans =
@@ -465,7 +465,7 @@ void ImeAdapterAndroid::OnEditElementFocusedForStylusWriting(
 
 void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     JNIEnv* env,
-    const jint id,
+    const int32_t id,
     const base::android::JavaRef<jobject>& jgesture_data_byte_buffer) {
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
@@ -511,7 +511,7 @@ void ImeAdapterAndroid::SetImeRenderWidgetHost() {
   rwhva_->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
 }
 
-void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env, jint focus_type) {
+void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env, int32_t focus_type) {
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
   if (!rfh)

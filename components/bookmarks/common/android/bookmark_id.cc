@@ -20,8 +20,8 @@ int JavaBookmarkIdGetType(JNIEnv* env,
   return Java_BookmarkId_getType(env, obj);
 }
 
-base::android::ScopedJavaLocalRef<jobject> JavaBookmarkIdCreateBookmarkId(
-    JNIEnv* env, jlong id, jint type) {
+base::android::ScopedJavaLocalRef<jobject>
+JavaBookmarkIdCreateBookmarkId(JNIEnv* env, jlong id, int32_t type) {
   return Java_BookmarkId_createBookmarkId(env, id, type);
 }
 

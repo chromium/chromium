@@ -32,15 +32,15 @@ JniHdrMetadata::~JniHdrMetadata() {
   Java_HdrMetadata_close(env, obj());
 }
 
-jint JniHdrMetadata::Primaries(JNIEnv* env) {
+int32_t JniHdrMetadata::Primaries(JNIEnv* env) {
   return static_cast<int>(color_space_->primaries);
 }
 
-jint JniHdrMetadata::ColorTransfer(JNIEnv* env) {
+int32_t JniHdrMetadata::ColorTransfer(JNIEnv* env) {
   return static_cast<int>(color_space_->transfer);
 }
 
-jint JniHdrMetadata::Range(JNIEnv* env) {
+int32_t JniHdrMetadata::Range(JNIEnv* env) {
   return static_cast<int>(color_space_->range);
 }
 
@@ -84,12 +84,12 @@ jfloat JniHdrMetadata::MinColorVolumeLuminance(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).luminance_min;
 }
 
-jint JniHdrMetadata::MaxContentLuminance(JNIEnv* env) {
+int32_t JniHdrMetadata::MaxContentLuminance(JNIEnv* env) {
   return hdr_metadata_->cta_861_3.value_or(kDefault861_3)
       .max_content_light_level;
 }
 
-jint JniHdrMetadata::MaxFrameAverageLuminance(JNIEnv* env) {
+int32_t JniHdrMetadata::MaxFrameAverageLuminance(JNIEnv* env) {
   return hdr_metadata_->cta_861_3.value_or(kDefault861_3)
       .max_frame_average_light_level;
 }

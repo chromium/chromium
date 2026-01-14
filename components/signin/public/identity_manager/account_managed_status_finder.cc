@@ -712,8 +712,9 @@ void AccountManagedStatusFinder::DestroyNativeObject(JNIEnv* env) {
   delete this;
 }
 
-jint AccountManagedStatusFinder::GetOutcomeFromNativeObject(JNIEnv* env) const {
-  return static_cast<jint>(GetOutcome());
+int32_t AccountManagedStatusFinder::GetOutcomeFromNativeObject(
+    JNIEnv* env) const {
+  return static_cast<int32_t>(GetOutcome());
 }
 #endif
 

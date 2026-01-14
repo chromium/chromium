@@ -340,17 +340,17 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
       Java_AutofillProfile_Constructor(
-          env, guid(), static_cast<jint>(record_type()), language_code());
+          env, guid(), static_cast<int32_t>(record_type()), language_code());
 
   for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
-    auto status = static_cast<jint>(GetVerificationStatus(type));
+    auto status = static_cast<int32_t>(GetVerificationStatus(type));
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
     if (type == NAME_FULL) {
-      Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
+      Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
                                    GetInfo(type, app_locale), status);
     } else {
-      Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
+      Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
                                    GetRawInfo(type), status);
     }
   }

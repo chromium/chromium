@@ -65,8 +65,8 @@ static jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env,
   return template_url->last_visited().InMillisecondsSinceUnixEpoch();
 }
 
-static jint JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env,
-                                              jlong template_url_ptr) {
+static int32_t JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env,
+                                                 jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id();
 }

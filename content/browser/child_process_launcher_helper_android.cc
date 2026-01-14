@@ -61,7 +61,7 @@ void StopChildProcess(base::ProcessHandle handle) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
-  Java_ChildProcessLauncherHelperImpl_stop(env, static_cast<jint>(handle));
+  Java_ChildProcessLauncherHelperImpl_stop(env, handle);
 }
 
 }  // namespace
@@ -234,7 +234,7 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
 static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
     JNIEnv* env,
     jlong termination_info_ptr,
-    jint binding_state,
+    int32_t binding_state,
     bool killed_by_us,
     bool clean_exit,
     bool exception_during_init,
@@ -316,20 +316,20 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
       "pid", process.Handle());
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
-  jint result = Java_ChildProcessLauncherHelperImpl_setPriority(
+  int32_t result = Java_ChildProcessLauncherHelperImpl_setPriority(
       env, java_peer_, process.Handle(), priority.visible,
       priority.has_media_stream, priority.has_immersive_xr_session,
       priority.has_foreground_service_worker, priority.frame_depth,
       priority.intersects_viewport, priority.boost_for_pending_views,
       priority.boost_for_loading, priority.is_spare_renderer,
-      static_cast<jint>(priority.importance), priority.has_active_clients);
-  if (result != static_cast<jint>(SpareRendererPriority::SPARE_NO_CHANGE)) {
+      static_cast<int32_t>(priority.importance), priority.has_active_clients);
+  if (result != static_cast<int32_t>(SpareRendererPriority::SPARE_NO_CHANGE)) {
     client_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ChildProcessLauncherHelper::
                            OnSpareRendererPriorityGraduatedOnClientThread,
                        this,
-                       result == static_cast<jint>(
+                       result == static_cast<int32_t>(
                                      SpareRendererPriority::SPARE_GRADUATED)));
   }
   base::UmaHistogramMicrosecondsTimes(
@@ -340,7 +340,8 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
 // Called from ChildProcessLauncher.java when the ChildProcess was started.
 // |handle| is the processID of the child process as originated in Java, 0 if
 // the ChildProcess could not be created.
-void ChildProcessLauncherHelper::OnChildProcessStarted(JNIEnv*, jint handle) {
+void ChildProcessLauncherHelper::OnChildProcessStarted(JNIEnv*,
+                                                       int32_t handle) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   scoped_refptr<ChildProcessLauncherHelper> ref(this);
   Release();  // Balances with LaunchProcessOnLauncherThread.

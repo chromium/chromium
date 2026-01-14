@@ -364,8 +364,8 @@ bool WebContentsAndroid::IsFocusedElementEditable(JNIEnv* env) {
 
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetRenderFrameHostFromId(
     JNIEnv* env,
-    jint render_process_id,
-    jint render_frame_id) const {
+    int32_t render_process_id,
+    int32_t render_frame_id) const {
   RenderFrameHost* rfh =
       RenderFrameHost::FromID(render_process_id, render_frame_id);
   if (!rfh)
@@ -397,8 +397,8 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetVisibleURL(
   return url::GURLAndroid::FromNativeGURL(env, web_contents_->GetVisibleURL());
 }
 
-jint WebContentsAndroid::GetVirtualKeyboardMode(JNIEnv* env) const {
-  return static_cast<jint>(web_contents_->GetVirtualKeyboardMode());
+int32_t WebContentsAndroid::GetVirtualKeyboardMode(JNIEnv* env) const {
+  return static_cast<int32_t>(web_contents_->GetVirtualKeyboardMode());
 }
 
 bool WebContentsAndroid::IsLoading(JNIEnv* env) const {
@@ -460,12 +460,12 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetRenderWidgetHostView(
   return rwhva->GetJavaObject();
 }
 
-jint WebContentsAndroid::GetVisibility(JNIEnv* env) {
-  return static_cast<jint>(web_contents_->GetVisibility());
+int32_t WebContentsAndroid::GetVisibility(JNIEnv* env) {
+  return static_cast<int32_t>(web_contents_->GetVisibility());
 }
 
 void WebContentsAndroid::UpdateWebContentsVisibility(JNIEnv* env,
-                                                     jint visibility) {
+                                                     int32_t visibility) {
   web_contents_->UpdateWebContentsVisibility(
       static_cast<Visibility>(visibility));
 }
@@ -477,7 +477,7 @@ RenderWidgetHostViewAndroid*
   return static_cast<RenderWidgetHostViewAndroid*>(rwhv);
 }
 
-jint WebContentsAndroid::GetBackgroundColor(JNIEnv* env) {
+int32_t WebContentsAndroid::GetBackgroundColor(JNIEnv* env) {
   return web_contents_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT);
 }
 
@@ -496,8 +496,8 @@ void WebContentsAndroid::ResumeLoadingCreatedWebContents(JNIEnv* env) {
 }
 
 void WebContentsAndroid::SetPrimaryPageImportance(JNIEnv* env,
-                                                  jint main_frame_importance,
-                                                  jint subframe_importance) {
+                                                  int32_t main_frame_importance,
+                                                  int32_t subframe_importance) {
   web_contents_->SetPrimaryPageImportance(
       static_cast<ChildProcessImportance>(main_frame_importance),
       static_cast<ChildProcessImportance>(subframe_importance));
@@ -556,12 +556,12 @@ void WebContentsAndroid::SelectAroundCaretAck(
 }
 
 void WebContentsAndroid::SelectAroundCaret(JNIEnv* env,
-                                           jint granularity,
+                                           int32_t granularity,
                                            bool should_show_handle,
                                            bool should_show_context_menu,
-                                           jint startOffset,
-                                           jint endOffset,
-                                           jint surroundingTextLength) {
+                                           int32_t startOffset,
+                                           int32_t endOffset,
+                                           int32_t surroundingTextLength) {
   auto* input_handler = web_contents_->GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
     return;
@@ -575,8 +575,8 @@ void WebContentsAndroid::SelectAroundCaret(JNIEnv* env,
 
 void WebContentsAndroid::AdjustSelectionByCharacterOffset(
     JNIEnv* env,
-    jint start_adjust,
-    jint end_adjust,
+    int32_t start_adjust,
+    int32_t end_adjust,
     bool show_selection_menu) {
   web_contents_->AdjustSelectionByCharacterOffset(start_adjust, end_adjust,
                                                   show_selection_menu);
@@ -650,7 +650,7 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
 
 void WebContentsAndroid::AddMessageToDevToolsConsole(
     JNIEnv* env,
-    jint level,
+    int32_t level,
     const JavaRef<jstring>& message) {
   DCHECK_GE(level, 0);
   DCHECK_LE(level, static_cast<int>(blink::mojom::ConsoleMessageLevel::kError));
@@ -684,7 +684,7 @@ bool WebContentsAndroid::HasViewTransitionOptIn(JNIEnv* env) {
              blink::mojom::ViewTransitionSameOriginOptIn::kEnabled;
 }
 
-jint WebContentsAndroid::GetThemeColor(JNIEnv* env) {
+int32_t WebContentsAndroid::GetThemeColor(JNIEnv* env) {
   return web_contents_->GetThemeColor().value_or(SK_ColorTRANSPARENT);
 }
 
@@ -695,10 +695,10 @@ jfloat WebContentsAndroid::GetLoadProgress(JNIEnv* env) {
 void WebContentsAndroid::RequestSmartClipExtract(
     JNIEnv* env,
     const JavaRef<jobject>& callback,
-    jint x,
-    jint y,
-    jint width,
-    jint height) {
+    int32_t x,
+    int32_t y,
+    int32_t width,
+    int32_t height) {
   // Secure the Java callback in a scoped object and give ownership of it to the
   // base::OnceCallback below.
   ScopedJavaGlobalRef<jobject> j_callback;
@@ -797,7 +797,7 @@ int WebContentsAndroid::DownloadImage(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jurl,
     bool is_fav_icon,
-    jint max_bitmap_size,
+    int32_t max_bitmap_size,
     bool bypass_cache,
     const base::android::JavaRef<jobject>& jcallback) {
   const gfx::Size preferred_size;
@@ -831,7 +831,7 @@ WebContentsAndroid::GetFullscreenVideoSize(JNIEnv* env) {
   return Java_WebContentsImpl_createSize(env, size.width(), size.height());
 }
 
-void WebContentsAndroid::SetSize(JNIEnv* env, jint width, jint height) {
+void WebContentsAndroid::SetSize(JNIEnv* env, int32_t width, int32_t height) {
   web_contents_->GetNativeView()->OnSizeChanged(width, height);
 }
 
@@ -880,7 +880,7 @@ void WebContentsAndroid::OnFinishDownloadImage(
 }
 
 void WebContentsAndroid::SendOrientationChangeEvent(JNIEnv* env,
-                                                    jint orientation) {
+                                                    int32_t orientation) {
   base::RecordAction(base::UserMetricsAction("ScreenOrientationChange"));
   WebContentsViewAndroid* view =
       static_cast<WebContentsViewAndroid*>(web_contents_->GetView());
@@ -944,13 +944,13 @@ void WebContentsAndroid::OnContentForNavigationEntryShown(JNIEnv* env) {
   }
 }
 
-jint WebContentsAndroid::GetCurrentBackForwardTransitionStage(JNIEnv* env) {
+int32_t WebContentsAndroid::GetCurrentBackForwardTransitionStage(JNIEnv* env) {
   auto stage = BackForwardTransitionAnimationManager::AnimationStage::kNone;
   if (auto* animation =
           web_contents_->GetBackForwardTransitionAnimationManager()) {
     stage = animation->GetCurrentAnimationStage();
   }
-  return static_cast<jint>(stage);
+  return static_cast<int32_t>(stage);
 }
 
 void WebContentsAndroid::SetLongPressLinkSelectText(JNIEnv* env, bool enabled) {
@@ -970,8 +970,9 @@ void WebContentsAndroid::SetSupportsForwardTransitionAnimation(JNIEnv* env,
   web_contents_->SetSupportsForwardTransitionAnimation(supports);
 }
 
-jint WebContentsAndroid::GetOriginalWindowOpenDisposition(JNIEnv* env) {
-  return static_cast<jint>(web_contents_->GetOriginalWindowOpenDisposition());
+int32_t WebContentsAndroid::GetOriginalWindowOpenDisposition(JNIEnv* env) {
+  return static_cast<int32_t>(
+      web_contents_->GetOriginalWindowOpenDisposition());
 }
 
 bool WebContentsAndroid::HasOpener(JNIEnv* env) {
@@ -979,10 +980,10 @@ bool WebContentsAndroid::HasOpener(JNIEnv* env) {
 }
 
 void WebContentsAndroid::UpdateWindowControlsOverlay(JNIEnv* env,
-                                                     jint left,
-                                                     jint top,
-                                                     jint right,
-                                                     jint bottom) {
+                                                     int32_t left,
+                                                     int32_t top,
+                                                     int32_t right,
+                                                     int32_t bottom) {
   float dip_scale = web_contents_->GetNativeView()->GetDipScale();
   left = std::round(left / dip_scale);
   top = std::round(top / dip_scale);

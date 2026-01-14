@@ -415,7 +415,7 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 
 static jlong JNI_WindowAndroid_Init(JNIEnv* env,
                                     const JavaRef<jobject>& obj,
-                                    jint sdk_display_id,
+                                    int32_t sdk_display_id,
                                     jfloat scroll_factor,
                                     bool window_is_wide_color_gamut) {
   WindowAndroid* window = new WindowAndroid(

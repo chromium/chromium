@@ -144,7 +144,7 @@ static void JNI_ViewConfigurationHelper_UpdateSharedViewConfiguration(
     jfloat touch_slop,
     jfloat double_tap_slop,
     jfloat min_scaling_span,
-    jint text_cursor_blink_interval) {
+    int32_t text_cursor_blink_interval) {
   GetViewConfigurationData().SynchronizedUpdate(
       maximum_fling_velocity, minimum_fling_velocity, touch_slop,
       double_tap_slop, min_scaling_span, text_cursor_blink_interval);

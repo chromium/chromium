@@ -137,7 +137,7 @@ void WebContentsObserverProxy::DidFailLoad(RenderFrameHost* render_frame_host,
   Java_WebContentsObserverProxy_didFailLoad(
       env, java_observer_, render_frame_host->IsInPrimaryMainFrame(),
       error_code, url::GURLAndroid::FromNativeGURL(env, validated_url),
-      static_cast<jint>(render_frame_host->GetLifecycleState()));
+      static_cast<int32_t>(render_frame_host->GetLifecycleState()));
 }
 
 void WebContentsObserverProxy::DidChangeVisibleSecurityState() {
@@ -194,7 +194,7 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
         render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
         url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
-        static_cast<jint>(render_frame_host->GetLifecycleState()));
+        static_cast<int32_t>(render_frame_host->GetLifecycleState()));
   }
 }
 
@@ -206,7 +206,7 @@ void WebContentsObserverProxy::DOMContentLoaded(
         render_frame_host->GetPage().GetJavaPage(),
         render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
-        static_cast<jint>(render_frame_host->GetLifecycleState()));
+        static_cast<int32_t>(render_frame_host->GetLifecycleState()));
   }
 }
 
@@ -294,7 +294,7 @@ void WebContentsObserverProxy::OnVisibilityChanged(
     content::Visibility visibility) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_onVisibilityChanged(
-      env, java_observer_, static_cast<jint>(visibility));
+      env, java_observer_, static_cast<int32_t>(visibility));
 }
 
 void WebContentsObserverProxy::TitleWasSet(NavigationEntry* entry) {

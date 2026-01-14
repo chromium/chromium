@@ -16,7 +16,7 @@ namespace content {
 static void JNI_ContentWebFeatureUsageUtils_LogWebFeatureForCurrentPage(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jweb_contents,
-    jint web_feature) {
+    int32_t web_feature) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(

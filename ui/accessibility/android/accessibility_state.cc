@@ -36,7 +36,7 @@ static void JNI_AccessibilityState_OnContrastLevelChanged(
 
 static void JNI_AccessibilityState_OnTextCursorBlinkIntervalChanged(
     JNIEnv* env,
-    jint newIntervalMs) {
+    int32_t newIntervalMs) {
   AccessibilityState::Get()->NotifyTextCursorBlinkIntervalObservers(
       base::Milliseconds(newIntervalMs));
 }

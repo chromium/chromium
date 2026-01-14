@@ -402,10 +402,10 @@ void ViewAndroid::RequestFocus() {
 
 bool ViewAndroid::StartDragAndDrop(const JavaRef<jobject>& jshadow_image,
                                    const JavaRef<jobject>& jdrop_data,
-                                   jint cursor_offset_x,
-                                   jint cursor_offset_y,
-                                   jint drag_obj_rect_width,
-                                   jint drag_obj_rect_height) {
+                                   int32_t cursor_offset_x,
+                                   int32_t cursor_offset_y,
+                                   int32_t drag_obj_rect_width,
+                                   int32_t drag_obj_rect_height) {
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())
     return false;

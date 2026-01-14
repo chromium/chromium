@@ -47,8 +47,8 @@ class ContactsProviderAndroid : public ContactsProvider {
   // Signals the end of adding contacts to the list. The contact list is
   // returned to the web page, the other params are logged via UKM.
   void EndContactsList(JNIEnv* env,
-                       jint percentage_shared,
-                       jint properties_requested);
+                       int32_t percentage_shared,
+                       int32_t properties_requested);
 
   // Signals the end (due to a permission error).
   void EndWithPermissionDenied(JNIEnv* env);

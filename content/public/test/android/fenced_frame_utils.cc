@@ -17,8 +17,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-static jint JNI_FencedFrameUtils_GetCount(JNIEnv* env,
-                                          const JavaRef<jobject>& jrfh) {
+static int32_t JNI_FencedFrameUtils_GetCount(JNIEnv* env,
+                                             const JavaRef<jobject>& jrfh) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       content::RenderFrameHost::FromJavaRenderFrameHost(jrfh));
   DCHECK(rfh);

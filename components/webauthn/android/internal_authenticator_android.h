@@ -64,11 +64,11 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
 
   void InvokeMakeCredentialResponse(
       JNIEnv* env,
-      jint status,
+      int32_t status,
       const base::android::JavaRef<jobject>& byte_buffer);
   void InvokeGetAssertionResponse(
       JNIEnv* env,
-      jint status,
+      int32_t status,
       const base::android::JavaRef<jobject>& byte_buffer);
   void InvokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
       JNIEnv* env,

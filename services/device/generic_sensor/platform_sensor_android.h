@@ -54,7 +54,7 @@ class PlatformSensorAndroid : public PlatformSensor {
   // (reading_index + 0.1).
   static void SimulateSensorEventFromJavaForTesting(
       base::android::ScopedJavaGlobalRef<jobject> j_object_,
-      jint reading_values_length);
+      int32_t reading_values_length);
 
  protected:
   ~PlatformSensorAndroid() override;

@@ -51,7 +51,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   bool IsEngineInitialized(JNIEnv* env);
   void SetSetupInProgress(JNIEnv* env, bool in_progress);
   bool IsInitialSyncFeatureSetupComplete(JNIEnv* env);
-  void SetInitialSyncFeatureSetupComplete(JNIEnv* env, jint source);
+  void SetInitialSyncFeatureSetupComplete(JNIEnv* env, int32_t source);
   base::android::ScopedJavaLocalRef<jintArray> GetActiveDataTypes(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jintArray> GetSelectedTypes(JNIEnv* env);
   void GetTypesWithUnsyncedData(
@@ -64,13 +64,13 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   void TriggerLocalDataMigration(
       JNIEnv* env,
       const base::android::JavaRef<jintArray>& types);
-  bool IsTypeManagedByPolicy(JNIEnv* env, jint type);
-  bool IsTypeManagedByCustodian(JNIEnv* env, jint type);
+  bool IsTypeManagedByPolicy(JNIEnv* env, int32_t type);
+  bool IsTypeManagedByCustodian(JNIEnv* env, int32_t type);
   void SetSelectedTypes(
       JNIEnv* env,
       bool sync_everything,
       const base::android::JavaRef<jintArray>& user_selectable_type_selection);
-  void SetSelectedType(JNIEnv* env, jint type, bool is_type_on);
+  void SetSelectedType(JNIEnv* env, int32_t type, bool is_type_on);
   bool IsCustomPassphraseAllowed(JNIEnv* env);
   bool IsEncryptEverythingEnabled(JNIEnv* env);
   bool IsPassphraseRequiredForPreferredDataTypes(JNIEnv* env);
@@ -78,9 +78,9 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes(JNIEnv* env);
   bool IsTrustedVaultRecoverabilityDegraded(JNIEnv* env);
   bool IsUsingExplicitPassphrase(JNIEnv* env);
-  jint GetPassphraseType(JNIEnv* env);
-  jint GetTransportState(JNIEnv* env);
-  jint GetUserActionableError(JNIEnv* env);
+  int32_t GetPassphraseType(JNIEnv* env);
+  int32_t GetTransportState(JNIEnv* env);
+  int32_t GetUserActionableError(JNIEnv* env);
   void SetEncryptionPassphrase(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& passphrase);

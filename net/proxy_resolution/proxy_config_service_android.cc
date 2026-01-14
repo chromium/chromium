@@ -432,7 +432,7 @@ class ProxyConfigServiceAndroid::Delegate
     void ProxySettingsChangedTo(
         JNIEnv* env,
         const JavaRef<jstring>& jhost,
-        jint jport,
+        int32_t jport,
         const JavaRef<jstring>& jpac_url,
         const JavaRef<jobjectArray>& jexclusion_list) override {
       std::string host = ConvertJavaStringToUTF8(env, jhost);

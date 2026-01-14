@@ -29,8 +29,8 @@ class POLICY_EXPORT PolicyMapAndroid {
   bool HasValue(JNIEnv* env,
                 const base::android::JavaRef<jstring>& policy) const;
 
-  jint GetIntValue(JNIEnv* env,
-                   const base::android::JavaRef<jstring>& policy) const;
+  int32_t GetIntValue(JNIEnv* env,
+                      const base::android::JavaRef<jstring>& policy) const;
 
   bool GetBooleanValue(JNIEnv* env,
                        const base::android::JavaRef<jstring>& policy) const;

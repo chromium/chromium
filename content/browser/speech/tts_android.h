@@ -34,9 +34,9 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
 
   // Methods called from Java via JNI.
   void VoicesChanged(JNIEnv* env);
-  void OnEndEvent(JNIEnv* env, jint utterance_id);
-  void OnErrorEvent(JNIEnv* env, jint utterance_id);
-  void OnStartEvent(JNIEnv* env, jint utterance_id);
+  void OnEndEvent(JNIEnv* env, int32_t utterance_id);
+  void OnErrorEvent(JNIEnv* env, int32_t utterance_id);
+  void OnStartEvent(JNIEnv* env, int32_t utterance_id);
 
   // Static functions.
   static TtsPlatformImplAndroid* GetInstance();

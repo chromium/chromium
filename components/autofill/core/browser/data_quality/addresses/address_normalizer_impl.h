@@ -57,7 +57,7 @@ class AddressNormalizerImpl : public AddressNormalizer {
   void StartAddressNormalization(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jprofile,
-      jint jtimeout_seconds,
+      int32_t jtimeout_seconds,
       const base::android::JavaRef<jobject>& jdelegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -172,7 +172,7 @@ content::RenderFrameHost* InternalAuthenticatorAndroid::GetRenderFrameHost() {
 
 void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
     JNIEnv* env,
-    jint status,
+    int32_t status,
     const base::android::JavaRef<jobject>& byte_buffer) {
   blink::mojom::MakeCredentialAuthenticatorResponsePtr response;
 
@@ -194,7 +194,7 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
 
 void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
     JNIEnv* env,
-    jint status,
+    int32_t status,
     const base::android::JavaRef<jobject>& byte_buffer) {
   blink::mojom::GetAssertionAuthenticatorResponsePtr response;
 

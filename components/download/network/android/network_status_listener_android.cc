@@ -18,16 +18,15 @@ NetworkStatusListenerAndroid::~NetworkStatusListenerAndroid() = default;
 
 void NetworkStatusListenerAndroid::OnNetworkStatusReady(
     JNIEnv* env,
-    jint connectionType) {
+    int32_t connectionType) {
   DCHECK(observer_);
   using ConnectionType = network::mojom::ConnectionType;
   ConnectionType connection_type = static_cast<ConnectionType>(connectionType);
   observer_->OnNetworkStatusReady(connection_type);
 }
 
-void NetworkStatusListenerAndroid::NotifyNetworkChange(
-    JNIEnv* env,
-    jint connectionType) {
+void NetworkStatusListenerAndroid::NotifyNetworkChange(JNIEnv* env,
+                                                       int32_t connectionType) {
   DCHECK(observer_);
   using ConnectionType = network::mojom::ConnectionType;
   ConnectionType connection_type = static_cast<ConnectionType>(connectionType);

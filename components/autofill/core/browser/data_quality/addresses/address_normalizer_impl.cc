@@ -284,7 +284,7 @@ void AddressNormalizerImpl::LoadRulesForAddressNormalization(
 void AddressNormalizerImpl::StartAddressNormalization(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jprofile,
-    jint jtimeout_seconds,
+    int32_t jtimeout_seconds,
     const base::android::JavaRef<jobject>& jdelegate) {
   // TODO(crbug.com/40282123): Check if existing profile needs to be passed.
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(

@@ -99,26 +99,26 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   void OnHardwareBufferAvailableOnMainThread(
       base::android::ScopedHardwareBufferHandle ahb_handle,
-      jint rotation,
+      int32_t rotation,
       jlong timestamp);
 
   // Implement org.chromium.media.VideoCapture.Natives.OnFrameAvailable.
   void OnFrameAvailable(JNIEnv* env,
                         const base::android::JavaRef<jbyteArray>& data,
-                        jint length,
-                        jint rotation);
+                        int32_t length,
+                        int32_t rotation);
 
   // Implement org.chromium.media.VideoCapture.Natives.OnI420FrameAvailable.
   void OnI420FrameAvailable(JNIEnv* env,
                             const base::android::JavaRef<jobject>& y_buffer,
-                            jint y_stride,
+                            int32_t y_stride,
                             const base::android::JavaRef<jobject>& u_buffer,
                             const base::android::JavaRef<jobject>& v_buffer,
-                            jint uv_row_stride,
-                            jint uv_pixel_stride,
-                            jint width,
-                            jint height,
-                            jint rotation,
+                            int32_t uv_row_stride,
+                            int32_t uv_pixel_stride,
+                            int32_t width,
+                            int32_t height,
+                            int32_t rotation,
                             jlong timestamp);
 
   // Implement
@@ -126,7 +126,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   void OnHardwareBufferAvailable(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& hardwareBuffer,
-      jint rotation,
+      int32_t rotation,
       jlong timestamp);
 
   // Implement org.chromium.media.VideoCapture.Natives.OnError.

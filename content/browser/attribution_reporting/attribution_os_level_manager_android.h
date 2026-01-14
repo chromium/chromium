@@ -50,8 +50,8 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
                  base::OnceClosure done) override;
 
   // These are exposed to JNI and therefore have to be public.
-  void OnDataDeletionCompleted(JNIEnv* env, jint request_id);
-  void OnRegistrationCompleted(JNIEnv* env, jint request_id, bool success);
+  void OnDataDeletionCompleted(JNIEnv* env, int32_t request_id);
+  void OnRegistrationCompleted(JNIEnv* env, int32_t request_id, bool success);
 
  private:
   base::flat_map<int, base::OnceClosure> pending_data_deletion_callbacks_

@@ -122,7 +122,7 @@ static void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
 static void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
     JNIEnv* env,
     jlong model_downloader_android,
-    jint j_reason) {
+    int32_t j_reason) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
       ->OnUnavailable(
           static_cast<ModelDownloaderAndroid::DownloadFailureReason>(j_reason));

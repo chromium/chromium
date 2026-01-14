@@ -221,8 +221,8 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
 static void JNI_PermissionUtil_ResolvePermissionRequest(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
-    jint content_settings_type,
-    jint content_setting) {
+    int32_t content_settings_type,
+    int32_t content_setting) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   permissions::PermissionRequestManager* permission_request_manager =

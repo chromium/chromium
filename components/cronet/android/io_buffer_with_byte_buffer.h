@@ -24,14 +24,14 @@ class IOBufferWithByteBuffer : public net::WrappedIOBuffer {
   // networking operations.
   IOBufferWithByteBuffer(JNIEnv* env,
                          const base::android::JavaRef<jobject>& jbyte_buffer,
-                         jint position,
-                         jint limit);
+                         int32_t position,
+                         int32_t limit);
 
   IOBufferWithByteBuffer(const IOBufferWithByteBuffer&) = delete;
   IOBufferWithByteBuffer& operator=(const IOBufferWithByteBuffer&) = delete;
 
-  jint initial_position() const { return initial_position_; }
-  jint initial_limit() const { return initial_limit_; }
+  int32_t initial_position() const { return initial_position_; }
+  int32_t initial_limit() const { return initial_limit_; }
 
   const base::android::JavaRef<jobject>& byte_buffer() const {
     return byte_buffer_;
@@ -42,8 +42,8 @@ class IOBufferWithByteBuffer : public net::WrappedIOBuffer {
 
   base::android::ScopedJavaGlobalRef<jobject> byte_buffer_;
 
-  const jint initial_position_;
-  const jint initial_limit_;
+  const int32_t initial_position_;
+  const int32_t initial_limit_;
 };
 
 // Represents a Java direct ByteBuffer backed by a net::IOBuffer. Keeps both the

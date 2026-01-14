@@ -101,8 +101,8 @@ static void JNI_MockUrlRequestJobFactory_RemoveUrlInterceptorJobFactory(
 
 static ScopedJavaLocalRef<jstring>
 JNI_MockUrlRequestJobFactory_GetMockUrlWithFailure(JNIEnv* jenv,
-                                                   jint jphase,
-                                                   jint jnet_error) {
+                                                   int32_t jphase,
+                                                   int32_t jnet_error) {
   GURL url(net::URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       static_cast<net::URLRequestFailedJob::FailurePhase>(jphase),
       static_cast<int>(jnet_error)));
@@ -112,7 +112,7 @@ JNI_MockUrlRequestJobFactory_GetMockUrlWithFailure(JNIEnv* jenv,
 static ScopedJavaLocalRef<jstring>
 JNI_MockUrlRequestJobFactory_GetMockUrlForData(JNIEnv* jenv,
                                                const JavaRef<jstring>& jdata,
-                                               jint jdata_repeat_count) {
+                                               int32_t jdata_repeat_count) {
   std::string data(base::android::ConvertJavaStringToUTF8(jenv, jdata));
   GURL url(net::URLRequestMockDataJob::GetMockHttpUrl(data,
                                                       jdata_repeat_count));

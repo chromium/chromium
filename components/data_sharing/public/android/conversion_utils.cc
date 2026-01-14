@@ -121,8 +121,9 @@ ScopedJavaLocalRef<jobject> CreateDataSharingNetworkResult(
 namespace data_sharing {
 
 // static
-static jint JNI_DataSharingConversionUtils_GetServerEnvironment(JNIEnv* env) {
-  return static_cast<jint>(data_sharing::features::GetServerEnvironment());
+static int32_t JNI_DataSharingConversionUtils_GetServerEnvironment(
+    JNIEnv* env) {
+  return static_cast<int32_t>(data_sharing::features::GetServerEnvironment());
 }
 
 }  // namespace data_sharing

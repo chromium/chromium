@@ -737,15 +737,15 @@ static void JNI_AppBannerManager_IgnoreChromeChannelForTesting(JNIEnv*) {
 // static
 static void JNI_AppBannerManager_SetDaysAfterDismissAndIgnoreToTrigger(
     JNIEnv* env,
-    jint dismiss_days,
-    jint ignore_days) {
+    int32_t dismiss_days,
+    int32_t ignore_days) {
   AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(dismiss_days,
                                                                  ignore_days);
 }
 
 // static
 static void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env,
-                                                        jint days) {
+                                                        int32_t days) {
   AppBannerManager::SetTimeDeltaForTesting(days);
 }
 

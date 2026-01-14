@@ -31,7 +31,7 @@ class FindInPageBridge {
 
   base::android::ScopedJavaLocalRef<jstring> GetPreviousFindText(JNIEnv* env);
 
-  void RequestFindMatchRects(JNIEnv* env, jint current_version);
+  void RequestFindMatchRects(JNIEnv* env, int32_t current_version);
 
   void ActivateNearestFindResult(JNIEnv* env, jfloat x, jfloat y);
 

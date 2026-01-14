@@ -86,7 +86,7 @@ void OriginVerifier::OnRelationshipCheckComplete(
   auto j_origin = base::android::ConvertUTF8ToJavaString(env, origin);
 
   Java_OriginVerifier_onOriginVerificationResult(env, jobject_, j_origin,
-                                                 static_cast<jint>(result));
+                                                 static_cast<int32_t>(result));
 }
 
 // static

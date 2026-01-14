@@ -57,20 +57,20 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
                                   const JavaRef<jobject>& motion_event,
                                   jlong oldest_event_time_ns,
                                   jlong latest_event_time_ns,
-                                  jint android_action,
+                                  int32_t android_action,
                                   jfloat touch_major_0,
                                   jfloat touch_major_1,
                                   jfloat touch_minor_0,
                                   jfloat touch_minor_1,
-                                  jint android_gesture_classification,
+                                  int32_t android_gesture_classification,
                                   bool for_touch_handle,
                                   bool is_latest_event_resampled) {
   std::unique_ptr<MotionEventAndroidSource> source =
       MotionEventAndroidSourceJava::Create(motion_event,
                                            is_latest_event_resampled);
-  jint pointer_count =
+  int32_t pointer_count =
       JNI_MotionEvent::Java_MotionEvent_getPointerCount(env, motion_event);
-  jint history_size =
+  int32_t history_size =
       JNI_MotionEvent::Java_MotionEvent_getHistorySize(env, motion_event);
   TRACE_EVENT(
       "input", "EventForwarder::OnTouchEvent", [&](perfetto::EventContext ctx) {
@@ -172,9 +172,9 @@ void EventForwarder::OnMouseEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& motion_event,
     jlong time_ns,
-    jint android_action,
-    jint android_action_button,
-    jint android_tool_type) {
+    int32_t android_action,
+    int32_t android_action_button,
+    int32_t android_tool_type) {
   std::unique_ptr<MotionEventAndroidSource> source =
       MotionEventAndroidSourceJava::Create(
           motion_event, /*is_latest_event_time_resampled=*/false);
@@ -214,7 +214,7 @@ void EventForwarder::OnMouseEvent(
 }
 
 void EventForwarder::OnDragEvent(JNIEnv* env,
-                                 jint action,
+                                 int32_t action,
                                  jfloat x,
                                  jfloat y,
                                  jfloat screen_x,
@@ -237,7 +237,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
 }
 
 bool EventForwarder::OnGestureEvent(JNIEnv* env,
-                                    jint type,
+                                    int32_t type,
                                     jlong time_ms,
                                     jfloat scale) {
   float dip_scale = view_->GetDipScale();
@@ -355,8 +355,8 @@ void EventForwarder::ScrollTo(JNIEnv* env,
 
 void EventForwarder::DoubleTap(JNIEnv* env,
                                jlong time_ms,
-                               jint x,
-                               jint y) {
+                               int32_t x,
+                               int32_t y) {
   float dip_scale = view_->GetDipScale();
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_DOUBLE_TAP, gfx::PointF(x / dip_scale, y / dip_scale),

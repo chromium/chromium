@@ -53,9 +53,9 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
       bool jdisable_cache,
       bool jdisable_connection_migration,
       bool jtraffic_stats_tag_set,
-      jint jtraffic_stats_tag,
+      int32_t jtraffic_stats_tag,
       bool jtraffic_stats_uid_set,
-      jint jtraffic_stats_uid,
+      int32_t jtraffic_stats_uid,
       net::Idempotency idempotency,
       scoped_refptr<net::SharedDictionary> shared_dictionary,
       jlong network);
@@ -91,8 +91,8 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   // Reads more data.
   bool ReadData(JNIEnv* env,
                 const base::android::JavaRef<jobject>& jbyte_buffer,
-                jint jposition,
-                jint jcapacity);
+                int32_t jposition,
+                int32_t jcapacity);
 
   // Releases all resources for the request and deletes the object itself.
   // |jsend_on_canceled| indicates if Java onCanceled callback should be

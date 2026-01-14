@@ -184,7 +184,7 @@ static void StartClientCertificateRequest(
   }
 
   // Build the |host_name| and |port| JNI parameters, as a String and
-  // a jint.
+  // a int32_t.
   ScopedJavaLocalRef<jstring> host_name_ref =
       base::android::ConvertUTF8ToJavaString(
           env, request->cert_request_info()->host_and_port.host());

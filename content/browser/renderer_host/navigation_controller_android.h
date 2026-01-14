@@ -39,11 +39,10 @@ class CONTENT_EXPORT NavigationControllerAndroid {
 
   bool CanGoBack(JNIEnv* env);
   bool CanGoForward(JNIEnv* env);
-  bool CanGoToOffset(JNIEnv* env, jint offset);
+  bool CanGoToOffset(JNIEnv* env, int32_t offset);
   void GoBack(JNIEnv* env);
   void GoForward(JNIEnv* env);
-  void GoToOffset(JNIEnv* env,
-                  jint offset);
+  void GoToOffset(JNIEnv* env, int32_t offset);
   bool IsInitialNavigation(JNIEnv* env);
   void LoadIfNecessary(JNIEnv* env);
   void ContinuePendingReload(JNIEnv* env);
@@ -52,16 +51,15 @@ class CONTENT_EXPORT NavigationControllerAndroid {
   bool NeedsReload(JNIEnv* env);
   void SetNeedsReload(JNIEnv* env);
   void CancelPendingReload(JNIEnv* env);
-  void GoToNavigationIndex(JNIEnv* env,
-                           jint index);
+  void GoToNavigationIndex(JNIEnv* env, int32_t index);
   base::android::ScopedJavaLocalRef<jobject> LoadUrl(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& url,
-      jint load_url_type,
-      jint transition_type,
+      int32_t load_url_type,
+      int32_t transition_type,
       const base::android::JavaRef<jstring>& j_referrer_url,
-      jint referrer_policy,
-      jint ua_override_option,
+      int32_t referrer_policy,
+      int32_t ua_override_option,
       const base::android::JavaRef<jstring>& extra_headers,
       const base::android::JavaRef<jobject>& j_post_data,
       const base::android::JavaRef<jstring>& base_url_for_data_url,
@@ -93,18 +91,18 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& history,
       bool is_forward,
-      jint max_entries);
+      int32_t max_entries);
   void ClearHistory(JNIEnv* env);
   int GetLastCommittedEntryIndex(JNIEnv* env);
   bool CanViewSource(JNIEnv* env);
-  bool RemoveEntryAtIndex(JNIEnv* env, jint index);
+  bool RemoveEntryAtIndex(JNIEnv* env, int32_t index);
   void PruneForwardEntries(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetEntryExtraData(
       JNIEnv* env,
-      jint index,
+      int32_t index,
       const base::android::JavaRef<jstring>& jkey);
   void SetEntryExtraData(JNIEnv* env,
-                         jint index,
+                         int32_t index,
                          const base::android::JavaRef<jstring>& jkey,
                          const base::android::JavaRef<jstring>& jvalue);
   void CopyStateFrom(JNIEnv* env,

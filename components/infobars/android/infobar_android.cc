@@ -52,8 +52,7 @@ int InfoBarAndroid::GetInfoBarIdentifier(JNIEnv* env) {
   return delegate()->GetIdentifier();
 }
 
-void InfoBarAndroid::OnButtonClicked(JNIEnv* env,
-                                     jint action) {
+void InfoBarAndroid::OnButtonClicked(JNIEnv* env, int32_t action) {
   ProcessButton(action);
 }
 

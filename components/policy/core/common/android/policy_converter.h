@@ -50,7 +50,7 @@ class POLICY_EXPORT PolicyConverter {
                         bool value);
   void SetPolicyInteger(JNIEnv* env,
                         const base::android::JavaRef<jstring>& policyKey,
-                        jint value);
+                        int32_t value);
   void SetPolicyString(JNIEnv* env,
                        const base::android::JavaRef<jstring>& policyKey,
                        const base::android::JavaRef<jstring>& value);

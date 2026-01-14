@@ -12,7 +12,7 @@
 
 namespace about_ui {
 
-static void JNI_CreditUtils_WriteCreditsHtml(JNIEnv* env, jint fd) {
+static void JNI_CreditUtils_WriteCreditsHtml(JNIEnv* env, int32_t fd) {
   base::File out_file(fd);
   out_file.WriteAtCurrentPos(base::as_byte_span(GetCredits(false)));
 }

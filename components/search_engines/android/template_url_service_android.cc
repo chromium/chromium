@@ -146,7 +146,7 @@ void TemplateUrlServiceAndroid::Load(JNIEnv* env) {
 void TemplateUrlServiceAndroid::SetUserSelectedDefaultSearchProvider(
     JNIEnv* env,
     const JavaRef<jstring>& jkeyword,
-    jint choice_made_location) {
+    int32_t choice_made_location) {
   std::u16string keyword(
       base::android::ConvertJavaStringToUTF16(env, jkeyword));
   TemplateURL* template_url =
@@ -436,7 +436,7 @@ base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::AddSearchEngineForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jkeyword,
-    jint age_in_days) {
+    int32_t age_in_days) {
   TemplateURLData data;
   std::u16string keyword =
       base::android::ConvertJavaStringToUTF16(env, jkeyword);

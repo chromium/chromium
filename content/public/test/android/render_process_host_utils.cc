@@ -12,18 +12,19 @@
 
 namespace content {
 
-static jint JNI_RenderProcessHostUtils_GetCurrentRenderProcessCount(
+static int32_t JNI_RenderProcessHostUtils_GetCurrentRenderProcessCount(
     JNIEnv* env) {
   return RenderProcessHost::GetCurrentRenderProcessCountForTesting();
 }
-static jint JNI_RenderProcessHostUtils_GetSpareRenderProcessHostCount(
+static int32_t JNI_RenderProcessHostUtils_GetSpareRenderProcessHostCount(
     JNIEnv* env) {
   return SpareRenderProcessHostManager::Get().GetSpares().size();
 }
-static jint JNI_RenderProcessHostUtils_GetSpareRenderBindingState(JNIEnv* env) {
+static int32_t JNI_RenderProcessHostUtils_GetSpareRenderBindingState(
+    JNIEnv* env) {
   RenderProcessHost* spare =
       SpareRenderProcessHostManager::Get().GetSpares()[0];
-  return static_cast<jint>(spare->GetEffectiveChildBindingState());
+  return static_cast<int32_t>(spare->GetEffectiveChildBindingState());
 }
 static bool JNI_RenderProcessHostUtils_IsSpareRenderReady(JNIEnv* env) {
   RenderProcessHost* spare =

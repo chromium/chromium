@@ -235,11 +235,11 @@ void ResourceManagerImpl::PreloadResource(AndroidResourceType res_type,
 }
 
 void ResourceManagerImpl::OnResourceReady(JNIEnv* env,
-                                          jint res_type,
-                                          jint res_id,
+                                          int32_t res_type,
+                                          int32_t res_id,
                                           const JavaRef<jobject>& bitmap,
-                                          jint width,
-                                          jint height,
+                                          int32_t width,
+                                          int32_t height,
                                           jlong native_resource) {
   DCHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST);
   DCHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST);
@@ -260,16 +260,15 @@ void ResourceManagerImpl::OnResourceReady(JNIEnv* env,
       gfx::Size(width, height));
 }
 
-void ResourceManagerImpl::RemoveResource(
-    JNIEnv* env,
-    jint res_type,
-    jint res_id) {
+void ResourceManagerImpl::RemoveResource(JNIEnv* env,
+                                         int32_t res_type,
+                                         int32_t res_id) {
   resources_[res_type].erase(res_id);
 }
 
 void ResourceManagerImpl::AssertResourceExists(JNIEnv* env,
-                                               jint res_type,
-                                               jint res_id) {
+                                               int32_t res_type,
+                                               int32_t res_id) {
   if (resources_[res_type].find(res_id) == resources_[res_type].end()) {
     if (base::FeatureList::IsEnabled(
             features::kAndroidDumpForBadCompositedUiState)) {

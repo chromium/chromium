@@ -73,7 +73,7 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
 #if BUILDFLAG(IS_ANDROID)
   // Implementation for JNI methods.
   void DestroyNativeObject(JNIEnv* env);
-  jint GetOutcomeFromNativeObject(JNIEnv* env) const;
+  int32_t GetOutcomeFromNativeObject(JNIEnv* env) const;
 #endif
 
  private:

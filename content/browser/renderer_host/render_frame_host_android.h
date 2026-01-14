@@ -48,8 +48,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetAllRenderFrameHosts(
       JNIEnv* env) const;
 
-  bool IsFeatureEnabled(JNIEnv* env,
-                        jint feature) const;
+  bool IsFeatureEnabled(JNIEnv* env, int32_t feature) const;
 
   base::UnguessableToken GetAndroidOverlayRoutingToken(JNIEnv* env) const;
 
@@ -68,9 +67,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jstring>& interface_name,
       jlong message_pipe_handle) const;
 
-  void TerminateRendererDueToBadMessage(
-      JNIEnv* env,
-      jint reason) const;
+  void TerminateRendererDueToBadMessage(JNIEnv* env, int32_t reason) const;
 
   bool IsProcessBlocked(JNIEnv* env) const;
 
@@ -98,7 +95,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jobject>&,
       const base::android::JavaRef<jobject>& callback) const;
 
-  jint GetLifecycleState(JNIEnv* env) const;
+  int32_t GetLifecycleState(JNIEnv* env) const;
 
   void InsertVisualStateCallback(
       JNIEnv* env,
@@ -107,7 +104,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   void ExecuteJavaScriptInIsolatedWorld(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jstring,
-      jint jworldId,
+      int32_t jworldId,
       const base::android::JavaRef<jobject>& jcallback);
 
   bool HasHitTestDataForTesting(JNIEnv* env);

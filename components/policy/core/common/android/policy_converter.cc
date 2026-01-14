@@ -86,7 +86,7 @@ void PolicyConverter::SetPolicyBoolean(JNIEnv* env,
 
 void PolicyConverter::SetPolicyInteger(JNIEnv* env,
                                        const JavaRef<jstring>& policyKey,
-                                       jint value) {
+                                       int32_t value) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
                  base::Value(static_cast<int>(value)));
 }

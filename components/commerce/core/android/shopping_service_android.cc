@@ -297,9 +297,9 @@ void ShoppingServiceAndroid::ScheduleSavedProductUpdate(JNIEnv* env) {
 }
 
 void ShoppingServiceAndroid::Subscribe(JNIEnv* env,
-                                       jint j_type,
-                                       jint j_id_type,
-                                       jint j_management_type,
+                                       int32_t j_type,
+                                       int32_t j_id_type,
+                                       int32_t j_management_type,
                                        const JavaRef<jstring>& j_id,
                                        const JavaRef<jstring>& j_seen_offer_id,
                                        jlong j_seen_price,
@@ -329,9 +329,9 @@ void ShoppingServiceAndroid::Subscribe(JNIEnv* env,
 }
 
 void ShoppingServiceAndroid::Unsubscribe(JNIEnv* env,
-                                         jint j_type,
-                                         jint j_id_type,
-                                         jint j_management_type,
+                                         int32_t j_type,
+                                         int32_t j_id_type,
+                                         int32_t j_management_type,
                                          const JavaRef<jstring>& j_id,
                                          const JavaRef<jobject>& j_callback) {
   std::string id = ConvertJavaStringToUTF8(j_id);
@@ -351,9 +351,9 @@ void ShoppingServiceAndroid::Unsubscribe(JNIEnv* env,
 }
 
 void ShoppingServiceAndroid::IsSubscribed(JNIEnv* env,
-                                          jint j_type,
-                                          jint j_id_type,
-                                          jint j_management_type,
+                                          int32_t j_type,
+                                          int32_t j_id_type,
+                                          int32_t j_management_type,
                                           const JavaRef<jstring>& j_id,
                                           const JavaRef<jobject>& j_callback) {
   std::string id = ConvertJavaStringToUTF8(j_id);
@@ -374,9 +374,9 @@ void ShoppingServiceAndroid::IsSubscribed(JNIEnv* env,
 
 bool ShoppingServiceAndroid::IsSubscribedFromCache(
     JNIEnv* env,
-    jint j_type,
-    jint j_id_type,
-    jint j_management_type,
+    int32_t j_type,
+    int32_t j_id_type,
+    int32_t j_management_type,
     const JavaRef<jstring>& j_id) {
   std::string id = ConvertJavaStringToUTF8(j_id);
   CHECK(!id.empty());

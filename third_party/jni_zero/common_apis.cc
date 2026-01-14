@@ -44,13 +44,13 @@ ScopedJavaLocalRef<jobject> ArrayToMap(JNIEnv* env,
 
 ScopedJavaLocalRef<jobject> ListGet(JNIEnv* env,
                                     const JavaRef<jobject>& list,
-                                    jint idx) {
+                                    int32_t idx) {
   return JNI_List::Java_List_get(env, list, idx);
 }
 
 ScopedJavaLocalRef<jobject> ListSet(JNIEnv* env,
                                     const JavaRef<jobject>& list,
-                                    jint idx,
+                                    int32_t idx,
                                     const JavaRef<jobject>& value) {
   return JNI_List::Java_List_set(env, list, idx, value);
 }
@@ -81,7 +81,7 @@ bool CollectionContains(JNIEnv* env,
   return JNI_Collection::Java_Collection_contains(env, collection, value);
 }
 
-jint CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection) {
+int32_t CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection) {
   return JNI_Collection::Java_Collection_size(env, collection);
 }
 
@@ -114,7 +114,7 @@ ScopedJavaLocalRef<jobject> MapRemove(JNIEnv* env,
   return JNI_Map::Java_Map_remove(env, map, key);
 }
 
-jint MapSize(JNIEnv* env, const JavaRef<jobject>& map) {
+int32_t MapSize(JNIEnv* env, const JavaRef<jobject>& map) {
   return JNI_Map::Java_Map_size(env, map);
 }
 

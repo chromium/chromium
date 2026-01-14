@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h"
 
-static jint JNI_CronetUrlRequestTest_GetConnectionMigrationDisableLoadFlag(
+static int32_t JNI_CronetUrlRequestTest_GetConnectionMigrationDisableLoadFlag(
     JNIEnv* env) {
   return net::LOAD_DISABLE_CONNECTION_MIGRATION_TO_CELLULAR;
 }

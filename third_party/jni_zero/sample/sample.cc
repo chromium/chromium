@@ -14,8 +14,8 @@ namespace jni_zero::sample {
 static void JNI_Sample_DoNothing(JNIEnv* env) {}
 
 static bool JNI_Sample_TestMultipleParams(JNIEnv* env,
-                                          jint a,
-                                          jint b,
+                                          int32_t a,
+                                          int32_t b,
                                           const JavaRef<jstring>& c,
                                           const JavaRef<jobject>& d) {
   return true;

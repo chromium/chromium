@@ -50,7 +50,7 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
                          const std::u16string& device_name) override;
 
   // Report the dialog's result.
-  void OnDialogFinished(JNIEnv* env, jint event_type);
+  void OnDialogFinished(JNIEnv* env, int32_t event_type);
 
   static std::unique_ptr<BluetoothScanningPromptAndroid> CreateForTesting(
       content::RenderFrameHost* frame,

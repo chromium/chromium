@@ -47,7 +47,7 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
 
   base::android::ScopedJavaLocalRef<jobject> GetCachedSuggestions(
       JNIEnv* env,
-      jint window_id);
+      int32_t window_id);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

@@ -27,9 +27,9 @@ class JniHdrMetadata {
 
   // Java HdrMetadata implementation.
 
-  jint Primaries(JNIEnv* env);
-  jint ColorTransfer(JNIEnv* env);
-  jint Range(JNIEnv* env);
+  int32_t Primaries(JNIEnv* env);
+  int32_t ColorTransfer(JNIEnv* env);
+  int32_t Range(JNIEnv* env);
 
   jfloat PrimaryRChromaticityX(JNIEnv* env);
   jfloat PrimaryRChromaticityY(JNIEnv* env);
@@ -41,8 +41,8 @@ class JniHdrMetadata {
   jfloat WhitePointChromaticityY(JNIEnv* env);
   jfloat MaxColorVolumeLuminance(JNIEnv* env);
   jfloat MinColorVolumeLuminance(JNIEnv* env);
-  jint MaxContentLuminance(JNIEnv* env);
-  jint MaxFrameAverageLuminance(JNIEnv* env);
+  int32_t MaxContentLuminance(JNIEnv* env);
+  int32_t MaxFrameAverageLuminance(JNIEnv* env);
 
  private:
   const raw_ref<const VideoColorSpace> color_space_;

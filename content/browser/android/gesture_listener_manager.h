@@ -52,7 +52,7 @@ class CONTENT_EXPORT GestureListenerManager
     return root_scroll_offset_update_frequency_.value_or(
         cc::mojom::RootScrollOffsetUpdateFrequency::kNone);
   }
-  void SetRootScrollOffsetUpdateFrequency(JNIEnv* env, jint frequency);
+  void SetRootScrollOffsetUpdateFrequency(JNIEnv* env, int32_t frequency);
   void GestureEventAck(const blink::WebGestureEvent& event,
                        blink::mojom::InputEventResultState ack_result);
   void DidStopFlinging();

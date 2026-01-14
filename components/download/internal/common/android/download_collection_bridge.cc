@@ -187,7 +187,7 @@ base::FilePath DownloadCollectionBridge::GetDisplayName(
   return base::FilePath();
 }
 
-static jint JNI_DownloadCollectionBridge_GetExpirationDurationInDays(
+static int32_t JNI_DownloadCollectionBridge_GetExpirationDurationInDays(
     JNIEnv* env) {
   return kDefaultExpirationDurationInDays;
 }

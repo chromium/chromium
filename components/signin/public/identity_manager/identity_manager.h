@@ -534,7 +534,7 @@ class IdentityManager : public KeyedService,
 
   base::android::ScopedJavaLocalRef<jobject> GetPrimaryAccountInfo(
       JNIEnv* env,
-      jint consent_level) const;
+      int32_t consent_level) const;
 
   base::android::ScopedJavaLocalRef<jobject> GetPrimaryAccountId(
       JNIEnv* env) const;

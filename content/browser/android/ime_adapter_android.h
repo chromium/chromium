@@ -85,7 +85,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void RequestCursorUpdate(JNIEnv*, bool immediateRequest, bool monitorRequest);
   bool RequestTextInputStateUpdate(JNIEnv*);
   void HandleStylusWritingGestureAction(JNIEnv*,
-                                        const jint,
+                                        const int32_t,
                                         const base::android::JavaRef<jobject>&);
 
   void OnStylusWritingGestureActionCompleted(
@@ -127,7 +127,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void UpdateState(const ui::mojom::TextInputState& state);
   void UpdateOnTouchDown();
 
-  void AdvanceFocusForIME(JNIEnv*, jint);
+  void AdvanceFocusForIME(JNIEnv*, int32_t);
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetSupportedMimeTypes(
       JNIEnv*);

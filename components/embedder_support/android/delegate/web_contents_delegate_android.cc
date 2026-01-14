@@ -636,10 +636,10 @@ WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
     return {};
   }
   // Java colors are already in 32bit ARBG, same as `SkColor`.
-  jint favicon_background =
+  int32_t favicon_background =
       Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXFaviconBackgroundColor(
           env, obj);
-  jint page_background =
+  int32_t page_background =
       Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXPageBackgroundColor(
           env, obj);
   return {

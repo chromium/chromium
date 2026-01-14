@@ -96,9 +96,9 @@ static jlong JNI_CronetBidirectionalStream_CreateBidirectionalStream(
     jlong jurl_request_context_adapter,
     bool jsend_request_headers_automatically,
     bool jtraffic_stats_tag_set,
-    jint jtraffic_stats_tag,
+    int32_t jtraffic_stats_tag,
     bool jtraffic_stats_uid_set,
-    jint jtraffic_stats_uid,
+    int32_t jtraffic_stats_uid,
     jlong jnetwork_handle) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
@@ -146,10 +146,10 @@ void CronetBidirectionalStreamAdapter::SendRequestHeaders(JNIEnv* env) {
           base::Unretained(this)));
 }
 
-jint CronetBidirectionalStreamAdapter::Start(
+int32_t CronetBidirectionalStreamAdapter::Start(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jurl,
-    jint jpriority,
+    int32_t jpriority,
     const base::android::JavaRef<jstring>& jmethod,
     const base::android::JavaRef<jobjectArray>& jheaders,
     bool jend_of_stream) {
@@ -192,8 +192,8 @@ jint CronetBidirectionalStreamAdapter::Start(
 bool CronetBidirectionalStreamAdapter::ReadData(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbyte_buffer,
-    jint jposition,
-    jint jlimit) {
+    int32_t jposition,
+    int32_t jlimit) {
   DCHECK_LT(jposition, jlimit);
 
   scoped_refptr<IOBufferWithByteBuffer> read_buffer(
@@ -234,10 +234,10 @@ bool CronetBidirectionalStreamAdapter::WritevData(
     void* data = env->GetDirectBufferAddress(jbuffer.obj());
     if (!data)
       return JNI_FALSE;
-    jint pos;
+    int32_t pos;
     env->GetIntArrayRegion(pending_write_data->jwrite_buffer_pos_list.obj(), i,
                            1, &pos);
-    jint limit;
+    int32_t limit;
     env->GetIntArrayRegion(pending_write_data->jwrite_buffer_limit_list.obj(),
                            i, 1, &limit);
     auto write_buffer = base::MakeRefCounted<net::WrappedIOBuffer>(
@@ -282,7 +282,7 @@ void CronetBidirectionalStreamAdapter::OnHeadersReceived(
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   // Get http status code from response headers.
-  jint http_status_code = 0;
+  int32_t http_status_code = 0;
   const auto http_status_header = response_headers.find(":status");
   if (http_status_header != response_headers.end()) {
     base::StringToInt(http_status_header->second, &http_status_code);

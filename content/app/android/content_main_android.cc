@@ -58,7 +58,7 @@ int StartContentMain(bool start_minimal_browser) {
 // start the minimal browser and one to start the remainder of the browser
 // process. The first method should always be called upon browser start, and
 // the second method can be deferred. See http://crbug.com/854209.
-static jint JNI_ContentMain_Start(JNIEnv* env, bool start_minimal_browser) {
+static int32_t JNI_ContentMain_Start(JNIEnv* env, bool start_minimal_browser) {
   return StartContentMain(start_minimal_browser);
 }
 

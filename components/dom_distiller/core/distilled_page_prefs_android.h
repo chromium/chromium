@@ -25,12 +25,11 @@ class DistilledPagePrefsAndroid {
       delete;
 
   virtual ~DistilledPagePrefsAndroid();
-  void SetFontFamily(JNIEnv* env,
-                     jint font_family);
-  jint GetFontFamily(JNIEnv* env);
-  void SetUserPrefTheme(JNIEnv* env, jint theme);
-  void SetDefaultTheme(JNIEnv* env, jint theme);
-  jint GetTheme(JNIEnv* env);
+  void SetFontFamily(JNIEnv* env, int32_t font_family);
+  int32_t GetFontFamily(JNIEnv* env);
+  void SetUserPrefTheme(JNIEnv* env, int32_t theme);
+  void SetDefaultTheme(JNIEnv* env, int32_t theme);
+  int32_t GetTheme(JNIEnv* env);
   void SetUserPrefFontScaling(JNIEnv* env, jfloat scaling);
   void SetDefaultFontScaling(JNIEnv* env, jfloat scaling);
   jfloat GetFontScaling(JNIEnv* env);

@@ -16,7 +16,7 @@ extern int main(int argc, char** argv);
 namespace testing {
 namespace android {
 
-static jint JNI_MainRunner_RunMain(
+static int32_t JNI_MainRunner_RunMain(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& command_line) {
   // Guards against process being reused.

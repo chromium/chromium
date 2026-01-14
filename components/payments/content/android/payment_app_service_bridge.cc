@@ -73,7 +73,7 @@ void OnPaymentAppCreationError(
   JNIEnv* env = AttachCurrentThread();
   Java_PaymentAppServiceCallback_onPaymentAppCreationError(
       env, jcallback, ConvertUTF8ToJavaString(env, error_message),
-      static_cast<jint>(error_reason));
+      static_cast<int32_t>(error_reason));
 }
 
 void OnDoneCreatingPaymentApps(const JavaRef<jobject>& jcallback) {

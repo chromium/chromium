@@ -151,7 +151,7 @@ void InstanceIDAndroid::DeleteIDImpl(DeleteIDCallback callback) {
 }
 
 void InstanceIDAndroid::DidGetID(JNIEnv* env,
-                                 jint request_id,
+                                 int32_t request_id,
                                  const base::android::JavaRef<jstring>& jid) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -162,7 +162,7 @@ void InstanceIDAndroid::DidGetID(JNIEnv* env,
 }
 
 void InstanceIDAndroid::DidGetCreationTime(JNIEnv* env,
-                                           jint request_id,
+                                           int32_t request_id,
                                            jlong creation_time_unix_ms) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -183,7 +183,7 @@ void InstanceIDAndroid::DidGetCreationTime(JNIEnv* env,
 
 void InstanceIDAndroid::DidGetToken(
     JNIEnv* env,
-    jint request_id,
+    int32_t request_id,
     const base::android::JavaRef<jstring>& jtoken) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -196,7 +196,7 @@ void InstanceIDAndroid::DidGetToken(
 }
 
 void InstanceIDAndroid::DidDeleteToken(JNIEnv* env,
-                                       jint request_id,
+                                       int32_t request_id,
                                        bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -208,7 +208,7 @@ void InstanceIDAndroid::DidDeleteToken(JNIEnv* env,
 }
 
 void InstanceIDAndroid::DidDeleteID(JNIEnv* env,
-                                    jint request_id,
+                                    int32_t request_id,
                                     bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

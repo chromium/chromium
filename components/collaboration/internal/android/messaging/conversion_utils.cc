@@ -56,7 +56,7 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
   ScopedJavaLocalRef<jstring> j_id =
       OptionalUuidToLowercaseJavaString(env, attribution.id);
 
-  jint j_last_known_tab_group_color = -1;
+  int32_t j_last_known_tab_group_color = -1;
   if (attribution.tab_group_metadata.has_value()) {
     j_local_tab_group_id =
         tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
@@ -66,12 +66,12 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
     j_last_known_tab_group_title = JavaStringOrNullFromOptionalString(
         env, attribution.tab_group_metadata->last_known_title);
     if (attribution.tab_group_metadata->last_known_color.has_value()) {
-      j_last_known_tab_group_color =
-          static_cast<jint>(*attribution.tab_group_metadata->last_known_color);
+      j_last_known_tab_group_color = static_cast<int32_t>(
+          *attribution.tab_group_metadata->last_known_color);
     }
   }
 
-  jint j_local_tab_id = -1;
+  int32_t j_local_tab_id = -1;
   ScopedJavaLocalRef<jstring> j_sync_tab_id = nullptr;
   ScopedJavaLocalRef<jstring> j_last_known_tab_url = nullptr;
   ScopedJavaLocalRef<jstring> j_last_known_tab_title = nullptr;

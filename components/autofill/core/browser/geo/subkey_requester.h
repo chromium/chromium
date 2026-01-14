@@ -83,7 +83,7 @@ class SubKeyRequester : public LoadRulesListener {
   void StartRegionSubKeysRequest(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jregion_code,
-      jint jtimeout_seconds,
+      int32_t jtimeout_seconds,
       const base::android::JavaRef<jobject>& jdelegate);
 
   // Cancels the pending subkey request task.

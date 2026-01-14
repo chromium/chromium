@@ -29,7 +29,7 @@ static jlong JNI_CompositorViewImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jwindow_android,
-    jint java_background_color) {
+    int32_t java_background_color) {
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   auto compositor_view = std::make_unique<CompositorViewImpl>(
@@ -88,9 +88,9 @@ void CompositorViewImpl::SurfaceDestroyed(JNIEnv* env) {
 }
 
 void CompositorViewImpl::SurfaceChanged(JNIEnv* env,
-                                        jint format,
-                                        jint width,
-                                        jint height,
+                                        int32_t format,
+                                        int32_t width,
+                                        int32_t height,
                                         bool can_be_used_with_surface_control,
                                         const JavaRef<jobject>& surface) {
   DCHECK(surface);

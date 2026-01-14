@@ -43,7 +43,7 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
 
   // Methods called from Java via JNI.
   void OpenItem(JNIEnv* env,
-                jint launch_location,
+                int32_t launch_location,
                 bool j_open_in_incognito,
                 const base::android::JavaRef<jstring>& j_namespace,
                 const base::android::JavaRef<jstring>& j_id);

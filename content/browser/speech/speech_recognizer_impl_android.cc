@@ -206,7 +206,8 @@ void SpeechRecognizerImplAndroid::OnRecognitionResultsOnIOThread(
   listener()->OnRecognitionResults(session_id(), results);
 }
 
-void SpeechRecognizerImplAndroid::OnRecognitionError(JNIEnv* env, jint error) {
+void SpeechRecognizerImplAndroid::OnRecognitionError(JNIEnv* env,
+                                                     int32_t error) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,

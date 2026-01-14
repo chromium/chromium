@@ -129,9 +129,9 @@ jlong PaintPreviewTestService::GetBaseService(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jintArray>
 PaintPreviewTestService::CreateSingleSkp(
     JNIEnv* env,
-    jint j_id,
-    jint j_width,
-    jint j_height,
+    int32_t j_id,
+    int32_t j_width,
+    int32_t j_height,
     const JavaRef<jintArray>& j_link_rects,
     const JavaRef<jobjectArray>& j_link_urls,
     const JavaRef<jintArray>& j_child_rects) {

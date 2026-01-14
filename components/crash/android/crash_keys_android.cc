@@ -20,7 +20,7 @@ using BigJavaCrashKey = crash_reporter::CrashKeyString<256>;
 
 BigJavaCrashKey g_installed_modules_key("installed_modules");
 
-JavaCrashKey& GetCrashKey(jint index) {
+JavaCrashKey& GetCrashKey(int32_t index) {
   // See CrashKeys.java for how to add a new crash key.
   static std::array<JavaCrashKey,
                     static_cast<size_t>(CrashKeyIndex::NUM_SMALL_KEYS)>
@@ -38,7 +38,7 @@ void SetAndroidCrashKey(CrashKeyIndex index, const std::string& value) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jinstance =
       Java_CrashKeys_getInstance(env);
-  Java_CrashKeys_set(env, jinstance, static_cast<jint>(index),
+  Java_CrashKeys_set(env, jinstance, static_cast<int32_t>(index),
                      base::android::ConvertUTF8ToJavaString(env, value));
 }
 
@@ -46,7 +46,7 @@ void ClearAndroidCrashKey(CrashKeyIndex index) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jinstance =
       Java_CrashKeys_getInstance(env);
-  Java_CrashKeys_set(env, jinstance, static_cast<jint>(index), nullptr);
+  Java_CrashKeys_set(env, jinstance, static_cast<int32_t>(index), nullptr);
 }
 
 void FlushAndroidCrashKeys() {
@@ -57,17 +57,17 @@ void FlushAndroidCrashKeys() {
 }
 
 static void JNI_CrashKeys_Set(JNIEnv* env,
-                              jint key,
+                              int32_t key,
                               const base::android::JavaRef<jstring>& value) {
   if (value.is_null()) {
-    if (key == static_cast<jint>(CrashKeyIndex::INSTALLED_MODULES)) {
+    if (key == static_cast<int32_t>(CrashKeyIndex::INSTALLED_MODULES)) {
       g_installed_modules_key.Clear();
     } else {
       GetCrashKey(key).Clear();
     }
   } else {
     std::string val = base::android::ConvertJavaStringToUTF8(env, value);
-    if (key == static_cast<jint>(CrashKeyIndex::INSTALLED_MODULES)) {
+    if (key == static_cast<int32_t>(CrashKeyIndex::INSTALLED_MODULES)) {
       g_installed_modules_key.Set(val);
     } else {
       GetCrashKey(key).Set(val);

@@ -141,7 +141,7 @@ void BluetoothChooserAndroid::AddOrUpdateDevice(
 
 void BluetoothChooserAndroid::OnDialogFinished(
     JNIEnv* env,
-    jint event_type,
+    int32_t event_type,
     const JavaRef<jstring>& device_id) {
   // Values are defined in BluetoothChooserDialog as DIALOG_FINISHED constants.
   switch (event_type) {

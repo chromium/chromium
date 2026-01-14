@@ -73,8 +73,8 @@ bool LargeIconBridge::GetLargeIconForURL(
     JNIEnv* env,
     const JavaRef<jobject>& j_browser_context,
     const JavaRef<jobject>& j_page_url,
-    jint min_source_size_px,
-    jint desired_source_size_px,
+    int32_t min_source_size_px,
+    int32_t desired_source_size_px,
     const JavaRef<jobject>& j_callback) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(j_browser_context);
@@ -106,7 +106,7 @@ void LargeIconBridge::
         const base::android::JavaRef<jobject>& j_browser_context,
         const base::android::JavaRef<jobject>& j_page_url,
         bool should_trim_page_url_path,
-        jint j_network_annotation_hash_code,
+        int32_t j_network_annotation_hash_code,
         const base::android::JavaRef<jobject>& j_callback) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(j_browser_context);

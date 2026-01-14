@@ -34,10 +34,10 @@ class WatcherImpl {
 
   ~WatcherImpl() = default;
 
-  jint Start(JNIEnv* env,
-             const JavaRef<jobject>& obj,
-             jlong mojo_handle,
-             jint signals) {
+  int32_t Start(JNIEnv* env,
+                const JavaRef<jobject>& obj,
+                jlong mojo_handle,
+                int32_t signals) {
     java_watcher_.Reset(env, obj);
 
     auto ready_callback = base::BindRepeating(&WatcherImpl::OnHandleReady,
@@ -83,11 +83,11 @@ static jlong JNI_WatcherImpl_CreateWatcher(JNIEnv* env) {
   return reinterpret_cast<jlong>(new WatcherImpl);
 }
 
-static jint JNI_WatcherImpl_Start(JNIEnv* env,
-                                  const JavaRef<jobject>& obj,
-                                  jlong watcher_ptr,
-                                  jlong mojo_handle,
-                                  jint signals) {
+static int32_t JNI_WatcherImpl_Start(JNIEnv* env,
+                                     const JavaRef<jobject>& obj,
+                                     jlong watcher_ptr,
+                                     jlong mojo_handle,
+                                     int32_t signals) {
   auto* watcher = reinterpret_cast<WatcherImpl*>(watcher_ptr);
   return watcher->Start(env, obj, mojo_handle, signals);
 }

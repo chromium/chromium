@@ -83,10 +83,10 @@ void RenderFrameHostTestExt::UpdateVisualState(
 }
 
 void RenderFrameHostTestExt::NotifyVirtualKeyboardOverlayRect(JNIEnv* env,
-                                                              jint x,
-                                                              jint y,
-                                                              jint width,
-                                                              jint height) {
+                                                              int32_t x,
+                                                              int32_t y,
+                                                              int32_t width,
+                                                              int32_t height) {
   gfx::Size size(width, height);
   gfx::Point origin(x, y);
   render_frame_host_->GetPage().NotifyVirtualKeyboardOverlayRect(

@@ -1053,7 +1053,7 @@ void RenderWidgetHostViewAndroid::DismissTextHandles(JNIEnv* env) {
   DismissTextHandles();
 }
 
-jint RenderWidgetHostViewAndroid::GetBackgroundColor(JNIEnv* env) {
+int32_t RenderWidgetHostViewAndroid::GetBackgroundColor(JNIEnv* env) {
   std::optional<SkColor> color =
       RenderWidgetHostViewAndroid::GetCachedBackgroundColor();
   if (!color)
@@ -1061,10 +1061,9 @@ jint RenderWidgetHostViewAndroid::GetBackgroundColor(JNIEnv* env) {
   return *color;
 }
 
-void RenderWidgetHostViewAndroid::ShowContextMenuAtTouchHandle(
-    JNIEnv* env,
-    jint x,
-    jint y) {
+void RenderWidgetHostViewAndroid::ShowContextMenuAtTouchHandle(JNIEnv* env,
+                                                               int32_t x,
+                                                               int32_t y) {
   if (GetTouchSelectionControllerClientManager()) {
     GetTouchSelectionControllerClientManager()->ShowContextMenu(
         gfx::Point(x, y));
@@ -1078,8 +1077,8 @@ void RenderWidgetHostViewAndroid::OnViewportInsetBottomChanged(JNIEnv* env) {
 
 void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
     JNIEnv* env,
-    jint width,
-    jint height,
+    int32_t width,
+    int32_t height,
     const jni_zero::JavaRef<jstring>& jpath,
     const jni_zero::JavaRef<jobject>& jcallback) {
   base::OnceCallback<void(const content::CopyFromSurfaceResult&)>

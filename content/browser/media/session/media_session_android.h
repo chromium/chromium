@@ -60,8 +60,7 @@ class MediaSessionAndroid final
             const jlong millis);
   void SeekTo(JNIEnv* env,
               const jlong millis);
-  void DidReceiveAction(JNIEnv* env,
-                        jint action);
+  void DidReceiveAction(JNIEnv* env, int32_t action);
   void RequestSystemAudioFocus(JNIEnv* env);
 
  private:

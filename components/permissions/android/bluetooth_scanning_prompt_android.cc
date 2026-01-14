@@ -94,7 +94,7 @@ void BluetoothScanningPromptAndroid::AddOrUpdateDevice(
 }
 
 void BluetoothScanningPromptAndroid::OnDialogFinished(JNIEnv* env,
-                                                      jint event_type) {
+                                                      int32_t event_type) {
   // Values are defined in BluetoothScanningPromptDialog as DIALOG_FINISHED
   // constants.
   switch (event_type) {

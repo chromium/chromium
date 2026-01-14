@@ -25,8 +25,8 @@ ScopedJavaLocalRef<jobject> CreateJavaParsed(JNIEnv* env,
   static constexpr bool is_signed =
       std::is_signed<decltype(parsed.scheme.begin)>::value;
   static constexpr size_t offset_size = sizeof(parsed.scheme.begin);
-  static_assert((is_signed && sizeof(jint) >= offset_size) ||
-                    (!is_signed && sizeof(jint) > offset_size),
+  static_assert((is_signed && sizeof(int32_t) >= offset_size) ||
+                    (!is_signed && sizeof(int32_t) > offset_size),
                 "Java size offsets for Parsed Components must be large enough "
                 "to store the full C++ offset.");
   return Java_Parsed_Constructor(
@@ -52,22 +52,22 @@ ScopedJavaLocalRef<jobject> ParsedAndroid::InitFromParsed(
 
 static void JNI_Parsed_InitNative(jlong native_ptr,
                                   bool is_inner,
-                                  jint scheme_begin,
-                                  jint scheme_length,
-                                  jint username_begin,
-                                  jint username_length,
-                                  jint password_begin,
-                                  jint password_length,
-                                  jint host_begin,
-                                  jint host_length,
-                                  jint port_begin,
-                                  jint port_length,
-                                  jint path_begin,
-                                  jint path_length,
-                                  jint query_begin,
-                                  jint query_length,
-                                  jint ref_begin,
-                                  jint ref_length,
+                                  int32_t scheme_begin,
+                                  int32_t scheme_length,
+                                  int32_t username_begin,
+                                  int32_t username_length,
+                                  int32_t password_begin,
+                                  int32_t password_length,
+                                  int32_t host_begin,
+                                  int32_t host_length,
+                                  int32_t port_begin,
+                                  int32_t port_length,
+                                  int32_t path_begin,
+                                  int32_t path_length,
+                                  int32_t query_begin,
+                                  int32_t query_length,
+                                  int32_t ref_begin,
+                                  int32_t ref_length,
                                   bool potentially_dangling_markup) {
   Parsed inner_parsed;
   Parsed* outer_parsed = reinterpret_cast<Parsed*>(native_ptr);

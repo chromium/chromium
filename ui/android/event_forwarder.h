@@ -47,24 +47,24 @@ class UI_ANDROID_EXPORT EventForwarder {
                     const base::android::JavaRef<jobject>& motion_event,
                     jlong oldest_event_time_ns,
                     jlong latest_event_time_ns,
-                    jint android_action,
+                    int32_t android_action,
                     jfloat touch_major_0,
                     jfloat touch_major_1,
                     jfloat touch_minor_0,
                     jfloat touch_minor_1,
-                    jint android_gesture_classification,
+                    int32_t android_gesture_classification,
                     bool is_touch_handle_event,
                     bool is_latest_event_time_resampled);
 
   void OnMouseEvent(JNIEnv* env,
                     const base::android::JavaRef<jobject>& motion_event,
                     jlong time_ns,
-                    jint android_action,
-                    jint android_changed_button,
-                    jint tool_type);
+                    int32_t android_action,
+                    int32_t android_changed_button,
+                    int32_t tool_type);
 
   void OnDragEvent(JNIEnv* env,
-                   jint action,
+                   int32_t action,
                    jfloat x,
                    jfloat y,
                    jfloat screen_x,
@@ -76,7 +76,7 @@ class UI_ANDROID_EXPORT EventForwarder {
                    const base::android::JavaRef<jstring>& j_html,
                    const base::android::JavaRef<jstring>& j_url);
 
-  bool OnGestureEvent(JNIEnv* env, jint type, jlong time_ms, jfloat scale);
+  bool OnGestureEvent(JNIEnv* env, int32_t type, jlong time_ms, jfloat scale);
 
   bool OnGenericMotionEvent(JNIEnv* env,
                             const base::android::JavaRef<jobject>& motion_event,
@@ -105,10 +105,7 @@ class UI_ANDROID_EXPORT EventForwarder {
                 jfloat x,
                 jfloat y);
 
-  void DoubleTap(JNIEnv* env,
-                 jlong time_ms,
-                 jint x,
-                 jint y);
+  void DoubleTap(JNIEnv* env, jlong time_ms, int32_t x, int32_t y);
 
   void StartFling(JNIEnv* env,
                   jlong time_ms,

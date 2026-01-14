@@ -323,7 +323,7 @@ static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
   // `remote` goes out of scope.
 }
 
-static jint JNI_DialogOverlayImpl_RegisterSurface(
+static int32_t JNI_DialogOverlayImpl_RegisterSurface(
     JNIEnv* env,
     const JavaRef<jobject>& surface) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -332,17 +332,14 @@ static jint JNI_DialogOverlayImpl_RegisterSurface(
                          /*can_be_used_with_surface_control=*/false));
 }
 
-static void JNI_DialogOverlayImpl_UnregisterSurface(
-    JNIEnv* env,
-    jint surface_id) {
+static void JNI_DialogOverlayImpl_UnregisterSurface(JNIEnv* env,
+                                                    int32_t surface_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_id);
 }
 
 static ScopedJavaLocalRef<jobject>
-JNI_DialogOverlayImpl_LookupSurfaceForTesting(
-    JNIEnv* env,
-    jint surfaceId) {
+JNI_DialogOverlayImpl_LookupSurfaceForTesting(JNIEnv* env, int32_t surfaceId) {
   auto surface_record =
       gpu::GpuSurfaceTracker::Get()->AcquireJavaSurface(surfaceId);
   if (!std::holds_alternative<gl::ScopedJavaSurface>(

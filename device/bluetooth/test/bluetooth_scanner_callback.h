@@ -15,7 +15,7 @@ namespace device {
 class BluetoothScannerCallback {
  public:
   // Called when a scan failed.
-  void OnScanFailed(JNIEnv* env, jint error_code);
+  void OnScanFailed(JNIEnv* env, int32_t error_code);
 
   // Called when a scan finished.
   void OnScanFinished(JNIEnv* env);

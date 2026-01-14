@@ -52,7 +52,7 @@ ScopedJavaLocalRef<jobject> JniPaymentApp::Create(
       ConvertUTF16ToJavaString(env, app->payment_app_->GetLabel()),
       ConvertUTF16ToJavaString(env, app->payment_app_->GetSublabel()),
       app->payment_app_->icon_bitmap(),
-      static_cast<jint>(app->payment_app_->type()),
+      static_cast<int32_t>(app->payment_app_->type()),
       reinterpret_cast<jlong>(app),
       app->payment_app_->GetPaymentEntitiesLogos());
 }

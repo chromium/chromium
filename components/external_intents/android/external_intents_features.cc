@@ -32,7 +32,8 @@ BASE_FEATURE(kExternalNavigationDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNavigationCaptureRefactorAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
+static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env,
+                                                    int32_t ordinal) {
   return reinterpret_cast<jlong>(UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
 }
 

@@ -216,8 +216,9 @@ bool SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(JNIEnv* env) {
       ->IsInitialSyncFeatureSetupComplete();
 }
 
-void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete(JNIEnv* env,
-                                                                  jint source) {
+void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete(
+    JNIEnv* env,
+    int32_t source) {
   native_sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       static_cast<SyncFirstSetupCompleteSource>(source));
 }
@@ -267,13 +268,14 @@ void SyncServiceAndroidBridge::TriggerLocalDataMigration(
       JavaIntArrayToDataTypeSet(env, types));
 }
 
-bool SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env, jint type) {
+bool SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
+                                                     int32_t type) {
   return native_sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
       IntToUserSelectableTypeChecked(type));
 }
 
 bool SyncServiceAndroidBridge::IsTypeManagedByCustodian(JNIEnv* env,
-                                                        jint type) {
+                                                        int32_t type) {
   return native_sync_service_->GetUserSettings()->IsTypeManagedByCustodian(
       IntToUserSelectableTypeChecked(type));
 }
@@ -306,7 +308,7 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 }
 
 void SyncServiceAndroidBridge::SetSelectedType(JNIEnv* env,
-                                               jint type,
+                                               int32_t type,
                                                bool is_type_on) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
     // This function shouldn't be called while signed out, but evidence suggests
@@ -356,21 +358,21 @@ bool SyncServiceAndroidBridge::IsUsingExplicitPassphrase(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
-jint SyncServiceAndroidBridge::GetPassphraseType(JNIEnv* env) {
+int32_t SyncServiceAndroidBridge::GetPassphraseType(JNIEnv* env) {
   // TODO(crbug.com/40923935): Mapping nullopt -> kImplicitPassphrase preserves
   // the historic behavior, but ideally we should propagate the nullopt state to
   // Java.
-  return static_cast<jint>(
+  return static_cast<int32_t>(
       native_sync_service_->GetUserSettings()->GetPassphraseType().value_or(
           PassphraseType::kImplicitPassphrase));
 }
 
-jint SyncServiceAndroidBridge::GetTransportState(JNIEnv* env) {
-  return static_cast<jint>(native_sync_service_->GetTransportState());
+int32_t SyncServiceAndroidBridge::GetTransportState(JNIEnv* env) {
+  return static_cast<int32_t>(native_sync_service_->GetTransportState());
 }
 
-jint SyncServiceAndroidBridge::GetUserActionableError(JNIEnv* env) {
-  return static_cast<jint>(native_sync_service_->GetUserActionableError());
+int32_t SyncServiceAndroidBridge::GetUserActionableError(JNIEnv* env) {
+  return static_cast<int32_t>(native_sync_service_->GetUserActionableError());
 }
 
 void SyncServiceAndroidBridge::SetEncryptionPassphrase(

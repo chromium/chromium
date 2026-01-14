@@ -49,7 +49,7 @@ class TranslateMessage {
   // Called by Java in response to the user clicking the primary button.
   void HandlePrimaryAction(JNIEnv* env);
   // Called by Java in response to the message being dismissed.
-  void HandleDismiss(JNIEnv* env, jint dismiss_reason);
+  void HandleDismiss(JNIEnv* env, int32_t dismiss_reason);
 
   // Called by Java in order to build the secondary overflow menu.
   base::android::ScopedJavaLocalRef<jobjectArray> BuildOverflowMenu(
@@ -71,7 +71,7 @@ class TranslateMessage {
   base::android::ScopedJavaLocalRef<jobjectArray>
   HandleSecondaryMenuItemClicked(
       JNIEnv* env,
-      jint overflow_menu_item_id,
+      int32_t overflow_menu_item_id,
       const base::android::JavaRef<jstring>& language_code,
       bool had_checkmark);
 
@@ -89,7 +89,7 @@ class TranslateMessage {
         JNIEnv* env,
         content::WebContents* web_contents,
         TranslateMessage* native_translate_message,
-        jint dismissal_duration_seconds) = 0;
+        int32_t dismissal_duration_seconds) = 0;
 
     virtual void ShowTranslateError(JNIEnv* env,
                                     content::WebContents* web_contents) = 0;

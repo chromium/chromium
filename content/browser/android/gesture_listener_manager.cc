@@ -153,7 +153,7 @@ void GestureListenerManager::SetMultiTouchZoomSupportEnabled(JNIEnv* env,
 
 void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
     JNIEnv* env,
-    jint frequency) {
+    int32_t frequency) {
   auto new_frequency =
       static_cast<cc::mojom::RootScrollOffsetUpdateFrequency>(frequency);
   root_scroll_offset_update_frequency_ = new_frequency;

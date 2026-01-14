@@ -228,7 +228,7 @@ bool CronetContextAdapter::StartNetLogToFile(JNIEnv* env,
 void CronetContextAdapter::StartNetLogToDisk(JNIEnv* env,
                                              const JavaRef<jstring>& jdir_name,
                                              bool jlog_all,
-                                             jint jmax_size) {
+                                             int32_t jmax_size) {
   std::string dir_name(base::android::ConvertJavaStringToUTF8(env, jdir_name));
   context_->StartNetLogToDisk(dir_name, jlog_all == JNI_TRUE, jmax_size);
 }
@@ -292,8 +292,8 @@ static void JNI_CronetUrlRequestContext_AddQuicHint(
     JNIEnv* env,
     jlong jurl_request_context_config,
     const JavaRef<jstring>& jhost,
-    jint jport,
-    jint jalternate_port) {
+    int32_t jport,
+    int32_t jalternate_port) {
   URLRequestContextConfig* config =
       reinterpret_cast<URLRequestContextConfig*>(jurl_request_context_config);
   config->quic_hints.push_back(

@@ -36,11 +36,11 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   void SetBoolean(JNIEnv* env,
                   const base::android::JavaRef<jstring>& j_preference,
                   const bool j_value);
-  jint GetInteger(JNIEnv* env,
-                  const base::android::JavaRef<jstring>& j_preference);
+  int32_t GetInteger(JNIEnv* env,
+                     const base::android::JavaRef<jstring>& j_preference);
   void SetInteger(JNIEnv* env,
                   const base::android::JavaRef<jstring>& j_preference,
-                  const jint j_value);
+                  const int32_t j_value);
   jdouble GetDouble(JNIEnv* env,
                     const base::android::JavaRef<jstring>& j_preference);
   void SetDouble(JNIEnv* env,

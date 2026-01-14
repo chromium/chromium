@@ -23,7 +23,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace l10n_util {
 
-static jint JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
+static int32_t JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
     JNIEnv* env,
     const JavaRef<jstring>& string) {
   return base::i18n::GetFirstStrongCharacterDirection(

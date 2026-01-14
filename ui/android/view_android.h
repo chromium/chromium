@@ -164,10 +164,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // |drag_obj_rect_height| is the height of the drag object.
   bool StartDragAndDrop(const base::android::JavaRef<jobject>& jshadow_image,
                         const base::android::JavaRef<jobject>& jdrop_data,
-                        jint cursor_offset_x,
-                        jint cursor_offset_y,
-                        jint drag_obj_rect_width,
-                        jint drag_obj_rect_height);
+                        int32_t cursor_offset_x,
+                        int32_t cursor_offset_y,
+                        int32_t drag_obj_rect_width,
+                        int32_t drag_obj_rect_height);
 
   gfx::Size GetPhysicalBackingSize() const;
   gfx::Size GetSizeDIPs() const;

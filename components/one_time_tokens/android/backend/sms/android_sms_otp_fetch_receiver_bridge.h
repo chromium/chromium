@@ -37,7 +37,7 @@ class AndroidSmsOtpFetchReceiverBridge
 
   // Implements consumer interface. Called via JNI when OTP value retrieval
   // fails.
-  void OnOtpValueRetrievalError(JNIEnv* env, jint api_error_code);
+  void OnOtpValueRetrievalError(JNIEnv* env, int32_t api_error_code);
 
  private:
   AndroidSmsOtpFetchReceiverBridge();
@@ -46,7 +46,7 @@ class AndroidSmsOtpFetchReceiverBridge
   void OnOtpValueRetrievedInternal(const std::string& otp_value);
 
   // Method to be run on the correct sequence when value retrieval fails.
-  void OnOtpValueRetrievalErrorInternal(jint api_error_code);
+  void OnOtpValueRetrievalErrorInternal(int32_t api_error_code);
 
   // The consumer to be notified when an OTP retrieval request finishes.
   base::WeakPtr<Consumer> consumer_;

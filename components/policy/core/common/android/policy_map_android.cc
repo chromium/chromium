@@ -26,7 +26,7 @@ bool PolicyMapAndroid::HasValue(
   return GetValue(env, policy) != nullptr;
 }
 
-jint PolicyMapAndroid::GetIntValue(
+int32_t PolicyMapAndroid::GetIntValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);

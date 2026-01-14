@@ -98,8 +98,8 @@ class AutocompleteResult {
   // AutocompleteResult is correct.
   bool VerifyCoherency(JNIEnv* env,
                        const base::android::JavaRef<jlongArray>& matches,
-                       jint match_index,
-                       jint verification_point);
+                       int32_t match_index,
+                       int32_t verification_point);
 #endif
 
   // Moves matches from |old_matches| to provide a consistent result set.

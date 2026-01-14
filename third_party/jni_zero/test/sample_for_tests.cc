@@ -48,9 +48,9 @@ void CPPClass::Destroy(JNIEnv* env,
   delete this;
 }
 
-jint CPPClass::Method(JNIEnv* env,
-                      const JavaRef<jobject>& caller,
-                      std::vector<std::string>& strArray) {
+int32_t CPPClass::Method(JNIEnv* env,
+                         const JavaRef<jobject>& caller,
+                         std::vector<std::string>& strArray) {
   return 0;
 }
 
@@ -290,8 +290,8 @@ JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(JNIEnv* env) {
   return {};
 }
 
-static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(
-    JNIEnv* env) {
+static std::vector<int32_t>
+JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env) {
   return {};
 }
 
