@@ -91,11 +91,11 @@ IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTestBase,
                            ->GetDependencyGraphForTesting()
                            .GetConstructionOrder(&nodes);
   EXPECT_TRUE(success);
-  std::ignore = std::ranges::contains(
+  EXPECT_TRUE(std::ranges::contains(
       nodes, "CloudUploadPromptPrefsHandlerFactory",
       [](const DependencyNode* node) -> std::string_view {
         return static_cast<const KeyedServiceBaseFactory*>(node)->name();
-      });
+      }));
 }
 
 class CloudUploadPromptPrefsHandlerTest
