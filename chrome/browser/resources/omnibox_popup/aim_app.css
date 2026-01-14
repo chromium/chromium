@@ -114,10 +114,6 @@ cr-composebox[searchbox-layout-mode="TallBottomContext"][show-dropdown_]::part(v
   bottom: 9px;
 }
 
-cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(carousel-divider) {
-  display: none;
-}
-
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
   left: unset;
   right: 12px;
