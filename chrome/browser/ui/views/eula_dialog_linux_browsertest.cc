@@ -22,6 +22,12 @@ class EulaDialogLinuxBrowserTest : public DialogBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(EulaDialogLinuxBrowserTest, InvokeUi_default) {
+// TODO(crbug.com/470084686): Broken on Linux ASan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_F(EulaDialogLinuxBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
