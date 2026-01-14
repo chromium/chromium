@@ -219,12 +219,12 @@ crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 
 # Failures with SkiaGraphite
-crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 # Win/AMD RX 7600 failures
 crbug.com/402989071 [ win11 amd-0x7480 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
@@ -293,8 +293,6 @@ crbug.com/438512194 [ win11 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_
 # Win11/Qualcomm Snapdragon X Elite
 crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]
 
-# TreesInViz damage calculation issues
-crbug.com/454680865 [ android-pixel-2 android-q angle-opengles graphite-disabled mobile no-clang-coverage qualcomm renderer-skia-gl target-cpu-64 ] TraceTest_Video_MP4_TreesInViz [ RetryOnFailure ]
 
 # Readback assertion on macOS
 crbug.com/474873836 [ mac intel-0x3e9b angle-metal ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
