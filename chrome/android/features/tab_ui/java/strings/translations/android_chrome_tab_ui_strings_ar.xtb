@@ -133,7 +133,7 @@
 <translation id="5627941783489838464">ما مِن تعديلات على علامات التبويب</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏رابط واحد (<ph name="TABS_COUNT_ONE" />) من Chrome}zero{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}two{‏رابطان (<ph name="TABS_COUNT_MANY" />) من Chrome}few{‏<ph name="TABS_COUNT_MANY" /> روابط من Chrome}many{‏<ph name="TABS_COUNT_MANY" /> رابطًا من Chrome}other{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}}</translation>
 <translation id="5740354908255726955">{TAB_COUNT,plural, =1{نقل علامة التبويب إلى اليسار}zero{نقل علامات التبويب إلى اليسار}two{نقل علامتَي التبويب إلى اليسار}few{نقل علامات التبويب إلى اليسار}many{نقل علامات التبويب إلى اليسار}other{نقل علامات التبويب إلى اليسار}}</translation>
-<translation id="5746204836956568669">هل المطلوب تجميع <ph name="NUMBER_OF_TABS" /> علامة تبويب للعمل بشكل أسرع؟</translation>
+<translation id="5746204836956568669">تجميع علامات التبويب الـ <ph name="NUMBER_OF_TABS" /> للعمل بسرعة أكبر؟</translation>
 <translation id="5773295109010386583">إغلاق علامات التبويب غير النشطة تلقائيًا</translation>
 <translation id="58326064309361797">اسحب علامات التبويب لجمعها.</translation>
 <translation id="5972844218283131174">إلغاء اختيار الكل</translation>

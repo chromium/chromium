@@ -9620,7 +9620,7 @@
 <translation id="7640256527901510478">裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
 <translation id="7640308610547854367">你已還原為舊版 ChromeOS。要等到下一個版本發布，才能取得更新內容。</translation>
 <translation id="7641513591566880111">新設定檔名稱</translation>
-<translation id="7641720519047586765">這個密碼金鑰已從此網站刪除</translation>
+<translation id="7641720519047586765">密碼金鑰已從這個網站刪除</translation>
 <translation id="764178579712141045">已新增 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643117827468520640">請詳閱這些條款</translation>
@@ -9633,7 +9633,7 @@
 <translation id="7647403192093989392">最近沒有活動</translation>
 <translation id="7648023614017258011">Chrome 正在驗證安裝套件</translation>
 <translation id="7648048654005891115">按鍵對映樣式</translation>
-<translation id="7648180062672842917">這個檔案含有敏感內容或危險內容。根據貴機構政策，你只能儲存到雲端儲存空間或捨棄檔案</translation>
+<translation id="7648180062672842917">這個檔案含有敏感/危險資料。根據貴機構政策，你只能儲存到雲端儲存空間或捨棄檔案</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7649954700951153978">在 iOS 裝置上提醒我</translation>
 <translation id="7650141368285545431">使用其他裝置的密碼金鑰</translation>
@@ -10597,7 +10597,7 @@
 <translation id="8275080796245127762">用你的裝置撥打電話</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
 <translation id="8276850948802942358">進一步瞭解如何授予網站使用第三方 Cookie 的臨時權限</translation>
-<translation id="8277907305629781277">你在 <ph name="DATE" /> 建立了這個密碼金鑰</translation>
+<translation id="8277907305629781277">密碼金鑰建立時間：<ph name="DATE" /></translation>
 <translation id="8278702675516957539">禁止使用 JavaScript 最佳化功能</translation>
 <translation id="827966378414194229">透過頭部動作和臉部表情操控 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">網站語言版本</translation>
@@ -11050,7 +11050,7 @@
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{管理擴充功能}other{管理擴充功能}}</translation>
 <translation id="8599681327221583254">一或多項政策設定有誤，請與管理員聯絡。</translation>
 <translation id="8599864823732014237">要略過企業註冊嗎？</translation>
-<translation id="8600362954032151088">前往 <ph name="GOOGLE_PASSWORD_MANAGER" />管理密碼和密碼金鑰</translation>
+<translation id="8600362954032151088">可以在 <ph name="GOOGLE_PASSWORD_MANAGER" />調整密碼和密碼金鑰的設定</translation>
 <translation id="8601206103050338563">TLS WWW 用戶端驗證</translation>
 <translation id="8602674530529411098">應用程式 (Beta 版)</translation>
 <translation id="8602851771975208551">電腦中其他程式所新增的應用程式可能會變更 Chrome 的運作方式。</translation>
