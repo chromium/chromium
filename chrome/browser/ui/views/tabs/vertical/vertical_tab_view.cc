@@ -576,7 +576,9 @@ void VerticalTabView::UpdateContrastRatioValues() {
 
 void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   // TODO(crbug.com/467735166): Log tab closing UMAs.
-  collection_node_->GetController()->CloseTab(GetTabInterface());
+  if (collection_node_) {
+    collection_node_->GetController()->CloseTab(GetTabInterface());
+  }
 }
 
 bool VerticalTabView::IsHoverAnimationActive() const {
