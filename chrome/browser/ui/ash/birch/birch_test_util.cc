@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
 
+#include <algorithm>
+
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
@@ -52,7 +54,7 @@ void DisableAllDataTypePrefsExcept(std::vector<std::string_view> exceptions) {
       prefs::kBirchUseCoral,
   };
   for (const std::string_view pref : kDataPrefs) {
-    const bool enable = base::Contains(exceptions, pref);
+    const bool enable = std::ranges::contains(exceptions, pref);
     pref_service->SetBoolean(pref, enable);
   }
 }

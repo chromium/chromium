@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/media_router/browser/media_router.h"
@@ -190,7 +189,7 @@ void QueryResultManager::RemoveOldSourcesForCastMode(
   }
 
   for (const MediaSource& source : cast_mode_it->second) {
-    if (!base::Contains(new_sources, source)) {
+    if (!std::ranges::contains(new_sources, source)) {
       sinks_observers_.erase(source);
       SetSinksCompatibleWithSource(cast_mode, source, std::vector<MediaSink>());
     }
@@ -280,7 +279,8 @@ bool QueryResultManager::AreSourcesValidForCastMode(
   // |cast_mode|.
   return std::ranges::none_of(sources, [=, this](const MediaSource& source) {
     return sinks_observers_.contains(source) &&
-           (!has_cast_mode || !base::Contains(cast_mode_it->second, source));
+           (!has_cast_mode ||
+            !std::ranges::contains(cast_mode_it->second, source));
   });
 }
 

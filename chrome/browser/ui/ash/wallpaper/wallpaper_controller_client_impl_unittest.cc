@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 
+#include <algorithm>
+
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -142,7 +143,7 @@ TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {
   auto handle_photo = [&last_ten](GooglePhotosPhotoPtr photo, bool success) {
     ASSERT_TRUE(success);
 
-    EXPECT_FALSE(base::Contains(last_ten, photo->id));
+    EXPECT_FALSE(std::ranges::contains(last_ten, photo->id));
 
     last_ten.push_back(photo->id);
 

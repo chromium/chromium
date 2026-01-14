@@ -63,8 +63,8 @@ bool ShouldHideNotification(Profile* profile,
   // If the session is multizone member, then it would appear as a duplicate of
   // the multizone group's session, so it should instead be hidden.
   return source && source->GetAppIds().size() == 1 &&
-         base::Contains(media_router::kMultizoneMemberAppIds,
-                        source->GetAppIds()[0]);
+         std::ranges::contains(media_router::kMultizoneMemberAppIds,
+                               source->GetAppIds()[0]);
 }
 
 }  // namespace
@@ -157,8 +157,8 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
   const bool had_items = HasActiveItems();
 
   std::erase_if(items_, [&routes](const auto& item) {
-    return !base::Contains(routes, item.first,
-                           &media_router::MediaRoute::media_route_id);
+    return !std::ranges::contains(routes, item.first,
+                                  &media_router::MediaRoute::media_route_id);
   });
 
   for (const auto& route : routes) {

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,8 +37,10 @@ void CompletionCallback(
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
     enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   // If there are no negative results, proceed with just `drop_data`.
-  bool all_text_results_allowed = !base::Contains(result.text_results, false);
-  bool all_file_results_allowed = !base::Contains(result.paths_results, false);
+  bool all_text_results_allowed =
+      !std::ranges::contains(result.text_results, false);
+  bool all_file_results_allowed =
+      !std::ranges::contains(result.paths_results, false);
   if (all_text_results_allowed && all_file_results_allowed) {
     std::move(callback).Run(std::move(drop_data));
     return;

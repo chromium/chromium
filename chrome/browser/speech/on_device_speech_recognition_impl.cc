@@ -4,6 +4,8 @@
 
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -38,7 +40,7 @@ const char kEnglishLanguageCodeKey[] = "en-US";
 // Returns a boolean indicating whether the language is enabled.
 bool IsLanguageInstallable(std::string_view language_code,
                            bool is_soda_binary_installed) {
-  return base::Contains(
+  return std::ranges::contains(
       speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
       language_code);
 }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -745,8 +744,8 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   CHECK_EQ(product_specific_bits_data.size(),
            survey_config.product_specific_bits_data_fields.size());
   for (const auto& field_value : product_specific_bits_data) {
-    CHECK(base::Contains(survey_config.product_specific_bits_data_fields,
-                         field_value.first));
+    CHECK(std::ranges::contains(survey_config.product_specific_bits_data_fields,
+                                field_value.first));
   }
 
   // Check that the |product_specific_string_data| matches the fields for this
@@ -754,8 +753,8 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   CHECK_EQ(product_specific_string_data.size(),
            survey_config.product_specific_string_data_fields.size());
   for (const auto& field_value : product_specific_string_data) {
-    CHECK(base::Contains(survey_config.product_specific_string_data_fields,
-                         field_value.first));
+    CHECK(std::ranges::contains(
+        survey_config.product_specific_string_data_fields, field_value.first));
   }
 
   // As soon as the HaTS Next dialog is created it will attempt to contact

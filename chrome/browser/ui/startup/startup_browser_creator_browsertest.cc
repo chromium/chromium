@@ -193,8 +193,8 @@ Browser* OpenNewBrowser(Profile* profile,
 
 bool HasInfoBar(infobars::ContentInfoBarManager* infobar_manager,
                 const infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
-  return base::Contains(infobar_manager->infobars(), identifier,
-                        &infobars::InfoBar::GetIdentifier);
+  return std::ranges::contains(infobar_manager->infobars(), identifier,
+                               &infobars::InfoBar::GetIdentifier);
 }
 
 struct StartupBrowserCreatorFlagTypeValue {

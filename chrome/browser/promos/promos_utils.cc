@@ -4,10 +4,10 @@
 
 #include "chrome/browser/promos/promos_utils.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -434,16 +434,16 @@ bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
 bool UserNotClassifiedAsMobileDeviceSwitcher(
     const segmentation_platform::ClassificationResult& result) {
   return result.status == segmentation_platform::PredictionStatus::kSucceeded &&
-         !base::Contains(
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel) &&
-         !base::Contains(result.ordered_labels,
-                         segmentation_platform::DeviceSwitcherModel::
-                             kIosPhoneChromeLabel) &&
-         !base::Contains(
+         !std::ranges::contains(result.ordered_labels,
+                                segmentation_platform::DeviceSwitcherModel::
+                                    kIosPhoneChromeLabel) &&
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kAndroidTabletLabel) &&
-         !base::Contains(
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kIosTabletLabel);
 }

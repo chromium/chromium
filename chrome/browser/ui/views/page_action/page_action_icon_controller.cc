@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
@@ -370,7 +369,8 @@ void PageActionIconController::OnPageActionIconViewShown(
   }
   std::vector<raw_ptr<PageActionIconView, VectorExperimental>>
       excluded_actions_on_page = page_actions_excluded_from_logging_[url];
-  if (!view->ephemeral() || base::Contains(excluded_actions_on_page, view)) {
+  if (!view->ephemeral() ||
+      std::ranges::contains(excluded_actions_on_page, view)) {
     return;
   }
   RecordOverallMetrics();
@@ -443,7 +443,7 @@ void PageActionIconController::RecordMetricsOnURLChange(GURL url) {
   RecordOverallMetrics();
   for (auto icon_item : page_action_icon_views_) {
     if (!icon_item.second->ephemeral() || !icon_item.second->GetVisible() ||
-        base::Contains(excluded_actions_on_page, icon_item.second)) {
+        std::ranges::contains(excluded_actions_on_page, icon_item.second)) {
       continue;
     }
     RecordIndividualMetrics(icon_item.first, icon_item.second);

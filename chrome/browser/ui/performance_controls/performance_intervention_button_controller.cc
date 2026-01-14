@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -149,7 +149,8 @@ void PerformanceInterventionButtonController::OnTabStripModelChanged(
     // Invalidate the actionable tab list since one of the actionable tabs is no
     // longer eligible and taking action on the remaining tabs no longer improve
     // resource health.
-    if (base::Contains(actionable_cpu_tabs_, current_page_context.value())) {
+    if (std::ranges::contains(actionable_cpu_tabs_,
+                              current_page_context.value())) {
       actionable_cpu_tabs_.clear();
       HideToolbarButton(false);
       return;

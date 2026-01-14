@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindowEnumerator_jni.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -37,7 +36,7 @@ void AndroidBrowserWindowEnumerator::OnBrowserWindowAdded(
     jlong j_browser_window_ptr) {
   BrowserWindowInterface* browser_window =
       reinterpret_cast<BrowserWindowInterface*>(j_browser_window_ptr);
-  DCHECK(!base::Contains(browser_windows_, browser_window));
+  DCHECK(!std::ranges::contains(browser_windows_, browser_window));
   browser_windows_.push_back(browser_window);
 }
 

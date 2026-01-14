@@ -99,7 +99,7 @@ class RevokedPermissionsResultTest
   bool IsUrlInRevokedSettings(std::list<PermissionsData> permissions_data,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
-    // base::Contains.
+    // std::ranges::contains.
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& permission : permissions_data) {

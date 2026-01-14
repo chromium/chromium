@@ -10,7 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
@@ -240,8 +239,8 @@ void TemplateURLTableModel::ModifyTemplateURL(size_t index,
 TemplateURL* TemplateURLTableModel::GetTemplateURL(size_t index) {
   // Sanity checks for https://crbug.com/781703.
   CHECK_LT(index, entries_.size());
-  CHECK(
-      base::Contains(template_url_service_->GetTemplateURLs(), entries_[index]))
+  CHECK(std::ranges::contains(template_url_service_->GetTemplateURLs(),
+                              entries_[index]))
       << "TemplateURLTableModel is returning a pointer to a TemplateURL "
          "that has already been freed by TemplateURLService.";
 

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -83,7 +84,7 @@ AppLocalBlockDialogView* AppLocalBlockDialogView::GetActiveViewForTesting() {
 }
 
 void AppLocalBlockDialogView::AddApp(const std::string& app_name) {
-  if (base::Contains(app_names_, app_name)) {
+  if (std::ranges::contains(app_names_, app_name)) {
     return;
   }
 

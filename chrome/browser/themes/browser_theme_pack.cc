@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/heap_array.h"
@@ -1675,7 +1674,7 @@ bool BrowserThemePack::LoadRawBitmapsTo(const FilePathMap& file_paths,
     PersistentID prs_id = entry.first;
     // Some images need to go directly into |image_memory_|. No modification is
     // necessary or desirable.
-    const bool is_copyable = base::Contains(kPreloadIDs, prs_id);
+    const bool is_copyable = std::ranges::contains(kPreloadIDs, prs_id);
     gfx::ImageSkia image_skia;
     for (int pass = 0; pass < 2; ++pass) {
       // Two passes: In the first pass, we process only scale factor

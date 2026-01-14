@@ -4,9 +4,9 @@
 
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -153,5 +153,5 @@ void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
 
 bool TestSafeBrowsingDatabaseHelper::HasListSynced(
     const safe_browsing::ListIdentifier& list_id) {
-  return base::Contains(v4_db_factory_->lists(), list_id);
+  return std::ranges::contains(v4_db_factory_->lists(), list_id);
 }

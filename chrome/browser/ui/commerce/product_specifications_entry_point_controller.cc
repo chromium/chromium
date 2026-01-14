@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -98,7 +100,7 @@ void LogClusterUKM(const TabStripModel* tab_strip_model,
     content::WebContents* contents =
         tab_strip_model->GetWebContentsAt(tab_index);
     const GURL& current_url = contents->GetLastCommittedURL();
-    if (!base::Contains(urls, current_url)) {
+    if (!std::ranges::contains(urls, current_url)) {
       continue;
     }
     bool comparable_by_server =

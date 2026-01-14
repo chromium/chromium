@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <unordered_set>
@@ -41,7 +42,7 @@ TabOrganization::TabOrganization(
   // TabDatas must not be duplicates, immediately destroy TabDatas that are.
   std::vector<const tabs::TabInterface*> existing_tabs;
   for (auto& tab_data : tab_datas) {
-    if (!base::Contains(existing_tabs, tab_data->tab())) {
+    if (!std::ranges::contains(existing_tabs, tab_data->tab())) {
       existing_tabs.emplace_back(tab_data->tab());
       tab_data->AddObserver(this);
       tab_datas_.emplace_back(std::move(tab_data));
@@ -160,7 +161,7 @@ void TabOrganization::Accept() {
     tab_data_tabs.insert(tab);
     const int index = tab_strip_model->GetIndexOfTab(tab);
     if (tab_data->IsValidForOrganizing() &&
-        !base::Contains(valid_indices, index)) {
+        !std::ranges::contains(valid_indices, index)) {
       valid_indices.emplace_back(index);
     }
   }

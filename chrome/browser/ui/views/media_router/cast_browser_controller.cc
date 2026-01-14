@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -57,7 +58,7 @@ void CastBrowserController::OnIssuesCleared() {
 void CastBrowserController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes) {
   has_local_route_ =
-      base::Contains(routes, true, &media_router::MediaRoute::is_local);
+      std::ranges::contains(routes, true, &media_router::MediaRoute::is_local);
   StopObservingMirroringMediaControllerHosts();
   for (const auto& route : routes) {
     const auto& route_id = route.media_route_id();

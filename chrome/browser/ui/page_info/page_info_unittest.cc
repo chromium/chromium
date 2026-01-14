@@ -4,6 +4,7 @@
 
 #include "components/page_info/page_info.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -2050,7 +2051,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
 // Tests that the SubresourceFilter setting is omitted correctly.
 TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   auto showing_setting = [](const PermissionInfoList& permissions) {
-    return base::Contains(
+    return std::ranges::contains(
         permissions, ContentSettingsType::ADS,
         [](const auto& permission) { return permission.type; });
   };

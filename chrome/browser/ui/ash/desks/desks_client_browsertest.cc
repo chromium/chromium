@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
@@ -49,7 +50,6 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -272,7 +272,7 @@ bool ContainUuidInTemplates(
     const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
         desk_templates) {
   DCHECK(uuid.is_valid());
-  return base::Contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
+  return std::ranges::contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
 }
 
 std::string GetTemplateJson(const base::Uuid& uuid, Profile* profile) {

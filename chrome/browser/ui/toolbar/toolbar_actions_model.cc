@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
@@ -178,7 +177,7 @@ void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
       continue;
     }
 
-    const bool is_pinned = base::Contains(new_pinned_list, action_id);
+    const bool is_pinned = std::ranges::contains(new_pinned_list, action_id);
     const extensions::ManagedToolbarPinMode pin_mode =
         extension_management->GetToolbarPinMode(action_id);
 
@@ -371,7 +370,7 @@ bool ToolbarActionsModel::IsPolicyBlockedHost(const GURL& url) const {
 }
 
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
-  return base::Contains(pinned_action_ids_, action_id);
+  return std::ranges::contains(pinned_action_ids_, action_id);
 }
 
 bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
@@ -569,7 +568,7 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
 
   auto stored_pinned_action_ids = extension_prefs_->GetPinnedExtensions();
   DCHECK_NE(is_now_visible,
-            base::Contains(stored_pinned_action_ids, action_id));
+            std::ranges::contains(stored_pinned_action_ids, action_id));
   if (is_now_visible) {
     stored_pinned_action_ids.push_back(action_id);
   } else {
@@ -614,9 +613,11 @@ ToolbarActionsModel::GetFilteredPinnedActionIds() const {
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   // O(n^2), but there are typically very few force-pinned extensions.
-  std::ranges::copy_if(
-      management->GetForcePinnedList(), std::back_inserter(pinned),
-      [&pinned](const std::string& id) { return !base::Contains(pinned, id); });
+  std::ranges::copy_if(management->GetForcePinnedList(),
+                       std::back_inserter(pinned),
+                       [&pinned](const std::string& id) {
+                         return !std::ranges::contains(pinned, id);
+                       });
 
   // TODO(pbos): Make sure that the pinned IDs are pruned from ExtensionPrefs on
   // startup so that we don't keep saving stale IDs.

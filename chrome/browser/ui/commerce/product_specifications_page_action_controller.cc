@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
@@ -115,7 +116,7 @@ void ProductSpecificationsPageActionController::
     OnProductSpecificationsSetUpdate(
         const ProductSpecificationsSet& before_set,
         const ProductSpecificationsSet& after_set) {
-  bool is_in_set = base::Contains(after_set.urls(), current_url_);
+  bool is_in_set = std::ranges::contains(after_set.urls(), current_url_);
   if (!product_group_for_page_.has_value()) {
     if (is_in_set) {
       most_recent_comparison_table_uuid_for_page_ = after_set.uuid();

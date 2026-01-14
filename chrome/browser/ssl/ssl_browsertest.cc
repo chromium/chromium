@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string_view>
@@ -10,7 +11,6 @@
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -2299,16 +2299,16 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestExtensionEvents) {
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
 
   // Verifies that security interstitial shown event is observed.
-  EXPECT_TRUE(base::Contains(observer.event_names(),
-                             extensions::api::safe_browsing_private::
-                                 OnSecurityInterstitialShown::kEventName));
+  EXPECT_TRUE(std::ranges::contains(
+      observer.event_names(), extensions::api::safe_browsing_private::
+                                  OnSecurityInterstitialShown::kEventName));
 
   ProceedThroughInterstitial(tab);
 
   // Verifies that security interstitial proceeded event is observed.
-  EXPECT_TRUE(base::Contains(observer.event_names(),
-                             extensions::api::safe_browsing_private::
-                                 OnSecurityInterstitialProceeded::kEventName));
+  EXPECT_TRUE(std::ranges::contains(
+      observer.event_names(), extensions::api::safe_browsing_private::
+                                  OnSecurityInterstitialProceeded::kEventName));
 
   extensions::EventRouter::Get(browser()->profile())
       ->RemoveObserverForTesting(&observer);

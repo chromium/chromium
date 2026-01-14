@@ -21,7 +21,6 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -371,7 +370,7 @@ void PinAfterChromeIfNotPresent(app_list::AppListSyncableService* syncable_servi
     PositionItemId next =
         GetNextPositionItemIdAfter(syncable_service, current_position);
     if (!next.position.IsValid() ||
-        !base::Contains(skip_app_ids, next.item_id)) {
+        !std::ranges::contains(skip_app_ids, next.item_id)) {
       next_position = next.position;
       break;
     }

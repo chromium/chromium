@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -139,8 +139,8 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   // The ephemeral toolbar button should show if the contextual task side panel
   // was closed.
   return current_task.has_value() &&
-         base::Contains(ephemeral_button_eligible_tasks_,
-                        current_task->GetTaskId());
+         std::ranges::contains(ephemeral_button_eligible_tasks_,
+                               current_task->GetTaskId());
 }
 
 contextual_tasks::ContextualTasksService*

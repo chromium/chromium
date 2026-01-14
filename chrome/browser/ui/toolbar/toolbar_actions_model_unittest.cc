@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -1044,7 +1044,8 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
   EXPECT_TRUE(AddExtension(extension));
   EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
   auto* prefs = extensions::ExtensionPrefs::Get(profile());
-  EXPECT_FALSE(base::Contains(prefs->GetPinnedExtensions(), extension_id));
+  EXPECT_FALSE(
+      std::ranges::contains(prefs->GetPinnedExtensions(), extension_id));
 
   // Pin all other extensions, to allow moving them around.
   ASSERT_TRUE(AddBrowserActionExtensions());

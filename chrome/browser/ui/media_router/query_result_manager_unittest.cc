@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
@@ -86,7 +87,7 @@ MATCHER_P(VectorSetEquals, expected, "") {
   }
 
   for (size_t i = 0; i < expected.size(); ++i) {
-    if (!base::Contains(arg, expected[i])) {
+    if (!std::ranges::contains(arg, expected[i])) {
       return false;
     }
   }

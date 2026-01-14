@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -737,8 +737,8 @@ TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
 
   // Check that the PictureInPictureOcclusionTracker is observing the
   // VideoOverlayWindowViews.
-  EXPECT_TRUE(base::Contains(tracker->GetPictureInPictureWidgetsForTesting(),
-                             &overlay_window()));
+  EXPECT_TRUE(std::ranges::contains(
+      tracker->GetPictureInPictureWidgetsForTesting(), &overlay_window()));
 
   // Check that it's no longer observed when the widget is destroyed.
   DestroyOverlayWindow();

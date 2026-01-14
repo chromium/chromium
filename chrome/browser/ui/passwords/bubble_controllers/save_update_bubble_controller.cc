@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
@@ -176,9 +175,9 @@ bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   if (original_username_ == GetPendingPassword().username_value) {
     return GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
   }
-  return base::Contains(existing_credentials_,
-                        GetPendingPassword().username_value,
-                        &password_manager::PasswordForm::username_value);
+  return std::ranges::contains(existing_credentials_,
+                               GetPendingPassword().username_value,
+                               &password_manager::PasswordForm::username_value);
 }
 
 bool SaveUpdateBubbleController::

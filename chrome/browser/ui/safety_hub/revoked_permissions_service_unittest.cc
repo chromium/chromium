@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <ctime>
 #include <list>
@@ -497,7 +498,7 @@ class RevokedPermissionsServiceTest
   bool IsUrlInRevokedSettings(std::list<PermissionsData> permissions_data,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
-    // base::Contains.
+    // std::ranges::contains.
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& permission : permissions_data) {
@@ -542,7 +543,7 @@ class RevokedPermissionsServiceTest
   bool IsUrlInContentSettings(ContentSettingsForOneType content_settings,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
-    // base::Contains.
+    // std::ranges::contains.
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& setting : content_settings) {

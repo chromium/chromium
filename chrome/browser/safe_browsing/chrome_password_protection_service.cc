@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -1760,8 +1759,8 @@ bool ChromePasswordProtectionService::IsInExcludedCountry() {
       g_browser_process->variations_service();
   if (!variations_service)
     return false;
-  return base::Contains(GetExcludedCountries(),
-                        variations_service->GetLatestCountry());
+  return std::ranges::contains(GetExcludedCountries(),
+                               variations_service->GetLatestCountry());
 }
 
 void ChromePasswordProtectionService::

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 
+#include <algorithm>
 #include <unordered_map>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
@@ -159,7 +159,8 @@ class FakeBinaryUploadService
       std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) override {
     EXPECT_EQ(final_action_, ack->ack().final_action());
     ++num_acks_;
-    ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
+    ASSERT_TRUE(
+        std::ranges::contains(requests_tokens_, ack->ack().request_token()));
   }
 
   void MaybeCancelRequests(

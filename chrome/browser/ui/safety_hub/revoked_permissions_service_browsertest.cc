@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
+#include <algorithm>
+
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -244,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
     }
 
     // Skip if the setting in the skip list.
-    if (base::Contains(skip_list, type)) {
+    if (std::ranges::contains(skip_list, type)) {
       continue;
     }
 

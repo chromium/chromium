@@ -6,6 +6,8 @@
 
 #import <AppKit/AppKit.h>
 
+#include <algorithm>
+
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
@@ -115,7 +117,7 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                   LOG(ERROR) << "Failed to remove quarantine attribute "
                                 "from shortcut.";
                 }
-                return base::Contains(step_successes, false)
+                return std::ranges::contains(step_successes, false)
                            ? Result::kSuccessWithErrors
                            : Result::kSuccess;
               },

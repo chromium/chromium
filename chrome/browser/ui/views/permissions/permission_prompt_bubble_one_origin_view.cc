@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -99,9 +99,9 @@ bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
                        permissions::RequestType type) {
   if (type == permissions::RequestType::kCameraStream) {
     // Hide camera request if camera PTZ request is present as well.
-    return !base::Contains(delegate.Requests(),
-                           permissions::RequestType::kCameraPanTiltZoom,
-                           &permissions::PermissionRequest::request_type);
+    return !std::ranges::contains(
+        delegate.Requests(), permissions::RequestType::kCameraPanTiltZoom,
+        &permissions::PermissionRequest::request_type);
   }
   return true;
 }

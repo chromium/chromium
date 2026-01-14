@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -105,7 +105,7 @@ void PushFrontImIfNotExists(const std::string& input_method_id,
     return;
   }
 
-  if (!base::Contains(*input_method_ids, input_method_id)) {
+  if (!std::ranges::contains(*input_method_ids, input_method_id)) {
     input_method_ids->insert(input_method_ids->begin(), input_method_id);
   }
 }

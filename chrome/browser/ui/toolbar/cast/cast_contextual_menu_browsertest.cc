@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -86,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
   for (size_t index = 0; index < model.GetItemCount(); index++) {
     model_actions.push_back(model.GetActionIdAtForTesting(index));
   }
-  EXPECT_TRUE(
-      base::Contains(model_actions, kActionMediaToolbarContextReportCastIssue));
+  EXPECT_TRUE(std::ranges::contains(model_actions,
+                                    kActionMediaToolbarContextReportCastIssue));
 
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
@@ -97,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
   for (size_t index = 0; index < model.GetItemCount(); index++) {
     incognito_model_actions.push_back(model.GetActionIdAtForTesting(index));
   }
-  EXPECT_TRUE(base::Contains(incognito_model_actions,
-                             kActionMediaToolbarContextReportCastIssue));
+  EXPECT_TRUE(std::ranges::contains(incognito_model_actions,
+                                    kActionMediaToolbarContextReportCastIssue));
 }
 #endif
 

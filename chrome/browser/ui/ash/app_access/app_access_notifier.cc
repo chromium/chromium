@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -144,7 +145,7 @@ bool AppAccessNotifier::MapContainsAppId(const MruAppIdMap& id_map,
   if (it == id_map.end()) {
     return false;
   }
-  return base::Contains(it->second, app_id);
+  return std::ranges::contains(it->second, app_id);
 }
 
 void AppAccessNotifier::OnCapabilityAccessUpdate(

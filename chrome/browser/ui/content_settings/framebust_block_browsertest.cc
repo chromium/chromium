@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <cstddef>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -148,8 +148,8 @@ class FramebustBlockBrowserTest
     // Return whether the redirect URL itself ended up in the list of blocked
     // URLs, which only happens if the renderer had the ability to navigate to
     // the URL in the first place.
-    return base::Contains(GetFramebustTabHelper()->blocked_urls(),
-                          redirect_url);
+    return std::ranges::contains(GetFramebustTabHelper()->blocked_urls(),
+                                 redirect_url);
   }
 
  protected:
@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        Framebust_WebUI_Blocked_No_Bypass) {
   const GURL chrome_url(chrome::kChromeUISettingsURL);
   EXPECT_FALSE(ExecuteAndCheckBlockedRedirection(chrome_url));
-  EXPECT_TRUE(base::Contains(GetFramebustTabHelper()->blocked_urls(),
-                             GURL(content::kBlockedURL)));
+  EXPECT_TRUE(std::ranges::contains(GetFramebustTabHelper()->blocked_urls(),
+                                    GURL(content::kBlockedURL)));
 }
 
 // Attempts to navigate to file:// URLs should be blocked without allowing the
@@ -326,8 +326,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        Framebust_File_Blocked_No_Bypass) {
   const GURL file_url("file:///");
   EXPECT_FALSE(ExecuteAndCheckBlockedRedirection(file_url));
-  EXPECT_TRUE(base::Contains(GetFramebustTabHelper()->blocked_urls(),
-                             GURL(content::kBlockedURL)));
+  EXPECT_TRUE(std::ranges::contains(GetFramebustTabHelper()->blocked_urls(),
+                                    GURL(content::kBlockedURL)));
 }
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,

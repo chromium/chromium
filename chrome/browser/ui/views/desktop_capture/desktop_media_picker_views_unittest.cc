@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -464,7 +465,7 @@ class DesktopMediaPickerViewsPerTypeTest
     // then teardown will fail.
     DesktopMediaPickerViewsTestBase::SetUp();
 
-    if (!base::Contains(source_types(), type())) {
+    if (!std::ranges::contains(source_types(), type())) {
       GTEST_SKIP();
     }
 
@@ -1214,7 +1215,7 @@ class DelegatedSourceListTest : public DesktopMediaPickerViewsTestBase {
     delegated_source_types_ = delegated_source_types;
     ASSERT_FALSE(
         std::ranges::any_of(source_types_, [this](DesktopMediaList::Type type) {
-          return base::Contains(delegated_source_types_, type);
+          return std::ranges::contains(delegated_source_types_, type);
         }));
   }
 };

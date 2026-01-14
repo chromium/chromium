@@ -4,10 +4,10 @@
 
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -288,7 +288,7 @@ SupervisedUserExtensionsManager::GetExtensionState(
     return SupervisedUserExtensionsManager::ExtensionState::kAllowed;
   }
 
-  if (base::Contains(kAllowlistExtensionIds, extension.id())) {
+  if (std::ranges::contains(kAllowlistExtensionIds, extension.id())) {
     return SupervisedUserExtensionsManager::ExtensionState::kAllowed;
   }
 

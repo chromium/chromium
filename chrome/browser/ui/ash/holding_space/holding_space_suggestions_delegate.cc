@@ -37,7 +37,7 @@ bool ItemIsPinnedSuggestion(
   }
 
   for (const auto& [_, suggested_file_paths] : suggestions_by_type) {
-    if (base::Contains(suggested_file_paths, item->file().file_path)) {
+    if (std::ranges::contains(suggested_file_paths, item->file().file_path)) {
       return true;
     }
   }

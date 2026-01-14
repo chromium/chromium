@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -115,9 +115,9 @@ const std::vector<SuggestionType> kUnclickableSuggestionTypes{
 };
 
 bool IsClickable(SuggestionType id) {
-  DCHECK(base::Contains(kClickableSuggestionTypes, id) ^
-         base::Contains(kUnclickableSuggestionTypes, id));
-  return base::Contains(kClickableSuggestionTypes, id);
+  DCHECK(std::ranges::contains(kClickableSuggestionTypes, id) ^
+         std::ranges::contains(kUnclickableSuggestionTypes, id));
+  return std::ranges::contains(kClickableSuggestionTypes, id);
 }
 
 Suggestion CreateSuggestionWithChildren(

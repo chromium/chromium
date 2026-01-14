@@ -13,7 +13,6 @@
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -144,7 +143,7 @@ void ThumbnailCache::Put(
   thumbnail->SetBitmap(bitmap);
 
   RemoveFromReadQueue(tab_id);
-  if (base::Contains(visible_ids_, tab_id)) {
+  if (std::ranges::contains(visible_ids_, tab_id)) {
     MakeSpaceForNewItemIfNecessary(tab_id);
     cache_.Put(tab_id, std::move(thumbnail));
     NotifyObserversOfThumbnailAddedToCache(tab_id);
@@ -169,8 +168,8 @@ Thumbnail* ThumbnailCache::Get(TabId tab_id, bool force_disk_read) {
   }
 
   if (force_disk_read && primary_tab_id_ != tab_id &&
-      base::Contains(visible_ids_, tab_id) &&
-      !base::Contains(read_queue_, tab_id)) {
+      std::ranges::contains(visible_ids_, tab_id) &&
+      !std::ranges::contains(read_queue_, tab_id)) {
     read_queue_.push_back(tab_id);
     ReadNextThumbnail();
   }
@@ -214,7 +213,8 @@ bool ThumbnailCache::CheckAndUpdateThumbnailMetaData(TabId tab_id,
 }
 
 bool ThumbnailCache::IsInVisibleIds(TabId tab_id) {
-  return primary_tab_id_ == tab_id || base::Contains(visible_ids_, tab_id);
+  return primary_tab_id_ == tab_id ||
+         std::ranges::contains(visible_ids_, tab_id);
 }
 
 void ThumbnailCache::UpdateVisibleIds(const std::vector<TabId>& priority,
@@ -260,7 +260,7 @@ void ThumbnailCache::UpdateVisibleIds(const std::vector<TabId>& priority,
     TabId tab_id = *iter;
     visible_ids_.push_back(tab_id);
     if (!cache_.Get(tab_id) && primary_tab_id_ != tab_id &&
-        !base::Contains(read_queue_, tab_id)) {
+        !std::ranges::contains(read_queue_, tab_id)) {
       read_queue_.push_back(tab_id);
     }
     iter++;
@@ -427,7 +427,7 @@ void ThumbnailCache::ReadNextThumbnail() {
 }
 
 void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
-  if (cache_.Get(tab_id) || !base::Contains(visible_ids_, tab_id) ||
+  if (cache_.Get(tab_id) || !std::ranges::contains(visible_ids_, tab_id) ||
       cache_.size() < cache_.MaximumCacheSize()) {
     return;
   }
@@ -437,7 +437,7 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 
   // 1. Find a cached item not in this list
   for (auto& item : cache_) {
-    if (!base::Contains(visible_ids_, item.first)) {
+    if (!std::ranges::contains(visible_ids_, item.first)) {
       key_to_remove = item.first;
       found_key_to_remove = true;
       break;
@@ -569,7 +569,7 @@ void ThumbnailCache::PostEtc1ReadTask(TabId tab_id,
       time_stamp = meta_iter->second.capture_time();
     }
 
-    if (base::Contains(visible_ids_, tab_id)) {
+    if (std::ranges::contains(visible_ids_, tab_id)) {
       MakeSpaceForNewItemIfNecessary(tab_id);
       std::unique_ptr<Thumbnail> thumbnail = Thumbnail::Create(
           tab_id, time_stamp, scale, ui_resource_provider_, this);

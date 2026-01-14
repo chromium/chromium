@@ -4,7 +4,8 @@
 
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -106,7 +107,7 @@ void ExpectCanDiscardFalse(
   CanDiscardResult result =
       CanDiscardHelper(tab_lifecycle_unit, discard_reason, &failure_reasons);
   EXPECT_TRUE(result == kDisallowed || result == kProtected);
-  EXPECT_TRUE(base::Contains(failure_reasons, failure_reason));
+  EXPECT_TRUE(std::ranges::contains(failure_reasons, failure_reason));
 }
 
 void ExpectCanDiscardFalseAllReasons(
