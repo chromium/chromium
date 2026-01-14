@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -244,8 +243,8 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
     }
 
     if (options.scalability_mode.has_value() &&
-        !base::Contains(supported_profile.scalability_modes,
-                        options.scalability_mode.value())) {
+        !std::ranges::contains(supported_profile.scalability_modes,
+                               options.scalability_mode.value())) {
       continue;
     }
 

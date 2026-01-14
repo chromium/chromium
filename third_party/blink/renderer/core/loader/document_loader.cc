@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -3400,7 +3401,7 @@ void DocumentLoader::RecordAcceptLanguageAndContentLanguageMetric() {
             kContentLanguageMatchesPrimaryAcceptLanguage);
   }
 
-  if (base::Contains(accept_languages, content_language)) {
+  if (std::ranges::contains(accept_languages, content_language)) {
     base::UmaHistogramEnumeration(language_histogram_name,
                                   AcceptLanguageAndContentLanguageUsage::
                                       kContentLanguageMatchesAnyAcceptLanguage);

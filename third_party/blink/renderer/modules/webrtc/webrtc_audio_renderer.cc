@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -714,7 +713,7 @@ bool WebRtcAudioRenderer::AddPlayingState(webrtc::AudioSourceInterface* source,
   DCHECK(state->playing());
   // Look up or add the |source| to the map.
   PlayingStates& array = source_playing_states_[source];
-  if (base::Contains(array, state))
+  if (std::ranges::contains(array, state))
     return false;
 
   array.push_back(state);

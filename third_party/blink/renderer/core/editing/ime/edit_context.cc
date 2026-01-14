@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -865,8 +864,8 @@ void EditContext::SetSelection(int start,
 }
 
 void EditContext::AttachElement(HTMLElement* element_to_attach) {
-  if (base::Contains(attached_elements_, element_to_attach,
-                     &Member<HTMLElement>::Get)) {
+  if (std::ranges::contains(attached_elements_, element_to_attach,
+                            &Member<HTMLElement>::Get)) {
     return;
   }
 

@@ -34,7 +34,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"

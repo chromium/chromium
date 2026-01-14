@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -79,7 +78,7 @@ using AudioPropertiesBoolMembers = Vector<bool AudioProcessingProperties::*>;
 
 template <typename T>
 static bool Contains(const Vector<T>& vector, T value) {
-  return base::Contains(vector, value);
+  return std::ranges::contains(vector, value);
 }
 
 }  // namespace

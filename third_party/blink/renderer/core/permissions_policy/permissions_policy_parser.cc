@@ -3,10 +3,10 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 
+#include <algorithm>
 #include <bitset>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
@@ -653,8 +653,8 @@ PermissionsPolicyParser::ParsePermissionsPolicyForTest(
 
 bool IsFeatureDeclared(network::mojom::PermissionsPolicyFeature feature,
                        const network::ParsedPermissionsPolicy& policy) {
-  return base::Contains(policy, feature,
-                        &network::ParsedPermissionsPolicyDeclaration::feature);
+  return std::ranges::contains(
+      policy, feature, &network::ParsedPermissionsPolicyDeclaration::feature);
 }
 
 bool RemoveFeatureIfPresent(network::mojom::PermissionsPolicyFeature feature,

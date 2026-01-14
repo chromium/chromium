@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"

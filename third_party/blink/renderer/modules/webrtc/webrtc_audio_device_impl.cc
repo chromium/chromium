@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -377,7 +378,7 @@ void WebRtcAudioDeviceImpl::AddAudioCapturer(
   DCHECK(!capturer->device().id.empty());
 
   base::AutoLock auto_lock(lock_);
-  DCHECK(!base::Contains(capturers_, capturer));
+  DCHECK(!std::ranges::contains(capturers_, capturer));
   capturers_.push_back(capturer);
   capturer->SetOutputDeviceForAec(output_device_id_for_aec_.Utf8());
 }
@@ -397,7 +398,7 @@ void WebRtcAudioDeviceImpl::AddPlayoutSink(
   DVLOG(1) << "WebRtcAudioDeviceImpl::AddPlayoutSink()";
   DCHECK(sink);
   base::AutoLock auto_lock(lock_);
-  DCHECK(!base::Contains(playout_sinks_, sink));
+  DCHECK(!std::ranges::contains(playout_sinks_, sink));
   playout_sinks_.push_back(sink);
 }
 

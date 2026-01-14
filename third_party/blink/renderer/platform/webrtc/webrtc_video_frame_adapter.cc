@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 
+#include <algorithm>
 #include <cmath>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
@@ -595,7 +595,8 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
 WebRtcVideoFrameAdapter::ScaledBuffer::GetMappedFrameBuffer(
     webrtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) {
   auto frame_buffer = parent_->GetOrCreateFrameBufferForSize(size_);
-  return base::Contains(types, frame_buffer->type()) ? frame_buffer : nullptr;
+  return std::ranges::contains(types, frame_buffer->type()) ? frame_buffer
+                                                            : nullptr;
 }
 
 webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
@@ -652,7 +653,8 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
 WebRtcVideoFrameAdapter::GetMappedFrameBuffer(
     webrtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) {
   auto frame_buffer = GetOrCreateFrameBufferForSize(full_size_);
-  return base::Contains(types, frame_buffer->type()) ? frame_buffer : nullptr;
+  return std::ranges::contains(types, frame_buffer->type()) ? frame_buffer
+                                                            : nullptr;
 }
 
 // Soft-applies cropping and scaling. The result is a ScaledBuffer.

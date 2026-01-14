@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 
+#include <algorithm>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -74,7 +74,7 @@ ScriptWebBundleRule::ParseJson(const String& inline_text,
   if (logger) {
     for (wtf_size_t i = 0; i < json_obj->size(); ++i) {
       JSONObject::Entry entry = json_obj->at(i);
-      if (!base::Contains(kKnownKeys, entry.first)) {
+      if (!std::ranges::contains(kKnownKeys, entry.first)) {
         logger->AddConsoleMessage(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kWarning,

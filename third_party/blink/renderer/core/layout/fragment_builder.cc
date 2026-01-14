@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -791,8 +792,8 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     static_position.offset += adjusted_offset;
 
     // |oof_positioned_candidates_| should not have duplicated entries.
-    DCHECK(!base::Contains(oof_positioned_candidates_, node,
-                           &LogicalOofPositionedNode::Node));
+    DCHECK(!std::ranges::contains(oof_positioned_candidates_, node,
+                                  &LogicalOofPositionedNode::Node));
     oof_candidates_may_have_anchors_ |= node.MayContainAnchor();
     oof_positioned_candidates_.emplace_back(
         node, descendant.break_token, static_position,

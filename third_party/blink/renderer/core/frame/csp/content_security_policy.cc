@@ -31,7 +31,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -199,7 +198,7 @@ String ContentSecurityPolicy::StripURLForUseInReport(
   // > 1. If url's scheme is not "`https`", "'http'", "`wss`" or "`ws`" then
   // >    return url's scheme.
   static const char* const allow_list[] = {"http", "https", "ws", "wss"};
-  if (!base::Contains(allow_list, url.Protocol())) {
+  if (!std::ranges::contains(allow_list, url.Protocol())) {
     return url.Protocol();
   }
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 namespace blink {

@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/css/css_image_generator_value.h"
 
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"

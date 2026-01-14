@@ -7,7 +7,8 @@
 // changes to it require review from security reviewers, listed in the
 // SECURITY_OWNERS file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 
@@ -24,7 +25,7 @@ bool FeatureEnabledForNavigation(blink::mojom::OriginTrialFeature feature) {
       blink::mojom::OriginTrialFeature::kDeviceBoundSessionCredentials,
       blink::mojom::OriginTrialFeature::kDeviceBoundSessionCredentials2,
   };
-  return base::Contains(kEnabledForNavigation, feature);
+  return std::ranges::contains(kEnabledForNavigation, feature);
 }
 
 }  // namespace origin_trials

@@ -11,7 +11,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
@@ -163,7 +162,8 @@ class AcceptEncodingNegotiation final : public ContentNegotiationAlgorithm {
 
     // Step 3. If "identity" is not a member of preferred-codings, append
     // "identity". [spec text]
-    if (!base::Contains(preferred_codings, kIdentity, &WeightedValue::value)) {
+    if (!std::ranges::contains(preferred_codings, kIdentity,
+                               &WeightedValue::value)) {
       preferred_codings.push_back({kIdentity, 0.0});
     }
 
@@ -551,7 +551,7 @@ bool WebPackageRequestMatcher::MatchRequest(
     DCHECK_EQ(vk.size(), sorted_variants.size());
     size_t i = 0;
     for (; i < sorted_variants.size(); ++i) {
-      if (!base::Contains(sorted_variants[i], vk[i]))
+      if (!std::ranges::contains(sorted_variants[i], vk[i]))
         break;
     }
     if (i == sorted_variants.size())

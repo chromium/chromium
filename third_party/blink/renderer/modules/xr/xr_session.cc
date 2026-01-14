@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"

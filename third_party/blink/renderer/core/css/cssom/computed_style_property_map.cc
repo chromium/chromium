@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/computed_style_property_map.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -109,7 +111,7 @@ const CSSValue* ComputedStylePropertyMap::GetProperty(
       CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kOutlineWidth,
   };
 
-  if (base::Contains(kWidthProperties, property_id)) {
+  if (std::ranges::contains(kWidthProperties, property_id)) {
     RecordUseCounterForWidthStyleValues(property_id, *style);
   }
 

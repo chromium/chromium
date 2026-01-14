@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -1530,8 +1531,8 @@ bool HTMLPermissionElement::IsStyleValid() {
     return false;
   }
 
-  if (base::Contains(kInvalidDisplayStyles,
-                     style->GetDisplayStyle().Display()) ||
+  if (std::ranges::contains(kInvalidDisplayStyles,
+                            style->GetDisplayStyle().Display()) ||
       style->IsDisplayTableType()) {
     AuditsIssue::ReportPermissionElementIssue(
         GetExecutionContext(), GetDomNodeId(),

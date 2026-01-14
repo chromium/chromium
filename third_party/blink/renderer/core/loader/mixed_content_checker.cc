@@ -28,9 +28,9 @@
 
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -275,8 +275,8 @@ static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
           WebFeature::kMixedContentInNonHTTPSFrameThatRestrictsMixedContent);
     }
   } else if (!IsUrlPotentiallyTrustworthy(url) &&
-             base::Contains(url::GetSecureSchemes(),
-                            origin->Protocol().Ascii())) {
+             std::ranges::contains(url::GetSecureSchemes(),
+                                   origin->Protocol().Ascii())) {
     UseCounter::Count(
         source->GetDocument(),
         WebFeature::kMixedContentInSecureFrameThatDoesNotRestrictMixedContent);

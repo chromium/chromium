@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_devices.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -541,13 +542,13 @@ void VerifyAudioInputCapabilities(
     for (auto value : capabilities->echoCancellation()) {
       echo_cancellation.push_back(ToEchoCancellationMode(value));
     }
-    EXPECT_TRUE(base::Contains(echo_cancellation,
-                               EchoCancellationMode::kBrowserDecides));
-    EXPECT_TRUE(
-        base::Contains(echo_cancellation, EchoCancellationMode::kDisabled));
+    EXPECT_TRUE(std::ranges::contains(echo_cancellation,
+                                      EchoCancellationMode::kBrowserDecides));
+    EXPECT_TRUE(std::ranges::contains(echo_cancellation,
+                                      EchoCancellationMode::kDisabled));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    EXPECT_TRUE(
-        base::Contains(echo_cancellation, EchoCancellationMode::kRemoteOnly));
+    EXPECT_TRUE(std::ranges::contains(echo_cancellation,
+                                      EchoCancellationMode::kRemoteOnly));
 #endif
     int effects = expected_capabilities->parameters.effects();
     // On some platforms, capabilities are not queried because it is costly.
@@ -558,7 +559,7 @@ void VerifyAudioInputCapabilities(
     }
     if (EchoCanceller::IsSystemWideAecAvailable(effects)) {
       EXPECT_TRUE(
-          base::Contains(echo_cancellation, EchoCancellationMode::kAll));
+          std::ranges::contains(echo_cancellation, EchoCancellationMode::kAll));
     }
   }
 }

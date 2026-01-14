@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/metrics/histogram_macros.h"
@@ -233,8 +234,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
         // Warn if a disallowed permissions policy is attempted to be enabled.
         for (const auto& policy : container_policy) {
-          if (!base::Contains(network::kFencedFrameAllowedFeatures,
-                              policy.feature)) {
+          if (!std::ranges::contains(network::kFencedFrameAllowedFeatures,
+                                     policy.feature)) {
             bool is_isolated_context =
                 execution_context_ && execution_context_->IsIsolatedContext();
             execution_context_->AddConsoleMessage(

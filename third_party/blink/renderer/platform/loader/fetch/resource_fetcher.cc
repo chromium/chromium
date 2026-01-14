@@ -35,7 +35,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -3347,7 +3346,8 @@ bool ResourceFetcher::IsPotentiallyUnusedPreload(
       break;
   }
 
-  return base::Contains(context_->GetPotentiallyUnusedPreloads(), params.Url());
+  return std::ranges::contains(context_->GetPotentiallyUnusedPreloads(),
+                               params.Url());
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

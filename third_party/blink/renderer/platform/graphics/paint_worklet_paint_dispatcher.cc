@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"

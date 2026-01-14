@@ -35,7 +35,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -74,7 +75,7 @@ Vector<String> MockClipboardHost::ReadStandardFormatNames() {
   if (!png_.empty())
     types.push_back(ui::kMimeTypePng);
   for (auto& it : custom_data_) {
-    CHECK(!base::Contains(types, it.key));
+    CHECK(!std::ranges::contains(types, it.key));
     types.push_back(it.key);
   }
   return types;

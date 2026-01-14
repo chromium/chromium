@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/service_worker/thread_safe_script_container.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 
 namespace blink {

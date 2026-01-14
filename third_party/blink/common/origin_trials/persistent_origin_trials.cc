@@ -7,9 +7,9 @@
 // since changes to it require review from security reviewers, listed in the
 // SECURITY_OWNERS file.
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 
 namespace blink::origin_trials {
@@ -25,7 +25,7 @@ bool IsTrialPersistentToNextResponse(std::string_view trial_name) {
       // Production persistent origin trials follow below:
       "DisableReduceAcceptLanguage",
   };
-  return base::Contains(kPersistentTrials, trial_name);
+  return std::ranges::contains(kPersistentTrials, trial_name);
 }
 
 }  // namespace blink::origin_trials

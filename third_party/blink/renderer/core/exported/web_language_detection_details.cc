@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/web/web_language_detection_details.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -104,8 +106,8 @@ void MatchTargetLanguageWithAcceptLanguages(
                           kXmlLangMatchesPrimaryAcceptLanguage
                     : AcceptLanguageAndXmlHtmlLangUsage::
                           kHtmlLangMatchesPrimaryAcceptLanguage);
-  } else if (base::Contains(accept_languages, target_language,
-                            &GetLanguageCode)) {
+  } else if (std::ranges::contains(accept_languages, target_language,
+                                   &GetLanguageCode)) {
     base::UmaHistogramEnumeration(
         language_histogram_name,
         is_xml_lang ? AcceptLanguageAndXmlHtmlLangUsage::

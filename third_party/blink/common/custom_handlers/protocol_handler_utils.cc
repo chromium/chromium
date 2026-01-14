@@ -4,9 +4,9 @@
 
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -113,7 +113,7 @@ bool IsValidCustomHandlerScheme(std::string_view scheme,
       "webcal",  "wtai",   "xmpp"};
 
   std::string lower_scheme = base::ToLowerASCII(scheme);
-  if (base::Contains(kProtocolSafelist, lower_scheme)) {
+  if (std::ranges::contains(kProtocolSafelist, lower_scheme)) {
     return true;
   }
   if (lower_scheme == "ftp" || lower_scheme == "ftps" ||

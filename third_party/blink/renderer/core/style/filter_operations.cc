@@ -28,7 +28,6 @@
 #include <algorithm>
 #include <numeric>
 
-#include "base/containers/contains.h"
 
 namespace blink {
 
@@ -94,8 +93,9 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 }
 
 bool FilterOperations::HasReferenceFilter() const {
-  return base::Contains(operations_, FilterOperation::OperationType::kReference,
-                        &FilterOperation::GetType);
+  return std::ranges::contains(operations_,
+                               FilterOperation::OperationType::kReference,
+                               &FilterOperation::GetType);
 }
 
 bool FilterOperations::UsesCurrentColor() const {

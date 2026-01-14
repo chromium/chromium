@@ -4,9 +4,9 @@
 
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 
+#include <algorithm>
 #include <limits>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -56,7 +56,7 @@ BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
     }
 
     // Check for icon purpose.
-    if (!base::Contains(icon.purpose, purpose))
+    if (!std::ranges::contains(icon.purpose, purpose))
       continue;
 
     // Check for size constraints.

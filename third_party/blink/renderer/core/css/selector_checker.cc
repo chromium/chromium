@@ -29,6 +29,8 @@
 
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
@@ -3301,8 +3303,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       // contained in the pseudo-element's classes (pseudo_ident_list).
       return std::ranges::all_of(base::span(selector.IdentList()).subspan(1ul),
                                  [&](const AtomicString& class_from_selector) {
-                                   return base::Contains(pseudo_ident_list,
-                                                         class_from_selector);
+                                   return std::ranges::contains(
+                                       pseudo_ident_list, class_from_selector);
                                  });
     }
     case CSSSelector::kPseudoScrollbarButton:

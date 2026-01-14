@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_plane_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane_set.h"

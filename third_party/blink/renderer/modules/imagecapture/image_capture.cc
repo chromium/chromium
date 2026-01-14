@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -685,7 +684,7 @@ bool CheckExactValueConstraint(const MediaSettingsRange* effective_capability,
 // capabilities such as whiteBalanceMode, exposureMode and focusMode.
 bool CheckExactValueConstraint(const Vector<String>& effective_capability,
                                const String& exact_constraint) {
-  return base::Contains(effective_capability, exact_constraint);
+  return std::ranges::contains(effective_capability, exact_constraint);
 }
 
 // For exact `sequence<DOMString>` constraints and `sequence<DOMString>`
@@ -693,7 +692,7 @@ bool CheckExactValueConstraint(const Vector<String>& effective_capability,
 bool CheckExactValueConstraint(const Vector<String>& effective_capability,
                                const Vector<String>& exact_constraints) {
   for (const auto& exact_constraint : exact_constraints) {
-    if (base::Contains(effective_capability, exact_constraint)) {
+    if (std::ranges::contains(effective_capability, exact_constraint)) {
       return true;
     }
   }
@@ -910,7 +909,7 @@ bool CheckValueConstraint(
     case ContentType::kBoolean:
       if (IsBareValueToBeTreatedAsExact(constraint_set_type)) {
         const bool exact_constraint = constraint->GetAsBoolean();
-        return base::Contains(effective_capability, exact_constraint);
+        return std::ranges::contains(effective_capability, exact_constraint);
       }
       return true;
     case ContentType::kConstrainBooleanParameters: {
@@ -920,7 +919,7 @@ bool CheckValueConstraint(
           constraint->GetAsConstrainBooleanParameters();
       if (dictionary_constraint->hasExact()) {
         const bool exact_constraint = dictionary_constraint->exact();
-        return base::Contains(effective_capability, exact_constraint);
+        return std::ranges::contains(effective_capability, exact_constraint);
       }
       return true;
     }
@@ -1038,15 +1037,15 @@ Vector<String> ApplyExactValueConstraint(
   // Update the effective capability.
   Vector<String> new_effective_capability;
   for (const auto& exact_constraint : exact_constraints) {
-    if (base::Contains(effective_capability, exact_constraint)) {
+    if (std::ranges::contains(effective_capability, exact_constraint)) {
       new_effective_capability.push_back(exact_constraint);
     }
   }
   DCHECK(!new_effective_capability.empty());
   // Clamp and update the setting.
   if (!*has_setting_ptr ||
-      !base::Contains(exact_constraints,
-                      static_cast<const String&>(ToString(*setting_ptr)))) {
+      !std::ranges::contains(exact_constraints, static_cast<const String&>(
+                                                    ToString(*setting_ptr)))) {
     *has_setting_ptr = true;
     *setting_ptr = ParseMeteringMode(new_effective_capability[0]);
   }
@@ -1071,7 +1070,7 @@ Vector<bool> ApplyIdealValueConstraint(bool* has_setting_ptr,
                                        bool ideal_constraint) {
   // Clamp and update the setting.
   *has_setting_ptr = true;
-  *setting_ptr = base::Contains(effective_capability, ideal_constraint)
+  *setting_ptr = std::ranges::contains(effective_capability, ideal_constraint)
                      ? ideal_constraint
                      : effective_capability[0];
   // Keep the effective capability intact.
@@ -1106,8 +1105,9 @@ Vector<String> ApplyIdealValueConstraint(
   // Validate and update the setting.
   *has_setting_ptr = true;
   *setting_ptr = ParseMeteringMode(
-      base::Contains(effective_capability, ideal_constraint) ? ideal_constraint
-                                                             : current_setting);
+      std::ranges::contains(effective_capability, ideal_constraint)
+          ? ideal_constraint
+          : current_setting);
   // Keep the effective capability intact.
   return effective_capability;
 }
@@ -1122,11 +1122,11 @@ Vector<String> ApplyIdealValueConstraint(
     const String& current_setting) {
   // Clamp and update the setting.
   if (!*has_setting_ptr ||
-      !base::Contains(ideal_constraints,
-                      static_cast<const String&>(ToString(*setting_ptr)))) {
+      !std::ranges::contains(ideal_constraints, static_cast<const String&>(
+                                                    ToString(*setting_ptr)))) {
     String setting_name = current_setting;
     for (const auto& ideal_constraint : ideal_constraints) {
-      if (base::Contains(effective_capability, ideal_constraint)) {
+      if (std::ranges::contains(effective_capability, ideal_constraint)) {
         setting_name = ideal_constraint;
         break;
       }
@@ -1455,7 +1455,7 @@ void MaybeSetBackgroundBlurSetting(bool value,
                                    const Vector<bool>& capability,
                                    bool& has_setting,
                                    BackgroundBlurMode& setting) {
-  if (!base::Contains(capability, value)) {
+  if (!std::ranges::contains(capability, value)) {
     return;
   }
 
@@ -1466,7 +1466,7 @@ void MaybeSetBackgroundBlurSetting(bool value,
 void MaybeSetBoolSetting(bool value,
                          const Vector<bool>& capability,
                          std::optional<bool>& setting) {
-  if (!base::Contains(capability, value)) {
+  if (!std::ranges::contains(capability, value)) {
     return;
   }
 
@@ -1477,7 +1477,7 @@ void MaybeSetBoolSetting(bool value,
                          const Vector<bool>& capability,
                          bool& has_setting,
                          bool& setting) {
-  if (!base::Contains(capability, value)) {
+  if (!std::ranges::contains(capability, value)) {
     return;
   }
 
@@ -1489,7 +1489,7 @@ void MaybeSetEyeGazeCorrectionSetting(
     bool value,
     const Vector<bool>& capability,
     std::optional<EyeGazeCorrectionMode>& setting) {
-  if (!base::Contains(capability, value)) {
+  if (!std::ranges::contains(capability, value)) {
     return;
   }
 
@@ -1500,7 +1500,7 @@ void MaybeSetFaceFramingSetting(bool value,
                                 const Vector<bool>& capability,
                                 bool& has_setting,
                                 MeteringMode& setting) {
-  if (!base::Contains(capability, value)) {
+  if (!std::ranges::contains(capability, value)) {
     return;
   }
 
@@ -2830,7 +2830,8 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
     Vector<bool> supported_background_blur_modes;
     for (auto mode : photo_state->supported_background_blur_modes) {
       bool boolean_mode = ToBooleanMode(mode);
-      if (!base::Contains(supported_background_blur_modes, boolean_mode)) {
+      if (!std::ranges::contains(supported_background_blur_modes,
+                                 boolean_mode)) {
         supported_background_blur_modes.push_back(boolean_mode);
       }
     }
@@ -2851,7 +2852,8 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
     Vector<bool> supported_eye_gaze_correction_modes;
     for (const auto& mode : photo_state->supported_eye_gaze_correction_modes) {
       bool boolean_mode = ToBooleanMode(mode);
-      if (!base::Contains(supported_eye_gaze_correction_modes, boolean_mode)) {
+      if (!std::ranges::contains(supported_eye_gaze_correction_modes,
+                                 boolean_mode)) {
         supported_eye_gaze_correction_modes.push_back(boolean_mode);
       }
     }

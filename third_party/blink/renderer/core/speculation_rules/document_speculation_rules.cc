@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
@@ -275,7 +274,7 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 
   CountSpeculationRulesLoadOutcome(outcome);
 
-  DCHECK(!base::Contains(rule_sets_, rule_set));
+  DCHECK(!std::ranges::contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
   if (rule_set->has_document_rule()) {
     UseCounter::Count(GetSupplementable(),

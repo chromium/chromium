@@ -4,11 +4,11 @@
 
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -97,7 +97,7 @@ class ContentToVisibleTimeReporterTest
         kBfcacheRestoreHistogram};
     std::vector<std::string> unexpected_histograms;
     for (const char* histogram : kAllHistograms) {
-      if (!base::Contains(histograms_with_values, histogram))
+      if (!std::ranges::contains(histograms_with_values, histogram))
         unexpected_histograms.push_back(histogram);
     }
     ExpectTotalSamples(unexpected_histograms, 0);

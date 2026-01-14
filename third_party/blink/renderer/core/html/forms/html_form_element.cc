@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/auto_reset.h"
@@ -858,7 +859,7 @@ void HTMLFormElement::CollectListedElements(
         if (elements_for_autofill) {
           elements_for_autofill->push_back(listed_element);
         }
-      } else if (base::Contains(nested_forms, listed_element->Form())) {
+      } else if (std::ranges::contains(nested_forms, listed_element->Form())) {
         elements_for_autofill->push_back(listed_element);
       }
     }

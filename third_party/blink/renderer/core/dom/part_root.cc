@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/dom/part_root.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/dom/child_node_list.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
@@ -32,7 +33,7 @@ void PartRoot::AddPart(Part& new_part) {
   if (cached_parts_list_dirty_) {
     return;
   }
-  DCHECK(!base::Contains(*cached_ordered_parts_, &new_part));
+  DCHECK(!std::ranges::contains(*cached_ordered_parts_, &new_part));
   cached_ordered_parts_->push_back(&new_part);
 }
 
@@ -172,7 +173,7 @@ void PartRoot::RebuildPartsList() {
         if (part->NodeToSortBy() != node) {
           continue;
         }
-        DCHECK(!base::Contains(*cached_ordered_parts_, part));
+        DCHECK(!std::ranges::contains(*cached_ordered_parts_, part));
         cached_ordered_parts_->push_back(part);
       }
     }

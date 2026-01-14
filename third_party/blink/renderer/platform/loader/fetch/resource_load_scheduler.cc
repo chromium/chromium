@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"

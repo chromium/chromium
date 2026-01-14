@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
@@ -199,7 +200,7 @@ void Subscriber::ConsumerUnsubscribe(
 
   // Also remove `associated_observer` from `internal_observers_`, since it no
   // longer cares about values `this` produces.
-  DCHECK(base::Contains(internal_observers_, associated_observer));
+  DCHECK(std::ranges::contains(internal_observers_, associated_observer));
   internal_observers_.erase(
       std::ranges::find(internal_observers_, associated_observer));
 

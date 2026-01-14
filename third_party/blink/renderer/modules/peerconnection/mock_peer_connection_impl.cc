@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
@@ -378,7 +377,7 @@ MockPeerConnectionImpl::AddTrack(
       return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER);
   }
   for (const auto& stream_id : stream_ids) {
-    if (!base::Contains(local_stream_ids_, stream_id)) {
+    if (!std::ranges::contains(local_stream_ids_, stream_id)) {
       stream_label_ = stream_id;
       local_stream_ids_.push_back(stream_id);
     }
@@ -404,7 +403,7 @@ webrtc::RTCError MockPeerConnectionImpl::RemoveTrackOrError(
     webrtc::scoped_refptr<webrtc::RtpSenderInterface> s) {
   webrtc::scoped_refptr<FakeRtpSender> sender(
       static_cast<FakeRtpSender*>(s.get()));
-  if (!base::Contains(senders_, sender)) {
+  if (!std::ranges::contains(senders_, sender)) {
     return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER,
                             "Mock: sender not found in senders");
   }

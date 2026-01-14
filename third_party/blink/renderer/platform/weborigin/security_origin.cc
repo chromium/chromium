@@ -30,11 +30,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -117,8 +117,8 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
             relevant_url.ProtocolIs("ftp")) &&
            relevant_url.Host().empty()));
 
-  if (base::Contains(url::GetNoAccessSchemes(),
-                     relevant_url.Protocol().Ascii()))
+  if (std::ranges::contains(url::GetNoAccessSchemes(),
+                            relevant_url.Protocol().Ascii()))
     return true;
 
   // Nonstandard schemes and unregistered schemes are placed in opaque origins.
@@ -126,7 +126,8 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
     // A temporary exception is made for non-standard local schemes.
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove the local scheme exception.
-    if (base::Contains(url::GetLocalSchemes(), relevant_url.Protocol().Ascii()))
+    if (std::ranges::contains(url::GetLocalSchemes(),
+                              relevant_url.Protocol().Ascii()))
       return false;
 
     // Otherwise, treat non-standard origins as opaque, unless the Android
@@ -426,7 +427,7 @@ bool SecurityOrigin::CanDisplay(const KURL& url) const {
            SecurityPolicy::IsOriginAccessToURLAllowed(this, url);
   }
 
-  if (base::Contains(url::GetLocalSchemes(), protocol.Ascii())) {
+  if (std::ranges::contains(url::GetLocalSchemes(), protocol.Ascii())) {
     return CanLoadLocalResources() ||
            SecurityPolicy::IsOriginAccessToURLAllowed(this, url);
   }
@@ -472,7 +473,7 @@ void SecurityOrigin::BlockLocalAccessFromLocalOrigin() {
 }
 
 bool SecurityOrigin::IsLocal() const {
-  return base::Contains(url::GetLocalSchemes(), protocol_.Ascii());
+  return std::ranges::contains(url::GetLocalSchemes(), protocol_.Ascii());
 }
 
 bool SecurityOrigin::IsLocalhost() const {

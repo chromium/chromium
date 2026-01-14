@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -393,7 +395,7 @@ void MediaVideoVisibilityTracker::ElementDidMoveToNewDocument() {
 
 void MediaVideoVisibilityTracker::Invoke(ExecutionContext* context,
                                          Event* event) {
-  DCHECK(base::Contains(FullscreenEventTypes(), event->type()));
+  DCHECK(std::ranges::contains(FullscreenEventTypes(), event->type()));
 
   // Video is not loaded yet.
   if (VideoElement().getReadyState() < HTMLMediaElement::kHaveMetadata) {

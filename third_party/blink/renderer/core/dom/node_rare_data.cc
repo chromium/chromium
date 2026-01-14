@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -88,13 +90,13 @@ void NodeRareData::AddDOMPart(Part& part) {
   if (!dom_parts_) {
     dom_parts_ = MakeGarbageCollected<PartsList>();
   }
-  DCHECK(!base::Contains(*dom_parts_, &part));
+  DCHECK(!std::ranges::contains(*dom_parts_, &part));
   dom_parts_->push_back(&part);
 }
 
 void NodeRareData::RemoveDOMPart(Part& part) {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  DCHECK(dom_parts_ && base::Contains(*dom_parts_, &part));
+  DCHECK(dom_parts_ && std::ranges::contains(*dom_parts_, &part));
   // Common case is that one node has one part:
   if (dom_parts_->size() == 1) {
     DCHECK_EQ(dom_parts_->front(), &part);

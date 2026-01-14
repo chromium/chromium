@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -1484,8 +1483,8 @@ void XRSystem::OnRequestSessionReturned(
   Element* fullscreen_element = nullptr;
   const auto& enabled_features =
       result->get_success()->session->enabled_features;
-  if (base::Contains(enabled_features,
-                     device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+  if (std::ranges::contains(enabled_features,
+                            device::mojom::XRSessionFeature::DOM_OVERLAY)) {
     fullscreen_element = query->DOMOverlayElement();
   }
 
@@ -1509,7 +1508,7 @@ void XRSystem::OnRequestSessionReturned(
     return;
   }
 
-  const bool session_has_camera_access = base::Contains(
+  const bool session_has_camera_access = std::ranges::contains(
       enabled_features, device::mojom::XRSessionFeature::CAMERA_ACCESS);
 
   // At this point, we know that we have an element that we need to make

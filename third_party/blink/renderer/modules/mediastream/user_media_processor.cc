@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -670,7 +669,7 @@ void UserMediaProcessor::RequestInfo::OnAudioSourceStarted(
     const String& result_name) {
   // Check if we're waiting to be notified of this source.  If not, then we'll
   // ignore the notification.
-  if (base::Contains(sources_waiting_for_callback_, source)) {
+  if (std::ranges::contains(sources_waiting_for_callback_, source)) {
     OnTrackStarted(source, result, result_name);
   }
 }

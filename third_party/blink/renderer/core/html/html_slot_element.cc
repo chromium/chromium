@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"

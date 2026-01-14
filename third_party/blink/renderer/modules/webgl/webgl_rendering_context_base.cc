@@ -31,7 +31,6 @@
 #include "base/bit_cast.h"
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
