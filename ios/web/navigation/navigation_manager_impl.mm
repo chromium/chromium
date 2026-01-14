@@ -117,6 +117,10 @@ namespace web {
 
 const char kRestoreNavigationItemCount[] = "IOS.RestoreNavigationItemCount";
 
+// Enabled by default since this is a killswitch.
+BASE_FEATURE(kSkipAutomaticNavigationInBackForwardList,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 class NavigationManagerImpl::GoToParams {
  public:
   constexpr GoToParams(GoToParams&&) = default;
@@ -620,21 +624,7 @@ void NavigationManagerImpl::UpdateCurrentItemForReplaceState(
 }
 
 void NavigationManagerImpl::GoTo(GoToParams params) {
-  int index = 0;
-  switch (params.navigation_type()) {
-    case BackForwardNavigationType::kBackward:
-      index = GetIndexForOffset(-1);
-      break;
-
-    case BackForwardNavigationType::kForward:
-      index = GetIndexForOffset(+1);
-      break;
-
-    case BackForwardNavigationType::kToEntry:
-      index = params.index();
-      break;
-  }
-
+  const int index = IndexForParams(params);
   if (index < 0 || index >= GetItemCount()) {
     // Button actions are executed asynchronously, so it is possible for the
     // client to call this with an invalid index if the user quickly taps the
@@ -646,7 +636,7 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
   delegate_->ClearDialogs();
 
   if (!web_view_cache_.IsAttachedToWebView()) {
-    // GoToIndex from detached mode is equivalent to restoring history with
+    // GoTo(...) from detached mode is equivalent to restoring history with
     // `last_committed_item_index` updated to `index`.
     Restore(index, web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
@@ -660,7 +650,17 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
   WKBackForwardListItem* wk_item = web_view_cache_.GetWKItemAtIndex(index);
   if (wk_item) {
     base::AutoReset<bool> auto_reset(&going_to_back_forward_list_item_, true);
-    delegate_->GoToBackForwardListItem(wk_item, item, params.navigation_type(),
+
+    // When determining the target of the back/forward navigation using the
+    // heuristic in NavigationManagerImpl, use kToEntry as the navigation
+    // type to avoid using both //ios/web and WebKit heuristics.
+
+    const BackForwardNavigationType navigation_type =
+        base::FeatureList::IsEnabled(kSkipAutomaticNavigationInBackForwardList)
+            ? BackForwardNavigationType::kToEntry
+            : params.navigation_type();
+
+    delegate_->GoToBackForwardListItem(wk_item, item, navigation_type,
                                        params.initiation_type(),
                                        params.has_user_gesture());
   } else {
@@ -669,6 +669,117 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
         << " has_empty_window_open_item: "
         << (empty_window_open_item_ != nullptr);
   }
+}
+
+int NavigationManagerImpl::IndexForParams(GoToParams params) {
+  const BackForwardNavigationType type = params.navigation_type();
+  if (type == BackForwardNavigationType::kToEntry) {
+    // For kToEntry, the index is stored in params.
+    return params.index();
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          kSkipAutomaticNavigationInBackForwardList)) {
+    // If the feature is disabled, then use GetIndexForOffset(+/-1) to
+    // compute the target index.
+    return GetIndexForOffset(type == BackForwardNavigationType::kForward ? +1
+                                                                         : -1);
+  }
+
+  // If the feature is enabled, we need to check whether there is automatic
+  // items (i.e. items inserted by "pushState(...)" or "replaceState(...)"
+  // calls in JavaScript).
+
+  // Say we have the following navigations, where #foo, ... are inserted by
+  // the page using "pushState(...)" when the document is loaded without any
+  // user interaction (i.e. automatic items). From the user perspective, those
+  // navigations are unexpected, and moving back/forward should skip over them.
+  //
+  //  a.com/a -> b.com/b -> b.com/b#foo -> b.com/b#bar -> c.com/c
+
+  int index = -1;
+  NavigationItemImpl* item = nullptr;
+  const int current_index = GetIndexForOffset(0);
+
+  switch (type) {
+    case BackForwardNavigationType::kToEntry:
+      NOTREACHED();
+
+    case BackForwardNavigationType::kBackward: {
+      // When navigating back, if the current item is not an automatic item
+      // (e.g. c.com/c), then the navigation is relative to `current_index`.
+      item = GetNavigationItemImplAtIndex(current_index);
+      if (!item || !item->WasCreatedAutomatically()) {
+        return current_index - 1;
+      }
+
+      // Otherwise, the current item is part of a chain of automatic items,
+      // skip over all those items to determine the item that corresponded
+      // to an user initiated navigation.
+      //
+      // In the exemple above, this would correspond to a back initiated
+      // from either "b.com/b#foo" or "b.com/b#bar" which should both be
+      // interpreted as relative to "b.com" instead.
+      index = current_index - 1;
+      item = GetNavigationItemImplAtIndex(index);
+      while (item && item->WasCreatedAutomatically()) {
+        index -= 1;
+        item = GetNavigationItemImplAtIndex(index);
+      }
+
+      if (!item) {
+        // The navigation history is incomplete, and all items up to the
+        // current item are automatic. Fall back to navigating relative
+        // to `current_index`.
+        return current_index - 1;
+      }
+
+      index -= 1;
+      item = GetNavigationItemImplAtIndex(index);
+      if (!item) {
+        // The navigation history is incomplete, and all items up to the
+        // current item are automatic. Fall back to navigating relative
+        // to `current_index`.
+        return current_index - 1;
+      }
+
+      return index;
+    }
+
+    case BackForwardNavigationType::kForward: {
+      // Starting from current_index + 1, skip over any automatic item
+      // (this corresponding navigating forward from "b.com/b" where we
+      // should skip over "b.com/b#foo" and "b.com/b#bar").
+      index = current_index + 1;
+      item = GetNavigationItemImplAtIndex(index);
+      while (item && item->WasCreatedAutomatically()) {
+        index += 1;
+        item = GetNavigationItemImplAtIndex(index);
+      }
+
+      if (!item) {
+        // The navigation history is incomplete, and all items up to the
+        // current item are automatic. Fall back to navigating relative
+        // to `current_index`.
+        return current_index + 1;
+      }
+
+      // After determining the potential target, check whether it is
+      // followed by any automatic navigations, and in that case, move
+      // to the back of the chain (this correspond to navigating forward
+      // from "a.com/a" where the previous iteration would have picked
+      // the index of "b.com/b" but we should navigate to "b.com/b#bar").
+      item = GetNavigationItemImplAtIndex(index + 1);
+      while (item && item->WasCreatedAutomatically()) {
+        index += 1;
+        item = GetNavigationItemImplAtIndex(index + 1);
+      }
+
+      return index;
+    }
+  }
+
+  NOTREACHED();
 }
 
 void NavigationManagerImpl::GoToIndex(int index) {
