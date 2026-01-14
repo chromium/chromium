@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1104098698795583187">이 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
+<translation id="1106270460549661906">Gemini와 공유 해제</translation>
 <translation id="1106350001632362876">기준 높이기</translation>
 <translation id="1107482171728500359">마이크 공유</translation>
 <translation id="110850812463801904">수동으로 OneDrive에 연결</translation>
@@ -4284,6 +4285,7 @@
 <translation id="3854976556788175030">출력함이 가득 참</translation>
 <translation id="3855441664322950881">확장 프로그램 압축</translation>
 <translation id="3855676282923585394">북마크 및 설정 가져오기...</translation>
+<translation id="3856023744577163821">채팅 또는 공유된 탭에서 열린 탭도 Gemini와 공유됩니다.</translation>
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" />에서 Google 계정 사용하기</translation>
 <translation id="3856800405688283469">시간대 선택</translation>
@@ -5477,6 +5479,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4683629100208651599">Make Lowercase(소문자로 표시)</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%(기본)</translation>
 <translation id="4684427112815847243">모두 동기화</translation>
+<translation id="4685044513206555960">관리자 정책에 의해 웹 앱 설치가 차단되었습니다</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" /> 사용 중지</translation>
 <translation id="4687238339694011189">프린터가 켜져 있고 Chromebook과 동일한 네트워크에 연결되어 있는지 확인하거나 USB 케이블을 사용하세요.</translation>
 <translation id="4687613760714619596">알 수 없는 기기(<ph name="DEVICE_ID" />)</translation>
@@ -7586,6 +7589,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6164393601566177235">사이트 추가</translation>
 <translation id="6164832038898943453">자동 번역할 언어 추가</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> 키를 사용하여 Chrome의 Gemini를 간편하게 여세요</translation>
 <translation id="6169040057125497443">마이크를 확인하세요.</translation>
 <translation id="6169967265765719844">Steam을 통해 설치된 게임 및 앱에 대한 권한은 <ph name="LINK_BEGIN" />Steam 앱 설정<ph name="LINK_END" />에서 관리할 수 있습니다.</translation>
 <translation id="6170313103929479668">분할 뷰 정렬</translation>
@@ -9802,6 +9806,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7697109152153663933">'비밀번호 및 자동 완성'을 클릭합니다.</translation>
 <translation id="769824636077131955">문서가 너무 커서 보안 확인을 진행할 수 없습니다. 인쇄할 수 있는 문서의 최대 크기는 50MB입니다.</translation>
 <translation id="7698507637739331665">일부 항목이 차단됨</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> 키로 간편하게 열기</translation>
 <translation id="7700516433658473670">프린터 및 스캐너</translation>
 <translation id="7700873336634517379">아니요, 이 프로필에서 학교용으로 계속 사용</translation>
 <translation id="7701040980221191251">없음</translation>

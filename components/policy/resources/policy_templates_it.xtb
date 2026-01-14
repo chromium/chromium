@@ -750,7 +750,6 @@ Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUC
 <translation id="1539343118617844331">Scuola</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1542958897137600427">Attiva il provisioning dei certificati client</translation>
-<translation id="1548431234399786388">Controlla le impostazioni di Reporting sugli eventi del browser.</translation>
 <translation id="1550295162561011575">L'impostazione di questa policy consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
 <translation id="1551782388466447648">Attiva la tastiera virtuale touch nella schermata di accesso</translation>
 <translation id="1552418937045050762">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
@@ -1352,6 +1351,7 @@ Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> chiude la scheda dopo
 Lasciare la policy non impostata significa che nessuna estensione è esente dalla procedura di reimpostazione.</translation>
 <translation id="1962273523772270623">Consenti la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
+<translation id="1963986268950915756">Abilita l'installazione di app web da parte dell'utente dal browser</translation>
 <translation id="1964191545419036999">Galleria (supportata dalla versione 117)</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
@@ -1976,15 +1976,6 @@ Se la policy viene impostata su disabled, gli utenti o le varianti <ph name="PRO
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="2382672620906337383">Il valore JavaScript setTimeout() non verrà bloccato finché non viene raggiunta una soglia di nidificazione superiore.</translation>
-<translation id="2383521405943565490">Questa policy consente di stabilire se il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita.
-
-Se la policy viene impostata su 1 - AllowPartitioning o se non viene configurata, il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita. È possibile eseguire l'override di questa impostazione predefinita per origini di primo livello specifiche in altri modi.
-
-Se la policy viene impostata su 2 - BlockPartitioning, il partizionamento dello spazio di archiviazione di terze parti viene disattivato per tutti i contesti.
-
-Utilizza <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> per disattivare il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche. Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
-
-Questa opzione verrà rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
 <translation id="2387469539700985783">Questa policy non influisce sui report generati da Android.</translation>
 <translation id="2388701318721126001">Se questa policy viene disattivata, non è possibile selezionare l'immagine di sfondo dell'utente <ph name="PRODUCT_OS_NAME" /> da un album di Google Foto.
@@ -2884,6 +2875,11 @@ Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutt
 Questa policy verrà rimossa in futuro.</translation>
 <translation id="2989404644164421834">Ricarica pagine</translation>
 <translation id="299127280603727143">Un gruppo di policy relative alle impostazioni di accesso alla rete locale.  Visita la pagina https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Questa policy consente di stabilire se gli utenti possono installare app web tramite il browser.
+Se attivi questa policy o non la configuri, gli utenti possono installare le app web tramite il browser.
+Se disattivi questa policy, gli utenti non potranno installare app web tramite il browser e il tipo di dati "app" verrà escluso dalla sincronizzazione per <ph name="CHROME_SYNC_NAME" />.
+Questa policy non supporta l'aggiornamento dinamico. Qualsiasi modifica, che si tratti di attivazione, disattivazione o annullamento dell'impostazione, diventa effettiva solo dopo il riavvio del browser.
+Questa policy non influisce sulla policy "<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />".</translation>
 <translation id="299446489108785864">Elenco di URL che specifica a quali URL verrà applicata la policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questa policy non influisce sui valori di apertura automatica impostati dagli utenti.
 
       Se la policy viene impostata, i file verranno aperti automaticamente in base alla policy soltanto se l'URL fa parte di questo insieme e il tipo di file è elencato nella policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se una delle condizioni è falsa, i file scaricati non verranno aperti automaticamente in base alla policy.
@@ -4268,10 +4264,6 @@ Nota: se l'impostazione non restituisce metodi di autenticazione supportati sia 
 <translation id="3982322576186033243">Non consentire hash non sicuri in handshake TLS</translation>
 <translation id="3982465141749620677">Chiedi una nuova autorizzazione in una scheda</translation>
 <translation id="3982624306233556415">Lista bloccata dei provider di identità che non possono utilizzare Extensible Enterprise SSO per il browser</translation>
-<translation id="3982849521386211220">Consente di configurare l'elenco di endpoint dell'API di reporting[1] a cui
-possono essere inviati i report aziendali.
-
-[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se la policy viene impostata su true o se non viene configurata, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -4810,7 +4802,6 @@ Nota: questa policy comporta il ritiro della policy <ph name="ARC_GLS_POLICY_NAM
 <translation id="4363101430102811068">Attiva il rilevamento della divulgazione delle credenziali inserite</translation>
 <translation id="436581050240847513">Riporta interfacce di rete del dispositivo</translation>
 <translation id="4369307906396795087">Gli script worker (web worker, service worker ecc.) utilizzano il controllo non rigoroso del tipo MIME. Funzioneranno gli script worker con tipi MIME precedenti, come <ph name="MIMETYPE_TEXT_ASCII" />.</translation>
-<translation id="4370908590951861085">Endpoint reporting</translation>
 <translation id="4370937370030117032">Viene disattivato l'invio di nome utente e nome file alle stampanti native</translation>
 <translation id="4372704773119750918">Non permettere all'utente aziendale di far parte del profilo multiplo (principale o secondario)</translation>
 <translation id="4373332965635821723">Abilita scorciatoie di accessibilità</translation>
@@ -5994,6 +5985,7 @@ Se non viene configurata, la funzionalità "Aiutami a scrivere" verrà attivata 
 <translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5082572440690475059">Consenti l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
+<translation id="5087922428454325090">Gli utenti non possono installare app web tramite il browser.</translation>
 <translation id="5087932158260897375">Se questa policy viene impostata su false, la segnalazione di dati diagnostici relativi all'attendibilità dei domini viene disattivata e non vengono inviati dati a Google.
 Se questa policy viene impostata su true o se non viene configurata, la segnalazione di dati diagnostici relativi all'attendibilità dei domini ha lo stesso comportamento di MetricsReportingEnabled per <ph name="PRODUCT_NAME" /> o DeviceMetricsReportingEnabled per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Questa policy consente di garantire la conformità alla specifica adottata di recente per lo zoom CSS.
@@ -8483,6 +8475,7 @@ Le modifiche alla policy vengono applicate solo mentre ARC non è in esecuzione,
 <translation id="6601216729409808032">Attiva controlli aggiuntivi delle policy per il cloud per consentire/bloccare l'installazione di estensioni.</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
 <translation id="6604049565198492174">La configurazione della policy consente di forzare l'applicazione della configurazione di rete per utente su ogni dispositivo <ph name="PRODUCT_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
+<translation id="6604522755563022737">Gli utenti possono installare app web tramite il browser.</translation>
 <translation id="660567106648774919">Questa policy è deprecata. Utilizza la policy <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
       Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questa policy viene impostata su Disattivata, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questa policy viene impostata su Attivata o se non viene configurata, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
@@ -8871,7 +8864,6 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 <translation id="6847379587945465889">Attiva il trasferimento dei cookie SSO SAML nella sessione utente durante l'accesso</translation>
 <translation id="6847810176590195243">Gli utenti potranno collegare e distribuire contenuti agli studenti. Questo include l'invio di contenuti web e la disponibilità di traduzioni/sottotitoli in tempo reale della voce dell'insegnante per gli studenti.</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
-<translation id="684882090733715433">Reporting sugli eventi del browser</translation>
 <translation id="6850300477973481112">Impostazioni del connettore di scrivania</translation>
 <translation id="6851199885688265233">Attiva la funzione di accessibilità di evidenziazione del cursore</translation>
 <translation id="6851315055469993882">Attiva cache di autenticazione HTTP con ambito globale</translation>
@@ -9230,25 +9222,6 @@ Sono consentite solo origini HTTPS valide. I caratteri jolly non sono supportati
 Le voci non valide vengono ignorate.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7045221780834308118">Se la policy viene impostata su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di <ph name="PRODUCT_OS_NAME" />. Se la policy non viene configurata o se viene disattivata, <ph name="DESK_API_NAME" /> non sarà disponibile. La policy verrà applicata soltanto sui dispositivi registrati.</translation>
-<translation id="704591686761455167">Questa policy consente di stabilire se gli URL dei blob vengono partizionati durante il recupero e la navigazione.
-Se questa policy viene attivata o se non viene configurata, gli URL dei blob verranno partizionati.
-Se questa policy viene disattivata, gli URL dei blob non verranno partizionati.
-
-Se il partizionamento dello spazio di archiviazione viene disattivato per una determinata origine di primo livello da
-<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
-o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
-anche gli URL dei BLOB non verranno partizionati.
-
-Se devi usare la policy, invia una segnalazione di bug all'indirizzo
-<ph name="BUG_URL" />
-spiegando il tuo caso d'uso. La policy sarà valida fino alla versione 146 di
-<ph name="PRODUCT_NAME" />,
-dopodiché la vecchia implementazione verrà rimossa.
-
-NOTA: le modifiche apportate a questa policy mentre il browser è in esecuzione verranno applicate soltanto ai processi del renderer avviati dopo le modifiche.
-
-Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning
-per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>
 <translation id="7046997898355294677">Mostra le notifiche sulla privacy finché non vengono ignorate dagli utenti</translation>
 <translation id="7047495632846973438">Specifica se le policy relative alle autorizzazioni dell'acquisizione del display vengono controllate o saltate.</translation>
@@ -10603,7 +10576,6 @@ specifica attuale.
 
 Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.</translation>
 <translation id="7969865441622729072">Attiva tutti i suoni in modalità Niente distrazioni.</translation>
-<translation id="7970660709107174905">Impostazioni di partizionamento dello spazio di archiviazione di terze parti</translation>
 <translation id="7972223739742725350">Non abilitare l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="7972642710812569707">Forza la riattivazione di WebSQL in contesti di terze parti.</translation>
 <translation id="7973609468423251675">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -10618,15 +10590,6 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 
           Il valore della policy deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7974114691960514888">Questa norma non è più supportata. Consente di attivare l'utilizzo di server relay e STUN durante la connessione a un client remoto. Se questa impostazione viene attivata, questo computer potrà rilevare i computer host remoti e collegarsi a essi anche se sono separati da un firewall. Se questa impostazione viene disattivata e le connessioni UDP in uscita vengono filtrate dal firewall, questo computer potrà collegarsi ai computer host soltanto all'interno della rete locale.</translation>
-<translation id="7975777377454336782">Questa policy consente di impostare un elenco di pattern URL che specificano le origini di primo livello per le quali il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine) deve essere disattivato.
-
-Se la policy non viene configurata o se un'origine di primo livello non corrisponde a uno dei pattern URL, viene applicata <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
-
-Per informazioni dettagliate sui pattern validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
-
-Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
-
-Questa opzione verrà rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="7976103461034266553">Se la policy viene impostata su Enabled, la funzione JavaScript setTimeout() con un timeout di 0 ms non verrà clampata su 1 ms.
           Se la policy viene impostata su Disabled, la funzione JavaScript setTimeout() con un timeout di 0 ms verrà clampata su 1 ms.
           Se la policy non viene configurata, viene usato il comportamento predefinito del browser per clampare la funzione setTimeout().

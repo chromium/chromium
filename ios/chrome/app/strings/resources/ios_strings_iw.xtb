@@ -621,6 +621,7 @@
 <translation id="3365529507898144230">‏שמירה ב-Photos</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
+<translation id="3378214228000661758">יצירה של מפתח גישה בשביל</translation>
 <translation id="3380352560400387991">האתר הזה מנסה לפתוח אפליקציה. הפעולה הזו תוציא אותך ממצב פרטי.</translation>
 <translation id="3385742921291399323">אפשר לקבל גישה לסיסמאות, לכרטיסיות, לסימניות ולנתונים שמורים נוספים.</translation>
 <translation id="3392923070107623576">אפשר ליצור קבוצות של כרטיסיות כדי לשמור על הסדר</translation>
@@ -670,6 +671,7 @@
 <translation id="355765753469272474">ביטול</translation>
 <translation id="3565012355885596568">לא הצלחנו לטעון את התמונות</translation>
 <translation id="3565930036634619844">‏מקש Tab. ‫<ph name="TAB_INDEX" /> מתוך <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">שמירה בדרך אחרת</translation>
 <translation id="3572607909481582402">‏בחשבון Google שלך</translation>
 <translation id="3575234738189584619">‏חיפוש באמצעות Lens</translation>
 <translation id="3575426792457739946">הרשימה הזו מכילה את כל הפרופילים שאפשר לעבור אליהם.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="508645147179720015">ההערה מכילה יותר מ-1,000 תווים</translation>
 <translation id="5087098519049306025">מעקב מחירים</translation>
 <translation id="5090832849094901128">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">‏מפתחות הגישה נשמרים במנהל הסיסמאות של Google בחשבון</translation>
 <translation id="510580293474170715">לא יובא אף פריט</translation>
 <translation id="5113960131843706315">הדברים שלך בדרך…</translation>
 <translation id="5118462200606189584">הוספת חשבון…</translation>
@@ -1753,6 +1756,7 @@
 <translation id="7522587739845660862">פרטים על המיקום שלך</translation>
 <translation id="7522948500476882302">כשמורידים קובץ, אפשר לבחור שהוא יימחק אוטומטית בעוד חודש</translation>
 <translation id="7524055474074101597">גישה לסיסמאות ולעוד אפשרויות מאפליקציות.</translation>
+<translation id="7525067979554623046">יצירה</translation>
 <translation id="75362970626182391">קבוצת כרטיסיות חדשה</translation>
 <translation id="7537586195939242955">‏מצטערים, לא ניתן להתקין את ה-Pass שלך ב-Passbook בשלב הזה.</translation>
 <translation id="754655535278952384">הבדיקה האחרונה: <ph name="TIME" /></translation>

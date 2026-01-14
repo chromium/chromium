@@ -621,6 +621,7 @@
 <translation id="3365529507898144230">Зберегти у Фото</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
+<translation id="3378214228000661758">Створити ключ доступу для додатка</translation>
 <translation id="3380352560400387991">Цей сайт намагається відкрити додаток. Ви вийдете з анонімного режиму.</translation>
 <translation id="3385742921291399323">Отримайте доступ до своїх збережених паролів, вкладок, закладок тощо.</translation>
 <translation id="3392923070107623576">Упорядковуйте вкладки за допомогою груп</translation>
@@ -670,6 +671,7 @@
 <translation id="355765753469272474">Відмінити</translation>
 <translation id="3565012355885596568">Не вдалося завантажити зображення</translation>
 <translation id="3565930036634619844">Вкладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Зберегти в інший спосіб</translation>
 <translation id="3572607909481582402">В обліковому записі Google</translation>
 <translation id="3575234738189584619">Шукати через Об’єктив</translation>
 <translation id="3575426792457739946">Цей список містить усі завантажені профілі.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="508645147179720015">Примітка містить більше ніж 1000 символів</translation>
 <translation id="5087098519049306025">Відстеження цін</translation>
 <translation id="5090832849094901128">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться.</translation>
+<translation id="5096619236864235">Ключі доступу зберігаються в Google Менеджері паролів для електронної адреси</translation>
 <translation id="510580293474170715">Нічого не імпортовано</translation>
 <translation id="5113960131843706315">Завантаження даних…</translation>
 <translation id="5118462200606189584">Додати обліковий запис…</translation>
@@ -1753,6 +1756,7 @@
 <translation id="7522587739845660862">Інформація про ваше місцезнаходження</translation>
 <translation id="7522948500476882302">Завантажуючи файл, можна налаштувати його автоматичне видалення через 1 місяць</translation>
 <translation id="7524055474074101597">Отримуйте доступ до паролів тощо в додатках.</translation>
+<translation id="7525067979554623046">Створити</translation>
 <translation id="75362970626182391">Нова група вкладок</translation>
 <translation id="7537586195939242955">Не вдалося внести дані в Passbook.</translation>
 <translation id="754655535278952384">Перевірено <ph name="TIME" /></translation>

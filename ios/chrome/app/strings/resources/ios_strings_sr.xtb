@@ -621,6 +621,7 @@
 <translation id="3365529507898144230">Сачувај у Сликама</translation>
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
 <translation id="3377063233124932127">Сада су сачувани обележивачи, лозинке и друго у врху.</translation>
+<translation id="3378214228000661758">Направите приступни кључ за</translation>
 <translation id="3380352560400387991">Овај сајт покушава да отвори апликацију. То ће вас одвести из режима без архивирања.</translation>
 <translation id="3385742921291399323">Приступајте сачуваним лозинкама, картицама, обележивачима и другом садржају.</translation>
 <translation id="3392923070107623576">Останите организовани прављењем група картица</translation>
@@ -670,6 +671,7 @@
 <translation id="355765753469272474">Опозови</translation>
 <translation id="3565012355885596568">Учитавање слика није успело</translation>
 <translation id="3565930036634619844">Картица. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Сачувај други начин</translation>
 <translation id="3572607909481582402">На Google налогу</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3575426792457739946">Ова листа садржи све учитане профиле.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="508645147179720015">Напомена премашује 1000 знакова</translation>
 <translation id="5087098519049306025">Праћење цена</translation>
 <translation id="5090832849094901128">Брисањем ове лозинке нећете избрисати налог на <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Приступни кључеви се чувају у Google менаџеру лозинки за</translation>
 <translation id="510580293474170715">Ништа није увезено</translation>
 <translation id="5113960131843706315">Преузимају се ствари…</translation>
 <translation id="5118462200606189584">Додај налог…</translation>
@@ -1753,6 +1756,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7522587739845660862">Информације о локацији</translation>
 <translation id="7522948500476882302">Када преузмете фајл, одаберите да се аутоматски избрише за 1 месец</translation>
 <translation id="7524055474074101597">Приступајте лозинкама и другим ставкама у апликацијама.</translation>
+<translation id="7525067979554623046">Направи</translation>
 <translation id="75362970626182391">Нова група картица</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="754655535278952384">Проверено је <ph name="TIME" /></translation>

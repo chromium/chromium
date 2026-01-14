@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Как да използвам тази функция?</translation>
 <translation id="1901600657316773839">Запазване на избора</translation>
 <translation id="1902277226107477495">Разпознаването на адреси е изключено. Можете да го включите отново в настройките.</translation>
+<translation id="1909201414196501151">Сайтът е добавен и фиксиран</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1925706052394657380">Отворете настройките за <ph name="BEGIN_BOLD" />основните приложения<ph name="END_BOLD" /> в iOS</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“ в профила ви {email}}other{Отметките бяха запазени в(ъв) „{title}“ в профила ви {email}}}</translation>
 <translation id="334690320928261823">Скорошни раздели</translation>
 <translation id="3349031117032695619">Блокиране на изскачащите прозорци</translation>
+<translation id="3350976670663926380">Редакциите са запазени</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Този профил е управляван.</translation>
 <translation id="3365529507898144230">Запазване в Снимки</translation>
 <translation id="3371831930909698441">Налице е превод. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="3377063233124932127">Запазените ви отметки, пароли и др. вече се показват най-горе.</translation>
+<translation id="3378214228000661758">Създайте ключ за достъп за</translation>
 <translation id="3380352560400387991">Този сайт се опитва да отвори приложение. Това действие ще изключи режима „инкогнито“.</translation>
 <translation id="3385742921291399323">Осъществявайте достъп до запазените си пароли, раздели, отметки и др.</translation>
 <translation id="3392923070107623576">Бъдете организирани с помощта на групи раздели</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Отмяна</translation>
 <translation id="3565012355885596568">Изображенията не се заредиха</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Запазване по друг начин</translation>
 <translation id="3572607909481582402">В профила ви в Google</translation>
 <translation id="3575234738189584619">Търсене с Обектив</translation>
 <translation id="3575426792457739946">Този списък съдържа всички заредени потребителски профили.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Изберете „Подобрена защита“.</translation>
 <translation id="3610041351087301930">Скриване на четеца</translation>
 <translation id="3610866916973186448">Да, искам да се изтрие</translation>
+<translation id="3616161326314492065">Правете снимки и ги споделяйте с Gemini, за да създавате и ремиксирате изображения.</translation>
 <translation id="3622175633937495219">История на търсенията (намерени: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да прекарате пръст по края, за да се върнете назад.</translation>
 <translation id="362709345066740529">Персонализирайте картите, емисията и др. оттук</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">Бележката съдържа повече от 1000 знака</translation>
 <translation id="5087098519049306025">Проследяване на цената</translation>
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Ключовете за достъп се запазват в Google Мениджър на пароли за</translation>
 <translation id="510580293474170715">Нищо не е импортирано</translation>
 <translation id="5113960131843706315">Получаване на нещата ви…</translation>
 <translation id="5118462200606189584">Добавяне на профил…</translation>
@@ -1750,6 +1756,7 @@
 <translation id="7522587739845660862">Информацията за местоположението ви</translation>
 <translation id="7522948500476882302">Когато изтеглите файл, изберете той да бъде изтрит автоматично след 1 месец</translation>
 <translation id="7524055474074101597">Осъществявайте достъп до паролите си и други данни във всички приложения.</translation>
+<translation id="7525067979554623046">Създаване</translation>
 <translation id="75362970626182391">Нова група раздели</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="754655535278952384">Проверихте <ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворете General</translation>
 <translation id="7855678267851972597">Аудиофайлове</translation>
+<translation id="7857520352710212030">Сайтът е фиксиран</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7863211248337747225">Инсталиране на приложението</translation>
 <translation id="7865127013871431856">Опции за превод</translation>

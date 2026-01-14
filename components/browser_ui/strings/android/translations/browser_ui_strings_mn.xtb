@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(бусад + 1)}other{(бусад + #)}}</translation>
 <translation id="5403592356182871684">Нэр</translation>
 <translation id="5407203562970638234">Аюулгүй байдлаа сайжруулаарай</translation>
+<translation id="5436307623797390637">Төхөөрөмж дээрх аппууд</translation>
 <translation id="5438097262470833822">Энэ сонголт <ph name="WEBSITE" />-н зөвшөөрлийг шинэчилнэ</translation>
 <translation id="5459413148890178711">Асаалттай үед сайтууд таны байршлыг хүсэх боломжтой. Унтраалттай үед сайтууд таны байршлыг харах боломжгүй.</translation>
 <translation id="5489227211564503167">Өнгөрсөн цаг: <ph name="TOTAL_TIME" />-н <ph name="ELAPSED_TIME" />.</translation>

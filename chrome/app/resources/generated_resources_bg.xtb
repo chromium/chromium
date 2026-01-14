@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">Файловете с пояснения за основния възел не могат да се изтеглят. Опитайте отново по-късно.</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Незабавно ще загубите достъп до групата раздели и тя ще бъде изтрита от всичките ви устройства</translation>
+<translation id="1106270460549661906">Отмяна на споделянето с Gemini</translation>
 <translation id="1106350001632362876">Увеличаване на прага</translation>
 <translation id="1107482171728500359">Споделяне на микрофона</translation>
 <translation id="110850812463801904">Ръчно свързване с OneDrive</translation>
@@ -4279,6 +4280,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3854976556788175030">Изходната тава е пълна</translation>
 <translation id="3855441664322950881">Пакетиране на разширение</translation>
 <translation id="3855676282923585394">Импортиране на отметки и настройки...</translation>
+<translation id="3856023744577163821">Разделите, отворени от разговор или споделен раздел, също се споделят с Gemini.</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3856470183388031602">Използване на профила ви в Google на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Изберете часова зона</translation>
@@ -5473,6 +5475,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4683629100208651599">Изписване с малки букви</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (по подразбиране)</translation>
 <translation id="4684427112815847243">Синхронизиране на всичко</translation>
+<translation id="4685044513206555960">Инсталирането на уеб приложения е блокирано чрез администраторско правило.</translation>
 <translation id="4685096503970466594">Изключване на „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4687238339694011189">Уверете се, че принтерът ви е включен и е свързан със същата мрежа като вашия Chromebook, или използвайте USB кабел.</translation>
 <translation id="4687613760714619596">Неизвестно устройство (<ph name="DEVICE_ID" />)</translation>
@@ -7583,6 +7586,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6164393601566177235">Добавяне на сайтове</translation>
 <translation id="6164832038898943453">Добавяне на езици за автоматичен превод</translation>
 <translation id="6165508094623778733">Научете повече</translation>
+<translation id="61667940770438207">Натиснете <ph name="FOCUS_TOGGLE_HOTKEY" /> за лесно отваряне на Gemini в Chrome</translation>
 <translation id="6169040057125497443">Моля, проверете микрофона си.</translation>
 <translation id="6169967265765719844">Разрешенията за игри и приложения, инсталирани чрез Steam, могат да бъдат управлявани от <ph name="LINK_BEGIN" />настройките на едноименното приложение<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Подреждане в разделен изглед</translation>
@@ -9800,6 +9804,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7697109152153663933">Кликнете върху „Пароли и автоматично попълване“</translation>
 <translation id="769824636077131955">Този документ е твърде голям за проверка на сигурността. Можете да отпечатвате документи с размер до 50 МБ.</translation>
 <translation id="7698507637739331665">Някои елементи са блокирани</translation>
+<translation id="7700176975240938448">Натиснете <ph name="FOCUS_TOGGLE_HOTKEY" /> за лесно отваряне</translation>
 <translation id="7700516433658473670">Принтери и скенери</translation>
 <translation id="7700873336634517379">Не, продължаване на използването на този потребителски профил за училище</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -10636,6 +10641,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8263228331881858381">Ключът за достъп е запазен</translation>
 <translation id="8263336784344783289">Наименувайте тази група</translation>
 <translation id="8264024885325823677">Тази настройка се управлява от администратора ви.</translation>
+<translation id="826410575944953302">Разгъване на вертикалните раздели</translation>
 <translation id="8264195025773092348">Показани са само поддържаните устройства. USB устройствата вече няма да са налице за приложенията с директно изпълнение, докато връзката не бъде прекратена.</translation>
 <translation id="8265018477030547118">Само на това устройство</translation>
 <translation id="826511437356419340">Влязохте в режим на общ преглед на прозорците. Навигирайте с прекарване на пръст или натиснете клавиша Tab, ако използвате клавиатура.</translation>
@@ -10733,6 +10739,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8323518750352551353">Да се раздели ли сърфирането?</translation>
 <translation id="8323744572398547859">За да получите разделите от другите си устройства, влезте в профила си и синхронизирайте историята. Също така ще получите паролите си и др. на всичките си устройства. Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="8324158725704657629">Без повторно питане</translation>
+<translation id="8324264291265547520">Разгъване на вертикалните раздели</translation>
 <translation id="8325413836429495820">Сайтове без разрешение за преглед на буферната памет</translation>
 <translation id="8326478304147373412">PKCS 7, верига сертификати</translation>
 <translation id="8327386430364625757">Математически символи</translation>

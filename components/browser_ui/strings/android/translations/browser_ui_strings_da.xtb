@@ -412,6 +412,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
 <translation id="5407203562970638234">Bliv bedre beskyttet</translation>
+<translation id="5436307623797390637">Apps på enheden</translation>
 <translation id="5438097262470833822">Denne handling nulstiller tilladelserne for <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Når dette er slået til, kan websites anmode om din lokation. Når dette er slået fra, kan websites ikke se din lokation.</translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>

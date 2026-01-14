@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">如何使用這項功能？</translation>
 <translation id="1901600657316773839">保留所選項目</translation>
 <translation id="1902277226107477495">地址偵測功能已關閉，你可以前往「設定」重新開啟。</translation>
+<translation id="1909201414196501151">已新增並釘選網站</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1925706052394657380">開啟 iOS 的「預設 App」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />設定</translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="334690320928261823">最近關閉的分頁</translation>
 <translation id="3349031117032695619">封鎖彈出式視窗</translation>
+<translation id="3350976670663926380">已儲存編輯內容</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" /> 是代管帳戶</translation>
 <translation id="3365529507898144230">儲存在相簿中</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
+<translation id="3378214228000661758">使用以下名稱建立密碼金鑰：</translation>
 <translation id="3380352560400387991">這個網站正在嘗試開啟某個應用程式，這會使你退出無痕模式。</translation>
 <translation id="3385742921291399323">取得儲存的密碼、分頁、書籤等資料。</translation>
 <translation id="3392923070107623576">建立分頁群組，讓一切井然有序</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">復原</translation>
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。第 <ph name="NUMBER_OF_TABS" /> 個，共 <ph name="TAB_INDEX" /> 個。</translation>
+<translation id="3567168891086460374">以其他方式儲存</translation>
 <translation id="3572607909481582402">儲存到你的 Google 帳戶</translation>
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
 <translation id="3575426792457739946">這份清單包含已載入的所有設定檔。</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">選擇「強化防護」</translation>
 <translation id="3610041351087301930">隱藏閱讀器模式</translation>
 <translation id="3610866916973186448">是，刪除</translation>
+<translation id="3616161326314492065">拍攝相片並與 Gemini 分享，即可創作及改造圖片。</translation>
 <translation id="3622175633937495219">搜尋歷史記錄 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="3625008969091706597">只要在邊緣滑動即可返回上一個畫面。</translation>
 <translation id="362709345066740529">在這裡自訂資訊卡、動態消息等</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">記事超過 1000 個半形字元</translation>
 <translation id="5087098519049306025">價格追蹤</translation>
 <translation id="5090832849094901128">刪除這組密碼並不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
+<translation id="5096619236864235">以下帳戶的密碼金鑰會儲存在 Google 密碼管理工具中：</translation>
 <translation id="510580293474170715">未匯入任何內容</translation>
 <translation id="5113960131843706315">正在取得你的資料…</translation>
 <translation id="5118462200606189584">新增帳戶…</translation>
@@ -1750,6 +1756,7 @@
 <translation id="7522587739845660862">你的位置資訊</translation>
 <translation id="7522948500476882302">下載檔案時，可以選擇在 1 個月後自動刪除</translation>
 <translation id="7524055474074101597">在多款應用程式中使用你的密碼和其他資訊。</translation>
+<translation id="7525067979554623046">建立</translation>
 <translation id="75362970626182391">新增分頁群組</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="754655535278952384">上次檢查時間：<ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@
 <translation id="7853202427316060426">活動</translation>
 <translation id="7854006015462979438">開啟「一般」</translation>
 <translation id="7855678267851972597">音訊</translation>
+<translation id="7857520352710212030">已釘選網站</translation>
 <translation id="7859988229622350291">一律不翻譯</translation>
 <translation id="7863211248337747225">取得應用程式</translation>
 <translation id="7865127013871431856">翻譯選項</translation>

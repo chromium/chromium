@@ -28,7 +28,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="2329392777730037872">無法在用戶端上開啟 <ph name="URL" />。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2366718077645204424">無法連線至主機，這可能與您使用的網絡設定有關。</translation>
-<translation id="242591256144136845">版權所有 2025 Google LLC。保留所有權利。</translation>
 <translation id="2504109125669302160">將「無障礙功能」權限授予「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="2509394361235492552">已連線至「<ph name="HOSTNAME" />」</translation>
 <translation id="2540992418118313681">您想與另一名使用者共用這部電腦的檢視權及控制權嗎？</translation>
@@ -138,7 +137,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="7067321367069083429">將螢幕變成輕觸式螢幕</translation>
 <translation id="7116737094673640201">歡迎使用 Chrome 遠端桌面</translation>
 <translation id="7144878232160441200">重試</translation>
-<translation id="7298392173540380852">版權所有 2025 Chromium 作者。保留所有權利。</translation>
 <translation id="7312846573060934304">主機已離線。</translation>
 <translation id="7319983568955948908">停止共用</translation>
 <translation id="7359298090707901886">所選瀏覽器無法在本機電腦上開啟網址。</translation>

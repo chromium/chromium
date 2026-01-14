@@ -9,7 +9,6 @@
 <translation id="1016498331642356377">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट सम्पादन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> लाई पठाउँदै...</translation>
 <translation id="103269572468856066">यी साइट तथा एपहरूको डेटा पनि हटाउने हो?</translation>
-<translation id="1034259925032978114">विन्डो खुला छ</translation>
 <translation id="1035113036584565771">सुझावहरूका बारेमा दिइने नोटिफिकेसनहरूको प्रोमो बन्द गरिएको छ</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1045899828449635435">यी साइटहरूको डेटा पनि मेटाउने हो?</translation>
@@ -330,7 +329,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2451607499823206582">ट्र्याक गरिँदै छ</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2461378706168271257">आफ्ना ट्याबहरू खोज्नुहोस्</translation>
-<translation id="2461822463642141190">हालको</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको म्युट गरिएको ट्याब</translation>
 <translation id="2468444275314013497">तपाईंको ब्राउजर सुरक्षित देखिन्छ</translation>
 <translation id="2471632347767899461">मद्दत केन्द्रमा खोजी हेर्नुहोस्</translation>
@@ -408,7 +406,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2789486458103222910">ठिक छ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ले पहिले नै प्रयोग गरिएको एउटा पासवर्ड भेट्टाएको छ। तपाईं उक्त पासवर्ड अझ सुरक्षित बनाउन सक्नुहुन्छ}other{Chrome ले पहिले नै प्रयोग गरिएका # वटा पासवर्ड भेट्टाएको छ। तपाईं ती पासवर्ड अझ सुरक्षित बनाउन सक्नुहुन्छ}}</translation>
 <translation id="2794551654724114396">Chrome बाट बढीभन्दा बढी फाइदा लिन मद्दत गर्ने उपयोगी सुझावहरू प्राप्त गर्न नोटिफिकेसनहरू अन गर्नुहोस्</translation>
-<translation id="2800066122460699237"><ph name="TAB_TITLE" /> ट्याब बन्द गरिने छ</translation>
 <translation id="2805210243313393104">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्कलगायतका थप कुराहरू प्राप्त गर्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2819849308549746319">सबै अनसब्सक्राइब गर्नुहोस्</translation>
@@ -911,7 +908,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4908869848243824489">Google को Discover</translation>
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, तपाईंलाई फेरि स्वागत छ!</translation>
-<translation id="4912413785358399818">ट्याब सार्नुहोस्</translation>
 <translation id="4913169188695071480">पुन: ताजा गर्ने काम रोक्नुहोस्</translation>
 <translation id="4921224083091001889">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू प्राप्त गर्न Chrome मा <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="4923173329789776645">तपाईंको सङ्गठनले डाउनलोड गर्न सिफारिस गरेको छैन</translation>
@@ -1306,7 +1302,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6550891580932862748">यसले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित राख्दैन। यसका कारण Google का अन्य उत्पादनहरूमा तपाईंले तय गर्नुभएका Safe Browsing का सेटिङ प्रभावित हुने छैनन्।</translation>
 <translation id="6554822972009632311">सामग्रीसम्बन्धी फिल्टर अन छ</translation>
 <translation id="6556501700899673703">Lexend</translation>
-<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="TAB_TITLE" /> र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6564820424018738527">तपाईंको Android डिभाइसमा यस्तै सेटिङ हुन सक्छ। Chrome र तपाईंको Android डिभाइसमा विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा अन गरिएको छ भने कुनै कम्पनीले तपाईंले खोल्ने विभिन्न वेबसाइट र तपाईंले प्रयोग गर्ने विभिन्न एपहरूमा देखाइने विज्ञापनको प्रभावकारिता मापन गर्न सक्ने सम्भावना हुन्छ।</translation>
@@ -1906,7 +1901,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8957528460562961174">आफ्ना पासवर्डहरूको एक्सेस प्राप्त गरिराख्न तिनलाई अहिले एक्स्पोर्ट गर्नुहोस् अनि आफ्नो रोजाइको पासवर्ड म्यानेजरमा इम्पोर्ट गर्नुहोस्। Google Play services उपलब्ध नभएकाले Google पासवर्ड म्यानेजरले काम गर्न छाडेको छ।</translation>
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
-<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="8969796057708736017">यो फाइल तपाईंको सङ्गठनका नीतिअनुरूप छ भने डाउनलोड गर्ने प्रक्रिया पूरा हुने छ</translation>
 <translation id="8970887620466824814">कुनै समस्या आयो।</translation>
 <translation id="8972098258593396643">डिफल्ट फोल्डरमा डाउनलोड गर्ने हो?</translation>

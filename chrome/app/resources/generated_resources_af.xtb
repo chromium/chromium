@@ -165,6 +165,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1102759278139578486">Kan nie die hoofnodus se annotasielêers aflaai nie. Probeer later weer.</translation>
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
 <translation id="1104098698795583187">Jy sal onmiddellik toegang tot die hierdie oortjiegroep verloor, en dit sal van al jou toestelle af uitgevee word</translation>
+<translation id="1106270460549661906">Ontdeel met Gemini</translation>
 <translation id="1106350001632362876">Verhoog drempel</translation>
 <translation id="1107482171728500359">Deel mikrofoon</translation>
 <translation id="110850812463801904">Koppel handmatig aan OneDrive</translation>
@@ -4282,6 +4283,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3854976556788175030">Uitvoerlaai is vol</translation>
 <translation id="3855441664322950881">Pakketuitbreiding</translation>
 <translation id="3855676282923585394">Voer boekmerke en instellings in …</translation>
+<translation id="3856023744577163821">Oortjies wat van ’n klets of ’n gedeelde oortjie af oopgemaak word, word ook met Gemini gedeel.</translation>
 <translation id="3856096718352044181">Bevestig dat dit 'n geldige verskaffer is of probeer later weer</translation>
 <translation id="3856470183388031602">Gebruik jou Google-rekening op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Kies tydsone</translation>
@@ -5476,6 +5478,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4683629100208651599">Maak dit kleinletters</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (verstek)</translation>
 <translation id="4684427112815847243">Sinkroniseer alles</translation>
+<translation id="4685044513206555960">Webappinstallasie word deur administrateurbeleid geblokkeer.</translation>
 <translation id="4685096503970466594">Skakel <ph name="FEATURE_NAME" /> af</translation>
 <translation id="4687238339694011189">Maak seker dat jou drukker aangeskakel is en aan dieselfde wi-fi-netwerk as jou Chromebook gekoppel is, of gebruik ’n USB-kabel</translation>
 <translation id="4687613760714619596">Onbekende toestel <ph name="DEVICE_ID" /></translation>
@@ -7586,6 +7589,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6164393601566177235">Voeg werwe by</translation>
 <translation id="6164832038898943453">Voeg tale by om outomaties te vertaal</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
+<translation id="61667940770438207">Maak Gemini maklik in Chrome oop met <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Gaan jou mikrofoon na.</translation>
 <translation id="6169967265765719844">Toestemmings vir speletjies en programme wat via Steam geïnstalleer is, kan in die <ph name="LINK_BEGIN" />Steam-programinstellings<ph name="LINK_END" /> bestuur word.</translation>
 <translation id="6170313103929479668">Rangskik verdeelde aansig</translation>
@@ -9802,6 +9806,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7697109152153663933">Klik op “Wagwoorde en outovul”</translation>
 <translation id="769824636077131955">Hierdie dokument is te groot vir 'n sekuriteitkontrole. Jy kan dokumente van tot 50 MB druk.</translation>
 <translation id="7698507637739331665">Sommige items is geblokkeer</translation>
+<translation id="7700176975240938448">Maak maklik oop met <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Druk en skandeer</translation>
 <translation id="7700873336634517379">Nee, gaan voort om in hierdie profiel vir skool te gebruik</translation>
 <translation id="7701040980221191251">Geen</translation>

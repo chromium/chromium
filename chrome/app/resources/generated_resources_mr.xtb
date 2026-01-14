@@ -2572,6 +2572,7 @@
 <translation id="2713444072780614174">पांढरा</translation>
 <translation id="2714180132046334502">गडद बॅकग्राउंड</translation>
 <translation id="2714393097308983682">Google Play स्टोअर</translation>
+<translation id="2714617928488200509">मॉडेल</translation>
 <translation id="2715751256863167692">हे अपडेट तुमचे Chromebook रीसेट करते आणि तुमचा सद्य वापरकर्ता डेटा काढून टाकते.</translation>
 <translation id="2715934493766003251">फाइल सिंक करणे सुरू असताना स्टोरेज साफ करू शकत नाही</translation>
 <translation id="2716986496990888774">हे सेटिंग पालकांकडून व्यवस्थापित केले आहे.</translation>
@@ -4611,6 +4612,7 @@
 <translation id="4078738236287221428">आक्रमक</translation>
 <translation id="4078903002989614318">क्रमाने लावणे आणि सूचीशी संबंधित पर्याय</translation>
 <translation id="4079140982534148664">वर्धित केलेले स्पेल चेक वापरा</translation>
+<translation id="4082070466456857368">विचारक्षम (3 Pro)</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> बंद करा</translation>
 <translation id="4085298594534903246">या पेजवर JavaScript  ब्लॉक केलेले होते.</translation>
@@ -7858,6 +7860,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6350821834561350243">समस्या रीप्रोड्यूस करण्यासाठी समस्येचे स्पष्ट वर्णन आणि पायऱ्या द्या (शक्य असल्यास)</translation>
 <translation id="6351178441572658285">ॲपच्या भाषा</translation>
 <translation id="6354918092619878358">SECG एल्लिपटिक कर्व्ह secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">टास्कचे नियंत्रण मिळवा</translation>
 <translation id="635609604405270300">डिव्हाइस सुरू ठेवा</translation>
 <translation id="6356537493253478650">प्रसन्न</translation>
 <translation id="63566973648609420">फक्त तुमचा सांकेतिक पासफ्रेझ असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. सांकेतिक पासफ्रेझ Google कडे पाठविला किंवा त्याद्वारे स्टोअर केला जात नाही.  तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, तुम्हाला <ph name="BEGIN_LINK" />सिंक रीसेट करण्याची आवश्यकता असेल<ph name="END_LINK" />.</translation>
@@ -8825,6 +8828,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7017219178341817193">एक नवीन पेज जोडा</translation>
 <translation id="7017354871202642555">विंडो सेट केल्यानंतर मोड सेट करणे शक्य नाही.</translation>
 <translation id="7019805045859631636">जलद</translation>
+<translation id="7020810150082302220">तुमचा डीफॉल्ट ब्राउझर बदलला गेला आहे</translation>
 <translation id="7021524108486027008">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या एंटरप्राइझद्वारे व्यवस्थापित केल्या जाणाऱ्या पद्धतीमध्ये टूल, संपादके आणि IDEs रन करा.</translation>
 <translation id="7022222879220069865">सर्व टचपॅड डिस्कनेक्ट केली गेली आहेत</translation>
 <translation id="7022562585984256452">तुमचे होम पेज सेट केले गेले आहे.</translation>
@@ -10206,6 +10210,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7969144945436590933">आणखी तपशील मिळवा</translation>
 <translation id="7970673414865679092">इथरनेटचे तपशील</translation>
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
+<translation id="7972837668077967426">कॅन्व्हास</translation>
 <translation id="7973149423217802477">थंब्स डाउनवर क्लिक केल्यावर तुम्हाला हे आवडले नाही असा फीडबॅक सबमिट केला जातो.</translation>
 <translation id="7973776233567882054">तुमच्या नेटवर्कचे पुढीलपैकी सर्वोत्तम वर्णन कोणते आहे?</translation>
 <translation id="797394244396603170">तुम्हाला ज्या डिव्हाइससह फाइल शेअर करायच्या आहेत ते डिव्हाइस निवडा</translation>
@@ -10768,6 +10773,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8339288417038613756">डिस्प्ले आणि मजकुराचा आकार</translation>
 <translation id="833986336429795709">ही लिंक उघडण्यासाठी, अ‍ॅप निवडा</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> साठी आणखी कृती</translation>
+<translation id="8341693734243413517">Chrome अपडेटर</translation>
 <translation id="8341804784147620576">शोधण्यासाठी शॉर्टकट दाखवा</translation>
 <translation id="8342221978608739536">वापरून पहिले नाही</translation>
 <translation id="8342387517402567689">गुप्त मोडमध्ये वेब अ‍ॅप इंस्टॉलना सपोर्ट नाही</translation>
@@ -11071,6 +11077,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8551588720239073785">तारीख आणि वेळ सेटिंग्ज</translation>
 <translation id="8551647092888540776">ऑफलाइन असताना <ph name="FILE_NAMES" /> उघडू शकत नाही</translation>
 <translation id="8552102814346875916">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये सेव्ह करा</translation>
+<translation id="8552947739661397736">टास्क ताब्यात घ्या, Gemini सध्या नियंत्रणामध्ये आहे</translation>
 <translation id="8553342806078037065">इतर लोक व्यवस्थापित करा</translation>
 <translation id="8554899698005018844">कोणतीही भाषा नाही</translation>
 <translation id="8555444629041783356">सूर्यास्ताचे ऑटोमॅटिक शेड्यूल</translation>

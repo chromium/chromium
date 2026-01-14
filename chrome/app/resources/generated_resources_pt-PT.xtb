@@ -165,6 +165,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1102759278139578486">Não é possível transferir os ficheiros de anotações do nó principal. Tente mais tarde.</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vai perder imediatamente o acesso a este grupo de separadores, e este vai ser eliminado de todos os seus dispositivos</translation>
+<translation id="1106270460549661906">Anular partilha com o Gemini</translation>
 <translation id="1106350001632362876">Aumentar limite</translation>
 <translation id="1107482171728500359">Partilhar microfone</translation>
 <translation id="110850812463801904">Ligar manualmente ao OneDrive</translation>
@@ -4270,6 +4271,7 @@ Quer pará-lo?</translation>
 <translation id="3854976556788175030">O tabuleiro de saída está cheio</translation>
 <translation id="3855441664322950881">Comprimir extensão</translation>
 <translation id="3855676282923585394">Importar marcadores e definições...</translation>
+<translation id="3856023744577163821">Os separadores abertos a partir de um chat ou de um separador partilhado também são partilhados com o Gemini.</translation>
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="3856470183388031602">Use a sua Conta Google no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
@@ -5464,6 +5466,7 @@ Quer pará-lo?</translation>
 <translation id="4683629100208651599">Colocar em minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predefinição)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
+<translation id="4685044513206555960">A instalação da app Web foi bloqueada pela política do administrador.</translation>
 <translation id="4685096503970466594">Desative a funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Certifique-se de que a impressora está ativada e ligada à mesma rede Wi-Fi que o Chromebook ou use um cabo USB</translation>
 <translation id="4687613760714619596">Dispositivo desconhecido (<ph name="DEVICE_ID" />)</translation>
@@ -7574,6 +7577,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6164393601566177235">Adicione sites</translation>
 <translation id="6164832038898943453">Adicionar idiomas à opção Traduzir automaticamente</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
+<translation id="61667940770438207">Abra facilmente o Gemini no Chrome com <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Verifique o microfone.</translation>
 <translation id="6169967265765719844">Pode gerir as autorizações de jogos e apps instalados através do Steam nas <ph name="LINK_BEGIN" />definições da app Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Organizar vista dividida</translation>
@@ -9791,6 +9795,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="7697109152153663933">Clique em "Palavras-passe e preenchimento automático"</translation>
 <translation id="769824636077131955">Este documento é demasiado grande para uma verificação de segurança. Pode imprimir documentos de até 50 MB.</translation>
 <translation id="7698507637739331665">Alguns itens estão bloqueados</translation>
+<translation id="7700176975240938448">Abra facilmente com a app <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Impressoras e scanners</translation>
 <translation id="7700873336634517379">Não, continuar a usar para a escola neste perfil</translation>
 <translation id="7701040980221191251">Nenhuma</translation>

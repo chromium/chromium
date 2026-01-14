@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Hvordan bruker jeg denne funksjonen?</translation>
 <translation id="1901600657316773839">Behold utvalget</translation>
 <translation id="1902277226107477495">Adressegjenkjenning er av. Slå det på igjen i innstillingene.</translation>
+<translation id="1909201414196501151">Nettstedet er lagt til og festet</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
 <translation id="1925706052394657380">Åpne <ph name="BEGIN_BOLD" />Standardapper<ph name="END_BOLD" />-innstillingene i iOS</translation>
 <translation id="1941314575388338491">Dobbelttrykk for å kopiere.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{Bokmerkene er lagret i «{title}» i kontoen din, {email}}}</translation>
 <translation id="334690320928261823">Nylige faner</translation>
 <translation id="3349031117032695619">Blokker forgrunnsvinduer</translation>
+<translation id="3350976670663926380">Endringene er lagret</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Denne kontoen administreres.</translation>
 <translation id="3365529507898144230">Lagre i Foto</translation>
 <translation id="3371831930909698441">Oversetter er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="3377063233124932127">Nå finner du blant annet de lagrede bokmerkene og passordene dine øverst.</translation>
+<translation id="3378214228000661758">Opprett en passnøkkel for</translation>
 <translation id="3380352560400387991">Dette nettstedet prøver å åpne en app. Dette medfører at du går ut av Inkognito.</translation>
 <translation id="3385742921291399323">Hent lagrede passord, faner, bokmerker med mer.</translation>
 <translation id="3392923070107623576">Hold orden ved å opprette fanegrupper</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Angre</translation>
 <translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Lagre annerledes</translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
 <translation id="3575426792457739946">På denne listen finner du alle innlastede profiler.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Velg «Økt beskyttelse»</translation>
 <translation id="3610041351087301930">Skjul leser</translation>
 <translation id="3610866916973186448">Ja, slett</translation>
+<translation id="3616161326314492065">Ta bilder og del dem med Gemini for å lage og remikse bilder.</translation>
 <translation id="3622175633937495219">Søkelogg (fant <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Du kan sveipe på kanten for å gå tilbake.</translation>
 <translation id="362709345066740529">Tilpass kortene, feeden med mer her</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">Merknaden inneholder over 1000 tegn</translation>
 <translation id="5087098519049306025">Prissporing</translation>
 <translation id="5090832849094901128">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Passnøkler lagres i Google Passordlagring for</translation>
 <translation id="510580293474170715">Ingenting er importert</translation>
 <translation id="5113960131843706315">Henter tingene dine …</translation>
 <translation id="5118462200606189584">Legg til konto…</translation>
@@ -1750,6 +1756,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7522587739845660862">Informasjon om posisjonen din</translation>
 <translation id="7522948500476882302">Når du laster ned en fil, kan du velge at den automatisk skal slettes etter 1 måned</translation>
 <translation id="7524055474074101597">Få tilgang til passordene dine med mer på tvers av apper.</translation>
+<translation id="7525067979554623046">Opprett</translation>
 <translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="754655535278952384">Sjekket <ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854006015462979438">Åpne Generelt</translation>
 <translation id="7855678267851972597">Lyd</translation>
+<translation id="7857520352710212030">Nettstedet er festet</translation>
 <translation id="7859988229622350291">Oversett aldri</translation>
 <translation id="7863211248337747225">Skaff deg appen</translation>
 <translation id="7865127013871431856">Alternativer for oversettelse</translation>

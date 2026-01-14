@@ -28,7 +28,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="2329392777730037872">Det gick inte att öppna <ph name="URL" /> på klientenheten.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2366718077645204424">Det går inte att nå värden. Detta beror troligen på konfigurationen av nätverket som du använder.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Med ensamrätt.</translation>
 <translation id="2504109125669302160">Ge behörigheten Tillgänglighet till <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Ansluten till <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Vill du dela den här datorn så att en annan användare kan visa och styra den?</translation>
@@ -138,7 +137,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="7067321367069083429">Skärmen används som pekskärm</translation>
 <translation id="7116737094673640201">Välkommen till Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Försök igen</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Med ensamrätt.</translation>
 <translation id="7312846573060934304">Värden är offline.</translation>
 <translation id="7319983568955948908">Sluta dela</translation>
 <translation id="7359298090707901886">Den valda webbläsaren kan inte användas för att öppna webbadresser på den lokala datorn.</translation>

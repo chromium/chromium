@@ -28,7 +28,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="2329392777730037872">Không mở được <ph name="URL" /> trên ứng dụng.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2366718077645204424">Không thể kết nối với máy chủ. Điều này có thể do cấu hình của mạng bạn đang sử dụng.</translation>
-<translation id="242591256144136845">Bản quyền 2025 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="2504109125669302160">Cấp quyền 'Hỗ trợ tiếp cận' cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Đã kết nối với <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Bạn có muốn chia sẻ máy tính này cho một người dùng khác xem và kiểm soát không?</translation>
@@ -138,7 +137,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="7067321367069083429">Màn hình đóng vai trò như màn hình cảm ứng</translation>
 <translation id="7116737094673640201">Chào mừng bạn đến với Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Thử lại</translation>
-<translation id="7298392173540380852">Bản quyền 2025 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="7312846573060934304">Máy chủ đang ngoại tuyến.</translation>
 <translation id="7319983568955948908">Ngừng chia sẻ</translation>
 <translation id="7359298090707901886">Không thể dùng trình duyệt đã chọn để mở URL trên máy cục bộ.</translation>

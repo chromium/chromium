@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">ดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลักไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1104098698795583187">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บนี้ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดของคุณ</translation>
+<translation id="1106270460549661906">เลิกแชร์กับ Gemini</translation>
 <translation id="1106350001632362876">เพิ่มเกณฑ์</translation>
 <translation id="1107482171728500359">แชร์ไมโครโฟน</translation>
 <translation id="110850812463801904">เชื่อมต่อกับ OneDrive ด้วยตนเอง</translation>
@@ -4267,6 +4268,7 @@
 <translation id="3854976556788175030">ถาดกระดาษออกเต็มแล้ว</translation>
 <translation id="3855441664322950881">แพคส่วนขยาย</translation>
 <translation id="3855676282923585394">นำเข้าบุ๊กมาร์กและการตั้งค่า...</translation>
+<translation id="3856023744577163821">ระบบจะแชร์แท็บที่เปิดจากแชทหรือแท็บที่แชร์อยู่กับ Gemini ด้วย</translation>
 <translation id="3856096718352044181">โปรดยืนยันว่านี่เป็นผู้ให้บริการที่ถูกต้องหรือลองอีกครั้งภายหลัง</translation>
 <translation id="3856470183388031602">ใช้บัญชี Google ของคุณบน <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">เลือกเขตเวลา</translation>
@@ -5461,6 +5463,7 @@
 <translation id="4683629100208651599">Make Lowercase</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ค่าเริ่มต้น)</translation>
 <translation id="4684427112815847243">ซิงค์ทุกอย่าง</translation>
+<translation id="4685044513206555960">นโยบายของผู้ดูแลระบบบล็อกการติดตั้งเว็บแอป</translation>
 <translation id="4685096503970466594">ปิด<ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">ตรวจสอบว่าเครื่องพิมพ์เปิดอยู่และเชื่อมต่อเครือข่ายเดียวกันกับ Chromebook หรือใช้สาย USB</translation>
 <translation id="4687613760714619596">อุปกรณ์ที่ไม่รู้จัก (<ph name="DEVICE_ID" />)</translation>
@@ -7565,6 +7568,7 @@
 <translation id="6164393601566177235">เพิ่มเว็บไซต์</translation>
 <translation id="6164832038898943453">เพิ่มภาษาที่จะให้แปลโดยอัตโนมัติ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
+<translation id="61667940770438207">เปิด Gemini ใน Chrome ได้ง่ายๆ ด้วย <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">โปรดตรวจสอบไมโครโฟน</translation>
 <translation id="6169967265765719844">คุณสามารถจัดการสิทธิ์สำหรับเกมและแอปที่ติดตั้งผ่าน Steam ได้ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป Steam<ph name="LINK_END" /></translation>
 <translation id="6170313103929479668">จัดเรียงมุมมองแบบแยก</translation>
@@ -9781,6 +9785,7 @@
 <translation id="7697109152153663933">คลิก "รหัสผ่านและป้อนข้อความอัตโนมัติ"</translation>
 <translation id="769824636077131955">เอกสารนี้ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย คุณสามารถพิมพ์เอกสารที่มีขนาดสูงสุด 50 MB</translation>
 <translation id="7698507637739331665">บางรายการถูกบล็อก</translation>
+<translation id="7700176975240938448">เปิดได้ง่ายๆ ด้วย <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">เครื่องพิมพ์และเครื่องสแกน</translation>
 <translation id="7700873336634517379">ไม่ ใช้สำหรับโรงเรียนในโปรไฟล์นี้ต่อไป</translation>
 <translation id="7701040980221191251">ไม่มี</translation>

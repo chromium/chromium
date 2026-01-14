@@ -353,6 +353,7 @@
 <translation id="4814736265800133385">在不登录账号的情况下使用 Chromium</translation>
 <translation id="4888717733111232871">Chromium的入站规则，允许mDNS流量。</translation>
 <translation id="4893347770495441059">重新启动以更新 Chromium(&amp;C)</translation>
+<translation id="4918086044614829423">接受</translation>
 <translation id="4918844574251943176">已复制图片</translation>
 <translation id="4943838377383847465">Chromium处于后台运行模式。</translation>
 <translation id="494490797786467921">点击即可关闭 Chromium 登录对话框</translation>
@@ -530,6 +531,9 @@
 <translation id="6901631050894301805">将 Chromium 设为默认浏览器，并将其固定到任务栏</translation>
 <translation id="6909503629704372277">管理 Chromium 个人资料(&amp;M)</translation>
 <translation id="6934579572334859869">向图片搜索功能询问此图片</translation>
+<translation id="6948031725951063910">您已达到 Chromium 的书签数量上限（<ph name="BOOKMARK_LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
+
+请先删除一些书签，否则新书签将无法保存到账号中。如果现在退出账号，系统将删除未保存的书签。</translation>
 <translation id="6964305034639999644">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6978145336957848883">安全系数低的密码容易被人猜到。不妨让 Chromium <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>
@@ -698,6 +702,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="8891709362986793894">您的组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
+<translation id="8932992523185907506">Chromium 不再是默认浏览器。要将 Chromium 设置为默认浏览器吗？</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
 <translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>

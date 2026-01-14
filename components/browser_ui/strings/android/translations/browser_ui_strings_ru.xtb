@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и ещё 1)}one{(и ещё #)}few{(и ещё #)}many{(и ещё #)}other{(и ещё #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5407203562970638234">Повысьте свою безопасность</translation>
+<translation id="5436307623797390637">Приложения на устройстве</translation>
 <translation id="5438097262470833822">Будут сброшены разрешения для <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">Когда этот параметр включен, сайты могут запрашивать доступ к данным о вашем местоположении. Когда параметр отключен, сайтам запрещен доступ к такой информации.</translation>
 <translation id="5489227211564503167">Просмотрено <ph name="ELAPSED_TIME" /> из <ph name="TOTAL_TIME" />.</translation>

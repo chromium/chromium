@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Como se usa esta función?</translation>
 <translation id="1901600657316773839">Manter selección</translation>
 <translation id="1902277226107477495">A detección de enderezos está desactivada. Volve activala en Configuración.</translation>
+<translation id="1909201414196501151">Engadiuse e fixouse o sitio</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1925706052394657380">Abre a opción de configuración <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Aplicacións predeterminadas) en iOS</translation>
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="334690320928261823">Pestanas recentes</translation>
 <translation id="3349031117032695619">Bloquear ventás emerxentes</translation>
+<translation id="3350976670663926380">Cambios gardados</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta conta está xestionada.</translation>
 <translation id="3365529507898144230">Gardar en Fotos</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
+<translation id="3378214228000661758">Crea unha clave de acceso para</translation>
 <translation id="3380352560400387991">Este sitio está tentando abrir unha aplicación. Con esta acción, sairás do modo de incógnito.</translation>
 <translation id="3385742921291399323">Accede aos contrasinais, as pestanas e os marcadores que teñas gardados, entre outras cousas.</translation>
 <translation id="3392923070107623576">Organízate creando grupos de pestanas</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Desfacer</translation>
 <translation id="3565012355885596568">Non se puideron cargar as imaxes</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Gardar doutro xeito</translation>
 <translation id="3572607909481582402">Na túa Conta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contén todos os perfís cargados.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Escolle Protección mellorada</translation>
 <translation id="3610041351087301930">Ocultar lector</translation>
 <translation id="3610866916973186448">Si, eliminar</translation>
+<translation id="3616161326314492065">Fai fotos e compárteas con Gemini para crear imaxes e facer un remix.</translation>
 <translation id="3622175633937495219">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Podes pasar o dedo polo bordo para retroceder.</translation>
 <translation id="362709345066740529">Personaliza as tarxetas, o feed e moito máis aquí</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">A nota ten máis de 1000 caracteres</translation>
 <translation id="5087098519049306025">Seguimento de prezos</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">As claves de acceso gárdanse no xestor de contrasinais de Google para</translation>
 <translation id="510580293474170715">Non se importou nada</translation>
 <translation id="5113960131843706315">Cargando o teu contido…</translation>
 <translation id="5118462200606189584">Engadir conta…</translation>
@@ -1750,6 +1756,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7522587739845660862">Máis información sobre a túa localización</translation>
 <translation id="7522948500476882302">Cando descargues un ficheiro, selecciona que se elimine automaticamente ao cabo dun mes</translation>
 <translation id="7524055474074101597">Accede aos teus contrasinais e moito máis en todas as aplicacións.</translation>
+<translation id="7525067979554623046">Crear</translation>
 <translation id="75362970626182391">Novo grupo de pestanas</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7853202427316060426">Actividade</translation>
 <translation id="7854006015462979438">Abre General (Xeral)</translation>
 <translation id="7855678267851972597">Audio</translation>
+<translation id="7857520352710212030">Fixouse o sitio</translation>
 <translation id="7859988229622350291">Non traducir nunca</translation>
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opcións do Tradutor</translation>

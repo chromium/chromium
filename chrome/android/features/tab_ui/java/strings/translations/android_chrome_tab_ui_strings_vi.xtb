@@ -88,7 +88,6 @@
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Bỏ ghim thẻ}other{Bỏ ghim các thẻ}}</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> thẻ mới, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{<ph name="MANY_ADDED" /> thẻ mới, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Nhóm thẻ}other{Nhóm các thẻ}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Bỏ ghim <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Bỏ ghim <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Tạo <ph name="NUM_DAYS_ONE" /> ngày trước}other{Tạo <ph name="NUM_DAYS_MANY" /> ngày trước}}</translation>
 <translation id="4076226664360336092">Danh sách nhóm thẻ, mở trên toàn màn hình</translation>
@@ -196,7 +195,6 @@
 <translation id="7792771145871471484">Xem lại các đề xuất.</translation>
 <translation id="7792860826279960128">Thông báo về các thay đổi trong Nhóm thẻ được chia sẻ đã mở trên một nửa màn hình</translation>
 <translation id="7825973332242257878">Nhóm thẻ</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Nhóm <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Nhóm <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="7853202427316060426">Hoạt động</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> bài đánh giá}other{Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> bài đánh giá}}</translation>
 <translation id="7885132941432959125">Chuyển thẻ sang phải</translation>

@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">Չհաջողվեց ներբեռնել հիմնական հանգույցի ծանոթագրության ֆայլերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1104098698795583187">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների այս խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
+<translation id="1106270460549661906">Չեղարկել Gemini-ի հետ համատեղ օգտագործումը</translation>
 <translation id="1106350001632362876">Ավելացնել շեմը</translation>
 <translation id="1107482171728500359">Հասանելի դարձնել խոսափողը</translation>
 <translation id="110850812463801904">Ձեռքով միանալ OneDrive-ին</translation>
@@ -4267,6 +4268,7 @@
 <translation id="3854976556788175030">Արտածման պնակը լցված է</translation>
 <translation id="3855441664322950881">Փաթեթավորել ընդլայնումը</translation>
 <translation id="3855676282923585394">Ներմուծել էջանիշներն ու կարգավորումները…</translation>
+<translation id="3856023744577163821">Ներդիրները, որոնք բացվել են զրույցից կամ հասանելի դարձվել ներդիրից, նաև հասանելի են դառնում Gemini-ին։</translation>
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3856470183388031602">Օգտագործեք ձեր Google հաշիվը ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="3856800405688283469">Ընտրեք ժամային գոտին</translation>
@@ -5461,6 +5463,7 @@
 <translation id="4683629100208651599">Դարձնել փոքրատառ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (կանխադրված)</translation>
 <translation id="4684427112815847243">Համաժամացնել բոլորը</translation>
+<translation id="4685044513206555960">Վեբ հավելվածի տեղադրումն արգելափակված է ադմինիստրատորի կանոններով։</translation>
 <translation id="4685096503970466594">Անջատել «<ph name="FEATURE_NAME" />» գործառույթը</translation>
 <translation id="4687238339694011189">Համոզվեք, որ ձեր տպիչն անջատված չէ և միացած է նույն ցանցին, ինչ ձեր Chromebook-ը, կամ օգտագործեք USB մալուխ</translation>
 <translation id="4687613760714619596">Անհայտ սարք (<ph name="DEVICE_ID" />)</translation>
@@ -7566,6 +7569,7 @@
 <translation id="6164393601566177235">Ինչպես կայքեր ավելացնել</translation>
 <translation id="6164832038898943453">Ավելացրեք լեզուներ՝ ավտոմատ թարգմանելու համար</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> դյուրանցման միջոցով հեշտությամբ բացեք Gemini-ը Chrome-ում</translation>
 <translation id="6169040057125497443">Ստուգեք խոսափողը</translation>
 <translation id="6169967265765719844">Steam-ի միջոցով տեղադրված խաղերի ու հավելվածների թույլտվությունները կարող եք կառավարել <ph name="LINK_BEGIN" />Steam հավելվածի կարգավորումներում<ph name="LINK_END" />։</translation>
 <translation id="6170313103929479668">Կարգավորել տրոհված էկրանը</translation>
@@ -9784,6 +9788,7 @@
 <translation id="7697109152153663933">Սեղմեք «Գաղտնաբառեր և ինքնալրացում»</translation>
 <translation id="769824636077131955">Այս փաստաթուղթը չափազանց մեծ է անվտանգության ստուգման համար։ Դուք կարող եք մինչև 50 ՄԲ չափի փաստաթղթեր տպել։</translation>
 <translation id="7698507637739331665">Որոշ տարրեր արգելափակված են</translation>
+<translation id="7700176975240938448">Հեշտությամբ բացեք <ph name="FOCUS_TOGGLE_HOTKEY" /> դյուրանցման միջոցով</translation>
 <translation id="7700516433658473670">Տպիչներ և սկաներներ</translation>
 <translation id="7700873336634517379">Ոչ, շարունակել օգտագործել այս պրոֆիլը դպրոցի համար</translation>
 <translation id="7701040980221191251">Չկա</translation>

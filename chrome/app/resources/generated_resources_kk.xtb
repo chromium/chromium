@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">Негізгі түйіннің aннотация файлдарын жүктеп алу мүмкін емес. Кейінірек қайталап көріңіз.</translation>
 <translation id="1103523840287552314">Әрқашан <ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="1104098698795583187">Осы қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз. Бұл топ барлық құрылғыңыздан жойылады.</translation>
+<translation id="1106270460549661906">Gemini-мен бөлісуді тоқтату</translation>
 <translation id="1106350001632362876">Шекті арттыру</translation>
 <translation id="1107482171728500359">Микрофонды бөлісу</translation>
 <translation id="110850812463801904">OneDrive-бен қолмен байланыстыру</translation>
@@ -3058,6 +3059,7 @@
 <translation id="3038612606416062604">Принтерді қолмен енгізу</translation>
 <translation id="3038628620670416486">Тінтуірден түймелерді табыңыз</translation>
 <translation id="3039491566278747710">Офлайн саясат құрылғыға орнатылмады.</translation>
+<translation id="303955801043931176">Қойынды жабық.</translation>
 <translation id="3040435070100611531">Google Wallet билеттеріңіз</translation>
 <translation id="3040982432432547149">Chromebook құрылғысына арналған Steam қолданбасын жақсартуға көмектесіңіз</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> қосылған қойындылар тобына қосылыңыз</translation>
@@ -4263,6 +4265,7 @@
 <translation id="3854976556788175030">Шығыс науасы толы</translation>
 <translation id="3855441664322950881">Пакет кеңейтімі</translation>
 <translation id="3855676282923585394">Бетбелгілер мен параметрлерді импорттау…</translation>
+<translation id="3856023744577163821">Чаттан ашылған қойындылар немесе ортақ қойынды да Gemini-ға жіберіледі.</translation>
 <translation id="3856096718352044181">Мұның жарамды провайдер екенін тексеріңіз немесе кейінірек қайталап көріңіз.</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" /> құрылғыңызда Google аккаунтын пайдалану</translation>
 <translation id="3856800405688283469">Уақыт белдеуін таңдау</translation>
@@ -5457,6 +5460,7 @@
 <translation id="4683629100208651599">Кіші әріппен жазу</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (әдепкі)</translation>
 <translation id="4684427112815847243">Барлығын синхрондау</translation>
+<translation id="4685044513206555960">Веб-қолданбаны орнату әкімші саясаты бойынша блокталған.</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" /> функциясын өшіру</translation>
 <translation id="4687238339694011189">Принтер қосылғанына және Chromebook құрылғыңызбен бір желіге қосылғанына көз жеткізіңіз немесе USB кабелін пайдаланыңыз</translation>
 <translation id="4687613760714619596">Белгісіз құрылғы (<ph name="DEVICE_ID" />)</translation>
@@ -7561,6 +7565,7 @@
 <translation id="6164393601566177235">Сайттар қосу</translation>
 <translation id="6164832038898943453">Автоматты түрде аударылатын тілдерді қосу</translation>
 <translation id="6165508094623778733">Толық ақпарат</translation>
+<translation id="61667940770438207">Chrome-дағы Gemini-ды <ph name="FOCUS_TOGGLE_HOTKEY" /> пернелерімен оңай ашыңыз</translation>
 <translation id="6169040057125497443">Микрофонды тексеріңіз.</translation>
 <translation id="6169967265765719844">Steam арқылы орнатылған ойындар мен қолданбаларға арналған рұқсаттарды <ph name="LINK_BEGIN" />Steam қолданбасы параметрлерінен<ph name="LINK_END" /> басқаруға болады.</translation>
 <translation id="6170313103929479668">Бөлінген көріністі реттеу</translation>
@@ -9776,6 +9781,7 @@
 <translation id="7697109152153663933">"Құпия сөздер және автотолтыру" түймесін басыңыз</translation>
 <translation id="769824636077131955">Бұл құжат қауіпсіздік тексерісін жүргізу үшін тым үлкен. 50 МБ-қа дейінгі құжаттарды басып шығаруға болады.</translation>
 <translation id="7698507637739331665">Кейбір элемент бөгелді</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> арқылы оңай ашыңыз</translation>
 <translation id="7700516433658473670">Принтерлер мен сканерлер</translation>
 <translation id="7700873336634517379">Жоқ, осы профильде мектеп үшін пайдалануды жалғастыру</translation>
 <translation id="7701040980221191251">Жоқ</translation>

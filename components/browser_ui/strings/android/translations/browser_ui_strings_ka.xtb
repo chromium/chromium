@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 სხვა)}other{(+ # სხვა)}}</translation>
 <translation id="5403592356182871684">სახელები</translation>
 <translation id="5407203562970638234">თქვენი უსაფრთხოების გაძლიერება</translation>
+<translation id="5436307623797390637">აპები მოწყობილობაზე</translation>
 <translation id="5438097262470833822">ეს არჩევანი გადააყენებს ნებართვებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="5459413148890178711">ჩართვის შემთხვევაში საიტებს შეეძლება თქვენი მდებარეობის გამოყენების თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება თქვენი მდებარეობის ნახვა.</translation>
 <translation id="5489227211564503167">გავიდა <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />-დან.</translation>

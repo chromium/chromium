@@ -9,7 +9,6 @@
 <translation id="1016498331642356377">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Удалить эти данные?</translation>
-<translation id="1034259925032978114">Окно открыто</translation>
 <translation id="1035113036584565771">Уведомление для продвижения функции закрыто</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1045899828449635435">Удалить эти данные?</translation>
@@ -330,7 +329,6 @@
 <translation id="2451607499823206582">Отслеживание</translation>
 <translation id="2453860139492968684">Завершить</translation>
 <translation id="2461378706168271257">Поиск по вкладкам</translation>
-<translation id="2461822463642141190">Сейчас</translation>
 <translation id="2466378451804467735">Выбранная вместе с несколькими другими вкладка "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2468444275314013497">Ваш браузер в безопасности</translation>
 <translation id="2471632347767899461">Обратитесь в Справочный центр</translation>
@@ -408,7 +406,6 @@
 <translation id="2789486458103222910">ОК</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome обнаружил повторяющийся пароль, который можно сделать надежнее.}one{Chrome обнаружил # повторяющийся пароль, который можно сделать надежнее.}few{Chrome обнаружил # повторяющихся пароля, которые можно сделать надежнее.}many{Chrome обнаружил # повторяющихся паролей, которые можно сделать надежнее.}other{Chrome обнаружил # повторяющего пароля, которые можно сделать надежнее.}}</translation>
 <translation id="2794551654724114396">Получайте полезные советы о том, как использовать все возможности Chrome.</translation>
-<translation id="2800066122460699237">Вкладка "<ph name="TAB_TITLE" />" будет закрыта.</translation>
 <translation id="2805210243313393104">Синхронизируйте закладки и другие данные на всех своих устройствах.</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2819849308549746319">Запретить все</translation>
@@ -912,7 +909,6 @@
 <translation id="4908869848243824489">Рекомендации от Google</translation>
 <translation id="4910889077668685004">Платежные приложения</translation>
 <translation id="4911042367886397055">С возвращением, <ph name="USER_NAME" />!</translation>
-<translation id="4912413785358399818">Переместить вкладку</translation>
 <translation id="4913169188695071480">Остановить обновление</translation>
 <translation id="4921224083091001889">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите как <ph name="EMAIL" /> в Chrome.</translation>
 <translation id="4923173329789776645">Ваша организация не рекомендует скачивать этот файл</translation>
@@ -1307,7 +1303,6 @@
 <translation id="6550891580932862748">Не защищает вас от опасных сайтов, расширений и скачиваемых файлов. Этот вариант не повлияет на настройки Безопасного просмотра в других продуктах Google.</translation>
 <translation id="6554822972009632311">Фильтр контента включен</translation>
 <translation id="6556501700899673703">Lexend</translation>
-<translation id="6556542240154580383">{TAB_COUNT,plural, =1{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="6560414384669816528">Поиск в Sogou</translation>
 <translation id="656065428026159829">Ещё</translation>
 <translation id="6564820424018738527">На вашем устройстве Android может быть похожий параметр. Если оценка эффективности рекламы включена в Chrome и на устройстве Android, компании смогут измерять эффективность рекламы на посещаемых вами сайтах и в приложениях, которые вы используете.</translation>
@@ -1907,7 +1902,6 @@
 <translation id="8957528460562961174">Вы можете экспортировать пароли и импортировать их в предпочитаемый менеджер паролей. Google Менеджер паролей больше не работает, потому что сервисы Google Play недоступны.</translation>
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8965591936373831584">ожидание</translation>
-<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="8969796057708736017">Скачивание завершится, если файл соответствует правилам вашей организации</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="8972098258593396643">Скачать в папку по умолчанию?</translation>

@@ -165,6 +165,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1102759278139578486">Non se puideron descargar os ficheiros de anotación do nó principal. Téntao de novo máis tarde.</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perderás inmediatamente o acceso ao grupo de pestanas, que se eliminará de todos os teus dispositivos</translation>
+<translation id="1106270460549661906">Deixar de compartir o contido con Gemini</translation>
 <translation id="1106350001632362876">Aumentar o límite</translation>
 <translation id="1107482171728500359">Compartir micrófono</translation>
 <translation id="110850812463801904">Conectar manualmente a OneDrive</translation>
@@ -4271,6 +4272,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3854976556788175030">A bandexa de saída está chea</translation>
 <translation id="3855441664322950881">Comprimir extensión</translation>
 <translation id="3855676282923585394">Importar marcadores e configuración...</translation>
+<translation id="3856023744577163821">As pestanas que se abran desde un chat ou unha pestana compartida tamén se compartirán con Gemini.</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3856470183388031602">Usa a túa Conta de Google en <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selecciona un fuso horario</translation>
@@ -5465,6 +5467,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4683629100208651599">Escribir en minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predeterminado)</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
+<translation id="4685044513206555960">A política de quen administra a conta bloqueou a instalación da aplicación web.</translation>
 <translation id="4685096503970466594">Desactivar <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Asegúrate de que a impresora estea acendida e conectada á mesma rede wifi que o teu Chromebook ou usa un cable USB</translation>
 <translation id="4687613760714619596">Dispositivo descoñecido (<ph name="DEVICE_ID" />)</translation>
@@ -7571,6 +7574,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6164393601566177235">Engadir sitios</translation>
 <translation id="6164832038898943453">Engadir idiomas para traducilos automaticamente</translation>
 <translation id="6165508094623778733">Máis información</translation>
+<translation id="61667940770438207">Preme <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir Gemini en Chrome facilmente</translation>
 <translation id="6169040057125497443">Comproba o micrófono.</translation>
 <translation id="6169967265765719844">Os permisos das aplicacións e xogos instalados a través de Steam poden xestionarse na <ph name="LINK_BEGIN" />configuración da aplicación Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Organizar vista dividida</translation>
@@ -9787,6 +9791,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7697109152153663933">Fai clic en Passwords and Autofill (Contrasinais e autocompletar)</translation>
 <translation id="769824636077131955">Este documento é demasiado grande para realizar unha Comprobación de seguranza. Podes imprimir documentos de ata 50 MB.</translation>
 <translation id="7698507637739331665">Algúns elementos están bloqueados</translation>
+<translation id="7700176975240938448">Preme <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir Gemini facilmente</translation>
 <translation id="7700516433658473670">Impresoras e escáneres</translation>
 <translation id="7700873336634517379">Non, continuar usando os datos do centro educativo neste perfil</translation>
 <translation id="7701040980221191251">Ningunha</translation>

@@ -165,6 +165,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1102759278139578486">Nu se pot descărca fișierele cu adnotări pentru nodurile principale. Încearcă din nou mai târziu.</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vei pierde imediat accesul la acest grup de file și el va fi șters de pe toate dispozitivele tale</translation>
+<translation id="1106270460549661906">Nu mai permite accesul Gemini</translation>
 <translation id="1106350001632362876">Mărește pragul</translation>
 <translation id="1107482171728500359">Permite accesul la microfon</translation>
 <translation id="110850812463801904">Conectează-te manual la OneDrive</translation>
@@ -4269,6 +4270,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3854976556788175030">Tava de ieșire este plină</translation>
 <translation id="3855441664322950881">Împachetează extensia</translation>
 <translation id="3855676282923585394">Importă marcajele și setările...</translation>
+<translation id="3856023744577163821">Filele deschise dintr-un chat sau o filă trimisă sunt, de asemenea, trimise la Gemini.</translation>
 <translation id="3856096718352044181">Confirmă dacă acesta este un furnizor valid sau încearcă din nou mai târziu</translation>
 <translation id="3856470183388031602">Folosește Contul Google pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selectează fusul orar</translation>
@@ -5463,6 +5465,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4683629100208651599">Schimbă în minuscule</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (prestabilit)</translation>
 <translation id="4684427112815847243">Sincronizează tot</translation>
+<translation id="4685044513206555960">Instalarea aplicației web este blocată de politica implementată de administrator.</translation>
 <translation id="4685096503970466594">Dezactivează <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Verifică dacă imprimanta este pornită și conectată la rețeaua folosită de Chromebook sau folosește un cablu USB</translation>
 <translation id="4687613760714619596">Dispozitiv necunoscut (<ph name="DEVICE_ID" />)</translation>
@@ -7570,6 +7573,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6164393601566177235">Adaugă site-uri</translation>
 <translation id="6164832038898943453">Adaugă limbi pentru traducere automată</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
+<translation id="61667940770438207">Deschide cu ușurință Gemini în Chrome cu <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Verifică microfonul.</translation>
 <translation id="6169967265765719844">Permisiunile pentru jocurile și aplicațiile instalate prin Steam se pot gestiona în <ph name="LINK_BEGIN" />setările aplicației Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Aranjează afișarea împărțită</translation>
@@ -9789,6 +9793,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7697109152153663933">Dă clic pe Parole și completare automată</translation>
 <translation id="769824636077131955">Acest document este prea mare pentru verificarea de securitate. Poți să printezi documente de până la 50 MB.</translation>
 <translation id="7698507637739331665">Unele elemente sunt blocate</translation>
+<translation id="7700176975240938448">Deschide cu ușurință cu <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Imprimante și scanere</translation>
 <translation id="7700873336634517379">Nu, continuă să folosești pentru școală în acest profil</translation>
 <translation id="7701040980221191251">Niciuna</translation>

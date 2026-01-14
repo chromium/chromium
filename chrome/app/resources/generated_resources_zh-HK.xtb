@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">無法下載主節點註釋檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">你將立即無法再存取此分頁群組，且該群組會從你的所有裝置中刪除</translation>
+<translation id="1106270460549661906">取消與 Gemini 分享</translation>
 <translation id="1106350001632362876">提高門檻</translation>
 <translation id="1107482171728500359">共用麥克風</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
@@ -2571,6 +2572,7 @@
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
+<translation id="2714617928488200509">型號</translation>
 <translation id="2715751256863167692">此升級操作會重設您的 Chromebook 硬件，並刪除目前的使用者資料。</translation>
 <translation id="2715934493766003251">檔案同步功能已開啟，因此無法清理儲存空間</translation>
 <translation id="2716986496990888774">此設定由家長管理。</translation>
@@ -4279,6 +4281,7 @@
 <translation id="3854976556788175030">輸出紙匣已滿</translation>
 <translation id="3855441664322950881">封裝擴充程式</translation>
 <translation id="3855676282923585394">匯入書籤和設定…</translation>
+<translation id="3856023744577163821">從對話或共用分頁所開啟的分頁亦會與 Gemini 分享。</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用 Google 帳戶</translation>
 <translation id="3856800405688283469">選取時區</translation>
@@ -4605,6 +4608,7 @@
 <translation id="4078738236287221428">積極</translation>
 <translation id="4078903002989614318">排序同埋清單選項</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
+<translation id="4082070466456857368">思考 (3 Pro)</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
@@ -5470,6 +5474,7 @@
 <translation id="4683629100208651599">設為小寫</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
+<translation id="4685044513206555960">管理員政策禁止安裝網絡應用程式。</translation>
 <translation id="4685096503970466594">關閉「<ph name="FEATURE_NAME" />」</translation>
 <translation id="4687238339694011189">請確認打印機已開啟並連線至 Chromebook 使用的網絡，或使用 USB 連接線</translation>
 <translation id="4687613760714619596">不明裝置 (<ph name="DEVICE_ID" />)</translation>
@@ -7574,6 +7579,7 @@
 <translation id="6164393601566177235">新增網站</translation>
 <translation id="6164832038898943453">加要自動翻譯嘅語言</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="61667940770438207">按 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可輕鬆開啟 Chrome 版 Gemini</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
 <translation id="6170313103929479668">調整分割檢視畫面</translation>
@@ -7842,6 +7848,7 @@
 <translation id="6350821834561350243">請清楚描述問題，並盡量提供重現問題的步驟</translation>
 <translation id="6351178441572658285">應用程式語言</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
+<translation id="6355632359041940003">接手操作</translation>
 <translation id="635609604405270300">保持裝置開啟</translation>
 <translation id="6356537493253478650">穩重</translation>
 <translation id="63566973648609420">只有知道密碼短語的使用者才能讀取您的加密資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
@@ -8809,6 +8816,7 @@
 <translation id="7017219178341817193">新增網頁</translation>
 <translation id="7017354871202642555">無法在視窗建立之後再設定模式。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7020810150082302220">你的預設瀏覽器已變更</translation>
 <translation id="7021524108486027008">透過 <ph name="DEVICE_TYPE" /> 在企業管理的環境中執行工具、編輯器和 IDE。</translation>
 <translation id="7022222879220069865">已經解除連接所有觸控板</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
@@ -9788,6 +9796,7 @@
 <translation id="7697109152153663933">按一下「密碼和自動填入」</translation>
 <translation id="769824636077131955">此文件太大，無法進行安全檢查。可列印文件大小上限為 50 MB。</translation>
 <translation id="7698507637739331665">已封鎖部分項目</translation>
+<translation id="7700176975240938448">按 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可輕鬆開啟</translation>
 <translation id="7700516433658473670">打印機和掃瞄器</translation>
 <translation id="7700873336634517379">否，繼續將此設定檔用於學校</translation>
 <translation id="7701040980221191251">沒有</translation>
@@ -10186,6 +10195,7 @@
 <translation id="7969144945436590933">瞭解詳情</translation>
 <translation id="7970673414865679092">以太網詳情</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
+<translation id="7972837668077967426">畫布</translation>
 <translation id="7973149423217802477">㩒一下唔鍾意就可以俾負評。</translation>
 <translation id="7973776233567882054">下列哪一項最符合您的網絡使用情況？</translation>
 <translation id="797394244396603170">選取您要分享檔案的裝置</translation>
@@ -10748,6 +10758,7 @@
 <translation id="8339288417038613756">顯示和文字大小</translation>
 <translation id="833986336429795709">如要開啟此連結，請選擇應用程式</translation>
 <translation id="8340547030807793004">可以對　<ph name="DEVICE" />　執行嘅其他操作</translation>
+<translation id="8341693734243413517">Chrome 更新程式</translation>
 <translation id="8341804784147620576">顯示搜尋捷徑</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342387517402567689">無痕模式不支援安裝網絡應用程式</translation>
@@ -11051,6 +11062,7 @@
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8551647092888540776">離線時無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="8552102814346875916">儲存去「一律啟用這些網站」清單</translation>
+<translation id="8552947739661397736">接手操作，目前由 Gemini 控制緊</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未選取語言</translation>
 <translation id="8555444629041783356">自動更新日落時間表</translation>

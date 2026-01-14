@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">Негизги түйүндүн аннотация файлдары жүктөлгөн жок. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="1104098698795583187">Сиз дароо бул өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготуп, ал бардык түзмөктөрүңүздөн жок кылынат</translation>
+<translation id="1106270460549661906">Gemini менен бөлүшүүнү токтотуу</translation>
 <translation id="1106350001632362876">Босого маанисин жогорулатуу</translation>
 <translation id="1107482171728500359">Микрофонду бөлүшүү</translation>
 <translation id="110850812463801904">OneDrive'га кол менен туташуу</translation>
@@ -4282,6 +4283,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3854976556788175030">Басылып чыгарылган барактар тактасы толуп калды</translation>
 <translation id="3855441664322950881">Кеңейтүүнү топтомдоштуруу</translation>
 <translation id="3855676282923585394">Кыстармалар менен параметрлерди импорттоо…</translation>
+<translation id="3856023744577163821">Чаттан же бөлүшүлгөн өтмөктөн ачылган өтмөктөр да Gemini менен бөлүшүлөт.</translation>
 <translation id="3856096718352044181">Бул жарамдуу кызмат көрсөтүүчү экенин текшерип, кайталап көрүңүз</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" /> түзмөгүңүздө Google аккаунтуңузду колдонуңуз</translation>
 <translation id="3856800405688283469">Убакыт алкагын тандоо</translation>
@@ -5476,6 +5478,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4683629100208651599">Кичине тамга менен жазуу</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (демейки)</translation>
 <translation id="4684427112815847243">Баарын шайкештештирүү</translation>
+<translation id="4685044513206555960">Веб-колдонмону орнотуу администратордун эрежелери менен бөгөттөлгөн.</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" /> өчүрүү</translation>
 <translation id="4687238339694011189">Принтерди күйгүзүп, Chromebook менен бир Wi-Fi тармагына туташтырып же USB кабелин колдонуңуз.</translation>
 <translation id="4687613760714619596">Белгисиз түзмөк (<ph name="DEVICE_ID" />)</translation>
@@ -7585,6 +7588,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6164393601566177235">Сайттарды кошуу</translation>
 <translation id="6164832038898943453">Автоматтык түрдө которула турган тилдерди кошуңуз</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> менен Chrome'до Gemini'ды оңой ачыңыз</translation>
 <translation id="6169040057125497443">Микрофонуңузду текшериңиз.</translation>
 <translation id="6169967265765719844">Steam аркылуу орнотулган оюндар менен колдонмолорго берилген урксаттарды <ph name="LINK_BEGIN" />Steam колдонмосунун параметрлеринен<ph name="LINK_END" /> башкарууга болот.</translation>
 <translation id="6170313103929479668">Бөлүп көрүү режимин тууралоо</translation>
@@ -9801,6 +9805,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7697109152153663933">“Сырсөздөр жана автотолтурууну” чыкылдатуу</translation>
 <translation id="769824636077131955">Коопсуздукту текшерүү үчүн бул документтин көлөмү өтө чоң. 50 Мб кичирээк документтерди басып чыгара аласыз.</translation>
 <translation id="7698507637739331665">Айрым элементтер бөгөттөлгөн</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> менен оңой ачыңыз</translation>
 <translation id="7700516433658473670">Принтерлер жана сканерлер</translation>
 <translation id="7700873336634517379">Жок, ушул мектеп профили колдонула берсин</translation>
 <translation id="7701040980221191251">Эч бир</translation>

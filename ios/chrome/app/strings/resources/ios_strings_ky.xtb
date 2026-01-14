@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Бул функцияны кантип колдоном?</translation>
 <translation id="1901600657316773839">Жок</translation>
 <translation id="1902277226107477495">Даректи аныктоо өчүк. Аны Параметрлерден кайра күйгүзүңүз.</translation>
+<translation id="1909201414196501151">Сайт кошулуп, кадалды</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1925706052394657380">iOS'то <ph name="BEGIN_BOLD" />Демейки колдонмолор<ph name="END_BOLD" /> параметрин ачыңыз</translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{Кыстармалар {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="334690320928261823">Соңку өтмөктөр</translation>
 <translation id="3349031117032695619">Калкып чыкмаларды бөгөттөө</translation>
+<translation id="3350976670663926380">Түзөтүүлөр сакталды</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Бул аккаунт тескелет.</translation>
 <translation id="3365529507898144230">Фотого сактоо</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="3377063233124932127">Эми сакталган кыстармаларыңыз, сырсөздөрүңүз жана башка нерселер жогору жакта.</translation>
+<translation id="3378214228000661758">Төмөнкү үчүн киргизүүчү ачкычты түзүү</translation>
 <translation id="3380352560400387991">Бул сайт колдонмону ачууга аракет кылып жатат. Бул сизди Жашыруун режимден чыгарат.</translation>
 <translation id="3385742921291399323">Сакталган сырсөздөрдү, өтмөктөрдү, кыстармаларды жана башкаларды алыңыз.</translation>
 <translation id="3392923070107623576">Өтмөктөр топторун түзүү менен иштериңизди иретке келтириңиз</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Кайтаруу</translation>
 <translation id="3565012355885596568">Сүрөттөр жүктөлбөй калды</translation>
 <translation id="3565930036634619844">Өтмөк. <ph name="NUMBER_OF_TABS" /> ичинен <ph name="TAB_INDEX" />.</translation>
+<translation id="3567168891086460374">Башка жол менен сактоо</translation>
 <translation id="3572607909481582402">Google аккаунтуңузда</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
 <translation id="3575426792457739946">Бул тизмеде бардык жүктөлгөн профилдер камтылат.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Мыктылап коргоону тандаңыз</translation>
 <translation id="3610041351087301930">Окурман режимин жашыруу</translation>
 <translation id="3610866916973186448">Ооба, өчүрүү</translation>
+<translation id="3616161326314492065">Сүрөттөрдү тартып, Gemini менен бөлүшүп, сүрөттөрдү түзүп жана ремикс түзүңүз.</translation>
 <translation id="3622175633937495219">Издөө таржымалы (<ph name="COUNT" /> табылды)</translation>
 <translation id="3625008969091706597">Артка кайтуу үчүн кырын сүрүп коюңуз.</translation>
 <translation id="362709345066740529">Карталарды, түрмөктү жана башкаларды бул жерде ыңгайлаштырыңыз</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">Эскертүү 1000 символдон ашып кетти</translation>
 <translation id="5087098519049306025">Бааларга көз салуу</translation>
 <translation id="5090832849094901128">Бул сырсөздү жок кылуу менен <ph name="WEBSITE" /> аккаунтуңуз өчпөйт.</translation>
+<translation id="5096619236864235">Сырсөздөр Google Сырсөздөрдү башкаргычта сакталат</translation>
 <translation id="510580293474170715">Эч нерсе өткөрүлүп алынган жок</translation>
 <translation id="5113960131843706315">Нерселериңиз алынууда…</translation>
 <translation id="5118462200606189584">Аккаунт кошуу…</translation>
@@ -1750,6 +1756,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7522587739845660862">Жайгашкан жериңиз жөнүндө маалымат</translation>
 <translation id="7522948500476882302">Файлды жүктөп алганыңызда, аны 1 айдан кийин автоматтык түрдө өчүрүүнү тандаңыз</translation>
 <translation id="7524055474074101597">Сырсөздөрүңүзгө жана башка колдонмолорго кириңиз.</translation>
+<translation id="7525067979554623046">Түзүү</translation>
 <translation id="75362970626182391">Жаңы өтмөктөр тобу</translation>
 <translation id="7537586195939242955">Кечиресиз, учурда картаңызды Passbook'ка орнотуу мүмкүн эмес</translation>
 <translation id="754655535278952384"><ph name="TIME" /> текшерилди</translation>
@@ -1841,6 +1848,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7853202427316060426">Аракеттер</translation>
 <translation id="7854006015462979438">Жалпы бөлүмүн ачыңыз</translation>
 <translation id="7855678267851972597">Аудио файлдар</translation>
+<translation id="7857520352710212030">Сайт кадалды</translation>
 <translation id="7859988229622350291">Эч качан которулбасын</translation>
 <translation id="7863211248337747225">Колдонмону жүктөп алуу</translation>
 <translation id="7865127013871431856">Которуу параметрлери</translation>

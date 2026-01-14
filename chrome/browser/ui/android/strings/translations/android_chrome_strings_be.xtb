@@ -9,7 +9,6 @@
 <translation id="1016498331642356377">Хуткі пошук з дапамогай галасавых каманд. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="1028699632127661925">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="103269572468856066">Выдаліць і гэтыя даныя?</translation>
-<translation id="1034259925032978114">Акно адкрыта</translation>
 <translation id="1035113036584565771">Апавяшчэнне з парадай закрыта</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1045899828449635435">Выдаліць і гэтыя даныя?</translation>
@@ -330,7 +329,6 @@
 <translation id="2451607499823206582">Адсочванне</translation>
 <translation id="2453860139492968684">Завяршыць</translation>
 <translation id="2461378706168271257">Шукаць па ўкладках</translation>
-<translation id="2461822463642141190">Цяпер</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, укладка з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="2468444275314013497">З браўзерам усё ў парадку</translation>
 <translation id="2471632347767899461">Пашукайце ў Даведачным цэнтры</translation>
@@ -408,7 +406,6 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome выявіў ужыты раней пароль, які можна палепшыць}one{Chrome выявіў # ужыты раней пароль, які можна палепшыць}few{Chrome выявіў # ужытыя раней паролі, якія можна палепшыць}many{Chrome выявіў # ужытых раней пароляў, якія можна палепшыць}other{Chrome выявіў # ужытага раней пароля, якія можна палепшыць}}</translation>
 <translation id="2794551654724114396">Уключыце апавяшчэнні з карыснымі парадамі, якія дапамогуць вам максімальна эфектыўна выкарыстоўваць Chrome</translation>
-<translation id="2800066122460699237">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
 <translation id="2805210243313393104">Выкарыстоўвайце свае закладкі і іншае змесціва на ўсіх сваіх прыладах</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2819849308549746319">Адпісацца ад усіх</translation>
@@ -912,7 +909,6 @@
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
 <translation id="4910889077668685004">Плацежныя праграмы</translation>
 <translation id="4911042367886397055">З вяртаннем, <ph name="USER_NAME" />!</translation>
-<translation id="4912413785358399818">Перамясціць укладку</translation>
 <translation id="4913169188695071480">Спыніць абнаўленне</translation>
 <translation id="4921224083091001889">Каб выкарыстоўваць свае паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome як <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Ваша арганізацыя не рэкамендуе спампоўваць гэты файл</translation>
@@ -1307,7 +1303,6 @@
 <translation id="6550891580932862748">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Гэты рэжым не паўплывае на налады Бяспечнага прагляду ў іншых прадуктах Google.</translation>
 <translation id="6554822972009632311">Уключаны фільтр змесціва</translation>
 <translation id="6556501700899673703">Lexend</translation>
-<translation id="6556542240154580383">{TAB_COUNT,plural, =1{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_ONE" /> укладка будуць закрыты}one{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладка будуць закрыты}few{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}many{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладак будуць закрыты}other{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}}</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6564820424018738527">На вашай прыладзе Android можа быць падобная налада. Калі ў Chrome і на вашай прыладзе Android уключана вымярэнне эфектыўнасці рэкламы, кампаніі могуць ацэньваць эфектыўнасць рэкламы на сайтах, якія вы наведваеце, і ў праграмах, якімі вы карыстаецеся.</translation>
@@ -1907,7 +1902,6 @@
 <translation id="8957528460562961174">Каб захаваць доступ да пароляў, экспартуйце іх і потым імпартуйце ў прыярытэтны менеджар пароляў. Праца Менеджара пароляў Google спынена, бо сэрвісы Google Play недаступныя.</translation>
 <translation id="8963117664422609631">Перайсці ў налады сайтаў</translation>
 <translation id="8965591936373831584">у стане чакання</translation>
-<translation id="8968085728801125376">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="8969796057708736017">Спампоўванне будзе завершана, калі файл будзе адпавядаць правілам вашай арганізацыі</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8972098258593396643">Спампаваць у стандартную папку?</translation>

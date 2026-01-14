@@ -28,7 +28,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="2329392777730037872">Kunne ikke åpne <ph name="URL" /> på klienten.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2366718077645204424">Kunne ikke nå verten. Dette er sannsynligvis på grunn av innstillingene for nettverket du bruker.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Med enerett.</translation>
 <translation id="2504109125669302160">Gi «Tilgjengelighet»-tillatelsen til <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Koblet til <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Har du lyst til å dele denne datamaskinen slik at en annen bruker kan se og kontrollere den?</translation>
@@ -138,7 +137,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="7067321367069083429">Skjermen fungerer som en berøringsskjerm</translation>
 <translation id="7116737094673640201">Velkommen til Chrome Eksternt skrivebord</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Med enerett.</translation>
 <translation id="7312846573060934304">Verten er uten nett.</translation>
 <translation id="7319983568955948908">Stopp deling</translation>
 <translation id="7359298090707901886">Den valgte nettleseren kan ikke brukes til å åpne nettadresser på den lokale maskinen.</translation>

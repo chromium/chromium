@@ -165,6 +165,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1102759278139578486">Põhisõlme märgistamise faile ei saa alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Kaotate kohe juurdepääsu sellele vahelehegrupile ja see kustutatakse kõigist teie seadmetest</translation>
+<translation id="1106270460549661906">Jagamise tühistamine Geminiga</translation>
 <translation id="1106350001632362876">Tõstke läve</translation>
 <translation id="1107482171728500359">Jaga mikrofoni</translation>
 <translation id="110850812463801904">Looge ühendus OneDrive'iga käsitsi</translation>
@@ -4273,6 +4274,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3854976556788175030">Väljastussalv on täis</translation>
 <translation id="3855441664322950881">Paki laiendus</translation>
 <translation id="3855676282923585394">Impordi järjehoidjad ja seaded...</translation>
+<translation id="3856023744577163821">Vestlusest või jagatud vahelehelt avatud vahelehti jagatakse samuti Geminiga.</translation>
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
 <translation id="3856470183388031602">Google’i konto kasutamine seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Ajavööndi valimine</translation>
@@ -5467,6 +5469,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4683629100208651599">Muuda väiketäheliseks</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (vaikeseade)</translation>
 <translation id="4684427112815847243">Sünkrooni kõik</translation>
+<translation id="4685044513206555960">Veebirakenduse installimine on administraatori reegliga blokeeritud.</translation>
 <translation id="4685096503970466594">Funktsiooni <ph name="FEATURE_NAME" /> väljalülitamine</translation>
 <translation id="4687238339694011189">Veenduge, et teie printer oleks sisse lülitatud ja ühendatud Chromebookiga samasse võrku, või kasutage USB-kaablit</translation>
 <translation id="4687613760714619596">Tundmatu seade (<ph name="DEVICE_ID" />)</translation>
@@ -7576,6 +7579,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6164393601566177235">Saitide lisamine</translation>
 <translation id="6164832038898943453">Lisage keeled, mille jaoks soovite automaatselt tõlke saada</translation>
 <translation id="6165508094623778733">Lisateave</translation>
+<translation id="61667940770438207">Avage Gemini Chrome'is hõlpsalt klahvidega <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Kontrollige mikrofoni.</translation>
 <translation id="6169967265765719844">Steami kaudu installitud mängude ja rakenduste lube saab hallata <ph name="LINK_BEGIN" />Steami rakenduse seadetes<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Poolitatud vaate kohandamine</translation>
@@ -9793,6 +9797,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7697109152153663933">Klõpsake valikul „Paroolid ja automaattäide“</translation>
 <translation id="769824636077131955">See dokument on turvakontrolli jaoks liiga suur. Saate printida kuni 50 MB dokumente.</translation>
 <translation id="7698507637739331665">Mõned üksused on blokeeritud</translation>
+<translation id="7700176975240938448">Avage hõlpsalt klahvidega <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Printerid ja skannerid</translation>
 <translation id="7700873336634517379">Ei, jätkan selle profiili kasutamist kooli jaoks</translation>
 <translation id="7701040980221191251">Pole</translation>

@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">اصل نوڈ تشریح والی فائلوں کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="1104098698795583187">آپ فوری طور پر اس ٹیب گروپ تک رسائی سے محروم ہو جائیں گے اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
+<translation id="1106270460549661906">‏‫Gemini کے ساتھ اشتراک ختم کریں</translation>
 <translation id="1106350001632362876">حد بڑھائیں</translation>
 <translation id="1107482171728500359">مائیکروفون کا اشتراک کریں</translation>
 <translation id="110850812463801904">‏دستی طور پر OneDrive سے منسلک کریں</translation>
@@ -3063,6 +3064,7 @@
 <translation id="3038612606416062604">دستی طور پر پرنٹر شامل کریں</translation>
 <translation id="3038628620670416486">اپنے ماؤس پر بٹنز تلاش کریں</translation>
 <translation id="3039491566278747710">آلہ پر آف لائن پالیسی انسٹال نہیں ہو سکی۔</translation>
+<translation id="303955801043931176">ٹیب بند ہو گیا</translation>
 <translation id="3040435070100611531">‏آپ کے Google والٹ پاسز</translation>
 <translation id="3040982432432547149">‏Chromebook کے لیے Steam کو بہتر بنانے میں ہماری مدد کریں</translation>
 <translation id="304169924727249890">‫<ph name="OWNER_FIRST_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
@@ -4268,6 +4270,7 @@
 <translation id="3854976556788175030">آؤٹ پٹ ٹرے بھر گئی ہے</translation>
 <translation id="3855441664322950881">پیک ایکسٹینشن</translation>
 <translation id="3855676282923585394">بُک مارکس اور ترتیبات درآمد کریں…</translation>
+<translation id="3856023744577163821">‏چیٹ یا اشتراک کردہ ٹیب سے کھولے گئے ٹیبز کا اشتراک بھی Gemini کے ساتھ کیا جاتا ہے۔</translation>
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3856470183388031602">‏اپنے <ph name="DEVICE_TYPE" /> پر اپنا Google اکاؤنٹ استعمال کریں</translation>
 <translation id="3856800405688283469">ٹائم زون منتخب کریں</translation>
@@ -5462,6 +5465,7 @@
 <translation id="4683629100208651599">چھوٹے حروف میں تبدیل کریں</translation>
 <translation id="4683947955326903992">‏%‎<ph name="PERCENTAGE" /> (ڈیفالٹ)</translation>
 <translation id="4684427112815847243">ہر چیز کی مطابقت پذیری کریں</translation>
+<translation id="4685044513206555960">منتظم کی پالیسی کے تحت، ویب ایپ کی انسٹالیشن مسدود ہے۔</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" /> آف کریں</translation>
 <translation id="4687238339694011189">‏یقینی بنائیں کہ آپ کا پرنٹر آن ہے اسی نیٹ ورک سے منسلک ہے جس سے آپ کا Chromebook منسلک ہے یا USB کیبل استعمال کریں</translation>
 <translation id="4687613760714619596">نامعلوم آلہ (<ph name="DEVICE_ID" />)</translation>
@@ -7568,6 +7572,7 @@
 <translation id="6164393601566177235">سائٹس شامل کریں</translation>
 <translation id="6164832038898943453">خودکار طور پر ترجمہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
+<translation id="61667940770438207">‏‫<ph name="FOCUS_TOGGLE_HOTKEY" /> کی مدد سے Chrome میں Gemini کو آسانی سے کھولیں</translation>
 <translation id="6169040057125497443">براہ کرم اپنا مائیکروفون چیک کریں۔</translation>
 <translation id="6169967265765719844">‏Steam کے ذریعے انسٹال کردہ گیمز اور ایپس کی اجازتوں کا نظم <ph name="LINK_BEGIN" />Steam ایپ کی ترتیبات<ph name="LINK_END" /> میں کیا جا سکتا ہے۔</translation>
 <translation id="6170313103929479668">اسپلٹ ویو کو ترتیب دیں</translation>
@@ -9784,6 +9789,7 @@
 <translation id="7697109152153663933">"پاس ورڈز اور آٹو فل" پر کلک کریں</translation>
 <translation id="769824636077131955">‏یہ دستاویز سیکیورٹی چیک کے لئے بہت بڑی ہے۔ آپ ‎50 MB تک کی دستاویزات پرنٹ کر سکتے ہیں۔</translation>
 <translation id="7698507637739331665">کچھ آئٹمز مسدود ہیں</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> کے ساتھ آسانی سے کھولیں</translation>
 <translation id="7700516433658473670">پرنٹرز اور اسکینرز</translation>
 <translation id="7700873336634517379">نہیں، اس پروفائل میں اسکول کے لیے استعمال کرنا جاری رکھیں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
@@ -10619,6 +10625,7 @@
 <translation id="8263228331881858381">پاس کی کو محفوظ کر دیا گیا</translation>
 <translation id="8263336784344783289">اس گروپ کو نام دیں</translation>
 <translation id="8264024885325823677">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
+<translation id="826410575944953302">عمودی ٹیبز کو پھیلائیں</translation>
 <translation id="8264195025773092348">‏صرف تعاون یافتہ آلات دکھائے جاتے ہیں۔ ‫USB آلات غیر منسلک ہونے تک مقامی ایپس کے لیے مزید دستیاب نہیں ہوں گے۔</translation>
 <translation id="8265018477030547118">صرف اس آلے پر</translation>
 <translation id="826511437356419340">ونڈو کے عمومی جائزہ کی وضع میں داخل ہوگئے۔ نیویگیٹ کرنے کے لیے سوائپ کریں، یا اگر آپ کی بورڈ استعمال کر رہے ہیں تو ٹیب کو دبائیں۔</translation>
@@ -10716,6 +10723,7 @@
 <translation id="8323518750352551353">علیحدہ براؤزنگ؟</translation>
 <translation id="8323744572398547859">‏اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، سائن ان کریں اور سرگزشت کو سنک کریں۔ آپ کو اپنے تمام آلات پر اپنے پاس ورڈز اور مزید چیزیں بھی مل جائیں گی۔ آپ ترتیبات میں کسی بھی وقت سنکنگ کو روک سکتے ہیں۔ ‫Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="8324158725704657629">دوبارہ مت پوچھیں</translation>
+<translation id="8324264291265547520">عمودی ٹیبز کو پھیلائیں</translation>
 <translation id="8325413836429495820">آپ کے کلپ بورڈ کو دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8326478304147373412">‏PKCS #7، سرٹیفیکیٹ چین</translation>
 <translation id="8327386430364625757">ریاضی کا فونٹ</translation>

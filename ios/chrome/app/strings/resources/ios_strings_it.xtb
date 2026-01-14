@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Come faccio a utilizzare questa funzionalità?</translation>
 <translation id="1901600657316773839">Mantieni selezione</translation>
 <translation id="1902277226107477495">Rilevamento dell'indirizzo disattivato. Riattivalo in Impostazioni.</translation>
+<translation id="1909201414196501151">Sito aggiunto e fissato</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1925706052394657380">Apri le impostazioni <ph name="BEGIN_BOLD" />App predefinite<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="334690320928261823">Schede recenti</translation>
 <translation id="3349031117032695619">Blocca popup</translation>
+<translation id="3350976670663926380">Modifiche salvate</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Questo account è gestito.</translation>
 <translation id="3365529507898144230">Salva in Foto</translation>
 <translation id="3371831930909698441">Traduttore disponibile. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="3377063233124932127">Ora i tuoi preferiti, le password e altri dati salvati sono visualizzati in alto.</translation>
+<translation id="3378214228000661758">Crea una passkey per</translation>
 <translation id="3380352560400387991">Questo sito sta tentando di aprire un'applicazione. Uscirai dalla modalità di navigazione in incognito.</translation>
 <translation id="3385742921291399323">Trova le password, le schede, i preferiti e altri dati salvati.</translation>
 <translation id="3392923070107623576">Mantieni l'organizzazione creando gruppi di schede</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Annulla</translation>
 <translation id="3565012355885596568">Impossibile caricare le immagini</translation>
 <translation id="3565930036634619844">Scheda. <ph name="TAB_INDEX" /> di <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Salva in altro modo</translation>
 <translation id="3572607909481582402">Nel tuo Account Google</translation>
 <translation id="3575234738189584619">Cerca con Lens</translation>
 <translation id="3575426792457739946">Questo elenco contiene tutti i profili caricati.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Scegli "Protezione avanzata"</translation>
 <translation id="3610041351087301930">Nascondi Reader</translation>
 <translation id="3610866916973186448">Sì, elimina</translation>
+<translation id="3616161326314492065">Scatta foto e condividile con Gemini per creare e remixare immagini.</translation>
 <translation id="3622175633937495219">Cerca nella cronologia (<ph name="COUNT" /> risultati)</translation>
 <translation id="3625008969091706597">Puoi far scorrere il bordo per tornare indietro.</translation>
 <translation id="362709345066740529">Personalizza le tue schede, il tuo feed e altro ancora qui</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">La nota contiene più di 1000 caratteri</translation>
 <translation id="5087098519049306025">Monitoraggio del prezzo</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Le passkey vengono salvate in Gestore delle password di Google per</translation>
 <translation id="510580293474170715">Nessun elemento importato</translation>
 <translation id="5113960131843706315">Recupero dei tuoi dati in corso…</translation>
 <translation id="5118462200606189584">Aggiungi account…</translation>
@@ -1750,6 +1756,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7522587739845660862">Informazioni sulla tua posizione</translation>
 <translation id="7522948500476882302">Quando scarichi un file, scegli di eliminarlo automaticamente dopo 1 mese</translation>
 <translation id="7524055474074101597">Accedi alle tue password e ad altro ancora nelle app.</translation>
+<translation id="7525067979554623046">Crea</translation>
 <translation id="75362970626182391">Nuovo gruppo di schede</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="754655535278952384">Ultimo controllo: <ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7854006015462979438">Apri Generali</translation>
 <translation id="7855678267851972597">Audio</translation>
+<translation id="7857520352710212030">Sito fissato</translation>
 <translation id="7859988229622350291">Non tradurre mai</translation>
 <translation id="7863211248337747225">Scarica l'app</translation>
 <translation id="7865127013871431856">Opzioni di Traduttore</translation>

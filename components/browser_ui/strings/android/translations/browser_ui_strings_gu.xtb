@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ વધુ 1)}one{(+ વધુ #)}other{(+ વધુ #)}}</translation>
 <translation id="5403592356182871684">નામ</translation>
 <translation id="5407203562970638234">તમારી સુરક્ષા બહેતર બનાવો</translation>
+<translation id="5436307623797390637">ડિવાઇસ પરની ઍપ</translation>
 <translation id="5438097262470833822">આ પસંદગી <ph name="WEBSITE" /> માટેની પરવાનગીઓને રીસેટ કરશે</translation>
 <translation id="5459413148890178711">ચાલુ હોય ત્યારે, સાઇટ તમારા લોકેશન વિશે પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તમારું લોકેશન જોઈ શકતી નથી.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />માંથી <ph name="ELAPSED_TIME" />નો સમય વીતી ગયો.</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">میں اس خصوصیت کو کیسے استعمال کروں؟</translation>
 <translation id="1901600657316773839">انتخاب کو برقرار رکھیں</translation>
 <translation id="1902277226107477495">پتہ کی شناخت آف کر دی گئی ہے۔ اسے دوبارہ آن کرنے کے لیے ترتیبات میں جائیں۔</translation>
+<translation id="1909201414196501151">سائٹ کو شامل اور پن کیا گیا</translation>
 <translation id="1911619930368729126">‏Google Drive میں اپ لوڈ کریں</translation>
 <translation id="1925706052394657380">‏‫iOS میں <ph name="BEGIN_BOLD" />ڈیفالٹ ایپس<ph name="END_BOLD" /> کی ترتیبات کھولیں</translation>
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="334690320928261823">حالیہ ٹیبز</translation>
 <translation id="3349031117032695619">پاپ اپس مسدود کریں</translation>
+<translation id="3350976670663926380">ترامیم محفوظ ہو گئیں</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />۔ یہ اکاؤنٹ نظم کردہ ہے۔</translation>
 <translation id="3365529507898144230">تصاویر میں محفوظ کریں</translation>
 <translation id="3371831930909698441">ترجمہ دستیاب ہے۔ اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="3377063233124932127">اب آپ کے محفوظ کردہ بک مارکس، پاس ورڈز اور بہت کچھ سب سے اوپر ہیں۔</translation>
+<translation id="3378214228000661758">درج ذیل کے لیے پاس کی تخلیق کریں</translation>
 <translation id="3380352560400387991">یہ سائٹ ایپلیکیشن کو کھولنے کی کوشش کر رہی ہے۔ اس سے آپ پوشیدگی سے باہر چلے جائیں گے۔</translation>
 <translation id="3385742921291399323">اپنے محفوظ کردہ پاس ورڈز، ٹیبز، بُک مارکس اور بہت کچھ حاصل کریں۔</translation>
 <translation id="3392923070107623576">ٹیب گروپس تخلیق کر کے منظم رہیں</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">کالعدم کریں</translation>
 <translation id="3565012355885596568">تصاویر لوڈ نہیں ہو سکیں</translation>
 <translation id="3565930036634619844">ٹیب۔ <ph name="NUMBER_OF_TABS" /> میں سے <ph name="TAB_INDEX" />۔</translation>
+<translation id="3567168891086460374">دوسرے طریقے سے محفوظ کریں</translation>
 <translation id="3572607909481582402">‏آپ کے Google اکاؤنٹ میں</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
 <translation id="3575426792457739946">اس فہرست ميں تمام لوڈ کردہ پروفائلز شامل ہیں۔</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">"بہتر کردہ حفاظت" منتخب کریں</translation>
 <translation id="3610041351087301930">ریڈر موڈ چھپائیں</translation>
 <translation id="3610866916973186448">ہاں، حذف کریں</translation>
+<translation id="3616161326314492065">‏تصاویر لیں اور تصاویر تخلیق کرنے اور ریمکس کرنے کیلئے Gemini کے ساتھ اشتراک کریں۔</translation>
 <translation id="3622175633937495219">تلاش کی سرگزشت (<ph name="COUNT" /> ملے)</translation>
 <translation id="3625008969091706597">آپ پیچھے جانے کے لیے کنارے کو سوائپ کر سکتے ہیں۔</translation>
 <translation id="362709345066740529">یہاں اپنے کارڈز، فیڈ اور مزید کو حسب ضرورت بنائیں</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">نوٹ 1000 سے زیادہ حروف کا ہے</translation>
 <translation id="5087098519049306025">قیمت کی ٹریکنگ</translation>
 <translation id="5090832849094901128">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="WEBSITE" /> سے حذف نہیں ہوگا۔</translation>
+<translation id="5096619236864235">‏درج ذیل کے لیے پاس کیز Google پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں</translation>
 <translation id="510580293474170715">کچھ بھی درآمد نہیں کیا گیا</translation>
 <translation id="5113960131843706315">آپ کا ڈیٹا لوڈ ہو رہا ہے…</translation>
 <translation id="5118462200606189584">اکاؤنٹ شامل کریں…</translation>
@@ -1750,6 +1756,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7522587739845660862">آپ کے مقام سے متعلق معلومات</translation>
 <translation id="7522948500476882302">جب آپ کوئی فائل ڈاؤن لوڈ کرتے ہیں تو آپ اسے ایک ماہ کے بعد خود بخود حذف ہونے کے لیے سیٹ کر سکتے ہیں</translation>
 <translation id="7524055474074101597">ایپس پر اپنے پاس ورڈز اور مزید بہت کچھ تک رسائی حاصل کریں۔</translation>
+<translation id="7525067979554623046">بنائیں</translation>
 <translation id="75362970626182391">نیا ٹیب گروپ</translation>
 <translation id="7537586195939242955">‏معذرت، آپ کا Pass اس وقت Passbook میں انسٹال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="754655535278952384"><ph name="TIME" /> چیک کیا گیا</translation>
@@ -1841,6 +1848,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7854006015462979438">'عام' کھولیں</translation>
 <translation id="7855678267851972597">آڈیوز</translation>
+<translation id="7857520352710212030">سائٹ کو پن کیا گیا</translation>
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7863211248337747225">ایپ حاصل کریں</translation>
 <translation id="7865127013871431856">ترجمہ کے اختیارات</translation>

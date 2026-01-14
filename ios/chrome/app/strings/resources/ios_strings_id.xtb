@@ -623,6 +623,7 @@
 <translation id="3365529507898144230">Simpan di Foto</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="3377063233124932127">Kini bookmark, sandi, dan data tersimpan lainnya ada di bagian atas.</translation>
+<translation id="3378214228000661758">Buat kunci sandi untuk</translation>
 <translation id="3380352560400387991">Situs ini mencoba membuka aplikasi. Tindakan ini akan membuat Anda keluar dari mode Samaran.</translation>
 <translation id="3385742921291399323">Dapatkan sandi, tab, bookmark, dan info tersimpan Anda lainnya.</translation>
 <translation id="3392923070107623576">Tetap teratur dengan membuat grup tab</translation>
@@ -672,6 +673,7 @@
 <translation id="355765753469272474">Urungkan</translation>
 <translation id="3565012355885596568">Tidak dapat memuat gambar</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> dari <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Simpan dengan cara lain</translation>
 <translation id="3572607909481582402">Di Akun Google Anda</translation>
 <translation id="3575234738189584619">Telusuri dengan Lens</translation>
 <translation id="3575426792457739946">Daftar ini berisi semua profil yang dimuat.</translation>
@@ -1084,6 +1086,7 @@
 <translation id="508645147179720015">Catatan berisi lebih dari 1.000 karakter</translation>
 <translation id="5087098519049306025">Pemantauan Harga</translation>
 <translation id="5090832849094901128">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Kunci sandi disimpan di Pengelola Sandi Google untuk</translation>
 <translation id="510580293474170715">Tidak ada yang diimpor</translation>
 <translation id="5113960131843706315">Memuat data Anda…</translation>
 <translation id="5118462200606189584">Tambahkan akun…</translation>
@@ -1759,6 +1762,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7522587739845660862">Info tentang lokasi Anda</translation>
 <translation id="7522948500476882302">Saat mendownload file, pilih untuk menghapusnya secara otomatis dalam 1 bulan</translation>
 <translation id="7524055474074101597">Akses sandi Anda dan lainnya di seluruh aplikasi.</translation>
+<translation id="7525067979554623046">Buat</translation>
 <translation id="75362970626182391">Grup Tab Baru</translation>
 <translation id="7537586195939242955">Maaf, Pass Anda tidak dapat dipasang ke Passbook saat ini.</translation>
 <translation id="754655535278952384">Diperiksa <ph name="TIME" /></translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">كيف يمكن استخدام هذه الميزة؟</translation>
 <translation id="1901600657316773839">الاحتفاظ بالاختيار</translation>
 <translation id="1902277226107477495">ميزة رصد العناوين غير مفعَّلة، يمكنك إعادة تفعيلها في "الإعدادات".</translation>
+<translation id="1909201414196501151">تمت إضافة الموقع الإلكتروني وتثبيته</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1925706052394657380">‏يُرجى فتح إعدادات <ph name="BEGIN_BOLD" />التطبيقات التلقائية<ph name="END_BOLD" /> في نظام التشغيل iOS، ثم</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضمن حسابك ({email}).}zero{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}two{تم حفظ الإشارتَين المرجعيتَين في "{title}" ضمن حسابك ({email}).}few{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}many{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}other{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}}</translation>
 <translation id="334690320928261823">علامات التبويب الأخيرة</translation>
 <translation id="3349031117032695619">حظر النوافذ المنبثقة</translation>
+<translation id="3350976670663926380">تم حفظ التعديلات</translation>
 <translation id="3353037916374303415">الحساب <ph name="EMAIL" /> مُدار.</translation>
 <translation id="3365529507898144230">الحفظ في "الصور"</translation>
 <translation id="3371831930909698441">الترجمة متوفّرة. الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="3377063233124932127">ستظهر الآن الإشارات المرجعية وكلمات المرور المحفوظة وغيرها في أعلى الشاشة.</translation>
+<translation id="3378214228000661758">إنشاء مفتاح مرور للحساب</translation>
 <translation id="3380352560400387991">يحاول هذا الموقع الإلكتروني فتح أحد التطبيقات. وسيؤدي هذا إلى الخروج من وضع التصفُّح المتخفي.</translation>
 <translation id="3385742921291399323">يتيح لك تسجيل الدخول الوصول إلى كلمات المرور وعلامات التبويب والإشارات المرجعية المحفوظة وغيرها.</translation>
 <translation id="3392923070107623576">تساعدك هذه المجموعات في تنظيم المهام</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">تراجع</translation>
 <translation id="3565012355885596568">تعذَّر تحميل الصور</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
+<translation id="3567168891086460374">الحفظ بطريقة أخرى</translation>
 <translation id="3572607909481582402">‏في حسابك على Google</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3575426792457739946">تحتوي هذه القائمة على جميع الملفات الشخصية التي تم تحميلها.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">اختَر "الحماية المحسَّنة"</translation>
 <translation id="3610041351087301930">إخفاء "وضع القارئ"</translation>
 <translation id="3610866916973186448">نعم، أريد حذفه</translation>
+<translation id="3616161326314492065">‏يمكنك التقاط صور ومشاركتها مع Gemini لإنشاء صور جديدة وعمل ريمكس لها.</translation>
 <translation id="3622175633937495219">سجلّ البحث (عدد النتائج المطابقة: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">يمكنك التمرير سريعًا من الحافة للرجوع للخلف.</translation>
 <translation id="362709345066740529">يمكنك تخصيص البطاقات والخلاصة والمزيد هنا</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">يجب ألّا يزيد عدد أحرف الملاحظة عن 1,000 حرف.</translation>
 <translation id="5087098519049306025">تتبُّع الأسعار</translation>
 <translation id="5090832849094901128">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">‏يتم حفظ مفاتيح المرور في "مدير كلمات المرور في Google" للحساب</translation>
 <translation id="510580293474170715">لم يتم استيراد أي بيانات</translation>
 <translation id="5113960131843706315">جارٍ تحميل بياناتك…</translation>
 <translation id="5118462200606189584">إضافة حساب…</translation>
@@ -1748,6 +1754,7 @@
 <translation id="7522587739845660862">معلومات عن موقعك الجغرافي</translation>
 <translation id="7522948500476882302">عند تنزيل ملف، يمكنك اختيار حذفه تلقائيًا بعد شهر واحد</translation>
 <translation id="7524055474074101597">يمكنك الوصول إلى كلمات المرور وغيرها على مختلف التطبيقات.</translation>
+<translation id="7525067979554623046">إنشاء</translation>
 <translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
@@ -1839,6 +1846,7 @@
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7854006015462979438">‏يُرجى فتح "الإعدادات العامة" (General)</translation>
 <translation id="7855678267851972597">ملفات صوتية</translation>
+<translation id="7857520352710212030">تم تثبيت الموقع الإلكتروني</translation>
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
 <translation id="7863211248337747225">تنزيل التطبيق</translation>
 <translation id="7865127013871431856">خيارات الترجمة</translation>

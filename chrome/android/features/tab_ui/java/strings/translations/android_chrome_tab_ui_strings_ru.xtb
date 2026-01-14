@@ -82,13 +82,13 @@
 <translation id="3619255692378312441">Настроить доступ</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Закрыть}one{Закрыть}few{Закрыть }many{Закрыть}other{Закрыть}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Нижний экран вкладки открыт наполовину.</translation>
 <translation id="374923079891132274">Значок для отпр. предпросм. листа</translation>
 <translation id="3776329373944672717">Название группы вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Открепить вкладку}one{Открепить вкладки}few{Открепить вкладки}many{Открепить вкладки}other{Открепить вкладки}}</translation>
 <translation id="3940195383040445971">Отслеживать цены на вкладках</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая вкладка, закрыто: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> новая вкладка, закрыто: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> новые вкладки, закрыто: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> новых вкладок, закрыто: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> новой вкладки, закрыто: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Открепить <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Открепить <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Открепить <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Открепить <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Открепить <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Создано <ph name="NUM_DAYS_ONE" /> день назад}one{Создано <ph name="NUM_DAYS_MANY" /> день назад}few{Создано <ph name="NUM_DAYS_MANY" /> дня назад}many{Создано <ph name="NUM_DAYS_MANY" /> дней назад}other{Создано <ph name="NUM_DAYS_MANY" /> дня назад}}</translation>
 <translation id="4076226664360336092">Список групп вкладок, открыт полностью</translation>
@@ -126,6 +126,7 @@
 <translation id="5339733443032484186">Ваша последняя вкладка</translation>
 <translation id="5380159289133845234">Архивировать одинаковые вкладки</translation>
 <translation id="5446043142172831860">Удалить вкладку и покинуть группу</translation>
+<translation id="5465437530117042974">Нижний экран вкладки закрыт.</translation>
 <translation id="5490235265819901748">Группа вкладок развернута</translation>
 <translation id="5494920125229734069">Выбрать все</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Добавьте не более <ph name="LIMIT_COUNT_ONE" /> файла, вкладки или изображения.}one{Добавьте не более <ph name="LIMIT_COUNT_MANY" /> файла, вкладки или изображения.}few{Добавьте не более <ph name="LIMIT_COUNT_MANY" /> файлов, вкладок или изображений.}many{Добавьте не более <ph name="LIMIT_COUNT_MANY" /> файлов, вкладок или изображений.}other{Добавьте не более <ph name="LIMIT_COUNT_MANY" /> файлов, вкладок или изображений.}}</translation>
@@ -141,6 +142,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6051432659151380973">Группы вкладок сохраняются автоматически.</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Нижний экран вкладки открыт полностью</translation>
 <translation id="6109251075362363230">Все одинаковые вкладки теперь также будут архивироваться, кроме той, которую вы использовали последней</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранный элемент}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранный элемент}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных элемента}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных элементов}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранного элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Переместить группу в новое окно}one{Переместить группу в другое окно}few{Переместить группу в другое окно}many{Переместить группу в другое окно}other{Переместить группу в другое окно}}</translation>
@@ -196,7 +198,6 @@
 <translation id="7792771145871471484">Подробнее.</translation>
 <translation id="7792860826279960128">Нижний экран с информацией об изменениях в общей группе вкладок открыт наполовину</translation>
 <translation id="7825973332242257878">Группы вкладок</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Сгруппировать <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладки}}</translation>
 <translation id="7853202427316060426">История действий</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзыв}one{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыв}few{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}many{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзывов}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}}</translation>
 <translation id="7885132941432959125">Переместить вкладку вправо</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Як карыстацца гэтай функцыяй?</translation>
 <translation id="1901600657316773839">Пакінуць выбар</translation>
 <translation id="1902277226107477495">Вызначэнне адрасоў выключана. Уключыць гэту функцыю зноў можна ў наладах.</translation>
+<translation id="1909201414196501151">Сайт дададзены і замацаваны</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
 <translation id="1925706052394657380">Адкрыйце налады <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Стандартныя праграмы) у iOS.</translation>
 <translation id="1941314575388338491">Каб скапіраваць, націсніце двойчы.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладка захавана ва ўліковым запісе ({email}) у папцы "{title}"}one{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}few{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}many{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}other{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}}</translation>
 <translation id="334690320928261823">Нядаўнія ўкладкі</translation>
 <translation id="3349031117032695619">Блакіраваць усплывальныя вокны</translation>
+<translation id="3350976670663926380">Змяненні захаваны</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Гэты ўліковы запіс знаходзіцца пад кіраваннем.</translation>
 <translation id="3365529507898144230">Захаваць у Фота</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3377063233124932127">Цяпер вашы захаваныя закладкі, паролі і іншае змесціва будуць паказвацца ўверсе.</translation>
+<translation id="3378214228000661758">Стварыце ключ доступу для</translation>
 <translation id="3380352560400387991">Гэты сайт спрабуе адкрыць праграму. У такім выпадку вы выйдзеце з рэжыму інкогніта.</translation>
 <translation id="3385742921291399323">Выкарыстоўвайце захаваныя паролі, укладкі, закладкі і іншыя даныя.</translation>
 <translation id="3392923070107623576">Упарадкоўвайце ўкладкі, аб’ядноўваючы іх у групы</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Адрабіць</translation>
 <translation id="3565012355885596568">Не ўдалося загрузіць відарысы</translation>
 <translation id="3565930036634619844">Укладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Захаваць іншым спосабам</translation>
 <translation id="3572607909481582402">Ва Уліковым запісе Google</translation>
 <translation id="3575234738189584619">Пошук з дапамогай Аб’ектыва</translation>
 <translation id="3575426792457739946">Гэты спіс змяшчае ўсе загружаныя профілі.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Выберыце функцыю "Палепшаная абарона"</translation>
 <translation id="3610041351087301930">Схаваць рэжым чытання</translation>
 <translation id="3610866916973186448">Так, выдаліць</translation>
+<translation id="3616161326314492065">Рабіце фота і абагульвайце іх з Gemini, каб ствараць відарысы і рэміксы з імі.</translation>
 <translation id="3622175633937495219">Гісторыя пошуку (знойдзена супадзенняў: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Каб перайсці назад, правядзіце пальцам па краі экрана.</translation>
 <translation id="362709345066740529">Тут можна наладзіць карткі, стужку і іншае</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">Даўжыня нататкі перавышае 1000 сімвалаў</translation>
 <translation id="5087098519049306025">Адсочванне цэн</translation>
 <translation id="5090832849094901128">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца.</translation>
+<translation id="5096619236864235">У Менеджары пароляў Google захоўваюцца ключы доступу для</translation>
 <translation id="510580293474170715">Нічога не імпартавана</translation>
 <translation id="5113960131843706315">Загружаюцца даныя…</translation>
 <translation id="5118462200606189584">Дадаць уліковы запіс…</translation>
@@ -1750,6 +1756,7 @@
 <translation id="7522587739845660862">Інфармацыя пра ваша месцазнаходжанне</translation>
 <translation id="7522948500476882302">Вы можаце наладзіць аўтаматычнае выдаленне файлаў праз месяц пасля іх спампоўвання</translation>
 <translation id="7524055474074101597">Атрымлівайце доступ да пароляў і іншых даных для ўваходу ў праграмы.</translation>
+<translation id="7525067979554623046">Стварыць</translation>
 <translation id="75362970626182391">Новая група ўкладак</translation>
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
 <translation id="754655535278952384">Праверана <ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854006015462979438">Адкрыйце агульныя налады</translation>
 <translation id="7855678267851972597">Аўдыяфайлы</translation>
+<translation id="7857520352710212030">Сайт замацаваны</translation>
 <translation id="7859988229622350291">Ніколі не перакладаць з наступных моў:</translation>
 <translation id="7863211248337747225">Усталяваць праграму</translation>
 <translation id="7865127013871431856">Параметры Перакладчыка</translation>

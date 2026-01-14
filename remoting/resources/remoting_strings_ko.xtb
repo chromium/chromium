@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">클라이언트 기기에서 <ph name="URL" /> 페이지를 열지 못했습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2366718077645204424">호스트에 연결할 수 없습니다. 사용 중인 네트워크의 구성 때문일 수 있습니다.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. All Rights Reserved.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />에 '접근성' 권한 부여</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />에 연결되었습니다</translation>
 <translation id="2540992418118313681">이 컴퓨터를 다른 사용자가 보고 제어하도록 공유하시겠습니까?</translation>
@@ -138,7 +137,6 @@
 <translation id="7067321367069083429">화면이 터치스크린처럼 작동합니다</translation>
 <translation id="7116737094673640201">Chrome 원격 데스크톱에 오신 것을 환영합니다.</translation>
 <translation id="7144878232160441200">다시 시도</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="7312846573060934304">호스트가 오프라인 상태입니다.</translation>
 <translation id="7319983568955948908">공유 중지</translation>
 <translation id="7359298090707901886">선택한 브라우저는 로컬 컴퓨터에서 URL을 열 때 사용할 수 없습니다.</translation>

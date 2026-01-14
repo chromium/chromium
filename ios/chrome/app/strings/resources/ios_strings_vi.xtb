@@ -621,6 +621,7 @@
 <translation id="3365529507898144230">Lưu vào Photos</translation>
 <translation id="3371831930909698441">Có tính năng dịch. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="3377063233124932127">Dấu trang, mật khẩu, v.v. mà bạn đã lưu hiện sẽ xuất hiện ở trên cùng.</translation>
+<translation id="3378214228000661758">Tạo một khoá truy cập cho</translation>
 <translation id="3380352560400387991">Trang web này đang tìm cách mở một ứng dụng. Thao tác này sẽ đưa bạn ra khỏi chế độ ẩn danh.</translation>
 <translation id="3385742921291399323">Sử dụng mật khẩu, thẻ, dấu trang mà bạn đã lưu và nhiều dữ liệu khác.</translation>
 <translation id="3392923070107623576">Sắp xếp bằng cách tạo các nhóm thẻ</translation>
@@ -670,6 +671,7 @@
 <translation id="355765753469272474">Huỷ</translation>
 <translation id="3565012355885596568">Không tải được hình ảnh</translation>
 <translation id="3565930036634619844">Thẻ. <ph name="TAB_INDEX" /> trên <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Lưu theo cách khác</translation>
 <translation id="3572607909481582402">Trong Tài khoản Google của bạn</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
 <translation id="3575426792457739946">Danh sách này chứa mọi hồ sơ đã tải.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
 <translation id="5087098519049306025">Theo dõi giá</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Đã lưu khoá truy cập vào Trình quản lý mật khẩu của Google cho</translation>
 <translation id="510580293474170715">Không có dữ liệu nào được nhập</translation>
 <translation id="5113960131843706315">Đang tải dữ liệu của bạn…</translation>
 <translation id="5118462200606189584">Thêm tài khoản…</translation>
@@ -1753,6 +1756,7 @@
 <translation id="7522587739845660862">Thông tin về vị trí của bạn</translation>
 <translation id="7522948500476882302">Khi bạn tải một tệp xuống, hãy chọn tự động xoá tệp đó sau 1 tháng</translation>
 <translation id="7524055474074101597">Dùng mật khẩu của bạn và nhiều dữ liệu khác trên các ứng dụng.</translation>
+<translation id="7525067979554623046">Tạo</translation>
 <translation id="75362970626182391">Nhóm thẻ mới</translation>
 <translation id="7537586195939242955">Rất tiếc, không thể cài đặt Pass (Vé xem) của bạn vào Passbook (Ví điện tử) lúc này.</translation>
 <translation id="754655535278952384">Đã kiểm tra <ph name="TIME" /></translation>

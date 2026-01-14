@@ -165,6 +165,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1102759278139578486">Dateien zur Annotation von Hauptknoten können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1104098698795583187">Du verlierst dann sofort den Zugriff auf diese Tabgruppe und sie wird von allen deinen Geräten gelöscht</translation>
+<translation id="1106270460549661906">Teilen mit Gemini aufheben</translation>
 <translation id="1106350001632362876">Schwellenwert erhöhen</translation>
 <translation id="1107482171728500359">Mikrofon freigeben</translation>
 <translation id="110850812463801904">Manuell mit OneDrive verbinden</translation>
@@ -4264,6 +4265,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3854976556788175030">Ausgabefach ist voll</translation>
 <translation id="3855441664322950881">Erweiterung packen</translation>
 <translation id="3855676282923585394">Lesezeichen und Einstellungen importieren...</translation>
+<translation id="3856023744577163821">Über einen Chat oder einen geteilten Tab geöffnete Tabs werden ebenfalls mit Gemini geteilt.</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3856470183388031602">Dein Google-Konto auf deinem <ph name="DEVICE_TYPE" /> verwenden</translation>
 <translation id="3856800405688283469">Zeitzone auswählen</translation>
@@ -5458,6 +5460,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4683629100208651599">Kleinschreibung verwenden</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (Standard)</translation>
 <translation id="4684427112815847243">Alles synchronisieren</translation>
+<translation id="4685044513206555960">Die Installation von Web-Apps wird durch die Administratorrichtlinie blockiert.</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" /> ausschalten</translation>
 <translation id="4687238339694011189">Der Drucker muss eingeschaltet und mit demselben WLAN wie Ihr Chromebook verbunden sein, Sie können aber auch ein USB-Kabel verwenden</translation>
 <translation id="4687613760714619596">Unbekanntes Gerät (<ph name="DEVICE_ID" />)</translation>
@@ -7562,6 +7565,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6164393601566177235">Websites hinzufügen</translation>
 <translation id="6164832038898943453">Sprachen hinzufügen, die automatisch übersetzt werden sollen</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="61667940770438207">Du kannst Gemini in Chrome ganz einfach mit <ph name="FOCUS_TOGGLE_HOTKEY" /> öffnen</translation>
 <translation id="6169040057125497443">Überprüfe dein Mikrofon.</translation>
 <translation id="6169967265765719844">Berechtigungen für Spiele und Apps, die über Steam installiert wurden, können in den <ph name="LINK_BEGIN" />Einstellungen der Steam-App<ph name="LINK_END" /> verwaltet werden.</translation>
 <translation id="6170313103929479668">Geteilte Ansicht anordnen</translation>
@@ -9779,6 +9783,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7697109152153663933">Auf „Passwörter und &amp;Autofill“ klicken</translation>
 <translation id="769824636077131955">Dieses Dokument ist zu groß für eine Sicherheitsprüfung. Du kannst Dokumente bis zu einer Größe von 50 MB ausdrucken.</translation>
 <translation id="7698507637739331665">Einige Elemente sind blockiert</translation>
+<translation id="7700176975240938448">Einfach mit <ph name="FOCUS_TOGGLE_HOTKEY" /> öffnen</translation>
 <translation id="7700516433658473670">Drucker und Scanner</translation>
 <translation id="7700873336634517379">Nein, dieses Profil für die Bildungseinrichtung verwenden</translation>
 <translation id="7701040980221191251">Keine</translation>

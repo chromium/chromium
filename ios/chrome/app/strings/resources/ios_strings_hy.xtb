@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Ինչպե՞ս կարող եմ օգտագործել այս գործառույթը</translation>
 <translation id="1901600657316773839">Պահպանել ընտրությունը</translation>
 <translation id="1902277226107477495">Հասցեի հայտնաբերումն անջատված է։ Կրկին միացրեք այն Կարգավորումներում։</translation>
+<translation id="1909201414196501151">Կայքն ավելացվեց և ամրացվեց</translation>
 <translation id="1911619930368729126">Վերբեռնել Google Drive</translation>
 <translation id="1925706052394657380">Բացեք <ph name="BEGIN_BOLD" />Կանխադրված հավելվածներ (Default Apps)<ph name="END_BOLD" /> կարգավորումը iOS-ում</translation>
 <translation id="1941314575388338491">Կրկնակի հպեք՝ պատճենելու համար:</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}other{Էջանիշները պահվեցին {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="334690320928261823">Վերջին ներդիրները</translation>
 <translation id="3349031117032695619">Արգելափակել ելնող պատուհանները</translation>
+<translation id="3350976670663926380">Փոփոխությունները պահվեցին</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />։ Սա կառավարվող հաշիվ է։</translation>
 <translation id="3365529507898144230">Պահել Լուսանկարներում</translation>
 <translation id="3371831930909698441">Translate-ը հասանելի է: Կարգավորումները հասանելի են էկրանի ստորին հատվածում:</translation>
 <translation id="3377063233124932127">Այժմ ձեր պահած էջանիշները, գաղտնաբառերը և մյուս տարրերը վերևում են։</translation>
+<translation id="3378214228000661758">Ստեղծեք մուտքի բանալի այս կայքի համար՝</translation>
 <translation id="3380352560400387991">Այս կայքը փորձում է հավելված բացել։ Դուք կվերաուղղորդվեք ինկոգնիտո պատուհան։</translation>
 <translation id="3385742921291399323">Օգտագործեք ձեր պահված գաղտնաբառերը, ներդիրները, էջանիշները և մյուս տվյալները։</translation>
 <translation id="3392923070107623576">Եղեք կազմակերպված՝ ստեղծելով ներդիրների խմբեր</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Հետարկել</translation>
 <translation id="3565012355885596568">Չհաջողվեց բեռնել պատկերները</translation>
 <translation id="3565930036634619844">Ներդիր։ Էջ <ph name="TAB_INDEX" />՝ <ph name="NUMBER_OF_TABS" />-ից։</translation>
+<translation id="3567168891086460374">Պահել մեկ այլ եղանակ</translation>
 <translation id="3572607909481582402">Ձեր Google հաշվում</translation>
 <translation id="3575234738189584619">Որոնել Տեսապակու միջոցով</translation>
 <translation id="3575426792457739946">Այս ցանկը պարունակում է բոլոր բեռնված պրոֆիլները։</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Ընտրեք «Բարելավված պաշտպանություն»</translation>
 <translation id="3610041351087301930">Թաքցնել ընթերցիչը</translation>
 <translation id="3610866916973186448">Այո, ջնջել</translation>
+<translation id="3616161326314492065">Լուսանկարեք և կիսվեք դրանցով Gemini-ի հետ՝ պատկերներ ստեղծելու և ռեմիքսելու համար։</translation>
 <translation id="3622175633937495219">Որոնեք պատմության մեջ (<ph name="COUNT" /> համընկնում)</translation>
 <translation id="3625008969091706597">Հետ գնալու համար մատը սահեցրեք էկրանի եզրով։</translation>
 <translation id="362709345066740529">Անհատականացրեք ձեր քարտերը, ֆիդը և ավելին՝ այստեղ</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">Նշումը պարունակում է ավելի քան 1000 նիշ</translation>
 <translation id="5087098519049306025">Գների հետագծում</translation>
 <translation id="5090832849094901128">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։</translation>
+<translation id="5096619236864235">Մուտքի բանալիները պահվում են Google գաղտնաբառերի կառավարչում այս հաշվի համար՝</translation>
 <translation id="510580293474170715">Ոչինչ չի ներմուծվել</translation>
 <translation id="5113960131843706315">Տվյալները բեռնվում են…</translation>
 <translation id="5118462200606189584">Ավելացնել հաշիվ…</translation>
@@ -1750,6 +1756,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7522587739845660862">Ձեր տեղադրության մասին տեղեկությունները</translation>
 <translation id="7522948500476882302">Ֆայլ ներբեռնելու ժամանակ նշեք, որ այն ավտոմատ ջնջվի 1 ամսից</translation>
 <translation id="7524055474074101597">Օգտագործեք ձեր գաղտնաբառերը և այլ տվյալներ հավելվածներում։</translation>
+<translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="75362970626182391">Ներդիրների նոր խումբ</translation>
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="754655535278952384">Ստուգվել է <ph name="TIME" /></translation>
@@ -1841,6 +1848,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7853202427316060426">Գործողություններ</translation>
 <translation id="7854006015462979438">Բացել ընդհանուր կարգավորումները</translation>
 <translation id="7855678267851972597">Աուդիոֆայլեր</translation>
+<translation id="7857520352710212030">Կայքն ամրացվեց</translation>
 <translation id="7859988229622350291">Երբեք չթարգմանել</translation>
 <translation id="7863211248337747225">Տեղադրել հավելվածը</translation>
 <translation id="7865127013871431856">Թարգմանության կարգավորումներ</translation>

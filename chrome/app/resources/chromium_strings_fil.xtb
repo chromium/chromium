@@ -356,6 +356,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4814736265800133385">Gamitin ang Chromium nang walang account</translation>
 <translation id="4888717733111232871">Inbound na panuntunan para sa Chromium upang payagan ang trapiko ng mDNS.</translation>
 <translation id="4893347770495441059">Ilunsad Ulit para Ma-update ang Chromium</translation>
+<translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4918844574251943176">Nakopya na ang larawan</translation>
 <translation id="4943838377383847465">Nasa background mode ang Chromium.</translation>
 <translation id="494490797786467921">I-click para isara ang dialog ng pag-sign in sa Chromium</translation>
@@ -533,6 +534,9 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6901631050894301805">Itakda ang Chromium bilang iyong default browser at i-pin ito sa taskbar mo</translation>
 <translation id="6909503629704372277">&amp;Pamahalaan ang mga profile sa Chromium</translation>
 <translation id="6934579572334859869">Magtanong sa Paghahanap ng Larawan tungkol sa larawang ito</translation>
+<translation id="6948031725951063910">Naabot mo ang limitasyon ng Chromium na <ph name="BOOKMARK_LIMIT" /> (na) bookmark, kaya hindi pa nase-save sa iyong Google Account ang ilan sa mga bookmark mo.
+
+Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde-delete ng ilan. Kung magsa-sign out ka ngayon, made-delete ang mga hindi na-save na bookmark.</translation>
 <translation id="6964305034639999644">Buksan ang link sa inco&amp;gnito window ng Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Madaling hulaan ang mahihinang password. Hayaan ang Chromium na <ph name="BEGIN_LINK" />gumawa ng malalakas na password at tandaan ang mga ito para sa iyo<ph name="END_LINK" />.</translation>
@@ -701,6 +705,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8880203542552872219">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chromium para tumugma ito sa bago mong password.</translation>
 <translation id="8891709362986793894">Nire-require sa iyo ng organisasyon mo na mag-sign in sa Chromium</translation>
 <translation id="8907580949721785412">Sinusubukan ng Chromium na ipakita ang mga password. I-type ang password sa Windows upang payagan ito.</translation>
+<translation id="8932992523185907506">Hindi na Chromium ang iyong default browser. Gawing default browser ang Chromium?</translation>
 <translation id="8941642502866065432">Hindi ma-update ang Chromium</translation>
 <translation id="897581876605952338">Logo ng Chromium Enterprise</translation>
 <translation id="8981150672034878610">Hindi masimulan ang Chromium dahil nagkaproblema noong binubuksan ang iyong profile. Subukang i-restart ang Chromium.</translation>

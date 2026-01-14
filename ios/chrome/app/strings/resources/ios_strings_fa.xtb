@@ -619,6 +619,7 @@
 <translation id="3365529507898144230">‏ذخیره در Photos</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="3377063233124932127">اکنون نشانک‌ها، گذرواژه‌ها، و دیگر موارد ذخیره‌شده در بالا نمایش داده می‌شوند.</translation>
+<translation id="3378214228000661758">ایجاد گذرکلید برای</translation>
 <translation id="3380352560400387991">این سایت تلاش می‌کند برنامه‌ای را باز کند. با این کار، از حالت «ناشناس» خارج خواهید شد.</translation>
 <translation id="3385742921291399323">گذرواژه‌ها، زبانه‌ها، نشانک‌ها، و دیگر موارد ذخیره‌شده را دریافت کنید.</translation>
 <translation id="3392923070107623576">با ایجاد گروه زبانه، منظم بمانید</translation>
@@ -668,6 +669,7 @@
 <translation id="355765753469272474">واگرداندن</translation>
 <translation id="3565012355885596568">بار کردن تصاویر ممکن نبود</translation>
 <translation id="3565930036634619844">زبانه. ‫<ph name="TAB_INDEX" /> از <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">ذخیره به روشی دیگر</translation>
 <translation id="3572607909481582402">‏در «حساب Google» شما</translation>
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3575426792457739946">این فهرست حاوی همه نمایه‌های بارشده است.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="508645147179720015">یادداشت بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="5087098519049306025">پیگیری قیمت</translation>
 <translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
+<translation id="5096619236864235">‏گذرکلیدها در «مدیر گذرواژه Google» ذخیره می‌شوند برای</translation>
 <translation id="510580293474170715">چیزی وارد نشد</translation>
 <translation id="5113960131843706315">درحال دریافت داده‌های شما…</translation>
 <translation id="5118462200606189584">افزودن حساب…</translation>
@@ -1209,7 +1212,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="559567008082979829">درصورت فعال شدن، بارگیری‌ها پس‌از یک ماه حذف می‌شوند.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
-<translation id="5611398002774823980">ذخیره در حساب</translation>
+<translation id="5611398002774823980">ذخیره کردن در حساب</translation>
 <translation id="561269594905823128">روی <ph name="BEGIN_BOLD" />انتخاب فایل<ph name="END_BOLD" /> تک‌ضرب بزنید.</translation>
 <translation id="5613297089029360427">مرتب کردن براساس جدیدترین</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
@@ -1750,6 +1753,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7522587739845660862">اطلاعات مربوط به مکان شما</translation>
 <translation id="7522948500476882302">وقتی فایلی را بارگیری می‌کنید، می‌توانید انتخاب کنید که به‌صورت خودکار بعداز ۱ ماه حذف شود</translation>
 <translation id="7524055474074101597">به گذرواژه‌ها و موارد دیگر در برنامه‌ها دسترسی داشته باشید.</translation>
+<translation id="7525067979554623046">ایجاد کردن</translation>
 <translation id="75362970626182391">گروه زبانه جدید</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
 <translation id="754655535278952384">آخرین بررسی: <ph name="TIME" /></translation>

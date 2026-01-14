@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">無法下載主節點註解檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">你將立即失去這個分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
+<translation id="1106270460549661906">取消與 Gemini 分享</translation>
 <translation id="1106350001632362876">提高門檻</translation>
 <translation id="1107482171728500359">共用麥克風</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
@@ -4266,6 +4267,7 @@
 <translation id="3854976556788175030">輸出紙匣已滿</translation>
 <translation id="3855441664322950881">封裝擴充功能</translation>
 <translation id="3855676282923585394">匯入書籤和設定...</translation>
+<translation id="3856023744577163821">從對話或已分享分頁開啟的分頁，也會分享給 Gemini。</translation>
 <translation id="3856096718352044181">請驗證供應商是否有效，或稍後再試</translation>
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用 Google 帳戶</translation>
 <translation id="3856800405688283469">選取時區</translation>
@@ -5456,6 +5458,7 @@
 <translation id="4683629100208651599">使用小寫字母</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
+<translation id="4685044513206555960">根據管理員政策，你無法安裝網頁應用程式。</translation>
 <translation id="4685096503970466594">關閉<ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">請確認印表機已開啟並連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線</translation>
 <translation id="4687613760714619596">不明裝置 (<ph name="DEVICE_ID" />)</translation>
@@ -7559,6 +7562,7 @@
 <translation id="6164393601566177235">新增網站</translation>
 <translation id="6164832038898943453">新增要自動翻譯的語言</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
+<translation id="61667940770438207">按下 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可輕鬆開啟 Chrome 內建 Gemini</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169967265765719844">你可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
 <translation id="6170313103929479668">調整分割畫面</translation>
@@ -9666,7 +9670,7 @@
 <translation id="7640256527901510478">裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
 <translation id="7640308610547854367">你已還原為舊版 ChromeOS。要等到下一個版本發布，才能取得更新內容。</translation>
 <translation id="7641513591566880111">新設定檔名稱</translation>
-<translation id="7641720519047586765">這個密碼金鑰已從此網站刪除</translation>
+<translation id="7641720519047586765">密碼金鑰已從這個網站刪除</translation>
 <translation id="764178579712141045">已新增 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643117827468520640">請詳閱這些條款</translation>
@@ -9775,6 +9779,7 @@
 <translation id="7697109152153663933">按一下「密碼和自動填入」</translation>
 <translation id="769824636077131955">這份文件的大小過大，無法進行安全性檢查。可列印文件大小上限為 50 MB。</translation>
 <translation id="7698507637739331665">已封鎖部分項目</translation>
+<translation id="7700176975240938448">使用 <ph name="FOCUS_TOGGLE_HOTKEY" /> 輕鬆開啟</translation>
 <translation id="7700516433658473670">印表機和掃描器</translation>
 <translation id="7700873336634517379">否，繼續在這個設定檔中使用學校帳戶</translation>
 <translation id="7701040980221191251">無</translation>
@@ -10639,7 +10644,7 @@
 <translation id="8275038454117074363">匯入</translation>
 <translation id="8275080796245127762">用你的裝置撥打電話</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
-<translation id="8277907305629781277">你在 <ph name="DATE" /> 建立了這個密碼金鑰</translation>
+<translation id="8277907305629781277">密碼金鑰建立時間：<ph name="DATE" /></translation>
 <translation id="8278702675516957539">禁止使用 JavaScript 最佳化功能</translation>
 <translation id="827966378414194229">透過頭部動作和臉部表情操控 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">網站語言版本</translation>
@@ -11096,7 +11101,7 @@
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{管理擴充功能}other{管理擴充功能}}</translation>
 <translation id="8599681327221583254">一或多項政策設定有誤，請與管理員聯絡。</translation>
 <translation id="8599864823732014237">要略過企業註冊嗎？</translation>
-<translation id="8600362954032151088">前往 <ph name="GOOGLE_PASSWORD_MANAGER" />管理密碼和密碼金鑰</translation>
+<translation id="8600362954032151088">可以在 <ph name="GOOGLE_PASSWORD_MANAGER" />調整密碼和密碼金鑰的設定</translation>
 <translation id="8601206103050338563">TLS WWW 用戶端驗證</translation>
 <translation id="8602674530529411098">應用程式 (Beta 版)</translation>
 <translation id="8602851771975208551">電腦中其他程式所新增的應用程式可能會變更 Chrome 的運作方式。</translation>

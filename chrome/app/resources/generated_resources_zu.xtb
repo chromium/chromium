@@ -165,6 +165,7 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1102759278139578486">Ayikwazi ukudawuniloda amafayela okuthasisela inodi eyinhloko. Zama futhi kamuva.</translation>
 <translation id="1103523840287552314">Humusha njalo i-<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Ngokushesha uzolahlekelwa ukufinyelela kuleli qembu lamathebhu, futhi lizosuswa kuwo wonke amadivayisi akho</translation>
+<translation id="1106270460549661906">Yeka ukwabelana ngeGemini</translation>
 <translation id="1106350001632362876">Khuphula umkhawulo</translation>
 <translation id="1107482171728500359">Yabelana ngemakrofoni</translation>
 <translation id="110850812463801904">Xhuma mathupha ku-OneDrive</translation>
@@ -4283,6 +4284,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3854976556788175030">Ithreyi yokukhishwa igcwele</translation>
 <translation id="3855441664322950881">Pakisha isandiso</translation>
 <translation id="3855676282923585394">Ngenisa amabhukhimakhi nezilungiselelo...</translation>
+<translation id="3856023744577163821">Amathebhu avulwe engxoxweni noma ithebhu eyabiwe nawo abelwa neGemini.</translation>
 <translation id="3856096718352044181">Sicela uqinisekise ukuthi lo ngumhlinzeki wangempela noma uzame futhi kamuva</translation>
 <translation id="3856470183388031602">Sebenzisa i-Google Account yakho eku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="3856800405688283469">Khetha indawo yesikhathi</translation>
@@ -5476,6 +5478,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4683629100208651599">Yenza Amagama amancane</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (okuzenzakalelayo)</translation>
 <translation id="4684427112815847243">Vumelanisa yonke into</translation>
+<translation id="4685044513206555960">Ukufakwa kwe-app yewebhu kuvinjwe inqubomgomo yomlawuli.</translation>
 <translation id="4685096503970466594">Vala i-<ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Qinisekisa ukuthi iphrinta yakho ivuliwe futhi ixhumeke kunethiwekhi efanayo ne-Chromebook yakho noma sebenzisa ikhebuli ye-USB</translation>
 <translation id="4687613760714619596">Idivayisi Engaziwa (<ph name="DEVICE_ID" />)</translation>
@@ -7586,6 +7589,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6164393601566177235">Engeza amasayithi</translation>
 <translation id="6164832038898943453">Engeza izilimi ukuze uhumushe ngokuzenzekelayo</translation>
 <translation id="6165508094623778733">Funda kabanzi</translation>
+<translation id="61667940770438207">Vula kalula iGemini kuChrome nge-<ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Sicela uhlole imakrofoni yakho.</translation>
 <translation id="6169967265765719844">Izimvume zamageyimu ne-app efakwe nge-Steam zingaphathwa <ph name="LINK_BEGIN" />kumasethingi e-app ye-Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Hlela isplit view</translation>
@@ -9804,6 +9808,7 @@ Lokhu kungabandakanya ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza y
 <translation id="7697109152153663933">Chofoza "Amaphasiwedi kanye nokugcwalisa ngokuzenzekelayo"</translation>
 <translation id="769824636077131955">Le dokhumenti inkulu kakhulu ukuthi ingahlolelwa ezokuphepha. Ungaphrinta amadokhumenti afika kwangu-50 MB.</translation>
 <translation id="7698507637739331665">Ezinye izinto zivinjelwe</translation>
+<translation id="7700176975240938448">Ivuleka kalula ngokuthi <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Amaphrinta nezikena</translation>
 <translation id="7700873336634517379">Cha, qhubeka nokusebenzisela isikole kule phrofayela</translation>
 <translation id="7701040980221191251">Lutho</translation>

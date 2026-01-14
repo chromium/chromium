@@ -88,7 +88,6 @@
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Tab loslösen}other{Tabs loslösen}}</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> neuer Tab, <ph name="ANY_CLOSED" /> geschlossen}other{<ph name="MANY_ADDED" /> neue Tabs, <ph name="ANY_CLOSED" /> geschlossen}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tab gruppieren}other{Tabs gruppieren}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab loslösen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs loslösen}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Vor <ph name="NUM_DAYS_ONE" /> Tag erstellt}other{Vor <ph name="NUM_DAYS_MANY" /> Tagen erstellt}}</translation>
 <translation id="4076226664360336092">Vollständig geöffnete Liste der Tabgruppen</translation>
@@ -196,7 +195,6 @@
 <translation id="7792771145871471484">Vorschläge ansehen.</translation>
 <translation id="7792860826279960128">Hinweis zu Änderungen an geteilten Tabgruppen, die halb geöffnet sind</translation>
 <translation id="7825973332242257878">Tabgruppen</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab gruppieren}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs gruppieren}}</translation>
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>

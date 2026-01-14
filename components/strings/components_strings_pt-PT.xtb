@@ -118,6 +118,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1185343831726846924">Não é possível ativar a confirmação do cartão virtual</translation>
 <translation id="1186201132766001848">Rever palavras-passe</translation>
 <translation id="1187430513518041110">Automóveis e veículos</translation>
+<translation id="1188817995162638216">Cancelar guardar ficheiro?</translation>
 <translation id="1190491977647722791">Papel (pesado)</translation>
 <translation id="1194278116501666615">Atualização do progresso de pré-carregamento do ArcVm</translation>
 <translation id="1195073053842921378">Este endereço vai ser apagado deste dispositivo</translation>
@@ -404,6 +405,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1640180200866533862">Políticas do utilizador</translation>
 <translation id="1640244768702815859">Experimente <ph name="BEGIN_LINK" />aceder à página inicial do site<ph name="END_LINK" />.</translation>
+<translation id="1641962500621836664">A guardar o ficheiro da câmara</translation>
 <translation id="1641976391427233992">Atrasar saída até</translation>
 <translation id="1643651787397909318">Botão Aceder à verificação de segurança do Chrome; ative para aceder à página de verificação de segurança do Chrome nas definições</translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -494,6 +496,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1777422078676229054">Foto (de arquivo)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Instalar apps Web?</translation>
+<translation id="1791044335740781449">A carregar o ficheiro para o Google Drive</translation>
 <translation id="1791415068765905273">Mostrar todas as tabelas de comparação</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as suas informações, privacidade e segurança na Conta Google</translation>
 <translation id="1793631236004319016">Última utilização há <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -560,6 +563,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Jogo Dino. Um dinossauro pixelizado desvia-se de catos e de pterodáctilos enquanto corre numa paisagem deserta. Quando ouvir uma pista de áudio, toque para saltar sobre os obstáculos.</translation>
 <translation id="1898423065542865115">Filtragem</translation>
+<translation id="1898678876221454577">Inicie sessão para guardar a sua análise</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou no último dia. Isto pode ser o resultado de uma configuração incorreta ou de um utilizador mal-intencionado que intercetou a sua ligação. O relógio do seu computador está atualmente definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}other{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou há # dias. Isto pode ser o resultado de uma configuração incorreta ou de um utilizador mal-intencionado que intercetou a sua ligação. O relógio do seu computador está atualmente definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}}</translation>
 <translation id="190166348986967700">O seu administrador vai começar a carregar os ficheiros para o <ph name="CLOUD_PROVIDER" /> a <ph name="DATE_TIME" />. Mantenha o dispositivo ligado até o carregamento de ficheiros estar concluído. Durante o carregamento, só vai poder ler os ficheiros locais.</translation>
 <translation id="1902576642799138955">Período de validade</translation>
@@ -896,6 +900,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="2414676293664737497">Markdown</translation>
 <translation id="2414886740292270097">Escuro</translation>
+<translation id="2429702686644080813">Inicie sessão para guardar o vídeo</translation>
 <translation id="2429716554270894715">Tecido (à prova de água)</translation>
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte com fibras e têxteis</translation>
@@ -1099,6 +1104,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2742128390261873684">Domótica</translation>
 <translation id="2743512410823092182">Recursos e equipamentos para DJs</translation>
 <translation id="2743934314332613923">Atualizar a carta de condução?</translation>
+<translation id="2757727729385895652">A carregar <ph name="COUNT" /> ficheiros para o Google Drive</translation>
 <translation id="2759299890026163685">Certifique-se de que tem uma ligação à Internet estável antes de tentar novamente</translation>
 <translation id="2759825833388495838">preencher a sua palavra-passe na app <ph name="APP_NAME" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1227,6 +1233,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2983666748527428214">Abrir separador de navegação anónima</translation>
 <translation id="2985306909656435243">Se ativada, o Chromium armazena uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="2985398929374701810">Introduza um endereço válido</translation>
+<translation id="2986485254770343131">A guardar ficheiros da câmara</translation>
 <translation id="2987034854559945715">Nenhuma funcionalidade correspondente</translation>
 <translation id="2989742184762224133">Agrafo duplo na parte superior</translation>
 <translation id="2991174974383378012">Partilha com Sites</translation>
@@ -1904,6 +1911,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4059523390906550209">Saiba mais sobre a proteção de dados confidenciais</translation>
 <translation id="4060880210388108757">Música indie e alternativa</translation>
 <translation id="4060883793524802469">Remover das tabelas</translation>
+<translation id="4061573458783426621">Não é possível guardar a digitalização no OneDrive</translation>
 <translation id="4063063121357725926">Permita que a Google ajude a encontrar descontos para os seus carrinhos</translation>
 <translation id="406358100705415968">Equipamento de proteção para a segurança no trabalho</translation>
 <translation id="4065659219963895623">Restaurantes</translation>
@@ -2215,6 +2223,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4530347922939905757">Mensagem de texto</translation>
 <translation id="4531477351494678589">Número do cartão virtual:</translation>
 <translation id="4535523368173457420">Estes motores de pesquisa são populares na sua região e são apresentados em ordem aleatória</translation>
+<translation id="4535602490975885745">Não é possível guardar a foto no OneDrive</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{Criado há 1 ano}other{Criado há {NUM_YEARS} anos}}</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542971377163063093">Tabuleiro 6</translation>
@@ -2309,6 +2318,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar o Diagnóstico de rede do Windows<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Palavra-passe de <ph name="USERNAME" /></translation>
 <translation id="4724144314178270921">Pode solicitar a visualização de texto e imagens na sua área de transferência</translation>
+<translation id="4725766358270333890">A carregar <ph name="COUNT" /> ficheiros para o Microsoft OneDrive</translation>
 <translation id="4726672564094551039">Atualizar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4729147136006144950">Caridade e filantropia</translation>
@@ -2351,6 +2361,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4771249073710170730">Modelismo e aparelhos telecomandados</translation>
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
 <translation id="4774055414220872623">Materiais para obras de arte e artesanato</translation>
+<translation id="4775456404799771098">Vai perder o ficheiro permanentemente</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780320432697076749">Software de foto</translation>
 <translation id="4780366598804516005">Caixa de correio 1</translation>
@@ -2803,6 +2814,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5509913453990750440">Moda e estilo</translation>
 <translation id="5510766032865166053">Pode ter sido movido ou eliminado.</translation>
 <translation id="551222491709693708">Banda desenhada e animação</translation>
+<translation id="5512381366239323820">ficheiros da câmara</translation>
 <translation id="5512812358367123529">Mobiliário de escritório</translation>
 <translation id="5513528801833998679">Usar o início de sessão no dispositivo</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
@@ -2938,6 +2950,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="572328651809341494">Separadores recentes</translation>
 <translation id="5723873695528696965">Controlar e reprogramar os seus dispositivos MIDI</translation>
 <translation id="5725297205162868298">O atalho não pode começar com o caráter @: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5725797473946373607">Não mostrar esta caixa de diálogo da próxima vez</translation>
 <translation id="5728246486828755318">Pode pedir para usar funcionalidades avançadas da impressora</translation>
 <translation id="5729442113829771034">Educação para a primeira infância</translation>
 <translation id="5730040223043577876">O Chrome recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
@@ -3104,6 +3117,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6018650639991193045">Eliminar o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
+<translation id="6023960830218262456">Não é possível guardar o vídeo no OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6025471531651464742">Adicionar ficheiros</translation>
 <translation id="6028591542479806248">Faça a gestão das notificações por email e para dispositivos móveis</translation>
@@ -3445,6 +3459,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer eliminação</translation>
 <translation id="6532101170117367231">Guardar no Google Drive</translation>
+<translation id="6535903140035956341">ficheiros e transferências da câmara</translation>
 <translation id="6536221421038631327">Se remover uma subscrição do Passpoint do seu dispositivo <ph name="DEVICE_TYPE" />, as redes associadas são removidas. Contacte "<ph name="FRIENDLY_NAME" />" para alterar o seu plano de subscrição. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para ver tabelas de comparação, ative a sincronização</translation>
 <translation id="6539092367496845964">Ocorreu um erro. Tente mais tarde.</translation>
@@ -3672,6 +3687,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6925267999184670015">B+ norte-americano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
+<translation id="6927878187051807444">ficheiros da câmara e capturas de ecrã</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
@@ -3814,6 +3830,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7140087718106278457">A lista de métodos de pagamento está fechada.</translation>
 <translation id="714064300541049402">Turno X da imagem 2 lateral</translation>
 <translation id="7140922144008419614">Botão Pesquisar separadores, ative para pesquisar separadores</translation>
+<translation id="7143668445748322952">ficheiros da câmara, transferências e capturas de ecrã</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -4064,6 +4081,7 @@ Detalhes adicionais:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Tecnologia da Google</translation>
 <translation id="753713322968419914">Remover a morada de casa do preenchimento automático do Chrome?</translation>
+<translation id="753714465667062283">Inicie sessão para guardar a sua foto</translation>
 <translation id="7537536606612762813">Obrigatório</translation>
 <translation id="7543525346216957623">Pede aos teus pais</translation>
 <translation id="7546409722674205727">A iniciar a app <ph name="APP_NAME" /></translation>
@@ -4173,6 +4191,7 @@ Detalhes adicionais:
 <translation id="7684928361160505327">{0,plural, =1{O ficheiro <ph name="FILE_NAME" /> foi bloqueado devido uma política}other{<ph name="FILE_COUNT" /> ficheiros foram bloqueados devido a uma política}}</translation>
 <translation id="7687186412095877299">Preenche os formulários de pagamento com os seus métodos de pagamento guardados</translation>
 <translation id="7687305263118037187">Tempo limite da tentativa</translation>
+<translation id="7689605946980652287">A carregar o ficheiro para o Microsoft OneDrive</translation>
 <translation id="7690647519407127574">Postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem da página recebida</translation>
 <translation id="769424100851389104">Iniciar atualização agora</translation>
@@ -5123,6 +5142,7 @@ Detalhes adicionais:
 <translation id="963734905955638680">Com base numa lei na sua região, o Chromium pede-lhe para escolher o seu motor de pesquisa predefinido. Estes motores de pesquisa são populares na sua região e são apresentados por ordem aleatória.</translation>
 <translation id="963837307749850257">Todos os utilizadores</translation>
 <translation id="964050462028070434">Gerir palavras-passe e chaves de acesso…</translation>
+<translation id="964681140808832181">Sim, quero cancelar</translation>
 <translation id="969892804517981540">Compilação oficial</translation>
 <translation id="97054401902912338">Saber mais sobre os filtros de conteúdo</translation>
 <translation id="973788791897303708">Este grupo de separadores está cheio</translation>

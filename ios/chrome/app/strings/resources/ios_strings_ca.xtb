@@ -621,6 +621,7 @@
 <translation id="3365529507898144230">Desa a Fotos</translation>
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
 <translation id="3377063233124932127">Ara, les adreces d'interès, les contrasenyes i altres dades desades es troben a la part superior.</translation>
+<translation id="3378214228000661758">Crea una clau d'accés per a</translation>
 <translation id="3380352560400387991">Aquest lloc web està provant d'obrir una aplicació. Aquesta acció farà que surtis del mode d'incògnit.</translation>
 <translation id="3385742921291399323">Accedeix a les teves contrasenyes, pestanyes, adreces d'interès i altres elements desats.</translation>
 <translation id="3392923070107623576">Organitza't creant grups de pestanyes</translation>
@@ -670,6 +671,7 @@
 <translation id="355765753469272474">Desfés</translation>
 <translation id="3565012355885596568">No s'han pogut carregar les imatges</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Desa d'altra forma</translation>
 <translation id="3572607909481582402">Al teu Compte de Google</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
 <translation id="3575426792457739946">Aquesta llista conté tots els perfils carregats.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="508645147179720015">La nota té més de 1.000 caràcters</translation>
 <translation id="5087098519049306025">Seguiment de preus</translation>
 <translation id="5090832849094901128">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Les claus d'accés es desen al gestor de contrasenyes de Google per a</translation>
 <translation id="510580293474170715">No s'ha importat res</translation>
 <translation id="5113960131843706315">S'estan obtenint les teves coses…</translation>
 <translation id="5118462200606189584">Afegeix un compte…</translation>
@@ -1753,6 +1756,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7522587739845660862">informació sobre la teva ubicació</translation>
 <translation id="7522948500476882302">Quan baixis un fitxer, pots triar que se suprimeixi automàticament al cap d'1 mes</translation>
 <translation id="7524055474074101597">Accedeix a les teves contrasenyes i a altres elements en totes les aplicacions.</translation>
+<translation id="7525067979554623046">Crea</translation>
 <translation id="75362970626182391">Grup de pestanyes nou</translation>
 <translation id="7537586195939242955">No es pot instal·lar el passi a Passbook en aquest moment.</translation>
 <translation id="754655535278952384">Comprovada <ph name="TIME" /></translation>

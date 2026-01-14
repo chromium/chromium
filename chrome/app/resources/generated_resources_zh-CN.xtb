@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">无法下载主要节点标注文件。请稍后再试。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">您将立即失去对此标签页分组的访问权限，并且该分组将从您的所有设备中删除</translation>
+<translation id="1106270460549661906">取消与 Gemini 分享</translation>
 <translation id="1106350001632362876">提高阈值</translation>
 <translation id="1107482171728500359">共享麦克风</translation>
 <translation id="110850812463801904">手动连接到 OneDrive</translation>
@@ -2550,6 +2551,7 @@
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
+<translation id="2714617928488200509">模型</translation>
 <translation id="2715751256863167692">此项升级操作会重置您 Chromebook 的硬件并移除当前的用户数据。</translation>
 <translation id="2715934493766003251">正在同步文件，无法清理存储空间</translation>
 <translation id="2716986496990888774">此设置由家长管理。</translation>
@@ -4259,6 +4261,7 @@
 <translation id="3854976556788175030">出纸盘已满</translation>
 <translation id="3855441664322950881">打包扩展程序</translation>
 <translation id="3855676282923585394">导入书签和设置...</translation>
+<translation id="3856023744577163821">从对话或所分享的标签页中打开的标签页也会分享给 Gemini。</translation>
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用您的 Google 账号</translation>
 <translation id="3856800405688283469">选择时区</translation>
@@ -4585,6 +4588,7 @@
 <translation id="4078738236287221428">激进</translation>
 <translation id="4078903002989614318">排序和列表选项</translation>
 <translation id="4079140982534148664">使用增强的“拼写检查”功能</translation>
+<translation id="4082070466456857368">思考 (3 Pro)</translation>
 <translation id="4084682180776658562">添加书签</translation>
 <translation id="4084835346725913160">关闭 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">已拦截此网页上的 JavaScript。</translation>
@@ -5452,6 +5456,7 @@
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据</translation>
+<translation id="4685044513206555960">管理员政策禁止安装 Web 应用。</translation>
 <translation id="4685096503970466594">关闭“<ph name="FEATURE_NAME" />”功能</translation>
 <translation id="4687238339694011189">请确保您的打印机已开机，且已连接到 Chromebook 所用网络或使用 USB 线</translation>
 <translation id="4687613760714619596">未知设备 (<ph name="DEVICE_ID" />)</translation>
@@ -7556,6 +7561,7 @@
 <translation id="6164393601566177235">添加网站</translation>
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
 <translation id="6165508094623778733">了解详情</translation>
+<translation id="61667940770438207">按下 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可轻松打开 Chrome 中的 Gemini</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
 <translation id="6170313103929479668">调整拆分视图</translation>
@@ -7824,6 +7830,7 @@
 <translation id="6350821834561350243">请清楚描述问题及其重现步骤（如果可能）</translation>
 <translation id="6351178441572658285">应用语言</translation>
 <translation id="6354918092619878358">SECG 椭圆曲线 secp256r1（又称 ANSI X9.62 prime256v1 或 NIST P-256）</translation>
+<translation id="6355632359041940003">接管任务</translation>
 <translation id="635609604405270300">请勿关闭设备</translation>
 <translation id="6356537493253478650">平静</translation>
 <translation id="63566973648609420">只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需<ph name="BEGIN_LINK" />重置同步<ph name="END_LINK" />。</translation>
@@ -8791,6 +8798,7 @@
 <translation id="7017219178341817193">添加新网页</translation>
 <translation id="7017354871202642555">无法在创建窗口后设置模式。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7020810150082302220">默认浏览器已更改</translation>
 <translation id="7021524108486027008">在 <ph name="DEVICE_TYPE" /> 上由您的企业管理的环境中运行工具、编辑器和 IDE。</translation>
 <translation id="7022222879220069865">所有触控板均已断开连接</translation>
 <translation id="7022562585984256452">您的主页已设置。</translation>
@@ -9773,6 +9781,7 @@
 <translation id="7697109152153663933">点击“密码和自动填充”</translation>
 <translation id="769824636077131955">此文档太大，无法进行安全检查。您只能打印不超过 50 MB 的文档。</translation>
 <translation id="7698507637739331665">某些内容已被屏蔽</translation>
+<translation id="7700176975240938448">使用 <ph name="FOCUS_TOGGLE_HOTKEY" /> 轻松打开</translation>
 <translation id="7700516433658473670">打印机和扫描仪</translation>
 <translation id="7700873336634517379">否，继续将此资料用作学校资料</translation>
 <translation id="7701040980221191251">无</translation>
@@ -10171,6 +10180,7 @@
 <translation id="7969144945436590933">获取更多详情</translation>
 <translation id="7970673414865679092">以太网详细信息</translation>
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">选择“不喜欢”，会提交您不喜欢此功能的反馈。</translation>
 <translation id="7973776233567882054">以下哪一项最能准确地描述您的网络？</translation>
 <translation id="797394244396603170">请选择您要与哪部设备分享文件</translation>
@@ -10733,6 +10743,7 @@
 <translation id="8339288417038613756">显示大小和文字大小</translation>
 <translation id="833986336429795709">要打开此链接，请选择一个应用</translation>
 <translation id="8340547030807793004">显示可对“<ph name="DEVICE" />”执行的更多操作</translation>
+<translation id="8341693734243413517">Chrome 更新程序</translation>
 <translation id="8341804784147620576">显示搜索快捷方式</translation>
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342387517402567689">在无痕模式下无法安装 Web 应用</translation>
@@ -11036,6 +11047,7 @@
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8551647092888540776">离线时无法打开<ph name="FILE_NAMES" /></translation>
 <translation id="8552102814346875916">保存到“始终让这些网站保持活动状态”列表</translation>
+<translation id="8552947739661397736">接管任务，目前该任务由 Gemini 掌管</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
 <translation id="8555444629041783356">自动更新日落时间表</translation>

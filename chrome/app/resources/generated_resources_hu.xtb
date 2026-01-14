@@ -165,6 +165,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1102759278139578486">Nem sikerült letölteni a fő annotációs fájlokat. Próbálja újra később.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
 <translation id="1104098698795583187">Azonnal elveszíti a jelen lapcsoporthoz való hozzáférését, és a lapcsoport az összes eszközéről törlődik</translation>
+<translation id="1106270460549661906">A Geminivel való megosztás visszavonása</translation>
 <translation id="1106350001632362876">Küszöbérték növelése</translation>
 <translation id="1107482171728500359">Mikrofon megosztása</translation>
 <translation id="110850812463801904">Manuális csatlakozás a OneDrive-hoz</translation>
@@ -4281,6 +4282,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3854976556788175030">A kiadótálca megtelt</translation>
 <translation id="3855441664322950881">Bővítmény becsomagolása</translation>
 <translation id="3855676282923585394">Könyvjelzők és beállítások importálása...</translation>
+<translation id="3856023744577163821">A csevegésből vagy a megosztott lapból megnyitott lapok is meg lesznek osztva a Geminivel.</translation>
 <translation id="3856096718352044181">Ellenőrizze a szolgáltató érvényességét, vagy próbálkozzon újra.</translation>
 <translation id="3856470183388031602">A Google-fiók használata a(z) <ph name="DEVICE_TYPE" /> eszközön</translation>
 <translation id="3856800405688283469">Időzóna kiválasztása</translation>
@@ -5474,6 +5476,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4683629100208651599">Átalakítás kisbetűssé</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (alapértelmezett)</translation>
 <translation id="4684427112815847243">Az összes szinkronizálása</translation>
+<translation id="4685044513206555960">A rendszergazdai házirend letiltja az internetes alkalmazások telepítését.</translation>
 <translation id="4685096503970466594">A(z) <ph name="FEATURE_NAME" /> kikapcsolása</translation>
 <translation id="4687238339694011189">Győződjön meg arról, hogy a nyomtató be van kapcsolva, és ugyanahhoz a hálózathoz csatlakozik, mint a Chromebook, vagy használjon USB-kábelt</translation>
 <translation id="4687613760714619596">Ismeretlen eszköz (<ph name="DEVICE_ID" />)</translation>
@@ -7584,6 +7587,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6164393601566177235">Webhelyek hozzáadása</translation>
 <translation id="6164832038898943453">Nyelvek hozzáadása az automatikus fordításhoz</translation>
 <translation id="6165508094623778733">További információ</translation>
+<translation id="61667940770438207">A(z) <ph name="FOCUS_TOGGLE_HOTKEY" /> billentyűkombinációval egyszerűen megnyithatja a Gemini a Chrome-ban szolgáltatást</translation>
 <translation id="6169040057125497443">Ellenőrizze a mikrofont.</translation>
 <translation id="6169967265765719844">A játékok és alkalmazások Steamen keresztüli telepítésére vonatkozó engedély a <ph name="LINK_BEGIN" />Steam alkalmazás beállításaiban<ph name="LINK_END" /> kezelhető.</translation>
 <translation id="6170313103929479668">Osztott nézet elrendezése</translation>
@@ -9800,6 +9804,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7697109152153663933">Kattintson a „Passwords and Autofill” (Jelszavak és automatikus kitöltés) elemre.</translation>
 <translation id="769824636077131955">Ez a dokumentum túl nagy ahhoz, hogy biztonsági ellenőrzést lehessen végrehajtani rajta. Legfeljebb 50 MB méretű dokumentumokat nyomtathat.</translation>
 <translation id="7698507637739331665">Egyes elemek le vannak tiltva</translation>
+<translation id="7700176975240938448">Egyszerű megnyitás a következővel: <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Nyomtatók és szkennerek</translation>
 <translation id="7700873336634517379">Nem, továbbra is ezt a profil használom az iskolához</translation>
 <translation id="7701040980221191251">Nincs</translation>

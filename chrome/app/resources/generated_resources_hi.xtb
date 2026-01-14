@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">मुख्य नोड की व्याख्या करने के लिए फ़ाइलें डाउनलोड नहीं की जा सकीं. कुछ देर बाद कोशिश करें.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1104098698795583187">आपके लिए, इस टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे आपके सभी डिवाइसों से मिटा दिया जाएगा</translation>
+<translation id="1106270460549661906">Gemini के साथ शेयर करना बंद करें</translation>
 <translation id="1106350001632362876">थ्रेशोल्ड बढ़ाएं</translation>
 <translation id="1107482171728500359">माइक्रोफ़ोन शेयर करें</translation>
 <translation id="110850812463801904">OneDrive से मैन्युअल तरीके से कनेक्ट करें</translation>
@@ -4283,6 +4284,7 @@
 <translation id="3854976556788175030">आउटपुट ट्रे भरी हुई है</translation>
 <translation id="3855441664322950881">एक्सटेंशन पैक करें</translation>
 <translation id="3855676282923585394">बुकमार्क और सेटिंग इंपोर्ट करें...</translation>
+<translation id="3856023744577163821">किसी चैट या शेयर किए गए टैब से खोले गए टैब भी Gemini के साथ शेयर किए जाते हैं.</translation>
 <translation id="3856096718352044181">कृपया पुष्टि करें कि यह एक मान्य डीएनएस सेवा है या थोड़ी देर बाद कोशिश करें</translation>
 <translation id="3856470183388031602">अपने Google खाते का इस्तेमाल अपने <ph name="DEVICE_TYPE" /> पर करें</translation>
 <translation id="3856800405688283469">समय क्षेत्र चुनें</translation>
@@ -5476,6 +5478,7 @@
 <translation id="4683629100208651599">छोटे अक्षरों में बदलें</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डिफ़ॉल्ट)</translation>
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
+<translation id="4685044513206555960">एडमिन नीति के तहत, वेब ऐप्लिकेशन को इंस्टॉल करने की अनुमति नहीं है.</translation>
 <translation id="4685096503970466594"><ph name="FEATURE_NAME" /> को बंद करें</translation>
 <translation id="4687238339694011189">पक्का करें कि आपका प्रिंटर चालू है और उसी नेटवर्क से कनेक्ट हो जिससे आपका Chromebook कनेक्ट है. अगर ऐसा नहीं है, तो यूएसबी केबल का इस्तेमाल करें</translation>
 <translation id="4687613760714619596">अज्ञात डिवाइस (<ph name="DEVICE_ID" />)</translation>
@@ -7583,6 +7586,7 @@
 <translation id="6164393601566177235">साइटें जोड़ें</translation>
 <translation id="6164832038898943453">अपने-आप अनुवाद की सुविधा के लिए भाषाएं जोड़ें</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> दबाकर Chrome में Gemini को आसानी से खोलें</translation>
 <translation id="6169040057125497443">कृपया अपना माइक्रोफ़ोन जाँचें.</translation>
 <translation id="6169967265765719844">Steam के ज़रिए इंस्टॉल किए गए गेम और ऐप्लिकेशन की अनुमतियां, <ph name="LINK_BEGIN" />Steam ऐप्लिकेशन की सेटिंग<ph name="LINK_END" /> में जाकर मैनेज की जा सकती हैं.</translation>
 <translation id="6170313103929479668">स्प्लिट व्यू को व्यवस्थित करें</translation>
@@ -9801,6 +9805,7 @@
 <translation id="7697109152153663933">“पासवर्ड और ऑटोमैटिक भरना” पर क्लिक करें</translation>
 <translation id="769824636077131955">यह दस्तावेज़ बहुत बड़ा है, इसलिए इसकी सुरक्षा जांच नहीं की जा सकती. सिर्फ़ 50 एमबी तक के दस्तावेज़ प्रिंट किए जा सकते हैं.</translation>
 <translation id="7698507637739331665">कुछ आइटम ब्लॉक किए गए हैं</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> दबाकर आसानी से खोलें</translation>
 <translation id="7700516433658473670">प्रिंटर और स्कैनर</translation>
 <translation id="7700873336634517379">नहीं, स्कूल के लिए इस प्रोफ़ाइल का इस्तेमाल जारी रखें</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>

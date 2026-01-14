@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Bu funksiyadan necə istifadə edə bilərəm?</translation>
 <translation id="1901600657316773839">Seçimi saxlayın</translation>
 <translation id="1902277226107477495">Ünvanın aşkarlanması sönülüdür. Onu Ayarlarda yenidən yandırın.</translation>
+<translation id="1909201414196501151">Sayt əlavə edildi və bərkidildi</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
 <translation id="1925706052394657380">iOS-da <ph name="BEGIN_BOLD" />Defolt tətbiqlər<ph name="END_BOLD" /> ayarlarını açın</translation>
 <translation id="1941314575388338491">Kopyalamaq üçün iki dəfə tıklayın.</translation>
@@ -615,10 +616,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="334690320928261823">Son tablar</translation>
 <translation id="3349031117032695619">Popapları bloklayın</translation>
+<translation id="3350976670663926380">Redaktələr yadda saxlanıldı</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Bu hesab idarə edilir.</translation>
 <translation id="3365529507898144230">Fotoda yadda saxlayın</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="3377063233124932127">İndi yadda saxladığınız əlfəcinlər, parollar və s. yuxarıdadır.</translation>
+<translation id="3378214228000661758">Bunun üçün parol yaradın</translation>
 <translation id="3380352560400387991">Bu sayt tətbiqi açmağa çalışır. Anonim rejimdən çıxacaqsınız.</translation>
 <translation id="3385742921291399323">Yadda saxlanılmış parollar, tablar, əlfəcinlər və s. əldə edin.</translation>
 <translation id="3392923070107623576">Tab qrupları yaradaraq nizamlı qalın</translation>
@@ -668,6 +671,7 @@
 <translation id="355765753469272474">Geri qaytarın</translation>
 <translation id="3565012355885596568">Şəkillər yüklənmir</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Başqa cür saxlayın</translation>
 <translation id="3572607909481582402">Google Hesabında</translation>
 <translation id="3575234738189584619">Linza ilə axtarış edin</translation>
 <translation id="3575426792457739946">Bütün yüklənmiş profillər bu siyahıda göstərilir.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">"Təkmil qoruma" seçin</translation>
 <translation id="3610041351087301930">Oxu rejimini gizlədin</translation>
 <translation id="3610866916973186448">Bəli, silin</translation>
+<translation id="3616161326314492065">Foto çəkin, habelə şəkillər yaratmaq və remiks etmək üçün Gemini ilə paylaşın.</translation>
 <translation id="3622175633937495219">Axtarış tarixçəsi (<ph name="COUNT" /> nəticə tapılıb)</translation>
 <translation id="3625008969091706597">Kənarı çəkərək geri qayıda bilərsiniz.</translation>
 <translation id="362709345066740529">Kartları, lenti və s. bölmələri burada fərdiləşdirin</translation>
@@ -1076,6 +1081,7 @@
 <translation id="508645147179720015">Qeyd 1000 simvoldan çoxdur</translation>
 <translation id="5087098519049306025">Qiymət İzləmə</translation>
 <translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
+<translation id="5096619236864235">Giriş açarları Google Parol Menecerində yadda saxlanır</translation>
 <translation id="510580293474170715">Heç nə import edilmədi</translation>
 <translation id="5113960131843706315">Məlumatlarınız əldə edilir…</translation>
 <translation id="5118462200606189584">Hesab əlavə edin…</translation>
@@ -1750,6 +1756,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7522587739845660862">Məkanınız haqqında məlumat</translation>
 <translation id="7522948500476882302">Faylı endirəndə 1 ay sonra avtomatik silinməsini seçin</translation>
 <translation id="7524055474074101597">Tətbiqlərdə parol və s. məlumatlara giriş.</translation>
+<translation id="7525067979554623046">Yaradın</translation>
 <translation id="75362970626182391">Yeni tab qrupu</translation>
 <translation id="7537586195939242955">Üzr istəyirik, Parolunuz indi Passbook'a yüklənilə bilmir.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> yoxlanıb</translation>
@@ -1841,6 +1848,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7853202427316060426">Fəalliyyət</translation>
 <translation id="7854006015462979438">Ümumi ayarları açın</translation>
 <translation id="7855678267851972597">Audiolar</translation>
+<translation id="7857520352710212030">Sayt bərkidildi</translation>
 <translation id="7859988229622350291">Neç vaxt tərcümə etməyin</translation>
 <translation id="7863211248337747225">Tətbiqi əldə edin</translation>
 <translation id="7865127013871431856">Tərcümə seçimləri</translation>

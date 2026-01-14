@@ -621,6 +621,7 @@
 <translation id="3365529507898144230">Išsaugoti Nuotraukose</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="3377063233124932127">Dabar išsaugotos žymės, slaptažodžiai ir kt. yra viršuje.</translation>
+<translation id="3378214228000661758">Sukurkite prieigos raktą, skirtą</translation>
 <translation id="3380352560400387991">Ši svetainė bando atidaryti programą. Išjungsite inkognito režimą.</translation>
 <translation id="3385742921291399323">Gaukite išsaugotus slaptažodžius, skirtukus, žymes ir kt.</translation>
 <translation id="3392923070107623576">Būkite tvarkingi kurdami skirtukų grupes</translation>
@@ -670,6 +671,7 @@
 <translation id="355765753469272474">Anuliuoti</translation>
 <translation id="3565012355885596568">Nepavyko įkelti vaizdų</translation>
 <translation id="3565930036634619844">Skirtukas. <ph name="TAB_INDEX" /> iš <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Išsaugoti kitu būdu</translation>
 <translation id="3572607909481582402">„Google“ paskyroje</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
 <translation id="3575426792457739946">Šiame sąraše yra visi įkelti profiliai.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="508645147179720015">Užrašą sudaro daugiau nei 1 000 simbolių</translation>
 <translation id="5087098519049306025">Kainų stebėjimas</translation>
 <translation id="5090832849094901128">Ištrynus šį slaptažodį jūsų paskyra svetainėje <ph name="WEBSITE" /> nebus ištrinta.</translation>
+<translation id="5096619236864235">Prieigos raktai išsaugomi „Google“ slaptažodžių tvarkyklėje</translation>
 <translation id="510580293474170715">Nieko neimportuota</translation>
 <translation id="5113960131843706315">Gaunami jūsų duomenys…</translation>
 <translation id="5118462200606189584">Pridėti paskyrą…</translation>
@@ -1753,6 +1756,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7522587739845660862">Informacija apie jūsų vietovę</translation>
 <translation id="7522948500476882302">Atsisiųsdami failą pasirinkite, kad jis būtų automatiškai ištrintas per vieną mėnesį</translation>
 <translation id="7524055474074101597">Pasiekite slaptažodžius ir kitas funkcijas programose.</translation>
+<translation id="7525067979554623046">Sukurti</translation>
 <translation id="75362970626182391">Nauja skirtukų grupė</translation>
 <translation id="7537586195939242955">Deja, šiuo metu negalima įdiegti „Pass“ į „Passbook“.</translation>
 <translation id="754655535278952384">Tikrinta <ph name="TIME" /></translation>
