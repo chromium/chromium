@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/aim/debugger/coordinator/aim_debugger_coordinator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -17,14 +18,24 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
 }  // namespace
 
+@interface ComposeboxDebuggerCoordinator () <AimDebuggerPresenter>
+
+@end
+
 @implementation ComposeboxDebuggerCoordinator {
   UIButton* _optionsButton;
+  // The coordinator for the AIM debugger.
+  AimDebuggerCoordinator* _aimDebuggerCoordinator;
 }
 
 - (void)start {
   CHECK(experimental_flags::IsOmniboxDebuggingEnabled());
   [self setupOptionsButton];
   [self setupOptionsMenu];
+}
+
+- (void)stop {
+  [self dismissAimDebuggerWithAnimation:NO];
 }
 
 #pragma mark - private
@@ -59,18 +70,20 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
 - (void)setupOptionsMenu {
   __weak __typeof(self) weakSelf = self;
+  /*
   UIAction* breadcrumbsAction = [UIAction
       actionWithTitle:@"Composebox logs"
                 image:DefaultSymbolWithPointSize(@"binoculars.circle", 16)
            identifier:nil
               handler:^(UIAction* action){
               }];
+   */
   UIAction* aimEligibilityDebuggerAction = [UIAction
       actionWithTitle:@"AIM Eligibility"
-                image:DefaultSymbolWithPointSize(@"key.viewfinder", 16)
+                image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol, 16)
            identifier:nil
-              handler:^(UIAction* action){
-
+              handler:^(UIAction* action) {
+                [weakSelf startAIMDebugger];
               }];
 
   UIAction* omniboxDebuggerAction = [UIAction
@@ -82,13 +95,14 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
                         .delegate composeboxDebuggerDidRequestOmniboxDebugging];
               }];
 
-  UIMenu* menu = [UIMenu menuWithTitle:@"Debugging options"
-                              children:@[
-                                breadcrumbsAction, aimEligibilityDebuggerAction,
-                                omniboxDebuggerAction
-                              ]];
+  // TODO(crbug.com/457960024): Add `breadcrumbsAction` once implemented.
+  UIMenu* menu = [UIMenu
+      menuWithTitle:@"Debugging options"
+           children:@[ aimEligibilityDebuggerAction, omniboxDebuggerAction ]];
 
   _optionsButton.showsMenuAsPrimaryAction = YES;
+  _optionsButton.preferredMenuElementOrder =
+      UIContextMenuConfigurationElementOrderFixed;
   _optionsButton.menu = menu;
 }
 
@@ -114,6 +128,26 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
     [gesture setTranslation:CGPointZero inView:containerView];
   }
+}
+
+- (void)startAIMDebugger {
+  [self dismissAimDebuggerWithAnimation:NO];
+  _aimDebuggerCoordinator = [[AimDebuggerCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  _aimDebuggerCoordinator.presenter = self;
+  [_aimDebuggerCoordinator start];
+}
+
+#pragma mark - AimDebuggerPresenter
+
+- (void)dismissAimDebuggerWithAnimation:(BOOL)animated {
+  if (animated) {
+    [_aimDebuggerCoordinator stopAnimatedWithCompletion:nil];
+  } else {
+    [_aimDebuggerCoordinator stop];
+  }
+  _aimDebuggerCoordinator = nil;
 }
 
 @end

@@ -172,6 +172,11 @@
   [_aimComposeboxCoordinator stop];
   _aimComposeboxCoordinator = nil;
 
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    [_debuggerCoordinator stop];
+    _debuggerCoordinator = nil;
+  }
+
   [_navigationMediator disconnect];
   _navigationMediator = nil;
 }

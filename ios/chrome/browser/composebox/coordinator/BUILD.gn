@@ -46,6 +46,7 @@ source_set("coordinator") {
     "//components/search_engines",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/aim/debugger/coordinator",
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
