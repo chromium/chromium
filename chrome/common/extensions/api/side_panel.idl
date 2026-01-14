@@ -179,7 +179,7 @@ namespace sidePanel {
     // |options|: Specifies the context in which to close the side panel.
     // |callback|: Returns a Promise which resolves when the side panel has been
     // closed.
-    [nodoc] static void close(
+    static void close(
         CloseOptions options,
         VoidCallback callback);
   };
