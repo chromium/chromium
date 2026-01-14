@@ -365,13 +365,6 @@ enum class DeepScanAccessPoint {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DeepScanAccessPoint)
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
-
-// Returns the highest precedence force save to cloud destination.
-TriggeredRule::ForceSaveToCloudDestination
-GetHighestPrecedenceForceSaveToCloudDestination(
-    TriggeredRule::ForceSaveToCloudDestination destination_1,
-    TriggeredRule::ForceSaveToCloudDestination destination_2);
-
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_COMMON_H_

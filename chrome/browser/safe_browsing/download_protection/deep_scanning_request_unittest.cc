@@ -31,6 +31,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -131,6 +132,121 @@ const std::set<std::string>* TxtMimeTypes() {
 }
 
 constexpr char kScanId[] = "scan_id";
+
+struct ForceSaveToCloudPrioritizationTestParams {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  enterprise_connectors::ContentAnalysisResponse response;
+  DownloadCheckResult expected_result;
+  const char* test_name;
+};
+
+// Helper to generate responses
+enterprise_connectors::ContentAnalysisResponse CreateResponse(
+    const std::vector<
+        enterprise_connectors::TriggeredRule::ForceSaveToCloudDestination>&
+        destinations) {
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  for (auto destination : destinations) {
+    auto* dlp_rule = dlp_result->add_triggered_rules();
+    dlp_rule->set_action(
+        enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+    dlp_rule->set_force_save_to_cloud_destination(destination);
+  }
+  return response;
+}
+
+std::vector<ForceSaveToCloudPrioritizationTestParams>
+GetForceSaveToCloudPrioritizationTestCases() {
+  namespace dp_features = enterprise_data_protection;
+  const auto response_gdrive =
+      CreateResponse({enterprise_connectors::TriggeredRule::CORP_G_DRIVE});
+  const auto response_onedrive =
+      CreateResponse({enterprise_connectors::TriggeredRule::CORP_ONEDRIVE});
+  const auto response_both =
+      CreateResponse({enterprise_connectors::TriggeredRule::CORP_G_DRIVE,
+                      enterprise_connectors::TriggeredRule::CORP_ONEDRIVE});
+
+  return {
+      // Both features enabled
+      {{dp_features::kEnableForceDownloadToCloud,
+        dp_features::kEnableForceDownloadToOneDrive},
+       {},
+       response_gdrive,
+       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
+       "BothEnabledGDriveResponse"},
+      {{dp_features::kEnableForceDownloadToCloud,
+        dp_features::kEnableForceDownloadToOneDrive},
+       {},
+       response_onedrive,
+       DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
+       "BothEnabledOneDriveResponse"},
+      {{dp_features::kEnableForceDownloadToCloud,
+        dp_features::kEnableForceDownloadToOneDrive},
+       {},
+       response_both,
+       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
+       "BothEnabledBothResponse"},
+
+      // Only GDrive feature enabled.
+      {{dp_features::kEnableForceDownloadToCloud},
+       {dp_features::kEnableForceDownloadToOneDrive},
+       response_gdrive,
+       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
+       "GDriveEnabledGDriveResponse"},
+      {{dp_features::kEnableForceDownloadToCloud},
+       {dp_features::kEnableForceDownloadToOneDrive},
+       response_onedrive,
+       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
+       "GDriveEnabledOneDriveResponse"},
+      {{dp_features::kEnableForceDownloadToCloud},
+       {dp_features::kEnableForceDownloadToOneDrive},
+       response_both,
+       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
+       "GDriveEnabledBothResponse"},
+
+      // Only OneDrive feature enabled.
+      {{dp_features::kEnableForceDownloadToOneDrive},
+       {dp_features::kEnableForceDownloadToCloud},
+       response_gdrive,
+       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
+       "OneDriveEnabledGDriveResponse"},
+      {{dp_features::kEnableForceDownloadToOneDrive},
+       {dp_features::kEnableForceDownloadToCloud},
+       response_onedrive,
+       DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
+       "OneDriveEnabledOneDriveResponse"},
+      {{dp_features::kEnableForceDownloadToOneDrive},
+       {dp_features::kEnableForceDownloadToCloud},
+       response_both,
+       DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
+       "OneDriveEnabledBothResponse"},
+
+      // Both features disabled.
+      {{},
+       {dp_features::kEnableForceDownloadToCloud,
+        dp_features::kEnableForceDownloadToOneDrive},
+       response_gdrive,
+       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
+       "BothDisabledGDriveResponse"},
+      {{},
+       {dp_features::kEnableForceDownloadToCloud,
+        dp_features::kEnableForceDownloadToOneDrive},
+       response_onedrive,
+       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
+       "BothDisabledOneDriveResponse"},
+      {{},
+       {dp_features::kEnableForceDownloadToCloud,
+        dp_features::kEnableForceDownloadToOneDrive},
+       response_both,
+       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
+       "BothDisabledBothResponse"},
+  };
+}
 
 }  // namespace
 
@@ -1384,6 +1500,49 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
 }
+
+class ForceSaveToCloudPrioritizationTest
+    : public DeepScanningReportingTest,
+      public testing::WithParamInterface<
+          ForceSaveToCloudPrioritizationTestParams> {};
+
+TEST_P(ForceSaveToCloudPrioritizationTest, AllCases) {
+  const auto& params = GetParam();
+  SetFeatures(params.enabled_features, params.disabled_features);
+  base::RunLoop run_loop;
+  DeepScanningRequest request(
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindLambdaForTesting([&](DownloadCheckResult result) {
+        SetLastResult(result);
+        if (result != DownloadCheckResult::ASYNC_SCANNING) {
+          run_loop.Quit();
+        }
+      }),
+      &download_protection_service_, settings().value(),
+      /*password=*/std::nullopt);
+
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+      params.response);
+  download_protection_service_.GetFakeBinaryUploadService()
+      ->SetExpectedFinalAction(
+          enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
+
+  request.Start();
+  run_loop.Run();
+  EXPECT_EQ(params.expected_result, last_result_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    DeepScanningReportingTest,
+    ForceSaveToCloudPrioritizationTest,
+    testing::ValuesIn(GetForceSaveToCloudPrioritizationTestCases()),
+    [](const testing::TestParamInfo<
+        ForceSaveToCloudPrioritizationTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
   base::RunLoop run_loop;

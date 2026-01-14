@@ -63,6 +63,26 @@ namespace safe_browsing {
 namespace {
 
 using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::TriggeredRule;
+
+TriggeredRule::ForceSaveToCloudDestination
+GetHighestPrecedenceForceSaveToCloudDestination(
+    TriggeredRule::ForceSaveToCloudDestination destination_1,
+    TriggeredRule::ForceSaveToCloudDestination destination_2) {
+  // Prefer G_DRIVE over ONEDRIVE.
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableForceDownloadToCloud) &&
+      (destination_1 == TriggeredRule::CORP_G_DRIVE ||
+       destination_2 == TriggeredRule::CORP_G_DRIVE)) {
+    return TriggeredRule::CORP_G_DRIVE;
+  } else if (base::FeatureList::IsEnabled(
+                 enterprise_data_protection::kEnableForceDownloadToOneDrive) &&
+             (destination_1 == TriggeredRule::CORP_ONEDRIVE ||
+              destination_2 == TriggeredRule::CORP_ONEDRIVE)) {
+    return TriggeredRule::CORP_ONEDRIVE;
+  }
+  return TriggeredRule::UNSPECIFIED;
+}
 
 DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
                                                DownloadCheckResult result_2) {
@@ -279,9 +299,8 @@ DownloadCheckResult ResponseToDownloadCheckResult(
             dlp_action, rule.action());
 
         if (rule.has_force_save_to_cloud_destination()) {
-          DCHECK(rule.action() ==
-                 enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
-          force_save_to_cloud_destination = enterprise_connectors::
+          DCHECK(rule.action() == TriggeredRule::FORCE_SAVE_TO_CLOUD);
+          force_save_to_cloud_destination =
               GetHighestPrecedenceForceSaveToCloudDestination(
                   force_save_to_cloud_destination,
                   rule.force_save_to_cloud_destination());
@@ -315,7 +334,10 @@ DownloadCheckResult ResponseToDownloadCheckResult(
           case enterprise_connectors::TriggeredRule::CORP_ONEDRIVE:
             return DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE;
           case enterprise_connectors::TriggeredRule::UNSPECIFIED:
-            NOTREACHED();
+            // If the destination is unspecified, we default to blocking the
+            // download. This should never happen unless both finch flag for
+            // gdrive and onedrive are disabled.
+            return DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
         }
       case enterprise_connectors::TriggeredRule::BLOCK:
         return DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;

@@ -165,21 +165,6 @@ TriggeredRule::Action GetHighestPrecedenceAction(
   return action;
 }
 
-TriggeredRule::ForceSaveToCloudDestination
-GetHighestPrecedenceForceSaveToCloudDestination(
-    TriggeredRule::ForceSaveToCloudDestination destination_1,
-    TriggeredRule::ForceSaveToCloudDestination destination_2) {
-  // Prefer G_DRIVE over ONEDRIVE.
-  if (destination_1 == TriggeredRule::CORP_G_DRIVE ||
-      destination_2 == TriggeredRule::CORP_G_DRIVE) {
-    return TriggeredRule::CORP_G_DRIVE;
-  } else if (destination_1 == TriggeredRule::CORP_ONEDRIVE ||
-             destination_2 == TriggeredRule::CORP_ONEDRIVE) {
-    return TriggeredRule::CORP_ONEDRIVE;
-  }
-  return TriggeredRule::UNSPECIFIED;
-}
-
 TriggeredRule::Action GetHighestPrecedenceAction(
     const TriggeredRule::Action& action_1,
     const TriggeredRule::Action& action_2) {
