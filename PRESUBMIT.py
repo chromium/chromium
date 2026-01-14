@@ -8024,3 +8024,21 @@ def CheckBaseFeatureMacro(input_api, output_api):
         output_api.PresubmitPromptWarning('BASE_FEATURE() macro naming:',
                                           warnings)
     ]
+
+def CheckAyeAye(input_api, output_api):
+    """Runs AyeAye checks locally via the alint tool.
+
+    These checks get run automatically behind the scenes on CLs in
+    Gerrit. Running them locally should surface any warnings or errors
+    earlier.
+    """
+    try:
+        command = ['git', 'config', '--get', '--type=bool', 'localayeaye.enable']
+        opted_in = input_api.subprocess.check_output(command)
+        # TODO(crbug.com/467912454): Roll this out by default.
+        if not opted_in:
+            return []
+    except Exception:
+        return []
+    print("User opted-in to AyeAye checks as top-level presubmit...")
+    return input_api.canned_checks.CheckAyeAye(input_api, output_api)
