@@ -6058,7 +6058,6 @@ crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.html [ Failu
 # Sheriff 2020-09-22
 crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Failure Pass ]
 
-crbug.com/1136163 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
 crbug.com/343278974 [ Debug Linux ] external/wpt/pointerevents/pointerlock/pointerevent_getCoalescedEvents_when_pointerlocked.https.html [ Failure Pass ]
 
 # Mixed content autoupgrades make these tests not applicable, since they check for mixed content images, the tests can be removed when cleaning up pre autoupgrades mixed content code.
