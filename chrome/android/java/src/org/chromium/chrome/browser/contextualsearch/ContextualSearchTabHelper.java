@@ -76,7 +76,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     private final Callback<ContextualSearchManager> mManagerCallback;
 
     /** The ReadAloudController supplier to get the active playback tab supplier when available. */
-    private @Nullable ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+    private final @Nullable ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private final Callback<@Nullable Tab> mActivePlaybackTabCallback =
             this::onActivePlaybackTabUpdated;
@@ -109,12 +109,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (context != null) scaleFactor /= context.getResources().getDisplayMetrics().density;
         mPxToDp = scaleFactor;
         mManagerCallback = (ContextualSearchManager manager) -> updateHooksForTab(mTab);
-        if (isReadAloudTapToSeekEnabled()) {
-            mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
-            if (mReadAloudControllerSupplier != null) {
-                new OneShotCallback<>(
-                        mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
-            }
+        mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
+        if (mReadAloudControllerSupplier != null) {
+            new OneShotCallback<>(
+                    mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
         }
     }
 
@@ -320,12 +318,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         SelectionPopupController.fromWebContents(webContents);
                 SelectionClient client =
                         mSelectionClientManager.removeContextualSearchSelectionClient();
-                if (isReadAloudTapToSeekEnabled()) {
-                    if (controller.getSelectionClient()
-                            == mSelectionClientManager.getSelectionClient()) {
-                        controller.setSelectionClient(client);
-                    }
-                } else {
+
+                if (controller.getSelectionClient()
+                        == mSelectionClientManager.getSelectionClient()) {
                     controller.setSelectionClient(client);
                 }
             }
@@ -343,9 +338,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     private boolean isContextualSearchActive(WebContents webContents) {
         assert mTab.getWebContents() == null || mTab.getWebContents() == webContents;
         // If the tab has an active ReadAloud playback, contextual search is disabled
-        if (isReadAloudTapToSeekEnabled()
-                && mReadAloudActivePlaybackTab != null
-                && mReadAloudActivePlaybackTab.get() == mTab) {
+        if (mReadAloudActivePlaybackTab != null && mReadAloudActivePlaybackTab.get() == mTab) {
             return false;
         }
         if (maybeObserveManagerCreation()) return false;
@@ -420,13 +413,6 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
                 ? true
                 : manager.isDeviceOnline();
-    }
-
-    /**
-     * @return Whether ReadAloud's tap to seek is enabled
-     */
-    private static boolean isReadAloudTapToSeekEnabled() {
-        return ChromeFeatureList.sReadAloudTapToSeek.isEnabled();
     }
 
     /**

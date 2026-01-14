@@ -121,12 +121,8 @@ public final class ReadAloudFeatures {
     }
 
     public static boolean shouldSkipAudioOverviewsDisclaimerWhenPossible() {
-      return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_SKIP_DISCLAIMER_WHEN_POSSIBLE);
-    }
-
-    /** Returns true if Read Aloud tap to seek is enabled. */
-    public static boolean isTapToSeekEnabled() {
-        return ChromeFeatureList.sReadAloudTapToSeek.isEnabled();
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_SKIP_DISCLAIMER_WHEN_POSSIBLE);
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */

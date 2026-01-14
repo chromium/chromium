@@ -10455,10 +10455,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"read-aloud-in-cct", flag_descriptions::kReadAloudInCCTName,
      flag_descriptions::kReadAloudInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReadAloudInOverflowMenuInCCT)},
-
-    {"read-aloud-tap-to-seek", flag_descriptions::kReadAloudTapToSeekName,
-     flag_descriptions::kReadAloudTapToSeekDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kReadAloudTapToSeek)},
 #endif
 
     {"rcaps-dynamic-profile-country",

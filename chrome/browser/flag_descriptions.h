@@ -5560,10 +5560,6 @@ inline constexpr char kReadAloudInCCTName[] = "Read Aloud entrypoint in CCT";
 inline constexpr char kReadAloudInCCTDescription[] =
     "Controls the Read Aloud entrypoint in the overflow menu for CCT";
 
-inline constexpr char kReadAloudTapToSeekName[] = "Read Aloud Tap to Seek";
-inline constexpr char kReadAloudTapToSeekDescription[] =
-    "Controls the Read Aloud Tap to Seek feature";
-
 inline constexpr char kReaderModeDistillInAppName[] =
     "Reader Mode distillation in app";
 inline constexpr char kReaderModeDistillInAppDescription[] =

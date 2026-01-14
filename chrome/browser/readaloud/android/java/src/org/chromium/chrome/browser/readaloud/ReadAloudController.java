@@ -616,9 +616,7 @@ public class ReadAloudController
                         activity,
                         (Supplier<@Nullable Profile>) mProfileSupplier,
                         new Handler(Looper.getMainLooper()));
-        if (ReadAloudFeatures.isTapToSeekEnabled()) {
-            new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
-        }
+        new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.addConnectionTypeObserver(this);
         }
@@ -2058,7 +2056,7 @@ public class ReadAloudController
      * @param endOffset index of where the selected word ends within the content
      */
     public void tapToSeek(String content, int beginOffset, int endOffset) {
-        if (ReadAloudFeatures.isTapToSeekEnabled() && isPlayingCurrentTab()) {
+        if (isPlayingCurrentTab()) {
             long timeWhenTapToSeekRequested = sClock.currentTimeMillis();
             TapToSeekHandler.tapToSeek(
                     content,

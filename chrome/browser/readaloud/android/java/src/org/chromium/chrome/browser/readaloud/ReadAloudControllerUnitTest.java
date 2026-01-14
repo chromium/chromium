@@ -132,10 +132,7 @@ import java.util.Locale;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
-@DisableFeatures({
-    ChromeFeatureList.READALOUD_TAP_TO_SEEK,
-    ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
-})
+@DisableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL sTestRedirectGURL = JUnitTestGURLs.URL_1_WITH_PATH;
@@ -3356,7 +3353,6 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
     public void testTapToSeek() {
         // play tab
         requestAndStartPlayback();
@@ -3403,7 +3399,6 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
     public void testTapToSeek_differentTab() {
         // play tab
         requestAndStartPlayback();

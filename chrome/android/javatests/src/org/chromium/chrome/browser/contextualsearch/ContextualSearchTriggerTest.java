@@ -400,7 +400,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch", "ReadAloud"})
-    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
     @DisabledTest(message = "flaky, see crbug.com/406344411")
     public void testTapToSeekSuppression() throws Exception {
         changeReadAloudActivePlaybackTab();
