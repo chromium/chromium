@@ -60,10 +60,10 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize(
   int height = WindowFrameUtil::kWindowsCaptionButtonHeightRestored;
   if (!frame_view_->GetBrowserView()->webui_tab_strip() &&
       frame_view_->IsMaximized()) {
-    int maximized_height =
-        frame_view_->GetBrowserView()->ShouldDrawTabStrip()
-            ? frame_view_->GetBrowserView()->GetTabStripHeight()
-            : frame_view_->TitlebarMaximizedVisualHeight();
+    const auto info = frame_view_->GetBrowserView()->GetFrameElementInfo();
+    int maximized_height = info.tabstrip_preferred_height
+                               ? info.tabstrip_preferred_height
+                               : frame_view_->TitlebarMaximizedVisualHeight();
     constexpr int kMaximizedBottomMargin = 2;
     maximized_height -= kMaximizedBottomMargin;
     height = std::min(height, maximized_height);

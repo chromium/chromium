@@ -163,7 +163,7 @@ void BrowserNativeWidgetMac::GetWindowFrameTitlebarHeight(
       browser_view_->browser_widget()->GetFrameView()) {
     *override_titlebar_height = true;
     *titlebar_height =
-        browser_view_->GetTabStripHeight() +
+        browser_view_->GetFrameElementInfo().tabstrip_preferred_height +
         browser_view_->browser_widget()->GetFrameView()->GetTopInset(true);
     if (!browser_view_->ShouldDrawTabStrip()) {
       *titlebar_height +=

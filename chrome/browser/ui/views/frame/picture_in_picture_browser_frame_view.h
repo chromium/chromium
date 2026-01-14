@@ -68,8 +68,6 @@ class PictureInPictureBrowserFrameView
   ~PictureInPictureBrowserFrameView() override;
 
   // BrowserFrameView:
-  gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;

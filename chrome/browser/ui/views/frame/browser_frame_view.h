@@ -92,11 +92,6 @@ class BrowserFrameView : public views::FrameView {
   // Default implementation for getting browser layout parameters.
   virtual BrowserLayoutParams GetBrowserLayoutParams() const;
 
-  // Returns the bounds, in this view's coordinates, that the tab
-  // strip should occupy.
-  virtual gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const = 0;
-
   // Returns the maximum bounds, in this view's coordinates, for
   // the WebAppFrameToolbarView, which contains controls for a web app.
   virtual gfx::Rect GetBoundsForWebAppFrameToolbar(
@@ -198,6 +193,9 @@ class BrowserFrameView : public views::FrameView {
  protected:
   // Called when `frame_`'s "paint as active" state has changed.
   virtual void PaintAsActiveChanged();
+
+  // Returns the client frame element info; used by subclasses.
+  ClientFrameElementInfo GetClientFrameElementInfo() const;
 
   // Used by GetCaptionButtonBounds() below.
   struct BoundsAndMargins {

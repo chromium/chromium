@@ -61,7 +61,6 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual bool GetBorderlessModeEnabled() const = 0;
 
   virtual bool IsTabStripVisible() const = 0;
-  virtual int GetTabStripHeight() const = 0;
   virtual bool IsToolbarVisible() const = 0;
 
   // Returns the tabstrips minimum size so the frame layout can work around

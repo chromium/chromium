@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -198,9 +199,9 @@ class BrowserView : public BrowserWindow,
   // window.
   gfx::Rect GetFindBarBoundingBox() const;
 
-  // Returns the preferred height of the TabStrip. Used to position the
-  // incognito avatar icon.
-  int GetTabStripHeight() const;
+  // Returns information about elements that want to render in the top window
+  // frame area.
+  ClientFrameElementInfo GetFrameElementInfo() const;
 
   // Returns the preferred size of the Web App Frame Toolbar. Used for example
   // to determine the height of the title bar.
@@ -345,6 +346,9 @@ class BrowserView : public BrowserWindow,
 
   // Returns whether a vertical tabstrip should be shown.
   bool ShouldDrawVerticalTabStrip() const;
+
+  // Returns whether the webapp frame toolbar should be drawn.
+  bool ShouldDrawWebAppFrameToolbar() const;
 
   // Returns whether or not strokes should be drawn around and under the tabs.
   bool ShouldDrawTabStrokes() const;

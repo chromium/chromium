@@ -284,11 +284,6 @@ void OpaqueBrowserFrameView::MaybeAddAppIconToLayoutParams(
   }
 }
 
-gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size) const {
-  return layout_->GetBoundsForTabStripRegion(tabstrip_minimum_size, width());
-}
-
 gfx::Rect OpaqueBrowserFrameView::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
   return layout_->GetBoundsForWebAppFrameToolbar(toolbar_preferred_size);
@@ -571,40 +566,22 @@ bool OpaqueBrowserFrameView::IsToolbarVisible() const {
          !GetBrowserView()->toolbar()->GetPreferredSize().IsEmpty();
 }
 
-int OpaqueBrowserFrameView::GetTabStripHeight() const {
-  return GetBrowserView()->GetTabStripHeight();
-}
-
 gfx::Size OpaqueBrowserFrameView::GetTabstripMinimumSize() const {
   return GetBrowserView()->tab_strip_view()->GetMinimumSize();
 }
 
 int OpaqueBrowserFrameView::GetTopAreaHeight() const {
-  int top_height = layout_->NonClientTopHeight(false);
-  auto* const browser_view = GetBrowserView();
-  const bool should_draw_tab_strip = browser_view->ShouldDrawTabStrip();
-  const bool is_app = browser_view->browser()->is_type_app() ||
-                      browser_view->browser()->is_type_app_popup();
-  if (is_app) {
-    const gfx::Rect web_app_toolbar_bounds = GetBoundsForWebAppFrameToolbar(
-        GetBrowserView()->GetWebAppFrameToolbarPreferredSize());
-    top_height = std::max(top_height, web_app_toolbar_bounds.bottom());
-    if (should_draw_tab_strip) {
-      top_height = std::max(top_height, GetTabstripMinimumSize().height());
-    }
-  } else if (should_draw_tab_strip) {
-    gfx::Size top_element_size;
-    if (browser_view->ShouldDrawVerticalTabStrip()) {
-      top_element_size = browser_view->toolbar()->GetPreferredSize();
-    } else {
-      top_element_size = GetTabstripMinimumSize();
-    }
-    top_height = std::max(
-        top_height,
-        GetBoundsForTabStripRegion(top_element_size).bottom() -
-            GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
-  }
-  return top_height;
+  const bool is_tabbed = GetBrowserView()->GetIsNormalType();
+  const auto info = GetClientFrameElementInfo();
+  const auto frame_height = FrameBorderInsets(false).top();
+  const auto top_height = layout_->NonClientTopHeight(false);
+  return std::max(
+      frame_height + info.toolbar_minimum_height,
+      top_height + info.tabstrip_preferred_height -
+          // Should the overlap be subtracted out in the app case as well?
+          (is_tabbed
+               ? GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap)
+               : 0));
 }
 
 bool OpaqueBrowserFrameView::UseCustomFrame() const {

@@ -38,8 +38,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   // BrowserFrameView:
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
-  gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;
@@ -75,6 +73,13 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   int TitlebarMaximizedVisualHeight() const;
 
   SkColor GetTitlebarColor() const;
+
+  // Returns the height of everything above the tabstrip's hit-test region,
+  // including both the window border (i.e. FrameTopBorderThickness()) and any
+  // additional draggable area that's considered part of the window frame rather
+  // than the tabstrip. If |restored| is true, this is calculated as if the
+  // window was restored, regardless of its current state.
+  int TopAreaHeight(bool restored) const;
 
   const BrowserCaptionButtonContainer* caption_button_container_for_testing()
       const {
@@ -122,13 +127,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   // the window was restored, regardless of its current state.
   int FrameTopBorderThickness(bool restored) const;
   int FrameTopBorderThicknessPx(bool restored) const;
-
-  // Returns the height of everything above the tabstrip's hit-test region,
-  // including both the window border (i.e. FrameTopBorderThickness()) and any
-  // additional draggable area that's considered part of the window frame rather
-  // than the tabstrip. If |restored| is true, this is calculated as if the
-  // window was restored, regardless of its current state.
-  int TopAreaHeight(bool restored) const;
 
   // Returns the height of the titlebar for popups or other browser types that
   // don't have tabs.

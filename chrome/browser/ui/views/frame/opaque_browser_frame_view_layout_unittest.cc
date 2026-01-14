@@ -75,11 +75,6 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsFullscreen() const override { return false; }
   bool IsTabStripVisible() const override { return window_title_.empty(); }
   bool GetBorderlessModeEnabled() const override { return false; }
-  int GetTabStripHeight() const override {
-    return IsTabStripVisible()
-               ? GetLayoutConstant(LayoutConstant::kTabStripHeight)
-               : 0;
-  }
   bool IsToolbarVisible() const override { return true; }
   gfx::Size GetTabstripMinimumSize() const override {
     return IsTabStripVisible() ? gfx::Size(78, 29) : gfx::Size();
@@ -275,10 +270,9 @@ class OpaqueBrowserFrameViewLayoutTest
     } else if (!maximized) {
       tabstrip_x += OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
     }
-    gfx::Size tabstrip_min_size(delegate_->GetTabstripMinimumSize());
-    gfx::Rect tabstrip_region_bounds(
-        layout_manager_->GetBoundsForTabStripRegion(tabstrip_min_size,
-                                                    kWindowWidth));
+    const gfx::Size tabstrip_min_size = delegate_->GetTabstripMinimumSize();
+    const gfx::Rect tabstrip_region_bounds =
+        GetBoundsForTabStripRegion(tabstrip_min_size, kWindowWidth);
     EXPECT_EQ(tabstrip_x, tabstrip_region_bounds.x());
     if (maximized) {
       EXPECT_EQ(0, tabstrip_region_bounds.y());
@@ -364,6 +358,16 @@ class OpaqueBrowserFrameViewLayoutTest
     EXPECT_EQ(IconAndTitleY(), title_bounds.y());
     EXPECT_EQ(CaptionLeft() - title_x, title_bounds.width());
     EXPECT_EQ(icon_size, title_bounds.height());
+  }
+
+  gfx::Rect GetBoundsForTabStripRegion(const gfx::Size& tabstrip_minimum_size,
+                                       int total_width) const {
+    const int x = layout_manager_->available_space_leading_x_;
+    const int available_width =
+        layout_manager_->available_space_trailing_x_ - x;
+    return gfx::Rect(x, layout_manager_->NonClientTopHeight(false),
+                     std::max(0, available_width),
+                     tabstrip_minimum_size.height());
   }
 
   std::unique_ptr<views::Widget> widget_;

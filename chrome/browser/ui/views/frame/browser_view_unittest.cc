@@ -73,13 +73,12 @@ namespace {
 
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
-  gfx::Rect tabstrip_bounds(
-      browser_view->browser_widget()
-          ->GetFrameView()
-          ->GetBoundsForTabStripRegion(
-              browser_view->tab_strip_view()->GetMinimumSize()));
-  gfx::Point tabstrip_region_origin(tabstrip_bounds.origin());
-  views::View::ConvertPointToTarget(browser_view->parent(), browser_view,
+  auto* const frame = browser_view->browser_widget()->GetFrameView();
+  const auto params = frame->GetBrowserLayoutParams();
+  gfx::Point tabstrip_region_origin = params.visual_client_area.origin();
+  tabstrip_region_origin.Offset(
+      params.leading_exclusion.ContentWithPadding().width(), 0);
+  views::View::ConvertPointToTarget(frame, browser_view,
                                     &tabstrip_region_origin);
   return tabstrip_region_origin;
 }

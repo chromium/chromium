@@ -176,36 +176,6 @@ bool BrowserFrameViewMac::CaptionButtonsOnLeadingEdge() const {
          (direction == NSUserInterfaceLayoutDirectionRightToLeft);
 }
 
-gfx::Rect BrowserFrameViewMac::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size) const {
-  // TODO(weili): In the future, we should hide the title bar, and show the
-  // tab strip directly under the menu bar. For now, just lay our content
-  // under the native title bar. Use the default title bar height to avoid
-  // calling through private APIs.
-  const bool restored =
-      !browser_widget()->IsMaximized() && !browser_widget()->IsFullscreen();
-  gfx::Rect bounds(0, GetTopInset(restored), width(),
-                   tabstrip_minimum_size.height());
-
-  // If we do not inset, the leftmost tab doesn't blend well with the bottom of
-  // the tab strip. Normally, we would naturally have an inset from either the
-  // caption buttons or the tab search button.
-  if (browser_widget()->IsFullscreen()) {
-    if (!GetBrowserView()->UsesImmersiveFullscreenMode()) {
-      bounds.Inset(gfx::Insets::TLBR(
-          0, GetLayoutConstant(LayoutConstant::kToolbarCornerRadius), 0, 0));
-    }
-  } else {
-    // The bottom curve of the first/last tab swoops into the caption button
-    // region, so account for this when calculating insets.
-    const gfx::Insets insets = GetCaptionButtonInsets(
-        /*visual_overlap=*/TabStyle::Get()->GetBottomCornerRadius());
-    bounds.Inset(insets);
-  }
-
-  return bounds;
-}
-
 gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
   gfx::Rect bounds(0, 0, width(),

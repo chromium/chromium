@@ -88,15 +88,6 @@ const views::Button* OpaqueBrowserFrameViewLayout::GetFrameButton(
   }
 }
 
-gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size,
-    int total_width) const {
-  const int x = available_space_leading_x_;
-  const int available_width = available_space_trailing_x_ - x;
-  return gfx::Rect(x, NonClientTopHeight(false), std::max(0, available_width),
-                   tabstrip_minimum_size.height());
-}
-
 gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
   // Adding 2px of vertical padding puts at least 1 px of space on the top and

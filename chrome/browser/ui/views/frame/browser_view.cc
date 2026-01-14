@@ -1158,14 +1158,23 @@ gfx::Rect BrowserView::GetFindBarBoundingBox() const {
   return contents_container_->GetMirroredRect(contents_bounds);
 }
 
-int BrowserView::GetTabStripHeight() const {
+ClientFrameElementInfo BrowserView::GetFrameElementInfo() const {
   // We want to return tabstrip_->height(), but we might be called in the midst
   // of layout, when that hasn't yet been updated to reflect the current state.
   // So return what the tabstrip height _ought_ to be right now.
-  return ShouldDrawTabStrip() ? horizontal_tab_strip_region_view_->tab_strip()
-                                    ->GetPreferredSize()
-                                    .height()
-                              : 0;
+  ClientFrameElementInfo info;
+  info.tabstrip_preferred_height =
+      horizontal_tab_strip_region_view_ && ShouldDrawTabStrip() &&
+              !ShouldDrawVerticalTabStrip()
+          ? horizontal_tab_strip_region_view_->GetPreferredSize().height()
+          : 0;
+  if (toolbar_ && ShouldDrawVerticalTabStrip()) {
+    info.toolbar_minimum_height = toolbar_->GetMinimumSize().height();
+  } else if (web_app_frame_toolbar_ && ShouldDrawWebAppFrameToolbar()) {
+    info.toolbar_minimum_height =
+        web_app_frame_toolbar_->GetMinimumSize().height();
+  }
+  return info;
 }
 
 gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
@@ -1324,6 +1333,11 @@ bool BrowserView::ShouldDrawVerticalTabStrip() const {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   return ShouldDrawTabStrip() && controller &&
          controller->ShouldDisplayVerticalTabs();
+}
+
+bool BrowserView::ShouldDrawWebAppFrameToolbar() const {
+  return !IsBorderlessModeEnabled() &&
+         GetFrameView()->ShouldShowWebAppFrameToolbar();
 }
 
 bool BrowserView::IsVerticalTabStripCollapsed() const {
@@ -6288,7 +6302,6 @@ void BrowserView::ApplyScreenshotSettings(bool allow) {
 
 BEGIN_METADATA(BrowserView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, FindBarBoundingBox)
-ADD_READONLY_PROPERTY_METADATA(int, TabStripHeight)
 ADD_READONLY_PROPERTY_METADATA(bool, TabStripVisible)
 ADD_READONLY_PROPERTY_METADATA(bool, Incognito)
 ADD_READONLY_PROPERTY_METADATA(bool, GuestSession)

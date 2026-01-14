@@ -60,8 +60,6 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
 
   // BrowserFrameView:
   BrowserLayoutParams GetBrowserLayoutParams() const override;
-  gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;
@@ -100,7 +98,6 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   bool IsFullscreen() const override;
   bool IsTabStripVisible() const override;
   bool GetBorderlessModeEnabled() const override;
-  int GetTabStripHeight() const override;
   bool IsToolbarVisible() const override;
   gfx::Size GetTabstripMinimumSize() const override;
   int GetTopAreaHeight() const override;

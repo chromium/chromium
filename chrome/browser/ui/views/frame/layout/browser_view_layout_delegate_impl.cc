@@ -55,8 +55,7 @@ bool BrowserViewLayoutDelegateImpl::IsVerticalTabStripCollapsed() const {
 }
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawWebAppFrameToolbar() const {
-  return !GetBorderlessModeEnabled() &&
-         GetFrameView()->ShouldShowWebAppFrameToolbar();
+  return browser_view_->ShouldDrawWebAppFrameToolbar();
 }
 
 bool BrowserViewLayoutDelegateImpl::GetBorderlessModeEnabled() const {
