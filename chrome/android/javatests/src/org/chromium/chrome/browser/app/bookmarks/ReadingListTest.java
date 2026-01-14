@@ -312,7 +312,8 @@ public class ReadingListTest {
 
         // On tablets, the search UI is always visible. On phones, we have to open it.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
-            onView(withId(R.id.row_search_text)).perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
+            BookmarkTestUtil.getSearchBoxViewInteraction()
+                    .perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
         } else {
             // Enter search UI, but don't enter any search key word.
             ThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);

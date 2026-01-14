@@ -181,9 +181,9 @@ public class BookmarkTabletTest {
         openBookmarkManager();
 
         // The search bar should be focused automatically.
-        onView(withId(R.id.row_search_text)).check(matches(isFocused()));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(isFocused()));
         // users should be able to directly type "google" in the search bar
-        onView(withId(R.id.row_search_text)).perform(replaceText("google"));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("google"));
         onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Bookmarks")))
                 .check(matches(isDisplayed()));
 
@@ -193,13 +193,13 @@ public class BookmarkTabletTest {
                 .check(matches(isDisplayed()));
 
         // After navigating to a new folder, the search bar should be focused again.
-        onView(withId(R.id.row_search_text)).check(matches(isFocused()));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(isFocused()));
         // And the search text should be cleared.
-        onView(withId(R.id.row_search_text)).check(matches(withText("")));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));
         // go back to the bookmark page
         onView(withId(R.id.back_button)).perform(click());
         // user's query is empty in the search bar
-        onView(withId(R.id.row_search_text)).perform(replaceText(""));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText(""));
         // user's query is empty the context inside bookmarks should not change
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
     }

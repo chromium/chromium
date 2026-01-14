@@ -114,8 +114,8 @@ public class BookmarkPaneTest {
         enterBookmarkPane();
 
         // Search for "One" in the history search box.
-        onView(withId(R.id.row_search_text)).perform(click());
-        onView(withId(R.id.row_search_text)).perform(replaceText("One"));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(click());
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("One"));
 
         // Verify that "One" is displayed as a match.
         onViewWaiting(allOf(withText("One"), withId(R.id.title))).check(matches(isDisplayed()));

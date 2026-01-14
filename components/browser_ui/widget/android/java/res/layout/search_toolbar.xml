@@ -11,11 +11,13 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/search_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="40dp"
+    android:layout_marginBottom="2dp"
+    android:paddingStart="16dp"
+    android:background="@drawable/search_row_modern_bg"
     android:orientation="horizontal"
-    android:visibility="gone" >
+    android:visibility="gone">
 
-    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <EditText
         tools:ignore="Autofill,LabelFor"
         android:id="@+id/search_text"
@@ -40,4 +42,5 @@ found in the LICENSE file.
         android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
         android:visibility="invisible"
         app:tint="@color/default_icon_color_tint_list" />
+
 </LinearLayout>

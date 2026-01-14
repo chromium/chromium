@@ -523,7 +523,7 @@ public class BookmarkTest {
         final boolean isTablet =
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity());
         if (isTablet) {
-            onView(withId(R.id.row_search_text)).perform(replaceText("Google"));
+            BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("Google"));
         } else {
             enterSearch();
             assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
@@ -552,7 +552,8 @@ public class BookmarkTest {
                 });
 
         if (isTablet) {
-            onView(withId(R.id.row_search_text)).perform(replaceText("Non-existent page"));
+            BookmarkTestUtil.getSearchBoxViewInteraction()
+                    .perform(replaceText("Non-existent page"));
         } else {
             searchBookmarks("Non-existent page");
         }
@@ -562,7 +563,7 @@ public class BookmarkTest {
                 getBookmarkCount());
 
         if (isTablet) {
-            onView(withId(R.id.row_search_text)).perform(replaceText(""));
+            BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText(""));
         } else {
             exitSearch();
         }
@@ -706,10 +707,10 @@ public class BookmarkTest {
         // Verify initial state.
         assertEquals(
                 "Should be in folder view.", BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
-        onView(withId(R.id.row_search_text)).check(matches(withText("")));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));
 
         // Action 1: User types in the search bar.
-        onView(withId(R.id.row_search_text)).perform(replaceText("Google"));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("Google"));
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
 
         // Verification 1: Search results are shown.
@@ -720,7 +721,7 @@ public class BookmarkTest {
         pressEscapeKey();
 
         // Verification 2: The search text is cleared, and the folder contents are restored.
-        onView(withId(R.id.row_search_text)).check(matches(withText("")));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));
         assertEquals("Clearing search should show all items in the folder.", 1, getBookmarkCount());
         assertEquals(
                 "Should still be in folder mode.",
@@ -756,7 +757,8 @@ public class BookmarkTest {
         assertEquals("Wrong number of items before starting search.", 1, getBookmarkCount());
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
-            onView(withId(R.id.row_search_text)).perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
+            BookmarkTestUtil.getSearchBoxViewInteraction()
+                    .perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
         } else {
             enterSearch();
             assertEquals(
@@ -803,7 +805,7 @@ public class BookmarkTest {
 
         // Start searching, enter a query.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
-            onView(withId(R.id.row_search_text)).perform(replaceText("test"));
+            BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("test"));
         } else {
             runOnUiThreadBlocking(mDelegate::openSearchUi);
             assertEquals(
@@ -2058,7 +2060,7 @@ public class BookmarkTest {
     }
 
     private void enterSearch() throws Exception {
-        onView(withId(R.id.row_search_text)).perform(click());
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(click());
         CriteriaHelper.pollUiThread(
                 () -> {
                     return mDelegate.getCurrentUiMode() == BookmarkUiMode.SEARCHING;
