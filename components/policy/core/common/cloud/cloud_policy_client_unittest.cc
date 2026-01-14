@@ -155,6 +155,20 @@ MATCHER_P(MatchProto, expected, "matches protobuf") {
   return arg.SerializePartialAsString() == expected.SerializePartialAsString();
 }
 
+class FakeExtensionsProvider
+    : public CloudPolicyClientTypeParams::ExtensionsProvider {
+ public:
+  explicit FakeExtensionsProvider(std::set<ExtensionIdAndVersion> extensions)
+      : extensions_(std::move(extensions)) {}
+
+  std::set<ExtensionIdAndVersion> GetExtensions() override {
+    return extensions_;
+  }
+
+ private:
+  std::set<ExtensionIdAndVersion> extensions_;
+};
+
 struct MockDeviceDMTokenCallbackObserver {
   MOCK_METHOD(std::string,
               OnDeviceDMTokenRequested,
@@ -687,6 +701,64 @@ TEST_F(CloudPolicyClientTest, Init) {
   EXPECT_FALSE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(0, client_->fetched_invalidation_version());
+}
+
+TEST_F(CloudPolicyClientTest, AddPolicyTypeToFetch) {
+  client_->AddPolicyTypeToFetch({policy_type_, std::string()});
+  EXPECT_THAT(client_->types_to_fetch(),
+              testing::UnorderedElementsAre(
+                  CloudPolicyClientTypeParams(policy_type_, std::string())));
+  EXPECT_THAT(client_->types_to_fetch(), testing::SizeIs(1));
+
+  FakeExtensionsProvider extensions_provider({});
+  std::string policy_type2 =
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+  client_->AddPolicyTypeToFetch({policy_type2, &extensions_provider});
+  EXPECT_THAT(
+      client_->types_to_fetch(),
+      testing::UnorderedElementsAre(
+          CloudPolicyClientTypeParams(policy_type_, std::string()),
+          CloudPolicyClientTypeParams(policy_type2, &extensions_provider)));
+  EXPECT_THAT(client_->types_to_fetch(), testing::SizeIs(2));
+
+  // Call a second time with the same object, no effect.
+  client_->AddPolicyTypeToFetch({policy_type2, &extensions_provider});
+  EXPECT_THAT(
+      client_->types_to_fetch(),
+      testing::UnorderedElementsAre(
+          CloudPolicyClientTypeParams(policy_type_, std::string()),
+          CloudPolicyClientTypeParams(policy_type2, &extensions_provider)));
+  EXPECT_THAT(client_->types_to_fetch(), testing::SizeIs(2));
+
+  // Same provider, different policy type.
+  std::string policy_type3 =
+      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType;
+  client_->AddPolicyTypeToFetch({policy_type3, &extensions_provider});
+  EXPECT_THAT(
+      client_->types_to_fetch(),
+      testing::UnorderedElementsAre(
+          CloudPolicyClientTypeParams(policy_type_, std::string()),
+          CloudPolicyClientTypeParams(policy_type2, &extensions_provider),
+          CloudPolicyClientTypeParams(policy_type3, &extensions_provider)));
+  EXPECT_THAT(client_->types_to_fetch(), testing::SizeIs(3));
+
+  // Remove one by one.
+  client_->RemovePolicyTypeToFetch({policy_type_, std::string()});
+  EXPECT_THAT(
+      client_->types_to_fetch(),
+      testing::UnorderedElementsAre(
+          CloudPolicyClientTypeParams(policy_type2, &extensions_provider),
+          CloudPolicyClientTypeParams(policy_type3, &extensions_provider)));
+  EXPECT_THAT(client_->types_to_fetch(), testing::SizeIs(2));
+
+  client_->RemovePolicyTypeToFetch({policy_type2, &extensions_provider});
+  EXPECT_THAT(client_->types_to_fetch(),
+              testing::UnorderedElementsAre(CloudPolicyClientTypeParams(
+                  policy_type3, &extensions_provider)));
+  EXPECT_THAT(client_->types_to_fetch(), testing::SizeIs(1));
+
+  client_->RemovePolicyTypeToFetch({policy_type3, &extensions_provider});
+  EXPECT_THAT(client_->types_to_fetch(), testing::IsEmpty());
 }
 
 TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
@@ -1945,8 +2017,10 @@ TEST_F(CloudPolicyClientTest,
                       service_.CaptureRequest(&request),
                       service_.SendJobOKAsync(policy_response)));
 
-  client_->AddPolicyTypeToFetch(CloudPolicyClientTypeParams(
-      dm_protocol::kChromeExtensionInstallUserCloudPolicyType, kExtension));
+  FakeExtensionsProvider fake_extensions_provider({kExtension});
+  client_->AddPolicyTypeToFetch(
+      {dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+       &fake_extensions_provider});
   RunClientTaskAndWaitPolicyFetch(base::BindLambdaForTesting(
       [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
 
@@ -2027,14 +2101,12 @@ TEST_F(CloudPolicyClientTest,
                       service_.CaptureRequest(&request),
                       service_.SendJobOKAsync(policy_response)));
 
-  base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>
-      extension_ids_and_version_getter = base::BindRepeating([]() {
-        return std::set<ExtensionIdAndVersion>{kExtensions.begin(),
-                                               kExtensions.end()};
-      });
-  client_->AddPolicyTypeToFetch(CloudPolicyClientTypeParams(
-      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-      std::move(extension_ids_and_version_getter)));
+  std::set<ExtensionIdAndVersion> extensions_set(kExtensions.begin(),
+                                                 kExtensions.end());
+  FakeExtensionsProvider fake_extensions_provider(extensions_set);
+  client_->AddPolicyTypeToFetch(
+      {dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+       &fake_extensions_provider});
   RunClientTaskAndWaitPolicyFetch(base::BindLambdaForTesting(
       [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
 

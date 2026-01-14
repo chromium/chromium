@@ -71,8 +71,9 @@ class POLICY_EXPORT CloudPolicyClient {
  public:
   // Maps a (policy type, settings entity ID) pair to its corresponding
   // PolicyFetchResponse.
-  using ResponseMap = base::flat_map<CloudPolicyClientTypeParams,
-                               enterprise_management::PolicyFetchResponse>;
+  using ResponseMap =
+      base::flat_map<CloudPolicyClientTypeParams,
+                     enterprise_management::PolicyFetchResponse>;
 
   // A callback which receives boolean status of an operation. If the
   // operation succeeded, |status| is true.
@@ -727,6 +728,10 @@ class POLICY_EXPORT CloudPolicyClient {
     return fetched_invalidation_version_;
   }
 
+  const base::flat_set<CloudPolicyClientTypeParams>& types_to_fetch() const {
+    return types_to_fetch_;
+  }
+
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Returns the number of active requests.
@@ -739,7 +744,8 @@ class POLICY_EXPORT CloudPolicyClient {
   // A map of (policy type, settings entity ID) pairs to fetch to the set of
   // settings entity IDs that should be fetched for the given policy type and
   // settings entity ID.
-  typedef base::flat_set<CloudPolicyClientTypeParams> CloudPolicyClientTypeParamsSet;
+  typedef base::flat_set<CloudPolicyClientTypeParams>
+      CloudPolicyClientTypeParamsSet;
 
   void FetchPolicyInternal(
       PolicyFetchReason reason,

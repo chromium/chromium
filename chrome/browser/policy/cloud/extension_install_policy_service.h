@@ -13,10 +13,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
 namespace policy {
+
 struct ExtensionIdAndVersion;
 
 class ExtensionInstallPolicyService : public KeyedService {
@@ -35,7 +38,9 @@ class ExtensionInstallPolicyService : public KeyedService {
 };
 
 // A keyed service that provides access to the extension install policy.
-class ExtensionInstallPolicyServiceImpl : public ExtensionInstallPolicyService {
+class ExtensionInstallPolicyServiceImpl
+    : public ExtensionInstallPolicyService,
+      public CloudPolicyClientTypeParams::ExtensionsProvider {
  public:
   explicit ExtensionInstallPolicyServiceImpl(Profile* profile);
   ~ExtensionInstallPolicyServiceImpl() override;
@@ -52,8 +57,18 @@ class ExtensionInstallPolicyServiceImpl : public ExtensionInstallPolicyService {
   std::optional<bool> IsExtensionAllowed(
       const ExtensionIdAndVersion& extension_id_and_version) override;
 
+  // CloudPolicyClientTypeParams::ExtensionsProvider:
+  std::set<ExtensionIdAndVersion> GetExtensions() override;
+
  private:
+  // Adds or removes from CloudPolicyClient::types_to_fetch_ based on
+  // the current value of the pref
+  // `kExtensionInstallCloudPolicyChecksEnabled`.
+  void OnPolicyChecksEnabledChanged();
+
   raw_ptr<Profile> profile_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace policy

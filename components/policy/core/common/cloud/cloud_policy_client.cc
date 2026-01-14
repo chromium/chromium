@@ -294,6 +294,19 @@ std::optional<std::string_view> HistogramVariantForType(std::string_view type) {
   return std::nullopt;
 }
 
+class SingleExtensionProvider
+    : public CloudPolicyClientTypeParams::ExtensionsProvider {
+ public:
+  explicit SingleExtensionProvider(const ExtensionIdAndVersion& extension)
+      : extension_(extension) {}
+  std::set<ExtensionIdAndVersion> GetExtensions() override {
+    return {extension_.get()};
+  }
+
+ private:
+  const raw_ref<const ExtensionIdAndVersion> extension_;
+};
+
 }  // namespace
 
 CloudPolicyClient::RegistrationParameters::RegistrationParameters(
@@ -857,10 +870,10 @@ void CloudPolicyClient::FetchExtensionInstallPolicy(
     PolicyFetchReason reason,
     const ExtensionIdAndVersion& extension_id_and_version,
     base::OnceCallback<void(DMServerJobResult)> callback) {
-  FetchPolicyInternal(
-      reason,
-      {CloudPolicyClientTypeParams(policy_type, extension_id_and_version)},
-      std::move(callback));
+  SingleExtensionProvider provider(extension_id_and_version);
+  FetchPolicyInternal(reason,
+                      {CloudPolicyClientTypeParams(policy_type, &provider)},
+                      std::move(callback));
 }
 
 void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
