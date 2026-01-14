@@ -7250,11 +7250,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "one-group-per-renderer",
-    "owners": ["youssefesmat@chromium.org", "baseos-perf@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "one-time-default-browser-notification",
     "owners": [ "gujen@google.com","scottyoder@google.com",  "bling-mony-pod@google.com" ],
     "expiry_milestone": 150

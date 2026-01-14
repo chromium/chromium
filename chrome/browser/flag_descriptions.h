@@ -7989,11 +7989,6 @@ inline constexpr char kLockedModeDescription[] =
     "Enabled the Locked Mode Web API which allows admin-allowlisted sites "
     "to enter a locked down fullscreen mode.";
 
-inline constexpr char kOneGroupPerRendererName[] =
-    "Use one cgroup for each foreground renderer";
-inline constexpr char kOneGroupPerRendererDescription[] =
-    "Places each Chrome foreground renderer into its own cgroup";
-
 inline constexpr char kPlatformKeysChangesWave1Name[] =
     "Platform Keys Changes Wave 1";
 inline constexpr char kPlatformKeysChangesWave1Description[] =

@@ -182,7 +182,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
@@ -2062,16 +2061,6 @@ void ChromeBrowserMainParts::OnFirstIdle() {
 #if BUILDFLAG(IS_ANDROID)
   sharing::ShareHistory::CreateForProfile(
       ProfileManager::GetPrimaryUserProfile());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // If OneGroupPerRenderer feature is enabled, post a task to clean any left
-  // over cgroups due to any unclean exits.
-  if (base::FeatureList::IsEnabled(base::kOneGroupPerRenderer)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&base::Process::CleanUpStaleProcessStates));
-  }
 #endif
 }
 
