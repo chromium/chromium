@@ -290,7 +290,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   }
 
   std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
-  target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeHost);
+  target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeNetwork);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                            kCopiedSwitchNames);
 

@@ -25,12 +25,8 @@ config("version") {
 config("remoting_me2me_host") {
   defines = []
 
-  if (is_win && remoting_multi_process != 0 && remoting_rdp_session != 0) {
+  if (is_win && remoting_rdp_session != 0) {
     defines += [ "REMOTING_RDP_SESSION" ]
-  }
-
-  if (remoting_multi_process != 0) {
-    defines += [ "REMOTING_MULTI_PROCESS" ]
   }
 }
 
@@ -60,12 +56,8 @@ config("host_implementation") {
       "STRICT",
     ]
 
-    if (remoting_multi_process != 0 && remoting_rdp_session != 0) {
+    if (remoting_rdp_session != 0) {
       defines += [ "REMOTING_RDP_SESSION" ]
-    }
-
-    if (remoting_multi_process != 0) {
-      defines += [ "REMOTING_MULTI_PROCESS" ]
     }
   }
 }

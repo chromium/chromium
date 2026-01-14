@@ -49,6 +49,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/authentication_method.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -93,6 +95,7 @@
 #include "remoting/host/host_power_save_blocker.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/ipc_desktop_environment.h"
+#include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
 #include "remoting/host/me2me_heartbeat_service_client.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
@@ -175,12 +178,6 @@
 #include "remoting/host/host_wtmpdb_logger.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(REMOTING_MULTI_PROCESS)
-#include "mojo/public/cpp/platform/platform_channel.h"
-#include "mojo/public/cpp/system/invitation.h"
-#include "remoting/host/ipc_host_event_logger.h"
-#endif  // defined(REMOTING_MULTI_PROCESS)
-
 using remoting::protocol::PairingRegistry;
 
 #if BUILDFLAG(IS_APPLE)
@@ -195,14 +192,12 @@ __attribute__((used)) __attribute__((section(
 
 namespace {
 
-#if !defined(REMOTING_MULTI_PROCESS)
 // This is used for tagging system event logs.
 const char kApplicationName[] = "chromoting";
 
 // Value used for --host-config option to indicate that the path must be read
 // from stdin.
-const char kStdinConfigPath[] = "-";
-#endif  // !defined(REMOTING_MULTI_PROCESS)
+constexpr base::FilePath::CharType kStdinConfigPath[] = FILE_PATH_LITERAL("-");
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The command line switch used to pass name of the pipe to capture audio on
@@ -272,6 +267,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   // alive as long as possible until the process exits (since destroying the
   // watchdog disarms it).
   HostProcess(std::unique_ptr<ChromotingHostContext> context,
+              bool multi_process,
               int* exit_code_out,
               ShutdownWatchdog* shutdown_watchdog);
 
@@ -533,7 +529,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
 
-#if defined(REMOTING_MULTI_PROCESS)
+  // These members are only initialized when `multi_process_` is true.
 
   // Accessed on the UI thread.
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
@@ -541,8 +537,10 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Raw interface pointer which refers to the object owned by
   // |desktop_environment_factory_|.
   raw_ptr<DesktopSessionConnector> desktop_session_connector_ = nullptr;
-#endif  // defined(REMOTING_MULTI_PROCESS)
 
+  // End of multi-process-only members.
+
+  bool multi_process_;
   raw_ptr<int> exit_code_out_;
   bool signal_parent_ = false;
   std::string report_offline_reason_;
@@ -552,8 +550,8 @@ class HostProcess : public ConfigWatcher::Delegate,
   raw_ptr<ShutdownWatchdog> shutdown_watchdog_;
 
 // On Mac, `remoting_host_control_` is bound by the BindRemotingHostControl IPC,
-// so it's a regular mojo receiver, while on Windows, this is bound by the
-// legacy OnAssociatedInterfaceRequest, which requires using an associated
+// so it's a regular mojo receiver, while on other platforms, this is bound by
+// the legacy OnAssociatedInterfaceRequest, which requires using an associated
 // receiver.
 #if BUILDFLAG(IS_MAC)
   mojo::Receiver<mojom::RemotingHostControl> remoting_host_control_{this};
@@ -574,11 +572,13 @@ class HostProcess : public ConfigWatcher::Delegate,
 };
 
 HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
+                         bool multi_process,
                          int* exit_code_out,
                          ShutdownWatchdog* shutdown_watchdog)
     : context_(std::move(context)),
       desktop_environment_options_(DesktopEnvironmentOptions::CreateDefault()),
       self_(this),
+      multi_process_(multi_process),
       exit_code_out_(exit_code_out),
       shutdown_watchdog_(shutdown_watchdog) {
   // TODO(zijiehe):
@@ -648,43 +648,42 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
       context_->network_task_runner()->task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 
-#if defined(REMOTING_MULTI_PROCESS)
-  auto endpoint =
-      mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(*cmd_line);
-  if (!endpoint.is_valid()) {
-    LOG(ERROR) << "IPC channel endpoint provided via command line param was "
-                  "missing or invalid";
-    return false;
-  }
-  auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
-
-  // Connect to the daemon process.
-  daemon_channel_ = IPC::ChannelProxy::Create(
-      invitation
-          .ExtractMessagePipe(cmd_line->GetSwitchValueASCII(kMojoPipeToken))
-          .release(),
-      IPC::Channel::MODE_CLIENT, this, context_->network_task_runner(),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-
-#else   // !defined(REMOTING_MULTI_PROCESS)
-  if (cmd_line->HasSwitch(kHostConfigSwitchName)) {
-    host_config_path_ = cmd_line->GetSwitchValuePath(kHostConfigSwitchName);
-
-    // Read config from stdin if necessary.
-    if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
-      base::ReadStreamToString(stdin, &host_config_);
+  if (multi_process_) {
+    auto endpoint =
+        mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(*cmd_line);
+    if (!endpoint.is_valid()) {
+      LOG(ERROR) << "IPC channel endpoint provided via command line param was "
+                 << "missing or invalid";
+      return false;
     }
-  } else {
-    base::FilePath default_config_dir = remoting::GetConfigDir();
-    host_config_path_ = default_config_dir.Append(kDefaultHostConfigFile);
-  }
+    auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
 
-  if (host_config_path_ != base::FilePath(kStdinConfigPath) &&
-      !base::PathExists(host_config_path_)) {
-    LOG(ERROR) << "Can't find host config at " << host_config_path_.value();
-    return false;
+    // Connect to the daemon process.
+    daemon_channel_ = IPC::ChannelProxy::Create(
+        invitation
+            .ExtractMessagePipe(cmd_line->GetSwitchValueASCII(kMojoPipeToken))
+            .release(),
+        IPC::Channel::MODE_CLIENT, this, context_->network_task_runner(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  } else {  // Single-process
+    if (cmd_line->HasSwitch(kHostConfigSwitchName)) {
+      host_config_path_ = cmd_line->GetSwitchValuePath(kHostConfigSwitchName);
+
+      // Read config from stdin if necessary.
+      if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
+        base::ReadStreamToString(stdin, &host_config_);
+      }
+    } else {
+      base::FilePath default_config_dir = remoting::GetConfigDir();
+      host_config_path_ = default_config_dir.Append(kDefaultHostConfigFile);
+    }
+
+    if (host_config_path_ != base::FilePath(kStdinConfigPath) &&
+        !base::PathExists(host_config_path_)) {
+      LOG(ERROR) << "Can't find host config at " << host_config_path_.value();
+      return false;
+    }
   }
-#endif  // !defined(REMOTING_MULTI_PROCESS)
 
   signal_parent_ = cmd_line->HasSwitch(kSignalParentSwitchName);
 
@@ -822,18 +821,18 @@ void HostProcess::StartOnNetworkThread() {
     return;
   }
 
-#if !defined(REMOTING_MULTI_PROCESS)
-  if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
-    // Process config we've read from stdin.
-    OnConfigUpdated(host_config_);
-  } else {
-    // Start watching the host configuration file.
-    config_watcher_ = std::make_unique<ConfigFileWatcher>(
-        context_->network_task_runner(), context_->file_task_runner(),
-        host_config_path_);
-    config_watcher_->Watch(this);
+  if (!multi_process_) {
+    if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
+      // Process config we've read from stdin.
+      OnConfigUpdated(host_config_);
+    } else {
+      // Start watching the host configuration file.
+      config_watcher_ = std::make_unique<ConfigFileWatcher>(
+          context_->network_task_runner(), context_->file_task_runner(),
+          host_config_path_);
+      config_watcher_->Watch(this);
+    }
   }
-#endif  // !defined(REMOTING_MULTI_PROCESS)
 
 #if BUILDFLAG(IS_POSIX)
   remoting::RegisterSignalHandler(
@@ -992,9 +991,20 @@ void HostProcess::OnChannelError() {
 void HostProcess::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
+#if BUILDFLAG(IS_MAC)
+  // The Mac host currently doesn't support true multi-process, and
+  // `remoting_host_control_` is bound in BindRemotingHostControl().
+  NOTREACHED();
+#else
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
 
-#if defined(REMOTING_MULTI_PROCESS)
+  if (!multi_process_) {
+    LOG(ERROR) << "Unexpected call requesting an associated interface: "
+               << interface_name << ", crashing the network process";
+    CrashProcess(__FUNCTION__, __FILE__, __LINE__);
+    return;
+  }
+
   if (interface_name == mojom::RemotingHostControl::Name_) {
     if (remoting_host_control_.is_bound()) {
       LOG(ERROR) << "Receiver already bound for associated interface: "
@@ -1027,11 +1037,7 @@ void HostProcess::OnAssociatedInterfaceRequest(
                << ", crashing the network process";
     CrashProcess(__FUNCTION__, __FILE__, __LINE__);
   }
-#else   // !defined(REMOTING_MULTI_PROCESS)
-  LOG(ERROR) << "Unexpected call requesting an associated interface: "
-             << interface_name << ", crashing the network process";
-  CrashProcess(__FUNCTION__, __FILE__, __LINE__);
-#endif  // !defined(REMOTING_MULTI_PROCESS)
+#endif
 }
 
 void HostProcess::StartOnUiThread() {
@@ -1093,32 +1099,31 @@ void HostProcess::StartOnUiThread() {
 
   // Create a desktop environment factory appropriate to the build type &
   // platform.
-#if defined(REMOTING_MULTI_PROCESS)
-  // Set up the AssociatedRemote used to send requests to the Daemon process.
-  // We need to do a little dance here using a pending associated receiver so
-  // that the remote is associated with the proper task_runner since it will be
-  // invoked on the network thread.
-  mojo::AssociatedRemote<mojom::DesktopSessionManager> remote;
-  mojo::GenericPendingAssociatedReceiver pending_receiver =
-      remote.BindNewEndpointAndPassReceiver(context_->network_task_runner());
-  daemon_channel_->GetRemoteAssociatedInterface(std::move(pending_receiver));
+  if (multi_process_) {
+    // Set up the AssociatedRemote used to send requests to the Daemon process.
+    // We need to do a little dance here using a pending associated receiver so
+    // that the remote is associated with the proper task_runner since it will
+    // be invoked on the network thread.
+    mojo::AssociatedRemote<mojom::DesktopSessionManager> remote;
+    mojo::GenericPendingAssociatedReceiver pending_receiver =
+        remote.BindNewEndpointAndPassReceiver(context_->network_task_runner());
+    daemon_channel_->GetRemoteAssociatedInterface(std::move(pending_receiver));
 
-  IpcDesktopEnvironmentFactory* desktop_environment_factory =
-      new IpcDesktopEnvironmentFactory(
-          context_->audio_task_runner(), context_->network_task_runner(),
-          context_->network_task_runner(), std::move(remote));
-  desktop_session_connector_ = desktop_environment_factory;
-#else   // !defined(REMOTING_MULTI_PROCESS)
-  Me2MeDesktopEnvironmentFactory* desktop_environment_factory =
-      new Me2MeDesktopEnvironmentFactory(
-          context_->network_task_runner(), context_->ui_task_runner(),
-          CreateDesktopInteractionStrategyFactory(
-              context_->network_task_runner(), context_->ui_task_runner(),
-              context_->video_capture_task_runner(),
-              context_->input_task_runner()));
-#endif  // !defined(REMOTING_MULTI_PROCESS)
-
-  desktop_environment_factory_.reset(desktop_environment_factory);
+    auto desktop_environment_factory =
+        std::make_unique<IpcDesktopEnvironmentFactory>(
+            context_->audio_task_runner(), context_->network_task_runner(),
+            context_->network_task_runner(), std::move(remote));
+    desktop_session_connector_ = desktop_environment_factory.get();
+    desktop_environment_factory_ = std::move(desktop_environment_factory);
+  } else {
+    desktop_environment_factory_ =
+        std::make_unique<Me2MeDesktopEnvironmentFactory>(
+            context_->network_task_runner(), context_->ui_task_runner(),
+            CreateDesktopInteractionStrategyFactory(
+                context_->network_task_runner(), context_->ui_task_runner(),
+                context_->video_capture_task_runner(),
+                context_->input_task_runner()));
+  }
 
   context_->network_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&HostProcess::StartOnNetworkThread, this));
@@ -1133,11 +1138,8 @@ void HostProcess::ShutdownOnUiThread() {
   // Tear down resources that need to be torn down on the UI thread.
   desktop_environment_factory_.reset();
   policy_watcher_.reset();
-
-#if defined(REMOTING_MULTI_PROCESS)
   daemon_channel_.reset();
   desktop_session_connector_ = nullptr;
-#endif  // defined(REMOTING_MULTI_PROCESS)
 
   // Release the remotes after the daemon channel has been closed.
   remoting_host_control_.reset();
@@ -2008,15 +2010,15 @@ void HostProcess::StartHost() {
       signal_strategy_.get());
 
   // Set up reporting the host status notifications.
-#if defined(REMOTING_MULTI_PROCESS)
-  mojo::AssociatedRemote<mojom::HostStatusObserver> remote;
-  daemon_channel_->GetRemoteAssociatedInterface(&remote);
-  host_event_logger_ = std::make_unique<IpcHostEventLogger>(
-      host_->status_monitor(), std::move(remote));
-#else   // !defined(REMOTING_MULTI_PROCESS)
-  host_event_logger_ =
-      HostEventLogger::Create(host_->status_monitor(), kApplicationName);
-#endif  // !defined(REMOTING_MULTI_PROCESS)
+  if (multi_process_) {
+    mojo::AssociatedRemote<mojom::HostStatusObserver> remote;
+    daemon_channel_->GetRemoteAssociatedInterface(&remote);
+    host_event_logger_ = std::make_unique<IpcHostEventLogger>(
+        host_->status_monitor(), std::move(remote));
+  } else {
+    host_event_logger_ =
+        HostEventLogger::Create(host_->status_monitor(), kApplicationName);
+  }
 
   // The email provided here is only used for logging via OnHostStarted().
   // TODO: joedow - Update host observer interface to handle multiple email
@@ -2166,8 +2168,10 @@ void HostProcess::CrashProcess(const std::string& function_name,
   ::remoting::CrashProcess(function_name, file_name, line_number);
 }
 
-int HostProcessMain() {
-  HOST_LOG << "Starting host process: version " << STRINGIZE(VERSION);
+int HostProcessMain(bool multi_process) {
+  HOST_LOG << "Starting host process: version "
+           << STRINGIZE(VERSION) << (multi_process ? " (multi-process)"
+                                                   : " (single-process)");
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -2251,7 +2255,8 @@ int HostProcessMain() {
   // Remove this hack as part of the multi-process refactoring.
   int exit_code = kSuccessExitCode;
   ShutdownWatchdog shutdown_watchdog(base::Seconds(kShutdownTimeoutSeconds));
-  new HostProcess(std::move(context), &exit_code, &shutdown_watchdog);
+  new HostProcess(std::move(context), multi_process, &exit_code,
+                  &shutdown_watchdog);
 
   // Run the main (also UI) task executor until the host no longer needs it.
   run_loop.Run();
@@ -2264,6 +2269,15 @@ int HostProcessMain() {
   }
 
   return exit_code;
+}
+
+int SingleProcessHostProcessMain() {
+  return HostProcessMain(false);
+}
+
+int NetworkProcessMain() {
+  // The network process is just the host process running in multi-process mode.
+  return HostProcessMain(true);
 }
 
 }  // namespace remoting
