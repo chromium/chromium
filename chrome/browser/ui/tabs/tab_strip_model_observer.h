@@ -157,7 +157,7 @@ class TabStripModelChange {
     // { F, 5 }, { C, 2 }, { B, 1 }
     //
     // Therefore all observers which store indices of tabs should update them
-    // in the order the tabs appear in `contents`. Observers should  not do
+    // in the order the tabs appear in `contents`. Observers should not do
     // index-based queries based on their own internally-stored indices until
     // after processing all of `contents`.
     std::vector<RemovedTab> contents;

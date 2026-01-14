@@ -151,6 +151,9 @@ void TabModelObserverJniBridge::TabRemoved(JNIEnv* env, TabAndroid* tab) {
   for (auto& observer : model_observers_) {
     observer.TabRemoved(tab);
   }
+  for (auto& observer : interface_observers_) {
+    observer.OnTabRemoved(tab);
+  }
 }
 
 void TabModelObserverJniBridge::AddObserver(TabModelObserver* observer) {

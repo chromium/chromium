@@ -26,6 +26,10 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // Called when the active tab changed. `tab` is the new active tab and is
   // never null.
   virtual void OnActiveTabChanged(tabs::TabInterface* tab) {}
+
+  // Called when a tab is removed from the tab list. `tab` is the removed tab
+  // and may be null after this call.
+  virtual void OnTabRemoved(tabs::TabInterface* tab) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_INTERFACE_OBSERVER_H_

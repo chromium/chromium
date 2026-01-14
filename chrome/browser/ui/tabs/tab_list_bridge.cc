@@ -554,6 +554,13 @@ void TabListBridge::OnTabStripModelChanged(
       break;
     }
     case TabStripModelChange::kRemoved:
+      for (const auto& removed_tab : change.GetRemove()->contents) {
+        tabs::TabInterface* tab = removed_tab.tab.get();
+        for (auto& observer : observers_) {
+          observer.OnTabRemoved(tab);
+        }
+      }
+      break;
     case TabStripModelChange::kMoved:
     case TabStripModelChange::kReplaced:
     case TabStripModelChange::kSelectionOnly:
