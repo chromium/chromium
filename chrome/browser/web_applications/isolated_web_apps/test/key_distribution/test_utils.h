@@ -49,7 +49,8 @@ class KeyDistributionComponentBuilder {
   // Component update requires the higher component version than the current
   // one.
   explicit KeyDistributionComponentBuilder(
-      const base::Version& component_version);
+      const base::Version& component_version,
+      bool is_preloaded = false);
   ~KeyDistributionComponentBuilder();
 
   KeyDistributionComponentBuilder(const KeyDistributionComponentBuilder&) =

@@ -20,7 +20,9 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
@@ -45,17 +47,22 @@ namespace web_app {
 
 namespace {
 
+using base::test::DictionaryHasValue;
 using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::ValueIs;
 using testing::_;
+using testing::AllOf;
 using testing::DoAll;
+using testing::ElementsAre;
+using testing::ElementsAreArray;
 using testing::Eq;
 using testing::Field;
 using testing::FieldsAre;
 using testing::HasSubstr;
 using testing::IsEmpty;
 using testing::IsFalse;
+using testing::IsNull;
 using testing::IsTrue;
 using testing::Optional;
 using testing::Property;
@@ -156,6 +163,178 @@ TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentFaultyData) {
               base::BucketsAre(base::Bucket(
                   IwaComponentUpdateError::kProtoParsingFailure, 1)));
 }
+
+namespace {
+
+struct DebugInfoTestParam {
+  const char* test_name;
+  bool is_preloaded = false;
+  bool in_managed_allowlist = false;
+  bool in_blocklist = false;
+  bool has_special_app_permissions = false;
+  bool is_key_rotated = false;
+};
+
+}  // namespace
+
+class IwaKeyDistributionInfoProviderDataAccessTest
+    : public testing::TestWithParam<DebugInfoTestParam> {
+ public:
+  void SetUp() override {
+    const auto& param = GetParam();
+    ASSERT_OK_AND_ASSIGN(auto bundle_id,
+                         web_package::SignedWebBundleId::Create(kWebBundleId));
+
+    test::KeyDistributionComponentBuilder builder(base::Version("1.0.0"),
+                                                  param.is_preloaded);
+
+    if (param.in_managed_allowlist) {
+      builder.AddToManagedAllowlist(bundle_id);
+    }
+    if (param.in_blocklist) {
+      builder.AddToBlocklist(bundle_id);
+    }
+    if (param.has_special_app_permissions) {
+      builder.AddToSpecialAppPermissions(
+          bundle_id,
+          test::KeyDistributionComponentBuilder::SpecialAppPermissions{
+              .skip_capture_started_notification = true});
+    }
+    if (param.is_key_rotated) {
+      builder.AddToKeyRotations(bundle_id, kExpectedKey);
+    }
+    std::move(builder).Build().InjectComponentDataDirectly();
+  }
+};
+
+TEST_P(IwaKeyDistributionInfoProviderDataAccessTest,
+       ProviderApisReturnCorrectData) {
+  const auto& param = GetParam();
+  const auto& kd_data_provider =
+      IwaKeyDistributionInfoProvider::GetInstanceForTesting();
+
+  // Version test
+  EXPECT_THAT(kd_data_provider.GetVersion(),
+              testing::Optional(base::Version("1.0.0")));
+
+  // IsPreloaded test (param.is_preloaded)
+  EXPECT_EQ(kd_data_provider.IsPreloadedForTesting(), param.is_preloaded);
+
+  // ManagedAllowlist test (param.in_managed_allowlist)
+  EXPECT_EQ(kd_data_provider.IsManagedInstallPermitted(kWebBundleId),
+            param.in_managed_allowlist);
+  EXPECT_EQ(kd_data_provider.IsManagedUpdatePermitted(kWebBundleId),
+            param.in_managed_allowlist);
+
+  // Blocklist test (param.in_blocklist)
+  EXPECT_EQ(kd_data_provider.IsBundleBlocklisted(kWebBundleId),
+            param.in_blocklist);
+
+  // SpecialAppPermissions test (param.has_special_app_permissions)
+  if (param.has_special_app_permissions) {
+    EXPECT_THAT(kd_data_provider.GetSkipMultiCaptureNotificationBundleIds(),
+                ElementsAre(kWebBundleId));
+    EXPECT_THAT(kd_data_provider.GetSpecialAppPermissionsInfo(kWebBundleId),
+                testing::Pointee(Field(
+                    &IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::
+                        skip_capture_started_notification,
+                    IsTrue())));
+  } else {
+    EXPECT_THAT(kd_data_provider.GetSkipMultiCaptureNotificationBundleIds(),
+                IsEmpty());
+    EXPECT_THAT(kd_data_provider.GetSpecialAppPermissionsInfo(kWebBundleId),
+                IsNull());
+  }
+
+  // KeyRotations test (param.is_key_rotated)
+  if (param.is_key_rotated) {
+    EXPECT_THAT(
+        kd_data_provider.GetKeyRotationInfo(kWebBundleId),
+        testing::Pointee(
+            Field(&IwaKeyDistributionInfoProvider::KeyRotationInfo::public_key,
+                  Optional(ElementsAreArray(kExpectedKey)))));
+  } else {
+    EXPECT_THAT(kd_data_provider.GetKeyRotationInfo(kWebBundleId), IsNull());
+  }
+}
+
+TEST_P(IwaKeyDistributionInfoProviderDataAccessTest,
+       DebugDataReflectsComponentData) {
+  const auto& param = GetParam();
+  const auto& kd_data_provider =
+      IwaKeyDistributionInfoProvider::GetInstanceForTesting();
+
+  // Version test
+  EXPECT_THAT(kd_data_provider.AsDebugValue(),
+              DictionaryHasValue("component_version", base::Value("1.0.0")));
+
+  // IsPreloaded test (param.is_preloaded)
+  if (param.is_preloaded) {
+    EXPECT_THAT(kd_data_provider.AsDebugValue(),
+                DictionaryHasValue("is_preloaded", base::Value(true)));
+  } else {
+    EXPECT_FALSE(
+        kd_data_provider.AsDebugValue().GetDict().contains("is_preloaded"));
+  }
+
+  // ManagedAllowlist test (param.in_managed_allowlist)
+  EXPECT_THAT(
+      kd_data_provider.AsDebugValue(),
+      DictionaryHasValue(
+          "managed_allowlist",
+          base::Value(param.in_managed_allowlist
+                          ? base::ListValue().Append(base::Value(kWebBundleId))
+                          : base::ListValue())));
+
+  // Blocklist test (param.in_blocklist)
+  EXPECT_THAT(
+      kd_data_provider.AsDebugValue(),
+      DictionaryHasValue(
+          "blocklist",
+          base::Value(param.in_blocklist
+                          ? base::ListValue().Append(base::Value(kWebBundleId))
+                          : base::ListValue())));
+
+  // SpecialAppPermissions test (param.has_special_app_permissions)
+  EXPECT_THAT(
+      kd_data_provider.AsDebugValue(),
+      DictionaryHasValue(
+          "special_app_permissions",
+          base::Value(param.has_special_app_permissions
+                          ? base::DictValue().Set(
+                                kWebBundleId,
+                                base::DictValue().Set(
+                                    "skip_capture_started_notification", true))
+                          : base::DictValue())));
+
+  // KeyRotations test (param.is_key_rotated)
+  EXPECT_THAT(
+      kd_data_provider.AsDebugValue(),
+      DictionaryHasValue(
+          "key_rotations",
+          base::Value(
+              param.is_key_rotated
+                  ? base::DictValue().Set(
+                        kWebBundleId,
+                        base::Value(base::DictValue().Set(
+                            "public_key",
+                            base::Value(base::Base64Encode(kExpectedKey)))))
+                  : base::DictValue())));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IwaKeyDistributionInfoProviderDataAccessTest,
+    testing::Values(
+        DebugInfoTestParam{.test_name = "IsPreloaded", .is_preloaded = true},
+        DebugInfoTestParam{.test_name = "ManagedAllowlist",
+                           .in_managed_allowlist = true},
+        DebugInfoTestParam{.test_name = "Blocklist", .in_blocklist = true},
+        DebugInfoTestParam{.test_name = "SpecialAppPermissions",
+                           .has_special_app_permissions = true},
+        DebugInfoTestParam{.test_name = "KeyRotations",
+                           .is_key_rotated = true}),
+    [](const auto& info) { return info.param.test_name; });
 
 class SignedWebBundleSignatureVerifierWithKeyDistributionTest
     : public testing::Test {
