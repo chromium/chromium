@@ -12624,8 +12624,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// This test is slow and timeout on fuchsia arm64 debug build.
+#define MAYBE_RunAdAuctionRepro1451572 DISABLED_RunAdAuctionRepro1451572
+#else
+#define MAYBE_RunAdAuctionRepro1451572 RunAdAuctionRepro1451572
+#endif
 // This test reproduces the crash reported in crbug.com/1451572.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, MAYBE_RunAdAuctionRepro1451572) {
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
