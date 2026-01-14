@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -362,11 +363,10 @@ void ServiceWorkerSubresourceLoader::MaybeDeleteThis() {
 }
 
 void ServiceWorkerSubresourceLoader::StartRequest() {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::StartRequest",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_OUT, "url", resource_request_.url.spec());
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerSubresourceLoader::StartRequest",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope),
+              "url", resource_request_.url.spec());
   TransitionToStatus(Status::kStarted);
   CHECK(commit_responsibility() == FetchResponseFrom::kNoResponseYet ||
         commit_responsibility() ==
@@ -556,11 +556,11 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
 
 void ServiceWorkerSubresourceLoader::OnFetchEventFinished(
     blink::mojom::ServiceWorkerEventStatus status) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::OnFetchEventFinished",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN, "status", MojoEnumToString(status));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSubresourceLoader::OnFetchEventFinished",
+              perfetto::TerminatingFlow::Global(
+                  request_id_, kServiceWorkerSubresourceLoaderScope),
+              "status", MojoEnumToString(status));
 
   // Stop restarting logic here since OnFetchEventFinished() indicates that the
   // fetch event dispatch reached the renderer.
@@ -643,11 +643,9 @@ void ServiceWorkerSubresourceLoader::SettleFetchEventDispatch(
 void ServiceWorkerSubresourceLoader::OnResponse(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::OnResponse",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerSubresourceLoader::OnResponse",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope));
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
   if (IsResponseAlreadyCommittedByRaceNetworkRequest()) {
     MaybeDeleteThis();
@@ -664,11 +662,10 @@ void ServiceWorkerSubresourceLoader::OnResponseStream(
   // TODO(crbug.com/40851723): remove the following workaround when we can
   // always expect CPUs have invariant TSC.
   timing = AdjustTimingIfNeededCrBug1342408(std::move(timing));
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::OnResponseStream",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSubresourceLoader::OnResponseStream",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope));
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
   if (IsResponseAlreadyCommittedByRaceNetworkRequest()) {
     MaybeDeleteThis();
@@ -687,11 +684,9 @@ void ServiceWorkerSubresourceLoader::OnFallback(
     return;
   }
   UpdateResponseTiming(std::move(timing));
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::OnFallback",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerSubresourceLoader::OnFallback",
+              perfetto::TerminatingFlow::Global(
+                  request_id_, kServiceWorkerSubresourceLoaderScope));
 
   bool is_race_network_request_aborted = false;
   if (race_network_request_loader_client_) {
@@ -1025,12 +1020,12 @@ void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
 
 void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
                                                      const char* reason) {
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::CommitCompleted",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN, "error_code", net::ErrorToString(error_code),
-      "reason", TRACE_STR_COPY(reason));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSubresourceLoader::CommitCompleted",
+              perfetto::TerminatingFlow::Global(
+                  request_id_, kServiceWorkerSubresourceLoaderScope),
+              "error_code", net::ErrorToString(error_code), "reason",
+              TRACE_STR_COPY(reason));
 
   TransitionToStatus(Status::kCompleted);
   if (error_code == net::OK) {
@@ -1244,12 +1239,11 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::FollowRedirect",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "new_url",
-      redirect_info_ ? redirect_info_->new_url.spec() : "(none)");
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerSubresourceLoader::FollowRedirect",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope),
+              "new_url",
+              redirect_info_ ? redirect_info_->new_url.spec() : "(none)");
 
   // In rare cases, the client seems to call FollowRedirect() when we aren't
   // expecting it. Just complete with error if we have not already completed.
@@ -1307,11 +1301,10 @@ void ServiceWorkerSubresourceLoader::SetPriority(net::RequestPriority priority,
 
 int ServiceWorkerSubresourceLoader::StartBlobReading(
     mojo::ScopedDataPipeConsumerHandle* body_pipe) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::StartBlobReading",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSubresourceLoader::StartBlobReading",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope));
   DCHECK(body_pipe);
   DCHECK(!body_reading_complete_);
 
@@ -1325,13 +1318,11 @@ int ServiceWorkerSubresourceLoader::StartBlobReading(
 void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
     mojo::ScopedDataPipeConsumerHandle data_pipe,
     std::optional<mojo_base::BigBuffer> metadata) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker",
-      "ServiceWorkerSubresourceLoader::OnSideDataReadingComplete",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "metadata size",
-      (metadata ? metadata->size() : 0));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSubresourceLoader::OnSideDataReadingComplete",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope),
+              "metadata size", (metadata ? metadata->size() : 0));
   DCHECK(url_loader_client_);
   DCHECK(!side_data_reading_complete_);
   side_data_reading_complete_ = true;
@@ -1349,11 +1340,10 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
 }
 
 void ServiceWorkerSubresourceLoader::OnBodyReadingComplete(int net_error) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSubresourceLoader::OnBodyReadingComplete",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSubresourceLoader::OnBodyReadingComplete",
+              perfetto::Flow::ProcessScoped(
+                  request_id_, kServiceWorkerSubresourceLoaderScope));
   body_reading_complete_ = true;
   // If the side data has not completed reading yet, then we need to delay
   // calling CommitCompleted.  This method will be called again from
