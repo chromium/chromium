@@ -929,11 +929,15 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.page_info") {
     sources = [
       "src/org/chromium/chrome/browser/page_info/PageInfoCookiesSettingsUnitTest.java",
+      "src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerTest.java",
       "src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerUnitTest.java",
       "src/org/chromium/chrome/browser/page_info/PermissionParamsListBuilderUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//components/permissions/android:java",
+    ]
   }
 
   robolectric_library(

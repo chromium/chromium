@@ -874,14 +874,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         if (mWebsiteSettingsObserver != null) {
                             mWebsiteSettingsObserver.onNotificationSubscribeClicked();
                         }
-
-                        // Reset the requested permission state to false, as the permission has
-                        // been granted and is not longer in request.
-                        mHasRequestedNotificationsPermission = false;
-
-                        if (mSite != null) {
-                            displaySitePermissions();
-                        }
                     });
             return;
         }

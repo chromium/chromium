@@ -218,6 +218,32 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
 
 }  // namespace permissions
 
+// This method is called when the user clicks on the "Subscribe" button in the
+// notifications permission row in PageInfo but did not grant the Android OS
+// level permission prompt. Despite the user granted the site-level permission,
+// we still need to dismiss the permission request as Chrome doesn't have the
+// Android OS level permission and hence the permission request is no longer
+// valid.
+static void JNI_PermissionUtil_DismissPermissionRequest(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents,
+    jint content_settings_type) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  if (!permission_request_manager) {
+    return;
+  }
+  if (permission_request_manager->IsRequestInProgress() &&
+      permission_request_manager->Requests().size() > 0 &&
+      permission_request_manager->Requests()[0]->GetContentSettingsType() ==
+          static_cast<ContentSettingsType>(content_settings_type)) {
+    permission_request_manager->Dismiss();
+  }
+}
+
 static void JNI_PermissionUtil_ResolvePermissionRequest(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
