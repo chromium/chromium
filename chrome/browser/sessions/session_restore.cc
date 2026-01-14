@@ -138,6 +138,10 @@ bool HasSingleNewTabPage(Browser* browser) {
 // Pointers to SessionRestoreImpls which are currently restoring the session.
 std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
 
+// Tracks whether any session has been restored during the current process
+// lifetime.
+static bool g_is_any_session_restored = false;
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Helper to pause occlusion tracking while it is alive and updates occlusion
 // states of restored tabs when it goes out of scope.
@@ -1177,6 +1181,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
     Browser* browser = Browser::Create(params);
+    g_is_any_session_restored = true;
     return browser;
   }
 
@@ -1482,6 +1487,11 @@ bool SessionRestore::IsRestoring(const Profile* profile) {
     }
   }
   return false;
+}
+
+// static
+bool SessionRestore::IsAnySessionRestored() {
+  return g_is_any_session_restored;
 }
 
 // static

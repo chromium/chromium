@@ -122,8 +122,7 @@ void RecordStartupPaintMetric(std::string_view paint_metric_base,
 
 WaapUIMetricsService::WaapUIMetricsService(
     base::PassKey<WaapUIMetricsServiceFactory>,
-    const Profile* profile)
-    : is_session_restored_(SessionRestore::IsRestoring(profile)) {}
+    const Profile* profile) {}
 
 WaapUIMetricsService::~WaapUIMetricsService() = default;
 
@@ -148,8 +147,8 @@ void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
   CHECK(is_first_call);
   is_first_call = false;
 
-  RecordStartupPaintMetric("BrowserWindow.FirstPaint", is_session_restored_,
-                           time);
+  RecordStartupPaintMetric("BrowserWindow.FirstPaint",
+                           SessionRestore::IsAnySessionRestored(), time);
 }
 
 void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
@@ -165,8 +164,8 @@ void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
 
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
-  RecordStartupPaintMetric("ReloadButton.FirstPaint", is_session_restored_,
-                           time);
+  RecordStartupPaintMetric("ReloadButton.FirstPaint",
+                           SessionRestore::IsAnySessionRestored(), time);
 }
 
 void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
@@ -183,7 +182,7 @@ void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
   RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint",
-                           is_session_restored_, time);
+                           SessionRestore::IsAnySessionRestored(), time);
 }
 
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(
