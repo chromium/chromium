@@ -1929,4 +1929,16 @@ TEST_P(LangParsingFlagDependentTest, ExtendedLangRangesParsing) {
   EXPECT_EQ(ValidateLang(":lang( \"*\" , en )"), GetParam());
 }
 
+TEST(CSSSelectorParserTest, ToolFormSubmitActive_Disabled) {
+  ScopedWebMCPForTest scoped_feature(false);
+  test::TaskEnvironment task_environment;
+
+  // Test that these pseudo classes are not valid with the WebMCP flag disabled
+  HeapVector<CSSSelector> tool_form_active = ParseSelector(":tool-form-active");
+  EXPECT_EQ(tool_form_active.size(), 0u);
+  HeapVector<CSSSelector> tool_submit_active =
+      ParseSelector(":tool-submit-active");
+  EXPECT_EQ(tool_submit_active.size(), 0u);
+}
+
 }  // namespace blink

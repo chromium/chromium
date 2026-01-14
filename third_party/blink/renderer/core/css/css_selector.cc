@@ -507,6 +507,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoTargetCurrent:
     case kPseudoTargetBefore:
     case kPseudoTargetAfter:
+    case kPseudoToolFormActive:
+    case kPseudoToolSubmitActive:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -688,6 +690,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"target-before", CSSSelector::kPseudoTargetBefore},
     {"target-current", CSSSelector::kPseudoTargetCurrent},
     {"target-text", CSSSelector::kPseudoTargetText},
+    {"tool-form-active", CSSSelector::kPseudoToolFormActive},
+    {"tool-submit-active", CSSSelector::kPseudoToolSubmitActive},
     {"user-invalid", CSSSelector::kPseudoUserInvalid},
     {"user-valid", CSSSelector::kPseudoUserValid},
     {"valid", CSSSelector::kPseudoValid},
@@ -1085,6 +1089,12 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoWindowInactive:
     case kPseudoXrOverlay:
       if (Match() != kPseudoClass) {
+        bits_.set<PseudoTypeField>(kPseudoUnknown);
+      }
+      break;
+    case kPseudoToolFormActive:
+    case kPseudoToolSubmitActive:
+      if (Match() != kPseudoClass || !RuntimeEnabledFeatures::WebMCPEnabled()) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
       break;
@@ -1867,6 +1877,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoTargetCurrent:
     case kPseudoTargetBefore:
     case kPseudoTargetAfter:
+    case kPseudoToolFormActive:
+    case kPseudoToolSubmitActive:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
       return true;
@@ -2214,6 +2226,8 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoTargetAfter:
     case CSSSelector::kPseudoTargetBefore:
     case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoToolFormActive:
+    case CSSSelector::kPseudoToolSubmitActive:
     case CSSSelector::kPseudoUserInvalid:
     case CSSSelector::kPseudoUserValid:
     case CSSSelector::kPseudoValid:
