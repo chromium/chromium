@@ -5799,7 +5799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage{BackendType}"
-    enum="MidiSendReceiveUsage" expires_after="2026-02-22">
+    enum="MidiSendReceiveUsage" expires_after="2026-12-01">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
