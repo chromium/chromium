@@ -47,6 +47,12 @@ void FakeUnexportableKeyService::DeleteKeySlowlyAsync(
     base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
   std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
 }
+void FakeUnexportableKeyService::DeleteKeysSlowlyAsync(
+    base::span<const UnexportableKeyId> key_ids,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
 void FakeUnexportableKeyService::DeleteAllKeysSlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {

@@ -194,15 +194,32 @@ void UnexportableKeyServiceProxied::DeleteKeySlowlyAsync(
     UnexportableKeyId key_id,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
-  if (!key_cache_.contains(key_id)) {
+  if (!key_cache_.erase(key_id)) {
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
-  key_cache_.erase(key_id);
 
   remote_->DeleteKey(
       key_id, priority,
       base::BindOnce(&AdaptErrorOrVoid).Then(std::move(callback)));
+}
+
+void UnexportableKeyServiceProxied::DeleteKeysSlowlyAsync(
+    base::span<const UnexportableKeyId> key_ids,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
+  auto to_delete = base::ToVector(key_ids);
+  std::erase_if(to_delete, [&](UnexportableKeyId key_id) {
+    return key_cache_.erase(key_id) == 0;
+  });
+
+  if (to_delete.empty()) {
+    std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+    return;
+  }
+
+  remote_->DeleteKeys(to_delete, priority,
+                      base::BindOnce(&AdaptSizeType).Then(std::move(callback)));
 }
 
 void UnexportableKeyServiceProxied::DeleteAllKeysSlowlyAsync(

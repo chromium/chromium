@@ -137,6 +137,15 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKey(
       base::BindOnce(&AdaptErrorOrVoid).Then(std::move(callback)));
 }
 
+void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKeys(
+    const std::vector<UnexportableKeyId>& key_ids,
+    BackgroundTaskPriority priority,
+    DeleteKeysCallback callback) {
+  unexportable_key_service_->DeleteKeysSlowlyAsync(
+      key_ids, priority,
+      base::BindOnce(&AdaptSizeType).Then(std::move(callback)));
+}
+
 void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteAllKeys(
     BackgroundTaskPriority priority,
     DeleteAllKeysCallback callback) {

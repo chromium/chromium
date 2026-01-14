@@ -229,6 +229,8 @@ chromium-metrics-reviews@google.com.
       summary="operations to delete all signing keys"/>
   <variant name=".DeleteKey"
       summary="operations to delete a single signing key"/>
+  <variant name=".DeleteKeys"
+      summary="operations to delete a collection of signing keys"/>
   <variant name=".FromWrappedKey"
       summary="operations to create a signing key from a wrapped key"/>
   <variant name=".GenerateKey"

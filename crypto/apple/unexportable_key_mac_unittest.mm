@@ -4,6 +4,9 @@
 
 #include "crypto/unexportable_key.h"
 
+#include <cstdint>
+#include <vector>
+
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "crypto/apple/fake_keychain_v2.h"
@@ -328,6 +331,161 @@ TEST_F(UnexportableKeyMacTest, GeneratedSpkiIsValid) {
       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
   ASSERT_TRUE(imported);
   EXPECT_TRUE(imported->IsEcP256());
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly) {
+  // Generate three keys.
+  std::unique_ptr<UnexportableSigningKey> key1 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key1);
+  std::unique_ptr<UnexportableSigningKey> key2 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key2);
+  std::unique_ptr<UnexportableSigningKey> key3 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key3);
+
+  // Verify they exist.
+  ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key1->GetWrappedKey()));
+  ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key2->GetWrappedKey()));
+  ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key3->GetWrappedKey()));
+
+  // Delete key1 and key3.
+  std::optional<size_t> count =
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly({
+          key1->GetWrappedKey(),
+          key3->GetWrappedKey(),
+      });
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 2u);
+
+  // Verify key1 and key3 are gone, but key2 remains.
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key1->GetWrappedKey()));
+  EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key2->GetWrappedKey()));
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key3->GetWrappedKey()));
+  EXPECT_EQ(scoped_fake_keychain_.keychain()->items().size(), 1u);
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_SingleKey) {
+  // Generate three keys.
+  std::unique_ptr<UnexportableSigningKey> key1 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key1);
+  std::unique_ptr<UnexportableSigningKey> key2 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key2);
+  std::unique_ptr<UnexportableSigningKey> key3 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key3);
+
+  // Delete key2.
+  std::optional<size_t> count =
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly(
+          {key2->GetWrappedKey()});
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 1u);
+
+  // Verify key2 is gone, but key1 and key3 remain.
+  EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key1->GetWrappedKey()));
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key2->GetWrappedKey()));
+  EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key3->GetWrappedKey()));
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_NonExistentKeys) {
+  // Generate a key.
+  std::unique_ptr<UnexportableSigningKey> key =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+
+  // Try to delete a mix of existing and non-existing keys.
+  std::vector<uint8_t> bogus_key1 = {1, 2, 3};
+  std::vector<uint8_t> bogus_key2 = {4, 5, 6};
+  std::optional<size_t> count =
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly({
+          bogus_key1,
+          key->GetWrappedKey(),
+          bogus_key2,
+      });
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 1u);
+
+  // Verify the real key is gone.
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_EmptyList) {
+  // Generate a key.
+  std::unique_ptr<UnexportableSigningKey> key =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+
+  // Call delete with an empty list.
+  std::optional<size_t> count =
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly(
+          {});
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 0u);
+
+  // Verify the key still exists.
+  EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_PrefixMatching) {
+  UnexportableKeyProvider::Config specific_config = config_;
+  specific_config.application_tag += ".suffix";
+  std::unique_ptr<UnexportableKeyProvider> specific_provider =
+      GetUnexportableKeyProvider(specific_config);
+  ASSERT_TRUE(specific_provider);
+
+  auto key = specific_provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  std::vector<uint8_t> wrapped_key = key->GetWrappedKey();
+
+  // `provider_`'s application tag is a prefix of the created key's tag, so
+  // deletion should succeed.
+  std::optional<size_t> count =
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly(
+          {wrapped_key});
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 1u);
+
+  EXPECT_FALSE(specific_provider->FromWrappedSigningKeySlowly(wrapped_key));
+  EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
+}
+
+TEST_F(UnexportableKeyMacTest,
+       DeleteSigningKeysSlowly_ApplicationTagSeparation) {
+  // Generate a key with the default provider.
+  std::unique_ptr<UnexportableSigningKey> key =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+
+  // Create a new provider with a different application tag.
+  const UnexportableKeyProvider::Config new_config{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "wrong-application-tag",
+  };
+  std::unique_ptr<UnexportableKeyProvider> new_provider =
+      GetUnexportableKeyProvider(new_config);
+  ASSERT_TRUE(new_provider);
+
+  // Deleting with the wrong provider should fail.
+  std::optional<size_t> count_fail =
+      new_provider->AsStatefulUnexportableKeyProvider()
+          ->DeleteSigningKeysSlowly({key->GetWrappedKey()});
+  ASSERT_TRUE(count_fail.has_value());
+  EXPECT_EQ(count_fail.value(), 0u);
+
+  // The key should still exist.
+  EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+
+  // Deleting with the correct provider should succeed.
+  std::optional<size_t> count_success =
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly(
+          {key->GetWrappedKey()});
+  ASSERT_TRUE(count_success.has_value());
+  EXPECT_EQ(count_success.value(), 1u);
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
 }
 
 TEST_F(UnexportableKeyMacTest, DeleteAllSigningKeys) {

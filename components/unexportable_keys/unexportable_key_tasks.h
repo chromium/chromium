@@ -91,6 +91,18 @@ class DeleteKeyTask
       base::OnceCallback<void(DeleteKeyTask::ReturnType, size_t)> callback);
 };
 
+// A `BackgroundTask` to delete a collection of
+// `crypto::UnexportableSigningKey`.
+class DeleteKeysTask
+    : public internal::BackgroundTaskImpl<ServiceErrorOr<size_t>> {
+ public:
+  DeleteKeysTask(
+      std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
+      std::vector<std::vector<uint8_t>> wrapped_keys,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(DeleteKeysTask::ReturnType, size_t)> callback);
+};
+
 // A `BackgroundTask` to delete all `crypto::UnexportableSigningKey`s matching
 // the key provider config.
 class DeleteAllKeysTask

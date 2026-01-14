@@ -111,6 +111,13 @@ interface UnexportableKeyService {
   DeleteKey(UnexportableKeyId key_id, BackgroundTaskPriority priority)
       => (ServiceError? error);
 
+  // Deletes the keys identified by key_ids.
+  // On success the number of keys deleted is returned. On error a ServiceError
+  // is returned instead.
+  DeleteKeys(
+      array<UnexportableKeyId> key_ids, BackgroundTaskPriority priority)
+      => result<uint64, ServiceError>;
+
   // Delete all keys.
   // On success the number of keys deleted is returned. On error a ServiceError
   // is returned instead.

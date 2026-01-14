@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       UnexportableKeyId key_id,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
+  void DeleteKeysSlowlyAsync(
+      base::span<const UnexportableKeyId> key_ids,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
@@ -114,6 +118,12 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   using KeyIdMap =
       absl::flat_hash_map<UnexportableKeyId,
                           scoped_refptr<RefCountedUnexportableSigningKey>>;
+
+  // Removes the key with `key_id` from the in-memory maps.
+  // Returns the wrapped key of the deleted key, or a
+  // `ServiceError::kKeyNotFound` if the key was not found.
+  ServiceErrorOr<std::vector<uint8_t>> DeleteKeyFromMaps(
+      UnexportableKeyId key_id);
 
   // Callback for `GetAllSigningKeysForGarbageCollectionSlowlyAsync()`.
   void OnGetAllSigningKeysForGarbageCollectionSlowly(

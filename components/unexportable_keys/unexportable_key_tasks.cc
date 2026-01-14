@@ -118,6 +118,19 @@ ServiceErrorOr<void> DeleteSigningKeySlowly(
   return base::ok();
 }
 
+ServiceErrorOr<size_t> DeleteSigningKeysSlowly(
+    crypto::UnexportableKeyProvider* key_provider,
+    base::span<const std::vector<uint8_t>> wrapped_keys,
+    void* task_ptr_for_tracing) {
+  TRACE_EVENT("browser", "unexportable_keys::DeleteSigningKeysSlowly",
+              perfetto::Flow::FromPointer(task_ptr_for_tracing));
+  return base::OptionalToExpected(
+      CHECK_DEREF(CHECK_DEREF(key_provider).AsStatefulUnexportableKeyProvider())
+          .DeleteSigningKeysSlowly(
+              base::ToVector<base::span<const uint8_t>>(wrapped_keys)),
+      ServiceError::kCryptoApiFailed);
+}
+
 ServiceErrorOr<size_t> DeleteAllSigningKeysSlowly(
     crypto::UnexportableKeyProvider* key_provider,
     void* task_ptr_for_tracing) {
@@ -214,6 +227,21 @@ DeleteKeyTask::DeleteKeyTask(
           std::move(callback),
           priority,
           BackgroundTaskType::kDeleteKey,
+          /*max_retries=*/0) {}
+
+DeleteKeysTask::DeleteKeysTask(
+    std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
+    std::vector<std::vector<uint8_t>> wrapped_keys,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(DeleteKeysTask::ReturnType, size_t)> callback)
+    : internal::BackgroundTaskImpl<DeleteKeysTask::ReturnType>(
+          base::BindRepeating(&DeleteSigningKeysSlowly,
+                              base::Owned(std::move(key_provider)),
+                              std::move(wrapped_keys),
+                              this),
+          std::move(callback),
+          priority,
+          BackgroundTaskType::kDeleteKeys,
           /*max_retries=*/0) {}
 
 DeleteAllKeysTask::DeleteAllKeysTask(

@@ -169,6 +169,25 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<void>)> callback) = 0;
 
+  // Deletes a collection of keys.
+  //
+  // Invokes `callback` with the number of deleted keys or a `ServiceError` if
+  // an error occurs during deletion.
+  //
+  // The entries in `key_ids` must have resulted from calling
+  // `GenerateSigningKeySlowlyAsync()` or `FromWrappedSigningKeySlowlyAsync()`.
+  //
+  // Assuming the entries in `key_ids` were found, they are invalidated
+  // immediately and should not be used again.
+  //
+  // Note: On platforms like macOS this will delete the keys from the OS, and
+  // thus future calls to `FromWrappedSigningKeySlowlyAsync()` with the same
+  // wrapped keys will fail.
+  virtual void DeleteKeysSlowlyAsync(
+      base::span<const UnexportableKeyId> key_ids,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) = 0;
+
   // Deletes all keys.
   //
   // This will remove all keys from the in-memory cache synchronously, reply

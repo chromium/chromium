@@ -207,6 +207,19 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   virtual bool DeleteSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) = 0;
 
+  // Deletes all state associated with all signing keys matching `Config` that
+  // match one of the provided wrapped keys. Returns the number of keys deleted,
+  // or nullopt if unsuccessful. This can sometimes block, and therefore must
+  // not be called from the UI thread.
+  //
+  // NOTE: For macOS this will perform prefix matching on
+  // `Config::application_tag`. That is, if `Config::application_tag` is
+  // "com.example.foo", this will delete keys with application tags like
+  // "com.example.foo.1", "com.example.foo.1234", etc, assuming the wrapped key
+  // matches exactly.
+  virtual std::optional<size_t> DeleteSigningKeysSlowly(
+      base::span<const base::span<const uint8_t>> wrapped_keys) = 0;
+
   // `DeleteAllSigningKeysSlowly()` deletes all state associated with all
   // signing keys matching `UnexportableKeyProvider::Config`.
   //

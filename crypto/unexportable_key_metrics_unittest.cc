@@ -4,6 +4,9 @@
 
 #include "crypto/unexportable_key_metrics.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <set>
@@ -75,10 +78,20 @@ class MockTrackingUnexportableKeyProvider
             key_provider_->AsStatefulUnexportableKeyProvider()) {
       stateful_key_provider->DeleteSigningKeySlowly(wrapped_key);
     }
-    return keys_.erase(
-        std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end()));
+    return keys_.erase(base::ToVector(wrapped_key));
   }
+
+  std::optional<size_t> DeleteSigningKeysSlowly(
+      base::span<const base::span<const uint8_t>> wrapped_keys) override {
+    return std::ranges::count_if(
+        wrapped_keys, [&](auto key) { return DeleteSigningKeySlowly(key); });
+  }
+
   std::optional<size_t> DeleteAllSigningKeysSlowly() override {
+    if (StatefulUnexportableKeyProvider* stateful_key_provider =
+            key_provider_->AsStatefulUnexportableKeyProvider()) {
+      stateful_key_provider->DeleteAllSigningKeysSlowly();
+    }
     return std::exchange(keys_, {}).size();
   }
 

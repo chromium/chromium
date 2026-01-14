@@ -186,25 +186,45 @@ void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
     UnexportableKeyId key_id,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
-  auto key_id_it = key_by_key_id_.find(key_id);
-  if (key_id_it == key_by_key_id_.end()) {
-    std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
-    return;
-  }
-
-  std::vector<uint8_t> wrapped_key = key_id_it->second->key().GetWrappedKey();
-  auto wrapped_key_it = key_id_by_wrapped_key_.find(wrapped_key);
-  CHECK(wrapped_key_it != key_id_by_wrapped_key_.end());
-  CHECK(wrapped_key_it->second.HasKeyId());
-  CHECK_EQ(wrapped_key_it->second.GetKeyId(), key_id);
-
-  key_by_key_id_.erase(key_id_it);
-  key_id_by_wrapped_key_.erase(wrapped_key_it);
+  ASSIGN_OR_RETURN(std::vector<uint8_t> wrapped_key, DeleteKeyFromMaps(key_id),
+                   [&](ServiceError error) {
+                     std::move(callback).Run(base::unexpected(error));
+                   });
 
   // The type expected by the callback
   using ArgType = ServiceErrorOr<void>;
   task_manager_->DeleteSigningKeySlowlyAsync(
       task_origin_, config_, std::move(wrapped_key), priority,
+      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
+                     service_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
+    base::span<const UnexportableKeyId> key_ids,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
+  // Delete the keys from the in-memory maps.
+  std::vector<ServiceErrorOr<std::vector<uint8_t>>> wrapped_key_or_errors =
+      base::ToVector(key_ids, [&](UnexportableKeyId key_id) {
+        return DeleteKeyFromMaps(key_id);
+      });
+
+  // Collect the wrapped keys of the keys that were successfully deleted.
+  std::erase_if(wrapped_key_or_errors, [](auto& k) { return !k.has_value(); });
+  auto wrapped_keys = base::ToVector(wrapped_key_or_errors,
+                                     [](auto& key) { return *std::move(key); });
+
+  // If no keys were deleted, return an error.
+  if (wrapped_keys.empty()) {
+    std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+    return;
+  }
+
+  // The type expected by the callback
+  using ArgType = ServiceErrorOr<size_t>;
+  task_manager_->DeleteSigningKeysSlowlyAsync(
+      task_origin_, config_, std::move(wrapped_keys), priority,
       base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
                      service_weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
@@ -293,6 +313,24 @@ ServiceErrorOr<base::Time> UnexportableKeyServiceImpl::GetCreationTime(
     return base::unexpected(ServiceError::kOperationNotSupported);
   }
   return stateful_key->GetCreationTime();
+}
+
+ServiceErrorOr<std::vector<uint8_t>>
+UnexportableKeyServiceImpl::DeleteKeyFromMaps(UnexportableKeyId key_id) {
+  auto key_id_it = key_by_key_id_.find(key_id);
+  if (key_id_it == key_by_key_id_.end()) {
+    return base::unexpected(ServiceError::kKeyNotFound);
+  }
+
+  std::vector<uint8_t> wrapped_key = key_id_it->second->key().GetWrappedKey();
+  auto wrapped_key_it = key_id_by_wrapped_key_.find(wrapped_key);
+  CHECK(wrapped_key_it != key_id_by_wrapped_key_.end());
+  CHECK(wrapped_key_it->second.HasKeyId());
+  CHECK_EQ(wrapped_key_it->second.GetKeyId(), key_id);
+
+  key_by_key_id_.erase(key_id_it);
+  key_id_by_wrapped_key_.erase(wrapped_key_it);
+  return wrapped_key;
 }
 
 void UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowly(

@@ -39,6 +39,10 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
       UnexportableKeyId key_id,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
+  void DeleteKeysSlowlyAsync(
+      base::span<const UnexportableKeyId> key_ids,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
