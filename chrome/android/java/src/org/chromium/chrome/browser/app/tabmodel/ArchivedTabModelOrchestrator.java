@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildNonOtrShadowStore;
 
 import android.content.Context;
 
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCountTracker;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
@@ -149,6 +151,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     // declutter.
     private final List<TabbedModeTabModelOrchestrator> mActivityTabModelOrchestrators =
             new ArrayList<>();
+
+    // Currently used to perform shadow operations for an alternative storage. Not always enabled.
+    private final AccumulatingTabCreator mShadowTabCreator = new AccumulatingTabCreator();
+    private @Nullable TabPersistentStore mShadowTabPersistentStore;
 
     private @MonotonicNonNull WindowAndroid mWindow;
     private @MonotonicNonNull TabArchiver mTabArchiver;
@@ -265,6 +271,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (mArchivedTabCountTracker != null) {
             mArchivedTabCountTracker.destroy();
             mArchivedTabCountTracker = null;
+        }
+
+        if (mShadowTabPersistentStore != null) {
+            mShadowTabPersistentStore.destroy();
+            mShadowTabPersistentStore = null;
         }
 
         super.destroy();
@@ -576,6 +587,16 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         System::currentTimeMillis,
                         mTabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
+
+        mShadowTabPersistentStore =
+                buildNonOtrShadowStore(
+                        mProfile,
+                        mShadowTabCreator,
+                        mTabModelSelector,
+                        mTabPersistencePolicy,
+                        mTabPersistentStore,
+                        ARCHIVED_TAB_SELECTOR_UNIQUE_TAG,
+                        /* recordMetrics= */ false);
     }
 
     @Override

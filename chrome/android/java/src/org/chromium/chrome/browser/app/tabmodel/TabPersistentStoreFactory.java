@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
@@ -35,7 +33,7 @@ public class TabPersistentStoreFactory {
      * <p>This method creates a {@link TabStateStore} that operates in "shadow" mode. It captures
      * the state of a selector without affecting the authoritative application state.
      *
-     * @param profileProviderSupplier The supplier for profiles.
+     * @param profile The original profile associated with the tabs.
      * @param regularShadowTabCreator The accumulator for regular tabs loaded by the shadow store.
      * @param incognitoShadowTabCreator The accumulator for incognito tabs loaded by the shadow
      *     store.
@@ -48,7 +46,7 @@ public class TabPersistentStoreFactory {
      * @param recordMetrics Whether to record metrics for the shadow store;
      */
     public static @Nullable TabPersistentStore buildShadowStore(
-            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            Profile profile,
             AccumulatingTabCreator regularShadowTabCreator,
             AccumulatingTabCreator incognitoShadowTabCreator,
             TabModelSelector selector,
@@ -57,15 +55,76 @@ public class TabPersistentStoreFactory {
             String windowTag,
             CipherFactory cipherFactory,
             boolean recordMetrics) {
-        if (!TabStateStorageFlagHelper.isTabStorageEnabled()) return null;
-
-        assert profileProviderSupplier.get() != null;
-        ProfileProvider profileProvider = profileProviderSupplier.get();
-        Profile profile = profileProvider.getOriginalProfile();
-        assert profile != null;
-
         TabCreatorManager shadowTabCreatorManager =
                 incognito -> incognito ? incognitoShadowTabCreator : regularShadowTabCreator;
+
+        return buildShadowStoreInternal(
+                profile,
+                shadowTabCreatorManager,
+                selector,
+                tabPersistencePolicy,
+                authoritativeStore,
+                windowTag,
+                cipherFactory,
+                regularShadowTabCreator,
+                recordMetrics);
+    }
+
+    /**
+     * Builds a shadow {@link TabPersistentStore} for validation against an authoritative store.
+     * This store will only function with non-OTR data. Returns null if a shadow store is not
+     * enabled via feature flags.
+     *
+     * <p>This method creates a {@link TabStateStore} that operates in "shadow" mode. It captures
+     * the state of a selector without affecting the authoritative application state.
+     *
+     * @param profile The original profile associated with the tabs.
+     * @param regularShadowTabCreator The accumulator for regular tabs loaded by the shadow store.
+     * @param selector The selector associated with the store.
+     * @param tabPersistencePolicy The tab persistence to use for the shadow store.
+     * @param authoritativeStore The primary {@link TabPersistentStore} that acts as the source of
+     *     truth.
+     * @param windowTag The unique identifier for the window instance.
+     * @param recordMetrics Whether to record metrics for the shadow store;
+     */
+    public static @Nullable TabPersistentStore buildNonOtrShadowStore(
+            Profile profile,
+            AccumulatingTabCreator regularShadowTabCreator,
+            TabModelSelector selector,
+            TabPersistencePolicy tabPersistencePolicy,
+            TabPersistentStore authoritativeStore,
+            String windowTag,
+            boolean recordMetrics) {
+        TabCreatorManager shadowTabCreatorManager =
+                incognito -> {
+                    assert !incognito;
+                    return regularShadowTabCreator;
+                };
+
+        return buildShadowStoreInternal(
+                profile,
+                shadowTabCreatorManager,
+                selector,
+                tabPersistencePolicy,
+                authoritativeStore,
+                windowTag,
+                /* cipherFactory= */ null,
+                regularShadowTabCreator,
+                recordMetrics);
+    }
+
+    private static @Nullable TabPersistentStore buildShadowStoreInternal(
+            Profile profile,
+            TabCreatorManager shadowTabCreatorManager,
+            TabModelSelector selector,
+            TabPersistencePolicy tabPersistencePolicy,
+            TabPersistentStore authoritativeStore,
+            String windowTag,
+            @Nullable CipherFactory cipherFactory,
+            AccumulatingTabCreator regularShadowTabCreator,
+            boolean recordMetrics) {
+        if (!TabStateStorageFlagHelper.isTabStorageEnabled()) return null;
+        assert !profile.isOffTheRecord();
 
         TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
         assert service != null;
