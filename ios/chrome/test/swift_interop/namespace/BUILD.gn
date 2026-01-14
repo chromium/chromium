@@ -6,8 +6,12 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   swift_modulemap("namespace") {
-    module_name = "Namespace"
-    sources = [ "namespace.h" ]
+    modules = [
+      {
+        name = "Namespace"
+        sources = [ "namespace.h" ]
+      },
+    ]
   }
 
   swift_source_set("tests") {

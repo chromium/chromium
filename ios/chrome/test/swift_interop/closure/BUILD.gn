@@ -16,10 +16,14 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("swift_closure") {
-    module_name = "Closure"
-    sources = [
-      "closure.h",
-      "observer.h",
+    modules = [
+      {
+        name = "Closure"
+        sources = [
+          "closure.h",
+          "observer.h",
+        ]
+      },
     ]
     public_deps = [
       ":cxx_closure",

@@ -6,11 +6,16 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   swift_modulemap("base_imports") {
-    module_name = "BaseImports"
-    sources = [
-      "//base/system/sys_info.h",
-      "//base/time/time.h",
+    modules = [
+      {
+        name = "BaseImports"
+        sources = [
+          "//base/system/sys_info.h",
+          "//base/time/time.h",
+        ]
+      },
     ]
+
     public_deps = [ "//base" ]
   }
 

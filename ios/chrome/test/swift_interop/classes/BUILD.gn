@@ -13,12 +13,22 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("classes") {
-    module_name = "Classes"
-    apinotes = [ "classes.apinotes" ]
-    sources = [
-      "inlined_classes.h",
-      "outlined.h",
-      "polymorphism.h",
+    modules = [
+      {
+        name = "Classes"
+        sources = [
+          "inlined_classes.h",
+          "outlined.h",
+        ]
+        apinotes = [ "classes.apinotes" ]
+      },
+
+      # This target deliberately tests the possibility of defining multiple
+      # modules in a single modulemap.
+      {
+        name = "Polymorphism"
+        sources = [ "polymorphism.h" ]
+      },
     ]
     public_deps = [ ":outlined" ]
   }

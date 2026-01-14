@@ -18,12 +18,16 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("swift_pointer") {
-    module_name = "Pointer"
-    sources = [
-      "object_passing.h",
-      "pointer_returner.h",
-      "shared_ptr.h",
-      "unique_ptr.h",
+    modules = [
+      {
+        name = "Pointer"
+        sources = [
+          "object_passing.h",
+          "pointer_returner.h",
+          "shared_ptr.h",
+          "unique_ptr.h",
+        ]
+      },
     ]
     public_deps = [
       ":cxx_pointer",

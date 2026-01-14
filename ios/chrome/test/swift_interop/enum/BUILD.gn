@@ -6,8 +6,12 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   swift_modulemap("enum") {
-    module_name = "Enum"
-    sources = [ "enum.h" ]
+    modules = [
+      {
+        name = "Enum"
+        sources = [ "enum.h" ]
+      },
+    ]
   }
 
   swift_source_set("tests") {
