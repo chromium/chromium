@@ -28,18 +28,15 @@ found in the LICENSE file.
         android:src="@drawable/drag_handlebar"
         app:tint="@macro/drag_handle_color"/>
 
-    <!-- Header -->
-    <TextView
+    <!-- Toolbar container -->
+    <FrameLayout
         android:id="@+id/toolbar_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/handle_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/web_ui_container"
-        android:textAppearance="@style/TextAppearance.Headline"
-        android:gravity="center_horizontal|top"
-        android:text="Header"/>
+        app:layout_constraintBottom_toTopOf="@id/web_ui_container" />
 
     <!-- Web UI Container -->
     <FrameLayout

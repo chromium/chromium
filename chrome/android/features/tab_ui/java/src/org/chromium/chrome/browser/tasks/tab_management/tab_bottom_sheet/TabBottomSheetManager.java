@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils.TabBottomSheetModes;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
@@ -63,7 +64,8 @@ public class TabBottomSheetManager implements Destroyable {
                 mTabBottomSheetCoordinator =
                         new TabBottomSheetCoordinator(mContext, mBottomSheetController);
             }
-            mTabBottomSheetCoordinator.showBottomSheet();
+            mTabBottomSheetCoordinator.showBottomSheet(
+                    /* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
         } else {
             destroy();
         }

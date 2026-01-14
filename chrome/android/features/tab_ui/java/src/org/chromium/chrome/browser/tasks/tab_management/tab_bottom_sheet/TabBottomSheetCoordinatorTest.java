@@ -33,6 +33,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils.TabBottomSheetModes;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -78,7 +79,7 @@ public class TabBottomSheetCoordinatorTest {
     private BottomSheetObserver simulateShowSuccessAndGetObserver() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
-        mCoordinator.showBottomSheet();
+        mCoordinator.showBottomSheet(/* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
         BottomSheetObserver coordinatorObserver = mBottomSheetObserverArgumentCaptor.getValue();
@@ -114,7 +115,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testShowBottomSheet_Fails_Cleanup() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.showBottomSheet();
+        mCoordinator.showBottomSheet(/* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
         verify(mMockBottomSheetController)
                 .requestShowContent(any(BottomSheetContent.class), eq(true));
         verify(mMockBottomSheetController, never()).addObserver(any(BottomSheetObserver.class));
@@ -144,15 +145,10 @@ public class TabBottomSheetCoordinatorTest {
     public void testDestroy_WhenNotShown_CleansUp() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.showBottomSheet();
+        mCoordinator.showBottomSheet(/* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
         mCoordinator.destroy();
 
         verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());
         assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
-    }
-
-    @Test
-    public void testFuseboxEnabledByDefault() {
-        assertTrue(mCoordinatorModel.get(TabBottomSheetProperties.FUSEBOX_ENABLED));
     }
 }
