@@ -10037,6 +10037,10 @@ const CSSValue* TextIndent::ParseSingleValue(CSSParserTokenStream& stream,
     }
     break;
   }
+  if (!hanging && !each_line &&
+      RuntimeEnabledFeatures::CssTextIndentAsPrimitiveEnabled()) {
+    return length_percentage;
+  }
   if (!length_percentage) {
     return nullptr;
   }
@@ -10056,10 +10060,14 @@ const CSSValue* TextIndent::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.TextIndent(), style));
+  const CSSValue* length = ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+      style.TextIndent(), style);
   const TextIndentFlags flags = style.GetTextIndentFlags();
+  if (!flags && RuntimeEnabledFeatures::CssTextIndentAsPrimitiveEnabled()) {
+    return length;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*length);
   if (EnumHasFlags(flags, TextIndentFlags::kHanging)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kHanging));
   }
@@ -10074,15 +10082,21 @@ void TextIndent::ApplyValue(StyleResolverState& state,
                             ValueMode) const {
   Length length_or_percentage_value;
   TextIndentFlags flags = TextIndentFlags::kDefault;
-  for (auto& list_value : To<CSSValueList>(value)) {
-    if (auto* list_primitive_value =
-            DynamicTo<CSSPrimitiveValue>(*list_value)) {
-      length_or_percentage_value = list_primitive_value->ConvertToLength(
-          state.CssToLengthConversionData());
-    } else if (const auto* ident = DynamicTo<CSSIdentifierValue>(*list_value)) {
-      flags |= CssValueIDToPlatformEnum<TextIndentFlags>(ident->GetValueID());
-    } else {
-      NOTREACHED();
+  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(value)) {
+    length_or_percentage_value =
+        primitive->ConvertToLength(state.CssToLengthConversionData());
+  } else {
+    for (auto& list_value : To<CSSValueList>(value)) {
+      if (auto* list_primitive_value =
+              DynamicTo<CSSPrimitiveValue>(*list_value)) {
+        length_or_percentage_value = list_primitive_value->ConvertToLength(
+            state.CssToLengthConversionData());
+      } else if (const auto* ident =
+                     DynamicTo<CSSIdentifierValue>(*list_value)) {
+        flags |= CssValueIDToPlatformEnum<TextIndentFlags>(ident->GetValueID());
+      } else {
+        NOTREACHED();
+      }
     }
   }
 

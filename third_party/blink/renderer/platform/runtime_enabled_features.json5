@@ -1759,6 +1759,10 @@
       status: "test",
     },
     {
+      name: "CssTextIndentAsPrimitive",
+      status: "stable",
+    },
+    {
       // crbug.com/40321528
       name: "CssTextJustify",
       status: "stable",

@@ -219,7 +219,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       return nullptr;
     }
     case CSSPropertyID::kTextIndent: {
-      if (value.IsIdentifierValue()) {
+      if (value.IsIdentifierValue() || value.IsPrimitiveValue()) {
         return CreateStyleValue(value);
       }
 
