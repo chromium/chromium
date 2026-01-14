@@ -18,6 +18,8 @@ namespace tabs {
 // Differentiates between model changes resulting from the restoration process
 // and changes as a result of user actions during the restoration
 // process.
+// Without the use of batching, this is inefficient. See
+// TabStateStorageService#CreateScopedBatch.
 class StorageRestoreOrchestrator : public TabCollectionObserver {
  public:
   StorageRestoreOrchestrator(TabStripCollection* collection,
@@ -48,6 +50,9 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
 
   // Used to keep track of nodes that were restored from the disk.
   absl::flat_hash_set<TabCollectionNodeHandle> restored_nodes_;
+
+  // Used to keep track of parents that have had their children vector modified.
+  absl::flat_hash_set<TabCollectionHandle> modified_parents_;
 };
 
 }  // namespace tabs
