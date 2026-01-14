@@ -123,7 +123,7 @@ InSlotMetadata::DoubleFreeOrCorruptionDetected(InSlotMetadata::CountType count,
 
   auto* thread_cache = root->GetThreadCache();
   if (ThreadCache::IsValid(thread_cache)) {
-    size_t bucket_index = slot_span->bucket - root->buckets_;
+    size_t bucket_index = slot_span->bucket - root->buckets;
     if (thread_cache->IsInFreelist(slot_start, bucket_index, position)) {
       DoubleFreeDetected(position);
     }

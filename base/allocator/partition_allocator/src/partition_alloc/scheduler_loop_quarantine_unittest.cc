@@ -28,7 +28,7 @@ GetBranchFromAllocatorRoot(PartitionRoot* root);
 template <>
 internal::GlobalSchedulerLoopQuarantineBranch*
 GetBranchFromAllocatorRoot<false>(PartitionRoot* root) {
-  return &root->scheduler_loop_quarantine_;
+  return &root->scheduler_loop_quarantine;
 }
 
 template <>
@@ -36,7 +36,7 @@ internal::ThreadBoundSchedulerLoopQuarantineBranch*
 GetBranchFromAllocatorRoot<true>(PartitionRoot* root) {
   ThreadCache* tcache = ThreadCache::Get();
   PA_CHECK(ThreadCache::IsValid(tcache));
-  PA_CHECK(root->settings_.with_thread_cache);
+  PA_CHECK(root->settings.with_thread_cache);
   return &tcache->GetSchedulerLoopQuarantineBranch();
 }
 

@@ -64,7 +64,7 @@ struct SlotSpanMetadata;
 
 class PartitionStatsDumper;
 
-class PartitionRoot;
+struct PartitionRoot;
 
 struct PurgeState {
   uint16_t generation = 0;

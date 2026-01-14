@@ -66,7 +66,7 @@ void OnDllProcessDetach() {
   // TLS), but the PartitionRoot associated wih the thread cache can be made to
   // not use the thread cache anymore.
   g_thread_cache_root.load(std::memory_order_relaxed)
-      ->settings_.with_thread_cache = false;
+      ->settings.with_thread_cache = false;
 }
 #endif
 
@@ -370,10 +370,10 @@ void ThreadCache::RemoveTombstoneForTesting() {
 
 // static
 void ThreadCache::Init(PartitionRoot* root) {
-  PA_CHECK(root->buckets_[kBucketCount - 1].slot_size ==
+  PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
            ThreadCache::kLargeSizeThreshold);
   PA_UNSAFE_TODO(
-      PA_CHECK(root->buckets_[largest_active_bucket_index_].slot_size ==
+      PA_CHECK(root->buckets[largest_active_bucket_index_].slot_size ==
                ThreadCache::kDefaultSizeThreshold));
 
   EnsureThreadSpecificDataInitialized();
@@ -409,7 +409,7 @@ void ThreadCache::SetGlobalLimits(PartitionRoot* root, float multiplier) {
       static_cast<size_t>(kSmallBucketBaseCount) * multiplier;
 
   for (int index = 0; index < kBucketCount; index++) {
-    const auto& root_bucket = PA_UNSAFE_TODO(root->buckets_[index]);
+    const auto& root_bucket = PA_UNSAFE_TODO(root->buckets[index]);
     // Invalid bucket.
     if (!root_bucket.active_slot_spans_head) {
       PA_UNSAFE_TODO(global_limits_[index]) = 0;
@@ -498,7 +498,7 @@ ThreadCache::ThreadCache(PartitionRoot* root)
   PA_UNSAFE_TODO(memset(&stats_, 0, sizeof(stats_)));
 
   for (int index = 0; index < kBucketCount; index++) {
-    const auto& root_bucket = PA_UNSAFE_TODO(root->buckets_[index]);
+    const auto& root_bucket = PA_UNSAFE_TODO(root->buckets[index]);
     Bucket* tcache_bucket = &PA_UNSAFE_TODO(buckets_[index]);
     tcache_bucket->freelist_head = nullptr;
     tcache_bucket->count = 0;
@@ -508,16 +508,16 @@ ThreadCache::ThreadCache(PartitionRoot* root)
     tcache_bucket->slot_size = root_bucket.slot_size;
     // Invalid bucket.
     if (!root_bucket.is_valid()) {
-      // Explicitly set this, as size computations iterate over all buckets_.
+      // Explicitly set this, as size computations iterate over all buckets.
       tcache_bucket->limit.store(0, std::memory_order_relaxed);
     }
   }
 
   // When enabled, initialize scheduler loop quarantine branch.
   const auto& scheduler_loop_quarantine_config =
-      root_->settings_.scheduler_loop_quarantine_thread_local_config;
+      root_->settings.scheduler_loop_quarantine_thread_local_config;
   scheduler_loop_quarantine_branch_.Configure(
-      root_->scheduler_loop_quarantine_root_, scheduler_loop_quarantine_config);
+      root_->scheduler_loop_quarantine_root, scheduler_loop_quarantine_config);
 }
 
 ThreadCache::~ThreadCache() {
@@ -585,7 +585,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // However, do not take too many items, to prevent memory bloat.
   //
   // Cache filling / purging policy:
-  // We aim at keeping the buckets_ neither empty nor full, while minimizing
+  // We aim at keeping the buckets neither empty nor full, while minimizing
   // requests to the central allocator.
   //
   // For each bucket, there is a |limit| of how many cached objects there are in
@@ -605,20 +605,20 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   PA_INCREMENT_COUNTER(stats_.batch_fill_count);
 
   Bucket& bucket = PA_UNSAFE_TODO(buckets_[bucket_index]);
-  // Some buckets_ may have a limit lower than |kBatchFillRatio|, but we still
+  // Some buckets may have a limit lower than |kBatchFillRatio|, but we still
   // want to at least allocate a single slot, otherwise we wrongly return
   // nullptr, which ends up deactivating the bucket.
   //
   // In these cases, we do not really batch bucket filling, but this is expected
-  // to be used for the largest buckets_, where over-allocating is not advised.
+  // to be used for the largest buckets, where over-allocating is not advised.
   int count = std::max(
       1, bucket.limit.load(std::memory_order_relaxed) / kBatchFillRatio);
 
   size_t usable_size;
   bool is_already_zeroed;
 
-  PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets_[bucket_index].CanStoreRawSize()));
-  PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets_[bucket_index].is_direct_mapped()));
+  PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets[bucket_index].CanStoreRawSize()));
+  PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets[bucket_index].is_direct_mapped()));
 
   size_t allocated_slots = 0;
 
@@ -643,14 +643,12 @@ void ThreadCache::FillBucket(size_t bucket_index) {
       // only used for direct-mapped allocations and single-slot ones anyway,
       // which are not handled here.
       size_t ret_slot_size;
-      internal::UntaggedSlotStart slot_start =
-          root_->AllocFromBucket<AllocFlags::kFastPathOrReturnNull |
-                                 AllocFlags::kReturnNull>(
-              &PA_UNSAFE_TODO(root_->buckets_[bucket_index]),
-              PA_UNSAFE_TODO(root_->buckets_[bucket_index])
-                  .slot_size /* raw_size */,
-              internal::PartitionPageSize(), &usable_size, &ret_slot_size,
-              &is_already_zeroed);
+      internal::UntaggedSlotStart slot_start = root_->AllocFromBucket<
+          AllocFlags::kFastPathOrReturnNull | AllocFlags::kReturnNull>(
+          &PA_UNSAFE_TODO(root_->buckets[bucket_index]),
+          PA_UNSAFE_TODO(root_->buckets[bucket_index]).slot_size /* raw_size */,
+          internal::PartitionPageSize(), &usable_size, &ret_slot_size,
+          &is_already_zeroed);
       // Either the previous allocation would require a slow path allocation, or
       // the central allocator is out of memory. If the bucket was filled with
       // some objects, then the allocation will be handled normally. Otherwise,
@@ -660,7 +658,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
         break;
       }
       PA_UNSAFE_TODO(
-          PA_DCHECK(ret_slot_size == root_->buckets_[bucket_index].slot_size));
+          PA_DCHECK(ret_slot_size == root_->buckets[bucket_index].slot_size));
 
       PA_UNSAFE_TODO(slot_starts[allocated_slots++]) = slot_start;
     }
@@ -834,9 +832,9 @@ void ThreadCache::PurgeInternal() {
   // TODO(lizeb): Investigate whether lock acquisition should be less
   // frequent.
   //
-  // Note: iterate over all buckets_, even the inactive ones. Since
+  // Note: iterate over all buckets, even the inactive ones. Since
   // |largest_active_bucket_index_| can be lowered at runtime, there may be
-  // memory already cached in the inactive buckets_. They should still be
+  // memory already cached in the inactive buckets. They should still be
   // purged.
   for (auto& bucket : buckets_) {
     ClearBucket(bucket, 0);

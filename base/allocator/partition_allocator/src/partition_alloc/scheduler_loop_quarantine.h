@@ -62,7 +62,7 @@
 
 namespace partition_alloc {
 
-class PartitionRoot;
+struct PartitionRoot;
 class ThreadCache;
 struct SchedulerLoopQuarantineStats;
 

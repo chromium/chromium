@@ -20,7 +20,7 @@
 
 namespace partition_alloc {
 
-class PartitionRoot;
+struct PartitionRoot;
 
 namespace internal {
 

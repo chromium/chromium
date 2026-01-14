@@ -52,7 +52,7 @@ void DCheckRootLockIsAcquired(PartitionRoot* root) {
 
 bool DeducedRootIsValid(const SlotSpanMetadata* slot_span) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-  return root->inverted_self_ == ~reinterpret_cast<uintptr_t>(root);
+  return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
 }
 
 }  // namespace partition_alloc::internal
