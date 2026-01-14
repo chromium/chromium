@@ -247,7 +247,7 @@ class PowerSaveBlocker::Delegate {
 
     object_proxy->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&Delegate::OnInhibitResponse,
+        base::BindOnce(&Delegate::OnInhibitResponseThunk, bus_,
                        weak_ptr_factory_.GetWeakPtr(), api));
   }
 
@@ -279,31 +279,53 @@ class PowerSaveBlocker::Delegate {
     inhibit_cookies_.push_back({api, cookie});
   }
 
+  // Static thunk to handle the response even if the Delegate is dead.
+  static void OnInhibitResponseThunk(scoped_refptr<dbus::Bus> bus,
+                                     base::WeakPtr<Delegate> delegate,
+                                     DBusApi api,
+                                     dbus::Response* response) {
+    if (delegate) {
+      delegate->OnInhibitResponse(api, response);
+    } else if (response) {
+      // The Delegate is gone, but we might have acquired a lock.
+      // Parse the cookie and release it immediately to prevent leaks.
+      dbus::MessageReader reader(response);
+      uint32_t cookie;
+      if (reader.PopUint32(&cookie)) {
+        Uninhibit(bus, api, cookie);
+      }
+    }
+  }
+
   // Makes the Uninhibit method call given an InhibitCookie saved by a prior
   // call to Inhibit().
   void Uninhibit(const InhibitCookie& inhibit_cookie) {
-    const DbusServiceInfo& service_info = kServiceInfos.at(inhibit_cookie.api);
+    Uninhibit(bus_, inhibit_cookie.api, inhibit_cookie.cookie);
+  }
 
-    dbus::ObjectProxy* object_proxy = bus_->GetObjectProxy(
+  // Static version of Uninhibit that can be called without a Delegate instance.
+  static void Uninhibit(scoped_refptr<dbus::Bus> bus,
+                        DBusApi api,
+                        uint32_t cookie) {
+    const DbusServiceInfo& service_info = kServiceInfos.at(api);
+
+    dbus::ObjectProxy* object_proxy = bus->GetObjectProxy(
         service_info.service_name, dbus::ObjectPath(service_info.object_path));
 
     dbus::MethodCall method_call(service_info.interface_name,
-                                 GetUninhibitMethodName(inhibit_cookie.api));
+                                 GetUninhibitMethodName(api));
     dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(inhibit_cookie.cookie);
+    writer.AppendUint32(cookie);
 
     // We don't care about checking the result. We assume it works; we can't
     // really do anything about it anyway if it fails.
-    object_proxy->CallMethod(&method_call,
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                             base::BindOnce(&Delegate::OnUninhibitResponse,
-                                            weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnUninhibitResponse(dbus::Response* response) {
-    if (!response) {
-      LOG(ERROR) << "No response to Uninhibit() request!";
-    }
+    object_proxy->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce([](dbus::Response* response) {
+          if (!response) {
+            LOG(ERROR) << "No response to Uninhibit() request!";
+          }
+        }));
   }
 
   void SetScreenSaverSuspended(bool suspend) {
