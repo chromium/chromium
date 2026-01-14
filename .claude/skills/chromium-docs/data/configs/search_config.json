@@ -1,0 +1,111 @@
+{
+  "indexing": {
+    "update_interval_days": 7,
+    "max_file_size_mb": 10,
+    "scan_patterns": [
+      "docs/**/*.md",
+      "*/README.md",
+      "*/docs/*.md"
+    ],
+    "excluded_patterns": [
+      "third_party/",
+      "out/",
+      ".git/",
+      ".claude/",
+      "node_modules/",
+      "testing/libfuzzer/fuzzers/"
+    ]
+  },
+  "search": {
+    "default_limit": 10,
+    "max_limit": 50,
+    "min_score_threshold": 0.1,
+    "boost_factors": {
+      "title_match": 3.0,
+      "keyword_match": 2.0,
+      "content_match": 1.0,
+      "path_match": 1.5,
+      "recent_docs": 1.2,
+      "popular_docs": 1.1
+    }
+  },
+  "categories": {
+    "architecture": {
+      "display_name": "Architecture & Design",
+      "patterns": ["design/", "architecture/", "overview/"],
+      "keywords": ["architecture", "design", "pattern", "structure"]
+    },
+    "api": {
+      "display_name": "APIs & Interfaces",
+      "patterns": ["api/", "public/", "interface/", "mojom/"],
+      "keywords": ["api", "interface", "public", "mojom", "binding"]
+    },
+    "testing": {
+      "display_name": "Testing & QA",
+      "patterns": ["test/", "testing/", "unittest/"],
+      "keywords": ["test", "unittest", "browser_test", "mock"]
+    },
+    "build": {
+      "display_name": "Build System",
+      "patterns": ["build/", "gn/", "ninja/"],
+      "keywords": ["build", "gn", "ninja", "compilation", "deps"]
+    },
+    "security": {
+      "display_name": "Security & Privacy",
+      "patterns": ["security/", "sandbox/", "crypto/"],
+      "keywords": ["security", "sandbox", "crypto", "privacy", "permission"]
+    },
+    "performance": {
+      "display_name": "Performance & Optimization",
+      "patterns": ["perf/", "benchmark/", "speed/", "memory/"],
+      "keywords": ["performance", "optimization", "benchmark", "memory", "cpu"]
+    },
+    "gpu": {
+      "display_name": "Graphics & GPU",
+      "patterns": ["gpu/", "graphics/", "webgl/"],
+      "keywords": ["gpu", "graphics", "webgl", "vulkan", "d3d", "opengl"]
+    },
+    "network": {
+      "display_name": "Network Stack",
+      "patterns": ["net/", "network/", "http/"],
+      "keywords": ["network", "http", "tcp", "ssl", "quic", "dns"]
+    },
+    "ui": {
+      "display_name": "User Interface",
+      "patterns": ["ui/", "views/", "aura/", "ash/"],
+      "keywords": ["ui", "views", "widget", "window", "layout"]
+    },
+    "media": {
+      "display_name": "Media & Codecs",
+      "patterns": ["media/", "audio/", "video/"],
+      "keywords": ["media", "audio", "video", "codec", "streaming"]
+    },
+    "accessibility": {
+      "display_name": "Accessibility",
+      "patterns": ["accessibility/", "a11y/"],
+      "keywords": ["accessibility", "a11y", "screen reader", "assistive"]
+    },
+    "platform": {
+      "display_name": "Platform Specific",
+      "subcategories": {
+        "chromeos": ["chromeos/", "ash/"],
+        "android": ["android/", "java/"],
+        "ios": ["ios/"],
+        "mac": ["mac/", "cocoa/"],
+        "windows": ["win/"],
+        "linux": ["linux/", "gtk/"]
+      }
+    },
+    "development": {
+      "display_name": "Development Tools",
+      "patterns": ["dev/", "debug/", "tools/"],
+      "keywords": ["development", "debug", "tools", "devtools", "logging"]
+    }
+  },
+  "search_strategies": {
+    "exact_match": {"weight": 3.0, "enabled": true},
+    "fuzzy_match": {"weight": 2.0, "enabled": true},
+    "semantic_match": {"weight": 1.5, "enabled": true},
+    "category_match": {"weight": 1.2, "enabled": true}
+  }
+}
