@@ -179,13 +179,14 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_file_width">132dp</dimen>
     <dimen name="fusebox_attachment_image_width">64dp</dimen>
     <dimen name="fusebox_attachment_item_height">@dimen/min_touch_target_size</dimen>
-    <dimen name="fusebox_attachment_item_padding">8dp</dimen>
-    <!-- The remove view is 34x48dp, visible elements should be 18x18dp. -->
-    <!-- Horizontal: (34-18)/2=8 -->
-    <!-- Vertical: (48-18)/2=15 -->
-    <dimen name="fusebox_attachment_remove_horizontal_padding">8dp</dimen>
-    <dimen name="fusebox_attachment_remove_vertical_padding">15dp</dimen>
-    <dimen name="fusebox_attachment_remove_width">34dp</dimen>
+    <dimen name="fusebox_attachment_item_spacing">1dp</dimen>
+    <dimen name="fusebox_attachment_thumbnail_padding">8dp</dimen>
+    <!-- The remove view is 48x48dp, visible elements should be 18x18dp. (48-18)/2=15 -->
+    <dimen name="fusebox_attachment_close_padding">15dp</dimen>
+    <dimen name="fusebox_attachment_close_overhang">7dp</dimen>
+    <dimen name="fusebox_attachment_remove_horizontal_padding">@dimen/fusebox_attachment_close_padding</dimen>
+    <dimen name="fusebox_attachment_remove_vertical_padding">@dimen/fusebox_attachment_close_padding</dimen>
+    <dimen name="fusebox_attachment_remove_width">@dimen/min_touch_target_size</dimen>
     <dimen name="fusebox_attachment_spinner_size">20dp</dimen>
     <dimen name="fusebox_attachment_visible_height">40dp</dimen>
     <dimen name="fusebox_expanded_location_bar_height">48dp</dimen>
@@ -194,7 +195,7 @@ found in the LICENSE file.
     <dimen name="fusebox_url_bar_top_margin_with_attachments">0dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
 
-  <!-- Search engine logo. -->
+    <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 
     <!-- Button highlight dimensions. -->
