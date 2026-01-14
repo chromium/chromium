@@ -16,7 +16,6 @@ namespace {
 
 const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kStartPage,
-    AccessPoint::kNtpLink,
     AccessPoint::kMenu,
     AccessPoint::kSettings,
     AccessPoint::kSettingsYourSavedInfo,
@@ -60,7 +59,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kStartPage,
-    AccessPoint::kNtpLink,
     AccessPoint::kMenu,
     AccessPoint::kSettings,
     AccessPoint::kSettingsYourSavedInfo,
@@ -95,8 +93,6 @@ class SigninMetricsTest : public ::testing::Test {
     switch (access_point) {
       case AccessPoint::kStartPage:
         return "StartPage";
-      case AccessPoint::kNtpLink:
-        return "NTP";
       case AccessPoint::kMenu:
         return "Menu";
       case AccessPoint::kSettings:

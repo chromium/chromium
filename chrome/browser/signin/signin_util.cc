@@ -489,7 +489,6 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case (signin_metrics::AccessPoint::kAddressBubble):
       return false;
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:

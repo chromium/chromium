@@ -159,7 +159,7 @@ enum class ProfileSignout {
 // LINT.IfChange
 enum class AccessPoint : int {
   kStartPage = 0,
-  kNtpLink = 1,
+  // kNtpLink = 1, no longer used.
   // Access point from the three dot app menu.
   kMenu = 2,
   kSettings = 3,

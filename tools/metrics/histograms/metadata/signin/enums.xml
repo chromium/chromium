@@ -914,7 +914,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SigninAccessPoint">
   <int value="0" label="Start page"/>
-  <int value="1" label="NTP Link"/>
+  <int value="1" label="(obsolete) NTP Link"/>
   <int value="2" label="Menu"/>
   <int value="3" label="Settings"/>
   <int value="4" label="Supervised user"/>

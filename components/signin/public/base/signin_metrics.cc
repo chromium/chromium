@@ -401,9 +401,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromStartPage"));
       break;
-    case AccessPoint::kNtpLink:
-      base::RecordAction(base::UserMetricsAction("Signin_Signin_FromNTP"));
-      break;
     case AccessPoint::kMenu:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromMenu"));
       break;
@@ -681,9 +678,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kStartPage:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromStartPage"));
-      break;
-    case AccessPoint::kNtpLink:
-      base::RecordAction(base::UserMetricsAction("Signin_Impression_FromNTP"));
       break;
     case AccessPoint::kMenu:
       base::RecordAction(base::UserMetricsAction("Signin_Impression_FromMenu"));

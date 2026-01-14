@@ -44119,6 +44119,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNTP">
+  <obsolete>Removed 01/2026.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point

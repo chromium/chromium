@@ -121,7 +121,6 @@ void MaybeRecordWebSigninToChromeSigninTimes(
       break;
     // All other access point should not record this metric.
     case signin_metrics::AccessPoint::kStartPage:
-    case signin_metrics::AccessPoint::kNtpLink:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
