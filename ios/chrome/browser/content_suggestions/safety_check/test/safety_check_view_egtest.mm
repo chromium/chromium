@@ -96,9 +96,10 @@ void ScrollToSafetyCheckModule() {
   return config;
 }
 
+// TODO(crbug.com/475843513): Re-enable this test.
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
-- (void)testLongPressAndHide {
+- (void)DISABLED_testLongPressAndHide {
   // Enable relevant preferences for the test.
   [ChromeEarlGrey
       setBoolValue:YES
