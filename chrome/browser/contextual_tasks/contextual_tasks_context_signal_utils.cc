@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_signal_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
 
 #include <algorithm>
 

@@ -13,7 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_signal_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
@@ -43,16 +44,6 @@ namespace {
       optimization_guide_common::mojom::LogSource::CONTEXTUAL_TASKS_CONTEXT, \
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),       \
       (message))
-
-struct TabSignals {
-  raw_ptr<content::WebContents> web_contents = nullptr;
-  // Static signals.
-  std::optional<float> embedding_score;
-  std::optional<int> num_query_title_matching_words;
-  // Dynamic (behavioral) signals.
-  std::optional<base::TimeDelta> duration_since_last_active;
-  std::optional<base::TimeDelta> duration_of_last_visit;
-};
 
 struct TabSimilarityScores {
   std::pair<float, std::string> best_similarity_score =
@@ -87,32 +78,6 @@ std::optional<TabSimilarityScores> GetEmbeddingScores(
     }
   }
   return similarity_scores;
-}
-
-// Probabilistic OR - any high score leads to high score.
-float ProbOr(const float score1, const float score2) {
-  return 1.0f - (1.0f - score1) * (1.0f - score2);
-}
-
-// TODO: crbug.com/452036470 - Add a proper scoring function based on analysis.
-double GetTabScore(const TabSignals& signals) {
-  double score = 0;
-  if (signals.embedding_score.has_value()) {
-    score = ProbOr(score, *(signals.embedding_score));
-  }
-  if (signals.duration_since_last_active.has_value()) {
-    score = ProbOr(
-        score,
-        std::pow(0.7, signals.duration_since_last_active->InSeconds() / 180));
-  }
-  if (signals.num_query_title_matching_words.has_value()) {
-    // Monotonically increasing; Always < 1.
-    // 0 matches = 0 score; 1 match = 0.57; 2 matches = 0.81 and so on.
-    float lexical_match_score =
-        1.0f - std::exp(-0.85 * *(signals.num_query_title_matching_words));
-    score = ProbOr(score, lexical_match_score);
-  }
-  return score;
 }
 
 void RecordContextDeterminationStatus(ContextDeterminationStatus status) {
