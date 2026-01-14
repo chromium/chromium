@@ -91,7 +91,7 @@
   {
     "name": "aim-server-eligibility",
     "owners": ["ameurhosni@google.com", "mahmadi@chromium.org"],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "aim-server-eligibility-en",
