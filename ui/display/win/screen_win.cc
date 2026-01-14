@@ -623,8 +623,7 @@ gfx::Point DIPToScreenPoint(const gfx::Point& dip_point,
 
 // Create a fake FHD display used in case no displays are ever conneceted.
 ScreenWinDisplay CreateFallbackPrimaryScreenDisplay() {
-  MONITORINFOEX monitor_info;
-  UNSAFE_TODO(::ZeroMemory(&monitor_info, sizeof(monitor_info)));
+  MONITORINFOEX monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
   monitor_info.rcMonitor = gfx::Rect{1920, 1080}.ToRECT();
   monitor_info.rcWork = monitor_info.rcMonitor;
