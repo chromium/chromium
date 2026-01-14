@@ -233,9 +233,11 @@ void CountersAttachmentContext::MaybeCreateListItemCounter(
   DCHECK(layout_object);
   RemoveStaleCounters(*layout_object, list_item_);
   if (ListItemOrdinal* ordinal = ListItemOrdinal::Get(element)) {
-    if (const auto& explicit_value = ordinal->ExplicitValue()) {
-      CreateCounter(*layout_object, list_item_, explicit_value.value());
-      return;
+    if (!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+      if (const auto& explicit_value = ordinal->ExplicitValue()) {
+        CreateCounter(*layout_object, list_item_, explicit_value.value());
+        return;
+      }
     }
     int value = ListItemOrdinal::IsInReversedOrderedList(element) ? -1 : 1;
     unsigned type_mask =

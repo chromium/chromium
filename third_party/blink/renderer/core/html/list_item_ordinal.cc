@@ -197,7 +197,8 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
 
   // If the element does not have the `counter-set` CSS property set, return
   // `explicit_value_`.
-  if (ExplicitValue().has_value()) {
+  if (!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() &&
+      ExplicitValue().has_value()) {
     return explicit_value_.value();
   }
 
@@ -275,6 +276,7 @@ void ListItemOrdinal::InvalidateOrdinalsAfter(bool is_reversed,
 }
 
 void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
+  DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled());
   if (UseExplicitValue() && value_ == value) {
     return;
   }
@@ -300,6 +302,7 @@ void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
 }
 
 void ListItemOrdinal::ClearExplicitValue(const Node& item_node) {
+  DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled());
   explicit_value_.reset();
   if (!UseExplicitValue()) {
     return;
@@ -365,13 +368,6 @@ int ListItemOrdinal::InitialCounterForReversedOrderedList(
     if (directives.HasSet()) {
       initial_counter += directives.SetValue();
       break;
-    }
-    if (const ListItemOrdinal* list_item_ordinal = Get(*current)) {
-      if (const std::optional<int> explicit_value =
-              list_item_ordinal->ExplicitValue()) {
-        initial_counter += explicit_value.value();
-        break;
-      }
     }
 
     // 4. Add |increment_negated| to |initial_counter|.

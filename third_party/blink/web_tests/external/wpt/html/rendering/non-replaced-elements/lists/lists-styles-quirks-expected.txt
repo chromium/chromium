@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <menu>\n   <li> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ol>\n   <li> - counter-reset
@@ -140,12 +140,6 @@ Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ol>\n    <li value="10"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <li value="10"> (in <ol>) - counter-set
-  assert_equals: expected "list-item 10" but got "none"
-[FAIL] <li value="10xyz"> (in <ol>) - counter-set
-  assert_equals: expected "list-item 10" but got "none"
-[FAIL] <li value="10e10"> (in <ol>) - counter-set
-  assert_equals: expected "list-item 10" but got "none"
 [FAIL] <ol start="xyz"><li> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 Harness: the test ran to completion.
