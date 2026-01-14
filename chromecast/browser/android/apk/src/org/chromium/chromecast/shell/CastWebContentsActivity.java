@@ -440,6 +440,7 @@ public class CastWebContentsActivity extends Activity {
                 });
     }
 
+    @SuppressWarnings("ScannerUseDelimiter")
     private static String loadBackPressedJavaScript(Context context)
             throws IOException, Resources.NotFoundException {
         try (Scanner scanner =
