@@ -1703,7 +1703,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
-    enum="BooleanReceived" expires_after="2026-02-22">
+    enum="BooleanReceived" expires_after="2027-02-22">
   <owner>andreydav@google.com</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
@@ -3277,7 +3277,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SAML.InSessionPasswordSyncEvent"
-    enum="SamlInSessionPasswordSyncEvent" expires_after="2026-02-22">
+    enum="SamlInSessionPasswordSyncEvent" expires_after="2027-02-22">
   <owner>mslus@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
