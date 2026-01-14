@@ -185,13 +185,11 @@ static PositionType CanonicalPosition(const PositionType& position) {
     return next.IsNotNull() ? next : prev;
 
   Node* const next_node = next.AnchorNode();
-  Node* next_editing_root = RootEditableElementOf(next);
   Node* const prev_node = prev.AnchorNode();
-  Node* prev_editing_root = RootEditableElementOf(prev);
   const bool prev_is_in_same_editable_element =
-      prev_node && prev_editing_root == editing_root;
+      prev_node && RootEditableElementOf(prev) == editing_root;
   const bool next_is_in_same_editable_element =
-      next_node && next_editing_root == editing_root;
+      next_node && RootEditableElementOf(next) == editing_root;
   if (prev_is_in_same_editable_element && !next_is_in_same_editable_element)
     return prev;
 
@@ -201,11 +199,6 @@ static PositionType CanonicalPosition(const PositionType& position) {
   if (!next_is_in_same_editable_element && !prev_is_in_same_editable_element) {
     // `prev/next_editing_root` is a child node of `editing_root`.
     if (editing_root) {
-      if (editing_root->contains(next_editing_root)) {
-        return next;
-      } else if (editing_root->contains(prev_editing_root)) {
-        return prev;
-      }
       // If `prev/next_editing_root` is not in the same block as `editing_root`,
       // but the `position` is editable and visually equivalent position,
       // directly return the `position`.
