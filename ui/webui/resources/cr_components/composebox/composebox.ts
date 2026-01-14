@@ -285,6 +285,7 @@ export class ComposeboxElement extends I18nMixinLit
   // this is false, that means at least one response has been received (even if
   // the response was empty or had an error).
   private haveReceivedAutcompleteResponse_: boolean = false;
+  private isVoiceInput_: boolean = false;
   private pendingUploads_: Set<string> = new Set<string>([]);
 
   constructor() {
@@ -770,11 +771,12 @@ export class ComposeboxElement extends I18nMixinLit
           /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
     } else {
       // If auto-submit is not enabled, update the input to the voice search
-      // query, query autocomplete, and recompute whether submission should be
-      // enabled.
+      // query, clear autocomplete matches, and recompute whether submission
+      // should be enabled.
       this.input_ = e.detail;
-      this.queryAutocomplete(/* clearMatches= */ true);
+      this.clearAutocompleteMatches();
       this.submitEnabled_ = this.computeSubmitEnabled_();
+      this.isVoiceInput_ = true;
       await this.updateComplete;
       this.focusInput();
     }
@@ -884,6 +886,9 @@ export class ComposeboxElement extends I18nMixinLit
   // "$." syntax  as this is not allowed in WillUpdate().
   protected handleInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
+    if (inputElement.value === '') {
+      this.isVoiceInput_ = false;
+    }
     this.input_ = inputElement.value;
     // `clearMatches` is true if input is empty stop any in progress providers
     // before requerying for on-focus (zero-suggest) inputs. The searchbox
@@ -1091,7 +1096,7 @@ export class ComposeboxElement extends I18nMixinLit
     // since the verbatim match is present.
     assert(
         (this.selectedMatchIndex_ >= 0 && this.result_) ||
-            this.contextFilesSize_ > 0,
+            this.contextFilesSize_ > 0 || this.isVoiceInput_,
         'Cannot submit query with no autocomplete matches and no files in ' +
             'context.');
 
@@ -1111,6 +1116,7 @@ export class ComposeboxElement extends I18nMixinLit
           e.ctrlKey, e.metaKey, e.shiftKey);
     }
 
+    this.isVoiceInput_ = false;
     this.animationState = GlowAnimationState.SUBMITTING;
 
     // If the composebox is expandable, collapse it and clear the input after
@@ -1314,6 +1320,9 @@ export class ComposeboxElement extends I18nMixinLit
   // autocomplete call through the handler. It also optionally clears existing
   // matches.
   private queryAutocomplete(clearMatches: boolean) {
+    if (this.isVoiceInput_) {
+      return;
+    }
     if (clearMatches) {
       this.clearAutocompleteMatches();
     }
@@ -1341,6 +1350,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   clearInput() {
     this.input_ = '';
+    this.isVoiceInput_ = false;
   }
 
   getInputText(): string {
