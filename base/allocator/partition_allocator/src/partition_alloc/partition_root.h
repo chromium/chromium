@@ -173,7 +173,9 @@ struct PartitionOptions {
   static constexpr auto kDisabled = EnableToggle::kDisabled;
   static constexpr auto kEnabled = EnableToggle::kEnabled;
 
+  // Partitions with a thread cache cannot be destroyed.
   EnableToggle thread_cache = kDisabled;
+  size_t thread_cache_index = internal::kInvalidThreadCacheIndex;
   EnableToggle use_cookie_if_supported = kEnabled;
   EnableToggle backup_ref_ptr = kDisabled;
   AllowToggle use_configurable_pool = kDisallowed;
@@ -256,6 +258,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     BucketDistribution bucket_distribution = BucketDistribution::kNeutral;
 
     bool with_thread_cache = false;
+    size_t thread_cache_index = internal::kInvalidThreadCacheIndex;
 
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
     bool use_cookie = true;
@@ -730,7 +733,9 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   ThreadCache* thread_cache_for_testing() const {
-    return settings.with_thread_cache ? ThreadCache::Get() : nullptr;
+    return settings.with_thread_cache
+               ? ThreadCache::Get(settings.thread_cache_index)
+               : nullptr;
   }
   size_t get_total_size_of_committed_pages() const {
     return total_size_of_committed_pages.load(std::memory_order_relaxed);
@@ -1880,6 +1885,10 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
   // `[[likely]]`: performance-sensitive partitions have a thread cache,
   // direct-mapped allocations are uncommon.
   ThreadCache* thread_cache = GetThreadCache();
+  // TODO(crbug.com/467243745): Once `ThreadCache::largest_active_bucket_index_`
+  // becomes a per-class variable, remove the initialization check in `IsValid`
+  // and reuse the `bucket_index > largest_active_bucket_index_` within
+  // `MaybePutInCache`.
   if (ThreadCache::IsValid(thread_cache) &&
       (size_details.slot_size <= BucketIndexLookup::kMaxBucketSize))
       [[likely]] {
@@ -2739,7 +2748,7 @@ ThreadCache* PartitionRoot::GetOrCreateThreadCache()
     PA_LOCKS_EXCLUDED(thread_cache_construction_lock) {
   ThreadCache* thread_cache = nullptr;
   if (settings.with_thread_cache) [[likely]] {
-    thread_cache = ThreadCache::Get();
+    thread_cache = ThreadCache::Get(settings.thread_cache_index);
     if (!ThreadCache::IsValid(thread_cache)) [[unlikely]] {
       thread_cache = MaybeInitThreadCache();
     }
@@ -2749,7 +2758,7 @@ ThreadCache* PartitionRoot::GetOrCreateThreadCache()
 
 ThreadCache* PartitionRoot::GetThreadCache() {
   if (settings.with_thread_cache) [[likely]] {
-    return ThreadCache::Get();
+    return ThreadCache::Get(settings.thread_cache_index);
   }
   return nullptr;
 }
@@ -2758,7 +2767,7 @@ ThreadCache* PartitionRoot::EnsureThreadCache()
     PA_LOCKS_EXCLUDED(thread_cache_construction_lock) {
   ThreadCache* thread_cache = nullptr;
   if (settings.with_thread_cache) [[likely]] {
-    thread_cache = ThreadCache::Get();
+    thread_cache = ThreadCache::Get(settings.thread_cache_index);
     if (!ThreadCache::IsValid(thread_cache)) [[unlikely]] {
       thread_cache = ForceInitThreadCache();
     }

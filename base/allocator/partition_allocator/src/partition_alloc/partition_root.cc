@@ -1140,8 +1140,10 @@ void PartitionRoot::Init(PartitionOptions opts) {
     ThreadCache::EnsureThreadSpecificDataInitialized();
     settings.with_thread_cache =
         (opts.thread_cache == PartitionOptions::kEnabled);
+    settings.thread_cache_index = opts.thread_cache_index;
 
     if (settings.with_thread_cache) {
+      PA_CHECK(opts.thread_cache_index < internal::kMaxThreadCacheIndex);
       ThreadCache::Init(this);
     }
 #endif  // !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -1211,6 +1213,7 @@ void PartitionRoot::EnableThreadCacheIfSupported() {
   // `internal::ThreadCacheInit()` are visible. To prevent that, we fake thread
   // cache creation being in-progress while this is running.
 
+  settings.thread_cache_index = internal::kDefaultRootThreadCacheIndex;
   {
     ::partition_alloc::internal::ScopedGuard construction_guard{
         thread_cache_construction_lock};
@@ -1218,7 +1221,7 @@ void PartitionRoot::EnableThreadCacheIfSupported() {
     ThreadCache::Init(this);
     // Create thread cache for this thread so that we can start using it right
     // after.
-    ThreadCache::Create(this);
+    ThreadCache::Create(this, settings.thread_cache_index);
   }
 
   settings.with_thread_cache = true;
@@ -1621,9 +1624,9 @@ void PartitionRoot::DumpStats(const char* partition_name,
     stats.has_thread_cache = settings.with_thread_cache;
     if (stats.has_thread_cache) {
       ThreadCacheRegistry::Instance().DumpStats(
-          true, &stats.current_thread_cache_stats);
-      ThreadCacheRegistry::Instance().DumpStats(false,
-                                                &stats.all_thread_caches_stats);
+          true, &stats.current_thread_cache_stats, settings.thread_cache_index);
+      ThreadCacheRegistry::Instance().DumpStats(
+          false, &stats.all_thread_caches_stats, settings.thread_cache_index);
     }
 
     stats.has_scheduler_loop_quarantine =
@@ -1667,7 +1670,8 @@ void PartitionRoot::DumpStats(const char* partition_name,
 // static
 void PartitionRoot::DeleteForTesting(PartitionRoot* partition_root) {
   if (partition_root->settings.with_thread_cache) {
-    ThreadCache::SwapForTesting(nullptr);
+    ThreadCache::SwapForTesting(nullptr,
+                                partition_root->settings.thread_cache_index);
     partition_root->settings.with_thread_cache = false;
   }
 
@@ -1682,7 +1686,7 @@ void PartitionRoot::DeleteForTesting(PartitionRoot* partition_root) {
 
 void PartitionRoot::ResetForTesting(bool allow_leaks) {
   if (settings.with_thread_cache) {
-    ThreadCache::SwapForTesting(nullptr);
+    ThreadCache::SwapForTesting(nullptr, settings.thread_cache_index);
     settings.with_thread_cache = false;
   }
 
@@ -1765,8 +1769,7 @@ void PartitionRoot::SetGlobalEmptySlotSpanRingIndexForTesting(int16_t index) {
 }
 
 ThreadCache* PartitionRoot::MaybeInitThreadCache() {
-  auto* tcache = ThreadCache::Get();
-  if (ThreadCache::IsTombstone(tcache)) {
+  if (ThreadCache::IsTombstone()) {
     // Thread is being terminated, don't try to use the thread cache, and don't
     // try to resurrect it.
     return nullptr;
@@ -1792,15 +1795,14 @@ ThreadCache* PartitionRoot::MaybeInitThreadCache() {
     return nullptr;
   }
 
-  tcache = ThreadCache::Create(this);
+  auto* tcache = ThreadCache::Create(this, settings.thread_cache_index);
   thread_cache_construction_lock.Release();
 
   return tcache;
 }
 
 ThreadCache* PartitionRoot::ForceInitThreadCache() {
-  auto* tcache = ThreadCache::Get();
-  if (ThreadCache::IsTombstone(tcache)) {
+  if (ThreadCache::IsTombstone()) {
     // Thread is being terminated, don't try to use the thread cache, and don't
     // try to resurrect it.
     return nullptr;
@@ -1814,7 +1816,7 @@ ThreadCache* PartitionRoot::ForceInitThreadCache() {
   // function.
   ::partition_alloc::internal::ScopedGuard construction_guard{
       thread_cache_construction_lock};
-  tcache = ThreadCache::Create(this);
+  auto* tcache = ThreadCache::Create(this, settings.thread_cache_index);
 
   return tcache;
 }

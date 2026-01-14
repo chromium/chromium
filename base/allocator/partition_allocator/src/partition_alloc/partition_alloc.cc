@@ -110,9 +110,14 @@ PartitionAllocator::~PartitionAllocator() {
 
 void PartitionAllocator::init(PartitionOptions opts) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled)
-      << "Cannot use a thread cache when PartitionAlloc is malloc().";
+  PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled ||
+           opts.thread_cache_index != internal::kDefaultRootThreadCacheIndex)
+      << "Cannot use a thread cache at default index when PartitionAlloc is "
+         "malloc().";
 #endif
+  PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled ||
+           opts.thread_cache_index < internal::kMaxThreadCacheIndex)
+      << "Thread cache index must be less than kMaxThreadCacheIndex";
   partition_root_.Init(opts);
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // The MemoryReclaimer won't have write access to the partition, so skip

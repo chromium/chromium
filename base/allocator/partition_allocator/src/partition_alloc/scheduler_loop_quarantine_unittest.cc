@@ -34,9 +34,10 @@ GetBranchFromAllocatorRoot<false>(PartitionRoot* root) {
 template <>
 internal::ThreadBoundSchedulerLoopQuarantineBranch*
 GetBranchFromAllocatorRoot<true>(PartitionRoot* root) {
-  ThreadCache* tcache = ThreadCache::Get();
-  PA_CHECK(ThreadCache::IsValid(tcache));
   PA_CHECK(root->settings.with_thread_cache);
+  PA_CHECK(root->settings.thread_cache_index == 0);
+  ThreadCache* tcache = root->thread_cache_for_testing();
+  PA_CHECK(ThreadCache::IsValid(tcache));
   return &tcache->GetSchedulerLoopQuarantineBranch();
 }
 
