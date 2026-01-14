@@ -44,7 +44,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -81,6 +80,7 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
@@ -1094,8 +1094,7 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
 class StrikeDatabaseTester {
  public:
   explicit StrikeDatabaseTester(Profile* profile)
-      : strike_database_(
-            autofill::StrikeDatabaseFactory::GetForProfile(profile)) {}
+      : strike_database_(StrikeDatabaseFactory::GetForProfile(profile)) {}
 
   bool IsEmpty() {
     int num_keys;

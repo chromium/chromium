@@ -5,12 +5,12 @@
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 
 #include "base/check_deref.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -49,7 +49,7 @@ strike_database::StrikeDatabaseBase*
 ChromeWalletablePassClient::GetStrikeDatabase() {
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+  return StrikeDatabaseFactory::GetForProfile(profile);
 }
 
 PrefService* ChromeWalletablePassClient::GetPrefService() {

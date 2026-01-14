@@ -11,10 +11,10 @@ static_library("wallet") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/autofill",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
+    "//chrome/browser/strike_database",
     "//chrome/browser/ui/wallet",
     "//components/optimization_guide/core",
     "//components/variations/service",

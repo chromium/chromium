@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/strike_database/strike_database.h"
 #include "content/public/browser/storage_partition.h"
-
-namespace autofill {
 
 // static
 strike_database::StrikeDatabase* StrikeDatabaseFactory::GetForProfile(
@@ -53,5 +51,3 @@ StrikeDatabaseFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<strike_database::StrikeDatabase>(db_provider,
                                                            profile->GetPath());
 }
-
-}  // namespace autofill

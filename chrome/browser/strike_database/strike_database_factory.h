@@ -18,8 +18,6 @@ class StrikeDatabase;
 
 class Profile;
 
-namespace autofill {
-
 // Singleton that owns all StrikeDatabases and associates them with
 // Profiles.
 class StrikeDatabaseFactory : public ProfileKeyedServiceFactory {
@@ -43,7 +41,5 @@ class StrikeDatabaseFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
-
-}  // namespace autofill
 
 #endif  // CHROME_BROWSER_AUTOFILL_STRIKE_DATABASE_FACTORY_H_

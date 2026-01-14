@@ -7066,6 +7066,7 @@ test("unit_tests") {
     "//chrome/browser/site_protection:utils",
     "//chrome/browser/status_icons",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/strike_database",
     "//chrome/browser/supervised_user:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",

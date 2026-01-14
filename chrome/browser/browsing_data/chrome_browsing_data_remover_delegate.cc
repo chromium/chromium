@@ -34,7 +34,6 @@
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -80,6 +79,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -1056,10 +1056,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // TODO(crbug.com/40594007): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that
       // timeframe.
-      strike_database::StrikeDatabase* strike_database =
-          autofill::StrikeDatabaseFactory::GetForProfile(profile_);
-      if (strike_database)
+      if (strike_database::StrikeDatabase* strike_database =
+              StrikeDatabaseFactory::GetForProfile(profile_)) {
         strike_database->ClearAllStrikes();
+      }
 
       autofill::PersonalDataManager* data_manager =
           autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);

@@ -5,10 +5,10 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
