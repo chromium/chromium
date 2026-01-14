@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
-import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for PartnerBookmarksReader. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,7 +31,6 @@ public class PartnerBookmarksReaderTest {
     @Mock private Context mContextMock;
     @Mock private PartnerBookmarksReader.Natives mJniMock;
     @Mock private PartnerBrowserCustomizations mBrowserCustomizations;
-    @Mock private Profile mProfile;
     @Captor private ArgumentCaptor<Runnable> mBrowserCustomizationsInitCallback;
 
     @Before
@@ -57,7 +55,6 @@ public class PartnerBookmarksReaderTest {
                 .thenReturn(browserCustomizationsInitialized);
         return new PartnerBookmarksReader(
                 mContextMock,
-                mProfile,
                 mBrowserCustomizations,
                 hasNullNativePointer
                         ? PartnerBookmarksReader.NULL_NATIVE_POINTER
