@@ -1086,6 +1086,24 @@ CriticalHintsMissingStatus GetCriticalHintsMissingStatus(
              : CriticalHintsMissingStatus::kPresent;
 }
 
+// Determines if a hint that is not allowed by the permissions policy should be
+// explicitly passed to the network service. This is part of an optimization
+// (`kOffloadAcceptCHFrameCheck`) where the network service, rather than the
+// browser process, handles `Accept-CH` headers. The network service needs the
+// list of not-allowed hints to do this correctly for cross-origin iframes.
+// This function returns true if the offload feature is enabled, one of the
+// controlling feature params (`kAcceptCHFrameOffloadNotAllowedHints` or
+// `kAlwaysGenerateNotAllowedClientHints`) is true, and the hint is indeed not
+// allowed by the policy.
+bool ShouldAddNotAllowedClientHint(const ClientHintsExtendedData& data,
+                                   network::mojom::WebClientHintsType hint) {
+  return base::FeatureList::IsEnabled(
+             network::features::kOffloadAcceptCHFrameCheck) &&
+         (network::features::kAcceptCHFrameOffloadNotAllowedHints.Get() ||
+          network::features::kAlwaysGenerateNotAllowedClientHints.Get()) &&
+         !IsClientHintAllowed(data, hint);
+}
+
 network::ResourceRequest::TrustedParams::EnabledClientHints
 GetEnabledClientHints(const url::Origin& origin,
                       FrameTreeNode* frame_tree_node,
@@ -1107,10 +1125,7 @@ GetEnabledClientHints(const url::Origin& origin,
     }
     // `enabled_client_hints.not_allowed_hints` are client hints that are
     // currently not allowed to be attached to the request.
-    if (base::FeatureList::IsEnabled(
-            network::features::kOffloadAcceptCHFrameCheck) &&
-        network::features::kAcceptCHFrameOffloadNotAllowedHints.Get() &&
-        !IsClientHintAllowed(data, hint)) {
+    if (ShouldAddNotAllowedClientHint(data, hint)) {
       enabled_client_hints.not_allowed_hints.push_back(hint);
     }
   }

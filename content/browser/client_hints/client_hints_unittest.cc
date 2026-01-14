@@ -583,4 +583,67 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsSubframeNotAllowed) {
               testing::UnorderedElementsAreArray(expected_not_allowed_hints));
 }
 
+TEST_F(ClientHintsTest, GetEnabledClientHintsNotAllowedHintsLogic) {
+  GURL main_url(kOriginUrl);
+  contents()->NavigateAndCommit(main_url);
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  AddOneChildNode();
+  FrameTreeNode* sub_frame_node = main_frame_node->child_at(0);
+  GURL sub_url("https://sub.example.com");
+  url::Origin sub_origin = url::Origin::Create(sub_url);
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Case 1: kOffloadAcceptCHFrameCheck is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        network::features::kOffloadAcceptCHFrameCheck);
+    const auto& actual_hints =
+        GetEnabledClientHints(sub_origin, sub_frame_node, &delegate);
+    EXPECT_TRUE(actual_hints.not_allowed_hints.empty());
+  }
+
+  // Case 2: Both kAcceptCHFrameOffloadNotAllowedHints and
+  // kAlwaysGenerateNotAllowedClientHints are false.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        network::features::kOffloadAcceptCHFrameCheck);
+    const auto& actual_hints =
+        GetEnabledClientHints(sub_origin, sub_frame_node, &delegate);
+    EXPECT_TRUE(actual_hints.not_allowed_hints.empty());
+  }
+
+  // Case 3: kOffloadAcceptCHFrameCheck enabled,
+  // kAcceptCHFrameOffloadNotAllowedHints enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{network::features::kOffloadAcceptCHFrameCheck,
+          {{network::features::kAcceptCHFrameOffloadNotAllowedHints.name,
+            "true"}}}},
+        {});
+    const auto& actual_hints =
+        GetEnabledClientHints(sub_origin, sub_frame_node, &delegate);
+    EXPECT_FALSE(actual_hints.not_allowed_hints.empty());
+  }
+
+  // Case 4: kOffloadAcceptCHFrameCheck enabled,
+  // kAlwaysGenerateNotAllowedClientHints enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{network::features::kOffloadAcceptCHFrameCheck,
+          {{network::features::kAlwaysGenerateNotAllowedClientHints.name,
+            "true"}}}},
+        {});
+    const auto& actual_hints =
+        GetEnabledClientHints(sub_origin, sub_frame_node, &delegate);
+    EXPECT_FALSE(actual_hints.not_allowed_hints.empty());
+  }
+}
+
 }  // namespace content
