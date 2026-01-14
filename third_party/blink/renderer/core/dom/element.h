@@ -2014,7 +2014,7 @@ class CORE_EXPORT Element : public ContainerNode {
   OverscrollAreaTracker& EnsureOverscrollAreaTracker();
   OverscrollAreaTracker* GetOverscrollAreaTracker() const;
 
-  Element* OverscrollContainer() const;
+  Element* GetOverscrollContainer() const;
   void SetOverscrollContainer(Element*);
   void ClearOverscrollContainer();
 

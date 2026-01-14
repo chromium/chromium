@@ -4507,7 +4507,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // We do this outside of the OverscrollCommandTargets check since we could,
   // for instance, remove the element's id first and then remove it from the
   // DOM.
-  if (auto* container = OverscrollContainer()) {
+  if (auto* container = GetOverscrollContainer()) {
     container->GetOverscrollAreaTracker()->RemoveOverscroll(this);
   }
 
@@ -4549,7 +4549,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   //   - ::-internal-overscroll-area-parent
   //     - #menu
   //   - #button
-  if (Element* container = OverscrollContainer()) {
+  if (Element* container = GetOverscrollContainer()) {
     if (!context.parent->IsPseudo(kPseudoIdOverscrollAreaParent)) {
       AttachContext overscroll_area_context(context);
       wtf_size_t index =
@@ -5482,19 +5482,19 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   // If we have an overscroll container, but it's the wrong one or we shouldn't
   // have one, remove this element from the overscroll container (which should
-  // also clear OverscrollContainer() on `this`).
-  if (OverscrollContainer() &&
+  // also clear GetOverscrollContainer() on `this`).
+  if (GetOverscrollContainer() &&
       (!new_style || !new_style->IsInternalOverscrollPositionAuto() ||
-       OverscrollContainer() != style_recalc_context.overscroll_container)) {
-    auto* tracker = OverscrollContainer()->GetOverscrollAreaTracker();
-    // We should've created a tracker when we set the OverscrollContainer on
+       GetOverscrollContainer() != style_recalc_context.overscroll_container)) {
+    auto* tracker = GetOverscrollContainer()->GetOverscrollAreaTracker();
+    // We should've created a tracker when we set the GetOverscrollContainer on
     // `this`.
     CHECK(tracker);
     tracker->RemoveOverscroll(this);
   }
   // If we no longer an overscroll container, but need one, add this element to
   // the context overscroll container.
-  if (!OverscrollContainer() && new_style &&
+  if (!GetOverscrollContainer() && new_style &&
       new_style->IsInternalOverscrollPositionAuto()) {
     // Note that we don't do anything special if there is no overscroll
     // container.
@@ -13464,7 +13464,7 @@ OverscrollAreaTracker* Element::GetOverscrollAreaTracker() const {
   return nullptr;
 }
 
-Element* Element::OverscrollContainer() const {
+Element* Element::GetOverscrollContainer() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetOverscrollContainer();
   }

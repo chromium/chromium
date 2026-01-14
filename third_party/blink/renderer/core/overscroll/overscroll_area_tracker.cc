@@ -14,7 +14,7 @@ OverscrollAreaTracker::OverscrollAreaTracker(Element* element)
     : container_(element) {}
 
 void OverscrollAreaTracker::AddOverscroll(Element* element) {
-  CHECK(!element->OverscrollContainer());
+  CHECK(!element->GetOverscrollContainer());
   DCHECK(element->isConnected());
   element->SetOverscrollContainer(container_);
   overscroll_members_.push_back(element);
@@ -44,7 +44,7 @@ void OverscrollAreaTracker::RemoveAllOverscroll() {
 }
 
 void OverscrollAreaTracker::RemoveOverscroll(Element* element) {
-  CHECK_EQ(element->OverscrollContainer(), container_);
+  CHECK_EQ(element->GetOverscrollContainer(), container_);
   element->ClearOverscrollContainer();
   Erase(overscroll_members_, element);
   needs_dom_sort_ = needs_dom_sort_ && overscroll_members_.size() > 1;

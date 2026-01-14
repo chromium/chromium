@@ -728,7 +728,8 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   // Targets of toggle-overscroll actions are reparented under their
   // corresponding ::-internal-overscroll-area on their overscroll container.
   Element* element = DynamicTo<Element>(node);
-  if (Element* container = element ? element->OverscrollContainer() : nullptr) {
+  if (Element* container =
+          element ? element->GetOverscrollContainer() : nullptr) {
     wtf_size_t index =
         container->GetOverscrollAreaTracker()->DOMSortedElements().Find(
             element);
