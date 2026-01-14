@@ -251,9 +251,9 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       // Active follow tab underline should be newly shown, pinned tabs should
       // re-animate or be newly shown if not already visible.
       if (IsUnderlineTabSharedThroughActiveFollow()) {
-        ShowAndAnimateUnderline();
+        ShowAndAnimateUnderline(/*triggered_by_glic=*/true);
       }
-      ShowOrAnimatePinnedUnderline();
+      ShowOrAnimatePinnedUnderline(/*triggered_by_glic=*/true);
       break;
     }
     case UpdateUnderlineReason::kContextAccessIndicatorOff: {
@@ -263,7 +263,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
           (GlicEnabling::IsMultiInstanceEnabled() || IsGlicWindowShowing())) {
         break;
       }
-      HideUnderline();
+      HideUnderline(/*triggered_by_glic=*/true);
       break;
     }
     case UpdateUnderlineReason::kFocusedTabChanged_NoFocusChange: {
@@ -279,7 +279,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       // follow. Pinned tabs should not react as the set of shared tabs has
       // not changed.
       if (IsUnderlineTabSharedThroughActiveFollow()) {
-        ShowAndAnimateUnderline();
+        ShowAndAnimateUnderline(/*triggered_by_glic=*/true);
       }
       break;
     }
@@ -290,7 +290,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       if (IsUnderlineTabPinned() && context_access_indicator_enabled_) {
         AnimateUnderline();
       } else if (!IsUnderlineTabPinned()) {
-        HideUnderline();
+        HideUnderline(/*triggered_by_glic=*/true);
       }
       break;
     }
@@ -298,19 +298,19 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       // Active follow tab underline should be newly shown, pinned tabs should
       // re-animate or be newly shown if not already visible.
       if (IsUnderlineTabSharedThroughActiveFollow()) {
-        ShowAndAnimateUnderline();
+        ShowAndAnimateUnderline(/*triggered_by_glic=*/true);
       }
-      ShowOrAnimatePinnedUnderline();
+      ShowOrAnimatePinnedUnderline(/*triggered_by_glic=*/true);
       break;
     case UpdateUnderlineReason::kFocusedTabChanged_ChromeLostFocus:
       // Underline should be hidden, with exception to pinned tabs.
       if (!IsUnderlineTabPinned()) {
-        HideUnderline();
+        HideUnderline(/*triggered_by_glic=*/true);
       }
       break;
     case UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet:
       if (GlicEnabling::IsMultiInstanceEnabled()) {
-        ShowAndAnimateUnderline();
+        ShowAndAnimateUnderline(/*triggered_by_glic=*/true);
       } else {
         // If `underline_view_` is not visible, then this tab was just added
         // to the set of pinned tabs.
@@ -319,7 +319,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
           // is open. For multi-instance this is controlled via the pinned
           // tabs api.
           if (IsGlicWindowShowing()) {
-            ShowAndAnimateUnderline();
+            ShowAndAnimateUnderline(/*triggered_by_glic=*/true);
           }
         } else {
           // This tab was already pinned - re-animate to reflect the change in
@@ -335,20 +335,20 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
         return;
       }
       // This tab may have just been removed from the pinned set.
-      HideUnderline();
+      HideUnderline(/*triggered_by_glic=*/true);
       break;
     case UpdateUnderlineReason::kPanelStateChanged_PanelShowing:
       // Visibility of underlines of pinned tabs should follow visibility of
       // the glic panel.
       if (IsUnderlineTabPinned()) {
-        ShowAndAnimateUnderline();
+        ShowAndAnimateUnderline(/*triggered_by_glic=*/true);
       }
       break;
     case UpdateUnderlineReason::kPanelStateChanged_PanelHidden:
       // Visibility of underlines of pinned tabs should follow visibility of
       // the glic panel.
       if (IsUnderlineTabPinned()) {
-        HideUnderline();
+        HideUnderline(/*triggered_by_glic=*/true);
       }
       break;
     case UpdateUnderlineReason::kUserInputSubmitted:
@@ -358,25 +358,46 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       break;
     case UpdateUnderlineReason::kContextualTask_TabInContext:
       if (!underline_view_->IsShowing()) {
-        ShowAndAnimateUnderline();
+        ShowAndAnimateUnderline(/*triggered_by_glic=*/false);
       }
       break;
     case UpdateUnderlineReason::kContextualTask_TabNotInContext:
       // TODO(crbug.com/467739947): Consider reenabling hide animation.
+      // If the underline is currently being shown due to a Glic side panel,
+      // ignore reset signals from contextual tasks as the backend sends reset
+      // signals much more frequently (e.g. for every tab switch event) even
+      // though contextual tasks side panel isn't open.
+      if (state_ == UnderlineState::kShowingForGlic) {
+        return;
+      }
       underline_view_->StopShowing();
       break;
   }
 }
 
-void TabUnderlineViewControllerImpl::ShowAndAnimateUnderline() {
+void TabUnderlineViewControllerImpl::ShowAndAnimateUnderline(
+    bool triggered_by_glic) {
+  state_ = triggered_by_glic ? UnderlineState::kShowingForGlic
+                             : UnderlineState::kShowingForContextualTasks;
   underline_view_->StopShowing();
   underline_view_->Show();
 }
 
-void TabUnderlineViewControllerImpl::HideUnderline() {
-  if (underline_view_->IsShowing()) {
-    underline_view_->StartRampingDown();
+void TabUnderlineViewControllerImpl::HideUnderline(bool triggered_by_glic) {
+  if (!underline_view_->IsShowing()) {
+    return;
   }
+
+  // Ignore the signal from Glic if the underline is being shown
+  // due to a signal from contextual tasks.
+  if (triggered_by_glic &&
+      state_ == UnderlineState::kShowingForContextualTasks) {
+    return;
+  }
+
+  state_ = UnderlineState::kHidden;
+
+  underline_view_->StartRampingDown();
 }
 
 void TabUnderlineViewControllerImpl::AnimateUnderline() {
@@ -390,7 +411,8 @@ void TabUnderlineViewControllerImpl::AnimateUnderline() {
   underline_view_->ResetAnimationCycle();
 }
 
-void TabUnderlineViewControllerImpl::ShowOrAnimatePinnedUnderline() {
+void TabUnderlineViewControllerImpl::ShowOrAnimatePinnedUnderline(
+    bool triggered_by_glic) {
   if (!IsUnderlineTabPinned()) {
     return;
   }
@@ -405,7 +427,7 @@ void TabUnderlineViewControllerImpl::ShowOrAnimatePinnedUnderline() {
   if (underline_view_->IsShowing()) {
     AnimateUnderline();
   } else {
-    ShowAndAnimateUnderline();
+    ShowAndAnimateUnderline(triggered_by_glic);
   }
 }
 
