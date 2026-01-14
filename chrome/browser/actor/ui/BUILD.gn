@@ -48,84 +48,60 @@ source_set("dom_node_geometry") {
   ]
 }
 
-if (!is_android) {
-  mojom("mojo_bindings") {
-    disable_variants = true
-    public_deps = [ "//mojo/public/mojom/base" ]
+mojom("mojo_bindings") {
+  disable_variants = true
+  public_deps = [ "//mojo/public/mojom/base" ]
 
-    deps = [
-      "//skia/public/mojom",
-      "//ui/gfx/geometry/mojom",
-    ]
+  deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
 
-    sources = [ "actor_overlay.mojom" ]
-    webui_module_path = "/"
-  }
+  sources = [ "actor_overlay.mojom" ]
+  webui_module_path = "/"
+}
 
-  source_set("ui") {
+if (!skip_android_unmigrated_actor_files) {
+  source_set("actor_overlay") {
     sources = [
-      "actor_border_view_controller.cc",
-      "actor_border_view_controller.h",
       "actor_overlay_handler.cc",
       "actor_overlay_handler.h",
       "actor_overlay_ui.cc",
       "actor_overlay_ui.h",
       "actor_overlay_web_view.cc",
       "actor_overlay_web_view.h",
-      "actor_ui_state_manager.cc",
-      "actor_ui_state_manager.h",
-      "actor_ui_state_manager_interface.h",
-      "actor_ui_state_manager_prefs.cc",
-      "actor_ui_state_manager_prefs.h",
-      "actor_ui_tab_controller.cc",
-      "actor_ui_tab_controller.h",
-      "actor_ui_tab_controller_interface.cc",
-      "actor_ui_tab_controller_interface.h",
-      "actor_ui_window_controller.h",
-      "handoff_button_controller.cc",
-      "handoff_button_controller.h",
     ]
     deps = [
-      ":ui_event_types",
+      ":mojo_bindings",
+      ":ui",
       "//base",
-      "//chrome/app/vector_icons",
-      "//chrome/browser/actor/resources:browser_resources",
-      "//chrome/browser/actor/ui:ui_event_utils",
-      "//chrome/browser/profiles:profile",
+      "//chrome/browser/actor/resources:grit_grit",
+      "//chrome/browser/profiles",
       "//chrome/browser/resources/actor_overlay:resources",
+      "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/tabs:tabs_public",
-      "//chrome/browser/ui/toasts",
-      "//chrome/browser/ui/toasts/api:toasts",
-      "//chrome/browser/ui/views/frame:immersive_mode_controller",
-      "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/common",
+      "//components/tabs:public",
       "//content/public/browser",
-      "//third_party/abseil-cpp:absl",
-      "//ui/base/unowned_user_data",
+      "//mojo/public/cpp/bindings",
+      "//skia",
+      "//ui/base",
+      "//ui/color",
+      "//ui/native_theme",
       "//ui/views",
       "//ui/views/controls/webview",
       "//ui/webui",
     ]
-
-    public_deps = [
-      ":metrics",
-      ":mojo_bindings",
-    ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
-    }
   }
 
   source_set("window_controller_impl") {
     sources = [ "actor_ui_window_controller.cc" ]
     deps = [
+      ":actor_overlay",
       ":metrics",
       ":ui",
       "//chrome/browser/actor",
@@ -136,28 +112,6 @@ if (!is_android) {
       "//chrome/common",
       "//ui/views",
       "//ui/views/controls/webview",
-    ]
-  }
-
-  source_set("event_dispatcher") {
-    sources = [
-      "event_dispatcher.cc",
-      "event_dispatcher.h",
-      "event_dispatcher_computations.cc",
-    ]
-    public_deps = [
-      ":ui",
-      "//base",
-      "//chrome/browser/actor:types",
-    ]
-    deps = [
-      ":dom_node_geometry",
-      ":ui_event_types",
-      ":ui_event_utils",
-      "//chrome/browser/actor",
-      "//chrome/browser/actor:variants",
-      "//chrome/browser/actor/ui",
-      "//third_party/abseil-cpp:absl",
     ]
   }
 
@@ -207,33 +161,6 @@ if (!is_android) {
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
-  source_set("ui_event_types") {
-    sources = [
-      "ui_event.cc",
-      "ui_event.h",
-    ]
-    public_deps = [
-      "//base",
-
-      # ActorTask::State isn't in actor:types
-      "//chrome/browser/actor",
-      "//chrome/browser/actor:types",
-    ]
-    deps = [ "//components/tabs:public" ]
-  }
-
-  source_set("ui_event_utils") {
-    sources = [
-      "ui_event_debugstring.cc",
-      "ui_event_debugstring.h",
-    ]
-    deps = [
-      ":ui_event_types",
-      "//base",
-      "//third_party/abseil-cpp:absl",
-    ]
-  }
-
   source_set("browser_tests") {
     testonly = true
 
@@ -248,6 +175,7 @@ if (!is_android) {
     ]
 
     deps = [
+      ":actor_overlay",
       ":dom_node_geometry",
       ":ui",
       ":ui_event_types",
@@ -300,6 +228,115 @@ if (!is_android) {
   }
 }
 
+source_set("ui") {
+  sources = [
+    "actor_ui_state_manager.cc",
+    "actor_ui_state_manager.h",
+    "actor_ui_state_manager_interface.h",
+  ]
+  deps = [
+    ":ui_event_types",
+    ":ui_event_utils",
+    "//base",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/common",
+  ]
+
+  public_deps = [
+    ":metrics",
+    ":mojo_bindings",
+  ]
+
+  if (!skip_android_unmigrated_actor_files) {
+    sources += [
+      "actor_border_view_controller.cc",
+      "actor_border_view_controller.h",
+      "actor_ui_state_manager_prefs.cc",
+      "actor_ui_state_manager_prefs.h",
+      "actor_ui_tab_controller.cc",
+      "actor_ui_tab_controller.h",
+      "actor_ui_tab_controller_interface.cc",
+      "actor_ui_tab_controller_interface.h",
+      "actor_ui_window_controller.h",
+      "handoff_button_controller.cc",
+      "handoff_button_controller.h",
+    ]
+    deps += [
+      "//chrome/app/vector_icons",
+      "//chrome/browser/actor",
+      "//chrome/browser/actor/resources:browser_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller",
+      "//chrome/browser/ui/views/interaction",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//third_party/abseil-cpp:absl",
+      "//ui/base/unowned_user_data",
+      "//ui/views",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
+  }
+}
+
+source_set("event_dispatcher") {
+  sources = [
+    "event_dispatcher.cc",
+    "event_dispatcher.h",
+    "event_dispatcher_computations.cc",
+  ]
+  public_deps = [
+    ":ui",
+    "//base",
+    "//chrome/browser/actor:types",
+  ]
+  deps = [
+    ":dom_node_geometry",
+    ":ui_event_types",
+    ":ui_event_utils",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:variants",
+    "//chrome/browser/actor/ui",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("ui_event_types") {
+  sources = [
+    "ui_event.cc",
+    "ui_event.h",
+  ]
+  public_deps = [
+    "//base",
+
+    # ActorTask::State isn't in actor:types
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:types",
+  ]
+  deps = [ "//components/tabs:public" ]
+}
+
+source_set("ui_event_utils") {
+  sources = [
+    "ui_event_debugstring.cc",
+    "ui_event_debugstring.h",
+  ]
+  deps = [
+    ":ui_event_types",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "dom_node_geometry_unittest.cc" ]
@@ -309,7 +346,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (!is_android) {
+  if (!skip_android_unmigrated_actor_files) {
     sources += [
       "actor_border_view_controller_unittest.cc",
       "actor_overlay_handler_unittest.cc",
@@ -323,6 +360,7 @@ source_set("unit_tests") {
       "ui_event_debugstring_unittest.cc",
     ]
     deps += [
+      ":actor_overlay",
       ":event_dispatcher",
       ":test_support",
       ":ui",

@@ -24,7 +24,10 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
   void OnUiEvent(SyncUiEvent event) override;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void MaybeShowToast(BrowserWindowInterface* bwi) override;
+#endif
+
   std::optional<std::string> GetActorTaskTitle(TaskId id) override;
   std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
       TaskId id) override;

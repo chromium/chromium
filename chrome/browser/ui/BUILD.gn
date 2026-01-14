@@ -1425,6 +1425,7 @@ static_library("ui") {
       "//chrome/browser/actor",
       "//chrome/browser/actor:impl",
       "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",
@@ -4777,6 +4778,7 @@ static_library("ui") {
       # componentized:
       # c/b/ui/browser.h, browser_finder.h, browser_window.h.
       # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
+      "//chrome/browser/actor/ui",
       "//chrome/browser/ui/views/zoom",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webauthn:impl",

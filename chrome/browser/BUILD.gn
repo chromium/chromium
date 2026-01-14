@@ -4265,6 +4265,7 @@ static_library("browser") {
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/accessibility/tree_fixing:service",
       "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/actor/ui:window_controller_impl",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/actor/ui/task_list_bubble:controller_impl",

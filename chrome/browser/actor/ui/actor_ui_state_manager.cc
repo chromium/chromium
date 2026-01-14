@@ -9,13 +9,8 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -26,10 +21,20 @@
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#endif
+
 namespace actor::ui {
 namespace {
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 // The maximum number of times the closing toast should be shown for a profile.
 constexpr int kToastShownMax = 2;
+#endif
 
 using tabs::TabInterface;
 using enum HandoffButtonState::ControlOwnership;
@@ -68,6 +73,7 @@ const UiTabState& GetPausedUiTabState() {
   return kPausedState;
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
       .actor_overlay = {.is_active = false, .border_glow_visible = false},
@@ -122,6 +128,7 @@ bool MaybeShowToastViaController(BrowserWindowInterface* bwi) {
   }
   return false;
 }
+#endif
 
 }  // namespace
 
@@ -167,12 +174,15 @@ void ActorUiStateManager::OnActorTaskStateChange(
       }
       break;
   }
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   for (const auto& tab : GetTabs(task_id)) {
     if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
       tab_controller->OnUiTabStateChange(ui_tab_state,
                                          base::BindOnce(&LogUiChangeError));
     }
   }
+#endif
 
   notify_actor_task_state_change_debounce_timer_.Start(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
@@ -199,6 +209,7 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
   TRACE_EVENT("actor", "UiStateManager::OnUiEvent_Async", "event",
               DebugString(event));
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     const TabUiUpdate update = std::visit(GetNewUiStateFn(), event);
     if (auto* tab_controller =
@@ -220,6 +231,7 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
   }
+#endif
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
@@ -267,16 +279,19 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             }
           },
           [](const StoppedActingOnTab& e) {
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
             auto* tab = e.tab_handle.Get();
             if (auto* tab_controller =
                     ActorUiTabControllerInterface::From(tab)) {
               tab_controller->OnUiTabStateChange(
                   GetCompletedUiTabState(), base::BindOnce(&LogUiChangeError));
             }
+#endif
           }},
       event);
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
   if (!features::kGlicActorUiToast.Get()) {
     return;
@@ -306,6 +321,7 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
     pref_service->SetInteger(kToastShown, toast_shown_count + 1);
   }
 }
+#endif
 
 void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
   actor_task_state_change_callback_list_.Notify(task_id);

@@ -296,6 +296,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/feedback",
     "//chrome/browser/glic/actor",

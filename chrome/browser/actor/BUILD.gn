@@ -129,6 +129,8 @@ source_set("impl") {
     ":actor",
     ":variants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/actor/ui:event_dispatcher",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/signin",
@@ -183,6 +185,7 @@ source_set("impl") {
     ]
 
     deps += [
+      ":variants",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:event_dispatcher",
       "//chrome/browser/affiliations",

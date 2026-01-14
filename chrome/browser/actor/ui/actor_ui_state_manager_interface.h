@@ -34,9 +34,11 @@ class ActorUiStateManagerInterface {
   // Handles a UiEvent that must be processed synchronously.
   virtual void OnUiEvent(SyncUiEvent event) = 0;
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   // Shows toast that notifies user the Actor is working in the background.
   // Shows a maximum of kToastShownMax per profile.
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
+#endif
 
   // Gets the title of a given task, this includes active tasks and tasks that
   // have stopped within an `kGlicActorUiCompletedTaskExpiryDelaySeconds` period
