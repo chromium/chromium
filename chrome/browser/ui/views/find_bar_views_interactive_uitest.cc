@@ -1046,6 +1046,15 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
 
   // Helper function to check if text is selected.
   auto has_selected_text = [this]() {
+#if BUILDFLAG(IS_MAC)
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                                false, false, true));
+
+#else
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, true,
+                                                false, false, false));
+
+#endif
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     if (!web_contents) {
@@ -1062,15 +1071,6 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
 
       // Wait for the selection to be "text".
       // This will poll after the last attempt.
-      Do([this]() {
-#if BUILDFLAG(IS_MAC)
-        EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A,
-                                                    false, false, false, true));
-#else
-        EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, true,
-                                                false, false, false));
-#endif
-      }),
       PollState(kTextSelectedState, has_selected_text),
 
       WaitForState(kTextSelectedState, true),
