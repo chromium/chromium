@@ -205,6 +205,8 @@ void SimulateClickOnElement(content::WebContents* contents,
 // contents twice.
 void RunForAllTabs(base::RepeatingCallback<void(content::WebContents&)> action);
 
+void WaitForLoadCompleteAndMaybeManifestSeen(content::WebContents& contents);
+
 // Wait for all available `WebContents` when this is called to finish loading.
 // Note: This will hang forever if any web contents purposefully never finishes
 // loading, causes reloads, or in any other way doesn't call the 'load' event in

@@ -689,58 +689,6 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       observation_{this};
 };
 
-class ManifestFoundOrNotWaiter final
-    : public content::WebContentsObserver {
- public:
-  explicit ManifestFoundOrNotWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    CHECK(web_contents);
-  }
-  ~ManifestFoundOrNotWaiter() override = default;
-
-  void Wait() {
-    if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-      if (web_contents()->GetPrimaryPage().GetManifestUrl().has_value()) {
-        SubscribeToManifest();
-      } else {
-        run_loop_.Quit();
-      }
-    }
-    run_loop_.Run();
-  }
-
-  void DocumentOnLoadCompletedInPrimaryMainFrame() override {
-    if (web_contents()->GetPrimaryPage().GetManifestUrl().has_value()) {
-      SubscribeToManifest();
-      return;
-    }
-    run_loop_.Quit();
-  }
-
-  void WebContentsDestroyed() override {
-    Observe(nullptr);
-    run_loop_.Quit();
-  }
-
- private:
-  void SubscribeToManifest() {
-    manifest_subscription_ =
-        content::PageManifestManager::GetOrCreate(
-            web_contents()->GetPrimaryPage())
-            ->GetSpecifiedManifest(
-                base::IgnoreArgs<
-                    const content::PageManifestManager::ManifestResult&>(
-                    base::BindOnce(
-                        &ManifestFoundOrNotWaiter::OnManifestSpecified,
-                        base::Unretained(this))));
-  }
-
-  void OnManifestSpecified() { run_loop_.Quit(); }
-
-  base::CallbackListSubscription manifest_subscription_;
-  base::RunLoop run_loop_;
-};
-
 std::optional<ProfileState>
 GetStateForProfile(StateSnapshot* state_snapshot, Profile* profile) {
   CHECK(state_snapshot);
@@ -4117,6 +4065,11 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   }
   web_app::test::CompletePageLoadForAllWebContents();
+  // Updates are triggered by the page load completing, so wait for them to
+  // finish.
+  if (provider()) {
+    provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+  }
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
@@ -4167,8 +4120,7 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdateStartedPostNavigation(
         loop_for_load_finish.QuitClosure());
     loop_for_load_finish.Run();
   }
-  ManifestFoundOrNotWaiter manifest_found_or_not_waiter(web_contents);
-  manifest_found_or_not_waiter.Wait();
+  test::WaitForLoadCompleteAndMaybeManifestSeen(*web_contents);
 
   // Wait till all manifest silent update command has completed. This will
   // either cause an update to happen, or the pending update to be stored on

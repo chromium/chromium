@@ -63,6 +63,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
@@ -102,22 +103,39 @@ void AutoAcceptDialogCallback(
           /*user_accepted=*/true, std::move(web_app_info));
 }
 
-// An utility that observes a `WebContents` instance to either finish loading or
-// for it to be destroyed. Useful for ensuring that the observed `WebContents`
-// has reached an end state.
-class WebContentsLoadOrDestroyedWaiter final
+// An utility that observes a `WebContents` instance to either finish loading
+// (with possible waiting for manifest changes to be propagated) or for it to be
+// destroyed. Useful for ensuring that the observed `WebContents` has reached an
+// end state.
+class WebContentsLoadAndManifestWaiter final
     : public content::WebContentsObserver {
  public:
-  explicit WebContentsLoadOrDestroyedWaiter(content::WebContents* web_contents)
+  explicit WebContentsLoadAndManifestWaiter(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {
     CHECK(web_contents);
   }
-  ~WebContentsLoadOrDestroyedWaiter() override = default;
+  ~WebContentsLoadAndManifestWaiter() override = default;
 
-  void Wait() { run_loop_.Run(); }
+  void Wait() {
+    manifest_url_specified_ =
+        web_contents()->GetPrimaryPage().GetManifestUrl().has_value();
+    loaded_ = web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame();
+    if (loaded_ && manifest_url_specified_) {
+      SubscribeToManifest();
+    }
+    MaybeQuit();
+    run_loop_.Run();
+  }
 
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
-    run_loop_.Quit();
+    manifest_url_specified_ =
+        web_contents()->GetPrimaryPage().GetManifestUrl().has_value();
+    loaded_ = true;
+    if (!manifest_found_ && manifest_url_specified_ &&
+        !manifest_subscription_) {
+      SubscribeToManifest();
+    }
+    MaybeQuit();
   }
 
   void WebContentsDestroyed() override {
@@ -126,6 +144,37 @@ class WebContentsLoadOrDestroyedWaiter final
   }
 
  private:
+  void SubscribeToManifest() {
+    manifest_subscription_ =
+        content::PageManifestManager::GetOrCreate(
+            web_contents()->GetPrimaryPage())
+            ->GetSpecifiedManifest(
+                base::IgnoreArgs<
+                    const content::PageManifestManager::ManifestResult&>(
+                    base::BindOnce(
+                        &WebContentsLoadAndManifestWaiter::OnManifestSpecified,
+                        base::Unretained(this))));
+  }
+
+  void OnManifestSpecified() {
+    manifest_found_ = true;
+    MaybeQuit();
+  }
+
+  void MaybeQuit() {
+    if (!loaded_) {
+      return;
+    }
+    if (!manifest_url_specified_ || manifest_found_) {
+      run_loop_.Quit();
+    }
+  }
+
+  bool loaded_ = false;
+  bool manifest_url_specified_ = false;
+  bool manifest_found_ = false;
+
+  base::CallbackListSubscription manifest_subscription_;
   base::RunLoop run_loop_;
 };
 
@@ -621,11 +670,13 @@ void RunForAllTabs(
   });
 }
 
+void WaitForLoadCompleteAndMaybeManifestSeen(content::WebContents& contents) {
+  WebContentsLoadAndManifestWaiter(&contents).Wait();
+}
+
 void CompletePageLoadForAllWebContents() {
   RunForAllTabs(base::BindRepeating([](content::WebContents& web_contents) {
-    if (!web_contents.IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-      WebContentsLoadOrDestroyedWaiter(&web_contents).Wait();
-    }
+    WebContentsLoadAndManifestWaiter(&web_contents).Wait();
   }));
 }
 
