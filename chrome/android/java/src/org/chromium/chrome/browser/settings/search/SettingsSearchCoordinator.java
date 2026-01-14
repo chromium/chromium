@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -963,6 +964,18 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                             mTurnOffHighlight = null;
                             listView.removeOnScrollListener(this);
                         }
+                    }
+                });
+        listView.addOnItemTouchListener(
+                new RecyclerView.SimpleOnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent e) {
+                        if (mTurnOffHighlight != null) {
+                            mTurnOffHighlight.run();
+                            mTurnOffHighlight = null;
+                            listView.removeOnItemTouchListener(this);
+                        }
+                        return false;
                     }
                 });
     }
