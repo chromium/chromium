@@ -14,7 +14,7 @@ if (enable_swift_cxx_interop) {
 
   swift_modulemap("classes") {
     module_name = "Classes"
-    apinotes = "classes.apinotes"
+    apinotes = [ "classes.apinotes" ]
     sources = [
       "inlined_classes.h",
       "outlined.h",
