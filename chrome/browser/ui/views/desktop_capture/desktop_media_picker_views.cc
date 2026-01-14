@@ -75,8 +75,6 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-BASE_FEATURE(kDesktopMediaPickerMultiLineTitle,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
@@ -1100,8 +1098,7 @@ void DesktopMediaPickerDialogView::AddedToWidget() {
   // TODO(420734141): Make DesktopMediaPickerDialogView always have a
   // BubbleFrameView.
   views::BubbleFrameView* bubble_frame_view = GetBubbleFrameView();
-  if (base::FeatureList::IsEnabled(kDesktopMediaPickerMultiLineTitle) &&
-      bubble_frame_view) {
+  if (bubble_frame_view) {
     bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
   }
 }

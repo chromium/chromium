@@ -32,7 +32,6 @@ class MdTextButton;
 
 class DesktopMediaPickerImpl;
 
-BASE_DECLARE_FEATURE(kDesktopMediaPickerMultiLineTitle);
 
 const DesktopMediaSourceViewStyle& GetGenericScreenStyle();
 const DesktopMediaSourceViewStyle& GetSingleScreenStyle();

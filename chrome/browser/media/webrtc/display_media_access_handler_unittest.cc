@@ -339,9 +339,6 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionDenied) {
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, MaxLengthDomainAccepted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDisplayMediaRejectLongDomains);
-
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateBrowserInitiated(
           GURL("https://" + std::string(255, 'a')), web_contents());
@@ -364,9 +361,6 @@ TEST_F(DisplayMediaAccessHandlerTest, MaxLengthDomainAccepted) {
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, OverMaxLengthDomainRejected) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDisplayMediaRejectLongDomains);
-
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateBrowserInitiated(
           GURL("https://" + std::string(256, 'a')), web_contents());
