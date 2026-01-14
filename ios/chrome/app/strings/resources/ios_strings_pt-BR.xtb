@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Como usar esse recurso?</translation>
 <translation id="1901600657316773839">Manter as mudanças</translation>
 <translation id="1902277226107477495">Detecção de endereço desativada. Ative de novo nas Configurações.</translation>
+<translation id="1909201414196501151">Site adicionado e fixado</translation>
 <translation id="1911619930368729126">Enviar para o Google Drive</translation>
 <translation id="1925706052394657380">Abra as configurações de <ph name="BEGIN_BOLD" />Apps Padrão<ph name="END_BOLD" /> no iOS</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{Favorito salvo em "{title}" na conta {email}}other{Favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="334690320928261823">Guias recentes</translation>
 <translation id="3349031117032695619">Bloquear pop-ups</translation>
+<translation id="3350976670663926380">Edições salvas</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta conta é gerenciada.</translation>
 <translation id="3365529507898144230">Salvar nas Fotos</translation>
 <translation id="3371831930909698441">Tradução disponível. Opções disponíveis perto da parte inferior da tela.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Escolha "Proteção reforçada"</translation>
 <translation id="3610041351087301930">Ocultar leitor</translation>
 <translation id="3610866916973186448">Sim, excluir</translation>
+<translation id="3616161326314492065">Tire fotos e compartilhe com o Gemini para criar e fazer montagens de imagens.</translation>
 <translation id="3622175633937495219">Pesquisar no histórico (<ph name="COUNT" /> encontrados)</translation>
 <translation id="3625008969091706597">Deslize a borda da tela para voltar.</translation>
 <translation id="362709345066740529">Personalize os cards, o feed e muito mais</translation>
@@ -1841,6 +1844,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7854006015462979438">Abra "Geral"</translation>
 <translation id="7855678267851972597">Áudios</translation>
+<translation id="7857520352710212030">Site fixado</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
 <translation id="7863211248337747225">Instalar o app</translation>
 <translation id="7865127013871431856">Opções do Tradutor</translation>

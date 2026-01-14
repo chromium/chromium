@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Hvernig nota ég þennan eiginleika?</translation>
 <translation id="1901600657316773839">Halda vali</translation>
 <translation id="1902277226107477495">Slökkt er á greiningu heimilisfanga. Þú getur kveikt á henni aftur í stillingunum.</translation>
+<translation id="1909201414196501151">Vefsvæði bætt við og fest</translation>
 <translation id="1911619930368729126">Hlaða inn á Google Drive</translation>
 <translation id="1925706052394657380">Opnaðu stillingar <ph name="BEGIN_BOLD" />Sjálfgefinna forrita<ph name="END_BOLD" /> í iOS</translation>
 <translation id="1941314575388338491">Ýttu tvisvar til að afrita.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Bókamerki vistað í „{title}“ á reikningnum þínum, {email}}one{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}other{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}}</translation>
 <translation id="334690320928261823">Nýlegir flipar</translation>
 <translation id="3349031117032695619">Loka á sprettiglugga</translation>
+<translation id="3350976670663926380">Breytingar voru vistaðar</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Þessum reikningi er stýrt.</translation>
 <translation id="3365529507898144230">Vista í Myndum</translation>
 <translation id="3371831930909698441">Þýðing er í boði. Valkostir eru neðst á skjánum</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Veldu „Aukin vörn“</translation>
 <translation id="3610041351087301930">Fela lesara</translation>
 <translation id="3610866916973186448">Já, eyða</translation>
+<translation id="3616161326314492065">Taktu myndir og deildu þeim með Gemini til að búa til og endurblanda myndir.</translation>
 <translation id="3622175633937495219">Leitarferill (<ph name="COUNT" /> fannst/fundust)</translation>
 <translation id="3625008969091706597">Þú getur strokið brúnina til að fara til baka.</translation>
 <translation id="362709345066740529">Hér geturðu sérsniðið spjöldin þín, strauminn og fleira</translation>
@@ -1841,6 +1844,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7853202427316060426">Virkni</translation>
 <translation id="7854006015462979438">Opnaðu almennar stillingar</translation>
 <translation id="7855678267851972597">Hljóð</translation>
+<translation id="7857520352710212030">Vefsvæði fest</translation>
 <translation id="7859988229622350291">Þýða aldrei</translation>
 <translation id="7863211248337747225">Sækja forritið</translation>
 <translation id="7865127013871431856">Valkostir þýðinga</translation>

@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Compartido conmigo</translation>
 <translation id="1369286077209859800">Mostrar todas las pestañas del grupo de pestañas</translation>
 <translation id="136942498637440594">Puedes buscar imágenes y lo que ves.</translation>
+<translation id="1373120905936431262">Sube una imagen para hacer un remix con Nano Banana</translation>
 <translation id="1377508275003315939">Contraseñas</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} dirección}other{{position} de {count} direcciones}}</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Marcador guardado en tu cuenta de Google ({email})}other{Marcadores guardados en tu cuenta de Google ({email})}}</translation>
 <translation id="1838089197478136166">¿Abrir en Wallet?</translation>
 <translation id="183878838231635348">Esta tarjeta muestra los problemas de privacidad o seguridad que haya detectado automáticamente la comprobación de seguridad.</translation>
+<translation id="1840320537320704887">Se han eliminado tus preferencias de la página Nueva pestaña</translation>
 <translation id="1845230888742614096">Conservar grupo</translation>
 <translation id="1853692000353488670">Nueva pestaña de Incógnito</translation>
 <translation id="1854463785401910334">Buscar en pestañas abiertas</translation>
@@ -253,6 +255,7 @@
 <translation id="1901366738768303267">¿Cómo uso esta función?</translation>
 <translation id="1901600657316773839">Mantener selección</translation>
 <translation id="1902277226107477495">Detección de dirección desactivada. Vuelve a activarla en Configuración.</translation>
+<translation id="1909201414196501151">Sitio añadido y fijado</translation>
 <translation id="1911619930368729126">Subir a Google Drive</translation>
 <translation id="1925706052394657380">Abre los ajustes de <ph name="BEGIN_BOLD" />aplicaciones predeterminadas<ph name="END_BOLD" /> en iOS</translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
@@ -615,6 +618,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{Marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
 <translation id="3349031117032695619">Bloquear ventanas emergentes</translation>
+<translation id="3350976670663926380">Cambios guardados</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está gestionada.</translation>
 <translation id="3365529507898144230">Guardar en Fotos</translation>
 <translation id="3371831930909698441">El Traductor está disponible. Opciones disponibles cerca de la parte inferior de la pantalla.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">Elige Protección mejorada</translation>
 <translation id="3610041351087301930">Ocultar lector</translation>
 <translation id="3610866916973186448">Sí, eliminar</translation>
+<translation id="3616161326314492065">Haz fotos y compártelas con Gemini para crear y mezclar imágenes.</translation>
 <translation id="3622175633937495219">Historial de búsqueda (resultados: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Puedes deslizar el borde para desplazarte hacia atrás.</translation>
 <translation id="362709345066740529">Personaliza tus tarjetas, tu feed y más aquí</translation>
@@ -871,6 +876,7 @@
 <translation id="4338650699862464074">Envía las URLs de las páginas que visitas a Google.</translation>
 <translation id="4342946437867096381">Ya has guardado una contraseña para este sitio en tu cuenta de Google. Google puede elegir la contraseña más reciente por ti.</translation>
 <translation id="4365121137632832185">Grupo de pestañas. Desplegado.</translation>
+<translation id="4365685757967464989">Permite que Gemini use tu cámara para hacer fotos</translation>
 <translation id="4367971618859387374">Nombre visible</translation>
 <translation id="4375772272517383391">Cerrar todas las pestañas</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -954,6 +960,7 @@
 
        Elige qué hacer con los datos de navegación de este dispositivo.</translation>
 <translation id="4675298276894277358">Este sitio no se volverá a mostrar</translation>
+<translation id="4676647168422678078">¿Aplicar tus preferencias de la página Nueva pestaña?</translation>
 <translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4691892551491778176">Cuando usas esta función, el contenido de la página y las URLs se envían a Google, pero no se utilizan para mejorar los modelos de IA generativa. Puedes desactivar esta opción en Configuración cuando quieras.</translation>
@@ -1002,6 +1009,7 @@
 <translation id="4840495572919996524">Tus marcadores, el historial, las contraseñas y otros datos dejarán de sincronizarse con tu cuenta de Google.</translation>
 <translation id="484280513275854557">Se ha cerrado tu sesión y se han eliminado los datos de navegación</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4854068532375923088">Permitir que Gemini use tu cámara</translation>
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4861953997778766866">Todos los usuarios pueden hacer cambios en tus grupos de pestañas compartidos</translation>
 <translation id="4865063548323785458">Guarda y autocompleta tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones</translation>
@@ -1205,6 +1213,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5579012242779565775">Ocultar Lista de lectura</translation>
 <translation id="5581786858144165447">Pregunta a Modo IA</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
+<translation id="5591526871732898147">Imagen adjunta {index}</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="559567008082979829">Configura tus descargas para que se eliminen al cabo de un mes.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
@@ -1841,6 +1850,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7854006015462979438">Abre General</translation>
 <translation id="7855678267851972597">Audios</translation>
+<translation id="7857520352710212030">Sitio fijado</translation>
 <translation id="7859988229622350291">No traducir nunca</translation>
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opciones del Traductor</translation>
@@ -1904,6 +1914,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8059312861912872211">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8059533439631660104">Oculta la sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
+<translation id="8064946459644399612">Se han aplicado tus preferencias de la página Nueva pestaña</translation>
 <translation id="8069168488983557089">Obtén conclusiones e información valiosa que te ayudarán a entender cualquier tema</translation>
 <translation id="8069394452933076548">Elige cuándo se moverán las pestañas que no se han usado recientemente a la sección de pestañas inactivas.</translation>
 <translation id="8073670137947914548">Descarga finalizada</translation>
@@ -1934,6 +1945,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8161614462829037225">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Longitud</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
+<translation id="8184895727539791845">Para permitir que Gemini use tu cámara, actívala en los ajustes de iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
 <translation id="8189615296021678665">Toca Guardar para acceder fácilmente a esta contraseña la próxima vez que inicies sesión.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2002,6 +2014,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8428045167754449968">Ciudad/Localidad</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
+<translation id="8429455911440977338">Activar cámara</translation>
 <translation id="8434837876193928924">Detalles del grupo de pestañas</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
 <translation id="8439758443371991593">Ocultar Añadir a lista de lectura</translation>
@@ -2243,6 +2256,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Apps</translation>
+<translation id="965259330007686240">Crea una imagen con Gemini</translation>
 <translation id="965879457362663186">Añadir archivo adjunto</translation>
 <translation id="966593914872420832">Búsqueda por voz</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Unirte al grupo de pestañas con <ph name="OWNER_NAME" />}=1{Unirte al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} persona más}other{Unirte al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} personas más}}</translation>

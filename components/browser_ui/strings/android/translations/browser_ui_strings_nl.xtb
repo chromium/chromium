@@ -412,6 +412,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(en nog 1)}other{(en nog #)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5407203562970638234">Je beveiliging verbeteren</translation>
+<translation id="5436307623797390637">Apps op apparaat</translation>
 <translation id="5438097262470833822">Met deze keuze reset je de rechten voor <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Als deze optie aanstaat, kunnen sites om je locatie vragen. Staat de optie uit, dan kunnen sites je locatie niet zien.</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>

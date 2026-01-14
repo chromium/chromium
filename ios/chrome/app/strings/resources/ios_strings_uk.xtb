@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Як користуватися цією функцією?</translation>
 <translation id="1901600657316773839">Не скасовувати</translation>
 <translation id="1902277226107477495">Функцію виявлення адрес вимкнено. Її можна ввімкнути в налаштуваннях.</translation>
+<translation id="1909201414196501151">Сайт додано й закріплено</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
 <translation id="1925706052394657380">Відкрийте налаштування <ph name="BEGIN_BOLD" />Default Apps (Додатки за умовчанням)<ph name="END_BOLD" /> на пристрої iOS</translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
 <translation id="334690320928261823">Останні вкладки</translation>
 <translation id="3349031117032695619">Блокувати спливаючі вікна</translation>
+<translation id="3350976670663926380">Зміни збережено</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Обліковим записом керує адміністратор.</translation>
 <translation id="3365529507898144230">Зберегти у Фото</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Виберіть "Покращений захист"</translation>
 <translation id="3610041351087301930">Сховати режим читання</translation>
 <translation id="3610866916973186448">Так, видалити</translation>
+<translation id="3616161326314492065">Робіть фотографії і діліться ними з Gemini, щоб редагувати знімки й створювати нові зображення.</translation>
 <translation id="3622175633937495219">Історія пошуку (знайдено: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Щоб повернутися, проведіть пальцем за край.</translation>
 <translation id="362709345066740529">Тут можна налаштувати картки, стрічку тощо</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">Дії</translation>
 <translation id="7854006015462979438">Перейдіть у розділ "Загальні".</translation>
 <translation id="7855678267851972597">Аудіо</translation>
+<translation id="7857520352710212030">Сайт закріплено</translation>
 <translation id="7859988229622350291">Мови, з яких не потрібно перекладати</translation>
 <translation id="7863211248337747225">Завантажити додаток</translation>
 <translation id="7865127013871431856">Параметри перекладу</translation>

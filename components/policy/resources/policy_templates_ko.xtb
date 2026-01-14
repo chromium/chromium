@@ -1335,6 +1335,7 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
       정책을 설정하지 않으면 어떤 확장 프로그램도 재설정 절차에서 제외되지 않습니다.</translation>
 <translation id="1962273523772270623">Google 서비스의 WebRTC 이벤트 로그 수집 허용</translation>
 <translation id="1962864958436828230">데이터 유출 방지를 위한 클립보드 제한용 최소 크기 한도 설정</translation>
+<translation id="1963986268950915756">브라우저에서 사용자 웹 앱 설치 사용 설정</translation>
 <translation id="1964191545419036999">갤러리(버전 117부터 지원됨)</translation>
 <translation id="1964634611280150550">시크릿 모드 사용이 중지됨</translation>
 <translation id="1964802606569741174">이 정책은 Android YouTube 앱에 아무런 영향도 미치지 않습니다. YouTube의 안전 모드를 실행해야 하는 경우 Android YouTube 앱 설치를 허용하지 않아야 합니다.</translation>
@@ -2863,6 +2864,11 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 이 정책은 향후 삭제될 예정입니다.</translation>
 <translation id="2989404644164421834">페이지 새로고침</translation>
 <translation id="299127280603727143">로컬 네트워크 액세스 설정과 관련된 정책 그룹입니다.  https://developer.chrome.com/blog/local-network-access를 참고하세요.</translation>
+<translation id="2994453006332740426">이 정책은 사용자가 브라우저를 통해 웹 앱을 설치할 수 있는지 제어합니다.
+이 정책을 사용 설정하거나 구성하지 않으면 사용자가 브라우저를 통해 웹 앱을 설치할 수 있습니다.
+이 정책을 사용 중지하면 사용자가 브라우저를 통해 웹 앱을 설치할 수 없으며 <ph name="CHROME_SYNC_NAME" />의 동기화에서 '앱' 데이터 유형이 제외됩니다.
+이 정책은 동적 새로고침을 지원하지 않습니다. 사용 설정, 사용 중지 또는 설정 해제 등의 변경사항은 브라우저를 다시 시작해야만 적용됩니다.
+이 정책은 '<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />' 정책에 영향을 미치지 않습니다.</translation>
 <translation id="299446489108785864"><ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />가 적용될 URL을 지정하는 URL 목록입니다. 이 정책은 사용자가 설정한 자동으로 열리는 값에 영향을 미치지 않습니다.
 
       정책을 설정하면 URL이 이 집합에 속하고 파일 형식이 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />에 표시된 경우에만 정책에 의해 자동으로 파일이 열립니다. 두 가지 조건 중 하나라도 충족되지 않으면 다운로드한 항목이 정책에 따라 자동으로 열리지 않습니다.
@@ -5994,6 +6000,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 <translation id="5082296146261894974">사용자가 휴대전화 허브 알림을 클릭하여 Eche 애플리케이션을 실행하도록 허용합니다.</translation>
 <translation id="5082572440690475059">다음 사이트에서 File System API를 통한 읽기 액세스 허용</translation>
 <translation id="5085647276663819155">인쇄 미리보기 사용 안함</translation>
+<translation id="5087922428454325090">사용자가 브라우저를 통해 웹 앱을 설치할 수 없습니다.</translation>
 <translation id="5087932158260897375">정책을 False로 설정하면 도메인 안정성 진단 데이터 보고가 사용 중지되고 데이터가 Google로 전송되지 않습니다.
 정책을 True로 설정하거나 설정하지 않으면 도메인 안정성 진단 데이터 보고에서 <ph name="PRODUCT_NAME" />의 경우 MetricsReportingEnabled, <ph name="PRODUCT_OS_NAME" />의 경우 DeviceMetricsReportingEnabled 동작을 따릅니다.</translation>
 <translation id="5088284418186527880">이 정책을 사용하면 새로 도입된 CSS 확대/축소 사양을 준수할 수 있습니다.
@@ -8484,6 +8491,7 @@ false로 설정하면 P2P가 사용되지 않습니다.
 <translation id="6601216729409808032">확장 프로그램 설치를 허용하거나 차단하기 위해 추가 클라우드 정책 검사를 사용 설정합니다.</translation>
 <translation id="6603004149426829878">시간대를 파악하는 동안 항상 사용 가능한 위치 신호를 모두 서버로 전송합니다.</translation>
 <translation id="6604049565198492174">정책을 설정하면 <ph name="PRODUCT_NAME" /> 기기마다 사용자별 네트워크 구성을 푸시할 수 있습니다. 네트워크 구성은 공개 네트워크 구성 형식에 정의된 JSON 형식 문자열입니다.</translation>
+<translation id="6604522755563022737">사용자는 브라우저를 통해 웹 앱을 설치할 수 있습니다.</translation>
 <translation id="660567106648774919">이 정책은 지원 중단되었으므로 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 정책을 대신 사용하세요.
 
       CCT를 처음 실행할 때 서비스 약관이 기본으로 표시됩니다. 정책을 사용 안함으로 설정하면 첫 실행 환경 또는 이후 실행 중 서비스 약관 대화상자가 나타나지 않습니다. 사용으로 설정하거나 설정하지 않으면 첫 실행 환경에서 서비스 약관 대화상자가 나타납니다. 다른 주의사항은 다음과 같습니다.
@@ -10953,9 +10961,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 <translation id="8225579382697740712">WebHID API 사용 제어</translation>
 <translation id="8229912067600517877">개발자 도구 사용</translation>
 <translation id="8238421250255592181">터치 키보드가 자동 완성을 지원할 수 있는지 나타내는 부울 플래그입니다.</translation>
-<translation id="8238558579601006178">정책을 0으로 설정하거나 설정하지 않은 상태로 두면 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 연결된 사용자의 사용자 범위에만 적용됩니다.
-정책을 1로 설정하면 사용자가 연결되어 있지 않더라도 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 사용자 범위에서 적용됩니다.
-정책을 2로 설정하면 소스가 사용자인 경우 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 적용되지 않습니다.</translation>
 <translation id="8239109177194627162">신용카드 입력 시 자동 완성 사용 안함</translation>
 <translation id="8239143983379015783">영구 할당량을 강제 적용합니다.</translation>
 <translation id="8240976615241583524">이 정책은 사용 가능한 최상의 연결을 찾으려고 할 때 WebRTC가 사용하는 IP 주소 및 인터페이스를 제한할 수 있습니다.

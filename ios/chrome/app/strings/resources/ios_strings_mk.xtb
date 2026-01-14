@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Како се користи функцијава?</translation>
 <translation id="1901600657316773839">Задржи го изборот</translation>
 <translation id="1902277226107477495">Откривањето адреса е исклучено. Вклучете го повторно во Settings.</translation>
+<translation id="1909201414196501151">Сајтот е додаден и закачен</translation>
 <translation id="1911619930368729126">Постави во Диск на Google</translation>
 <translation id="1925706052394657380">Отворете ги поставките за <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> во iOS</translation>
 <translation id="1941314575388338491">Допрете двапати за да копирате.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка, {email}}one{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}other{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}}</translation>
 <translation id="334690320928261823">Неодамнешни картички</translation>
 <translation id="3349031117032695619">Блокирање скокачки прозорци</translation>
+<translation id="3350976670663926380">Измените се зачувани</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Сметкава е управувана.</translation>
 <translation id="3365529507898144230">Зачувај во „Фотографии“</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Изберете „Подобрена заштита“</translation>
 <translation id="3610041351087301930">Скриј Reader Mode</translation>
 <translation id="3610866916973186448">Да, избриши</translation>
+<translation id="3616161326314492065">Снимајте фотографии и споделувајте ги со Gemini за да создавате и да ремиксувате слики.</translation>
 <translation id="3622175633937495219">Историја на пребарување (најдено: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Може да го повлечете работ за да се вратите назад.</translation>
 <translation id="362709345066740529">Приспособете ги картичките, активноста и друго овде</translation>
@@ -1233,7 +1236,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5656431592348714536">Подобрен календар</translation>
 <translation id="5659593005791499971">Е-пошта</translation>
 <translation id="5665739277590037307">Важат <ph name="GOOGLE_TERMS" /> и <ph name="GEMINI_APPS_PRIVACY" />. Gemini може да прави грешки, па проверувајте ги одговорите.</translation>
-<translation id="5666313630530585305">Најавете се на веб-сајт.</translation>
+<translation id="5666313630530585305">Најавете се на вебсајт.</translation>
 <translation id="5669335982068190158">Бевте одјавени како дел од ресетирањето на вашиот iPhone. Допрете „Продолжи“ подолу за да се најавите.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Верзија <ph name="PRODUCT_VERSION" /></translation>
@@ -1540,7 +1543,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6680416467695217368">Приспособете го менито</translation>
 <translation id="6681791404926413601">{count,plural, =1{Достапна е {count} опција за начин на плаќање над тастатурата.}one{Достапни се {count} опција за начин на плаќање над тастатурата.}other{Достапни се {count} опции за начин на плаќање над тастатурата.}}</translation>
 <translation id="6682680306647339111">Потсетникот е отстранет</translation>
-<translation id="6684262542644248484">Најавете се на веб-сајт</translation>
+<translation id="6684262542644248484">Најавете се на вебсајт</translation>
 <translation id="6685259053455152195">Кратенки за брзо менување поставки и користење функции од лентата за адреси.</translation>
 <translation id="6689342293888598653">Боја на заднината – бела</translation>
 <translation id="6689685206615181381">Достапен е само режимот „Инкогнито“</translation>
@@ -1841,6 +1844,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворете General</translation>
 <translation id="7855678267851972597">Аудија</translation>
+<translation id="7857520352710212030">Сајтот е закачен</translation>
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
 <translation id="7863211248337747225">Преземете ја апликацијата</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>

@@ -1342,6 +1342,7 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
       Politika ayarlanmadan bırakılırsa hiçbir uzantı, sıfırlama prosedüründen muaf tutulmaz.</translation>
 <translation id="1962273523772270623">Google hizmetlerinden WebRTC olay günlüklerinin toplanmasına izin ver</translation>
 <translation id="1962864958436828230">Veri sızıntısını önleme amaçlı pano kısıtlaması için minimum boyut sınırını belirleyin</translation>
+<translation id="1963986268950915756">Kullanıcıların Tarayıcıdan Web Uygulaması Yüklemesine İzin Ver</translation>
 <translation id="1964191545419036999">Galeri (117 sürümünden itibaren desteklenir)</translation>
 <translation id="1964634611280150550">Gizli mod devre dışı</translation>
 <translation id="1964802606569741174">Bu politikanın Android YouTube uygulaması üzerinde hiçbir etkisi yoktur. YouTube'da Güvenlik Modu uygulanacaksa Android YouTube uygulamasının yüklenmesine izin verilmemelidir.</translation>
@@ -2281,6 +2282,17 @@ Not: Bir alanın atlanması, tüm değerlerin o alanla eşleştiği anlamına ge
 <translation id="2568488785376704318">Bu politika kullanımdan kaldırılmıştır. Lütfen bunun yerine <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="2570059561924004903">Sesli geri bildirimi dışı bırak</translation>
 <translation id="2570181623957732921">Üçüncü taraf alanlarının listesi için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
+<translation id="2571353268726025696">Bu politika, Birinci Taraf Grup özelliğini (daha sonra <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> özelliği olarak yeniden adlandırıldı) devre dışı bırakma yöntemi olarak sağlanmıştır.
+
+Bu politika ayarlanmadığında veya Etkin değerine ayarlandığında Birinci Taraf Grup özelliği etkinleştirilir.
+
+Bu politika Devre dışı değerine ayarlandığında Birinci Taraf Grup özelliği devre dışı bırakılır.
+
+Chrome'un, Birinci Taraf Grup ile ilgili entegrasyonları destekleyip desteklemediğini kontrol eder.
+
+Bu, <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> politikasına eşdeğerdir.
+Her iki politika da tarayıcı davranışı üzerinde aynı etkiye sahip olacak şekilde kullanılabilir.
+<ph name="PRODUCT_NAME" /> 144 sürümünde <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> özelliğinin desteği sonlandırıldıktan sonra bu iki politikanın da desteği sonlandırılmıştır.</translation>
 <translation id="2571821662934804440">Yapay zeka modellerini iyileştirmeden özelliğin kullanılmasına izin ver</translation>
 <translation id="2573850437942404034">İzin verme</translation>
 <translation id="2575198840408498393">Dolaşım profillerinin oluşturulmasını devre dışı bırak</translation>
@@ -2887,6 +2899,11 @@ Burada belirtilen kalıpların dışında kalan alan adlarındaki çerezler ya d
 Bu politika, gelecekte kaldırılacaktır.</translation>
 <translation id="2989404644164421834">Sayfaları Yeniden Yükle</translation>
 <translation id="299127280603727143">Yerel Ağ Erişimi ayarlarıyla ilgili politika grubu.  https://developer.chrome.com/blog/local-network-access adresine göz atın</translation>
+<translation id="2994453006332740426">Bu politika, kullanıcıların tarayıcı üzerinden web uygulamaları yükleyip yükleyemeyeceğini kontrol eder.
+Bu politikayı etkinleştirir veya yapılandırmazsanız kullanıcılar web uygulamalarını tarayıcı üzerinden yükleyebilir.
+Bu politikayı devre dışı bırakırsanız kullanıcılar, web uygulamalarını tarayıcı üzerinden yükleyemez ve "uygulamalar" veri türü, <ph name="CHROME_SYNC_NAME" /> için senkronizasyonun dışında tutulur.
+Bu politika, dinamik yenilemeyi desteklemez. Etkinleştirme, devre dışı bırakma veya ayarı geri alma gibi tüm değişiklikler yalnızca tarayıcı yeniden başlatıldıktan sonra geçerli olur.
+Bu politika, "<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />" politikasını etkilemez.</translation>
 <translation id="299446489108785864"><ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> politikasının hangi URL'lere uygulanacağını belirten URL'lerin listesi. Bu politikanın, kullanıcılar tarafından belirlenen otomatik olarak açık değerler üzerinde hiçbir etkisi yoktur.
 
       Bu politika ayarlanırsa dosyalar yalnızca URL bu kümenin bir parçası olup dosya türü <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> öğesinde listeleniyorsa politikaya göre otomatik olarak açılır. İki koşuldan biri yanlışsa indirilen, politikaya göre otomatik olarak açılmaz.
@@ -6000,6 +6017,7 @@ Bu politika Ayarlanmadı değerine ayarlanırsa "Yazmama yardım et" özelliği,
 <translation id="5082296146261894974">Kullanıcıların Eche uygulamasını başlatmak için Telefon Merkezi bildirimini tıklamasına izin verir.</translation>
 <translation id="5082572440690475059">Bu sitelerde File System API üzerinden okuma erişimine izin ver</translation>
 <translation id="5085647276663819155">Baskı Önizlemeyi Devre Dışı Bırak</translation>
+<translation id="5087922428454325090">Kullanıcılar, web uygulamalarını tarayıcı üzerinden yükleyemez.</translation>
 <translation id="5087932158260897375">Bu politika Yanlış değerine ayarlanırsa alan güvenilirliği teşhis verilerinin raporlanması devre dışı bırakılır ve Google'a hiçbir veri gönderilmez.
 Bu politika Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa alan güvenilirliği teşhis verilerinin raporlanması, <ph name="PRODUCT_NAME" /> için MetricsReportingEnabled veya <ph name="PRODUCT_OS_NAME" /> için DeviceMetricsReportingEnabled davranışını izler.</translation>
 <translation id="5088284418186527880">Bu politika, yeni kullanılmaya başlanan CSS yakınlaştırma spesifikasyonuna uygunluğu etkinleştirir.
@@ -7572,6 +7590,35 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6083631234867522991">Windows (Windows istemcileri):</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" /> algoritmasını kullan</translation>
 <translation id="608788685013546076">Güç tüketimi en üst düzeydeyken pil kullanımına geçme eşiği yüzdesini ayarla</translation>
+<translation id="6089118101413877627">Bu politika, Birinci Taraf Grup özellikleri (daha sonra <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> özelliği olarak yeniden adlandırıldı) için tarayıcı tarafından kullanılan grupların listesini geçersiz kılma imkanı sağlar.
+
+Tarayıcının Birinci Taraf Gruplar listesindeki her bir grup, Birinci Taraf Gruplar için gereken koşulları karşılamalıdır.
+Birinci Taraf Grup'ta birincil site ve en az bir tane üye site yer almalıdır.
+Ayrıca grup, sahibi olduğu hizmet sitelerinin listesinin yanı sıra bir sitenin ve bu siteye ait ccTLD varyantlarının haritasını da içerebilir.
+<ph name="PRODUCT_NAME" /> tarafından kullanılan Birinci Taraf Gruplar hakkında daha fazla bilgi için https://github.com/WICG/first-party-sets adresine göz atın.
+
+Birinci Taraf Grup'taki tüm siteler, HTTPS üzerinden sunulan kaydedilebilir bir alan olmalıdır. Birinci Taraf Grup içindeki her site aynı zamanda benzersiz olmalıdır. Bu demektir ki bir site, Birinci Taraf Grup'ta birden fazla kez listelenemez.
+
+Bu politikaya boş bir sözlük verilirse tarayıcı, herkese açık Birinci Taraf Grup listesini kullanır.
+
+<ph name="REPLACEMENTS" /> listesindeki Birinci Taraf Gruplardaki bir site aynı zamanda tarayıcının listesindeki bir Birinci Taraf Grup'ta da yer alıyorsa bu site, tarayıcının Birinci Taraf Grubundan kaldırılır.
+Bunun ardından politikanın Birinci Taraf Grubu, tarayıcının Birinci Taraf Gruplar listesine eklenir.
+
+<ph name="ADDITIONS" /> listesindeki Birinci Taraf Gruplardaki bir site aynı zamanda tarayıcının listesindeki bir Birinci Taraf Grup'ta da yer alıyorsa tarayıcının Birinci Taraf Grubu yeni Birinci Taraf Grubun eklenebileceği şekilde güncellenir. Tarayıcının listesi güncellendikten sonra, politikanın Birinci Taraf Grubu tarayıcının Birinci Taraf Gruplar listesine eklenir.
+
+Tarayıcının Birinci Taraf Gruplar listesindeki sitelerin hiçbiri, birden fazla grupta yer alamaz. Bu zorunluluk ayrıca, <ph name="REPLACEMENTS" /> ve <ph name="ADDITIONS" /> listelerinin her ikisi için de geçerlidir. Benzer şekilde, bir site hem <ph name="REPLACEMENTS" /> listesinde hem de <ph name="ADDITIONS" /> listesinde yer alamaz.
+
+Joker karakterler (*) bir politika değeri olarak veya bu listelerdeki herhangi bir Birinci Taraf Grup içinde desteklenmez.
+
+Politika tarafından sağlanan tüm gruplar geçerli bir Birinci Taraf Grup olmalıdır. Geçerli değilse uygun bir hata verilir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
+
+Bu, <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> politikasına eşdeğerdir.
+Her iki politika da tarayıcı davranışı üzerinde aynı etkiye sahip olacak şekilde kullanılabilir.
+<ph name="PRODUCT_NAME" /> 144 sürümünde <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> özelliğinin desteği sonlandırıldıktan sonra bu iki politikanın da desteği sonlandırılmıştır.</translation>
 <translation id="6089679180657323464">Wilco teşhis ve telemetri denetleyicisi ayarlarını kontrol eder.</translation>
 <translation id="6091233616732024397">Tarayıcıyı kullanabilmeleri için kullanıcıları oturum açmaya zorla</translation>
 <translation id="6092073071805297119">Erişilebilirlik performansı filtrelerinin kullanılmasına izin ver.</translation>
@@ -8456,6 +8503,7 @@ Politikada yapılacak değişiklikler yalnızca ARC çalışmıyorken (ör. Chro
 <translation id="6601216729409808032">Uzantıların yüklenmesine izin vermek veya yüklenmesini engellemek için ek bulut politikası kontrollerini etkinleştirir.</translation>
 <translation id="6603004149426829878">Saat dilimini çözümlerken kullanılabilir konum sinyallerini her zaman sunucuya gönder</translation>
 <translation id="6604049565198492174">Politika ayarlanırsa her <ph name="PRODUCT_NAME" /> cihaz için kullanıcı başına ağ yapılandırması aktarılabilir. Ağ yapılandırması, Açık Ağ Yapılandırması biçimiyle tanımlanmış JSON biçimli bir dizedir.</translation>
+<translation id="6604522755563022737">Kullanıcılar, web uygulamalarını tarayıcı üzerinden yükleyebilir.</translation>
 <translation id="660567106648774919">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen "<ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />" politikasını kullanın.
 
       Varsayılan olarak CCT ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikanın Devre Dışı değerine ayarlanması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine neden olur. Bu politikanın Etkin değerine ayarlanması veya ayarlanmadan bırakılması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesine neden olur. Dikkat edilmesi gereken diğer noktalar:
@@ -10342,6 +10390,28 @@ Internet Explorer'ın <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında d
       Doğru değerine ayarlanırsa cihazın ağ etkinlikleri raporlanır.</translation>
 <translation id="780629758750905699">Family Link hesaplarının cihaza eklenmesine izin ver</translation>
 <translation id="7807139251387225825">Senkronizasyonun dışında tutulması gereken türlerin listesi</translation>
+<translation id="7812285231594048601">Bu politika kullanımdan kaldırılmıştır. Lütfen bunun yerine <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" /> politikasını kullanın.
+
+Varsayılan davranış (Politika ayarlanmadıysa)
+İçerik alanına bir hesap eklendiğinde, kullanıcıdan yeni profil oluşturmasını isteyen küçük bir iletişim kutusu görünebilir. Bu iletişim kutusu kapatılabilir.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Kullanıcı, <ph name="PRODUCT_NAME" /> tarayıcıdaki bir Google hizmetinde ilk kez oturum açarsa kullanıcıdan kurumsal hesabı için yeni profil oluşturmasını isteyen bir iletişim kutusu görünür. Kullanıcı, İptal'i tıklayarak oturumu kapatabilir veya Devam'ı tıklayarak yeni profil oluşturabilir. Mevcut tarama verileri yeni profile eklenmez. Yeni oluşturulan profilin ikincil hesapları olabilir. Örneğin kullanıcı, içerik alanındaki başka bir hesapta oturum açabilir.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışında bu davranış <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> ile aynıdır.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Kullanıcının, yerel tarama verilerini saklamasına izin vermek için iletişim kutusuna bir onay kutusu eklenmesi dışında bu davranış <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> ile aynıdır.
+Kullanıcı bu kutuyu işaretlerse mevcut profil verileri, yönetilen hesapla ilişkilendirilir.
+-  Mevcut tüm tarama verileri, yeni profilde de yer alır.
+-  Bu verilere yer işaretleri, geçmiş, şifre, otomatik doldurma verileri, açık sekmeler, çerezler, önbellek, web depolama alanı, uzantılar vb. dahildir.
+Kullanıcı kutuyu işaretlemezse:
+-  Eski profil mevcut kalır ve veri kaybı yaşanmaz.
+-  Yeni bir profil oluşturulur.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışında bu davranış <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> ile aynıdır.</translation>
 <translation id="781268256210530471">Eklenti ayarları</translation>
 <translation id="7816326058023670173">Çocuk ve ebeveyn cihazları arasında paylaşılan sır.</translation>
 <translation id="7818131573217430250">Giriş ekranında yüksek kontrast modunun varsayılan durumunu ayarla</translation>
@@ -10909,9 +10979,6 @@ Bu politika, Gizli moda uygulanır. Dolayısıyla, tarayıcıda Gizli mod etkinl
 <translation id="8225579382697740712">WebHID API'nin kullanımını kontrol et</translation>
 <translation id="8229912067600517877">Geliştirici Araçları'nı etkinleştir</translation>
 <translation id="8238421250255592181">Dokunmatik klavyede otomatik tamamlama özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
-<translation id="8238558579601006178">Bu politika 0 değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikası yalnızca ilişkili kullanıcılar için kullanıcı kapsamına uygulanır.
-Bu politika 1 değerine ayarlanırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikası, ilişkili olmayan kullanıcılar için bile kullanıcı kapsamına uygulanır.
-Bu politika 2 değerine ayarlanırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikası, kaynağı kullanıcı olduğunda hiçbir zaman uygulanmaz.</translation>
 <translation id="8239109177194627162">Kredi kartlarını otomatik doldurmayı devre dışı bırak</translation>
 <translation id="8239143983379015783">Kalıcı kotanın etkinleştirilmesini zorunlu tut</translation>
 <translation id="8240976615241583524">Bu politika, mevcut en iyi bağlantıyı ararken WebRTC'nin kullandığı hem IP adreslerinin hem de arayüzlerin kısıtlanmasına olanak tanır.

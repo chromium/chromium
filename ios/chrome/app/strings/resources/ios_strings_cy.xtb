@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Sut ydw i'n defnyddio'r nodwedd hon?</translation>
 <translation id="1901600657316773839">Cadw'r dewis</translation>
 <translation id="1902277226107477495">Mae canfod cyfeiriad wedi'i ddiffodd. Trowch ef ymlaen eto yn y Gosodiadau.</translation>
+<translation id="1909201414196501151">Gwefan wedi'i hychwanegu a'i phinio</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
 <translation id="1925706052394657380">Agorwch y gosodiadau <ph name="BEGIN_BOLD" />Apiau Diofyn<ph name="END_BOLD" /> yn iOS</translation>
 <translation id="1941314575388338491">Tapiwch ddwywaith i gopïo.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}two{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}few{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}many{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}other{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}}</translation>
 <translation id="334690320928261823">Tabiau Diweddar</translation>
 <translation id="3349031117032695619">Rhwystro ffenestri naid</translation>
+<translation id="3350976670663926380">Golygiadau wedi'u cadw</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Rheolir y cyfrif hwn.</translation>
 <translation id="3365529507898144230">Cadw yn Photos</translation>
 <translation id="3371831930909698441">Mae cyfieithiad ar gael. Mae opsiynau ar gael yn agos at waelod y sgrîn.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Dewiswch "Diogelwch Gwell"</translation>
 <translation id="3610041351087301930">Cuddio'r Darllenydd</translation>
 <translation id="3610866916973186448">Ie, dileu</translation>
+<translation id="3616161326314492065">Tynnwch luniau a rhannwch nhw gyda Gemini i greu ac ailgymysgu lluniau.</translation>
 <translation id="3622175633937495219">Hanes Chwilio (wedi dod o hyd i <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Gallwch sweipio'r ymyl i fynd yn ôl.</translation>
 <translation id="362709345066740529">Addaswch eich cardiau, ffrwd a mwy yma</translation>
@@ -1841,6 +1844,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7853202427316060426">Gweithgarwch</translation>
 <translation id="7854006015462979438">Agor Cyffredinol</translation>
 <translation id="7855678267851972597">Sain</translation>
+<translation id="7857520352710212030">Gwefan wedi'i phinio</translation>
 <translation id="7859988229622350291">Peidio byth â chyfieithu</translation>
 <translation id="7863211248337747225">Gosod yr ap</translation>
 <translation id="7865127013871431856">Dewisiadau cyfieithu</translation>

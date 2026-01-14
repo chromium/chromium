@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Pamahalaan ang access</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Isara ang item}one{Isara ang mga item}other{Isara ang mga item}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Binuksan nang kalahati ang Bottom Sheet ng Tab.</translation>
 <translation id="374923079891132274">Thumbnail ng share sheet.</translation>
 <translation id="3776329373944672717">Pamagat ng grupo ng tab na <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5380159289133845234">Mag-archive ng mga duplicate na tab</translation>
 <translation id="5446043142172831860">Alisin ang tab at umalis sa grupo</translation>
+<translation id="5465437530117042974">Isinara ang mga pagbabago sa Bottom Sheet ng Tab.</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Magdagdag nang hanggang <ph name="LIMIT_COUNT_ONE" /> file, tab, o larawan}one{Magdagdag nang hanggang <ph name="LIMIT_COUNT_MANY" /> file, tab, o larawan}other{Magdagdag nang hanggang <ph name="LIMIT_COUNT_MANY" /> na file, tab, o larawan}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6051432659151380973">Awtomatikong mase-save ang mga grupo ng tab mo</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
+<translation id="606985262342505139">Binuksan nang buo ang Bottom Sheet ng Tab</translation>
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling item}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling item}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling item}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Ilipat ang grupo sa bagong window}one{Ilipat ang grupo sa ibang window}other{Ilipat ang grupo sa ibang window}}</translation>

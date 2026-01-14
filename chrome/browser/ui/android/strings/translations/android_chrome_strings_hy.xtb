@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">Միայն այս սարքում</translation>
 <translation id="4181841719683918333">Լեզուներ</translation>
 <translation id="4188221736490993796">Դասավորել Ֆ-ից Ա</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-ը կանգնեցրել է այս կայքից ծանուցումների ուղարկումը՝ սպամի կամ մոլորեցնող բովանդակության պատճառով}one{Chrome-ը կանգնեցրել է այս կայքից ծանուցումների ուղարկումը՝ սպամի կամ մոլորեցնող բովանդակության պատճառով}other{Chrome-ը կանգնեցրել է այս կայքերից ծանուցումների ուղարկումը՝ սպամի կամ մոլորեցնող բովանդակության պատճառով}}</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ներդիր այս սարքում}one{# ներդիր այս սարքում}other{# ներդիր այս սարքում}}</translation>
 <translation id="4198423547019359126">Ներբեռնումների պանակներ չկան</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">Կիսվել հղումով</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը</translation>
+<translation id="5847265694842662173">Chrome-ը կանգնեցրել է ծանուցումների ուղարկումը ոչ վստահելի և վաղուց չայցելված կայքերից</translation>
 <translation id="5848257610304005265">Բացե՞լ PDF ֆայլը <ph name="APP_NAME" /> հավելվածի միջոցով</translation>
 <translation id="5849288995120328556">Չեղարկե՞լ հասանելիությունը</translation>
 <translation id="5853623416121554550">դադարեցված է</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">Բացել Chrome-ի օգնության կենտրոնը նոր ներդիրում</translation>
 <translation id="59577092665511740">Ընտրեք հաշիվ։</translation>
 <translation id="5958275228015807058">Ձեր ֆայլերն ու էջերը որոնեք «Ներբեռնումներ» պանակում</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-ը կանգնեցրել է ծանուցումների ձեզ ուղարկումը կայքից, որը վաղուց չեք այցելել}one{Chrome-ը կանգնեցրել է ծանուցումների ձեզ ուղարկումը կայքից, որը վաղուց չեք այցելել}other{Chrome-ը կանգնեցրել է ծանուցումների ձեզ ուղարկումը կայքերից, որոնք վաղուց չեք այցելել}}</translation>
 <translation id="5962718611393537961">Հպեք՝ կոծկելու համար</translation>
 <translation id="5964869237734432770">Չստանալ նկարագրություններ</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>
@@ -1805,6 +1808,7 @@
 <translation id="847433688444405067">Դիտարկեք տարբեր սարքերում</translation>
 <translation id="8477178913400731244">Ջնջել տվյալները</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Ոչ ակտիվ պատուհաններ չկան</translation>
 <translation id="8493948351860045254">Տարածք ազատել</translation>
 <translation id="8497242791509864205">Բացել տեսակավորման տարբերակները</translation>
 <translation id="8497480609928300907">Տեղեկություններ տվյալների պաշտպանության ուղեցույցի մասին</translation>

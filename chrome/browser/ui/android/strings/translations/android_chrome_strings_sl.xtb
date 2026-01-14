@@ -725,6 +725,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4180726336228139707">Samo v tej napravi</translation>
 <translation id="4181841719683918333">Jeziki</translation>
 <translation id="4188221736490993796">Razvrsti od Ž do A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je temu spletnemu mestu preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}one{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}two{Chrome je tema spletnima mestoma preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}few{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}other{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}}</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 zavihek v tej napravi}one{# zavihek v tej napravi}two{# zavihka v tej napravi}few{# zavihki v tej napravi}other{# zavihkov v tej napravi}}</translation>
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
@@ -1117,6 +1118,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5833984609253377421">Deli povezavo z drugimi</translation>
 <translation id="5839058148541733625">Dino za Chrome</translation>
 <translation id="5841444063256914865">Ali želite vseeno prenesti datoteko »<ph name="FILE_NAME" />«?</translation>
+<translation id="5847265694842662173">Chrome je spletnim mestom, ki zlorabljajo brskalnik, in spletnim mestom, ki se ne uporabljajo, preprečil pošiljanje obvestil</translation>
 <translation id="5848257610304005265">Želite odpreti PDF z aplikacijo <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite ustaviti deljenje?</translation>
 <translation id="5853623416121554550">začasno ustavljeno</translation>
@@ -1145,6 +1147,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5956665950594638604">Odpiranje centra za pomoč za Chrome na nov. zavih.</translation>
 <translation id="59577092665511740">Izberite račun.</translation>
 <translation id="5958275228015807058">Poiščite datoteke in strani v Prenosih</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je spletnemu mestu, ki ga nedavno niste obiskali, preprečil pošiljanje obvestil}one{Chrome je spletnim mestom, ki jih nedavno niste obiskali, preprečil pošiljanje obvestil}two{Chrome je spletnima mestoma, ki ju nedavno niste obiskali, preprečil pošiljanje obvestil}few{Chrome je spletnim mestom, ki jih nedavno niste obiskali, preprečil pošiljanje obvestil}other{Chrome je spletnim mestom, ki jih nedavno niste obiskali, preprečil pošiljanje obvestil}}</translation>
 <translation id="5962718611393537961">Dotik za strnitev</translation>
 <translation id="5964869237734432770">Ustavi prenos opisov slik</translation>
 <translation id="5972844218283131174">Počisti vse</translation>
@@ -1805,6 +1808,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="847433688444405067">Brskanje po vseh napravah</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /><ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Ni neaktivnih oken</translation>
 <translation id="8493948351860045254">Sprosti prostor</translation>
 <translation id="8497242791509864205">Odpiranje možnosti razvrščanja</translation>
 <translation id="8497480609928300907">Pojasnilo glede vodnika po zasebnosti</translation>

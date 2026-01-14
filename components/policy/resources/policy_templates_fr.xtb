@@ -1314,6 +1314,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
       Si cette règle n'est pas configurée, aucune extension n'est exclue de la procédure de réinitialisation.</translation>
 <translation id="1962273523772270623">Autoriser la collecte des journaux d'événements WebRTC à partir des services Google</translation>
 <translation id="1962864958436828230">Définir la taille minimale liée à la restriction du presse-papiers pour prévenir les fuites de données</translation>
+<translation id="1963986268950915756">Autoriser les utilisateurs à installer des applications Web depuis le navigateur</translation>
 <translation id="1964191545419036999">Galerie (disponible depuis la version 117)</translation>
 <translation id="1964634611280150550">Mode navigation privée désactivé</translation>
 <translation id="1964802606569741174">Cette règle n'a aucun effet sur l'application YouTube pour Android. Vous ne devez pas autoriser son installation si le mode sécurisé de YouTube doit être appliqué.</translation>
@@ -2223,6 +2224,17 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 <translation id="2568488785376704318">Cette règle est obsolète. Veuillez utiliser la règle <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> à la place.</translation>
 <translation id="2570059561924004903">Désactiver la lecture vocale</translation>
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
+<translation id="2571353268726025696">Cette règle permet de désactiver ou non la fonctionnalité d'ensembles internes (qui ont ensuite été renommés <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Si cette règle est activée ou n'est pas configurée, la fonctionnalité d'ensembles internes est activée.
+
+Si elle est désactivée, la fonctionnalité l'est également.
+
+Cela détermine si Chrome accepte ou non les intégrations liées aux ensembles internes.
+
+Il s'agit de l'équivalent de la règle <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Vous pouvez utiliser l'une ou l'autre de ces règles, car elles ont le même effet sur le comportement du navigateur.
+Ces deux règles sont obsolètes suite à l'abandon de la fonctionnalité liée aux <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> dans la version 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2571821662934804440">Autoriser l'utilisation de la fonctionnalité sans améliorer les modèles d'IA</translation>
 <translation id="2573850437942404034">Ne pas autoriser</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
@@ -2820,6 +2832,11 @@ Pour les cookies sur des domaines autres que ceux représentés par les formats 
 Cette règle sera supprimée prochainement.</translation>
 <translation id="2989404644164421834">Actualiser les pages</translation>
 <translation id="299127280603727143">Groupe de règles liées aux paramètres d'accès au réseau local.  Consultez https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Cette règle détermine si les utilisateurs peuvent installer des applications Web via le navigateur.
+Si vous activez cette règle ou ne la configurez pas, les utilisateurs peuvent installer des applications Web via le navigateur.
+Si vous désactivez cette règle, les utilisateurs ne peuvent pas installer d'applications Web via le navigateur, et le type de données "applications" est exclu de la synchronisation pour <ph name="CHROME_SYNC_NAME" />.
+Cette règle n'est pas compatible avec l'actualisation dynamique. Toute modification (activation, désactivation ou non-configuration) ne prend effet qu'après le redémarrage du navigateur.
+Cette règle n'affecte pas la règle "<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />".</translation>
 <translation id="299446489108785864">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
 
       Si cette règle est configurée, les fichiers seront ouverts automatiquement à condition que la règle s'applique à l'URL et que le type de fichier figure dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si l'une des deux conditions est fausse, le fichier téléchargé ne s'ouvrira pas automatiquement suivant cette règle.
@@ -5894,6 +5911,7 @@ Si cette règle n'est pas configurée, "M'aider à écrire" sera activé sur les
 <translation id="5082296146261894974">Permet aux utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5082572440690475059">Autoriser l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
+<translation id="5087922428454325090">Les utilisateurs ne peuvent pas installer d'applications Web via le navigateur.</translation>
 <translation id="5087932158260897375">Si cette règle est définie sur "False", les rapports sur les données de diagnostic de fiabilité du domaine sont désactivés et aucune donnée n'est envoyée à Google.
 Si cette règle est définie sur "True" ou si elle n'est pas définie, les rapports sur les données de diagnostic de fiabilité du domaine suivront le comportement de MetricsReportingEnabled pour <ph name="PRODUCT_NAME" /> ou de DeviceMetricsReportingEnabled pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Cette règle permet de suivre la spécification nouvellement adoptée concernant le zoom CSS.
@@ -7453,6 +7471,35 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6083631234867522991">Windows (clients Windows) :</translation>
 <translation id="6087413944876892918">Utiliser l'algorithme <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
+<translation id="6089118101413877627">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles internes (qui ont ensuite été renommés <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Chaque ensemble figurant dans la liste des ensembles internes du navigateur doit respecter les exigences liées aux ensembles internes.
+Un ensemble interne doit contenir un site principal et au moins un site membre.
+Un ensemble peut également contenir une liste de sites de services dont il est propriétaire, ainsi qu'un mappage entre un site et toutes ses variantes ccTLD.
+Pour en savoir plus sur les ensembles internes qu'utilise <ph name="PRODUCT_NAME" />, rendez-vous sur https://github.com/WICG/first-party-sets.
+
+Tous les sites d'un ensemble interne doivent être des domaines enregistrables diffusés sur HTTPS. Chaque site d'un ensemble interne doit aussi être unique (il ne peut pas figurer plusieurs fois dans un ensemble interne).
+
+Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles internes.
+
+Pour tous les sites appartenant à un ensemble interne de la liste <ph name="REPLACEMENTS" /> : si un site figure aussi dans un ensemble interne de la liste du navigateur, il sera supprimé de l'ensemble interne du navigateur.
+L'ensemble interne de la règle sera alors ajouté à la liste des ensembles internes du navigateur.
+
+Pour tous les sites appartenant à un ensemble interne de la liste <ph name="ADDITIONS" /> : si un site figure aussi dans un ensemble interne de la liste du navigateur, l'ensemble interne du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble interne à la liste du navigateur. Une fois la liste du navigateur mise à jour, l'ensemble interne de la règle est ajouté à la liste des ensembles internes du navigateur.
+
+La liste des ensembles internes du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition s'applique aussi aux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />. De même, un site ne peut pas figurer dans les deux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />.
+
+Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble interne de ces listes.
+
+Tous les ensembles que cette règle fournit doivent être des ensembles internes valides sous peine de générer une erreur.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" /> ou à <ph name="MS_AAD_NAME" />, ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Il s'agit de l'équivalent de la règle <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Vous pouvez utiliser l'une ou l'autre de ces règles, car elles ont le même effet sur le comportement du navigateur.
+Ces deux règles sont obsolètes suite à l'abandon de la fonctionnalité liée aux <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> dans la version 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
 <translation id="6091233616732024397">Obliger les utilisateurs à se connecter pour se servir du navigateur</translation>
 <translation id="6092073071805297119">Autoriser l'utilisation du filtrage des performances d'accessibilité.</translation>
@@ -8315,6 +8362,7 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="6601216729409808032">Active des vérifications supplémentaires des règles cloud pour autoriser ou bloquer l'installation d'extensions.</translation>
 <translation id="6603004149426829878">Toujours transmettre les signaux de localisation disponibles au serveur tout en mettant à jour le fuseau horaire</translation>
 <translation id="6604049565198492174">Si cette règle est activée, la configuration réseau est appliquée par utilisateur pour chaque appareil <ph name="PRODUCT_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
+<translation id="6604522755563022737">Les utilisateurs peuvent installer des applications Web via le navigateur.</translation>
 <translation id="660567106648774919">Cette règle est obsolète (veuillez utiliser la règle <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> à la place).
 
       Par défaut, les conditions d'utilisation sont affichées la première fois que des onglets personnalisés Chrome sont exécutés. Si cette règle est désactivée, la boîte de dialogue des conditions d'utilisation ne s'affiche ni à la première exécution, ni lors des suivantes. Si cette règle est activée ou qu'elle n'est pas configurée, la boîte de dialogue des conditions d'utilisation s'affiche à la première exécution. Notez également les points suivants :
@@ -10147,6 +10195,28 @@ Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet�
       Si elle est définie sur "True", les événements réseau de l'appareil seront signalés.</translation>
 <translation id="780629758750905699">Autoriser l'ajout de comptes Family Link à l'appareil</translation>
 <translation id="7807139251387225825">Liste des types à exclure de la synchronisation</translation>
+<translation id="7812285231594048601">Cette règle est obsolète. Veuillez utiliser <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" /> à la place.
+
+Comportement par défaut (Règle non définie)
+Lorsqu'un compte est ajouté dans la zone de contenu, une petite boîte de dialogue invitant l'utilisateur à créer un profil peut s'afficher. L'utilisateur peut fermer cette boîte de dialogue.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Si un utilisateur se connecte à un service Google pour la première fois dans un navigateur <ph name="PRODUCT_NAME" />, une boîte de dialogue s'affiche et l'invite à créer un profil pour son compte d'entreprise. L'utilisateur peut cliquer sur "Annuler" pour se déconnecter ou sur "Continuer" pour créer un profil. Les données de navigation existantes ne seront pas ajoutées au nouveau profil. Ce nouveau profil est autorisé à posséder des comptes secondaires (par exemple, l'utilisateur peut se connecter à un autre compte dans la zone de contenu).
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, mais le nouveau profil n'est pas autorisé à posséder de comptes secondaires.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, mais une case à cocher sera ajoutée à la boîte de dialogue pour permettre à l'utilisateur de conserver les données de navigation locales.
+Si l'utilisateur coche la case, les données de profil existantes sont associées au compte géré.
+– Toutes les données de navigation existantes seront présentes dans le nouveau profil.
+– Ces données incluent les favoris, l'historique, le mot de passe, les données de saisie automatique, les onglets ouverts, les cookies, le cache, l'espace de stockage Web, les extensions, etc.
+Si l'utilisateur ne coche pas la case :
+– L'ancien profil continuera d'exister, et aucune donnée ne sera perdue.
+– Un profil sera créé.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mais le nouveau profil n'est pas autorisé à posséder de comptes secondaires.</translation>
 <translation id="781268256210530471">Paramètres des plug-ins</translation>
 <translation id="7816326058023670173">Secret partagé entre les appareils utilisés par les parents et l’enfant.</translation>
 <translation id="7818131573217430250">Définir l'état par défaut du mode Contraste élevé sur l'écran de connexion</translation>
@@ -10695,9 +10765,6 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
 <translation id="8225579382697740712">Contrôler l'utilisation de l'API WebHID</translation>
 <translation id="8229912067600517877">Activer les Outils pour les développeurs</translation>
 <translation id="8238421250255592181">Flag booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
-<translation id="8238558579601006178">Si cette règle est définie sur 0 ou n'est pas configurée, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ne s'applique qu'au niveau de l'utilisateur à condition qu'il soit affilié.
-Si cette règle est définie sur 1, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> s'applique au niveau de l'utilisateur, même si celui-ci n'est pas affilié.
-Si cette règle est définie sur 2, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ne s'applique jamais lorsque sa source est un utilisateur.</translation>
 <translation id="8239109177194627162">Désactiver la saisie automatique pour les cartes de crédit</translation>
 <translation id="8239143983379015783">Forcer l'activation du quota persistant</translation>
 <translation id="8240976615241583524">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible.

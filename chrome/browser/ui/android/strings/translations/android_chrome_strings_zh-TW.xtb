@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">僅儲存到這部裝置</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4188221736490993796">按 Z 到 A 排序</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{由於偵測到垃圾/欺詐內容，因此 Chrome 已停止顯示來自該網站的通知}other{由於偵測到垃圾/欺詐內容，因此 Chrome 已停止顯示來自這些網站的通知}}</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{這部裝置上的 1 個分頁}other{這部裝置上的 # 個分頁}}</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
 <translation id="5841444063256914865">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="5847265694842662173">部分網站有濫用行為或你不常使用，Chrome 已停止顯示這類網站的通知</translation>
 <translation id="5848257610304005265">要使用「<ph name="APP_NAME" />」開啟 PDF 嗎？</translation>
 <translation id="5849288995120328556">要停止共用嗎？</translation>
 <translation id="5853623416121554550">已暫停</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">在新分頁中開啟 Chrome 說明中心</translation>
 <translation id="59577092665511740">請選擇帳戶。</translation>
 <translation id="5958275228015807058">前往「下載」主畫面尋找你的檔案和網頁</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已停止顯示近期未造訪網站的通知}other{Chrome 已停止顯示近期未造訪網站的通知}}</translation>
 <translation id="5962718611393537961">輕觸即可收合</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
@@ -1805,6 +1808,7 @@
 <translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8477178913400731244">刪除資料</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">沒有閒置視窗</translation>
 <translation id="8493948351860045254">釋出空間</translation>
 <translation id="8497242791509864205">開啟排序選項</translation>
 <translation id="8497480609928300907">隱私權指南說明</translation>

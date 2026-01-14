@@ -1315,6 +1315,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
       Si no se le asigna ningún valor, ninguna extensión quedará exenta del proceso de borrado.</translation>
 <translation id="1962273523772270623">Permitir la recogida de registros de eventos WebRTC de servicios de Google</translation>
 <translation id="1962864958436828230">Establecer un límite de tamaño mínimo para la restricción del portapapeles que previene la filtración de datos</translation>
+<translation id="1963986268950915756">Habilitar la instalación de aplicaciones web de usuario desde el navegador</translation>
 <translation id="1964191545419036999">Galería (compatible desde la versión 117)</translation>
 <translation id="1964634611280150550">Modo Incógnito inhabilitado</translation>
 <translation id="1964802606569741174">Esta política no influye en la aplicación YouTube para Android. Si se debe aplicar el modo Seguro en YouTube, deberás inhabilitar la descarga de la aplicación YouTube para Android.</translation>
@@ -2835,6 +2836,11 @@ Para las cookies de dominios que no coincidan con los patrones indicados, o para
 Esta política se eliminará en el futuro.</translation>
 <translation id="2989404644164421834">Volver a cargar páginas</translation>
 <translation id="299127280603727143">Un grupo de políticas relacionadas con los ajustes de acceso a la red local.  Consulta https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Esta política controla si los usuarios pueden instalar aplicaciones web mediante el navegador.
+Si habilitas esta política o no la configuras, los usuarios podrán instalar aplicaciones web mediante el navegador.
+Si inhabilitas esta política, los usuarios no podrán instalar aplicaciones web mediante el navegador y el tipo de datos "aplicaciones" se excluirá de la sincronización de <ph name="CHROME_SYNC_NAME" />.
+Esta política no admite la actualización dinámica. Los cambios, ya sean para habilitar, inhabilitar o anular la configuración, solo se aplicarán después de reiniciar el navegador.
+Esta política no afecta a la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.</translation>
 <translation id="299446489108785864">Lista de URLs que especifica a qué URLs se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta a los valores abiertos automáticamente por los usuarios.
 
       Si se establece esta política, los archivos se abrirán automáticamente solo si la URL está incluida en la lista y el tipo de archivo aparece en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si no se cumple alguna de estas condiciones, la política no abrirá automáticamente el archivo descargado.
@@ -5930,6 +5936,7 @@ Si no se define esta política, Ayúdame a escribir se habilitará en los dispos
 <translation id="5082296146261894974">Permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5082572440690475059">Permitir el acceso de lectura a través de la API File System en estos sitios web</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
+<translation id="5087922428454325090">Los usuarios no pueden instalar aplicaciones web mediante el navegador.</translation>
 <translation id="5087932158260897375">Si se asigna el valor false a esta política, se inhabilitarán los informes de datos de diagnóstico sobre la fiabilidad de dominios y no se enviarán datos a Google.
 Si se asigna el valor true a esta política o no se define, los informes de datos de diagnóstico sobre la fiabilidad de dominios seguirán el comportamiento de MetricsReportingEnabled en el caso de <ph name="PRODUCT_NAME" /> o el comportamiento DeviceMetricsReportingEnabled en el caso de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Esta política permite cumplir la especificación de zoom de CSS recientemente adoptada.
@@ -8399,6 +8406,7 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 <translation id="6601216729409808032">Habilitar comprobaciones adicionales de políticas en la nube para permitir o bloquear la instalación de extensiones.</translation>
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se detecta la zona horaria</translation>
 <translation id="6604049565198492174">Establecer esta política permite aplicar una configuración de red para cada usuario en un dispositivo <ph name="PRODUCT_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
+<translation id="6604522755563022737">Los usuarios pueden instalar aplicaciones web mediante el navegador.</translation>
 <translation id="660567106648774919">Esta política está obsoleta. Se debe usar la política <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> en su lugar.
 
       De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor Inhabilitada a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor Habilitada o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
@@ -8878,6 +8886,25 @@ Si no se define la política <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATIO
 Si se inhabilita esta política o no se define, se aplicará el comportamiento predeterminado de bloquear dichas solicitudes.</translation>
 <translation id="6915524162137327111">Mostrar etiquetas de gestión durante 30 s</translation>
 <translation id="6919205861950516688">No permitir la función Organizador de pestañas.</translation>
+<translation id="6920791385071265136">Controla si las extensiones que se han retirado debido a infracciones no relacionadas con malware se pueden seguir instalando de forma forzosa en entornos de baja confianza.
+
+Puedes consultar más información sobre las infracciones no relacionadas con malware y las retiradas aquí: https://developer.chrome.com/docs/webstore/review-process#warning
+
+Una vez que se haya resuelto la infracción no relacionada con malware, la extensión permanecerá habilitada y no se podrá inhabilitar ni retirar.
+
+En <ph name="MS_WIN_NAME" />, esta política no está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política no está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Las extensiones de instalación forzada con infracciones no relacionadas con malware seguirán habilitadas en estos casos.
+
+Actualmente, una extensión de instalación forzada con infracciones no relacionadas con malware permanece instalada y habilitada en Chrome.
+
+Si se habilita esta política, las extensiones de instalación forzada se comportarán de la misma manera (es decir, permanecerán habilitadas) independientemente de las infracciones no relacionadas con malware.
+
+Si se inhabilita esta política o no se define, las extensiones de instalación forzada que tengan infracciones no relacionadas con malware se inhabilitarán.
+
+Esta política se quitó en la versión M145. A partir de esa versión, las extensiones de instalación forzada con infracciones no relacionadas con malware se inhabilitarán en entornos de baja confianza.</translation>
 <translation id="692096803256767290">Restaurar SO a la versión seleccionada</translation>
 <translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos utilicen máquinas virtuales en ChromeOS</translation>
@@ -10809,9 +10836,6 @@ Esta política se aplica al modo Incógnito. Esto quiere decir que el modo Incó
 <translation id="8225579382697740712">Controla el uso de la API WebHID</translation>
 <translation id="8229912067600517877">Habilitar herramientas de desarrollo</translation>
 <translation id="8238421250255592181">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de autocompletar.</translation>
-<translation id="8238558579601006178">Si se le asigna el valor 0 a esta política o no se define, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> solo se aplicará al permiso de usuario para los usuarios afiliados.
-Si se le asigna el valor 1 a esta política, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se aplicará al permiso de usuario, aunque ese usuario no esté afiliado.
-Si se le asigna el valor 2 a esta política, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nunca se aplicará cuando su origen sea un usuario.</translation>
 <translation id="8239109177194627162">Inhabilitar la función Autocompletar para tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar que se habilite la cuota persistente</translation>
 <translation id="8240976615241583524">Esta política permite restringir el uso de direcciones IP e interfaces por parte de WebRTC al intentar buscar la mejor conexión disponible.

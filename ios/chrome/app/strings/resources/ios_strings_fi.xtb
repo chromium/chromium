@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Miten käytän tätä ominaisuutta?</translation>
 <translation id="1901600657316773839">Säilytä valinta</translation>
 <translation id="1902277226107477495">Osoitteentunnistus on pois päältä. Laita se takaisin päälle asetuksista.</translation>
+<translation id="1909201414196501151">Sivusto lisätty ja kiinnitetty</translation>
 <translation id="1911619930368729126">Lähetä Google Driveen</translation>
 <translation id="1925706052394657380">Avaa <ph name="BEGIN_BOLD" />oletussovellusten<ph name="END_BOLD" /> asetukset iOS:ssä</translation>
 <translation id="1941314575388338491">Kopioi kaksoisnapauttamalla.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Kirjanmerkki tallennettu tilillesi: {title}, {email}}other{Kirjanmerkit tallennettu tilillesi: {title}, {email}}}</translation>
 <translation id="334690320928261823">Viimeaikaiset välilehdet</translation>
 <translation id="3349031117032695619">Estä ponnahdusikkunat</translation>
+<translation id="3350976670663926380">Muokkaukset tallennettu</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Tämä on hallinnoitu tili</translation>
 <translation id="3365529507898144230">Tallenna Kuviin</translation>
 <translation id="3371831930909698441">Kääntäjä on käytössä. Asetukset löytyvät näytön alalaidasta.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Valitse "Parannettu suojaus"</translation>
 <translation id="3610041351087301930">Piilota lukijatila</translation>
 <translation id="3610866916973186448">Kyllä, poista</translation>
+<translation id="3616161326314492065">Ota kuvia ja jaa niitä Geminille, niin voit luoda ja remiksata kuvia.</translation>
 <translation id="3622175633937495219">Hae historiasta (<ph name="COUNT" /> löytyi)</translation>
 <translation id="3625008969091706597">Voit siirtyä taaksepäin pyyhkäisemällä sivun reunaa.</translation>
 <translation id="362709345066740529">Muokkaa kortteja, fiidiä ja muita ominaisuuksia täällä</translation>
@@ -1841,6 +1844,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7853202427316060426">Tapahtumat</translation>
 <translation id="7854006015462979438">Avaa Yleiset</translation>
 <translation id="7855678267851972597">Audio</translation>
+<translation id="7857520352710212030">Sivusto kiinnitetty</translation>
 <translation id="7859988229622350291">Älä koskaan käännä näitä</translation>
 <translation id="7863211248337747225">Lataa sovellus</translation>
 <translation id="7865127013871431856">Käännösasetukset</translation>

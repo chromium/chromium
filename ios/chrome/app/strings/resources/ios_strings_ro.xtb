@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Cum folosesc această funcție?</translation>
 <translation id="1901600657316773839">Păstrează selecția</translation>
 <translation id="1902277226107477495">Detectarea adresei este dezactivată. Activeaz-o din nou în Setări.</translation>
+<translation id="1909201414196501151">Site-ul a fost adăugat și fixat</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
 <translation id="1925706052394657380">Deschide setările pentru <ph name="BEGIN_BOLD" />Aplicații prestabilite<ph name="END_BOLD" /> în iOS</translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Marcaj salvat în {title} în contul tău {email}}few{Marcaje salvate în {title} în contul tău {email}}other{Marcaje salvate în {title} în contul tău {email}}}</translation>
 <translation id="334690320928261823">File recente</translation>
 <translation id="3349031117032695619">Blochează ferestrele de tip pop-up</translation>
+<translation id="3350976670663926380">Modificările au fost salvate</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Acest cont este gestionat.</translation>
 <translation id="3365529507898144230">Salvează în Foto</translation>
 <translation id="3371831930909698441">Traducerea este disponibilă. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Alege Protecție îmbunătățită</translation>
 <translation id="3610041351087301930">Ascunde modul Cititor</translation>
 <translation id="3610866916973186448">Da, doresc ștergerea</translation>
+<translation id="3616161326314492065">Fă fotografii și trimite-le la Gemini ca să creezi și să remixezi imagini.</translation>
 <translation id="3622175633937495219">Istoricul căutărilor (găsite: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Poți să glisezi pe margine pentru a te deplasa înapoi.</translation>
 <translation id="362709345066740529">Personalizează-ți aici cardurile, feedul și multe altele</translation>
@@ -1841,6 +1844,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7853202427316060426">Activitate</translation>
 <translation id="7854006015462979438">Deschide General</translation>
 <translation id="7855678267851972597">Conținut audio</translation>
+<translation id="7857520352710212030">Site-ul a fost fixat</translation>
 <translation id="7859988229622350291">Nu traduce niciodată</translation>
 <translation id="7863211248337747225">Descarcă aplicația</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>

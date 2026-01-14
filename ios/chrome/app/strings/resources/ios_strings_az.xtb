@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Bu funksiyadan necə istifadə edə bilərəm?</translation>
 <translation id="1901600657316773839">Seçimi saxlayın</translation>
 <translation id="1902277226107477495">Ünvanın aşkarlanması sönülüdür. Onu Ayarlarda yenidən yandırın.</translation>
+<translation id="1909201414196501151">Sayt əlavə edildi və bərkidildi</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
 <translation id="1925706052394657380">iOS-da <ph name="BEGIN_BOLD" />Defolt tətbiqlər<ph name="END_BOLD" /> ayarlarını açın</translation>
 <translation id="1941314575388338491">Kopyalamaq üçün iki dəfə tıklayın.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="334690320928261823">Son tablar</translation>
 <translation id="3349031117032695619">Popapları bloklayın</translation>
+<translation id="3350976670663926380">Redaktələr yadda saxlanıldı</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Bu hesab idarə edilir.</translation>
 <translation id="3365529507898144230">Fotoda yadda saxlayın</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"Təkmil qoruma" seçin</translation>
 <translation id="3610041351087301930">Oxu rejimini gizlədin</translation>
 <translation id="3610866916973186448">Bəli, silin</translation>
+<translation id="3616161326314492065">Foto çəkin, habelə şəkillər yaratmaq və remiks etmək üçün Gemini ilə paylaşın.</translation>
 <translation id="3622175633937495219">Axtarış tarixçəsi (<ph name="COUNT" /> nəticə tapılıb)</translation>
 <translation id="3625008969091706597">Kənarı çəkərək geri qayıda bilərsiniz.</translation>
 <translation id="362709345066740529">Kartları, lenti və s. bölmələri burada fərdiləşdirin</translation>
@@ -1841,6 +1844,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7853202427316060426">Fəalliyyət</translation>
 <translation id="7854006015462979438">Ümumi ayarları açın</translation>
 <translation id="7855678267851972597">Audiolar</translation>
+<translation id="7857520352710212030">Sayt bərkidildi</translation>
 <translation id="7859988229622350291">Neç vaxt tərcümə etməyin</translation>
 <translation id="7863211248337747225">Tətbiqi əldə edin</translation>
 <translation id="7865127013871431856">Tərcümə seçimləri</translation>

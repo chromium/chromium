@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Як карыстацца гэтай функцыяй?</translation>
 <translation id="1901600657316773839">Пакінуць выбар</translation>
 <translation id="1902277226107477495">Вызначэнне адрасоў выключана. Уключыць гэту функцыю зноў можна ў наладах.</translation>
+<translation id="1909201414196501151">Сайт дададзены і замацаваны</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
 <translation id="1925706052394657380">Адкрыйце налады <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Стандартныя праграмы) у iOS.</translation>
 <translation id="1941314575388338491">Каб скапіраваць, націсніце двойчы.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладка захавана ва ўліковым запісе ({email}) у папцы "{title}"}one{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}few{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}many{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}other{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}}</translation>
 <translation id="334690320928261823">Нядаўнія ўкладкі</translation>
 <translation id="3349031117032695619">Блакіраваць усплывальныя вокны</translation>
+<translation id="3350976670663926380">Змяненні захаваны</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Гэты ўліковы запіс знаходзіцца пад кіраваннем.</translation>
 <translation id="3365529507898144230">Захаваць у Фота</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Выберыце функцыю "Палепшаная абарона"</translation>
 <translation id="3610041351087301930">Схаваць рэжым чытання</translation>
 <translation id="3610866916973186448">Так, выдаліць</translation>
+<translation id="3616161326314492065">Рабіце фота і абагульвайце іх з Gemini, каб ствараць відарысы і рэміксы з імі.</translation>
 <translation id="3622175633937495219">Гісторыя пошуку (знойдзена супадзенняў: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Каб перайсці назад, правядзіце пальцам па краі экрана.</translation>
 <translation id="362709345066740529">Тут можна наладзіць карткі, стужку і іншае</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854006015462979438">Адкрыйце агульныя налады</translation>
 <translation id="7855678267851972597">Аўдыяфайлы</translation>
+<translation id="7857520352710212030">Сайт замацаваны</translation>
 <translation id="7859988229622350291">Ніколі не перакладаць з наступных моў:</translation>
 <translation id="7863211248337747225">Усталяваць праграму</translation>
 <translation id="7865127013871431856">Параметры Перакладчыка</translation>

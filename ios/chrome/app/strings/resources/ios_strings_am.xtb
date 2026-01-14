@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">ይህን ባህሪ እንዴት መጠቀም እችላለሁ?</translation>
 <translation id="1901600657316773839">ምርጫን አቆይ</translation>
 <translation id="1902277226107477495">የአድራሻ ማወቂያ ጠፍቷል። በቅንብሮች ውስጥ መልሰው ያብሩት።</translation>
+<translation id="1909201414196501151">ጣቢያ ታክሏል እና ተሰክቷል</translation>
 <translation id="1911619930368729126">ወደ Google Drive ስቀል</translation>
 <translation id="1925706052394657380">iOS ውስጥ <ph name="BEGIN_BOLD" />ነባሪ መተግበሪያዎች<ph name="END_BOLD" /> ቅንብሮች ይክፈቱ</translation>
 <translation id="1941314575388338491">ለመቅዳት ሁለቴ መታ ያድርጉ።</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}other{በመለያዎ፣ {email} ውስጥ ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="334690320928261823">የቅርብ ጊዜ ትሮች</translation>
 <translation id="3349031117032695619">ብቅ-ባዮችን አግድ</translation>
+<translation id="3350976670663926380">አርትዖቶች ተቀምጠዋል</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />። ይህ መለያ የሚተዳደር ነው።</translation>
 <translation id="3365529507898144230">ፎቶዎች ውስጥ አስቀምጥ</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">«የላቀ ጥበቃ» የሚለውን ይምረጡ</translation>
 <translation id="3610041351087301930">አንባቢን ደብቅ</translation>
 <translation id="3610866916973186448">አዎ፣ ሰርዝ</translation>
+<translation id="3616161326314492065">ምስሎችን ለመፍጠር እና እንደገና ለመቀላቀል ፎቶዎችን ያንሱ እና ከGemini ጋር ያጋሩ።</translation>
 <translation id="3622175633937495219">የፍለጋ ታሪክ (<ph name="COUNT" /> ይገኛሉ)</translation>
 <translation id="3625008969091706597">ወደ ኋላ ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="362709345066740529">እዚህ የእርስዎን ካርዶች፣ ምግብ እና ሌሎችንም ያብጁ</translation>
@@ -1841,6 +1844,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7853202427316060426">እንቅስቃሴ</translation>
 <translation id="7854006015462979438">አጠቃላይን ይክፈቱ</translation>
 <translation id="7855678267851972597">ኦዲዮዎች</translation>
+<translation id="7857520352710212030">ጣቢያ ተሰክቷል</translation>
 <translation id="7859988229622350291">በጭራሽ አይተርጉሙ</translation>
 <translation id="7863211248337747225">መተግበሪያውን አግኝ</translation>
 <translation id="7865127013871431856">የትርጉም አማራጮች</translation>

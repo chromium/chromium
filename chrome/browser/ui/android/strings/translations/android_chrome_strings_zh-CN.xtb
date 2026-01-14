@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">仅在此设备上</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4188221736490993796">按从 Z 到 A 排序</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已阻止此网站发送通知，因为其包含网络垃圾或欺骗性内容}other{Chrome 已阻止这些网站发送通知，因为其包含网络垃圾或欺骗性内容}}</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此设备上的 1 个标签页}other{此设备上的 # 个标签页}}</translation>
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">分享链接</translation>
 <translation id="5839058148541733625">Chrome 恐龙</translation>
 <translation id="5841444063256914865">您仍要下载“<ph name="FILE_NAME" />”吗？</translation>
+<translation id="5847265694842662173">Chrome 已阻止存在滥用行为以及您未使用的网站发送通知</translation>
 <translation id="5848257610304005265">要使用“<ph name="APP_NAME" />”打开 PDF 文件吗？</translation>
 <translation id="5849288995120328556">要停止分享吗？</translation>
 <translation id="5853623416121554550">已暂停</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">在新标签页中打开 Chrome 帮助中心</translation>
 <translation id="59577092665511740">选择一个账号。</translation>
 <translation id="5958275228015807058">在“下载内容”中查找您的文件和网页</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已阻止您近期未访问过的网站向您发送通知}other{Chrome 已阻止您近期未访问过的网站向您发送通知}}</translation>
 <translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5972844218283131174">取消全选</translation>
@@ -1803,6 +1806,7 @@
 <translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8477178913400731244">删除数据</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">没有闲置窗口</translation>
 <translation id="8493948351860045254">释放空间</translation>
 <translation id="8497242791509864205">打开排序选项</translation>
 <translation id="8497480609928300907">隐私保护指南说明</translation>

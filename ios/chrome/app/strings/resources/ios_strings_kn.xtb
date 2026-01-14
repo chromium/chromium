@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">ನಾನು ಈ ಫೀಚರ್‌ ಅನ್ನು ಹೇಗೆ ಬಳಸಬೇಕು?</translation>
 <translation id="1901600657316773839">ಆಯ್ಕೆಯನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1902277226107477495">ಪತ್ತೆ ಮಾಡುವಿಕೆ ಆಫ್ ಆಗಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅದನ್ನು ಮತ್ತೆ ಆನ್ ಮಾಡಿ.</translation>
+<translation id="1909201414196501151">ಸೈಟ್ ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ ಮತ್ತು ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1911619930368729126">Google ಡ್ರೈವ್‌ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="1925706052394657380">iOS ನಲ್ಲಿ <ph name="BEGIN_BOLD" />ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳ<ph name="END_BOLD" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1941314575388338491">ನಕಲಿಸಲು ಡಬಲ್‌ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="334690320928261823">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="3349031117032695619">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="3350976670663926380">ಎಡಿಟ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. ಈ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="3365529507898144230">Photos ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3371831930909698441">ಅನುವಾದ ಲಭ್ಯವಿದೆ. ಪರದೆಯ ಕೆಳಭಾಗದ ಸಮೀಪದಲ್ಲಿ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">"ವರ್ಧಿತ ಸುರಕ್ಷತೆ" ಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3610041351087301930">ರೀಡರ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3610866916973186448">ಹೌದು, ಅಳಿಸಿ</translation>
+<translation id="3616161326314492065">ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ರೀಮಿಕ್ಸ್ ಮಾಡಲು ಫೋಟೋಗಳನ್ನು ತೆಗೆದುಕೊಂಡು, Gemini ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಿ.</translation>
 <translation id="3622175633937495219">ಹುಡುಕಾಟದ ಇತಿಹಾಸ (<ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ)</translation>
 <translation id="3625008969091706597">ಹಿಂತಿರುಗಲು ನೀವು ಅಂಚನ್ನು ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
 <translation id="362709345066740529">ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳು, ಫೀಡ್ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಇಲ್ಲಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">ಚಟುವಟಿಕೆ</translation>
 <translation id="7854006015462979438">ಸಾಮಾನ್ಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7855678267851972597">ಆಡಿಯೋಗಳು</translation>
+<translation id="7857520352710212030">ಸೈಟ್ ಅನ್ನು ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7859988229622350291">ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
 <translation id="7863211248337747225">ಆ್ಯಪ್‌ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7865127013871431856">ಅನುವಾದ ಆಯ್ಕೆಗಳು</translation>

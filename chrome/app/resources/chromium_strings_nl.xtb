@@ -532,6 +532,9 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6901631050894301805">Stel Chromium in als je standaardbrowser en zet deze vast op je taakbalk</translation>
 <translation id="6909503629704372277">&amp;Chromium-profielen beheren</translation>
 <translation id="6934579572334859869">Vragen over deze afbeelding stellen aan Zoeken met afbeelding</translation>
+<translation id="6948031725951063910">Je hebt de limiet van Chromium van <ph name="BOOKMARK_LIMIT" /> bookmarks bereikt. Sommige van je bookmarks zijn daarom nog niet opgeslagen in je Google-account.
+
+Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Zwakke wachtwoorden zijn makkelijk te raden. Laat Chromium <ph name="BEGIN_LINK" />sterke wachtwoorden voor je instellen en onthouden<ph name="END_LINK" />.</translation>
@@ -700,6 +703,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8880203542552872219">Als dit het geval is, bewerk je het opgeslagen wachtwoord in Chromium, zodat het overeenkomt met je nieuwe wachtwoord.</translation>
 <translation id="8891709362986793894">Je organisatie vereist dat je inlogt bij Chromium</translation>
 <translation id="8907580949721785412">Chromium probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
+<translation id="8932992523185907506">Chromium is niet meer je standaardbrowser. Chromium als standaardbrowser instellen?</translation>
 <translation id="8941642502866065432">Kan Chromium niet updaten</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
 <translation id="8981150672034878610">Kan Chromium niet starten omdat er iets is misgegaan bij het openen van je profiel. Start Chromium opnieuw op.</translation>

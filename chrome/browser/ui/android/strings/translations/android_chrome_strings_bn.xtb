@@ -725,6 +725,7 @@
 <translation id="4180726336228139707">শুধু এই ডিভাইসে</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4188221736490993796">Z থেকে A অনুসারে সাজান</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{স্প্যাম বা বিভ্রান্তিকর কন্টেন্ট থাকার কারণে Chrome এই সাইটকে বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}one{স্প্যাম বা বিভ্রান্তিকর কন্টেন্ট থাকার কারণে Chrome এইসব সাইটকে বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}other{স্প্যাম বা বিভ্রান্তিকর কন্টেন্ট থাকার কারণে Chrome এইসব সাইটকে বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}}</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{এই ডিভাইসে ১টি ট্যাব}one{এই ডিভাইসে #টি ডিভাইস}other{এই ডিভাইসে #টি ডিভাইস}}</translation>
 <translation id="4198423547019359126">ডাউনলোড করার জন্য লোকেশন উপলভ্য নেই</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5833984609253377421">লিঙ্ক শেয়ার করুন</translation>
 <translation id="5839058148541733625">Chrome ডাইনো গেম</translation>
 <translation id="5841444063256914865">আপনি কি তবুও "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
+<translation id="5847265694842662173">Chrome অপব্যবহার করা ও অব্যবহৃত সাইটকে বিজ্ঞপ্তি পাঠানো থেকে আটকায়</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> অ্যাপের সাহায্যে পিডিএফ ফাইল খুলতে চান?</translation>
 <translation id="5849288995120328556">শেয়ার করা বন্ধ করতে চান?</translation>
 <translation id="5853623416121554550">পজ করা হয়েছে</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5956665950594638604">Chrome সহায়তা কেন্দ্রকে একটি নতুন ট্যাবে খুলুন</translation>
 <translation id="59577092665511740">একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="5958275228015807058">ডাউনলোড ফোল্ডার থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে নিন</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{আপনি সম্প্রতি ভিজিট করেননি এমন একটি সাইটকে Chrome বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}one{আপনি সম্প্রতি ভিজিট করেননি এমন সাইটকে Chrome বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}other{আপনি সম্প্রতি ভিজিট করেননি এমন সাইটকে Chrome বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}}</translation>
 <translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5972844218283131174">সবগুলি অনির্বাচন করুন</translation>
@@ -1805,6 +1808,7 @@
 <translation id="847433688444405067">ডিভাইস জুড়ে ব্রাউজ করা</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">কোনও ইনঅ্যাক্টিভ উইন্ডো নেই</translation>
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>
 <translation id="8497242791509864205">সাজানোর বিকল্প খুলুন</translation>
 <translation id="8497480609928300907">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা</translation>

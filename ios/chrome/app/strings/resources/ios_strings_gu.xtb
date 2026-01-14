@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">મારી સાથે શેર કરેલા</translation>
 <translation id="1369286077209859800">ટૅબના ગ્રૂપમાં બધા ટૅબ બતાવો</translation>
 <translation id="136942498637440594">તમે છબીઓ અને જે જોતા હો તે શોધી શકો છો.</translation>
+<translation id="1373120905936431262">Nano Banana વડે રિમિક્સ કરવા માટે કોઈ છબી અપલોડ કરો</translation>
 <translation id="1377508275003315939">પાસવર્ડ</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}માંથી {position} નંબરનું ઍડ્રેસ}one{{count}માંથી {position} નંબરનું ઍડ્રેસ}other{{count}માંથી {position} નંબરનું ઍડ્રેસ}}</translation>
 <translation id="1383876407941801731">શોધો</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="1838089197478136166">Walletમાં ખોલીએ?</translation>
 <translation id="183878838231635348">આ કાર્ડ, સલામતી માટે તપાસની સુવિધા દ્વારા તમારા માટે ઑટોમૅટિક રીતે ભાળ મેળવવામાં આવેલી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યા બતાવે છે.</translation>
+<translation id="1840320537320704887">તમારા નવા ટૅબ પેજની પસંદગીઓ કાઢી નાખી</translation>
 <translation id="1845230888742614096">ગ્રૂપ રાખો</translation>
 <translation id="1853692000353488670">નવી છુપી ટેબ</translation>
 <translation id="1854463785401910334">ખુલ્લા ટૅબમાં શોધો</translation>
@@ -253,6 +255,7 @@
 <translation id="1901366738768303267">હું આ સુવિધાનો ઉપયોગ કેવી રીતે કરું?</translation>
 <translation id="1901600657316773839">પસંદગી રાખો</translation>
 <translation id="1902277226107477495">સરનામાની ભાળ મેળવવાની સુવિધા બંધ છે. તેને સેટિંગમાં ફરીથી ચાલુ કરો.</translation>
+<translation id="1909201414196501151">સાઇટ ઉમેરી અને પિન કરી</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
 <translation id="1925706052394657380">iOSમાં <ph name="BEGIN_BOLD" />ડિફૉલ્ટ ઍપ<ph name="END_BOLD" />ના સેટિંગ ખોલો</translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
@@ -615,6 +618,7 @@
 <translation id="3344485292736684439">{count,plural, =1{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="334690320928261823">તાજેતરના ટૅબ</translation>
 <translation id="3349031117032695619">પૉપ-અપ બ્લૉક કરો</translation>
+<translation id="3350976670663926380">ફેરફારો સાચવ્યા</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. આ એકાઉન્ટ મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3365529507898144230">Photosમાં સાચવો</translation>
 <translation id="3371831930909698441">અનુવાદ ઉપલબ્ધ છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">"વધારેલું સંરક્ષણ" પસંદ કરો</translation>
 <translation id="3610041351087301930">રીડર છુપાવો</translation>
 <translation id="3610866916973186448">હા, ડિલીટ કરો</translation>
+<translation id="3616161326314492065">છબીઓ બનાવવા અને રિમિક્સ કરવા માટે ફોટા લો અને Gemini સાથે શેર કરો.</translation>
 <translation id="3622175633937495219">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="3625008969091706597">તમે પાછળ જવા માટે, કિનારીને સ્વાઇપ કરી શકો છો.</translation>
 <translation id="362709345066740529">અહીં તમારા કાર્ડ, ફીડ અને બીજું ઘણું કસ્ટમાઇઝ કરો</translation>
@@ -871,6 +876,7 @@
 <translation id="4338650699862464074">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે.</translation>
 <translation id="4342946437867096381">તમે પહેલેથી આ સાઇટ માટેનો પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવ્યો છે. Google તમારા માટે સૌથી તાજેતરનો પાસવર્ડ પસંદ કરી શકે છે.</translation>
 <translation id="4365121137632832185">ટૅબનું ગ્રૂપ. મોટું કરેલું.</translation>
+<translation id="4365685757967464989">ફોટા લેવા માટે Geminiને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="4367971618859387374">ડિસ્પ્લે નામ</translation>
 <translation id="4375772272517383391">બધા ટૅબ બંધ કરો</translation>
 <translation id="4378154925671717803">ફોન</translation>
@@ -954,6 +960,7 @@
 
        આ ડિવાઇસ પરના વર્તમાન બ્રાઉઝિંગ ડેટા સાથે શું કરવું તે પસંદ કરો.</translation>
 <translation id="4675298276894277358">આ સાઇટ ફરીથી બતાવવામાં આવશે નહીં</translation>
+<translation id="4676647168422678078">તમારા નવા ટૅબ પેજની પસંદગીઓ લાગુ કરીએ?</translation>
 <translation id="4682496302933121474">પેજનો અનુવાદ કરીએ?</translation>
 <translation id="4682686630151240767">1. iPhone સેટિંગ ખોલો</translation>
 <translation id="4691892551491778176">જ્યારે તમે આ સુવિધાનો ઉપયોગ કરો, ત્યારે પેજનું કન્ટેન્ટ અને URLs Googleને મોકલવામાં આવે છે, પરંતુ તેનો ઉપયોગ જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે કરવામાં આવશે નહીં. તમે આને કોઈપણ સમયે સેટિંગમાં જઈને બંધ કરી શકો છો.</translation>
@@ -1002,6 +1009,7 @@
 <translation id="4840495572919996524">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય બાબતો હવેથી Google એકાઉન્ટ પર સિંક થશે નહીં.</translation>
 <translation id="484280513275854557">તમને સાઇન આઉટ કરવામાં આવ્યા બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવ્યો</translation>
 <translation id="4850886885716139402">જુઓ</translation>
+<translation id="4854068532375923088">“Gemini”ને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="4860895144060829044">કૉલ કરો</translation>
 <translation id="4861953997778766866">દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબ ગ્રૂપમાં ફેરફાર કરી શકે છે</translation>
 <translation id="4865063548323785458">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે તમારા પાસવર્ડ સાચવો અને તેને ઑટોમૅટિક રીતે ભરો</translation>
@@ -1205,6 +1213,7 @@
 <translation id="5579012242779565775">વાંચન સૂચિ છુપાવો</translation>
 <translation id="5581786858144165447">'AIને પૂછો' મોડ</translation>
 <translation id="5585019845078534178">કાર્ડ્સ</translation>
+<translation id="5591526871732898147">જોડેલી છબી {index}</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="559567008082979829">તમારા ડાઉનલોડ એક મહિના પછી ડિલીટ કરવામાં આવે તે રીતે સેટ કરો.</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
@@ -1841,6 +1850,7 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7854006015462979438">સામાન્ય ખોલો</translation>
 <translation id="7855678267851972597">ઑડિયો</translation>
+<translation id="7857520352710212030">સાઇટ પિન કરી</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7863211248337747225">ઍપ મેળવો</translation>
 <translation id="7865127013871431856">Google Translateના વિકલ્પો</translation>
@@ -1904,6 +1914,7 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} બુકમાર્ક}one{{count} બુકમાર્ક}other{{count} બુકમાર્ક}}</translation>
 <translation id="8059533439631660104">વિભાગને સંકુચિત કરે છે.</translation>
 <translation id="8061584726507121204">ઇતિહાસ</translation>
+<translation id="8064946459644399612">તમારા નવા ટૅબ પેજની પસંદગીઓ લાગુ કરી</translation>
 <translation id="8069168488983557089">તમને કોઈપણ વિષય સમજવામાં મદદ કરી શકે તેવા મહત્ત્વની બાબતો અને જાણકારીઓ મેળવો</translation>
 <translation id="8069394452933076548">તાજેતરમાં જે ટૅબનો ઉપયોગ કરવામાં આવ્યો ન હોય, તેમને નિષ્ક્રિય ટૅબના વિભાગમાં ક્યારે ખસેડવામાં આવે તે પસંદ કરો.</translation>
 <translation id="8073670137947914548">ડાઉનલોડ સમાપ્ત</translation>
@@ -1934,6 +1945,7 @@
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે અનલૉક કરો</translation>
 <translation id="8173034266693057059">લંબાઈ</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} માટે}=2{{website_1} અને {website_2} માટે}=3{{website_1}, {website_2} અને વધુ 1 માટે}one{{website_1}, {website_2} અને વધુ {more_count} માટે}other{{website_1}, {website_2} અને વધુ {more_count} માટે}}</translation>
+<translation id="8184895727539791845">Geminiને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપવા માટે, iOS સેટિંગમાં કૅમેરા ચાલુ કરો</translation>
 <translation id="8185076488803799132">આયાત કરો</translation>
 <translation id="8189615296021678665">આગામી વખતે જ્યારે તમે સાઇન ઇન કરો, ત્યારે સરળતાથી આ પાસવર્ડ ઍક્સેસ કરવા માટે "સાચવો" પર ટૅપ કરો.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2002,6 +2014,7 @@
 <translation id="8428045167754449968">શહેર/નગર</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428634594422941299">સમજાઈ ગયું</translation>
+<translation id="8429455911440977338">કૅમેરા ચાલુ કરો</translation>
 <translation id="8434837876193928924">ટૅબના ગ્રૂપની વિગતો</translation>
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8439758443371991593">'વાંચન સૂચિમાં ઉમેરો' છુપાવો</translation>
@@ -2243,6 +2256,7 @@
 <translation id="956218893102219091">તમારા IP ઍડ્રેસના આધારે અંદાજિત લોકેશનને બદલે, Geminiના સૌથી સચોટ પરિણામો માટે તમારા સચોટ લોકેશનનો ઉપયોગ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="963102227019621224">વેબ અને ઍપ ઍક્ટિવિટી</translation>
+<translation id="965259330007686240">Gemini વડે કોઈ છબી બનાવો</translation>
 <translation id="965879457362663186">જોડાણ ઉમેરો</translation>
 <translation id="966593914872420832">વૉઇસ શોધ</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{<ph name="OWNER_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ}=1{<ph name="OWNER_NAME" /> અને અન્ય {COUNT} વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ}one{<ph name="OWNER_NAME" /> અને અન્ય {COUNT} વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ}other{<ph name="OWNER_NAME" /> અને અન્ય {COUNT} લોકો સાથે ટૅબના ગ્રૂપમાં જોડાઓ}}</translation>

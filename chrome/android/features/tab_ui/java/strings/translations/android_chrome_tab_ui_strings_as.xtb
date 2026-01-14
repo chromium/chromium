@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">এক্সেছ পৰিচালনা কৰক</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{বস্তু বন্ধ কৰক}one{বস্তু বন্ধ কৰক}other{বস্তু বন্ধ কৰক}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">টেবৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত আছে।</translation>
 <translation id="374923079891132274">শ্বেয়াৰ শ্বীট পূৰ্বদৰ্শনৰ থাম্বনেইল।</translation>
 <translation id="3776329373944672717">টেবৰ গোট শিৰোনাম <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">আপোনাৰ অন্তিম টেব</translation>
 <translation id="5380159289133845234">ডুপ্লিকেট টেব আৰ্কাইভ কৰক</translation>
 <translation id="5446043142172831860">টেব আঁতৰাওক আৰু গোটৰ পৰা বাহিৰ হওক</translation>
+<translation id="5465437530117042974">টেবৰ তলৰ শ্বীটখনৰ সালসলনি বন্ধ কৰা হৈছে।</translation>
 <translation id="5490235265819901748">টেবৰ গোটটো বিস্তাৰ কৰা হৈছে</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> টা পৰ্যন্ত ফাইল, টেব বা প্ৰতিচ্ছবি যোগ দিয়ক}one{<ph name="LIMIT_COUNT_MANY" /> টা পৰ্যন্ত ফাইল, টেব বা প্ৰতিচ্ছবি যোগ দিয়ক}other{<ph name="LIMIT_COUNT_MANY" /> টা পৰ্যন্ত ফাইল, টেব বা প্ৰতিচ্ছবি যোগ দিয়ক}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6051432659151380973">আপোনাৰ টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে ছেভ কৰা হয়</translation>
 <translation id="6054741997831917303">শেহতীয়াকৈ এইটো বস্তুৰ মূল্য <ph name="PREVIOUS_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />লৈ হ্ৰাস পাইছে</translation>
+<translation id="606985262342505139">টেবৰ তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত আছে</translation>
 <translation id="6109251075362363230">আটাইবোৰ ডুপ্লিকেট টেবো এতিয়া আৰ্কাইভ কৰা হ’ব, য’ত একেবাৰে শেহতীয়াকৈ ব্যৱহাৰ কৰা প্ৰতিলিপিটোৰ ক্ষেত্ৰত ব্যতিক্ৰম থাকিব।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা বস্তু বন্ধ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা বস্তু বন্ধ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা বস্তু বন্ধ কৰক}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{গোটটোক নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{গোটটোক আন এখন নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{গোটটোক আন এখন নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>

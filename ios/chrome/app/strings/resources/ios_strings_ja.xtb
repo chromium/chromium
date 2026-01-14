@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">この機能の使用方法</translation>
 <translation id="1901600657316773839">選択を保持</translation>
 <translation id="1902277226107477495">住所の検出をオフにしました。設定で再びオンにできます。</translation>
+<translation id="1909201414196501151">サイトを追加して固定しました</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1925706052394657380">iOS で [<ph name="BEGIN_BOLD" />デフォルトのアプリ<ph name="END_BOLD" />] の設定を開く</translation>
 <translation id="1941314575388338491">ダブルタップしてコピー。</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{ブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="334690320928261823">最近使ったタブ</translation>
 <translation id="3349031117032695619">ポップアップのブロック</translation>
+<translation id="3350976670663926380">編集内容を保存しました</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。このアカウントは管理対象です。</translation>
 <translation id="3365529507898144230">フォトに保存</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">[保護強化機能] を選択</translation>
 <translation id="3610041351087301930">リーダーを非表示</translation>
 <translation id="3610866916973186448">はい、削除します</translation>
+<translation id="3616161326314492065">写真を撮影して Gemini と共有し、画像の作成やリミックスを行います。</translation>
 <translation id="3622175633937495219">履歴を検索（<ph name="COUNT" /> 件見つかりました）</translation>
 <translation id="3625008969091706597">端をスワイプすると戻れます。</translation>
 <translation id="362709345066740529">カードやフィードなどをここでカスタマイズできます</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7854006015462979438">[全般] を開く</translation>
 <translation id="7855678267851972597">音声</translation>
+<translation id="7857520352710212030">サイトを固定しました</translation>
 <translation id="7859988229622350291">翻訳しない</translation>
 <translation id="7863211248337747225">アプリをダウンロード</translation>
 <translation id="7865127013871431856">翻訳オプション</translation>

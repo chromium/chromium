@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ആക്‌സസ് മാനേജ് ചെയ്യുക</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ഇനം അടയ്‌ക്കുക}other{ഇനങ്ങൾ അടയ്‌ക്കുക}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ടാബ് ബോട്ടം ഷീറ്റ് പകുതി ഉയരത്തിൽ.</translation>
 <translation id="374923079891132274">ഷെയർഷീറ്റ് പ്രിവ്യൂ തംബ്നൈൽ</translation>
 <translation id="3776329373944672717">ടാബ് ഗ്രൂപ്പിന്റെ പേര് <ph name="TITLE_OF_GROUP" /> ആണ്</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">നിങ്ങളുടെ അവസാന ടാബ്</translation>
 <translation id="5380159289133845234">ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകൾ ആർക്കൈവ് ചെയ്യുക</translation>
 <translation id="5446043142172831860">ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് വിടുക</translation>
+<translation id="5465437530117042974">ടാബ് ബോട്ടം ഷീറ്റിലെ മാറ്റങ്ങൾ അടച്ചു.</translation>
 <translation id="5490235265819901748">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിച്ചു</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> ഫയൽ, ടാബ് അല്ലെങ്കിൽ ചിത്രം വരെ ചേർക്കുക}other{<ph name="LIMIT_COUNT_MANY" /> ഫയലുകൾ, ടാബുകൾ അല്ലെങ്കിൽ ചിത്രങ്ങൾ വരെ ചേർക്കുക}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6051432659151380973">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ സംരക്ഷിക്കും</translation>
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
+<translation id="606985262342505139">ടാബ് ബോട്ടം ഷീറ്റ് മുഴുവൻ ഉയരത്തിൽ</translation>
 <translation id="6109251075362363230">ഏറ്റവും അടുത്തിടെ ഉപയോഗിച്ച പകർപ്പ് ഒഴികെ, എല്ലാ ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകളും ഇപ്പോൾ ആർക്കൈവ് ചെയ്യും.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ഇനം അടയ്ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ അടയ്ക്കുക}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ഗ്രൂപ്പിനെ പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ഗ്രൂപ്പിനെ മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>

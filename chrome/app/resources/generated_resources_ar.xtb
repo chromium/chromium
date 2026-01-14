@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">يتعذَّر تنزيل ملفات التعليقات التوضيحية للعقدة الرئيسية. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1104098698795583187">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب هذه، وسيتم حذفها من جميع أجهزتك</translation>
+<translation id="1106270460549661906">‏إلغاء المشاركة مع Gemini</translation>
 <translation id="1106350001632362876">زيادة الحدّ</translation>
 <translation id="1107482171728500359">مشاركة الميكروفون</translation>
 <translation id="110850812463801904">‏الربط يدويًا بخدمة OneDrive</translation>
@@ -1083,7 +1084,6 @@
 <translation id="1709085899471866534">تعرَّف سريعًا على علامات التبويب غير النشطة. يمكنك إيقاف هذا المظهر الجديد في أي وقت من خلال الإعدادات.</translation>
 <translation id="1709106626015023981">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (الأصلي)</translation>
 <translation id="1709217939274742847">اختَر تذكرة لاستخدامها في المصادقة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="1709509436926747582">عرض علامات التبويب في أعلى الصفحة</translation>
 <translation id="1709762881904163296">إعدادات الشبكة</translation>
 <translation id="1709916727352927457">حذف مفتاح المرور</translation>
 <translation id="1709972045049031556">تعذَّرت المشاركة</translation>
@@ -1123,7 +1123,6 @@
 <translation id="1744108098763830590">صفحة الخلفية</translation>
 <translation id="1745732479023874451">إدارة جهات الاتصال</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{هل تريد فتح # ملف وتعديله في تطبيق الويب هذا؟}two{هل تريد فتح ملفَين وتعديلهما في تطبيق الويب هذا؟}few{هل تريد فتح # ملفات وتعديلها في تطبيق الويب هذا؟}many{هل تريد فتح # ملفًا وتعديلها في تطبيق الويب هذا؟}other{هل تريد فتح # ملف وتعديلها في تطبيق الويب هذا؟}}</translation>
-<translation id="1748329107062243374">استخدام مفتاح مرور من جهاز <ph name="DEVICE_NAME" /> لتسجيل الدخول إلى <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">‏يمكنك حفظ كلمة المرور هذه في حسابك على Google أو على هذا الجهاز فقط.</translation>
 <translation id="1749733017156547309">كلمة المرور مطلوبة.</translation>
 <translation id="1750172676754093297">يتعذّر على مفتاح الأمان تخزين بصمات الإصبع.</translation>
@@ -4026,6 +4025,7 @@
 <translation id="3712143870407382523">اختَر نافذة لهذا الجانب.</translation>
 <translation id="3712897371525859903">حفظ الصفحة &amp;باسم...</translation>
 <translation id="371300529209814631">الخلف/الأمام</translation>
+<translation id="371302509916403935">تحته خط</translation>
 <translation id="3713047097299026954">لا يوفّر مفتاح الأمان أي بيانات تسجيل دخول</translation>
 <translation id="3713091615825314967">تم تفعيل التحديثات التلقائية.</translation>
 <translation id="3713673533020367620">فتح علامة التبويب في وضع "تقسيم العرض"</translation>
@@ -4276,6 +4276,7 @@
 <translation id="3854976556788175030">درج الإخراج ممتلئ</translation>
 <translation id="3855441664322950881">إنشاء حزمة للإضافة</translation>
 <translation id="3855676282923585394">إشارات وإعدادات الاستيراد...</translation>
+<translation id="3856023744577163821">‏تتم أيضًا مشاركة علامات التبويب المفتوحة من محادثة أو المشترَكة مع Gemini.</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
 <translation id="3856470183388031602">‏استخدام حسابك على Google على جهاز "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="3856800405688283469">اختيار منطقة زمنية</translation>
@@ -4533,7 +4534,6 @@
 <translation id="4028467762035011525">إضافة أساليب إدخال</translation>
 <translation id="4029024445166427442">‏مفتاح مشغِّل التطبيقات + shift + مفتاح Backspace</translation>
 <translation id="4029556917477724407">الرجوع من الصفحة "<ph name="PAGE_TITLE" />" إلى الصفحة السابقة</translation>
-<translation id="4031178684547097947">‫5 أسطر</translation>
 <translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4031527940632463547">تم حظر أجهزة الاستشعار</translation>
 <translation id="4033471457476425443">إضافة مجلد جديد</translation>
@@ -5468,6 +5468,7 @@
 <translation id="4683629100208651599">تحويل الأحرف إلى أحرف صغيرة</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (تلقائي)</translation>
 <translation id="4684427112815847243">مزامنة جميع البيانات</translation>
+<translation id="4685044513206555960">تحظر سياسة المشرف تثبيت تطبيق الويب.</translation>
 <translation id="4685096503970466594">إيقاف ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="4687238339694011189">‏تأكَّد من تشغيل الطابعة واتصالها بالشبكة نفسها التي يتصل بها جهاز Chromebook، أو استخدِم كابل USB.</translation>
 <translation id="4687613760714619596">جهاز غير معروف (<ph name="DEVICE_ID" />)</translation>
@@ -5800,7 +5801,6 @@
 <translation id="4908811072292128752">فتح علامة تبويب جديدة لتصفح موقعي ويب في وقت واحد</translation>
 <translation id="4910241725741323970">سَبَق تثبيت هذا التطبيق</translation>
 <translation id="4912643508233590958">عمليات التنشيط من الوضع بعيد</translation>
-<translation id="4912892750325639080">‫3 أسطر</translation>
 <translation id="4913209098186576320">قد يكون هذا الملف خطيرًا<ph name="LINE_BREAK" />تستغرق عملية التحقق هذه وقتًا أطول من المعتاد...</translation>
 <translation id="4913695564084524048">يتعذّر العثور على بيانات التطبيق</translation>
 <translation id="4915961947098019832">المواقع الإلكترونية التي يُسمح لها بعرض الصور</translation>
@@ -6335,7 +6335,6 @@
 <translation id="529296195492126134">لا يمكن استخدام وضع الملف الشخصي المؤقت. يُرجى التواصل مع المشرف.</translation>
 <translation id="5293043095535566171">هل تريد السماح بالوصول إلى الموقع الجغرافي؟</translation>
 <translation id="5293170712604732402">استعادة الإعدادات إلى الوضع التلقائي الأصلي</translation>
-<translation id="5293567237718106662">عرض علامات التبويب في أعلى الصفحة</translation>
 <translation id="5294068591166433464">‏إذا حاول موقع إلكتروني سرقة كلمة المرور، أو إذا نزّلت ملفًا ضارًا، قد يرسِل Chrome أيضًا عناوين URL، بما في ذلك أجزاء من محتوى الصفحة، إلى Google.</translation>
 <translation id="5294097441441645251">يجب البدء بحرف صغير أو شرطة سفلية.</translation>
 <translation id="5294618183559481278">‏يستخدم جهاز <ph name="DEVICE_TYPE" /> أداة استشعار مدمجة لرصد مَن ينظر إلى شاشة جهازك. تتم معالجة جميع البيانات فورًا على جهازك، ثم حذفها. ولا يتم مطلقًا إرسال بيانات جهاز الاستشعار إلى Google. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -6930,7 +6929,6 @@
 <translation id="571222594670061844">السماح للمواقع الإلكترونية بعرض طلبات تسجيل الدخول من خدمات إدارة الهوية</translation>
 <translation id="5713033452812927234">جارٍ فتح النوافذ من جهازك السابق</translation>
 <translation id="5713158217420111469">متّصل بجهاز <ph name="DEVICE" /></translation>
-<translation id="5714095002162155866">عرض علامات التبويب بشكل عمودي</translation>
 <translation id="5714100381896040477">تقليل التأثيرات المتحركة على الشاشة</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
 <translation id="572155275267014074">‏إعدادات Android</translation>
@@ -7425,7 +7423,6 @@
 <translation id="6059652578941944813">التسلسل الهرمي للشهادة</translation>
 <translation id="6059775313639803773">بإمكانك الحصول على ردود مفصَّلة من مصادر أكثر، في وقت إضافي قليل</translation>
 <translation id="6059925163896151826">‏أجهزة USB</translation>
-<translation id="6061408389284235459">تم إرسال إشعار إلى "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6063284707309177505">إنشاء رمز الاستجابة السريعة</translation>
 <translation id="6064217302520318294">قفل الشاشة</translation>
 <translation id="606449270532897041">إدارة بيانات الموقع الإلكتروني</translation>
@@ -7581,6 +7578,7 @@
 <translation id="6164393601566177235">إضافة المواقع الإلكترونية</translation>
 <translation id="6164832038898943453">إضافة اللغات إلى قائمة "لغات أريد ترجمتها تلقائيًا"</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
+<translation id="61667940770438207">‏يمكن استخدام <ph name="FOCUS_TOGGLE_HOTKEY" /> لفتح "Gemini في Chrome" بسهولة</translation>
 <translation id="6169040057125497443">الرجاء التحقق من الميكروفون.</translation>
 <translation id="6169967265765719844">‏يمكن إدارة الأذونات للألعاب والتطبيقات المثبَّتة عبر Steam في <ph name="LINK_BEGIN" />إعدادات تطبيق Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">ترتيب وضع "تقسيم العرض"</translation>
@@ -8550,7 +8548,6 @@
 <translation id="6833753236242482566">متوازن (خيار مُقترَح)</translation>
 <translation id="6835624277262316125">‏يمكن أن يساعدك عنوان عملك في إنجاز المزيد على مختلف خدمات Google، كالحصول على نتائج بحث واتجاهات في "خرائط Google" أكثر صلة باهتماماتك. ويمكنك تعديل عنوانك أو حذفه في <ph name="BEGIN_LINK" />حسابك على Google (‏<ph name="USERNAME" />)‏<ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6836441935577925845">عرض علامات التبويب بشكل عمودي</translation>
 <translation id="6838992358006915573">‏المكبِّر يتبع تركيز ChromeVox</translation>
 <translation id="6839916869147598086">تم تغيير تسجيل الدخول</translation>
 <translation id="6840155290835956714">السؤال قبل الإرسال</translation>
@@ -9050,7 +9047,6 @@
 <translation id="7191159667348037">‏طابعة غير معروفة (USB)</translation>
 <translation id="7191631508323321927">ردهة</translation>
 <translation id="7191632649590906354">‏أصبح بإمكان أفراد عائلتك استخدام اسم المستخدم وكلمة المرور لحسابك عند استخدام "مدير كلمات المرور في Google". اطلب منهم الانتقال إلى <ph name="WEBSITE" /> لتسجيل الدخول.</translation>
-<translation id="7192393330344360021">سطر واحد</translation>
 <translation id="7193051357671784796">أضافت مؤسستك هذا التطبيق. يمكنك إعادة تشغيل التطبيق لإنهاء تثبيته.</translation>
 <translation id="7193374945610105795">لم يتم حفظ أي كلمات مرور لـ <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">إرسال ملاحظات عن المجموعات المقترَحة</translation>
@@ -9808,6 +9804,7 @@
 <translation id="7697109152153663933">انقر على "كلمات المرور والملء التلقائي".</translation>
 <translation id="769824636077131955">إنّ حجم هذا المستند كبير بدرجة يتعذّر معها إجراء فحص الأمان. يمكنك طباعة مستندات يصل حجمها إلى 50 ميغابايت.</translation>
 <translation id="7698507637739331665">تم حظر بعض العناصر</translation>
+<translation id="7700176975240938448">يمكن استخدام <ph name="FOCUS_TOGGLE_HOTKEY" /> للفتح بسهولة</translation>
 <translation id="7700516433658473670">الطابعات والماسحات الضوئية</translation>
 <translation id="7700873336634517379">لا، أريد مواصلة استخدام ملف المؤسسة التعليمية هذا</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
@@ -10720,7 +10717,6 @@
 <translation id="8312841338723044391">مباشر</translation>
 <translation id="8313308349366087671">خيارات التطبيق</translation>
 <translation id="8313599942510782709">لا تزال المَهمّة جارية</translation>
-<translation id="8314089908545021657">إقران بجهاز جديد</translation>
 <translation id="8314381333424235892">إضافة مفقودة أو غير مُثبتة</translation>
 <translation id="831440797644402910">يتعذّر فتح هذا المجلد</translation>
 <translation id="8314835274931377415">هل تريد بدء عملية إعداد ميزة "الوصول عبر مفتاح تحكّم"؟</translation>

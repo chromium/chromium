@@ -118,6 +118,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1185343831726846924">Patvirtinimas, kad negalima įjungti virtualios kortelės</translation>
 <translation id="1186201132766001848">Patikrinti slaptažodžius</translation>
 <translation id="1187430513518041110">Automobiliai ir transporto priemonės</translation>
+<translation id="1188817995162638216">Atšaukti failo išsaugojimą?</translation>
 <translation id="1190491977647722791">Popierius (sunkus)</translation>
 <translation id="1194278116501666615">„ArcVm“ išankstinio įkėlimo eigos atnaujinimas</translation>
 <translation id="1195073053842921378">Šis adresas bus ištrintas iš šio įrenginio</translation>
@@ -404,6 +405,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1640180200866533862">Naudotojo politika</translation>
 <translation id="1640244768702815859">Pabandykite <ph name="BEGIN_LINK" />apsilankyti pagrindiniame svetainės puslapyje<ph name="END_LINK" />.</translation>
+<translation id="1641962500621836664">Išsaugomas fotoaparato failas</translation>
 <translation id="1641976391427233992">Atidėti išvestį iki</translation>
 <translation id="1643651787397909318">Mygtukas „Eiti į „Chrome“ saugos patikrą“; suaktyvinkite, kad pereitumėte į „Chrome“ saugos patikros puslapį nustatymuose</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -494,6 +496,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1777422078676229054">Fotopopierius (archyvinis)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Įdiegti žiniatinklio programas?</translation>
+<translation id="1791044335740781449">Failas įkeliamas į „Google“ diską</translation>
 <translation id="1791415068765905273">Rodyti visas palyginimo lenteles</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tvarkyti savo informaciją, privatumo ir saugos nustatymus „Google“ paskyroje</translation>
 <translation id="1793631236004319016">Paskutinį kartą naudota prieš <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -560,6 +563,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1884843295353628214">Džiazas</translation>
 <translation id="1890171020361705182">Dinozauro žaidimas. Pikseliais atvaizduotas dinozauras bėga per dykynę ir bando išvengti kaktusų ir pterodaktilių. Išgirdę garsinį signalą, palieskite, kad peršoktumėte per kliūtis.</translation>
 <translation id="1898423065542865115">Filtravimas</translation>
+<translation id="1898678876221454577">Prisijunkite, kad išsaugotumėte nuskaitytą dokumentą</translation>
 <translation id="1901443836186977402">{1,plural, =1{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi pastarąją dieną. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}one{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dieną. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}few{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dienas. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}many{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dienos. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}other{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dienų. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}}</translation>
 <translation id="190166348986967700">Administratorius pradės įkelti failus į „<ph name="CLOUD_PROVIDER" />“ <ph name="DATE_TIME" />. Laikykite įrenginį prijungtą, kol bus baigtas failų įkėlimas. Įkeliant vietinius failus galima tik skaityti.</translation>
 <translation id="1902576642799138955">Galiojimo laikas</translation>
@@ -896,6 +900,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2413528052993050574">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas gali būti atšauktas. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="2414676293664737497">Žymėjimas</translation>
 <translation id="2414886740292270097">Tamsi</translation>
+<translation id="2429702686644080813">Prisijunkite, kad išsaugotumėte vaizdo įrašą</translation>
 <translation id="2429716554270894715">Audinys (atsparus vandeniui)</translation>
 <translation id="2436186046335138073">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas?</translation>
 <translation id="2436976580469434549">Pluošto ir audinių menai</translation>
@@ -1099,6 +1104,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2742128390261873684">Namų įrenginių automatizavimas</translation>
 <translation id="2743512410823092182">Muzikos renginių ir laidų vedėjams skirti ištekliai ir įranga</translation>
 <translation id="2743934314332613923">Atnaujinti vairuotojo pažymėjimą?</translation>
+<translation id="2757727729385895652">Įkeliamą tiek failų: <ph name="COUNT" /> į „Google“ diską</translation>
 <translation id="2759299890026163685">Prieš bandydami dar kartą įsitikinkite, kad interneto ryšys stabilus</translation>
 <translation id="2759825833388495838">užpildyti „<ph name="APP_NAME" />“ slaptažodį</translation>
 <translation id="2760805590727089264">mm / MM</translation>
@@ -1122,6 +1128,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2794629552137076216">Stiklas (šiurkštus)</translation>
 <translation id="2799223571221894425">Paleisti iš naujo</translation>
 <translation id="2799758406651937857">Vyrų apranga</translation>
+<translation id="2803320044666896137">Šios politikos vertės nepaisoma, nes naudotojas nesusietas.</translation>
 <translation id="2807052079800581569">Vaizdo Y padėtis</translation>
 <translation id="2808278141522721006">„Windows Hello“ galite įjungti arba išjungti skiltyje „<ph name="SETTINGS" />“</translation>
 <translation id="2818338148457093657">Grožio paslaugos ir SPA centrai</translation>
@@ -1141,6 +1148,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2859383374160668142">Galite bet kada peržiūrėti sumažintas stebimų produktų kainas.</translation>
 <translation id="2859806420264540918">Šioje svetainėje rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
 <translation id="28618371182701850">Elektra varomos ir įkraunamos transporto priemonės</translation>
+<translation id="2873317327342476681">Dinozauro žaidimas, palieskite dinozaurą arba paspauskite tarpo klavišą, jei norite žaisti</translation>
 <translation id="287387905105155974">Pagalbos debesėlis</translation>
 <translation id="28761159517501904">Filmai</translation>
 <translation id="2876489322757410363">Išjungiate inkognito režimą, kad galėtumėte sumokėti naudodami išorinę programą. Tęsti?</translation>
@@ -1226,6 +1234,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2983666748527428214">Inkognito skirtuko atidarymas</translation>
 <translation id="2985306909656435243">Jei šis nustatymas įgalintas, „Chromium“ išsaugos kortelės kopiją įrenginyje, kad galėtumėte greičiau užpildyti formas.</translation>
 <translation id="2985398929374701810">Įveskite tinkamą adresą</translation>
+<translation id="2986485254770343131">Išsaugomi fotoaparato failai</translation>
 <translation id="2987034854559945715">Nėra jokių atitinkančių funkcijų</translation>
 <translation id="2989742184762224133">Dvi sankabėlės viršuje</translation>
 <translation id="2991174974383378012">Bendrinimas su svetainėmis</translation>
@@ -1495,6 +1504,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3415471717466570460">Jūsų paieškos, geriausios atitiktys ir jų puslapių turinys siunčiami „Google“ ir juos gali matyti tikrinantys žmonės, siekiant patobulinti šią funkciją. Tai eksperimentinė funkcija ir ji ne visada pateikia tinkamus atsakymus.</translation>
 <translation id="3422248202833853650">Pabandykite išeiti iš kitų programų, kad atlaisvintumėte atminties.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> šiuo metu nepasiekiama.</translation>
+<translation id="3422794267539320056">Palieskite dinozaurą arba paspauskite tarpo klavišą, jei norite žaisti</translation>
 <translation id="3423742043356668186">Nurodyta sistema</translation>
 <translation id="3427342743765426898">&amp;Redaguoti dar kartą</translation>
 <translation id="342781501876943858">„Chromium“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
@@ -1903,6 +1913,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4059523390906550209">Sužinokite daugiau apie neskelbtinų duomenų apsaugą</translation>
 <translation id="4060880210388108757">Nepriklausoma ir alternatyvioji muzika</translation>
 <translation id="4060883793524802469">Pašalinti iš lentelių</translation>
+<translation id="4061573458783426621">Nepavyko išsaugoti nuskaityto dokumento „OneDrive“</translation>
 <translation id="4063063121357725926">Leiskite „Google“ padėti jums rasti nuolaidų krepšeliams</translation>
 <translation id="406358100705415968">Darbo saugos apsauginės priemonės</translation>
 <translation id="4065659219963895623">Restoranai</translation>
@@ -2214,6 +2225,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4530347922939905757">Teksto pranešimas</translation>
 <translation id="4531477351494678589">Virtualios kortelės numeris:</translation>
 <translation id="4535523368173457420">Šie paieškos varikliai populiarūs jūsų regione ir rodomi atsitiktine tvarka</translation>
+<translation id="4535602490975885745">Nepavyko išsaugoti nuotraukos sistemoje „OneDrive“</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{Sukurta prieš 1 metus}one{Sukurta prieš {NUM_YEARS} metus}few{Sukurta prieš {NUM_YEARS} metus}many{Sukurta prieš {NUM_YEARS} metų}other{Sukurta prieš {NUM_YEARS} metų}}</translation>
 <translation id="4541810033354695636">išplėstoji realybė</translation>
 <translation id="4542971377163063093">6 dėklas</translation>
@@ -2308,6 +2320,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Paleistas įrankis „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> slaptažodis</translation>
 <translation id="4724144314178270921">Gali būti prašoma peržiūrėti tekstą ir vaizdus jūsų iškarpinėje</translation>
+<translation id="4725766358270333890">Įkeliama tiek failų: <ph name="COUNT" /> į „Microsoft OneDrive“</translation>
 <translation id="4726672564094551039">Iš naujo įkelti politiką</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4729147136006144950">Labdara ir filantropija</translation>
@@ -2350,6 +2363,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4771249073710170730">Valdymas radijo bangomis ir modeliavimas</translation>
 <translation id="4771973620359291008">Įvyko nežinoma klaida.</translation>
 <translation id="4774055414220872623">Menas ir amatai</translation>
+<translation id="4775456404799771098">Failą prarasite visam laikui</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Iššokantysis langas užblokuotas}one{# iššokantysis langas užblokuotas}few{# iššokantieji langai užblokuoti}many{# iššokančiojo lango užblokuota}other{# iššokančiųjų langų užblokuota}}</translation>
 <translation id="4780320432697076749">Nuotraukų programinė įranga</translation>
 <translation id="4780366598804516005">1 pašto dėžutė</translation>
@@ -2802,6 +2816,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5509913453990750440">Mada ir stilius</translation>
 <translation id="5510766032865166053">Galbūt jis perkeltas arba ištrintas.</translation>
 <translation id="551222491709693708">Komiksai ir animacija</translation>
+<translation id="5512381366239323820">fotoaparato failus</translation>
 <translation id="5512812358367123529">Biuro baldai</translation>
 <translation id="5513528801833998679">Naudoti įrenginio prisijungimą</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
@@ -2937,6 +2952,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="572328651809341494">Naujausi skirtukai</translation>
 <translation id="5723873695528696965">Valdyti ir iš naujo suprogramuoti MIDI įrenginius</translation>
 <translation id="5725297205162868298">Spartusis klavišas negali prasidėti simboliu @: „<ph name="SHORTCUT_NAME" />“</translation>
+<translation id="5725797473946373607">Kitą kartą nerodyti šio dialogo lango</translation>
 <translation id="5728246486828755318">Gali būti prašoma naudoti išplėstines spausdintuvo funkcijas</translation>
 <translation id="5729442113829771034">Švietimas ankstyvoje vaikystėje</translation>
 <translation id="5730040223043577876">„Chrome“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
@@ -3103,6 +3119,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6017514345406065928">Žalia</translation>
 <translation id="6018650639991193045">Ištrinti naršymo istoriją, slapukus, talpyklos duomenis ir kt. „Chrome“ nustatymuose</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
+<translation id="6023960830218262456">Nepavyko išsaugoti vaizdo įrašo sistemoje „OneDrive“</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinchronizuota)</translation>
 <translation id="6025471531651464742">Pridėti failų</translation>
 <translation id="6028591542479806248">Tvarkykite pranešimus mobiliuosiuose ir el. pašte</translation>
@@ -3444,6 +3461,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6529173248185917884">Septintas ritinėlis</translation>
 <translation id="6529602333819889595">&amp;Ištrinti dar kartą</translation>
 <translation id="6532101170117367231">Išsaugoti „Google“ diske</translation>
+<translation id="6535903140035956341">fotoaparato failus ir atsisiuntimus</translation>
 <translation id="6536221421038631327">Pašalinus „Passpoint“ prenumeratą iš „<ph name="DEVICE_TYPE" />“ bus pašalinti susiję tinklai. Susisiekite su „<ph name="FRIENDLY_NAME" />“ ir atlikite prenumeratos plano pakeitimus. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Norėdami peržiūrėti palyginimo lenteles, įjunkite sinchronizavimą</translation>
 <translation id="6539092367496845964">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
@@ -3541,7 +3559,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6702851555558236418">Garso įrašai ir muzikos programinė įranga</translation>
 <translation id="6702919718839027939">Rodyti</translation>
 <translation id="6704458454638854812">Nustatyta ypatybės „custom_size“ vertė yra „custom“.</translation>
-<translation id="670477556876354552">Būtina paleisti iš naujo</translation>
 <translation id="6706005862292023715">Užuolaidos ir langų apdaila</translation>
 <translation id="6706210727756204531">Taikymo sritis</translation>
 <translation id="6706678697074905703">Šio IBAN nepavyko išsaugoti jūsų „Google“ paskyroje. Vietoje to jis išsaugotas naršyklėje „Chrome“ šiame įrenginyje.</translation>
@@ -3672,6 +3689,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="6926216138694948720">Kūno menas</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
+<translation id="6927878187051807444">fotoaparato failus ir ekrano kopijas</translation>
 <translation id="6930607614725241390">Paieška šoniniame skydelyje</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
@@ -3814,6 +3832,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7140087718106278457">Mokėjimo metodų sąrašas uždarytas.</translation>
 <translation id="714064300541049402">2 pusė: sukti vaizdą pagal X ašį</translation>
 <translation id="7140922144008419614">Mygtukas „Ieškoti skirtukuose“; suaktyvinkite, jei norite ieškoti skirtukuose</translation>
+<translation id="7143668445748322952">fotoaparato failus, atsisiuntimus ir ekrano kopijas</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -4065,6 +4084,7 @@ Papildoma išsami informacija:
 <translation id="7535087603100972091">Reikšmė</translation>
 <translation id="753556296624075801">Teikia „Google“</translation>
 <translation id="753713322968419914">Pašalinti namų adresą iš „Chrome“ automatinio pildymo?</translation>
+<translation id="753714465667062283">Prisijunkite, kad išsaugotumėte nuotrauką</translation>
 <translation id="7537536606612762813">Privaloma</translation>
 <translation id="7543525346216957623">Paprašykite vieno iš tėvų</translation>
 <translation id="7546409722674205727">Paleidžiama „<ph name="APP_NAME" />“</translation>
@@ -4174,6 +4194,7 @@ Papildoma išsami informacija:
 <translation id="7684928361160505327">{0,plural, =1{Failas „<ph name="FILE_NAME" />“ užblokuotas dėl politikos}one{<ph name="FILE_COUNT" /> failas užblokuotas dėl politikos}few{<ph name="FILE_COUNT" /> failai užblokuoti dėl politikos}many{<ph name="FILE_COUNT" /> failo užblokuota dėl politikos}other{<ph name="FILE_COUNT" /> failų užblokuota dėl politikos}}</translation>
 <translation id="7687186412095877299">Užpildomos mokėjimo formos naudojant išsaugotus mokėjimo metodus</translation>
 <translation id="7687305263118037187">Baigėsi pakartotinio bandymo laikas</translation>
+<translation id="7689605946980652287">Failas įkeliamas į „Microsoft OneDrive“</translation>
 <translation id="7690647519407127574">„Oufuku Hagaki“ atvirukas</translation>
 <translation id="7693583928066320343">Puslapių tvarka gauta</translation>
 <translation id="769424100851389104">Dabar pradėti atnaujinimą</translation>
@@ -5124,6 +5145,7 @@ Papildoma išsami informacija:
 <translation id="963734905955638680">Atsižvelgdama į jūsų regiono įstatymus, „Chromium“ prašo pasirinkti numatytąjį paieškos variklį. Šie paieškos varikliai populiarūs jūsų regione ir rodomi atsitiktine tvarka.</translation>
 <translation id="963837307749850257">Visi vartotojai</translation>
 <translation id="964050462028070434">Tvarkyti slaptažodžius ir „passkey“…</translation>
+<translation id="964681140808832181">Taip, noriu atšaukti</translation>
 <translation id="969892804517981540">Oficialiai pagaminta</translation>
 <translation id="97054401902912338">Sužinokite daugiau apie turinio filtrus</translation>
 <translation id="973788791897303708">Ši skirtukų grupė pilna</translation>

@@ -512,6 +512,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6326175484149238433">Desinstalar de Chrome</translation>
 <translation id="6327105987658262776">No hay actualizaciones disponibles.</translation>
 <translation id="6334815226785304306">Establecer Google Chrome como navegador predeterminado y fijarlo en la barra de tareas</translation>
+<translation id="63540178978900677">Chrome ya no es tu navegador predeterminado. ¿Establecer Chrome como navegador predeterminado?</translation>
 <translation id="6360449101159168105">Mientras esta pestaña estaba inactiva, se ha liberado memoria para que Chrome siga funcionando rápido. Si quieres, puedes excluir este sitio para que no pueda estar inactivo.</translation>
 <translation id="6388799252195623474">ayúdame con esto</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
@@ -713,6 +714,9 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8418845734693287262">ChromeOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
 <translation id="8425765582779547329">Para tener más protección online con las opciones de tus padres, inicia sesión en Chrome</translation>
+<translation id="842852285618875960">Has alcanzado el límite de marcadores de Google Chrome (<ph name="BOOKMARK_LIMIT" />), por lo que algunos de ellos aún no se han guardado en tu cuenta de Google.
+
+No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si cierras sesión ahora, se eliminarán los marcadores que no hayas guardado.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8496177819998570653">&amp;Gestor de contraseñas de Google</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia ahora y restauraremos las pestañas.</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">How do I use this feature?</translation>
 <translation id="1901600657316773839">Keep selection</translation>
 <translation id="1902277226107477495">Address detection off. Turn it back on in Settings.</translation>
+<translation id="1909201414196501151">Site added and pinned</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1925706052394657380">Open <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> settings in iOS</translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>
 <translation id="3349031117032695619">Block pop-ups</translation>
+<translation id="3350976670663926380">Edits saved</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. This account is managed.</translation>
 <translation id="3365529507898144230">Save in Photos</translation>
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Choose 'Enhanced protection'</translation>
 <translation id="3610041351087301930">Hide reader</translation>
 <translation id="3610866916973186448">Yes, delete</translation>
+<translation id="3616161326314492065">Take photos and share with Gemini to create and remix images.</translation>
 <translation id="3622175633937495219">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="3625008969091706597">You can swipe the edge to go back.</translation>
 <translation id="362709345066740529">Customise your cards, feed and more here</translation>
@@ -1841,6 +1844,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7854006015462979438">Open General</translation>
 <translation id="7855678267851972597">Audios</translation>
+<translation id="7857520352710212030">Site pinned</translation>
 <translation id="7859988229622350291">Never translate</translation>
 <translation id="7863211248337747225">Get the app</translation>
 <translation id="7865127013871431856">Translate options</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Как да използвам тази функция?</translation>
 <translation id="1901600657316773839">Запазване на избора</translation>
 <translation id="1902277226107477495">Разпознаването на адреси е изключено. Можете да го включите отново в настройките.</translation>
+<translation id="1909201414196501151">Сайтът е добавен и фиксиран</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1925706052394657380">Отворете настройките за <ph name="BEGIN_BOLD" />основните приложения<ph name="END_BOLD" /> в iOS</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“ в профила ви {email}}other{Отметките бяха запазени в(ъв) „{title}“ в профила ви {email}}}</translation>
 <translation id="334690320928261823">Скорошни раздели</translation>
 <translation id="3349031117032695619">Блокиране на изскачащите прозорци</translation>
+<translation id="3350976670663926380">Редакциите са запазени</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Този профил е управляван.</translation>
 <translation id="3365529507898144230">Запазване в Снимки</translation>
 <translation id="3371831930909698441">Налице е превод. Опциите са достъпни в долната част на екрана.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Изберете „Подобрена защита“.</translation>
 <translation id="3610041351087301930">Скриване на четеца</translation>
 <translation id="3610866916973186448">Да, искам да се изтрие</translation>
+<translation id="3616161326314492065">Правете снимки и ги споделяйте с Gemini, за да създавате и ремиксирате изображения.</translation>
 <translation id="3622175633937495219">История на търсенията (намерени: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да прекарате пръст по края, за да се върнете назад.</translation>
 <translation id="362709345066740529">Персонализирайте картите, емисията и др. оттук</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854006015462979438">Отворете General</translation>
 <translation id="7855678267851972597">Аудиофайлове</translation>
+<translation id="7857520352710212030">Сайтът е фиксиран</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7863211248337747225">Инсталиране на приложението</translation>
 <translation id="7865127013871431856">Опции за превод</translation>

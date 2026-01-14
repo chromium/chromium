@@ -1352,6 +1352,7 @@ Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> chiude la scheda dopo
 Lasciare la policy non impostata significa che nessuna estensione è esente dalla procedura di reimpostazione.</translation>
 <translation id="1962273523772270623">Consenti la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
+<translation id="1963986268950915756">Abilita l'installazione di app web da parte dell'utente dal browser</translation>
 <translation id="1964191545419036999">Galleria (supportata dalla versione 117)</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
@@ -2269,6 +2270,17 @@ Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il
 <translation id="2568488785376704318">Questa policy è deprecata. Usa la policy <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Disattiva feedback vocale</translation>
 <translation id="2570181623957732921">Attiva <ph name="DESK_API_NAME" /> per un elenco di domini di terze parti</translation>
+<translation id="2571353268726025696">Questa policy consente di disattivare la funzionalità degli insiemi proprietari (che in seguito è stata rinominata funzionalità <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Se questa policy non viene impostata o se viene impostata su Attivata, la funzionalità degli insiemi proprietari viene attivata.
+
+Se questa policy viene impostata su Disattivata, la funzionalità degli insiemi proprietari viene disattivata.
+
+Consente inoltre di stabilire se Chrome supporta o meno le integrazioni correlate agli insiemi proprietari.
+
+Equivale alla policy <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Entrambe le policy possono essere utilizzate con lo stesso effetto sul comportamento del browser.
+Entrambe queste policy sono state ritirate in seguito al ritiro della funzionalità <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> nella versione 144 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2571821662934804440">Consenti l'utilizzo della funzionalità senza migliorare i modelli di AI</translation>
 <translation id="2573850437942404034">Non consentire</translation>
 <translation id="2575198840408498393">Disattiva la creazione di profili di roaming</translation>
@@ -2873,6 +2885,11 @@ Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutt
 Questa policy verrà rimossa in futuro.</translation>
 <translation id="2989404644164421834">Ricarica pagine</translation>
 <translation id="299127280603727143">Un gruppo di policy relative alle impostazioni di accesso alla rete locale.  Visita la pagina https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Questa policy consente di stabilire se gli utenti possono installare app web tramite il browser.
+Se attivi questa policy o non la configuri, gli utenti possono installare le app web tramite il browser.
+Se disattivi questa policy, gli utenti non potranno installare app web tramite il browser e il tipo di dati "app" verrà escluso dalla sincronizzazione per <ph name="CHROME_SYNC_NAME" />.
+Questa policy non supporta l'aggiornamento dinamico. Qualsiasi modifica, che si tratti di attivazione, disattivazione o annullamento dell'impostazione, diventa effettiva solo dopo il riavvio del browser.
+Questa policy non influisce sulla policy "<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />".</translation>
 <translation id="299446489108785864">Elenco di URL che specifica a quali URL verrà applicata la policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questa policy non influisce sui valori di apertura automatica impostati dagli utenti.
 
       Se la policy viene impostata, i file verranno aperti automaticamente in base alla policy soltanto se l'URL fa parte di questo insieme e il tipo di file è elencato nella policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se una delle condizioni è falsa, i file scaricati non verranno aperti automaticamente in base alla policy.
@@ -5983,6 +6000,7 @@ Se non viene configurata, la funzionalità "Aiutami a scrivere" verrà attivata 
 <translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5082572440690475059">Consenti l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
+<translation id="5087922428454325090">Gli utenti non possono installare app web tramite il browser.</translation>
 <translation id="5087932158260897375">Se questa policy viene impostata su false, la segnalazione di dati diagnostici relativi all'attendibilità dei domini viene disattivata e non vengono inviati dati a Google.
 Se questa policy viene impostata su true o se non viene configurata, la segnalazione di dati diagnostici relativi all'attendibilità dei domini ha lo stesso comportamento di MetricsReportingEnabled per <ph name="PRODUCT_NAME" /> o DeviceMetricsReportingEnabled per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Questa policy consente di garantire la conformità alla specifica adottata di recente per lo zoom CSS.
@@ -7543,6 +7561,43 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 <translation id="6083631234867522991">Windows (client Windows):</translation>
 <translation id="6087413944876892918">Utilizza l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
+<translation id="6089118101413877627">Questa policy fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari (che in seguito è stata rinominata funzionalità <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
+Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
+Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
+Visita la pagina https://github.com/WICG/first-party-sets per avere maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
+
+Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco,
+ovvero non può essere elencato più di una volta in un insieme proprietario.
+
+Quando a questa policy viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
+
+Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
+in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
+Dopodiché, l'insieme proprietario della policy verrà aggiunto all'elenco di insiemi proprietari del browser.
+
+Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
+in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il
+nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
+l'insieme proprietario della policy verrà aggiunto all'elenco di insiemi proprietari del browser.
+
+L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno sia presente in
+più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli
+elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+I caratteri jolly (*) non sono supportati come valore della policy, neppure all'interno di un insieme proprietario in questi elenchi.
+
+Tutti gli insiemi forniti da questa policy devono essere insiemi proprietari validi. Qualora non lo fossero,
+verrà segnalato un errore adeguato.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Equivale alla policy <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Entrambe le policy possono essere utilizzate con lo stesso effetto sul comportamento del browser.
+Entrambe queste policy sono state ritirate in seguito al ritiro della funzionalità <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> nella versione 144 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
 <translation id="6091233616732024397">Forza gli utenti a eseguire l'accesso per usare il browser</translation>
 <translation id="6092073071805297119">Consenti l'uso del filtro delle prestazioni di accessibilità.</translation>
@@ -8435,6 +8490,7 @@ Le modifiche alla policy vengono applicate solo mentre ARC non è in esecuzione,
 <translation id="6601216729409808032">Attiva controlli aggiuntivi delle policy per il cloud per consentire/bloccare l'installazione di estensioni.</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
 <translation id="6604049565198492174">La configurazione della policy consente di forzare l'applicazione della configurazione di rete per utente su ogni dispositivo <ph name="PRODUCT_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
+<translation id="6604522755563022737">Gli utenti possono installare app web tramite il browser.</translation>
 <translation id="660567106648774919">Questa policy è deprecata. Utilizza la policy <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
       Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questa policy viene impostata su Disattivata, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questa policy viene impostata su Attivata o se non viene configurata, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
@@ -10314,6 +10370,28 @@ Per maggiori informazioni sulla policy <ph name="IEEM_SITELIST_POLICY" /> di Int
       Se è impostata su True, gli eventi di rete del dispositivo verranno segnalati.</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
+<translation id="7812285231594048601">Questa policy è stata ritirata. Utilizza invece <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" />.
+
+Comportamento predefinito (Policy non impostata)
+Quando viene aggiunto un account nell'area dei contenuti, potrebbe essere visualizzata una piccola finestra di dialogo che chiede all'utente di creare un nuovo profilo. Questa finestra di dialogo è ignorabile.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Se un utente accede a un servizio Google per la prima volta in un browser <ph name="PRODUCT_NAME" />, viene visualizzata una finestra di dialogo che chiede all'utente di creare un nuovo profilo per il proprio account aziendale. L'utente può fare clic su Annulla e uscire, oppure su Continua per creare un nuovo profilo. I dati di navigazione esistenti non verranno aggiunti al nuovo profilo. Il profilo appena creato può avere account secondari, ad esempio l'utente può accedere a un altro account nell'area dei contenuti.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, ad eccezione del fatto che il profilo appena creato non può avere account secondari.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, ad eccezione dell'aggiunta di una casella di controllo nella finestra di dialogo per consentire all'utente di conservare i dati di navigazione locali.
+Se l'utente seleziona la casella, i dati del profilo esistenti vengono associati all'account gestito.
+- Tutti i dati di navigazione esistenti saranno presenti nel nuovo profilo.
+- Questi dati includono preferiti, cronologia, password, dati di compilazione automatica, schede aperte, cookie, cache, spazio di archiviazione web, estensioni e così via.
+Se l'utente non seleziona la casella:
+- Il vecchio profilo continuerà a esistere, nessun dato andrà perso.
+- Verrà creato un nuovo profilo.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, ad eccezione del fatto che il profilo appena creato non può avere account secondari.</translation>
 <translation id="781268256210530471">Impostazioni plug-in</translation>
 <translation id="7816326058023670173">Stesso secret per dispositivi di figli e genitori.</translation>
 <translation id="7818131573217430250">Impostazione stato predefinito modalità ad alto contrasto nella schermata di accesso</translation>
@@ -10872,9 +10950,6 @@ Questa policy viene applicata alla modalità di navigazione in incognito. Ciò s
 <translation id="8225579382697740712">Controlla l'utilizzo dell'API WebHID</translation>
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
-<translation id="8238558579601006178">Quando questa policy viene impostata su 0 o non viene configurata, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata solo all'ambito utente per gli utenti affiliati.
-Quando questa policy viene impostata su 1, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata all'ambito utente, anche se l'utente non è affiliato.
-Quando questa policy viene impostata su 2, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> non verrà mai applicata se la sua origine è un utente.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
 <translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
 <translation id="8240976615241583524">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile.

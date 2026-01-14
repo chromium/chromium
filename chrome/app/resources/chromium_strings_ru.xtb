@@ -528,6 +528,9 @@
 <translation id="6901631050894301805">Сделайте Chromium браузером по умолчанию и закрепите его на панели задач.</translation>
 <translation id="6909503629704372277">&amp;Настроить профили Chromium</translation>
 <translation id="6934579572334859869">Спросить об этом изображении у поиска картинок</translation>
+<translation id="6948031725951063910">Вы достигли лимита закладок в Chromium (<ph name="BOOKMARK_LIMIT" />), поэтому некоторые из них ещё не сохранены в аккаунте Google.
+
+Чтобы добавить закладки в аккаунт, удалите некоторые из сохраненных. Если вы выйдете прямо сейчас, несохраненные закладки будут удалены.</translation>
 <translation id="6964305034639999644">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6978145336957848883">Простые пароли легко подобрать. Разрешите Chromium <ph name="BEGIN_LINK" />создавать и хранить надежные пароли для вас<ph name="END_LINK" />.</translation>
@@ -694,6 +697,7 @@
 <translation id="8880203542552872219">Если да, то вам нужно сменить пароль, сохраненный в Chromium, на новый.</translation>
 <translation id="8891709362986793894">По правилам вашей организации, нужно войти в Chromium</translation>
 <translation id="8907580949721785412">Чтобы просмотреть пароли, введите пароль своего аккаунта Windows.</translation>
+<translation id="8932992523185907506">Chromium больше не браузер по умолчанию. Вернуть его?</translation>
 <translation id="8941642502866065432">Не удалось обновить Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8981150672034878610">Не удалось запустить Chromium. При открытии вашего профиля произошла ошибка. Попробуйте перезапустить Chromium.</translation>

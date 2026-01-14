@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">ฉันจะใช้ฟีเจอร์นี้ได้อย่างไร</translation>
 <translation id="1901600657316773839">เก็บรายการที่เลือกไว้</translation>
 <translation id="1902277226107477495">การตรวจหาที่อยู่ปิดอยู่ โปรดเปิดอีกครั้งในการตั้งค่า</translation>
+<translation id="1909201414196501151">เพิ่มและปักหมุดเว็บไซต์แล้ว</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
 <translation id="1925706052394657380">เปิดการตั้งค่า<ph name="BEGIN_BOLD" />แอปเริ่มต้น<ph name="END_BOLD" />ใน iOS</translation>
 <translation id="1941314575388338491">แตะสองครั้งเพื่อคัดลอก</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="334690320928261823">แท็บล่าสุด</translation>
 <translation id="3349031117032695619">บล็อกป๊อปอัป</translation>
+<translation id="3350976670663926380">บันทึกการแก้ไขแล้ว</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" /> บัญชีนี้มีการจัดการ</translation>
 <translation id="3365529507898144230">บันทึกใน Photos</translation>
 <translation id="3371831930909698441">มีบริการแปลภาษา ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">เลือก "การปกป้องที่ดียิ่งขึ้น"</translation>
 <translation id="3610041351087301930">ซ่อนโหมดผู้อ่าน</translation>
 <translation id="3610866916973186448">ใช่ ลบออก</translation>
+<translation id="3616161326314492065">ถ่ายรูปและแชร์กับ Gemini เพื่อสร้างและรีมิกซ์รูปภาพ</translation>
 <translation id="3622175633937495219">ประวัติการค้นหา (พบ <ph name="COUNT" /> รายการ)</translation>
 <translation id="3625008969091706597">คุณสามารถปัดขอบเพื่อย้อนกลับได้</translation>
 <translation id="362709345066740529">ปรับแต่งการ์ด ฟีด และอื่นๆ ที่นี่</translation>
@@ -1841,6 +1844,7 @@
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7854006015462979438">เปิดทั่วไป</translation>
 <translation id="7855678267851972597">เสียง</translation>
+<translation id="7857520352710212030">ปักหมุดเว็บไซต์แล้ว</translation>
 <translation id="7859988229622350291">ไม่ต้องแปล</translation>
 <translation id="7863211248337747225">ดาวน์โหลดแอป</translation>
 <translation id="7865127013871431856">ตัวเลือกแปลภาษา</translation>

@@ -531,6 +531,9 @@
 <translation id="6901631050894301805">Chromium-г өгөгдмөл хөтчөөрөө тохируулж, ажлын хэсэгтээ бэхэлнэ үү</translation>
 <translation id="6909503629704372277">&amp;Chromium-н профайлуудыг удирдах</translation>
 <translation id="6934579572334859869">Энэ зургийн тухай Зурган хайлтаас асуу</translation>
+<translation id="6948031725951063910">Та Chromium-н <ph name="BOOKMARK_LIMIT" /> хавчуургын хязгаарт хүрсэн тул таны зарим хавчуургыг Google Бүртгэлд тань хараахан хадгалаагүй байна.
+
+Та зарим хавчуургаа устгах хүртэл бүртгэлдээ шинэ хавчуурга хадгалах боломжгүй. Хэрэв та одоо гарвал хадгалаагүй хавчуургыг устгана.</translation>
 <translation id="6964305034639999644">Холбоосыг Chromium-н нууцлалтай цонхонд нээх</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Сул нууц үгийг таахад хялбар байдаг. Chromium-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
@@ -697,6 +700,7 @@
 <translation id="8880203542552872219">Хэрэв тийм бол Chromium-д хадгалсан нууц үгээ засаж, шинэ нууц үгтэйгээ тааруулна уу.</translation>
 <translation id="8891709362986793894">Танай байгууллага таныг Chromium-д нэвтрэхийг шаардаж байна</translation>
 <translation id="8907580949721785412">Chromium нь нууц үгийг харуулахыг оролдож байна. Үүнийг зөвшөөрөхөөр бол  Windows нууц үгээ бичнэ үү.</translation>
+<translation id="8932992523185907506">Chromium таны өгөгдмөл хөтөч биш болсон байна. Chromium-г өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="8941642502866065432">Chromium-г шинэчилж чадсангүй</translation>
 <translation id="897581876605952338">Chromium Enterprise-н лого</translation>
 <translation id="8981150672034878610">Таны профайлыг нээхэд ямар нэг алдаа гарсан тул Chromium-г эхлүүлэх боломжгүй. Chromium-г дахин эхлүүлж үзнэ үү.</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Hur använder jag den här funktionen?</translation>
 <translation id="1901600657316773839">Behåll markeringen</translation>
 <translation id="1902277226107477495">Adressidentifiering har inaktiverats. Aktivera funktionen igen i inställningarna.</translation>
+<translation id="1909201414196501151">Webbplatsen har lagts till och fästs</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
 <translation id="1925706052394657380">Öppna inställningarna för <ph name="BEGIN_BOLD" />standardappar<ph name="END_BOLD" /> i iOS</translation>
 <translation id="1941314575388338491">Tryck snabbt två gånger om du vill kopiera informationen.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="334690320928261823">Senaste flikarna</translation>
 <translation id="3349031117032695619">Blockera popup-fönster</translation>
+<translation id="3350976670663926380">Ändringarna har sparats</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Detta är ett hanterat konto.</translation>
 <translation id="3365529507898144230">Spara i Foto</translation>
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Välj Utökat skydd</translation>
 <translation id="3610041351087301930">Dölj läsarläget</translation>
 <translation id="3610866916973186448">Ja, radera</translation>
+<translation id="3616161326314492065">Ta foton och dela dem med Gemini för att skapa och remixa bilder.</translation>
 <translation id="3622175633937495219">Sökhistorik (<ph name="COUNT" /> hittades)</translation>
 <translation id="3625008969091706597">Du kan svepa från kanten för att gå tillbaka.</translation>
 <translation id="362709345066740529">Anpassa dina kort, ditt flöde och annat här</translation>
@@ -1841,6 +1844,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854006015462979438">Öppna Allmänt</translation>
 <translation id="7855678267851972597">Ljud</translation>
+<translation id="7857520352710212030">Webbplatsen har fästs</translation>
 <translation id="7859988229622350291">Översätt aldrig</translation>
 <translation id="7863211248337747225">Skaffa appen</translation>
 <translation id="7865127013871431856">Översättningsalternativ</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">¿Cómo uso esta función?</translation>
 <translation id="1901600657316773839">Conservar la selección</translation>
 <translation id="1902277226107477495">La detección de direcciones está desactivada. Vuelve a activarla en Configuración.</translation>
+<translation id="1909201414196501151">El sitio se agregó y se fijó</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1925706052394657380">Abrir la configuración de <ph name="BEGIN_BOLD" />Apps predeterminadas<ph name="END_BOLD" /> en iOS</translation>
 <translation id="1941314575388338491">Presiona dos veces para copiar.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{Los favoritos se guardaron en "{title}" en tu cuenta ({email}).}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
 <translation id="3349031117032695619">Bloquear ventanas emergentes</translation>
+<translation id="3350976670663926380">Se guardaron los cambios</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está administrada.</translation>
 <translation id="3365529507898144230">Guardar en Fotos</translation>
 <translation id="3371831930909698441">Está disponible la traducción. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Elige "Protección mejorada"</translation>
 <translation id="3610041351087301930">Ocultar lector</translation>
 <translation id="3610866916973186448">Sí, borrar</translation>
+<translation id="3616161326314492065">Toma fotos y compártelas con Gemini para crear y remezclar imágenes.</translation>
 <translation id="3622175633937495219">Buscar Historial (se encontraron <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Puedes deslizar el borde para volver.</translation>
 <translation id="362709345066740529">Personaliza tus tarjetas, tu feed y mucho más aquí</translation>
@@ -1841,6 +1844,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7854006015462979438">Abre General</translation>
 <translation id="7855678267851972597">Audios</translation>
+<translation id="7857520352710212030">Se fijó el sitio</translation>
 <translation id="7859988229622350291">Nunca traducir</translation>
 <translation id="7863211248337747225">Obtener la app</translation>
 <translation id="7865127013871431856">Opciones de traducción</translation>

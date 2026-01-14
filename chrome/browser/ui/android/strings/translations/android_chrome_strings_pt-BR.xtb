@@ -725,6 +725,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4180726336228139707">Somente neste dispositivo</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar de Z a A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome impediu esse site de enviar notificações devido a spam ou conteúdo enganoso}one{O Chrome impediu esse site de enviar notificações devido a spam ou conteúdo enganoso}other{O Chrome impediu esses sites de enviarem notificações devido a spam ou conteúdo enganoso}}</translation>
 <translation id="4195643157523330669">Abrir em nova guia</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 guia neste dispositivo}one{# guia neste dispositivo}other{# guias neste dispositivo}}</translation>
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
@@ -1118,6 +1119,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5833984609253377421">Compartilhar link</translation>
 <translation id="5839058148541733625">Dinossauro do Chrome</translation>
 <translation id="5841444063256914865">Quer baixar "<ph name="FILE_NAME" />" mesmo assim?</translation>
+<translation id="5847265694842662173">O Chrome impediu o envio de notificações de sites abusivos e sem uso</translation>
 <translation id="5848257610304005265">Abrir PDF com o <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Parar de compartilhar?</translation>
 <translation id="5853623416121554550">pausado</translation>
@@ -1146,6 +1148,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5956665950594638604">Abrir Central de Ajuda do Chrome em uma nova guia</translation>
 <translation id="59577092665511740">Escolha uma conta.</translation>
 <translation id="5958275228015807058">Encontre seus arquivos e páginas em Downloads</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome impediu o envio de notificações de um site que você não visita faz tempo}one{O Chrome impediu o envio de notificações de um site que você não visita faz tempo}other{O Chrome impediu o envio de notificações de sites que você não visita faz tempo}}</translation>
 <translation id="5962718611393537961">Toque para recolher</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
@@ -1806,6 +1809,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="847433688444405067">Navegue em vários dispositivos</translation>
 <translation id="8477178913400731244">Excluir dados</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Nenhuma janela inativa</translation>
 <translation id="8493948351860045254">Liberar espaço</translation>
 <translation id="8497242791509864205">Abrir as opções de classificação</translation>
 <translation id="8497480609928300907">Explicação sobre o Guia de privacidade</translation>

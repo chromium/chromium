@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ॲक्सेस व्यवस्थापित करा</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{आयटम बंद करा}other{आयटम बंद करा}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">अर्धा उंचीवर उघडलेली टॅबची तळाशी असलेली शीट.</translation>
 <translation id="374923079891132274">शेअर शीट पूर्वावलोकनाची थंबनेल</translation>
 <translation id="3776329373944672717">टॅब गटाचे शीर्षक <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">तुमचा शेवटचा टॅब</translation>
 <translation id="5380159289133845234">डुप्लिकेट टॅब संग्रहित करा</translation>
 <translation id="5446043142172831860">टॅब काढून टाका आणि गटातून बाहेर पडा</translation>
+<translation id="5465437530117042974">टॅबच्या तळाशी असलेल्या शीट मधील बदल बंद केले आहेत.</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{कमाल <ph name="LIMIT_COUNT_ONE" /> फाइल, टॅब किंवा इमेज जोडा}other{कमाल <ph name="LIMIT_COUNT_MANY" /> फाइल, टॅब किंवा इमेज जोडा}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6051432659151380973">तुमचे टॅब गट आपोआप सेव्ह होतात</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
+<translation id="606985262342505139">पूर्ण उंचीवर उघडलेली टॅबची तळाशी असलेली शीट</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम बंद करा}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{गट नवीन विंडोवर हलवा}other{गट दुसऱ्या विंडोवर हलवा}}</translation>

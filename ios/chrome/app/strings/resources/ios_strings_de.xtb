@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Wie verwende ich diese Funktion?</translation>
 <translation id="1901600657316773839">Auswahl beibehalten</translation>
 <translation id="1902277226107477495">Adressenerkennung deaktiviert. Du kannst sie in den Einstellungen wieder aktivieren.</translation>
+<translation id="1909201414196501151">Website hinzugefügt und angepinnt</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1925706052394657380">Öffne unter iOS die Einstellungen für <ph name="BEGIN_BOLD" />Standard-Apps<ph name="END_BOLD" /></translation>
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="334690320928261823">Letzte Tabs</translation>
 <translation id="3349031117032695619">Pop-ups blockieren</translation>
+<translation id="3350976670663926380">Änderungen gespeichert</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dieses Konto ist verwaltet.</translation>
 <translation id="3365529507898144230">In Fotos speichern</translation>
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Wähle „Erweiterter Schutz“ aus</translation>
 <translation id="3610041351087301930">Reader ausblenden</translation>
 <translation id="3610866916973186448">Ja, löschen</translation>
+<translation id="3616161326314492065">Du kannst Fotos aufnehmen und sie mit Gemini teilen, um Bilder zu erstellen und zu remixen.</translation>
 <translation id="3622175633937495219">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="3625008969091706597">Du kannst über den Rand wischen, um zurückzugehen.</translation>
 <translation id="362709345066740529">Hier kannst du deine Karten, deinen Feed und mehr anpassen</translation>
@@ -1841,6 +1844,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854006015462979438">„Allgemein“ öffnen</translation>
 <translation id="7855678267851972597">Audiodateien</translation>
+<translation id="7857520352710212030">Website angepinnt</translation>
 <translation id="7859988229622350291">Nie übersetzen</translation>
 <translation id="7863211248337747225">App herunterladen</translation>
 <translation id="7865127013871431856">Übersetzungsoptionen</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">管理存取權</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{關閉項目}other{關閉項目}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">分頁頁底面板宜家顯示喺螢幕下半部。</translation>
 <translation id="374923079891132274">分享表單預覽畫面縮圖。</translation>
 <translation id="3776329373944672717">分頁群組標題「<ph name="TITLE_OF_GROUP" />」</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5380159289133845234">封存重複的分頁</translation>
 <translation id="5446043142172831860">移除分頁並離開群組</translation>
+<translation id="5465437530117042974">分頁頁底面板變動閂咗。</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{最多可加入 <ph name="LIMIT_COUNT_ONE" /> 個檔案、分頁或圖片}other{最多可加入 <ph name="LIMIT_COUNT_MANY" /> 個檔案、分頁或圖片}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">分頁頁底面板宜家顯示喺成個畫面</translation>
 <translation id="6109251075362363230">所有重複的分頁現在亦會封存 (最近使用的重複分頁除外)。</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移至新視窗}other{將群組移至另一個視窗}}</translation>

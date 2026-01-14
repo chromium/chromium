@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">与我共享</translation>
 <translation id="1369286077209859800">显示标签页分组中的所有标签页</translation>
 <translation id="136942498637440594">您可以搜索图片和您看到的内容。</translation>
+<translation id="1373120905936431262">上传图片，使用 Nano Banana 改换风格</translation>
 <translation id="1377508275003315939">密码</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 个地址，共 {count} 个}other{第 {position} 个地址，共 {count} 个}}</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{书签已保存到您的 Google 账号 {email}}}</translation>
 <translation id="1838089197478136166">在“钱包”中打开？</translation>
 <translation id="183878838231635348">此卡片会显示安全检查功能自动为您检测到的所有隐私问题或安全问题。</translation>
+<translation id="1840320537320704887">已移除“新标签页”页面偏好设置</translation>
 <translation id="1845230888742614096">保留分组</translation>
 <translation id="1853692000353488670">打开新的无痕式标签页</translation>
 <translation id="1854463785401910334">在打开的标签页中搜索</translation>
@@ -253,6 +255,7 @@
 <translation id="1901366738768303267">如何使用此功能？</translation>
 <translation id="1901600657316773839">保留所做选择</translation>
 <translation id="1902277226107477495">地址检测已关闭。您可以在“设置”中重新开启此功能。</translation>
+<translation id="1909201414196501151">已添加并固定网站</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
 <translation id="1925706052394657380">在 iOS 中打开<ph name="BEGIN_BOLD" />默认 App<ph name="END_BOLD" /> 设置</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
@@ -615,6 +618,7 @@
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="334690320928261823">最近打开的标签页</translation>
 <translation id="3349031117032695619">阻止弹出式窗口</translation>
+<translation id="3350976670663926380">修改已保存</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>
 <translation id="3365529507898144230">保存在相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
@@ -680,6 +684,7 @@
 <translation id="3602260545951981695">选择“增强型保护”</translation>
 <translation id="3610041351087301930">隐藏阅读器</translation>
 <translation id="3610866916973186448">是，删除</translation>
+<translation id="3616161326314492065">拍摄照片并与 Gemini 分享，即可创作图片和改换图片风格。</translation>
 <translation id="3622175633937495219">在历史记录中搜索（找到 <ph name="COUNT" /> 项结果）</translation>
 <translation id="3625008969091706597">滑动边缘即可返回。</translation>
 <translation id="362709345066740529">在此处自定义卡片、信息流等</translation>
@@ -871,6 +876,7 @@
 <translation id="4338650699862464074">将您访问的网页网址发送给 Google。</translation>
 <translation id="4342946437867096381">您已在 Google 账号中保存了一个用于登录此网站的密码。Google 可为您选择保存最新的密码。</translation>
 <translation id="4365121137632832185">标签页分组，已展开。</translation>
+<translation id="4365685757967464989">允许 Gemini 使用摄像头拍照</translation>
 <translation id="4367971618859387374">显示名称</translation>
 <translation id="4375772272517383391">关闭所有标签页</translation>
 <translation id="4378154925671717803">电话</translation>
@@ -954,6 +960,7 @@
 
        选择如何处理此设备上现有的浏览数据。</translation>
 <translation id="4675298276894277358">此网站不会再显示</translation>
+<translation id="4676647168422678078">要应用“新标签页”页面偏好设置吗？</translation>
 <translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4691892551491778176">当您使用此功能时，网页内容和网址会发送给 Google，但不会用于改进生成式 AI 模型。您随时可以在设置中关闭此功能。</translation>
@@ -1002,6 +1009,7 @@
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 账号中。</translation>
 <translation id="484280513275854557">您已退出账号；浏览数据已被删除</translation>
 <translation id="4850886885716139402">查看</translation>
+<translation id="4854068532375923088">允许“Gemini”使用摄像头</translation>
 <translation id="4860895144060829044">致电</translation>
 <translation id="4861953997778766866">所有人都可以更改您分享的标签页分组</translation>
 <translation id="4865063548323785458">保存并自动填充密码，轻松登录网站和应用</translation>
@@ -1205,6 +1213,7 @@
 <translation id="5579012242779565775">隐藏“阅读清单”</translation>
 <translation id="5581786858144165447">询问 AI 模式</translation>
 <translation id="5585019845078534178">卡片</translation>
+<translation id="5591526871732898147">附加图片 {index}</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="559567008082979829">设置为在一个月后自动删除下载内容。</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -1841,6 +1850,7 @@
 <translation id="7853202427316060426">活动</translation>
 <translation id="7854006015462979438">打开“通用”</translation>
 <translation id="7855678267851972597">音频</translation>
+<translation id="7857520352710212030">网站已固定</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7863211248337747225">下载应用</translation>
 <translation id="7865127013871431856">翻译选项</translation>
@@ -1904,6 +1914,7 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>
 <translation id="8061584726507121204">历史记录</translation>
+<translation id="8064946459644399612">已应用“新标签页”页面偏好设置</translation>
 <translation id="8069168488983557089">获取关键要点和数据洞见，帮助您了解任何主题</translation>
 <translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分中。</translation>
 <translation id="8073670137947914548">已下载完毕</translation>
@@ -1934,6 +1945,7 @@
 <translation id="8161614462829037225">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
 <translation id="8173034266693057059">长度</translation>
 <translation id="8182037667962849780">{count,plural, =1{对于 {website_1}}=2{对于 {website_1}、{website_2}}=3{对于 {website_1}、{website_2} 和另外 1 个}other{对于 {website_1}、{website_2} 个另外 {more_count} 个}}</translation>
+<translation id="8184895727539791845">如要允许 Gemini 使用摄像头，请在 iOS 设置中开启相机权限</translation>
 <translation id="8185076488803799132">导入</translation>
 <translation id="8189615296021678665">点按“保存”即可在下次登录时轻松访问此密码。</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2002,6 +2014,7 @@
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
+<translation id="8429455911440977338">开启相机权限</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>
@@ -2243,6 +2256,7 @@
 <translation id="956218893102219091">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963102227019621224">网络与应用活动记录</translation>
+<translation id="965259330007686240">用 Gemini 制作图片</translation>
 <translation id="965879457362663186">添加附件</translation>
 <translation id="966593914872420832">语音搜索</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{加入<ph name="OWNER_NAME" />所在的标签页分组}=1{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人所在的标签页分组}other{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人所在的标签页分组}}</translation>

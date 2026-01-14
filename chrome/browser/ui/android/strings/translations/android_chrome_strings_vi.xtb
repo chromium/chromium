@@ -725,6 +725,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4180726336228139707">Chỉ trên thiết bị này</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4188221736490993796">Sắp xếp từ Z đến A</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome đã ngăn trang web này gửi thông báo do nội dung rác hoặc nội dung lừa đảo}other{Chrome đã ngăn các trang web này gửi thông báo do nội dung rác hoặc nội dung lừa đảo}}</translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 thẻ trên thiết bị này}other{# thẻ trên thiết bị này}}</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
@@ -1117,6 +1118,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5833984609253377421">Chia sẻ đường liên kết</translation>
 <translation id="5839058148541733625">Trò chơi khủng long trên Chrome</translation>
 <translation id="5841444063256914865">Bạn vẫn muốn tải "<ph name="FILE_NAME" />" xuống?</translation>
+<translation id="5847265694842662173">Chrome đã ngăn các trang web gửi thông báo do đó là trang web lạm dụng và không còn sử dụng</translation>
 <translation id="5848257610304005265">Mở tệp PDF bằng <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Dừng chia sẻ?</translation>
 <translation id="5853623416121554550">đã tạm dừng</translation>
@@ -1145,6 +1147,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5956665950594638604">Mở Trung tâm trợ giúp Chrome trong thẻ mới</translation>
 <translation id="59577092665511740">Chọn một tài khoản.</translation>
 <translation id="5958275228015807058">Tìm tệp và trang của bạn trong Tệp đã tải xuống</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome đã ngăn một trang web gửi thông báo cho bạn do gần đây bạn không truy cập}other{Chrome đã ngăn các trang web gửi thông báo cho bạn do gần đây bạn không truy cập}}</translation>
 <translation id="5962718611393537961">Nhấn để thu gọn</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>
@@ -1805,6 +1808,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="847433688444405067">Duyệt xem trên các thiết bị</translation>
 <translation id="8477178913400731244">Xoá dữ liệu</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Không có cửa sổ không hoạt động</translation>
 <translation id="8493948351860045254">Giải phóng dung lượng</translation>
 <translation id="8497242791509864205">Mở tuỳ chọn sắp xếp</translation>
 <translation id="8497480609928300907">Giải thích hướng dẫn về quyền riêng tư</translation>

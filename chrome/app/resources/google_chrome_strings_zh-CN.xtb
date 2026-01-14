@@ -368,6 +368,7 @@
 <translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
 <translation id="5043786843026425788">详细了解如何在 Chrome 中使用 Google 智能镜头进行搜索</translation>
 <translation id="504867494566807945">在任意应用内通过 Chromium 打开链接。此外，为了方便使用，Chromium 会固定到任务栏。</translation>
+<translation id="5105120510934353742">若要接收后续 Google Chrome 更新，您需要使用 macOS 13 或更高版本。该电脑目前使用的是 macOS 12。</translation>
 <translation id="5114340746415930644">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>
 <translation id="5120334927898581447">登录其他 Google 服务时登录 Chrome</translation>
 <translation id="5126049312684316860">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
@@ -502,6 +503,7 @@
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6334815226785304306">将 Google Chrome 设为默认浏览器并固定到任务栏</translation>
+<translation id="63540178978900677">Chrome 不再是默认浏览器。要将 Chrome 设为默认浏览器吗？</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="6388799252195623474">帮我解决这个问题</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
@@ -703,6 +705,9 @@
 <translation id="8418845734693287262">由于您的账号登录详细信息已过期，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="842386925677997438">Chrome 的安全工具</translation>
 <translation id="8425765582779547329">若要使用家长选择的设置更安全地上网，请登录 Chrome</translation>
+<translation id="842852285618875960">您已达到 Google Chrome 的书签数量上限（<ph name="BOOKMARK_LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
+
+请先删除一些书签，否则新书签将无法保存到账号中。如果现在退出账号，系统将删除未保存的书签。</translation>
 <translation id="8433638294851456451">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8496177819998570653">Google 密码管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 刚刚应用了一项特殊的安全更新。请立即重启，以便系统恢复您的标签页。</translation>

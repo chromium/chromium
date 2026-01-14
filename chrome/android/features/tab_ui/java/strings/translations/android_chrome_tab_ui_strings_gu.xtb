@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ઍક્સેસ મેનેજ કરો</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{આઇટમ બંધ કરો}one{આઇટમ બંધ કરો}other{આઇટમ બંધ કરો}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ટૅબ બોટમ શીટ અડધી ઊંચાઈએ ખોલી.</translation>
 <translation id="374923079891132274">શેર શીટ પ્રીવ્યૂનો થંબનેલ.</translation>
 <translation id="3776329373944672717">ટૅબ ગ્રૂપનું શીર્ષક <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">તમારું છેલ્લું ટૅબ</translation>
 <translation id="5380159289133845234">ડુપ્લિકેટ ટૅબ આર્કાઇવ કરો</translation>
 <translation id="5446043142172831860">ટૅબ કાઢી નાખો અને ગ્રૂપ છોડી દો</translation>
+<translation id="5465437530117042974">ટૅબ બોટમ શીટમાં કરેલા ફેરફારો બંધ કરવામાં આવ્યા.</translation>
 <translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{વધુમાં વધુ <ph name="LIMIT_COUNT_ONE" /> ફાઇલ, ટૅબ કે છબી ઉમેરો}one{વધુમાં વધુ <ph name="LIMIT_COUNT_MANY" /> ફાઇલ, ટૅબ અથવા છબી ઉમેરો}other{વધુમાં વધુ <ph name="LIMIT_COUNT_MANY" /> ફાઇલ, ટૅબ અથવા છબી ઉમેરો}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6051432659151380973">તમારા ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે સાચવવામાં આવશે</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
+<translation id="606985262342505139">ટૅબ બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> આઇટમ બંધ કરો}one{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> આઇટમ બંધ કરો}other{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> આઇટમ બંધ કરો}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ગ્રૂપને નવી વિન્ડોમાં ખસેડો}one{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}other{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}}</translation>

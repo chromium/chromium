@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Πώς μπορώ να χρησιμοποιήσω αυτή τη λειτουργία;</translation>
 <translation id="1901600657316773839">Διατήρηση επιλογής</translation>
 <translation id="1902277226107477495">Ο εντοπισμός διευθύνσεων έχει απενεργοποιηθεί. Ενεργοποιήστε τον ξανά στις Ρυθμίσεις.</translation>
+<translation id="1909201414196501151">Ο ιστότοπος προστέθηκε και καρφιτσώθηκε</translation>
 <translation id="1911619930368729126">Μεταφόρ.στο Google Drive</translation>
 <translation id="1925706052394657380">Ανοίξτε τις ρυθμίσεις για <ph name="BEGIN_BOLD" />Προεπιλεγμένες εφαρμογές<ph name="END_BOLD" /> στο iOS</translation>
 <translation id="1941314575388338491">Πατήστε δύο φορές για αντιγραφή.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title} στον λογαριασμό {email}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον φάκελο{title} στον λογαριασμό {email}}}</translation>
 <translation id="334690320928261823">Πρόσφατες καρτέλες</translation>
 <translation id="3349031117032695619">Αποκλεισμός αναδυόμενων</translation>
+<translation id="3350976670663926380">Οι αλλαγές αποθηκεύτηκαν</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Αυτός ο λογαριασμός είναι διαχειριζόμενος.</translation>
 <translation id="3365529507898144230">Αποθήκευση στις Φωτογραφίες</translation>
 <translation id="3371831930909698441">Διατίθεται μετάφραση. Διαθέσιμες επιλογές κοντά στο κάτω μέρος της οθόνης.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Επιλέξτε Βελτιωμένη προστασία</translation>
 <translation id="3610041351087301930">Απόκρυψη αναγνώστη</translation>
 <translation id="3610866916973186448">Ναι, διαγραφή</translation>
+<translation id="3616161326314492065">Τραβήξτε φωτογραφίες και μοιραστείτε τις με το Gemini για να δημιουργήσετε εικόνες και να κάνετε remix.</translation>
 <translation id="3622175633937495219">Ιστορικό αναζήτησης (Βρέθηκαν <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Μπορείτε να σύρετε την άκρη για μετάβαση προς τα πίσω.</translation>
 <translation id="362709345066740529">Προσαρμόστε εδώ τις κάρτες, τη ροή και άλλα</translation>
@@ -1842,6 +1845,7 @@
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7854006015462979438">Ανοίξτε την ενότητα Γενικά</translation>
 <translation id="7855678267851972597">Ήχοι</translation>
+<translation id="7857520352710212030">Ο ιστότοπος καρφιτσώθηκε</translation>
 <translation id="7859988229622350291">Να μην γίνεται ποτέ μετάφραση από</translation>
 <translation id="7863211248337747225">Λήψη της εφαρμογής</translation>
 <translation id="7865127013871431856">Επιλογές Μετάφρασης</translation>

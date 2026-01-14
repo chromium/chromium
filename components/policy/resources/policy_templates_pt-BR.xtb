@@ -1364,6 +1364,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
       Se deixada sem definição, nenhuma extensão será isenta do processo de redefinição.</translation>
 <translation id="1962273523772270623">Permite a coleta de logs de eventos WebRTC dos serviços do Google</translation>
 <translation id="1962864958436828230">Definir o limite mínimo para a prevenção contra vazamento de dados de acordo com a restrição da área de transferência</translation>
+<translation id="1963986268950915756">Permitir instalação de apps da web pelo navegador</translation>
 <translation id="1964191545419036999">Galeria (com suporte desde a versão 117)</translation>
 <translation id="1964634611280150550">Modo de navegação anônima desativado</translation>
 <translation id="1964802606569741174">Esta política não tem nenhum efeito sobre o app YouTube para Android. Se o modo de segurança do YouTube precisar ser aplicado, a instalação desse app será bloqueada.</translation>
@@ -2318,6 +2319,17 @@ Observação: a omissão de um campo significa que todos os valores correspondem
 <translation id="2568488785376704318">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Desativar a resposta falada</translation>
 <translation id="2570181623957732921">Ativar a <ph name="DESK_API_NAME" /> para uma lista de domínios de terceiros</translation>
+<translation id="2571353268726025696">Esta política é fornecida como uma forma de desativar o recurso de Conjuntos Primários (agora chamado <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Quando ela é deixada sem definição ou é ativada, os Conjuntos Primários ficam ativados.
+
+Quando ela é desativada, eles também ficam desativados.
+
+Essa política controla se o Chrome aceita integrações relacionadas a Conjuntos Primários.
+
+Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Qualquer uma das políticas pode ser usada com o mesmo efeito no comportamento do navegador.
+Ambas foram descontinuadas junto ao recurso <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> na versão 144 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2571821662934804440">Permitir o uso do recurso sem aprimorar os modelos de IA</translation>
 <translation id="2573850437942404034">Não permitir</translation>
 <translation id="2575198840408498393">Desativar a criação de perfis de roaming</translation>
@@ -2937,6 +2949,11 @@ No caso de cookies em domínios não cobertos pelos padrões especificados aqui 
 Esta política pode ser removida no futuro.</translation>
 <translation id="2989404644164421834">Atualizar páginas</translation>
 <translation id="299127280603727143">Um grupo de políticas relacionadas às configurações de acesso à rede local.  Consulte: https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Esta política controla se os usuários podem instalar apps da web pelo navegador.
+Se ela for ativada ou não for configurada, os usuários poderão instalar apps da web pelo navegador.
+Se ela for desativada, não vai permitir que os usuários instalem apps da web, e o tipo de dado "Apps" será excluído da sincronização para o <ph name="CHROME_SYNC_NAME" />.
+A política não tem atualização dinâmica. Qualquer alteração, seja para ativar, desativar ou não definir a política só vai entrar em vigor depois que o navegador for reiniciado.
+Esta política não afeta a "<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />".</translation>
 <translation id="299446489108785864">A lista de URLs especificando para quais URLs a <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> é válida. Esta política não tem impacto em valores de abertura automática definidos pelo usuário.
 
       Se esta política for definida, os arquivos serão abertos automaticamente se o URL fizer parte deste conjunto e o tipo de arquivo estiver listado em <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se alguma das condições for falsa, o download não será aberto automaticamente por padrão.
@@ -6115,6 +6132,7 @@ Se ela for deixada sem definição, o recurso ficará ativado em dispositivos n�
 <translation id="5082296146261894974">Permite que os usuários cliquem na notificação do recurso Seu smartphone para abrir o app Eche.</translation>
 <translation id="5082572440690475059">Permitir acesso de leitura com a API File System nestes sites</translation>
 <translation id="5085647276663819155">Desativar visualização da impressão</translation>
+<translation id="5087922428454325090">Os usuários não podem instalar apps da web pelo navegador.</translation>
 <translation id="5087932158260897375">Se a política for definida como falsa, os relatórios de dados para diagnóstico de confiabilidade do domínio serão desativados e nenhum dado será enviado ao Google.
 Se a política for definida como verdadeira ou for deixada sem definição, esses relatórios vão seguir o comportamento de MetricsReportingEnabled para o <ph name="PRODUCT_NAME" /> ou de DeviceMetricsReportingEnabled para o <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Esta política permite a conformidade com a especificação recém-adotada de zoom do CSS.
@@ -7706,6 +7724,44 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6083631234867522991">Windows (clientes do Windows):</translation>
 <translation id="6087413944876892918">Usar o algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
+<translation id="6089118101413877627">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para os recursos de Conjuntos Primários (agora chamados <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Cada item na lista do navegador precisa atender aos requisitos de um Conjunto Primário.
+Para isso, o conjunto precisa conter um site primário e um ou mais sites membros.
+Os conjuntos também podem ter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
+Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como os Conjuntos Primários são usados pelo <ph name="PRODUCT_NAME" />.
+
+Todos os sites em um Conjunto Primário precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um Conjunto Primário também precisa ser único,
+o que significa que um site não pode ser listado mais de uma vez em um mesmo Conjunto Primário.
+
+Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de Conjuntos Primários.
+
+No caso de todos os sites em um Conjunto Primário da lista de <ph name="REPLACEMENTS" />, se o site também estiver
+em um Conjunto Primário na lista do navegador, ele será removido desse último conjunto.
+Em seguida, o Conjunto Primário da política será adicionado à lista desses conjuntos do navegador.
+
+No caso de todos os sites em um Conjunto Primário da lista de <ph name="ADDITIONS" />, se um site também estiver
+em um Conjunto Primário na lista do navegador, esse último será atualizado para que o
+novo possa ser adicionado à lista. Depois dessa atualização,
+o Conjunto Primário da política será adicionado à lista desses conjuntos do navegador.
+
+A lista de Conjuntos Primários do navegador exige que nenhum dos sites na lista esteja em
+mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
+e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
+<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
+
+Caracteres curinga (*) não podem ser usados como valor da política nem dentro de Conjuntos Primários nessas listas.
+
+Todos os conjuntos fornecidos pela política precisam ser um Conjunto Primário válido. Caso contrário,
+será gerado um erro.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Qualquer uma das políticas pode ser usada com o mesmo efeito no comportamento do navegador.
+Ambas foram descontinuadas junto ao recurso <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> na versão 144 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Forçar o usuário a fazer login para usar o navegador</translation>
 <translation id="6092073071805297119">Permitir o uso da filtragem de desempenho de acessibilidade.</translation>
@@ -8644,6 +8700,7 @@ Mudanças na política são aplicadas apenas enquanto o ARC não está em execu�
 <translation id="6601216729409808032">Ativa outras verificações de política de nuvem para permitir/bloquear a instalação de extensões.</translation>
 <translation id="6603004149426829878">Sempre enviar qualquer sinal de localização disponível para o servidor ao determinar o fuso horário</translation>
 <translation id="6604049565198492174">Se a política for definida, será possível aplicar a configuração de rede por usuário para cada dispositivo <ph name="PRODUCT_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
+<translation id="6604522755563022737">Os usuários podem instalar apps da web pelo navegador.</translation>
 <translation id="660567106648774919">Esta política está obsoleta. Use a <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
       Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Definir esta política como "Desativada" fará com que a caixa de diálogo de Termos de Serviço não apareça na primeira execução e nas execuções subsequentes. Definir a política como "Ativada" ou deixá-la sem definição fará com que a caixa de diálogo de Termos de Serviço apareça na primeira execução. As outras ressalvas são as seguintes:
@@ -10560,6 +10617,28 @@ Para mais informações sobre a política <ph name="IEEM_SITELIST_POLICY" /> do 
       Se ela for definida como verdadeira, os eventos de rede do dispositivo serão informados.</translation>
 <translation id="780629758750905699">Permitir adicionar contas do Family Link no dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos a serem excluídos da sincronização</translation>
+<translation id="7812285231594048601">Esta política foi descontinuada. Use a <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME" />.
+
+Comportamento padrão (política não definida)
+Quando uma conta é adicionada à área de conteúdo, uma pequena caixa de diálogo pode aparecer pedindo para o usuário criar um novo perfil. Essa caixa pode ser dispensada.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Se alguém fizer login em um serviço do Google pela primeira vez no navegador <ph name="PRODUCT_NAME" />, uma caixa de diálogo vai aparecer pedindo que essa pessoa crie um perfil para a conta corporativa. Ela pode clicar em "Cancelar" e sair da conta ou em "Continuar" para criar um perfil. Os dados de navegação atuais não vão ser adicionados ao novo perfil. O perfil recém-criado pode ter contas secundárias. Por exemplo, é possível fazer login em outra conta na área de conteúdo.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, mas o perfil recém-criado não pode ter contas secundárias.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, mas uma caixa de seleção é adicionada para que a pessoa possa manter os dados de navegação locais.
+Ao marcar essa caixa, os dados atuais do perfil vão ser associados à conta gerenciada.
+- Todos os dados de navegação atuais vão estar no novo perfil.
+- Esses dados incluem favoritos, histórico, senha, dados de preenchimento automático, guias abertas, cookies, cache, armazenamento na web, extensões etc.
+Se a caixa não for marcada:
+- O perfil antigo vai continuar existindo e nenhum dado será perdido.
+- Um novo perfil vai ser criado.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mas o perfil recém-criado não pode ter contas secundárias.</translation>
 <translation id="781268256210530471">Configurações de plug-ins</translation>
 <translation id="7816326058023670173">Segredo compartilhado entre os dispositivos do familiar responsável e da criança.</translation>
 <translation id="7818131573217430250">Definir o estado padrão do modo de alto contraste na tela de login</translation>
@@ -11137,9 +11216,6 @@ Esta política é válida para o modo de navegação anônima. Isso significa qu
 <translation id="8225579382697740712">Controlar o uso da API WebHID</translation>
 <translation id="8229912067600517877">Ativar as Ferramentas para desenvolvedores</translation>
 <translation id="8238421250255592181">Uma sinalização booleana indicando se o teclado na tela pode oferecer preenchimento automático.</translation>
-<translation id="8238558579601006178">Quando esta política for definida como 0 ou deixada sem definição, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> será aplicada apenas no escopo do usuário para usuários afiliados.
-Se for definida como 1, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> será aplicada no escopo do usuário, mesmo que o usuário não seja afiliado.
-Se for definida como 2, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nunca será aplicada quando a origem for um usuário.</translation>
 <translation id="8239109177194627162">Desativar o preenchimento automático de cartões de crédito</translation>
 <translation id="8239143983379015783">Forçar a ativação da cota persistente</translation>
 <translation id="8240976615241583524">Esta política permite restringir as interfaces e os endereços IP usados pelo WebRTC ao tentar encontrar a melhor conexão disponível.

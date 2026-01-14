@@ -118,6 +118,7 @@
 <translation id="1185343831726846924">La confirmation de la carte virtuelle ne peut pas être activée</translation>
 <translation id="1186201132766001848">Vérifier les mots de passe</translation>
 <translation id="1187430513518041110">Voitures et véhicules</translation>
+<translation id="1188817995162638216">Annuler l'enregistrement du fichier?</translation>
 <translation id="1190491977647722791">Papier (épais)</translation>
 <translation id="1194278116501666615">Mise à jour de la progression du préchargement de la MV Arc</translation>
 <translation id="1195073053842921378">Cette adresse sera supprimée de cet appareil</translation>
@@ -404,6 +405,7 @@
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1640180200866533862">Règles relatives aux utilisateurs</translation>
 <translation id="1640244768702815859">Essayez de <ph name="BEGIN_LINK" />consulter la page d'accueil du site<ph name="END_LINK" />.</translation>
+<translation id="1641962500621836664">Enregistrement du fichier de la caméra en cours…</translation>
 <translation id="1641976391427233992">Retarder la sortie jusqu'à</translation>
 <translation id="1643651787397909318">Accédez au bouton de la Vérification de sécurité de Chrome, puis activez-le pour visiter la page de la Vérification de sécurité de Chrome dans les paramètres</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -494,6 +496,7 @@
 <translation id="1777422078676229054">Photo (archives)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Installer des applis Web?</translation>
+<translation id="1791044335740781449">Téléversement du fichier vers Google Disque en cours…</translation>
 <translation id="1791415068765905273">Afficher tous les tableaux de comparaison</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
 <translation id="1793631236004319016">Dernière utilisation : il y a <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -560,6 +563,7 @@
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Jeu du dinosaure. Un dinosaure pixelisé traverse un paysage désolé en esquivant les cactus et les ptérodactyles. Lorsque vous entendez un signal audio, touchez pour le faire sauter par-dessus les obstacles.</translation>
 <translation id="1898423065542865115">Filtrage</translation>
+<translation id="1898678876221454577">Connectez-vous pour enregistrer votre document numérisé</translation>
 <translation id="1901443836186977402">{1,plural, =1{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré au cours des dernières 24 heures. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}one{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré il y a # jour. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}other{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré il y a # jours. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}}</translation>
 <translation id="190166348986967700">Votre administrateur commencera à téléverser vos fichiers sur <ph name="CLOUD_PROVIDER" /> le <ph name="DATE_TIME" />. Gardez votre appareil connecté jusqu'à ce que le téléversement de votre fichier soit terminé. Pendant le téléversement, vous ne pourrez lire que les fichiers locaux.</translation>
 <translation id="1902576642799138955">Période de validité</translation>
@@ -896,6 +900,7 @@
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414676293664737497">Markdown</translation>
 <translation id="2414886740292270097">Foncé</translation>
+<translation id="2429702686644080813">Connectez-vous pour enregistrer votre vidéo</translation>
 <translation id="2429716554270894715">Tissu (imperméable)</translation>
 <translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arts textiles</translation>
@@ -1099,6 +1104,7 @@
 <translation id="2742128390261873684">Domotique</translation>
 <translation id="2743512410823092182">Ressources et équipement pour DJ</translation>
 <translation id="2743934314332613923">Mettre à jour le permis de conduire?</translation>
+<translation id="2757727729385895652">Téléversement de <ph name="COUNT" /> fichiers vers Google Disque en cours…</translation>
 <translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
 <translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1226,6 +1232,7 @@
 <translation id="2983666748527428214">Ouvrir l'onglet de navigation privée</translation>
 <translation id="2985306909656435243">Si l'option est activée, Chromium conservera une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement vos formulaires.</translation>
 <translation id="2985398929374701810">Entrez une adresse valide</translation>
+<translation id="2986485254770343131">Enregistrement des fichiers de l'appareil photo en cours…</translation>
 <translation id="2987034854559945715">Aucune fonctionnalité correspondante</translation>
 <translation id="2989742184762224133">Double agrafe en haut</translation>
 <translation id="2991174974383378012">Partage avec des sites Web</translation>
@@ -1902,6 +1909,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4059523390906550209">En savoir plus sur la protection des données confidentielles</translation>
 <translation id="4060880210388108757">Musique indépendante et alternative</translation>
 <translation id="4060883793524802469">Retirer des tableaux</translation>
+<translation id="4061573458783426621">Impossible d'enregistrer le document numérisé dans OneDrive</translation>
 <translation id="4063063121357725926">Laissez Google vous aider à trouver des rabais pour vos paniers</translation>
 <translation id="406358100705415968">Équipement de protection pour la sécurité au travail</translation>
 <translation id="4065659219963895623">Restaurants</translation>
@@ -2213,6 +2221,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4530347922939905757">Message texte</translation>
 <translation id="4531477351494678589">Numéro de carte virtuelle :</translation>
 <translation id="4535523368173457420">Ces moteurs de recherche sont populaires dans votre région et sont affichés dans un ordre aléatoire</translation>
+<translation id="4535602490975885745">Impossible d'enregistrer la photo sur OneDrive</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{Créé il y a 1 an}one{Créé il y a {NUM_YEARS} an}other{Créé il y a {NUM_YEARS} ans}}</translation>
 <translation id="4541810033354695636">Réalité augmentée</translation>
 <translation id="4542971377163063093">Bac 6</translation>
@@ -2307,6 +2316,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />d'exécuter Windows Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Mot de passe pour <ph name="USERNAME" /></translation>
 <translation id="4724144314178270921">Les sites peuvent demander à voir le texte et les images de votre presse-papiers</translation>
+<translation id="4725766358270333890">Téléversement de <ph name="COUNT" /> fichiers vers Microsoft OneDrive en cours…</translation>
 <translation id="4726672564094551039">Actualiser les politiques</translation>
 <translation id="4728558894243024398">Plateforme</translation>
 <translation id="4729147136006144950">Charité et philanthropie</translation>
@@ -2349,6 +2359,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4771249073710170730">Radiocommande et modélisation</translation>
 <translation id="4771973620359291008">Une erreur inconnue s'est produite.</translation>
 <translation id="4774055414220872623">Matériel d'arts plastiques</translation>
+<translation id="4775456404799771098">Vous perdrez définitivement le fichier</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fenêtre contextuelle bloquée}one{# fenêtre contextuelle bloquée}other{# fenêtres contextuelles bloquées}}</translation>
 <translation id="4780320432697076749">Logiciels de photo</translation>
 <translation id="4780366598804516005">Boîte aux lettres 1</translation>
@@ -2801,6 +2812,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5509913453990750440">Mode et style</translation>
 <translation id="5510766032865166053">Il a peut-être été déplacé ou supprimé.</translation>
 <translation id="551222491709693708">Bandes dessinées et films d'animation</translation>
+<translation id="5512381366239323820">fichiers de l'appareil photo</translation>
 <translation id="5512812358367123529">Mobilier de bureau</translation>
 <translation id="5513528801833998679">Utiliser la connexion à l'appareil</translation>
 <translation id="5515388687005870733">55 mm x 85 mm</translation>
@@ -2936,6 +2948,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5723873695528696965">Contrôler et reprogrammer vos appareils MIDI</translation>
 <translation id="5725297205162868298">Le raccourci ne peut pas commencer par le caractère @ : « <ph name="SHORTCUT_NAME" /> »</translation>
+<translation id="5725797473946373607">Ne plus afficher cette boîte de dialogue la prochaine fois</translation>
 <translation id="5728246486828755318">Peut demander d'utiliser des fonctionnalités avancées de l'imprimante</translation>
 <translation id="5729442113829771034">Éducation de la petite enfance</translation>
 <translation id="5730040223043577876">Chrome recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
@@ -3102,6 +3115,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6017514345406065928">Vert</translation>
 <translation id="6018650639991193045">Supprimer votre historique de navigation, vos témoins, votre cache et plus encore dans les paramètres de Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
+<translation id="6023960830218262456">Impossible d'enregistrer la vidéo sur OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronisés)</translation>
 <translation id="6025471531651464742">Ajouter des fichiers</translation>
 <translation id="6028591542479806248">Gérer les notifications mobiles et par courriel</translation>
@@ -3443,6 +3457,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6529173248185917884">Septième rouleau</translation>
 <translation id="6529602333819889595">&amp;Rétablir la suppression</translation>
 <translation id="6532101170117367231">Enregistrer dans Google Disque</translation>
+<translation id="6535903140035956341">fichiers et téléchargements de l'appareil photo</translation>
 <translation id="6536221421038631327">La suppression d'un abonnement Passpoint de votre <ph name="DEVICE_TYPE" /> retirera les réseaux associés. Contactez « <ph name="FRIENDLY_NAME" /> » pour apporter des modifications à votre forfait d'abonnement. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Pour voir les tableaux de comparaison, activez la synchronisation</translation>
 <translation id="6539092367496845964">Une erreur s'est produite. Réessayez plus tard.</translation>
@@ -3540,7 +3555,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6702851555558236418">Logiciels audio et de musique</translation>
 <translation id="6702919718839027939">Présentation</translation>
 <translation id="6704458454638854812">La propriété « Taille_personnalisée » est définie, le nom doit être « Personnalisé ».</translation>
-<translation id="670477556876354552">Un redémarrage est requis</translation>
 <translation id="6706005862292023715">Rideaux et accessoires de fenêtre</translation>
 <translation id="6706210727756204531">Portée</translation>
 <translation id="6706678697074905703">Cet IBAN n'a pas pu être enregistré dans votre compte Google. Il est plutôt enregistré dans Chrome sur cet appareil.</translation>
@@ -3671,6 +3685,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6925267999184670015">Amérique du Nord B+</translation>
 <translation id="6926216138694948720">Art corporel</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
+<translation id="6927878187051807444">fichiers et captures d'écran de l'appareil photo</translation>
 <translation id="6930607614725241390">Recherchez dans le panneau latéral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente les fonctionnalités de Chrome<ph name="END_BOLD" />, telles que la recherche à partir de la barre d'adresse et des images sur des pages Web. Une fonctionnalité peut ne pas être proposée si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
@@ -3813,6 +3828,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7140087718106278457">La liste des modes de paiement est fermée.</translation>
 <translation id="714064300541049402">Décalage X de l'image côté 2</translation>
 <translation id="7140922144008419614">Bouton Rechercher dans les onglets, activer pour rechercher dans les onglets</translation>
+<translation id="7143668445748322952">fichiers, téléchargements et captures d'écran de l'appareil photo</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7152230779180489711">Dernière visite</translation>
@@ -4063,6 +4079,7 @@ Détails supplémentaires :
 <translation id="7535087603100972091">Valeur</translation>
 <translation id="753556296624075801">Propulsé par Google</translation>
 <translation id="753713322968419914">Retirer l'adresse personnelle du remplissage automatique de Chrome?</translation>
+<translation id="753714465667062283">Connectez-vous pour enregistrer votre photo</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> en cours de démarrage…</translation>
@@ -4172,6 +4189,7 @@ Détails supplémentaires :
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> a été bloqué en raison d'une politique}one{<ph name="FILE_COUNT" /> fichier a été bloqué en raison d'une politique}other{<ph name="FILE_COUNT" /> fichiers ont été bloqués en raison d'une politique}}</translation>
 <translation id="7687186412095877299">Remplit les formulaires de facturation avec les renseignements de vos modes de paiement enregistrés</translation>
 <translation id="7687305263118037187">Délai de nouvel essai</translation>
+<translation id="7689605946980652287">Téléversement du fichier vers Microsoft OneDrive en cours…</translation>
 <translation id="7690647519407127574">Carte postale Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordre des pages reçu</translation>
 <translation id="769424100851389104">Démarrer la mise à jour maintenant</translation>
@@ -5120,6 +5138,7 @@ Détails supplémentaires :
 <translation id="963734905955638680">Conformément à la loi de votre région, Chromium vous demande de choisir votre moteur de recherche par défaut. Ces moteurs de recherche sont populaires dans votre région et sont affichés dans un ordre aléatoire.</translation>
 <translation id="963837307749850257">Tous les utilisateurs</translation>
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
+<translation id="964681140808832181">Oui, je veux annuler</translation>
 <translation id="969892804517981540">Version officielle</translation>
 <translation id="97054401902912338">En savoir plus sur les filtres de contenu</translation>
 <translation id="973788791897303708">Ce groupe d'onglets est complet</translation>

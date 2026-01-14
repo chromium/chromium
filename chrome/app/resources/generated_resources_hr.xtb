@@ -165,6 +165,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1102759278139578486">Ne mogu se preuzeti datoteke sa zabilješkama glavnog čvora. Pokušajte ponovo kasnije.</translation>
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Odmah ćete izgubiti pristup grupi kartica i ona će se izbrisati sa svih vaših uređaja</translation>
+<translation id="1106270460549661906">Prekini dijeljenje s Geminijem</translation>
 <translation id="1106350001632362876">Povećaj prag</translation>
 <translation id="1107482171728500359">Dijeljenje mikrofona</translation>
 <translation id="110850812463801904">Ručno se povežite s OneDriveom</translation>
@@ -1082,7 +1083,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1709085899471866534">U trenu saznajte kada su kartice neaktivne. Novi izgled uvijek možete isključiti u postavkama.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativno)</translation>
 <translation id="1709217939274742847">Odaberite tiket koji ćete upotrebljavati za autentifikaciju. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="1709509436926747582">Prikaži kartice pri vrhu</translation>
 <translation id="1709762881904163296">Postavke mreže</translation>
 <translation id="1709916727352927457">Brisanje pristupnog ključa</translation>
 <translation id="1709972045049031556">Dijeljenje nije moguće</translation>
@@ -1122,7 +1122,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1744108098763830590">pozadinska stranica</translation>
 <translation id="1745732479023874451">Upravljajte kontaktima</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Otvoriti i urediti # datoteku u ovoj web-aplikaciji?}few{Otvoriti i urediti # datoteke u ovoj web-aplikaciji?}other{Otvoriti i urediti # datoteka u ovoj web-aplikaciji?}}</translation>
-<translation id="1748329107062243374">Upotrijebite pristupni ključ s uređaja <ph name="DEVICE_NAME" /> za prijavu na web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Ovu zaporku možete spremiti na svoj Google račun ili samo na ovaj uređaj</translation>
 <translation id="1749733017156547309">Potrebna je zaporka</translation>
 <translation id="1750172676754093297">Sigurnosni ključ ne može pohraniti otiske prstiju</translation>
@@ -4023,6 +4022,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3712143870407382523">Odaberite prozor za ovu stranu</translation>
 <translation id="3712897371525859903">Spremi stranicu &amp;kao...</translation>
 <translation id="371300529209814631">Natrag/naprijed</translation>
+<translation id="371302509916403935">Podcrtavanje</translation>
 <translation id="3713047097299026954">Za taj sigurnosni ključ nema podataka za prijavu</translation>
 <translation id="3713091615825314967">Automatska su ažuriranja uključena.</translation>
 <translation id="3713673533020367620">Otvori karticu u podijeljenom prikazu</translation>
@@ -4272,6 +4272,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3854976556788175030">Izlazna je ladica puna</translation>
 <translation id="3855441664322950881">Zapakiraj proširenje</translation>
 <translation id="3855676282923585394">Uvoz oznaka i postavki...</translation>
+<translation id="3856023744577163821">Kartice otvorene iz razgovora ili dijeljene kartice također se dijele s Geminijem.</translation>
 <translation id="3856096718352044181">Potvrdite da je to valjani davatelj ili pokušajte ponovo kasnije</translation>
 <translation id="3856470183388031602">Upotrijebite Google račun na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Odaberite vremensku zonu</translation>
@@ -4532,7 +4533,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4028467762035011525">Dodavanje načina unosa</translation>
 <translation id="4029024445166427442">pokretač + shift + backspace</translation>
 <translation id="4029556917477724407">Povratak sa stranice <ph name="PAGE_TITLE" /></translation>
-<translation id="4031178684547097947">Pet redaka</translation>
 <translation id="4031179711345676612">Mikrofon je dopušten</translation>
 <translation id="4031527940632463547">Senzori su blokirani</translation>
 <translation id="4033471457476425443">Dodajte novu mapu</translation>
@@ -5335,7 +5335,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4593962599442730215">Promjena postavki</translation>
 <translation id="4594218792629569101">Odaberite Označi kao pročitano da biste premjestili stranicu na dno popisa</translation>
 <translation id="4595560905247879544">Aplikacije i proširenja može mijenjati samo voditelj (<ph name="CUSTODIAN_NAME" />).</translation>
-<translation id="4598345735110653698">Upravljaj pristupnim ključevima</translation>
+<translation id="4598345735110653698">Upravljajte pristupnim ključevima</translation>
 <translation id="4598556348158889687">Upravljanje pohranom</translation>
 <translation id="4598776695426288251">Wi-Fi je dostupan putem više uređaja</translation>
 <translation id="4600071396330666617">Broj prijedloga</translation>
@@ -5467,6 +5467,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4683629100208651599">Promijeni u mala slova</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (zadano)</translation>
 <translation id="4684427112815847243">Sinkroniziraj sve</translation>
+<translation id="4685044513206555960">Instalacija web-aplikacije blokirana je prema administratorskim pravilima.</translation>
 <translation id="4685096503970466594">Isključivanje značajke <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Provjerite je li pisač uključen i povezan s istom mrežom kao Chromebook ili upotrijebite USB kabel</translation>
 <translation id="4687613760714619596">Nepoznati uređaj (<ph name="DEVICE_ID" />)</translation>
@@ -5798,7 +5799,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4908811072292128752">Otvorite novu karticu za istodobni pregled dvije stranice</translation>
 <translation id="4910241725741323970">Aplikacija je već instalirana</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>
-<translation id="4912892750325639080">Tri retka</translation>
 <translation id="4913209098186576320">Datoteka je možda opasna<ph name="LINE_BREAK" />Provjera traje dulje nego inače...</translation>
 <translation id="4913695564084524048">Nije moguće pronaći podatke aplikacije</translation>
 <translation id="4915961947098019832">Dopušteno je prikazivanje slika</translation>
@@ -6332,7 +6332,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="529296195492126134">Jednokratni način rada nije podržan. Obratite se administratoru</translation>
 <translation id="5293043095535566171">Uključiti pristup lokaciji?</translation>
 <translation id="5293170712604732402">Vraćanje postavki na njihove izvorne zadane vrijednosti</translation>
-<translation id="5293567237718106662">Prikaži kartice pri vrhu</translation>
 <translation id="5294068591166433464">Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može Googleu poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="5294097441441645251">Mora započinjati malim slovom ili podvlakom</translation>
 <translation id="5294618183559481278">Vaš <ph name="DEVICE_TYPE" /> koristi ugrađeni senzor kako bi detektirao osobe ispred vašeg uređaja. Svi se podaci odmah obrađuju na uređaju, a zatim brišu. Podaci senzora nikad se ne šalju Googleu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -6925,7 +6924,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="571222594670061844">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta</translation>
 <translation id="5713033452812927234">Otvaranje prozora s prethodnog uređaja</translation>
 <translation id="5713158217420111469">Povezano s uređajem <ph name="DEVICE" /></translation>
-<translation id="5714095002162155866">Prikaži kartice sa strane</translation>
 <translation id="5714100381896040477">Ograničite kretanje na zaslonu</translation>
 <translation id="5719854774000914513">Web-lokacije mogu tražiti dopuštenje za povezivanje s HID uređajima</translation>
 <translation id="572155275267014074">Postavke Androida</translation>
@@ -7419,7 +7417,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6059652578941944813">Hijerarhija certifikata</translation>
 <translation id="6059775313639803773">Pronađite detaljnije odgovore s više izvora, uz malo dodatnog vremena</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
-<translation id="6061408389284235459">Obavijest je poslana na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Izrada QR kôda</translation>
 <translation id="6064217302520318294">Zaključavanje zaslona</translation>
 <translation id="606449270532897041">Upravljanje podacima web-lokacije</translation>
@@ -7575,6 +7572,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6164393601566177235">Dodaj web-lokacije</translation>
 <translation id="6164832038898943453">Dodajte jezike koji će se automatski prevoditi</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
+<translation id="61667940770438207">Jednostavno otvorite Gemini u Chromeu pomoću prečaca <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Provjerite mikrofon.</translation>
 <translation id="6169967265765719844">Dopuštenjima za igre i aplikacije instalirane putem Steama može se upravljati u <ph name="LINK_BEGIN" />postavkama aplikacije Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Uredi podijeljeni prikaz</translation>
@@ -8540,7 +8538,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6833753236242482566">Uravnoteženo (preporučeno)</translation>
 <translation id="6835624277262316125">Pomoću poslovne adrese možete obaviti zadatke na Googleovim uslugama, primjerice dobiti relevantnije rezultate pretraživanja i upute na Google kartama. Adresu možete urediti ili izbrisati na svom <ph name="BEGIN_LINK" />Google računu <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Povežite se s internetom da biste ažurirali svoj uređaj <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6836441935577925845">Prikaži kartice sa strane</translation>
 <translation id="6838992358006915573">Povećalo prati fokus ChromeVoxa</translation>
 <translation id="6839916869147598086">Prijava je promijenjena</translation>
 <translation id="6840155290835956714">Pitaj prije slanja</translation>
@@ -9039,7 +9036,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7191159667348037">Nepoznati pisač (USB)</translation>
 <translation id="7191631508323321927">Hodnik</translation>
 <translation id="7191632649590906354">Članovi obitelji sada mogu koristiti vaše korisničko ime i zaporku kad upotrebljavaju Google upravitelj zaporki. Recite im da se prijave na <ph name="WEBSITE" />.</translation>
-<translation id="7192393330344360021">Jedan redak</translation>
 <translation id="7193051357671784796">Tu je aplikaciju dodala vaša organizacija. Ponovo pokrenite aplikaciju da biste dovršili instalaciju.</translation>
 <translation id="7193374945610105795">Nema spremljenih zaporki za <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">poslati povratne informacije za predložene grupe</translation>
@@ -9798,6 +9794,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7697109152153663933">Kliknite Zaporke i automatsko popunjavanje</translation>
 <translation id="769824636077131955">Dokument je prevelik za sigurnosnu provjeru. Možete ispisivati dokumente do 50 MB.</translation>
 <translation id="7698507637739331665">Neke su stavke blokirane</translation>
+<translation id="7700176975240938448">Jednostavno otvorite pomoću prečaca <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Pisači i skeneri</translation>
 <translation id="7700873336634517379">Ne, nastavi upotrebljavati za školu na ovom profilu</translation>
 <translation id="7701040980221191251">Nema ih</translation>
@@ -10011,7 +10008,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> za račun <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Otvori &amp;sliku u novoj kartici</translation>
 <translation id="784934925303690534">Vremenski raspon</translation>
-<translation id="7850320739366109486">Ne ometaj</translation>
+<translation id="7850320739366109486">Ne uznemiravaj</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o situacijama u kojima se OS Chrome ruši, o tome kojim se značajkama koristite, koliko memorije obično upotrebljavate te podatke o upotrebi i dijagnostici Android aplikacija. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama uređaja s OS-om Chrome. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ako je za vaš Google račun uključena postavka Aktivnost na webu i u aplikacijama, vaši podaci s Androida mogu se spremati na vaš Google račun. Na stranici account.google.com možete pogledati svoje podatke, izbrisati ih ili promijeniti postavke računa.<ph name="END_PARAGRAPH3" /></translation>
@@ -10709,7 +10706,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8312841338723044391">UŽIVO</translation>
 <translation id="8313308349366087671">Opcije aplikacije</translation>
 <translation id="8313599942510782709">Vaš je zadatak još u tijeku</translation>
-<translation id="8314089908545021657">Upari s novim telefonom</translation>
 <translation id="8314381333424235892">Proširenje nedostaje ili je nevažeće</translation>
 <translation id="831440797644402910">Mapu nije moguće otvoriti</translation>
 <translation id="8314835274931377415">Želite li pokrenuti postavljanje navigacije prekidačima?</translation>

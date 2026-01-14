@@ -165,6 +165,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1102759278139578486">Tidak dapat mendownload file anotasi node utama. Coba lagi nanti.</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Anda akan segera kehilangan akses ke grup tab ini, dan grup ini akan dihapus dari semua perangkat Anda</translation>
+<translation id="1106270460549661906">Berhenti berbagi dengan Gemini</translation>
 <translation id="1106350001632362876">Tingkatkan nilai minimum</translation>
 <translation id="1107482171728500359">Bagikan mikrofon</translation>
 <translation id="110850812463801904">Hubungkan ke OneDrive secara manual</translation>
@@ -1089,7 +1090,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1709085899471866534">Lihat sekilas saat tab tidak aktif. Anda dapat menonaktifkan tampilan baru ini di setelan kapan saja.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asli)</translation>
 <translation id="1709217939274742847">Pilih tiket untuk digunakan dalam proses autentikasi. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
-<translation id="1709509436926747582">Tampilkan Tab di Bagian Atas</translation>
 <translation id="1709762881904163296">Setelan Jaringan</translation>
 <translation id="1709916727352927457">Hapus kunci sandi</translation>
 <translation id="1709972045049031556">Tidak dapat berbagi</translation>
@@ -1129,7 +1129,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1744108098763830590">halaman background</translation>
 <translation id="1745732479023874451">Kelola kontak</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Buka dan edit # file di aplikasi web ini?}}</translation>
-<translation id="1748329107062243374">Gunakan kunci sandi dari <ph name="DEVICE_NAME" /> untuk login ke <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Anda dapat menyimpan sandi ini di Akun Google atau hanya di perangkat ini</translation>
 <translation id="1749733017156547309">Sandi wajib diisi</translation>
 <translation id="1750172676754093297">Kunci keamanan Anda tidak dapat menyimpan sidik jari</translation>
@@ -2573,6 +2572,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2714180132046334502">Latar belakang gelap</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2714617928488200509">Model</translation>
 <translation id="2715751256863167692">Upgrade ini menyetel ulang Chromebook dan menghapus data pengguna saat ini.</translation>
 <translation id="2715934493766003251">Tidak dapat mengosongkan penyimpanan saat sinkronisasi file aktif</translation>
 <translation id="2716986496990888774">Setelan ini dikelola oleh orang tua.</translation>
@@ -4034,6 +4034,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3712143870407382523">Pilih jendela untuk sisi ini</translation>
 <translation id="3712897371525859903">Simp&amp;an halaman sebagai...</translation>
 <translation id="371300529209814631">Sebelumnya/Selanjutnya</translation>
+<translation id="371302509916403935">Garis bawah</translation>
 <translation id="3713047097299026954">Kunci keamanan ini tidak memiliki data login apa pun</translation>
 <translation id="3713091615825314967">Update otomatis diaktifkan.</translation>
 <translation id="3713673533020367620">Buka tab di tampilan terpisah</translation>
@@ -4283,6 +4284,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3854976556788175030">Baki hasil cetak penuh</translation>
 <translation id="3855441664322950881">Kemas ekstensi</translation>
 <translation id="3855676282923585394">Impor Bookmark dan Setelan...</translation>
+<translation id="3856023744577163821">Tab yang dibuka dari percakapan atau tab bersama juga dibagikan kepada Gemini.</translation>
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="3856470183388031602">Gunakan Akun Google Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Pilih zona waktu</translation>
@@ -4543,7 +4545,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4028467762035011525">Tambahkan metode input</translation>
 <translation id="4029024445166427442">peluncur + shift + backspace</translation>
 <translation id="4029556917477724407">Kembali dari halaman <ph name="PAGE_TITLE" /></translation>
-<translation id="4031178684547097947">5 baris</translation>
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4031527940632463547">Sensor diblokir</translation>
 <translation id="4033471457476425443">Tambahkan folder baru</translation>
@@ -4611,6 +4612,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4078738236287221428">Agresif</translation>
 <translation id="4078903002989614318">Opsi pengurutan dan daftar</translation>
 <translation id="4079140982534148664">Gunakan Fitur Periksa Ejaan Lanjutan</translation>
+<translation id="4082070466456857368">Penalaran (3 Pro)</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084835346725913160">Tutup <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript diblokir di halaman ini.</translation>
@@ -5478,6 +5480,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4683629100208651599">Jadikan Huruf Kecil</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sinkronkan semua</translation>
+<translation id="4685044513206555960">Penginstalan aplikasi web diblokir oleh kebijakan administrator.</translation>
 <translation id="4685096503970466594">Nonaktifkan <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">Pastikan printer Anda menyala dan terhubung ke jaringan yang sama dengan Chromebook atau menggunakan kabel USB</translation>
 <translation id="4687613760714619596">Perangkat Tak Diketahui (<ph name="DEVICE_ID" />)</translation>
@@ -5810,7 +5813,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4908811072292128752">Buka tab baru untuk mengakses 2 situs sekaligus</translation>
 <translation id="4910241725741323970">Aplikasi sudah diinstal</translation>
 <translation id="4912643508233590958">Bangun saat Nganggur</translation>
-<translation id="4912892750325639080">3 baris</translation>
 <translation id="4913209098186576320">File ini mungkin berbahaya<ph name="LINE_BREAK" />Pemeriksaan ini memerlukan waktu lebih lama dari biasanya...</translation>
 <translation id="4913695564084524048">Tidak dapat menemukan data aplikasi</translation>
 <translation id="4915961947098019832">Diizinkan menampilkan gambar</translation>
@@ -6345,7 +6347,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="529296195492126134">Mode singkat tidak didukung. Harap hubungi administrator Anda</translation>
 <translation id="5293043095535566171">Aktifkan akses lokasi?</translation>
 <translation id="5293170712604732402">Pulihkan setelan ke default aslinya</translation>
-<translation id="5293567237718106662">Tampilkan tab di bagian atas</translation>
 <translation id="5294068591166433464">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Google</translation>
 <translation id="5294097441441645251">Harus diawali dengan karakter huruf kecil atau garis bawah</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> menggunakan sensor bawaan untuk mendeteksi orang di depan perangkat Anda. Semua data langsung diproses di perangkat lalu dihapus. Data sensor tidak pernah dikirim ke Google. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -6940,7 +6941,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="571222594670061844">Situs dapat menampilkan perintah login dari layanan identitas</translation>
 <translation id="5713033452812927234">Membuka jendela dari perangkat sebelumnya</translation>
 <translation id="5713158217420111469">Terhubung ke <ph name="DEVICE" /></translation>
-<translation id="5714095002162155866">Tampilkan tab di samping</translation>
 <translation id="5714100381896040477">Batasi gerakan di layar</translation>
 <translation id="5719854774000914513">Situs dapat meminta untuk terhubung ke perangkat HID</translation>
 <translation id="572155275267014074">Setelan Android</translation>
@@ -7435,7 +7435,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6059652578941944813">Hierarki Sertifikat</translation>
 <translation id="6059775313639803773">Dapatkan respons yang lebih mendalam dengan lebih banyak sumber, dan proses ini membutuhkan waktu yang sedikit lebih lama</translation>
 <translation id="6059925163896151826">Perangkat USB</translation>
-<translation id="6061408389284235459">Notifikasi dikirim ke <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Buat Kode QR</translation>
 <translation id="6064217302520318294">Kunci layar</translation>
 <translation id="606449270532897041">Kelola data situs</translation>
@@ -7591,6 +7590,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6164393601566177235">Tambahkan situs</translation>
 <translation id="6164832038898943453">Tambahkan bahasa ke daftar bahasa yang otomatis diterjemahkan</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
+<translation id="61667940770438207">Buka Gemini di Chrome dengan mudah menggunakan <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Harap periksa mikrofon Anda.</translation>
 <translation id="6169967265765719844">Izin untuk game dan aplikasi yang diinstal melalui Steam dapat dikelola di <ph name="LINK_BEGIN" />setelan aplikasi Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Atur tampilan terpisah</translation>
@@ -7859,6 +7859,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6350821834561350243">Berikan deskripsi masalah yang jelas dan langkah-langkah untuk mereproduksi masalah (jika memungkinkan)</translation>
 <translation id="6351178441572658285">Bahasa aplikasi</translation>
 <translation id="6354918092619878358">Kurva eliptis SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Ambil alih tugas</translation>
 <translation id="635609604405270300">Jaga perangkat tetap menyala</translation>
 <translation id="6356537493253478650">Tenang</translation>
 <translation id="63566973648609420">Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, Anda perlu <ph name="BEGIN_LINK" />menyetel ulang sinkronisasi<ph name="END_LINK" />.</translation>
@@ -8552,7 +8553,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6833753236242482566">Seimbang (direkomendasikan)</translation>
 <translation id="6835624277262316125">Alamat kantor Anda dapat membantu menyelesaikan berbagai hal di seluruh layanan Google, seperti hasil Penelusuran yang lebih relevan dan rute di Google Maps. Anda dapat mengedit atau menghapus alamat di <ph name="BEGIN_LINK" />Akun Google <ph name="USERNAME" /><ph name="END_LINK" /> Anda.</translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>
-<translation id="6836441935577925845">Tampilkan Tab di Samping</translation>
 <translation id="6838992358006915573">Pembesar mengikuti fokus ChromeVox</translation>
 <translation id="6839916869147598086">Login telah berubah</translation>
 <translation id="6840155290835956714">Tanyakan sebelum mengirim</translation>
@@ -8827,6 +8827,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7017219178341817193">Tambahkan halaman baru</translation>
 <translation id="7017354871202642555">Tidak dapat menyetel mode setelah jendela ditetapkan.</translation>
 <translation id="7019805045859631636">Cepat</translation>
+<translation id="7020810150082302220">Browser default Anda telah diubah</translation>
 <translation id="7021524108486027008">Jalankan alat, editor, dan IDE di lingkungan yang dikelola oleh perusahaan Anda di <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Semua touchpad telah terputus</translation>
 <translation id="7022562585984256452">Beranda Anda telah disetel.</translation>
@@ -9051,7 +9052,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7191159667348037">Printer Tidak Dikenal (USB)</translation>
 <translation id="7191631508323321927">Lorong</translation>
 <translation id="7191632649590906354">Anggota keluarga Anda kini dapat menggunakan nama pengguna dan sandi Anda saat mereka menggunakan Pengelola Sandi Google. Minta mereka membuka <ph name="WEBSITE" /> untuk login.</translation>
-<translation id="7192393330344360021">1 baris</translation>
 <translation id="7193051357671784796">Aplikasi ini ditambahkan oleh organisasi Anda. Mulai ulang aplikasi untuk menyelesaikan penginstalannya.</translation>
 <translation id="7193374945610105795">Tidak ada sandi yang tersimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Kirim masukan untuk Grup yang Disarankan</translation>
@@ -9809,6 +9809,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="7697109152153663933">Klik “Sandi dan Isi Otomatis”</translation>
 <translation id="769824636077131955">Dokumen ini terlalu besar untuk pemeriksaan keamanan. Anda dapat mencetak dokumen berukuran hingga 50 MB.</translation>
 <translation id="7698507637739331665">Beberapa item diblokir</translation>
+<translation id="7700176975240938448">Buka dengan mudah menggunakan <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Printer dan pemindai</translation>
 <translation id="7700873336634517379">Tidak, terus gunakan profil ini untuk sekolah</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
@@ -10207,6 +10208,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7969144945436590933">Dapatkan detail selengkapnya</translation>
 <translation id="7970673414865679092">Detail ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Enkripsi RSA</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">Memberi tanda Tidak suka akan mengirim masukan bahwa Anda tidak menyukai fitur ini.</translation>
 <translation id="7973776233567882054">Manakah dari pernyataan berikut yang paling mendeskripsikan jaringan Anda?</translation>
 <translation id="797394244396603170">Pilih perangkat penerima file yang akan Anda bagikan</translation>
@@ -10720,7 +10722,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8313308349366087671">Opsi aplikasi</translation>
 <translation id="8313599942510782709">Tugas Anda masih dalam proses</translation>
-<translation id="8314089908545021657">Hubungkan dengan ponsel baru</translation>
 <translation id="8314381333424235892">Ekstensi tidak ada atau tidak diinstal</translation>
 <translation id="831440797644402910">Tidak dapat membuka folder ini</translation>
 <translation id="8314835274931377415">Mulai penyiapan Tombol Akses?</translation>
@@ -10768,6 +10769,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8339288417038613756">Ukuran tampilan dan teks</translation>
 <translation id="833986336429795709">Untuk membuka link ini, pilih aplikasi</translation>
 <translation id="8340547030807793004">Tindakan lainnya untuk <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Peng-update Chrome</translation>
 <translation id="8341804784147620576">Tampilkan Pintasan Penelusuran</translation>
 <translation id="8342221978608739536">Tidak mencoba</translation>
 <translation id="8342387517402567689">Penginstalan aplikasi web tidak didukung dalam mode Samaran</translation>
@@ -11071,6 +11073,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>
 <translation id="8551647092888540776">Tidak dapat membuka <ph name="FILE_NAMES" /> saat offline</translation>
 <translation id="8552102814346875916">Simpan ke daftar "selalu aktifkan situs ini"</translation>
+<translation id="8552947739661397736">Ambil alih tugas, Gemini saat ini memegang kontrol</translation>
 <translation id="8553342806078037065">Kelola orang lain</translation>
 <translation id="8554899698005018844">Tidak ada bahasa</translation>
 <translation id="8555444629041783356">Jadwal matahari terbenam otomatis</translation>

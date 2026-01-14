@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Administrer adgang</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Luk element}one{Luk element}other{Luk elementer}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Feltet i bunden med faner er åbnet i halv højde.</translation>
 <translation id="374923079891132274">Miniature med forhåndsvisning af deleark.</translation>
 <translation id="3776329373944672717">Titel på fanegruppe <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Administrer</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Din seneste fane</translation>
 <translation id="5380159289133845234">Arkivér dubletter af faner</translation>
 <translation id="5446043142172831860">Fjern fane, og forlad gruppe</translation>
+<translation id="5465437530117042974">Ændringerne af feltet i bunden med faner er lukket.</translation>
 <translation id="5490235265819901748">Fanegruppen blev udvidet</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Tilføj op til <ph name="LIMIT_COUNT_ONE" /> fil, fane eller billede}one{Tilføj op til <ph name="LIMIT_COUNT_MANY" /> fil, fane eller billede}other{Tilføj op til <ph name="LIMIT_COUNT_MANY" /> filer, faner eller billeder}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6051432659151380973">Dine fanegrupper gemmes automatisk</translation>
 <translation id="6054741997831917303">Prisen på denne vare er for nylig faldet fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Feltet i bunden med faner er åbnet i fuld højde</translation>
 <translation id="6109251075362363230">Alle dubletter af faner arkiveres nu også med undtagelse af den senest anvendte kopi.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Luk <ph name="TABS_COUNT_ONE" /> valgt element}one{Luk <ph name="TABS_COUNT_MANY" /> valgt element}other{Luk <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flyt gruppe til det nye vindue}one{Flyt gruppe til det nye vindue}other{Flyt gruppe til et andet vindue}}</translation>

@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Como se usa esta función?</translation>
 <translation id="1901600657316773839">Manter selección</translation>
 <translation id="1902277226107477495">A detección de enderezos está desactivada. Volve activala en Configuración.</translation>
+<translation id="1909201414196501151">Engadiuse e fixouse o sitio</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1925706052394657380">Abre a opción de configuración <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Aplicacións predeterminadas) en iOS</translation>
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="334690320928261823">Pestanas recentes</translation>
 <translation id="3349031117032695619">Bloquear ventás emerxentes</translation>
+<translation id="3350976670663926380">Cambios gardados</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta conta está xestionada.</translation>
 <translation id="3365529507898144230">Gardar en Fotos</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Escolle Protección mellorada</translation>
 <translation id="3610041351087301930">Ocultar lector</translation>
 <translation id="3610866916973186448">Si, eliminar</translation>
+<translation id="3616161326314492065">Fai fotos e compárteas con Gemini para crear imaxes e facer un remix.</translation>
 <translation id="3622175633937495219">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Podes pasar o dedo polo bordo para retroceder.</translation>
 <translation id="362709345066740529">Personaliza as tarxetas, o feed e moito máis aquí</translation>
@@ -1841,6 +1844,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7853202427316060426">Actividade</translation>
 <translation id="7854006015462979438">Abre General (Xeral)</translation>
 <translation id="7855678267851972597">Audio</translation>
+<translation id="7857520352710212030">Fixouse o sitio</translation>
 <translation id="7859988229622350291">Non traducir nunca</translation>
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opcións do Tradutor</translation>

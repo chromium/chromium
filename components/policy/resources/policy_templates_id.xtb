@@ -1365,6 +1365,7 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
       Jika kebijakan tidak disetel, tidak ada ekstensi yang dikecualikan dari prosedur reset.</translation>
 <translation id="1962273523772270623">Mengizinkan pengumpulan log aktivitas WebRTC dari layanan Google</translation>
 <translation id="1962864958436828230">Menyetel batas ukuran minimal untuk batasan papan klip pencegahan kebocoran data</translation>
+<translation id="1963986268950915756">Aktifkan Penginstalan Aplikasi Web Pengguna dari Browser</translation>
 <translation id="1964191545419036999">Galeri (didukung sejak versi 117)</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
 <translation id="1964802606569741174">Kebijakan ini tidak memengaruhi aplikasi YouTube Android. Jika Mode Perlindungan di YouTube harus diterapkan, penginstalan aplikasi YouTube Android harus dilarang.</translation>
@@ -2956,6 +2957,11 @@ Untuk cookie pada domain yang tidak tercakup oleh pola yang ditentukan di sini, 
 Kebijakan ini akan dihapus pada masa mendatang.</translation>
 <translation id="2989404644164421834">Muat Ulang Halaman</translation>
 <translation id="299127280603727143">Kumpulan kebijakan yang terkait dengan setelan Akses Jaringan Lokal.  Lihat https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Kebijakan ini mengontrol apakah pengguna dapat menginstal aplikasi web melalui browser.
+Jika Anda mengaktifkan atau tidak mengonfigurasi kebijakan ini, pengguna dapat menginstal aplikasi web melalui browser.
+Jika Anda menonaktifkan kebijakan ini, pengguna tidak dapat menginstal aplikasi web melalui browser dan jenis data "aplikasi" akan dikecualikan dari sinkronisasi untuk <ph name="CHROME_SYNC_NAME" />.
+Kebijakan ini tidak mendukung pemuatan ulang dinamis. Semua perubahan, baik mengaktifkan, menonaktifkan, atau menghapus setelan, hanya akan berlaku setelah browser dimulai ulang.
+Kebijakan ini tidak memengaruhi kebijakan '<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />'.</translation>
 <translation id="299446489108785864">Daftar URL yang menentukan URL tempat <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> akan diterapkan. Kebijakan ini tidak berpengaruh pada nilai yang terbuka otomatis yang disetel oleh pengguna.
 
       Jika kebijakan ini disetel, file hanya akan otomatis dibuka oleh kebijakan jika URL merupakan bagian dari daftar ini dan jenis file tercantum di <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Jika salah satu kondisinya tidak terpenuhi, hasil download tidak akan otomatis dibuka oleh kebijakan.
@@ -6140,6 +6146,7 @@ Jika kebijakan ini disetel ke Tidak Disetel, "Bantu tulis" akan diaktifkan di pe
 <translation id="5082296146261894974">Mengizinkan pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5082572440690475059">Izinkan akses baca melalui File System API di situs ini</translation>
 <translation id="5085647276663819155">Nonaktifkan Pratinjau Cetak</translation>
+<translation id="5087922428454325090">Pengguna tidak dapat menginstal aplikasi web melalui browser.</translation>
 <translation id="5087932158260897375">Jika kebijakan ini disetel ke salah (false), pelaporan data diagnostik keandalan domain akan dinonaktifkan dan tidak ada data yang akan dikirim ke Google.
 Jika kebijakan ini disetel ke benar (true) atau tidak disetel, pelaporan data diagnostik keandalan domain akan mengikuti perilaku MetricsReportingEnabled untuk <ph name="PRODUCT_NAME" /> atau DeviceMetricsReportingEnabled untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Kebijakan ini memungkinkan kesesuaian dengan spesifikasi zoom CSS yang baru diterapkan.
@@ -8715,6 +8722,7 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 <translation id="6601216729409808032">Mengaktifkan pemeriksaan kebijakan cloud tambahan untuk mengizinkan/memblokir penginstalan ekstensi.</translation>
 <translation id="6603004149426829878">Selalu kirim sinyal lokasi yang tersedia ke server sembari menentukan zona waktu</translation>
 <translation id="6604049565198492174">Jika kebijakan disetel, pendorongan konfigurasi jaringan akan diizinkan bagi tiap pengguna untuk tiap perangkat <ph name="PRODUCT_NAME" />. Konfigurasi jaringan berupa string berformat JSON, seperti yang didefinisikan oleh format Konfigurasi Jaringan Terbuka.</translation>
+<translation id="6604522755563022737">Pengguna dapat menginstal aplikasi web melalui browser.</translation>
 <translation id="660567106648774919">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
       Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke Nonaktif, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke Aktif atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
@@ -9211,6 +9219,25 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, perilaku default
 pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="6915524162137327111">Tampilkan label pengelolaan selama 30 detik</translation>
 <translation id="6919205861950516688">Jangan izinkan Pengelola Tab.</translation>
+<translation id="6920791385071265136">Mengontrol apakah ekstensi yang dihapus karena pelanggaran non-malware masih dapat diinstal otomatis di lingkungan dengan tingkat kepercayaan rendah.
+
+Informasi selengkapnya tentang pelanggaran non-malware dan penghapusan dapat ditemukan di sini. https://developer.chrome.com/docs/webstore/review-process#warning
+
+Setelah pelanggaran non-malware diselesaikan, ekstensi akan tetap diaktifkan dan tidak dapat dinonaktifkan atau dihapus.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini tidak tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />`.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini tidak tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Ekstensi dengan pelanggaran non-malware yang diinstal otomatis akan tetap diaktifkan dalam kasus ini.
+
+Saat ini, ekstensi dengan pelanggaran non-malware yang diinstal otomatis tetap diinstal dan diaktifkan di Chrome.
+
+Jika kebijakan ini disetel ke Aktif, ekstensi yang diinstal otomatis akan berperilaku sama (yaitu, tetap diaktifkan) terlepas dari pelanggaran non-malware.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, ekstensi dengan pelanggaran non-malware yang diinstal otomatis akan dinonaktifkan.
+
+Kebijakan ini dihapus di M145. Mulai versi tersebut, ekstensi dengan pelanggaran non-malware yang diinstal otomatis akan dinonaktifkan di lingkungan dengan tingkat kepercayaan rendah.</translation>
 <translation id="692096803256767290">Roll back OS ke versi target</translation>
 <translation id="6921241119085515674">Izinkan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Mengizinkan perangkat menjalankan mesin virtual di ChromeOS</translation>
@@ -11231,9 +11258,6 @@ Kebijakan ini diterapkan dalam mode Samaran. Artinya, mode Samaran harus diaktif
 <translation id="8225579382697740712">Mengontrol penggunaan WebHID API</translation>
 <translation id="8229912067600517877">Aktifkan Developer Tools</translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
-<translation id="8238558579601006178">Jika kebijakan ini disetel ke 0 atau tidak disetel, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> hanya akan diterapkan pada cakupan pengguna untuk pengguna terafiliasi.
-Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan diterapkan pada cakupan pengguna, meskipun pengguna tersebut tidak terafiliasi.
-Jika kebijakan ini disetel ke 2, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> tidak akan pernah diterapkan jika sumbernya adalah pengguna.</translation>
 <translation id="8239109177194627162">Nonaktifkan Isi Otomatis untuk kartu kredit</translation>
 <translation id="8239143983379015783">Memaksa pengaktifan kuota persisten</translation>
 <translation id="8240976615241583524">Kebijakan ini memungkinkan pembatasan alamat IP dan antarmuka yang dapat digunakan oleh WebRTC saat mencoba menemukan koneksi terbaik yang tersedia.

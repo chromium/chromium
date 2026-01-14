@@ -369,6 +369,7 @@
 <translation id="5003967926796347400">Klik på "Google Adgangs­kode­admin­istrator"</translation>
 <translation id="5043786843026425788">Få flere oplysninger om at søge med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Åbn links i Chrome fra en hvilken som helst app. Den fastgøres også til proceslinjen, så du nemt kan tilgå den.</translation>
+<translation id="5105120510934353742">Hvis du vil have Google Chrome-opdateringer fremover, skal du have macOS 13 eller nyere. Denne computer anvender macOS 12.</translation>
 <translation id="5114340746415930644">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Log ind i Chrome, når du logger ind i andre Google-tjenester</translation>
 <translation id="5126049312684316860">Chrome forudindlæser endnu flere sider, som du sandsynligvis vil besøge, så de indlæses hurtigere, når du besøger dem</translation>
@@ -503,6 +504,7 @@
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6327105987658262776">Der er ingen opdatering tilgængelig.</translation>
 <translation id="6334815226785304306">Gør Google Chrome til din standardbrowser, og fastgør den til proceslinjen</translation>
+<translation id="63540178978900677">Chrome er ikke længere din standardbrowser. Vil du gøre Chrome til din standardbrowser?</translation>
 <translation id="6360449101159168105">Mens denne fane var inaktiv, blev der frigjort hukommelse for at sikre, at Chrome kører hurtigt. Du kan vælge, at dette website altid skal være inaktivt.</translation>
 <translation id="6388799252195623474">hjælp mig med dette</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
@@ -704,6 +706,9 @@
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="842386925677997438">Chromes sikkerhedsværktøjer</translation>
 <translation id="8425765582779547329">Log ind i Chrome for at blive beskyttet på nettet med dine forældres valg</translation>
+<translation id="842852285618875960">Du har nået Google Chromes grænse på <ph name="BOOKMARK_LIMIT" /> bogmærker, så nogle af dine bogmærker er endnu ikke gemt på din Google-konto.
+
+Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8496177819998570653">Google Adgangs­kode­admin­istrator</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>

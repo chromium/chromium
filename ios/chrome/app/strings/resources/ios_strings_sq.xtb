@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Si ta përdor këtë veçori?</translation>
 <translation id="1901600657316773839">Mbaje zgjedhjen</translation>
 <translation id="1902277226107477495">Zbulimi i adresës është joaktiv. Riaktivizoje atë te "Cilësimet".</translation>
+<translation id="1909201414196501151">Sajti u shtua dhe u gozhdua</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
 <translation id="1925706052394657380">Hap cilësimet për <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> në iOS</translation>
 <translation id="1941314575388338491">Trokit dy herë për të kopjuar.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="334690320928261823">Skedat e fundit</translation>
 <translation id="3349031117032695619">Blloko dritaret kërcyese</translation>
+<translation id="3350976670663926380">Modifikimet u ruajtën</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Kjo llogari është e menaxhuar.</translation>
 <translation id="3365529507898144230">Ruaj te "Fotografitë"</translation>
 <translation id="3371831930909698441">Ofrohet "Përkthe". Opsionet ofrohen pranë fundit të ekranit</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Zgjidh "Mbrojtjen e përmirësuar"</translation>
 <translation id="3610041351087301930">Fshih lexuesin</translation>
 <translation id="3610866916973186448">Po, fshije</translation>
+<translation id="3616161326314492065">Nxirr fotografi dhe ndaji me Gemini për të krijuar dhe remiksuar imazhe.</translation>
 <translation id="3622175633937495219">Historiku i kërkimeve (u gjetën <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Mund të rrëshqasësh shpejt anash për të kaluar pas.</translation>
 <translation id="362709345066740529">Personalizo kartat, furnizimin dhe më shumë këtu</translation>
@@ -1841,6 +1844,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7854006015462979438">Hap "Të përgjithshme"</translation>
 <translation id="7855678267851972597">Audiot</translation>
+<translation id="7857520352710212030">Sajti u gozhdua</translation>
 <translation id="7859988229622350291">Mos përkthe asnjëherë</translation>
 <translation id="7863211248337747225">Merr aplikacionin</translation>
 <translation id="7865127013871431856">Opsionet e "Përkthe"</translation>

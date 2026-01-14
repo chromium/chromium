@@ -1315,6 +1315,7 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
 Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetprocedure.</translation>
 <translation id="1962273523772270623">Verzameling van WebRTC-gebeurtenislogboeken van Google-services toestaan</translation>
 <translation id="1962864958436828230">Minimale groottelimiet instellen voor klembordbeperking ter voorkoming van datalekken</translation>
+<translation id="1963986268950915756">Installatie van web-apps door gebruikers vanuit browser aanzetten</translation>
 <translation id="1964191545419036999">Galerij (ondersteund sinds versie 117)</translation>
 <translation id="1964634611280150550">Incognitomodus staat uit</translation>
 <translation id="1964802606569741174">Dit beleid is niet van invloed op de YouTube-app voor Android. Als de veiligheidsmodus voor YouTube moet worden afgedwongen, moet je installatie van de YouTube-app voor Android niet toestaan.</translation>
@@ -2829,6 +2830,11 @@ Voor cookies op domeinen die niet overeenkomen met de hier genoemde patronen, of
 Dit beleid wordt in de toekomst verwijderd.</translation>
 <translation id="2989404644164421834">Pagina's opnieuw laden</translation>
 <translation id="299127280603727143">Een groep beleidsregels voor instellingen voor toegang tot lokaal netwerk.  Zie https://developer.chrome.com/blog/local-network-access</translation>
+<translation id="2994453006332740426">Met dit beleid wordt bepaald of gebruikers web-apps kunnen installeren via de browser.
+Als je dit beleid toepast of niet instelt, kunnen gebruikers web-apps installeren via de browser.
+Als je dit beleid niet toepast, kunnen gebruikers geen web-apps installeren via de browser en wordt het gegevenstype Apps uitgesloten van synchronisatie voor <ph name="CHROME_SYNC_NAME" />.
+Dit beleid ondersteunt geen dynamische vernieuwing. Wijzigingen, zoals instellingen aan- of uitzetten of instellingen verwijderen, worden pas van kracht nadat de browser opnieuw is opgestart.
+Dit beleid heeft geen invloed op het beleid <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.</translation>
 <translation id="299446489108785864">Lijst met URL's waarin wordt aangegeven op welke URL's <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> van toepassing is. Dit beleid is niet van invloed op waarden voor automatisch openen die zijn ingesteld door gebruikers.
 
       Als dit beleid is ingesteld, worden bestanden alleen geopend op basis van het beleid als de URL onderdeel is van deze set en het bestandstype wordt vermeld in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Als een van de voorwaarden False is, wordt de download niet automatisch geopend op basis van het beleid.
@@ -5875,6 +5881,7 @@ Als je dit beleid niet instelt, staat Help me met schrijven aan op niet-beheerde
 <translation id="5082296146261894974">Staat toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
+<translation id="5087922428454325090">Gebruikers kunnen geen web-apps installeren via de browser.</translation>
 <translation id="5087932158260897375">Als je dit beleid instelt op False, wordt rapportage van diagnostische gegevens over domeinbetrouwbaarheid uitgezet en worden er geen gegevens naar Google gestuurd.
 Als je dit beleid instelt op True of niet instelt, volgt de rapportage van diagnostische gegevens over domeinbetrouwbaarheid het gedrag van MetricsReportingEnabled voor <ph name="PRODUCT_NAME" /> of DeviceMetricsReportingEnabled voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5088284418186527880">Dit beleid zorgt voor naleving van de nieuw aangenomen specificatie voor css-zoom.
@@ -8311,6 +8318,7 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 <translation id="6601216729409808032">Hiermee worden aanvullende cloudbeleidschecks aangezet om de installatie van extensies toe te staan of te blokkeren.</translation>
 <translation id="6603004149426829878">Beschikbare locatiesignalen altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
 <translation id="6604049565198492174">Als je het beleid instelt, kan de netwerkconfiguratie per gebruiker worden toegepast op elk <ph name="PRODUCT_NAME" />-apparaat. De netwerkconfiguratie is een json-tekenreeks zoals gedefinieerd in de Open Network Configuration-indeling.</translation>
+<translation id="6604522755563022737">Gebruikers kunnen web-apps installeren via de browser.</translation>
 <translation id="660567106648774919">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
       De servicevoorwaarden worden standaard getoond als CCT voor het eerst wordt uitgevoerd. Als je dit beleid niet toepast, wordt het dialoogvenster met servicevoorwaarden niet getoond tijdens de eerste uitvoering of de daaropvolgende uitvoeringen. Als je dit beleid toepast of niet instelt, wordt het dialoogvenster met servicevoorwaarden getoond tijdens de eerste uitvoering. De andere belangrijke aspecten zijn:
@@ -8788,6 +8796,25 @@ Als je het beleid <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NA
 Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepassing, waarbij dergelijke verzoeken worden geblokkeerd.</translation>
 <translation id="6915524162137327111">Beheerlabels 30 seconden tonen</translation>
 <translation id="6919205861950516688">Sta Tabbladorganisator niet toe.</translation>
+<translation id="6920791385071265136">Hiermee bepaal je of extensies die zijn verwijderd wegens schendingen van het beleid tegen malware nog steeds kunnen worden afgedwongen in omgevingen met een laag vertrouwen.
+
+Hier vind je meer informatie over schendingen die geen malware zijn en over verwijderingen: https://developer.chrome.com/docs/webstore/review-process#warning
+
+Nadat de schending die geen malware is, is opgelost, blijft de extensie aanstaan en kan deze niet worden uitgezet of verwijderd.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid niet beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, zijn gekoppeld aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid niet beschikbaar voor instanties die worden beheerd via MDM, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Afgedwongen geïnstalleerde extensies met schendingen die geen malware zijn, blijven in deze gevallen aanstaan.
+
+Op dit moment blijft een afgedwongen geïnstalleerde extensie met schendingen die geen malware zijn, geïnstalleerd en aangezet in Chrome.
+
+Als je het beleid toepast, blijven geforceerd geïnstalleerde extensies hetzelfde gedrag vertonen (dat wil zeggen: aanblijven) ongeacht schendingen die geen malware zijn.
+
+Als je het beleid niet toepast of niet instelt, worden geforceerd geïnstalleerde extensies met schendingen die geen malware zijn, uitgezet.
+
+Dit beleid is verwijderd in M145. Vanaf deze versie worden afgedwongen geïnstalleerde extensies met schendingen die geen malware zijn, uitgezet in omgevingen met een laag vertrouwen.</translation>
 <translation id="692096803256767290">De doelversie van het OS herstellen</translation>
 <translation id="6921241119085515674">Het <ph name="CLOUD_UPLOAD_NAME" />-proces toestaan voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Apparaten toestaan virtuele machines uit te voeren op Chrome OS</translation>
@@ -10707,9 +10734,6 @@ Dit beleid wordt toegepast op de incognitomodus. Dit betekent dat de incognitomo
 <translation id="8225579382697740712">Het gebruik van de WebHID API beheren</translation>
 <translation id="8229912067600517877">Developer Tools aanzetten</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
-<translation id="8238558579601006178">Als je dit beleid instelt op 0 of niet instelt, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> alleen toegepast op gebruikersniveau voor aangesloten gebruikers.
-Als je dit beleid instelt op 1, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> toegepast op gebruikersniveau, ook als die gebruiker niet is aangesloten.
-Als je dit beleid instelt op 2, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nooit toegepast als de bron een gebruiker is.</translation>
 <translation id="8239109177194627162">Automatisch invullen uitzetten voor creditcards</translation>
 <translation id="8239143983379015783">Afdwingen dat permanent quotum wordt aangezet</translation>
 <translation id="8240976615241583524">Dit beleid maakt het mogelijk om te beperken welke IP-adressen en interfaces worden gebruikt door WebRTC als naar de beste beschikbare verbinding wordt gezocht.

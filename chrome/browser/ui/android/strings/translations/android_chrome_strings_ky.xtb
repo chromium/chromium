@@ -725,6 +725,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4180726336228139707">Ушул түзмөктө гана</translation>
 <translation id="4181841719683918333">Тилдер</translation>
 <translation id="4188221736490993796">Я-А тартибинде иргөө</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Спам же жалган материалдан улам Chrome бул сайттын билдирмелерди жөнөтүү мүмкүнчүлүгүн бөгөттөдү}other{Спам же жалган материалдан улам Chrome бул сайттардын билдирмелерди жөнөтүү мүмкүнчүлүгүн бөгөттөдү}}</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Ушул түзмөктөгү 1 өтмөк}other{Ушул түзмөктөгү # өтмөк}}</translation>
 <translation id="4198423547019359126">Жүктөп алуу үчүн жеткиликтүү орун жок</translation>
@@ -1117,6 +1118,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5833984609253377421">Шилтемени бөлүшүү</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">"<ph name="FILE_NAME" />" файлын баары бир жүктөп аласызбы?</translation>
+<translation id="5847265694842662173">Chrome орунсуз жана пайдаланылбаган сайттардын билдирмелерди жөнөтүү мүмкүнчүлүгүн бөгөттөдү</translation>
 <translation id="5848257610304005265">PDF файлы <ph name="APP_NAME" /> колдонмосу менен ачылсынбы?</translation>
 <translation id="5849288995120328556">Бөлүшүүнү токтотосузбу?</translation>
 <translation id="5853623416121554550">тындырылды</translation>
@@ -1145,6 +1147,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5956665950594638604">Chrome Жардам борборун жаңы өтмөктө ачуу</translation>
 <translation id="59577092665511740">Аккаунт тандаңыз.</translation>
 <translation id="5958275228015807058">Файлдар менен барактарды "Жүктөлүп алынгандар" папкасынан таап алыңыз</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome сиз көптөн бери кирбеген сайттын билдирмелерди жөнөтүү мүмкүнчүлүгүн бөгөттөдү}other{Chrome сиз көптөн бери кирбеген сайттардын билдирмелерди жөнөтүү мүмкүнчүлүгүн бөгөттөдү}}</translation>
 <translation id="5962718611393537961">Жыйыштыруу үчүн таптап коюңуз</translation>
 <translation id="5964869237734432770">Сүрөттөмөлөрдү албоо</translation>
 <translation id="5972844218283131174">Баарын тандоодон чыгаруу</translation>
@@ -1805,6 +1808,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="847433688444405067">Түзмөктөрдү карап чыгуу</translation>
 <translation id="8477178913400731244">Колдонмодогу нерселер өчүрүлөт</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="8491317241605644838">Жигерсиз терезелер жок</translation>
 <translation id="8493948351860045254">Орун бошотуу</translation>
 <translation id="8497242791509864205">Иреттөө параметрлерин ачуу</translation>
 <translation id="8497480609928300907">Купуялык жетектемесинин түшүндүрмөсү</translation>

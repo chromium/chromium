@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Hogyan használhatom ezt a funkciót?</translation>
 <translation id="1901600657316773839">Kijelölés megtartása</translation>
 <translation id="1902277226107477495">Címfelismerés kikapcsolva. A beállítások között kapcsolhatja be újra.</translation>
+<translation id="1909201414196501151">Webhely hozzáadva és kitűzve</translation>
 <translation id="1911619930368729126">Feltöltés Google Drive-ba</translation>
 <translation id="1925706052394657380">Nyissa meg az <ph name="BEGIN_BOLD" />Alapértelmezett alkalmazások<ph name="END_BOLD" /> beállításait iOS-eszközén.</translation>
 <translation id="1941314575388338491">A másoláshoz koppintson duplán.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{A könyvjelzőt {email} fiókja következő mappájába mentettük: „{title}”}other{A könyvjelzőket {email} fiókja következő mappájába mentettük: „{title}”}}</translation>
 <translation id="334690320928261823">Nemrég megnyitott lapok</translation>
 <translation id="3349031117032695619">Előugró ablakok letiltása</translation>
+<translation id="3350976670663926380">Módosítások mentve</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ez egy felügyelt fiók.</translation>
 <translation id="3365529507898144230">Mentés a Fotókba</translation>
 <translation id="3371831930909698441">Rendelkezésre áll fordítás. A beállítások a képernyő alsó részén találhatók.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Válassza a „Speciális védelem” lehetőséget.</translation>
 <translation id="3610041351087301930">Olvasó elrejtése</translation>
 <translation id="3610866916973186448">Igen, törlöm</translation>
+<translation id="3616161326314492065">Fotókat készíthet, és megoszthatja őket a Geminivel képek létrehozásához és remixeléséhez.</translation>
 <translation id="3622175633937495219">Keresési előzmények (<ph name="COUNT" /> elem található)</translation>
 <translation id="3625008969091706597">Ujját a képernyő szélén gyorsan csúsztatva visszaléphet.</translation>
 <translation id="362709345066740529">Itt személyre szabhatja kártyáit, hírcsatornáját és egyebeket</translation>
@@ -1841,6 +1844,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7853202427316060426">Aktivitás</translation>
 <translation id="7854006015462979438">Nyissa meg az Általános beállításokat</translation>
 <translation id="7855678267851972597">Audiofájlok</translation>
+<translation id="7857520352710212030">Webhely kitűzve</translation>
 <translation id="7859988229622350291">Sosem fordított nyelvek</translation>
 <translation id="7863211248337747225">Alkalmazás letöltése</translation>
 <translation id="7865127013871431856">Fordítási beállítások</translation>

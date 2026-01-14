@@ -253,6 +253,7 @@
 <translation id="1901366738768303267">Como posso usar esta funcionalidade?</translation>
 <translation id="1901600657316773839">Manter seleção</translation>
 <translation id="1902277226107477495">Deteção de morada desativada. Ative-a nas Definições.</translation>
+<translation id="1909201414196501151">Site adicionado e afixado</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
 <translation id="1925706052394657380">Abra as definições de <ph name="BEGIN_BOLD" />Apps predefinidas<ph name="END_BOLD" /> no iOS</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
@@ -615,6 +616,7 @@
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="334690320928261823">Separadores recentes</translation>
 <translation id="3349031117032695619">Bloquear pop-ups</translation>
+<translation id="3350976670663926380">Edições guardadas</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta conta é gerida.</translation>
 <translation id="3365529507898144230">Guardar no Fotos</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
@@ -680,6 +682,7 @@
 <translation id="3602260545951981695">Escolha "Proteção melhorada"</translation>
 <translation id="3610041351087301930">Ocultar leitor</translation>
 <translation id="3610866916973186448">Sim, eliminar</translation>
+<translation id="3616161326314492065">Tire fotos e partilhe-as com o Gemini para criar e remisturar imagens.</translation>
 <translation id="3622175633937495219">Histórico de pesquisas (<ph name="COUNT" /> encontrado(s))</translation>
 <translation id="3625008969091706597">Pode deslizar rapidamente na extremidade para retroceder.</translation>
 <translation id="362709345066740529">Personalize os seus cartões, feed e muito mais aqui</translation>
@@ -1841,6 +1844,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7854006015462979438">Abra Geral</translation>
 <translation id="7855678267851972597">Áudios</translation>
+<translation id="7857520352710212030">Site afixado</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
 <translation id="7863211248337747225">Obter a app</translation>
 <translation id="7865127013871431856">Opções de tradução</translation>

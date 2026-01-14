@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Toegang beheren</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Item sluiten}other{Items sluiten}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Tabblad onderaan op halve hoogte.</translation>
 <translation id="374923079891132274">Thumbnail voor voorbeeld van blad delen.</translation>
 <translation id="3776329373944672717">Titel van tabbladgroep: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Beheren</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5380159289133845234">Dubbele tabbladen archiveren</translation>
 <translation id="5446043142172831860">Tabblad verwijderen en groep verlaten</translation>
+<translation id="5465437530117042974">Wijzigingen in tabblad onderaan gesloten.</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Voeg maximaal <ph name="LIMIT_COUNT_ONE" /> bestand, tabblad of afbeelding toe}other{Voeg maximaal <ph name="LIMIT_COUNT_MANY" /> bestanden, tabbladen of afbeeldingen toe}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6051432659151380973">Je tabbladgroepen worden automatisch opgeslagen</translation>
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Tabblad onderaan op volledige hoogte</translation>
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd item sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde items sluiten}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Groep verplaatsen naar nieuw venster}other{Groep verplaatsen naar ander venster}}</translation>

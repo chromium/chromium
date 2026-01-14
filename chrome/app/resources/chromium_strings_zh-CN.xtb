@@ -530,6 +530,9 @@
 <translation id="6901631050894301805">将 Chromium 设为默认浏览器，并将其固定到任务栏</translation>
 <translation id="6909503629704372277">管理 Chromium 个人资料(&amp;M)</translation>
 <translation id="6934579572334859869">向图片搜索功能询问此图片</translation>
+<translation id="6948031725951063910">您已达到 Chromium 的书签数量上限（<ph name="BOOKMARK_LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
+
+请先删除一些书签，否则新书签将无法保存到账号中。如果现在退出账号，系统将删除未保存的书签。</translation>
 <translation id="6964305034639999644">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6978145336957848883">安全系数低的密码容易被人猜到。不妨让 Chromium <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>
@@ -568,6 +571,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7347827960336370838">只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了口令或想更改此设置，将需要<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="7349591376906416160">您的系统管理员已将 Chromium 配置为使用<ph name="ALTERNATIVE_BROWSER_NAME" />访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7352651011704765696">出了点问题</translation>
+<translation id="7368826207863345663">若要接收后续 Chromium 更新，您需要使用 macOS 13 或更高版本。该电脑目前使用的是 macOS 12。</translation>
 <translation id="7376384068949534168">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限和<ph name="PERMISSION_2" />权限。</translation>
 <translation id="7384121030444253939">此扩展程序已不再受支持。Chromium 建议您移除它。</translation>
 <translation id="7413153308467572558">从上次停下的地方继续：Chromium 会在您每次重启后恢复标签页。如需关闭此功能，请前往</translation>
@@ -697,6 +701,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="8891709362986793894">您的组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
+<translation id="8932992523185907506">Chromium 不再是默认浏览器。要将 Chromium 设置为默认浏览器吗？</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
 <translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>

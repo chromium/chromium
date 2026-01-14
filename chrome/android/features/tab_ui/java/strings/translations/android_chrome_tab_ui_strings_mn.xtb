@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Хандалтыг удирдах</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Зүйлийг хаах}other{Зүйлсийг хаах}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Табын доод хүснэгт тал өндөртэй байна.</translation>
 <translation id="374923079891132274">Хуваалцах хүснэгтийн урьдчилсан үзэлтийн өнгөц зураг.</translation>
 <translation id="3776329373944672717">Табын бүлгийн нэр <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">удирдах</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Таны сүүлийн таб</translation>
 <translation id="5380159289133845234">Давхардсан табуудыг архивлах</translation>
 <translation id="5446043142172831860">Табыг хасаж, бүлгээс гарах</translation>
+<translation id="5465437530117042974">Табын доод хүснэгтийн өөрчлөлтийг хаасан.</translation>
 <translation id="5490235265819901748">Бүлэг табыг дэлгэсэн</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> хүртэлх файл, таб, зураг нэмнэ үү}other{<ph name="LIMIT_COUNT_MANY" /> хүртэлх файл, таб, зураг нэмнэ үү}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6051432659151380973">Таны табын бүлгүүдийг автоматаар хадгалдаг</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
+<translation id="606985262342505139">Табын доод хүснэгт бүтэн өндөртэй байна</translation>
 <translation id="6109251075362363230">Хамгийн сүүлд ашигласан хуулбарыг эс тооцвол бүх давхардсан табыг одоо мөн архивлана.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> зүйлийг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> зүйлийг хаах}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Бүлгийг шинэ цонх руу зөөх}other{Бүлгийг өөр цонх руу зөөх}}</translation>

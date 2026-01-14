@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">သုံးခွင့် စီမံရန်</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{တဘ်ကို ပိတ်ရန်}other{တဘ်များကို ပိတ်ရန်}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">‘တဘ်အောက်ခြေအပိုဆောင်း စာမျက်နှာ’ ကို မြင်ကွင်းတစ်ဝက် ဖွင့်လိုက်သည်။</translation>
 <translation id="374923079891132274">စာမျက်နှာအစမ်းကြည့်ရှုမှု မျှဝေရန်ပုံသေး။</translation>
 <translation id="3776329373944672717">တဘ်အုပ်စု ခေါင်းစဉ် <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="5380159289133845234">မိတ္တူပွားတဘ်များ သိမ်းဆည်းခြင်း</translation>
 <translation id="5446043142172831860">တဘ်ဖယ်ရှားပြီး အဖွဲ့မှထွက်ရန်</translation>
+<translation id="5465437530117042974">‘တဘ်အောက်ခြေအပိုဆောင်း စာမျက်နှာ’ အပြောင်းအလဲများကို ပိတ်လိုက်သည်။</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ဖိုင်၊ တဘ် (သို့) ပုံ <ph name="LIMIT_COUNT_ONE" /> ခုအထိ ထည့်ပါ}other{ဖိုင်၊ တဘ် (သို့) ပုံ <ph name="LIMIT_COUNT_MANY" /> ခုအထိ ထည့်ပါ}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6051432659151380973">သင့်တဘ်အုပ်စုများကို အလိုအလျောက်သိမ်းသည်</translation>
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
+<translation id="606985262342505139">‘တဘ်အောက်ခြေအပိုဆောင်း စာမျက်နှာ’ ကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်</translation>
 <translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ရွေးထားသော တဘ် <ph name="TABS_COUNT_ONE" /> ခု ပိတ်ရန်}other{ရွေးထားသော တဘ် <ph name="TABS_COUNT_MANY" /> ခု ပိတ်ရန်}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{အုပ်စုကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အုပ်စုကို ဝင်းဒိုးနောက်တစ်ခုသို့ ရွှေ့ရန်}}</translation>
