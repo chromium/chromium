@@ -5272,6 +5272,15 @@ public class StripLayoutHelper
         mCloseButtonMenu.setHorizontalOffset(horizontalOffset);
 
         mCloseButtonMenu.show();
+
+        // Set clipToOutline to true to contain the mouse hover effect inside thepopup's outline.
+        // Also set the background of the list view to tablet_tab_strip_close_all_tabs_context_menu
+        // to make its shape the same as the popup.
+        assumeNonNull(mCloseButtonMenu.getListView());
+        mCloseButtonMenu
+                .getListView()
+                .setBackgroundResource(R.drawable.tablet_tab_strip_close_all_tabs_context_menu);
+        mCloseButtonMenu.getListView().setClipToOutline(true);
     }
 
     /**
