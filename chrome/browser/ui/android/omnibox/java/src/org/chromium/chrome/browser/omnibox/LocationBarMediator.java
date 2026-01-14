@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxInputSession;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -379,6 +380,7 @@ class LocationBarMediator
     /* package */ void destroy() {
         mCallbackController.destroy();
         mFuseboxCoordinator.removeAttachmentChangeListener(this);
+        mFuseboxCoordinator.setInputSession(null);
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);
@@ -993,6 +995,24 @@ class LocationBarMediator
         mUrlFocusedWithPastedText = false;
     }
 
+    private void setFuseboxInputSession(boolean shouldStart) {
+        // Delay activating Fusebox session until we are ready to do so.
+        if (!mNativeInitialized || mProfileSupplier.get() == null) return;
+
+        // Propagate signals to AutocompleteCoordinator ahead of everyone else.
+        // Autocomplete requires certain signals, such as AutocompleteRequestType
+        // and PageClassification to be correct throughout from the moment the focus
+        // is gained to the moment the focus is lost.
+        //
+        // This call is permitted to happen before anyone else is activated, and
+        // must be called before everyone else cleans up.
+
+        var fuseboxSession =
+                shouldStart ? FuseboxInputSession.createForProfile(mProfileSupplier.get()) : null;
+        mAutocompleteCoordinator.setInputSession(fuseboxSession);
+        mFuseboxCoordinator.setInputSession(fuseboxSession);
+    }
+
     /**
      * Handle and run any necessary animations that are triggered off focusing the UrlBar.
      *
@@ -1004,15 +1024,7 @@ class LocationBarMediator
             mUrlFocusedWithoutAnimations = false;
         }
 
-        // Propagate signals to AutocompleteCoordinator ahead of everyone else.
-        // Autocomplete requires certain signals, such as AutocompleteRequestType
-        // and PageClassification to be correct throughout from the moment the focus
-        // is gained to the moment the focus is lost.
-        //
-        // This call is permitted to happen before anyone else is activated, and
-        // must be called before everyone else cleans up.
-        var fuseboxSession = mUrlHasFocus ? new FuseboxSessionState() : null;
-        mAutocompleteCoordinator.setSessionState(fuseboxSession);
+        setFuseboxInputSession(hasFocus);
 
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
             listener.onUrlFocusChange(hasFocus);
@@ -1315,6 +1327,8 @@ class LocationBarMediator
         mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
         mSearchEngineUtils.addSearchBoxHintTextObserver(this);
         mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
+
+        setFuseboxInputSession(mUrlHasFocus);
     }
 
     private void focusCurrentTab() {

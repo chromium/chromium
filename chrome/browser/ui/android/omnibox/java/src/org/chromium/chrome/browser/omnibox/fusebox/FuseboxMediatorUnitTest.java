@@ -152,14 +152,12 @@ public class FuseboxMediatorUnitTest {
         mMediator =
                 new FuseboxMediator(
                         mContext,
-                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
                         mAttachments,
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
         Clipboard.setInstanceForTesting(mClipboard);
@@ -180,14 +178,12 @@ public class FuseboxMediatorUnitTest {
         mMediator =
                 new FuseboxMediator(
                         mContext,
-                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
                         new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
     }
@@ -262,6 +258,10 @@ public class FuseboxMediatorUnitTest {
         return ids;
     }
 
+    private FuseboxInputSession createInputSession() {
+        return new FuseboxInputSession(mProfile, mComposeBoxQueryControllerBridge);
+    }
+
     @Test
     public void testDestroy() {
         assertTrue(mAutocompleteRequestTypeSupplier.hasObservers());
@@ -322,6 +322,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void popupAddsTabs() {
+        mMediator.setInputSession(createInputSession());
+
         assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
@@ -461,6 +463,7 @@ public class FuseboxMediatorUnitTest {
 
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         recreateMediator();
+        mMediator.setInputSession(createInputSession());
         ShadowLooper.idleMainLooper();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
@@ -521,14 +524,12 @@ public class FuseboxMediatorUnitTest {
         FuseboxMediator mediator =
                 new FuseboxMediator(
                         mContext,
-                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
                         new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
                         requestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
 
@@ -585,6 +586,7 @@ public class FuseboxMediatorUnitTest {
     public void onToggleAttachmentsPopup_pdfUploadEligible_showsFileButton() {
         doReturn(true).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
+        mMediator.setInputSession(createInputSession());
         assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
     }
 
@@ -592,6 +594,7 @@ public class FuseboxMediatorUnitTest {
     public void onToggleAttachmentsPopup_pdfUploadNotEligible_hidesFileButton() {
         doReturn(false).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
+        mMediator.setInputSession(createInputSession());
         assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
     }
 
@@ -689,6 +692,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testAddAttachment_disablesCreateImage() {
+        mMediator.setInputSession(createInputSession());
+
         doReturn("token-tab1").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
@@ -778,6 +783,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onTabPickerClicked_launchesTabPickerActivity() {
+        mMediator.setInputSession(createInputSession());
         mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
 
         verify(mPopup).dismiss();
@@ -800,6 +806,7 @@ public class FuseboxMediatorUnitTest {
         addTabAttachment(tab1);
         addTabAttachment(tab2);
 
+        mMediator.setInputSession(createInputSession());
         mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
 
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
@@ -821,6 +828,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_FILE);
 
+        mMediator.setInputSession(createInputSession());
         mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
 
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
@@ -890,6 +898,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testFailedUpload() {
+        mMediator.setInputSession(createInputSession());
         mMediator.onAttachmentUploadFailed();
         verify(mSnackbarManager).showSnackbar(any());
     }

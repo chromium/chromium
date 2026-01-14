@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
-import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxInputSession;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
@@ -133,7 +133,7 @@ class AutocompleteMediator
     private boolean mNativeInitialized;
     private long mUrlFocusTime;
     // When set, indicates if the omnibox session is active.
-    private @Nullable FuseboxSessionState mSessionState;
+    private @Nullable FuseboxInputSession mInputSession;
     // Tracks whether the activity window is currently focused.
     // This flag is updated via the onTopResumedActivityChanged(boolean) callback:
     // https://developer.android.com/reference/android/app/Activity#onTopResumedActivityChanged(boolean)
@@ -428,16 +428,23 @@ class AutocompleteMediator
     }
 
     /**
-     * Take necessary action to update the autocomplete system state and record metrics when the
-     * omnibox session state changes.
+     * Manages the state of the autocomplete session.
      *
-     * @param state The current Session state object (if session is activated), or {@code null} if
-     *     session is terminated.
+     * <p>This method is the entry point for activating or deactivating the autocomplete feature. A
+     * non-null {@code session} indicates the start of a new session, triggering the initialization
+     * of the autocomplete input, attachment of IME listeners, and a request for zero-prefix
+     * suggestions.
+     *
+     * <p>A null {@code session} signifies the end of the current session, leading to the cleanup of
+     * resources, detachment of listeners, and recording of session-related metrics.
+     *
+     * @param session The new input session, or {@code null} if the session is being terminated.
      */
-    void setSessionState(@Nullable FuseboxSessionState state) {
-        if (Objects.equals(mSessionState, state)) return;
-        mSessionState = state;
-        boolean activated = state != null;
+    void setInputSession(@Nullable FuseboxInputSession session) {
+        if (Objects.equals(mInputSession, session)) return;
+        boolean wasActivated = mInputSession != null;
+        boolean isActivated = session != null;
+        mInputSession = session;
 
         // Propagate the information about omnibox session state change to all the processors first.
         // Processors need this for accounting purposes.
@@ -445,21 +452,21 @@ class AutocompleteMediator
         // batch of suggestions, that is:
         // - before any call to startZeroSuggest() (when first suggestions are populated), and
         // - before stopAutocomplete() (when current suggestions are erased).
-        mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(activated);
+        mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(isActivated);
 
         if (mAnimationDriver.isAnimationEnabled()) {
-            mAnimationDriver.onOmniboxSessionStateChange(activated);
-            if (activated) {
+            mAnimationDriver.onOmniboxSessionStateChange(isActivated);
+            if (isActivated) {
                 mDelegate.setKeyboardVisibility(true, false);
             }
         }
 
-        if (activated) {
+        if (isActivated) {
             initAutocompleteInput();
 
             // Do not attach IME observer when omnibox autofocus feature enabled and Incognito NTP
             // visible.
-            if (!isOmniboxAutofocusOnIncognitoNtpActive()) {
+            if (!wasActivated && !isOmniboxAutofocusOnIncognitoNtpActive()) {
                 mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
             }
 
@@ -954,7 +961,7 @@ class AutocompleteMediator
         }
 
         // Reject results if the current session is inactive.
-        if (!isInSession()) return;
+        if (!isInInputSession()) return;
 
         if (mAutocomplete != null
                 && PreloadingFeatureMap.getInstance().shouldPrewarmOnAutocomplete()) {
@@ -984,7 +991,7 @@ class AutocompleteMediator
     }
 
     public void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
-        if (mSessionState != null) {
+        if (mInputSession != null) {
             mAutocompleteInput.setRequestType(type);
             mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
             onTextChanged(
@@ -1539,7 +1546,7 @@ class AutocompleteMediator
 
     private void onToolbarPositionChanged(@ControlsPosition Integer newPosition) {
         mListPropertyModel.set(SuggestionListProperties.TOOLBAR_POSITION, newPosition);
-        if (isInSession()) {
+        if (isInInputSession()) {
             // Hacky solution: rebuild the list if we're active when the position changes,
             // triggering recalculation of refine arrow icon. TODO(http://crbug.com/446058347):
             // refactor to enable updates to the icon property of the model once the list is already
@@ -1557,7 +1564,7 @@ class AutocompleteMediator
 
     /** Returns whether Omnibox session is active (the user is interacting with the Omnibox). */
     boolean isOmniboxSessionActiveForTesting() {
-        return isInSession();
+        return isInInputSession();
     }
 
     /** Returns the current Animation Driver instance. */
@@ -1570,7 +1577,7 @@ class AutocompleteMediator
      */
     @Override
     public void onAttachmentListChanged() {
-        if (!isInSession()) return;
+        if (!isInInputSession()) return;
 
         mAutocompleteInput.setHasAttachments(mFuseboxCoordinator.getAttachmentsCount() > 0);
         // Re-request ZPS in the event of attachments being removed/replaced.
@@ -1584,7 +1591,7 @@ class AutocompleteMediator
      */
     @Override
     public void onAttachmentUploadStatusChanged() {
-        if (!isInSession()) return;
+        if (!isInInputSession()) return;
 
         // Re-request ZPS in the event of new attachments being uploaded.
         onTextChanged(
@@ -1604,15 +1611,15 @@ class AutocompleteMediator
                 mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE
                         ? true
                         : isTopResumedActivity);
-        if (isInSession()) {
+        if (isInInputSession()) {
             onTextChanged(
                     mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                     /* isOnFocusContext= */ false);
         }
     }
 
-    private boolean isInSession() {
-        return (mSessionState != null) && mActivityWindowFocused;
+    private boolean isInInputSession() {
+        return (mInputSession != null) && mActivityWindowFocused;
     }
 
     @Override

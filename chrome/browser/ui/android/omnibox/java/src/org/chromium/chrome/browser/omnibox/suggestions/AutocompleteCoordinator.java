@@ -26,11 +26,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
-import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxInputSession;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
@@ -252,8 +252,17 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         };
     }
 
-    public void setSessionState(@Nullable FuseboxSessionState state) {
-        mMediator.setSessionState(state);
+    /**
+     * Sets the input session state for the autocomplete system.
+     *
+     * <p>This call should be issued by the parent coordinator managing the omnibox to notify the
+     * autocomplete system about the input session changes. A non-null session indicates that a new
+     * session has begun, while a null session indicates that the session has been terminated.
+     *
+     * @param session The new input session, or {@code null} if the session is being terminated.
+     */
+    public void setInputSession(@Nullable FuseboxInputSession session) {
+        mMediator.setInputSession(session);
     }
 
     public void onUrlAnimationFinished(boolean hasFocus) {

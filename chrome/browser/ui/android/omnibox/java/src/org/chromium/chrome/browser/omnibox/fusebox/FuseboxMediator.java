@@ -26,6 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -64,7 +64,6 @@ import java.util.Set;
 @NullMarked
 public class FuseboxMediator {
     private final Context mContext;
-    private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
@@ -73,16 +72,15 @@ public class FuseboxMediator {
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
-    private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
-    private final Snackbar mAttachmentUploadFailedSnackbar;
+    private @Nullable Snackbar mAttachmentUploadFailedSnackbar;
+    private @Nullable FuseboxInputSession mInputSession;
 
     FuseboxMediator(
             Context context,
-            Profile profile,
             WindowAndroid windowAndroid,
             PropertyModel model,
             FuseboxViewHolder viewHolder,
@@ -90,11 +88,9 @@ public class FuseboxMediator {
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
             ObservableSupplierImpl<@FuseboxState Integer> fuseboxStateSupplier,
             SnackbarManager snackbarManager) {
         mContext = context;
-        mProfile = profile;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
         mModel = model;
@@ -102,17 +98,11 @@ public class FuseboxMediator {
         mModelList = modelList;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
-        mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
+
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mSnackbarManager = snackbarManager;
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
-
-        // Create the upload failed snackbar
-        mAttachmentUploadFailedSnackbar =
-                createStyledSnackbar(
-                        context.getText(R.string.fusebox_upload_failed),
-                        Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
         mModel.set(FuseboxProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
@@ -127,10 +117,6 @@ public class FuseboxMediator {
                 () -> activateAiMode(AiModeActivationSource.TOOL_MENU));
         mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED, this::activateImageGeneration);
         mModel.set(FuseboxProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
-
-        mModel.set(
-                FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
-                mComposeBoxQueryControllerBridge.isPdfUploadEligible());
 
         mModelList.addObserver(
                 new ListObservable.ListObserver<>() {
@@ -151,10 +137,35 @@ public class FuseboxMediator {
         mAutocompleteRequestTypeSupplier.removeObserver(mOnAutocompleteRequestTypeChanged);
     }
 
+    @EnsuresNonNullIf("mInputSession")
+    /* package */ boolean isInInputSession() {
+        return mInputSession != null && mInputSession.composeBoxController != null;
+    }
+
+    /* package */ void setInputSession(@Nullable FuseboxInputSession session) {
+        mInputSession = session;
+        if (!isInInputSession()) return;
+
+        // Needed by nullaway. Already checked by isInInputSession.
+        assert mInputSession.composeBoxController != null;
+
+        mModel.set(
+                FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
+                mInputSession.composeBoxController.isPdfUploadEligible());
+
+        // Create the upload failed snackbar
+        mAttachmentUploadFailedSnackbar =
+                createStyledSnackbar(
+                        mContext.getText(R.string.fusebox_upload_failed),
+                        Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
+    }
+
     private Snackbar createStyledSnackbar(CharSequence text, int snackbarIdentifier) {
+        assert isInInputSession();
+
         Snackbar snackbar =
                 Snackbar.make(text, null, Snackbar.TYPE_NOTIFICATION, snackbarIdentifier);
-        boolean isIncognito = mProfile.isOffTheRecord();
+        boolean isIncognito = mInputSession.profile.isOffTheRecord();
         snackbar.setBackgroundColor(ChromeColors.getInverseBgColor(mContext, isIncognito));
 
         int textAppearanceResId =
@@ -251,7 +262,9 @@ public class FuseboxMediator {
      * @param callback The callback to run with the URL for the AIM service.
      */
     void getAimUrl(GURL url, Callback<GURL> callback) {
-        mComposeBoxQueryControllerBridge.getAimUrl(url, callback);
+        if (isInInputSession()) {
+            assumeNonNull(mInputSession.composeBoxController).getAimUrl(url, callback);
+        }
     }
 
     /**
@@ -259,7 +272,9 @@ public class FuseboxMediator {
      * @param callback The callback to run with the URL for the image generation service.
      */
     void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
-        mComposeBoxQueryControllerBridge.getImageGenerationUrl(url, callback);
+        if (isInInputSession()) {
+            assumeNonNull(mInputSession.composeBoxController).getImageGenerationUrl(url, callback);
+        }
     }
 
     @VisibleForTesting
@@ -310,7 +325,7 @@ public class FuseboxMediator {
     }
 
     private void onAddCurrentTab(Tab tab) {
-        if (mComposeBoxQueryControllerBridge == null) return;
+        if (!isInInputSession()) return;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
@@ -376,6 +391,8 @@ public class FuseboxMediator {
     @VisibleForTesting
     void onTabPickerClicked() {
         mPopup.dismiss();
+        if (!isInInputSession()) return;
+
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
         int remainingAttachments = mModelList.getRemainingAttachments();
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB)) return;
@@ -392,7 +409,7 @@ public class FuseboxMediator {
                             .putIntegerArrayListExtra(
                                     ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS,
                                     preselectedTabIds);
-            ProfileIntentUtils.addProfileToIntent(mProfile, intent);
+            ProfileIntentUtils.addProfileToIntent(mInputSession.profile, intent);
 
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             boolean isIncognitoBrandedModelSelected = false;
@@ -430,6 +447,7 @@ public class FuseboxMediator {
     }
 
     void onAttachmentUploadFailed() {
+        if (mAttachmentUploadFailedSnackbar == null) return;
         mSnackbarManager.showSnackbar(mAttachmentUploadFailedSnackbar);
     }
 

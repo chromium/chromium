@@ -6,17 +6,13 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -80,7 +76,6 @@ public class FuseboxCoordinatorUnitTest {
 
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private AutocompleteController.Natives mControllerJniMock;
-    @Mock private ComposeBoxQueryControllerBridge.Natives mComposeboxController;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private FuseboxMediator mMediator;
     @Mock private TabModelSelector mTabModelSelector;
@@ -90,6 +85,7 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
 
     private ActivityController<TestActivity> mActivityController;
     private WindowAndroid mWindowAndroid;
@@ -108,8 +104,6 @@ public class FuseboxCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxController);
-
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
@@ -130,13 +124,13 @@ public class FuseboxCoordinatorUnitTest {
                 .getPageClassification(anyBoolean());
 
         doReturn(true).when(mIncognitoProfile).isIncognitoBranded();
+        doReturn(true).when(mMediator).isInInputSession();
 
         mCoordinator =
                 new FuseboxCoordinator(
                         activity,
                         mWindowAndroid,
                         parent,
-                        mProfileSupplier,
                         mLocationBarDataProvider,
                         mTabModelSelectorSupplier,
                         mTemplateUrlServiceSupplier,
@@ -155,82 +149,12 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testOnProfileAvailable_featureEnabled_withBridge() {
-        // Start with a default state.
-        mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
-        assertNotNull(mCoordinator.getMediatorForTesting());
-        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testOnProfileAvailable_featureEnabled_noBridge() {
-        // Start with a default state.
-        mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 0L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
-        assertNull(mCoordinator.getMediatorForTesting());
-    }
-
-    @Test
-    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testOnProfileAvailable_featureDisabled() {
-        // Start with a default state.
-        mCoordinator.setMediatorForTesting(null);
-
-        mProfileSupplier.set(mProfile);
-        verify(mComposeboxController, never())
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        assertNull(mCoordinator.getMediatorForTesting());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testOnProfileAvailable_tracksProfileChanges() {
-        // Start with a default state.
-        mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
-        assertNotNull(mCoordinator.getMediatorForTesting());
-        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
-
-        mCoordinator.setMediatorForTesting(null);
-        mProfileSupplier.set(mock(Profile.class));
-        assertNotNull(mCoordinator.getMediatorForTesting());
-        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testToolbarVisibility_featureEnabled_mediatorNotInitialized() {
-        // Case where the Profile is not initialized, or the Bridge was not instantiated.
-        mCoordinator.setMediatorForTesting(null);
-
-        // Nothing should happen (including no crashes).
-        mCoordinator.onUrlFocusChange(true);
-        mCoordinator.onUrlFocusChange(false);
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled_mediatorInitialized() {
-        // Mediator set by setUp().
-
-        mCoordinator.onUrlFocusChange(true);
+        startRegularSession();
         verify(mMediator).setToolbarVisible(true);
 
-        mCoordinator.onUrlFocusChange(false);
+        doReturn(false).when(mMediator).isInInputSession();
+        clearSession();
         verify(mMediator).setToolbarVisible(false);
     }
 
@@ -263,14 +187,14 @@ public class FuseboxCoordinatorUnitTest {
                     .when(mLocationBarDataProvider)
                     .getPageClassification(anyBoolean());
 
-            mCoordinator.onUrlFocusChange(true);
+            startRegularSession();
 
             boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
             verify(mMediator).setToolbarVisible(shouldBeVisible);
 
             if (shouldBeVisible) {
-                mCoordinator.onUrlFocusChange(false);
-                verify(mMediator).setToolbarVisible(false);
+                clearSession();
+                verify(mMediator, Mockito.atLeast(1)).setToolbarVisible(false);
             }
         }
     }
@@ -288,14 +212,11 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
+        startRegularSession();
         ShadowLooper.idleMainLooper();
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
 
-        mCoordinator.onUrlFocusChange(true);
+        startRegularSession();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (long) mCoordinator.getAutocompleteRequestTypeSupplier().get());
@@ -304,19 +225,15 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void createImageButtonVisibility_isCreateImagesEligible() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-
-        doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
-        mProfileSupplier.set(mIncognitoProfile);
+        doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
+        startIncognitoSession();
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
                         .get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
 
-        doReturn(false).when(mComposeboxController).isCreateImagesEligible(anyLong());
-        mProfileSupplier.set(mProfile);
+        doReturn(false).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
+        startRegularSession();
         assertFalse(
                 mCoordinator
                         .getModelForTesting()
@@ -326,21 +243,20 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void createImageButtonVisibility_incognitoProfile() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
+        doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
 
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
-        mProfileSupplier.set(mIncognitoProfile);
+        startIncognitoSession();
         assertFalse(
                 mCoordinator
                         .getModelForTesting()
                         .get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
 
+        clearSession();
+
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
-        mProfileSupplier.set(mProfile);
-        mProfileSupplier.set(mIncognitoProfile);
+        startRegularSession();
+        startIncognitoSession();
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
@@ -350,21 +266,19 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void createImageButtonVisibility_regularProfile() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
+        doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
 
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
-        mProfileSupplier.set(mProfile);
+        startRegularSession();
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
                         .get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
 
+        clearSession();
+
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
-        mProfileSupplier.set(mIncognitoProfile);
-        mProfileSupplier.set(mProfile);
+        startRegularSession();
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
@@ -398,5 +312,22 @@ public class FuseboxCoordinatorUnitTest {
         int width = context.getResources().getDisplayMetrics().widthPixels;
         int height = context.getResources().getDisplayMetrics().heightPixels;
         assertEquals(new Rect(0, 0, width, height), viewportRectProvider.getRect());
+    }
+
+    private void startRegularSession() {
+        doReturn(true).when(mMediator).isInInputSession();
+        mCoordinator.setInputSession(
+                new FuseboxInputSession(mProfile, mComposeBoxQueryControllerBridge));
+    }
+
+    private void startIncognitoSession() {
+        doReturn(true).when(mMediator).isInInputSession();
+        mCoordinator.setInputSession(
+                new FuseboxInputSession(mIncognitoProfile, mComposeBoxQueryControllerBridge));
+    }
+
+    private void clearSession() {
+        doReturn(false).when(mMediator).isInInputSession();
+        mCoordinator.setInputSession(null);
     }
 }

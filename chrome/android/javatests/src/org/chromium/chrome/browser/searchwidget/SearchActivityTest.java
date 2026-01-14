@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
@@ -86,7 +85,6 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -238,14 +236,6 @@ public class SearchActivityTest {
                 .build();
     }
 
-    private AutocompleteResult buildSimpleAutocompleteResult() {
-        return AutocompleteResult.fromCache(
-                List.of(
-                        buildSimpleAutocompleteMatch("https://www.google.com"),
-                        buildSimpleAutocompleteMatch("https://android.com")),
-                null);
-    }
-
     @Test
     @SmallTest
     public void testStartsBrowserAfterUrlSubmitted_aboutblank() throws Exception {
@@ -392,35 +382,6 @@ public class SearchActivityTest {
                     return null;
                 },
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-    }
-
-    @Test
-    @SmallTest
-    public void testZeroSuggestBeforeNativeIsLoaded() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LocaleManager.getInstance()
-                            .setDelegateForTest(
-                                    new LocaleManagerDelegate() {
-                                        @Override
-                                        public boolean needToCheckForSearchEnginePromo() {
-                                            return false;
-                                        }
-                                    });
-                });
-
-        CachedZeroSuggestionsManager.saveToCache(
-                PageClassification.ANDROID_SEARCH_WIDGET_VALUE, buildSimpleAutocompleteResult());
-
-        // Wait for the activity to load, but don't let it load the native library.
-        mTestDelegate.shouldDelayLoadingNative = true;
-        startSearchActivity();
-
-        // Focus on the url bar with not text.
-        mOmnibox.requestFocus();
-        // Omnibox suggestions should appear now.
-        mOmnibox.checkSuggestionsShown();
-        verifyNoMoreInteractions(mAutocompleteController);
     }
 
     @Test
