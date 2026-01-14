@@ -1218,13 +1218,16 @@ bool ExtensionRegistrar::ReplaceReloadedExtension(
   // The extension must already be disabled, and the original extension has
   // been unloaded.
   CHECK(registry_->disabled_extensions().Contains(extension->id()));
-  if (!delegate_->CanEnableExtension(extension.get()))
+  if (!delegate_->CanEnableExtension(extension.get())) {
     return false;
+  }
 
-  // TODO(michaelpg): Other disable reasons might have been added after the
-  // reload started. We may want to keep the extension disabled and just remove
-  // the DISABLE_RELOAD reason in that case.
-  extension_prefs_->ClearDisableReasons(extension->id());
+  // We want to keep the extension disabled if there are other disable reasons.
+  extension_prefs_->RemoveDisableReason(extension->id(),
+                                        disable_reason::DISABLE_RELOAD);
+  if (!extension_prefs_->GetDisableReasons(extension->id()).empty()) {
+    return false;
+  }
 
   // Move it over to the enabled list.
   CHECK(registry_->RemoveDisabled(extension->id()));

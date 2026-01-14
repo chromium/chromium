@@ -514,6 +514,27 @@ TEST_F(ExtensionRegistrarTest, ReloadExtension) {
   AddEnabledExtension();
 }
 
+TEST_F(ExtensionRegistrarTest, ReloadExtensionWithNewDisableReason) {
+  AddEnabledExtension();
+  ReloadEnabledExtension();
+
+  // Add a new disable reason while the extension is reloading.
+  auto* prefs = ExtensionPrefs::Get(browser_context());
+  prefs->AddDisableReason(extension()->id(),
+                          disable_reason::DISABLE_USER_ACTION);
+
+  // Add the now-reloaded extension back into the registrar.
+  // It should NOT be enabled because of the new disable reason.
+  registrar()->AddExtension(extension());
+  ExpectInSet(ExtensionRegistry::DISABLED);
+
+  // The `DISABLE_RELOAD` reason should be gone, but the user action reason
+  // should remain.
+  EXPECT_THAT(
+      prefs->GetDisableReasons(extension()->id()),
+      testing::UnorderedElementsAre(disable_reason::DISABLE_USER_ACTION));
+}
+
 TEST_F(ExtensionRegistrarTest, RemoveReloadedExtension) {
   AddEnabledExtension();
   ReloadEnabledExtension();
