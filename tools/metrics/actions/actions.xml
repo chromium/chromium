@@ -3803,6 +3803,15 @@ should be able to be added at any place in this file.
   <description>User navigated to the Android in-app history page.</description>
 </action>
 
+<action name="Android.BookmarkPage.CopyLink">
+  <owner>wylieb@google.com</owner>
+  <owner>hocheung@chromium.org</owner>
+  <description>
+    User copied a bookmark link on the native Android bookmark page by clicking
+    &quot;copy link&quot; from the per-row overflow menu (non-selection mode).
+  </description>
+</action>
+
 <action name="Android.BookmarkPage.ReadingList.MarkAsRead">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>

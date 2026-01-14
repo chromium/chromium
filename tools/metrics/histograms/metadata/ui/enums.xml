@@ -453,6 +453,7 @@ chromium-metrics-reviews@google.com.
   <int value="78" label="UMA_FUSEBOX_MAX_ATTACHMENTS"/>
   <int value="79" label="UMA_FUSEBOX_UPLOAD_FAILED"/>
   <int value="80" label="UMA_BOOKMARK_LINK_COPIED"/>
+  <int value="81" label="UMA_BOOKMARK_LINK_COPIED_NON_SELECTION"/>
 </enum>
 
 <enum name="WebUIPreloadReason">

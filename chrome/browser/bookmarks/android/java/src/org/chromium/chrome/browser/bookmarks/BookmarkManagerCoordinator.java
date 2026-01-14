@@ -59,6 +59,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -274,7 +275,8 @@ public class BookmarkManagerCoordinator
                         this::canShowSigninPromo,
                         onScrollListenerConsumer,
                         bookmarkManagerOpener,
-                        priceDropNotificationManager);
+                        priceDropNotificationManager,
+                        Clipboard.getInstance());
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/* object= */ mMediator);

@@ -4448,6 +4448,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARK_ITEM_EDIT" desc="Menu item text for showing bookmark editing page [CHAR_LIMIT=24]">
         Edit
       </message>
+      <message name="IDS_BOOKMARK_ITEM_COPY_LINK" desc="Menu item text for copying a bookmark link [CHAR_LIMIT=24]">
+        Copy link
+      </message>
       <message name="IDS_BOOKMARK_ITEM_MOVE" desc="Menu item for moving a bookmark to a new folder [CHAR_LIMIT=24]">
         Move to…
       </message>

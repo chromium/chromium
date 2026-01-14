@@ -65,6 +65,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkMetrics.BookmarkManagerFilter;
@@ -90,6 +91,7 @@ import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -122,6 +124,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -186,6 +189,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Clipboard mClipboard;
     @Mock private BooleanSupplier mCanShowPromo;
     @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
@@ -541,7 +545,8 @@ public class BookmarkManagerMediatorTest {
                         mCanShowPromo,
                         mOnScrollListenerConsumer,
                         mBookmarkManagerOpener,
-                        mPriceDropNotificationManager);
+                        mPriceDropNotificationManager,
+                        mClipboard);
         mMediator.onAttachedToWindow();
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
@@ -1132,16 +1137,17 @@ public class BookmarkManagerMediatorTest {
                 BookmarkListEntry.createBookmarkEntry(
                         mBookmarkItem21, null, BookmarkRowDisplayPref.COMPACT);
         ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(6, modelList.size());
+        assertEquals(7, modelList.size());
         verifyBookmarkListMenuItem(modelList.get(0), R.string.bookmark_item_select, true);
         verifyBookmarkListMenuItem(modelList.get(1), R.string.bookmark_item_edit, true);
-        verifyBookmarkListMenuItem(modelList.get(2), R.string.bookmark_item_move, true);
-        verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_delete, true);
+        verifyBookmarkListMenuItem(modelList.get(2), R.string.bookmark_item_copy_link, true);
+        verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_move, true);
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.bookmark_item_delete, true);
 
         mMediator.openSearchUi();
         modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(5, modelList.size());
-        verifyBookmarkListMenuItem(modelList.get(4), R.string.bookmark_show_in_folder, true);
+        assertEquals(6, modelList.size());
+        verifyBookmarkListMenuItem(modelList.get(5), R.string.bookmark_show_in_folder, true);
     }
 
     @Test
@@ -1153,12 +1159,13 @@ public class BookmarkManagerMediatorTest {
                 BookmarkListEntry.createBookmarkEntry(
                         mReadingListItem, null, BookmarkRowDisplayPref.COMPACT);
         ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(5, modelList.size());
+        assertEquals(6, modelList.size());
         verifyBookmarkListMenuItem(modelList.get(0), R.string.reading_list_mark_as_read, true);
         verifyBookmarkListMenuItem(modelList.get(1), R.string.bookmark_item_select, true);
         verifyBookmarkListMenuItem(modelList.get(2), R.string.bookmark_item_edit, true);
-        verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_move, true);
-        verifyBookmarkListMenuItem(modelList.get(4), R.string.bookmark_item_delete, true);
+        verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_copy_link, true);
+        verifyBookmarkListMenuItem(modelList.get(4), R.string.bookmark_item_move, true);
+        verifyBookmarkListMenuItem(modelList.get(5), R.string.bookmark_item_delete, true);
     }
 
     @Test
@@ -1184,15 +1191,15 @@ public class BookmarkManagerMediatorTest {
                 BookmarkListEntry.createBookmarkEntry(
                         mBookmarkItem21, meta, BookmarkRowDisplayPref.COMPACT);
         ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(7, modelList.size());
+        assertEquals(8, modelList.size());
         verifyBookmarkListMenuItem(
-                modelList.get(6), R.string.disable_price_tracking_menu_item, true);
+                modelList.get(7), R.string.disable_price_tracking_menu_item, true);
 
         doReturn(false).when(mShoppingService).isSubscribedFromCache(any());
         modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(7, modelList.size());
+        assertEquals(8, modelList.size());
         verifyBookmarkListMenuItem(
-                modelList.get(6), R.string.enable_price_tracking_menu_item, true);
+                modelList.get(7), R.string.enable_price_tracking_menu_item, true);
     }
 
     @Test
@@ -1221,8 +1228,8 @@ public class BookmarkManagerMediatorTest {
                 BookmarkListEntry.createBookmarkEntry(
                         mBookmarkItem21, meta, BookmarkRowDisplayPref.COMPACT);
         ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        // The 7th item would be the enable/disable price tracking.
-        assertEquals(6, modelList.size());
+        // The 8th item would be the enable/disable price tracking.
+        assertEquals(7, modelList.size());
     }
 
     @Test
@@ -1305,12 +1312,25 @@ public class BookmarkManagerMediatorTest {
         // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
         clickChildAt(menu, 1);
 
+        // Copy link.
+        UserActionTester userActionTester = new UserActionTester();
+        clickChildAt(menu, 2);
+        verify(mClipboard).setText(EXAMPLE_URL.getSpec());
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
+        assertEquals(mActivity.getString(R.string.copied), snackbar.getTextForTesting());
+        assertEquals(
+                Snackbar.UMA_BOOKMARK_LINK_COPIED_NON_SELECTION,
+                snackbar.getIdentifierForTesting());
+        assertEquals(1, userActionTester.getActionCount("Android.BookmarkPage.CopyLink"));
+
         // Move.
         // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
-        clickChildAt(menu, 2);
+        clickChildAt(menu, 3);
 
         // Delete.
-        clickChildAt(menu, 3);
+        clickChildAt(menu, 4);
         verify(mBookmarkModel).deleteBookmarks(mBookmarkId21);
     }
 
@@ -1344,6 +1364,7 @@ public class BookmarkManagerMediatorTest {
                 menuModelList,
                 R.string.bookmark_item_select,
                 R.string.bookmark_item_edit,
+                R.string.bookmark_item_copy_link,
                 R.string.bookmark_item_move,
                 R.string.bookmark_item_delete,
                 R.string.disable_price_tracking_menu_item);
@@ -1352,8 +1373,8 @@ public class BookmarkManagerMediatorTest {
                 (BasicListMenu) mMediator.createListMenuForBookmark(mModelList.get(1).model);
         assertNotNull(menu);
 
-        // Delete.
-        clickChildAt(menu, 4);
+        // Price tracking.
+        clickChildAt(menu, 5);
         verify(mPriceTrackingUtilsJniMock)
                 .setPriceTrackingStateForBookmark(
                         any(), anyLong(), anyBoolean(), any(), anyBoolean());
@@ -1913,7 +1934,7 @@ public class BookmarkManagerMediatorTest {
         assertFalse(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
 
         // Show in folder.
-        clickChildAt(menu, 4);
+        clickChildAt(menu, 5);
         assertTrue(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
     }
 

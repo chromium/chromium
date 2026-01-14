@@ -44,7 +44,9 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -65,6 +67,7 @@ import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.listmenu.ListMenu;
@@ -407,6 +410,7 @@ class BookmarkManagerMediator
     private boolean mIsBookmarkModelReorderingInProgress;
     // Whether the shopping feature is available and there are price-tracked bookmarks.
     private boolean mShoppingFilterAvailable;
+    private final Clipboard mClipboard;
 
     BookmarkManagerMediator(
             Activity activity,
@@ -431,7 +435,8 @@ class BookmarkManagerMediator
             BooleanSupplier canShowSigninPromo,
             Consumer<OnScrollListener> onScrollListenerConsumer,
             BookmarkManagerOpener bookmarkManagerOpener,
-            PriceDropNotificationManager priceDropNotificationManager) {
+            PriceDropNotificationManager priceDropNotificationManager,
+            Clipboard clipboard) {
         mContext = activity;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -456,6 +461,7 @@ class BookmarkManagerMediator
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mShoppingService = shoppingService;
         mSnackbarManager = snackbarManager;
+        mClipboard = clipboard;
         mCanShowSigninPromo = canShowSigninPromo;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             OneshotSupplierImpl<SnackbarManager> snackbarManagerSupplierImpl =
@@ -1523,6 +1529,9 @@ class BookmarkManagerMediator
 
         listItems.add(buildSimpleMenuItem(R.string.bookmark_item_select));
         listItems.add(buildSimpleMenuItem(R.string.bookmark_item_edit));
+        if (!bookmarkItem.isFolder()) {
+            listItems.add(buildSimpleMenuItem(R.string.bookmark_item_copy_link));
+        }
         listItems.add(
                 new ListItemBuilder()
                         .withTitleRes(R.string.bookmark_item_move)
@@ -1591,6 +1600,20 @@ class BookmarkManagerMediator
                         assumeNonNull(bookmarkItem);
                         mBookmarkManagerOpener.startEditActivity(
                                 mContext, mProfile, bookmarkItem.getId());
+                    } else if (textId == R.string.bookmark_item_copy_link) {
+                        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+                        assumeNonNull(bookmarkItem);
+                        if (!bookmarkItem.isFolder()) {
+                            mClipboard.setText(bookmarkItem.getUrl().getSpec());
+                            Snackbar snackbar =
+                                    Snackbar.make(
+                                            mContext.getString(R.string.copied),
+                                            new SnackbarController() {},
+                                            Snackbar.TYPE_NOTIFICATION,
+                                            Snackbar.UMA_BOOKMARK_LINK_COPIED_NON_SELECTION);
+                            mSnackbarManager.showSnackbar(snackbar);
+                            RecordUserAction.record("Android.BookmarkPage.CopyLink");
+                        }
                     } else if (textId == R.string.reading_list_mark_as_read) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         assumeNonNull(bookmarkItem);
