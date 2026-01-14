@@ -495,16 +495,16 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
       std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
   const float blink_saib = std::max(
       0.0f, max_safe_area_inset_bottom() - blink_bottom_content_offset);
-  const float transform_delta_by_safe_area_inset_bottom =
-      -(real_saib - blink_saib);
+  float transform_delta_by_safe_area_inset_bottom = -(real_saib - blink_saib);
 
-  const float scaled_transform_delta_by_safe_area_inset_bottom =
-      transform_delta_by_safe_area_inset_bottom / min_page_scale_factor();
+  if (min_page_scale_factor() > 0.f) {
+    transform_delta_by_safe_area_inset_bottom /= min_page_scale_factor();
+  }
 
   if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
-      scaled_transform_delta_by_safe_area_inset_bottom) {
+      transform_delta_by_safe_area_inset_bottom) {
     property_trees->SetTransformDeltaBySafeAreaInsetBottom(
-        scaled_transform_delta_by_safe_area_inset_bottom);
+        transform_delta_by_safe_area_inset_bottom);
   }
 
   // Adjust the viewport layers by shrinking/expanding the container to account

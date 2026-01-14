@@ -910,6 +910,9 @@ class CC_EXPORT LayerTreeImpl {
   LayerSelection selection_;
 
   scoped_refptr<SyncedScale> page_scale_factor_;
+
+  // The minimum and maximum page scale factor.  A value of 0 indicates that the
+  // limit is not enforced.
   float min_page_scale_factor_;
   float max_page_scale_factor_;
   float external_page_scale_factor_;
