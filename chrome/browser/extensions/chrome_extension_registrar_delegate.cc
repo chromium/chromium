@@ -484,7 +484,7 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
 
 void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
     const Extension* extension,
-    bool is_extension_loaded) {
+    bool is_extension_installed) {
   PermissionsUpdater(profile_).InitializePermissions(extension);
 
   // We keep track of all permissions the user has granted each extension.
@@ -530,7 +530,7 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
   if (!is_trusted_location && !auto_grant_permission) {
     bool is_external_install =
         Manifest::IsExternalLocation(extension->location());
-    if (!is_extension_loaded && is_external_install) {
+    if (!is_extension_installed && is_external_install) {
       // Grant initial permissions to establish a baseline for update checks.
       // TODO(crbug.com/435980394): Grant for this extension type on install.
       PermissionsUpdater(profile_).GrantActivePermissions(extension);

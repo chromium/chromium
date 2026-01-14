@@ -148,10 +148,10 @@ void ExtensionRegistrar::AddExtension(
     return;
   }
 
-  bool is_extension_loaded = false;
+  bool is_extension_installed = false;
   const Extension* old = registry_->GetInstalledExtension(extension->id());
   if (old) {
-    is_extension_loaded = true;
+    is_extension_installed = true;
     int version_compare_result = extension->version().CompareTo(old->version());
     // Other than for unpacked extensions, we should not be downgrading.
     if (!Manifest::IsUnpackedLocation(extension->location()) &&
@@ -186,7 +186,7 @@ void ExtensionRegistrar::AddExtension(
     failed_to_reload_unpacked_extensions_.erase(extension->path());
     ReplaceReloadedExtension(extension);
   } else {
-    if (is_extension_loaded) {
+    if (is_extension_installed) {
       // To upgrade an extension in place, remove the old one and then activate
       // the new one. ReloadExtension disables the extension, which is
       // sufficient.
