@@ -11,6 +11,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -423,10 +424,8 @@ enum class PresentedState {
 }
 
 - (void)dismissBookmarksEditorAnimated:(BOOL)animated {
-  if (self.currentPresentedState != PresentedState::BOOKMARK_EDITOR) {
-    // TODO(crbug.com/40062447): This test should be turned into a DCHECK().
-    return;
-  }
+  CHECK_EQ(PresentedState::BOOKMARK_EDITOR, self.currentPresentedState,
+           base::NotFatalUntil::M154);
   self.bookmarkEditorCoordinator.animatedDismissal = animated;
   [self stopBookmarksEditorCoordinator];
 }
@@ -437,7 +436,9 @@ enum class PresentedState {
                             urlsToOpen:std::vector<GURL>()
                            inIncognito:NO
                                 newTab:NO];
-  [self dismissBookmarksEditorAnimated:animated];
+  if (self.currentPresentedState == PresentedState::BOOKMARK_EDITOR) {
+    [self dismissBookmarksEditorAnimated:animated];
+  }
 }
 
 - (void)dismissSnackbar {
