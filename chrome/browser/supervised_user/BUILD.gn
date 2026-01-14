@@ -123,6 +123,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java",
       "//components/signin/public/android:java",
       "//components/url_formatter/android:url_formatter_java",
+      "//google_apis/gaia/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_java",
       "//third_party/jni_zero:jni_zero_java",
