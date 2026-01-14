@@ -142,14 +142,10 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
 
   content::WebContents* web_contents(int index) { return web_contents_[index]; }
 
+  // Returns whether tab groups are supported by the test's main window.
+  // Used as a utility function to reduce line wrapping.
   bool SupportsTabGroups() {
-#if BUILDFLAG(IS_ANDROID)
-    // Android doesn't support things like platform apps that have tab strips
-    // that don't support tab groups, so tab groups are always supported.
-    return true;
-#else
-    return browser()->tab_strip_model()->SupportsTabGroups();
-#endif
+    return ExtensionTabUtil::SupportsTabGroups(browser_window_interface());
   }
 
   // Creates a tab group out of existing tabs at `tab_indices`. CHECKs that the
