@@ -524,7 +524,7 @@ TEST_F(EncryptionTest, EncryptAndDecryptMultipleParallel) {
       kTestStrings.size());
   for (size_t i = 0; i < kTestStrings.size(); ++i) {
     // Choose random key pair.
-    size_t i_key_pair = base::RandInt(0, public_value_strings.size() - 1);
+    size_t i_key_pair = base::RandGenerator(public_value_strings.size());
     (new SingleEncryptionContext(
          kTestStrings[i], public_value_strings[i_key_pair],
          public_value_ids[i_key_pair], encryptor_, results[i].cb()))
