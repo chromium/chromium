@@ -202,7 +202,6 @@ public class AuxiliarySearchDonor {
     }
 
     @SuppressLint({"CheckResult", "NewApi"})
-    @SuppressWarnings("AsyncFunctionReturnsNull")
     @RequiresNonNull("mAppSearchSession")
     @VisibleForTesting
     boolean onConsumerSchemaSearchedImpl(boolean success) {
