@@ -281,7 +281,11 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
     }
 
     std::unique_ptr<views::View> removed_view =
-        src_parent_node->node_view_->RemoveChildViewT(child_node->node_view_);
+        src_parent_node->detach_child_from_node_
+            ? src_parent_node->detach_child_from_node_.Run(
+                  child_node->node_view_)
+            : src_parent_node->node_view_->RemoveChildViewT(
+                  child_node->node_view_);
     std::unique_ptr<TabCollectionNode> removed_node = std::move(*it);
     src_parent_node->children_.erase(it);
 

@@ -30,9 +30,13 @@ VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<views::DelegatingLayoutManager>(this)))) {
+              std::make_unique<views::DelegatingLayoutManager>(this),
+              this))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
-      &TabCollectionAnimatingLayoutManager::AnimateAndRemoveChildView,
+      &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
+      base::Unretained(&layout_manager_.get())));
+  collection_node->set_detach_child_from_node(base::BindRepeating(
+      &TabCollectionAnimatingLayoutManager::RemoveChildViewForReparenting,
       base::Unretained(&layout_manager_.get())));
 
   node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
@@ -92,11 +96,23 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   return layouts;
 }
 
+bool VerticalUnpinnedTabContainerView::IsViewDragging(
+    const views::View& child_view) const {
+  return GetDragHandler().IsViewDragging(child_view);
+}
+
 void VerticalUnpinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
 
 VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler() {
+  CHECK(collection_node_);
+  CHECK(collection_node_->GetController());
+  return collection_node_->GetController()->GetDragHandler();
+}
+
+const VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler()
+    const {
   CHECK(collection_node_);
   CHECK(collection_node_->GetController());
   return collection_node_->GetController()->GetDragHandler();

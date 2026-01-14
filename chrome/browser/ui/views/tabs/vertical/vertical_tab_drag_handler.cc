@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check_deref.h"
@@ -209,6 +210,11 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverUnpinnedContainer(
 
 TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
   return this;
+}
+
+bool VerticalTabDragHandlerImpl::IsViewDragging(const views::View& view) const {
+  return std::ranges::find(dragged_tabs_, &view, &TabCollectionNode::view) !=
+         dragged_tabs_.end();
 }
 
 bool VerticalTabDragHandlerImpl::CanAcceptEvent(const ui::Event& event) {

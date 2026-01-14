@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -22,13 +23,19 @@ namespace {
 // are removed from the View tree once they are no longer required.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPendingDeletion, false)
 
+// Stores the bounds in screen coordinates of the associated View prior to being
+// removed from its host TabCollectionNode. Used for collection move animations.
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kPreviousCollectionBounds)
+
 }  // namespace
 
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
-    std::unique_ptr<LayoutManagerBase> target_layout_manager)
+    std::unique_ptr<LayoutManagerBase> target_layout_manager,
+    Delegate* delegate)
     : target_layout_manager_(
           CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
-      animation_(this) {
+      animation_(this),
+      delegate_(delegate) {
   // TODO(crbug.com/459824840): Determine the appropriate animation duration.
   // Currently set to match the duration of TabContainerImpl.
   animation_.SetSlideDuration(
@@ -76,6 +83,10 @@ void TabCollectionAnimatingLayoutManager::AnimationEnded(
   // Do not invalidate the target layout as the animation progresses, only the
   // animating layout manager requires invalidation.
   InvalidateHost(/*mark_layouts_changed=*/false);
+
+  // Clear any View-specific metadata and state no longer needed once the most
+  // recent animation has finished.
+  ClearViewAnimationMetadata();
 }
 
 views::ProposedLayout
@@ -180,13 +191,25 @@ void TabCollectionAnimatingLayoutManager::ResetToTargetLayout() {
   InvalidateHost(/*mark_layouts_changed=*/false);
 }
 
-void TabCollectionAnimatingLayoutManager::AnimateAndRemoveChildView(
+void TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView(
     views::View* child_view) {
   DCHECK(std::ranges::contains(host_view()->children(), child_view));
   child_view->SetCanProcessEventsWithinSubtree(false);
   child_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   child_view->SetProperty(kPendingDeletion, true);
   InvalidateHost(/*mark_layouts_changed=*/true);
+}
+
+std::unique_ptr<views::View>
+TabCollectionAnimatingLayoutManager::RemoveChildViewForReparenting(
+    views::View* child_view) {
+  DCHECK(base::Contains(host_view()->children(), child_view));
+  if (delegate_ && !delegate_->IsViewDragging(*child_view)) {
+    child_view->SetProperty(kPreviousCollectionBounds,
+                            child_view->GetBoundsInScreen());
+    child_view->SetPaintToLayer();
+  }
+  return host_view()->RemoveChildViewT(child_view);
 }
 
 views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
@@ -222,10 +245,19 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       // Animate-in new Views from empty bounds.
       // TODO(crbug.com/459824840): We may want to snap new children to target
       // bounds in the case of a tab drag-and-drop.
-      gfx::Rect initial_bounds = target_child.bounds;
-      initial_bounds.set_height(0);
-      interpolated_child.bounds = gfx::Tween::RectValueBetween(
-          value, initial_bounds, target_child.bounds);
+      gfx::Rect* previous_container_bounds =
+          target_child.child_view->GetProperty(kPreviousCollectionBounds);
+      if (previous_container_bounds) {
+        gfx::Rect initial_bounds = views::View::ConvertRectFromScreen(
+            host_view(), *previous_container_bounds);
+        interpolated_child.bounds = gfx::Tween::RectValueBetween(
+            value, initial_bounds, target_child.bounds);
+      } else {
+        gfx::Rect initial_bounds = target_child.bounds;
+        initial_bounds.set_height(0);
+        interpolated_child.bounds = gfx::Tween::RectValueBetween(
+            value, initial_bounds, target_child.bounds);
+      }
     }
     result.child_layouts.push_back(interpolated_child);
   }
@@ -295,5 +327,12 @@ void TabCollectionAnimatingLayoutManager::
     if (should_remove) {
       host_view()->RemoveChildViewT(child);
     }
+  }
+}
+
+void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadata() {
+  for (views::View* child_view : host_view()->children()) {
+    child_view->DestroyLayer();
+    child_view->ClearProperty(kPreviousCollectionBounds);
   }
 }

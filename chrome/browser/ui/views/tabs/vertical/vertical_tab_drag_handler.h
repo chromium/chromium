@@ -40,6 +40,10 @@ class VerticalTabDragHandler {
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
 
+  // Returns true if `view` belongs to a TabCollectionNode currently being
+  // dragged.
+  virtual bool IsViewDragging(const views::View& view) const = 0;
+
   // For vertical tabs, `TabSlotView` doesn't represent the actual tab
   // view. This method converts `view` to its actual tab view, or nullptr
   // if this handler doesn't manage it.
@@ -71,6 +75,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void EndDrag(EndDragReason reason) override;
   void DraggedTabsOverNode(const TabCollectionNode& node) override;
   TabDragContext* GetDragContext() override;
+  bool IsViewDragging(const views::View& view) const override;
 
   // TabDragContext
   bool CanAcceptEvent(const ui::Event& event) override;

@@ -39,6 +39,8 @@ class TabCollectionNode {
       CustomRemoveChildViewCallback;
   typedef base::RepeatingCallback<void(std::unique_ptr<views::View>, size_t)>
       CustomAttachChildViewCallback;
+  typedef base::RepeatingCallback<std::unique_ptr<views::View>(views::View*)>
+      CustomDetachChildViewCallback;
   typedef std::vector<std::unique_ptr<TabCollectionNode>> NodeChildren;
 
   explicit TabCollectionNode(tabs::ConstChildPtr node_data);
@@ -103,6 +105,11 @@ class TabCollectionNode {
     attach_child_to_node_ = std::move(attach_child_to_node);
   }
 
+  void set_detach_child_from_node(
+      CustomDetachChildViewCallback detach_child_from_node) {
+    detach_child_from_node_ = std::move(detach_child_from_node);
+  }
+
   base::CallbackListSubscription RegisterWillDestroyCallback(
       base::OnceClosure callback);
 
@@ -163,6 +170,11 @@ class TabCollectionNode {
   // container. Used when the default AddChildView behavior needs to be
   // overridden.
   CustomAttachChildViewCallback attach_child_to_node_;
+
+  // Custom callback invoked when reparent an existing view as child to another
+  // container. Used when the default RemoveChildViewT behavior needs to be
+  // overridden.
+  CustomDetachChildViewCallback detach_child_from_node_;
 
   // The view created for this node. (for tab:tabview, for unpinned: the
   // unpinned_container_view).

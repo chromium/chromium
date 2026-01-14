@@ -63,6 +63,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
  private:
   virtual VerticalTabDragHandler& GetDragHandler() = 0;
+  virtual const VerticalTabDragHandler& GetDragHandler() const = 0;
 
   // Invalidates the layout of the host view, skipping animations.
   virtual void UpdateLayoutForDrag() = 0;

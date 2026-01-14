@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -20,8 +22,17 @@
 class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
                                             public gfx::AnimationDelegate {
  public:
+  class Delegate {
+   public:
+    virtual bool IsViewDragging(const views::View& child_view) const = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   explicit TabCollectionAnimatingLayoutManager(
-      std::unique_ptr<LayoutManagerBase> target_layout_manager);
+      std::unique_ptr<LayoutManagerBase> target_layout_manager,
+      Delegate* delegate = nullptr);
   TabCollectionAnimatingLayoutManager(
       const TabCollectionAnimatingLayoutManager&) = delete;
   TabCollectionAnimatingLayoutManager& operator=(
@@ -47,7 +58,13 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // Animates the removal of `child_view` from the `host_view()` associated with
   // this layout manager. `child_view` will be destroyed by the layout manager
   // asynchronously.
-  void AnimateAndRemoveChildView(views::View* child_view);
+  void AnimateAndDestroyChildView(views::View* child_view);
+
+  // Handles removing `child_view` from the `host_view()` for reparenting views
+  // to other TabCollectionNode views. Records relevant metadata used for
+  // animating move operations.
+  std::unique_ptr<views::View> RemoveChildViewForReparenting(
+      views::View* child_view);
 
   const views::ProposedLayout& target_layout() const { return target_layout_; }
 
@@ -75,6 +92,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // calculated.
   void RemoveNonAnimatingPendingDeleteViews();
 
+  // Clears any child view metadata and state relevant only for the most
+  // recent animation sequence, e.g. any state needed to animate Views moving
+  // between independent TabCollectionNodes. Invoked after the current
+  // `animation_` has ended.
+  void ClearViewAnimationMetadata();
+
   // The layout manager that defines the goal state.
   const raw_ref<LayoutManagerBase> target_layout_manager_;
 
@@ -91,6 +114,8 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
 
   // The current animation progress.
   double current_offset_ = 1.0;
+
+  const raw_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_TAB_COLLECTION_ANIMATING_LAYOUT_MANAGER_H_

@@ -63,10 +63,15 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       group_line_(AddChildView(std::make_unique<views::View>())),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<views::DelegatingLayoutManager>(this)))) {
+              std::make_unique<views::DelegatingLayoutManager>(this),
+              this))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
-      &TabCollectionAnimatingLayoutManager::AnimateAndRemoveChildView,
+      &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(&layout_manager_.get())));
+  collection_node->set_detach_child_from_node(base::BindRepeating(
+      &TabCollectionAnimatingLayoutManager::RemoveChildViewForReparenting,
+      base::Unretained(&layout_manager_.get())));
+
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabGroupView::ResetCollectionNode, base::Unretained(this)));
@@ -179,6 +184,10 @@ views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
       group_header_->editor_bubble_button(), stop_context_menu_propagation);
 }
 
+bool VerticalTabGroupView::IsViewDragging(const views::View& child_view) const {
+  return GetDragHandler().IsViewDragging(child_view);
+}
+
 void VerticalTabGroupView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -214,6 +223,12 @@ bool VerticalTabGroupView::IsCollapsed() const {
 }
 
 VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() {
+  CHECK(collection_node_);
+  CHECK(collection_node_->GetController());
+  return collection_node_->GetController()->GetDragHandler();
+}
+
+const VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() const {
   CHECK(collection_node_);
   CHECK(collection_node_->GetController());
   return collection_node_->GetController()->GetDragHandler();

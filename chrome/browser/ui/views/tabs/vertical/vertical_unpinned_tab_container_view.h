@@ -17,9 +17,11 @@ class TabCollectionNode;
 class VerticalTabDragHandler;
 
 // Container for the vertical tabstrip's unpinned tabs.
-class VerticalUnpinnedTabContainerView : public views::View,
-                                         public views::LayoutDelegate,
-                                         public VerticalDraggedTabsContainer {
+class VerticalUnpinnedTabContainerView
+    : public views::View,
+      public views::LayoutDelegate,
+      public VerticalDraggedTabsContainer,
+      public TabCollectionAnimatingLayoutManager::Delegate {
   METADATA_HEADER(VerticalUnpinnedTabContainerView, views::View)
 
  public:
@@ -34,9 +36,13 @@ class VerticalUnpinnedTabContainerView : public views::View,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  // TabCollectionAnimatingLayoutManager::Delegate:
+  bool IsViewDragging(const views::View& child_view) const override;
+
  private:
   // VerticalDraggedTabsContainer:
   VerticalTabDragHandler& GetDragHandler() override;
+  const VerticalTabDragHandler& GetDragHandler() const override;
   void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Point point_in_container) override;
 
