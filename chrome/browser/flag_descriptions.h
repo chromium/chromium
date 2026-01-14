@@ -5537,11 +5537,6 @@ inline constexpr char kProtectedTabsAndroidDescription[] =
 inline constexpr char kReadAloudName[] = "Read Aloud";
 inline constexpr char kReadAloudDescription[] =
     "Controls the Read Aloud feature";
-
-inline constexpr char kReadAloudInCCTName[] = "Read Aloud entrypoint in CCT";
-inline constexpr char kReadAloudInCCTDescription[] =
-    "Controls the Read Aloud entrypoint in the overflow menu for CCT";
-
 inline constexpr char kReaderModeDistillInAppName[] =
     "Reader Mode distillation in app";
 inline constexpr char kReaderModeDistillInAppDescription[] =

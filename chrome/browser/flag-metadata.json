@@ -7982,14 +7982,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "read-aloud-in-cct",
-    "owners": [
-      "basiaz@google.com",
-      "iwells@google.com"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "read-anything-docs-integration",
     "owners": [ "abigailbklein@google.com", "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 155
