@@ -6841,7 +6841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AwBrowserContext.ProfileDataMigrationHappened"
-    enum="Boolean" expires_after="2026-01-21">
+    enum="Boolean" expires_after="2026-07-21">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
