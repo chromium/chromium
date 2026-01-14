@@ -44,3 +44,7 @@
 
 # Fail on try bot due to DCHECKs being enabled there
 -PermissionElementBrowserTest.TabSwitchingClosesPrompt
+
+# crbug.com/475665154
+-WebUIURLLoaderFactoryTest.RangeRequest/3
+-WebUIURLLoaderFactoryTest.RangeRequest/4
