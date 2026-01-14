@@ -332,6 +332,8 @@ void TestResponseProvider::GetLanguageResponse(
             (testTranslateBadgeWithReaderModeBadgeSupport)]) {
     config.features_enabled.push_back(kEnableReaderMode);
     config.features_enabled.push_back(kEnableReaderModeInUS);
+    config.features_enabled.push_back(kProactiveSuggestionsFramework);
+    config.features_enabled.push_back(kPageActionMenu);
   }
 
   if ([self isRunningTest:@selector(testInfobarTranslateRevert)] ||
