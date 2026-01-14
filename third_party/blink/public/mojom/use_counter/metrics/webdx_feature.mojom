@@ -479,6 +479,10 @@ enum WebDXFeature {
   kDRAFT_MetaTextScale = 417,
   kJpegxl = 418,
   kPartitionedCookies = 419,
+  kPrompt = 420,
+  kProofreader = 421,
+  kRewriter = 422,
+  kWriter = 423,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -8793,6 +8793,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="417" label="DRAFT_MetaTextScale"/>
   <int value="418" label="Jpegxl"/>
   <int value="419" label="PartitionedCookies"/>
+  <int value="420" label="Prompt"/>
+  <int value="421" label="Proofreader"/>
+  <int value="422" label="Rewriter"/>
+  <int value="423" label="Writer"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
