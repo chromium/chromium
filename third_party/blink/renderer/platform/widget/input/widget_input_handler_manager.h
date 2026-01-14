@@ -52,20 +52,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     : public ThreadSafeRefCounted<WidgetInputHandlerManager>,
       public InputHandlerProxyClient,
       public MainThreadEventQueueClient {
-  // Used in UMA metrics reporting. Do not re-order, and rename the metric if
-  // additional states are required.
-  enum class InitialInputTiming {
-    // Input comes before lifecycle update
-    kBeforeLifecycle = 0,
-    // Input is before commit
-    kBeforeCommit = 1,
-    // Input comes before first paint
-    kBeforeFirstPaint = 2,
-    // Input comes only after first paint
-    kAfterFirstPaint = 3,
-    kMaxValue = kAfterFirstPaint
-  };
-
  public:
   // For use in bitfields to keep track of why we should keep suppressing input
   // events. Maybe the rendering pipeline is currently deferring something, or
@@ -321,8 +307,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // "Mojo-bound" thread.
   const scoped_refptr<base::SingleThreadTaskRunner>& InputThreadTaskRunner(
       TaskRunnerType type = TaskRunnerType::kDefault) const;
-
-  void LogInputTimingUMA();
 
   // Records event UMA using the given `first_paint_time`.  If no paint occurred
   // before this method is called, `first_paint_time` must be passed as

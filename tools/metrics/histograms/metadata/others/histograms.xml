@@ -6451,15 +6451,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaintHolding.InputTiming4" enum="PaintHoldingInputTiming"
-    expires_after="2026-02-22">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Records whether or not input arrived before the first paint.
-  </summary>
-</histogram>
-
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
     expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>

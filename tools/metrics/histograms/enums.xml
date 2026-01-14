@@ -22319,13 +22319,6 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Widget swapped"/>
 </enum>
 
-<enum name="PaintHoldingInputTiming">
-  <int value="0" label="Before Lifecycle"/>
-  <int value="1" label="Before Commit"/>
-  <int value="2" label="Before First Paint"/>
-  <int value="3" label="After First Paint"/>
-</enum>
-
 <enum name="PasswordBubbleDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>
