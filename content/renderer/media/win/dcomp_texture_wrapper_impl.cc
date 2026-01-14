@@ -51,8 +51,7 @@ class DCOMPTextureMailboxResources
     if (!last_sync_token_)
       return;
 
-    gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-    sii->DestroySharedImage(last_sync_token_.value(), std::move(shared_image_));
+    shared_image_->UpdateDestructionSyncToken(last_sync_token_.value());
   }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;

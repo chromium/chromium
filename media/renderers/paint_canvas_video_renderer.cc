@@ -797,8 +797,7 @@ class VideoTextureBacking : public cc::TextureBacking {
   ~VideoTextureBacking() override {
     gpu::SyncToken sync_token =
         gpu::RasterScopedAccess::EndAccess(std::move(ri_access_));
-    auto* sii = raster_context_provider_->SharedImageInterface();
-    sii->DestroySharedImage(sync_token, std::move(shared_image_));
+    shared_image_->UpdateDestructionSyncToken(sync_token);
   }
 
   const SkImageInfo& GetSkImageInfo() override { return sk_image_info_; }

@@ -30,7 +30,8 @@ void VideoFrameSharedImageCache::ReleaseCachedData() {
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
   if (shared_image_) {
-    sii->DestroySharedImage(sync_token_, std::move(shared_image_));
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
+    shared_image_.reset();
   }
 }
 

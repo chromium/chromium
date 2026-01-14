@@ -2436,7 +2436,6 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
   auto mapping = shared_image->Map();
   if (!mapping) {
     LOG(ERROR) << "Mapping shared image failed.";
-    sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
     return false;
   }
   // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
