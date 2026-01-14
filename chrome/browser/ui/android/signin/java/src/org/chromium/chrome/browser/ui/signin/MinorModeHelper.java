@@ -21,9 +21,9 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SyncButtonsType;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -88,7 +88,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
 
     private final IdentityManager mIdentityManager;
 
-    private final CoreAccountInfo mPrimaryAccount;
+    private final CoreAccountId mPrimaryAccountId;
 
     // Disposable updater which is executed only once.
     private @Nullable UiUpdater mUiUpdater;
@@ -102,17 +102,17 @@ public class MinorModeHelper implements IdentityManager.Observer {
      * account.
      *
      * @param identityManager The {@link IdentityManager} for the profile
-     * @param primaryAccount {@link CoreAccountInfo} for the primary account.
+     * @param primaryAccountId {@link CoreAccountId} for the primary account Id.
      * @param uiUpdater Callback method to be run when the {@link CAPABILITY_TIMEOUT_MS} is reached
      *     or capability is retrieved.
      */
     public static void resolveMinorMode(
-            IdentityManager identityManager, CoreAccountInfo primaryAccount, UiUpdater uiUpdater) {
+            IdentityManager identityManager, CoreAccountId primaryAccountId, UiUpdater uiUpdater) {
         if (uiUpdater == null) {
             throw new IllegalArgumentException("uiUpdater must not be null.");
         }
         AccountInfo accountInfo =
-                identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
+                identityManager.findExtendedAccountInfoByAccountId(primaryAccountId);
 
         boolean skipRefreshTokenSwitch =
                 SigninFeatureMap.isEnabled(
@@ -128,7 +128,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
 
         recordNoImmediateAvailability();
         identityManager.addObserver(
-                new MinorModeHelper(identityManager, primaryAccount, uiUpdater));
+                new MinorModeHelper(identityManager, primaryAccountId, uiUpdater));
     }
 
     /**
@@ -168,9 +168,9 @@ public class MinorModeHelper implements IdentityManager.Observer {
     }
 
     private MinorModeHelper(
-            IdentityManager identityManager, CoreAccountInfo primaryAccount, UiUpdater uiUpdater) {
+            IdentityManager identityManager, CoreAccountId primaryAccountId, UiUpdater uiUpdater) {
         this.mIdentityManager = identityManager;
-        this.mPrimaryAccount = primaryAccount;
+        this.mPrimaryAccountId = primaryAccountId;
         mUiUpdater = uiUpdater;
 
         // When the sDisableHistorySyncOptInTimeoutForTesting is enabled in tests, the buttons
@@ -182,7 +182,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
 
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
-        if (!mPrimaryAccount.getId().equals(accountInfo.getId())) {
+        if (!mPrimaryAccountId.equals(accountInfo.getId())) {
             // Update intended for different account.
             return;
         }

@@ -35,6 +35,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -128,6 +129,14 @@ public class SyncPromoControllerTest {
     @Test
     public void shouldShowSyncPromoForNtpWhenNoAccountOnDevice() {
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    public void shouldHideNtpSyncPromoWhenNoAccountInfo() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mIdentityManager.findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId()))
+                .thenReturn(null);
+        Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
     }
 
     @Test
