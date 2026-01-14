@@ -1396,7 +1396,7 @@ ClientSideDetectionHost::DetermineVisualFeaturesExtraction() {
                              encoded_resolution);
   }
 
-  base::UmaHistogramEnumeration("SBClientPhishing.VisualFeaturesClearReason",
+  base::UmaHistogramEnumeration("SBClientPhishing.VisualFeaturesClearReason2",
                                 can_extract_visual_features_result);
   return can_extract_visual_features_result;
 }
@@ -1527,7 +1527,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
       visual_utils::CanExtractVisualFeaturesResult::kCanExtractVisualFeatures) {
     verdict->clear_visual_features();
   } else {
-    base::UmaHistogramBoolean("SBClientPhishing.HasVisualFeaturesImage",
+    base::UmaHistogramBoolean("SBClientPhishing.HasVisualFeaturesImage2",
                               verdict->has_visual_features() &&
                                   verdict->visual_features().has_image());
   }

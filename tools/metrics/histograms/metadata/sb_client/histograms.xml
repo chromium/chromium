@@ -665,14 +665,15 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.HasVisualFeaturesImage" enum="BooleanExists"
-    expires_after="2026-04-05">
+<histogram name="SBClientPhishing.HasVisualFeaturesImage2" enum="BooleanExists"
+    expires_after="2027-01-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Log whether CSD-Phishing pings contain the visual features image. This is
-    only log when the ping should contain the image (i.e. when
-    SBClientPhishing.VisualFeaturesClearReason is kCanExtractVisualFeatures).
+    only logged when the ping should contain the image (i.e. when
+    SBClientPhishing.VisualFeaturesClearReason is kCanExtractVisualFeatures) and
+    after it's determined that the ping is eligible to be sent.
   </summary>
 </histogram>
 
@@ -1481,12 +1482,14 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.VisualFeaturesClearReason"
-    enum="CanExtractVisualFeaturesResult" expires_after="2026-05-17">
+<histogram name="SBClientPhishing.VisualFeaturesClearReason2"
+    enum="CanExtractVisualFeaturesResult" expires_after="2027-01-13">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Log the reason why CSD-Phishing pings do not contain visual features images.
+    This is logged after deciding that the ping is eligible to be sent and the
+    visual features extraction capability has been determined.
   </summary>
 </histogram>
 
