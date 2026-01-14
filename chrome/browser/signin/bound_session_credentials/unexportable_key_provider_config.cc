@@ -106,15 +106,22 @@ crypto::UnexportableKeyProvider::Config GetConfigForProfile(
   return config;
 }
 
-crypto::UnexportableKeyProvider::Config GetConfigForProfileAndPurpose(
+crypto::UnexportableKeyProvider::Config
+GetConfigForStoragePartitionPathAndPurpose(
     const Profile& profile,
+    const base::FilePath& relative_partition_path,
     KeyPurpose purpose) {
+  CHECK(!relative_partition_path.IsAbsolute());
+
   crypto::UnexportableKeyProvider::Config config = GetConfigForProfile(profile);
 #if BUILDFLAG(IS_MAC)
-  base::StrAppend(&config.application_tag, {
-                                               ".",
-                                               PurposeToString(purpose),
-                                           });
+  base::StrAppend(&config.application_tag,
+                  {
+                      ".",
+                      HexEncodeLowerSha64(relative_partition_path.value()),
+                      ".",
+                      PurposeToString(purpose),
+                  });
 #endif  // BUILDFLAG(IS_MAC)
   return config;
 }

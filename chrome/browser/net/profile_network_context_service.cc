@@ -1532,8 +1532,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         receiver = uks_remote.InitWithNewPipeAndPassReceiver();
     unexportable_keys::UnexportableKeyServiceProxyImpl* uks =
         UnexportableKeyServiceFactory::
-            RecreateMojoProxyForProfileAndPurposeWithReceiver(
-                profile_,
+            RecreateMojoProxyForStoragePartitionPathAndPurposeWithReceiver(
+                profile_, relative_partition_path,
                 unexportable_keys::KeyPurpose::kDeviceBoundSessionCredentials,
                 std::move(receiver));
     if (uks) {

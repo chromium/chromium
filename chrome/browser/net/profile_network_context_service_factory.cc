@@ -15,6 +15,7 @@
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "crypto/crypto_buildflags.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -32,6 +33,10 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #endif
 
 ProfileNetworkContextService*
@@ -85,6 +90,10 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
   DependsOn(
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
   DependsOn(SCTReportingServiceFactory::GetInstance());
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  DependsOn(UnexportableKeyServiceFactory::GetInstance());
+#endif
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =
