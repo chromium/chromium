@@ -5613,8 +5613,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 // frame and mouse up is on OOF iframe, the mouse up event is delivered to the
 // main frame as well to clear cached mouse states including autoscroll
 // selection state.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/421826783): Re-enable this test
+// TODO(crbug.com/475802008): Re-enable this test
 #define MAYBE_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection \
   DISABLED_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection
 #else
