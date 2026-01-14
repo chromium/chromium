@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -270,6 +271,8 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   std::unique_ptr<chromeos::ExternalCache> external_cache_;
 
   std::unique_ptr<KioskExternalUpdater> usb_stick_updater_;
+
+  base::ScopedTempDir crx_unpack_dir_;
 };
 
 }  // namespace ash

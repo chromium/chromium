@@ -64,15 +64,6 @@ ParseExternalUpdateManifest(const base::FilePath& external_update_dir) {
                         KioskExternalUpdater::ErrorCode::kNone);
 }
 
-// Copies `external_crx_file` to `temp_crx_file`, and removes `temp_dir`
-// created for unpacking `external_crx_file`.
-bool CopyExternalCrxAndDeleteTempDir(const base::FilePath& external_crx_file,
-                                     const base::FilePath& temp_crx_file,
-                                     const base::FilePath& temp_dir) {
-  base::DeletePathRecursively(temp_dir);
-  return base::CopyFile(external_crx_file, temp_crx_file);
-}
-
 // Returns true if `version_1` < `version_2`, and
 // if `update_for_same_version` is true and `version_1` = `version_2`.
 bool ShouldUpdateForHigherVersion(const std::string& version_1,
@@ -166,7 +157,8 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
     const std::string& app_id,
     const std::string& version,
     const std::string& min_browser_version,
-    const base::FilePath& temp_dir) {
+    const base::FilePath& temp_dir,
+    const base::FilePath& validated_crx_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // User might pull out the usb stick before updating is completed.
@@ -185,17 +177,28 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
     return;
   }
 
-  base::FilePath external_crx_path =
-      external_updates_[app_id].external_crx.path;
-  base::FilePath temp_crx_path =
-      crx_unpack_dir_.Append(external_crx_path.BaseName());
-  backend_task_runner_->PostTaskAndReplyWithResult(
+  backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CopyExternalCrxAndDeleteTempDir, external_crx_path,
-                     temp_crx_path, temp_dir),
-      base::BindOnce(&KioskExternalUpdater::PutValidatedExtension,
-                     weak_factory_.GetWeakPtr(), app_id, temp_crx_path,
-                     version));
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     temp_dir));
+
+  PutValidatedExtension(app_id, validated_crx_path, version);
+}
+
+void KioskExternalUpdater::OnExternalUpdateCopyFailure(
+    const std::string& app_id,
+    const base::FilePath& crx_file_path) {
+  // User might pull out the usb stick before updating is completed.
+  if (CheckExternalUpdateInterrupted()) {
+    return;
+  }
+
+  external_updates_[app_id].update_status = UpdateStatus::kFailed;
+  external_updates_[app_id].error = l10n_util::GetStringFUTF16(
+      IDS_KIOSK_EXTERNAL_UPDATE_FAILED_COPY_CRX_TO_TEMP,
+      base::UTF8ToUTF16(crx_file_path.value()));
+
+  MaybeValidateNextExternalUpdate();
 }
 
 void KioskExternalUpdater::OnExternalUpdateUnpackFailure(
@@ -209,6 +212,7 @@ void KioskExternalUpdater::OnExternalUpdateUnpackFailure(
   external_updates_[app_id].error =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           IDS_KIOSK_EXTERNAL_UPDATE_BAD_CRX);
+
   MaybeValidateNextExternalUpdate();
 }
 
@@ -378,21 +382,10 @@ bool KioskExternalUpdater::ShouldDoExternalUpdate(
 
 void KioskExternalUpdater::PutValidatedExtension(const std::string& app_id,
                                                  const base::FilePath& crx_file,
-                                                 const std::string& version,
-                                                 bool crx_copied) {
+                                                 const std::string& version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (CheckExternalUpdateInterrupted()) {
-    return;
-  }
-
-  if (!crx_copied) {
-    LOG(ERROR) << "Cannot copy external crx file to " << crx_file.value();
-    external_updates_[app_id].update_status = UpdateStatus::kFailed;
-    external_updates_[app_id].error = l10n_util::GetStringFUTF16(
-        IDS_KIOSK_EXTERNAL_UPDATE_FAILED_COPY_CRX_TO_TEMP,
-        base::UTF8ToUTF16(crx_file.value()));
-    MaybeValidateNextExternalUpdate();
     return;
   }
 

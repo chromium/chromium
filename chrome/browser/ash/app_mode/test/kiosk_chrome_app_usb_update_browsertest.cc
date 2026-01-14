@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fcntl.h>
+
 #include <string>
 #include <string_view>
 #include <utility>
@@ -9,11 +11,14 @@
 
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
@@ -52,6 +57,13 @@ const std::string_view kLowerCrxVersionAppPath =
     "chromeos/app_mode/apps_and_extensions/external_update/lower_crx_version";
 const std::string_view kBadCrxAppPath =
     "chromeos/app_mode/apps_and_extensions/external_update/bad_crx";
+
+constexpr std::string_view kGoodCrxFileName =
+    "iiigpodgfihagabpagjehoocpakbnclp-2.0.0.crx";
+constexpr std::string_view kExternalUpdateJsonFileName = "external_update.json";
+
+constexpr std::string_view kKioskAppVersion1 = "1.0.0";
+constexpr std::string_view kKioskAppVersion2 = "2.0.0";
 
 // Helper to mount a directory under //chrome/test/data as a fake USB disk.
 class FakeUsbMountHelper {
@@ -129,6 +141,23 @@ bool UpdateViaUsb(FakeUsbMountHelper& usb_helper,
   return did_update;
 }
 
+// Helper to mount a temporary directory as a fake USB disk.
+void MountTempUsbAndRun(
+    const base::FilePath& usb_path,
+    base::OnceCallback<void()> to_run_while_usb_is_mounted) {
+  auto& manager = CHECK_DEREF(disks::DiskMountManager::GetInstance());
+  manager.MountPath(usb_path.value(),
+                    /*source_format=*/"",
+                    /*mount_label=*/"",
+                    /*mount_options=*/{},
+                    /*type=*/MountType::kDevice,
+                    /*access_mode=*/MountAccessMode::kReadOnly,
+                    /*callback=*/base::DoNothing());
+  std::move(to_run_while_usb_is_mounted).Run();
+  manager.UnmountPath(usb_path.value(),
+                      disks::DiskMountManager::UnmountPathCallback());
+}
+
 // Plain data type used in test parameters.
 struct TestParam {
   TestParam(std::string_view name,
@@ -173,6 +202,14 @@ KioskMixin::Config ToKioskConfig(const TestParam& param) {
       param.name,
       KioskMixin::AutoLaunchAccount{param.initial_app.account_id},
       {param.initial_app}};
+}
+
+void VerifyUpdateSucceeded(bool update_succeeded) {
+  EXPECT_TRUE(update_succeeded);
+
+  EXPECT_EQ(kKioskAppVersion2, CachedChromeAppVersion(TheKioskChromeApp()));
+  EXPECT_EQ(kKioskAppVersion1,
+            InstalledChromeAppVersion(CurrentProfile(), TheKioskChromeApp()));
 }
 
 }  // namespace
@@ -228,44 +265,149 @@ INSTANTIATE_TEST_SUITE_P(
                   /*usb_source_path=*/kUpdatePassAppPath,
                   /*initial_app=*/kiosk::test::OfflineEnabledChromeAppV1(),
                   /*expect_update_works=*/true,
-                  /*final_cached_version=*/"2.0.0",
-                  /*final_installed_version=*/"1.0.0"},
+                  /*final_cached_version=*/kKioskAppVersion2,
+                  /*final_installed_version=*/kKioskAppVersion1},
         // The USB does not have an external_update.json file.
         TestParam{/*name=*/"UsbWithoutExternalUpdateJson",
                   /*usb_source_path=*/kNoManifestAppPath,
                   /*initial_app=*/kiosk::test::OfflineEnabledChromeAppV1(),
                   /*expect_update_works=*/false,
-                  /*final_cached_version=*/"1.0.0",
-                  /*final_installed_version=*/"1.0.0"},
+                  /*final_cached_version=*/kKioskAppVersion1,
+                  /*final_installed_version=*/kKioskAppVersion1},
         // The USB has an external_update.json that is not valid JSON.
         TestParam{/*name=*/"UsbWithInvalidExternalUpdateJson",
                   /*usb_source_path=*/kBadManifestAppPath,
                   /*initial_app=*/kiosk::test::OfflineEnabledChromeAppV1(),
                   /*expect_update_works=*/false,
-                  /*final_cached_version=*/"1.0.0",
-                  /*final_installed_version=*/"1.0.0"},
+                  /*final_cached_version=*/kKioskAppVersion1,
+                  /*final_installed_version=*/kKioskAppVersion1},
         // The external_update.json points to the wrong CRX file.
         TestParam{/*name=*/"UsbWithWrongAppCrx",
                   /*usb_source_path=*/kBadCrxAppPath,
                   /*initial_app=*/kiosk::test::OfflineEnabledChromeAppV1(),
                   /*expect_update_works=*/false,
-                  /*final_cached_version=*/"1.0.0",
-                  /*final_installed_version=*/"1.0.0"},
+                  /*final_cached_version=*/kKioskAppVersion1,
+                  /*final_installed_version=*/kKioskAppVersion1},
         // The USB has version 1.0.0, but Kiosk already has version 2.0.0.
         TestParam{/*name=*/"UsbWithLowerVersionApp",
                   /*usb_source_path=*/kLowerAppVersionAppPath,
                   /*initial_app=*/kiosk::test::OfflineEnabledChromeAppV2(),
                   /*expect_update_works=*/false,
-                  /*final_cached_version=*/"2.0.0",
-                  /*final_installed_version=*/"2.0.0"},
+                  /*final_cached_version=*/kKioskAppVersion2,
+                  /*final_installed_version=*/kKioskAppVersion2},
         // The external_update.json says the app is version 3.0.0, but the app
         // manifest in the CRX has version 1.0.0.
         TestParam{/*name=*/"UsbWithWrongCrxVersion",
                   /*usb_source_path=*/kLowerCrxVersionAppPath,
                   /*initial_app=*/kiosk::test::OfflineEnabledChromeAppV2(),
                   /*expect_update_works=*/false,
-                  /*final_cached_version=*/"2.0.0",
-                  /*final_installed_version=*/"2.0.0"}),
+                  /*final_cached_version=*/kKioskAppVersion2,
+                  /*final_installed_version=*/kKioskAppVersion2}),
     ParamName);
 
+// This test verifies crbug.com/469366062, crbug.com/468370853
+class KioskChromeAppUsbUpdateSingleReadTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    base::PathService::Get(chrome::DIR_TEST_DATA, &dir_test_data_);
+
+    ASSERT_TRUE(fake_usb_temp_dir_.CreateUniqueTempDir());
+    fake_usb_path_ = fake_usb_temp_dir_.GetPath();
+
+    ASSERT_TRUE(WaitKioskLaunched());
+  }
+
+  void TearDownOnMainThread() override {
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  base::FilePath GetFakeUsbPath() { return fake_usb_path_; }
+
+  void WriteToPipe(const base::FilePath& source_crx_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    std::string source_crx_content;
+    base::ReadFileToString(source_crx_path, &source_crx_content);
+    base::ScopedFD pipe_fd(open(fake_usb_crx_path_.value().c_str(), O_WRONLY));
+    base::WriteFileDescriptor(pipe_fd.get(), source_crx_content);
+  }
+
+  void CopyExternalUpdateJsonToFakeUsbPath() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    const base::FilePath source_json_path =
+        dir_test_data_.Append(kUpdatePassAppPath)
+            .Append(kExternalUpdateJsonFileName);
+    ASSERT_TRUE(base::PathExists(source_json_path));
+
+    ASSERT_TRUE(base::CopyFile(
+        source_json_path, fake_usb_path_.Append(kExternalUpdateJsonFileName)));
+  }
+
+  void WriteCrxFileToPipe() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    const base::FilePath source_crx_path =
+        dir_test_data_.Append(kUpdatePassAppPath).Append(kGoodCrxFileName);
+    ASSERT_TRUE(base::PathExists(source_crx_path));
+
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&KioskChromeAppUsbUpdateSingleReadTest::WriteToPipe,
+                       base::Unretained(this), source_crx_path));
+  }
+
+  void CreateNamedFIFOPipe() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    const base::FilePath pipe_path = fake_usb_path_.Append(kGoodCrxFileName);
+    fake_usb_crx_path_ = pipe_path;
+    EXPECT_EQ(mkfifo(pipe_path.value().c_str(), 0666), 0);
+  }
+
+ private:
+  base::ScopedTempDir fake_usb_temp_dir_;
+  base::FilePath fake_usb_path_;
+  base::FilePath fake_usb_crx_path_;
+  base::FilePath dir_test_data_;
+  FakeUsbMountHelper usb_helper_;
+  KioskMixin kiosk_{
+      &mixin_host_,
+      KioskMixin::Config{
+          "RaceConditionTest",
+          KioskMixin::AutoLaunchAccount{
+              kiosk::test::OfflineEnabledChromeAppV1().account_id},
+          {kiosk::test::OfflineEnabledChromeAppV1()}}};
+};
+
+IN_PROC_BROWSER_TEST_F(KioskChromeAppUsbUpdateSingleReadTest,
+                       ShouldNotPerformMultipleReadsFromUsb) {
+  EXPECT_EQ(kKioskAppVersion1, CachedChromeAppVersion(TheKioskChromeApp()));
+  EXPECT_EQ(kKioskAppVersion1,
+            InstalledChromeAppVersion(CurrentProfile(), TheKioskChromeApp()));
+
+  CopyExternalUpdateJsonToFakeUsbPath();
+
+  // Simulate a file that can only be read once.
+  CreateNamedFIFOPipe();
+  WriteCrxFileToPipe();
+
+  ExternalUpdateWaiter waiter(KioskChromeAppManager::Get());
+  bool update_succeeded = false;
+  MountTempUsbAndRun(
+      GetFakeUsbPath(),
+      base::BindOnce(
+          [](bool* update_succeeded_ptr, ExternalUpdateWaiter* waiter_ptr) {
+            *update_succeeded_ptr = waiter_ptr->WaitExternalUpdate();
+          },
+          &update_succeeded, base::Unretained(&waiter)));
+
+  // Crx file should be read only once and the update should succeed.
+  VerifyUpdateSucceeded(update_succeeded);
+}
 }  // namespace ash

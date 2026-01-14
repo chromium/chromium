@@ -63,11 +63,16 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
       const disks::DiskMountManager::MountPoint& mount_info) override;
 
   // KioskExternalUpdateValidatorDelegate overrides:
-  void OnExternalUpdateUnpackSuccess(const std::string& app_id,
-                                     const std::string& version,
-                                     const std::string& min_browser_version,
-                                     const base::FilePath& temp_dir) override;
+  void OnExternalUpdateUnpackSuccess(
+      const std::string& app_id,
+      const std::string& version,
+      const std::string& min_browser_version,
+      const base::FilePath& temp_dir,
+      const base::FilePath& validated_crx_path) override;
   void OnExternalUpdateUnpackFailure(const std::string& app_id) override;
+  void OnExternalUpdateCopyFailure(
+      const std::string& app_id,
+      const base::FilePath& crx_file_path) override;
 
   // Processes the parsed external update manifest, check the ErrorCode in
   // `result` for any manifest parsing error.
@@ -99,8 +104,7 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
   // `crx_copied` indicates whether the `crx_file` is copied successfully.
   void PutValidatedExtension(const std::string& app_id,
                              const base::FilePath& crx_file,
-                             const std::string& version,
-                             bool crx_copied);
+                             const std::string& version);
 
   // Called upon completion of installing the validated external extension into
   // the local cache. `success` is true if the operation succeeded.

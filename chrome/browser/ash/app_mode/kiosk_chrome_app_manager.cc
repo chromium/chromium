@@ -78,7 +78,6 @@ constexpr char kCrxCacheDir[] = "kiosk/crx";
 
 // Sub directory under DIR_USER_DATA to store unpacked crx file for validating
 // its signature.
-constexpr char kCrxUnpackDir[] = "kiosk_unpack";
 
 KioskChromeAppManager::Overrides* g_test_overrides = nullptr;
 
@@ -86,12 +85,6 @@ base::FilePath GetCrxCacheDir() {
   base::FilePath user_data_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
   return user_data_dir.AppendASCII(kCrxCacheDir);
-}
-
-base::FilePath GetCrxUnpackDir() {
-  base::FilePath temp_dir;
-  base::GetTempDir(&temp_dir);
-  return temp_dir.AppendASCII(kCrxUnpackDir);
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunner() {
@@ -510,6 +503,7 @@ KioskChromeAppManager::KioskChromeAppManager(
   external_cache_ = CreateExternalCache(shared_url_loader_factory_, this);
   g_instance = this;
   UpdateAppsFromPolicy();
+  CHECK(crx_unpack_dir_.CreateUniqueTempDir());
 }
 
 KioskChromeAppManager::~KioskChromeAppManager() {
@@ -521,7 +515,7 @@ KioskChromeAppManager::~KioskChromeAppManager() {
 
 void KioskChromeAppManager::MonitorKioskExternalUpdate() {
   usb_stick_updater_ = std::make_unique<KioskExternalUpdater>(
-      GetBackgroundTaskRunner(), GetCrxCacheDir(), GetCrxUnpackDir());
+      GetBackgroundTaskRunner(), GetCrxCacheDir(), crx_unpack_dir_.GetPath());
 }
 
 const KioskAppData* KioskChromeAppManager::GetAppData(
