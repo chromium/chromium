@@ -141,6 +141,26 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromUnownedHandle(
 }
 
 // static
+scoped_refptr<D3DSharedFence>
+D3DSharedFence::CreateFromUnownedHandleAndOpenD3D12Fence(
+    ID3D12Device* d3d12_signal_device,
+    HANDLE shared_handle) {
+  CHECK(d3d12_signal_device);
+  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence;
+  HRESULT hr = d3d12_signal_device->OpenSharedHandle(
+      shared_handle, IID_PPV_ARGS(&d3d12_fence));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Unable to open shared handle for D3D12Fence: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+  scoped_refptr<D3DSharedFence> fence =
+      gfx::D3DSharedFence::CreateFromUnownedHandle(shared_handle);
+  fence->d3d12_signal_fence_ = std::move(d3d12_fence);
+  return fence;
+}
+
+// static
 scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromD3D12Fence(
     Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence,
     uint64_t fence_value) {

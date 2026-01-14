@@ -1557,11 +1557,6 @@ std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
     AutoLock auto_lock(this);
     // Persistently open the shared handle by caching it on this backing.
     if (!dawn_shared_buffer_memory_) {
-      Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device;
-      if (backend_type == wgpu::BackendType::D3D12) {
-        dawn_d3d12_device = dawn::native::d3d12::GetD3D12Device(device.Get());
-      }
-
       dawn_shared_buffer_memory_ =
           CreateDawnSharedBufferMemory(device, d3d12_resource_);
 
@@ -1631,6 +1626,7 @@ wgpu::Buffer D3DImageBacking::BeginAccessDawnBuffer(
 }
 
 void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
+                                          wgpu::BackendType backend_type,
                                           wgpu::Buffer buffer) {
   AutoLock auto_lock(this);
   DCHECK(buffer);
@@ -1650,8 +1646,17 @@ void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
     fence.ExportInfo(&export_info);
     DCHECK_EQ(export_info.type, wgpu::SharedFenceType::DXGISharedHandle);
 
-    scoped_refptr<gfx::D3DSharedFence> signaled_fence =
-        gfx::D3DSharedFence::CreateFromUnownedHandle(shared_handle_info.handle);
+    scoped_refptr<gfx::D3DSharedFence> signaled_fence;
+    if (backend_type == wgpu::BackendType::D3D12) {
+      Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device =
+          dawn::native::d3d12::GetD3D12Device(device.Get());
+      signaled_fence =
+          gfx::D3DSharedFence::CreateFromUnownedHandleAndOpenD3D12Fence(
+              dawn_d3d12_device.Get(), shared_handle_info.handle);
+    } else {
+      signaled_fence = gfx::D3DSharedFence::CreateFromUnownedHandle(
+          shared_handle_info.handle);
+    }
 
     if (signaled_fence) {
       signaled_fence->Update(signaled_value);

@@ -144,7 +144,9 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   wgpu::Buffer BeginAccessDawnBuffer(const wgpu::Device& device,
                                      wgpu::BackendType backend_type,
                                      wgpu::BufferUsage usage);
-  void EndAccessDawnBuffer(const wgpu::Device& device, wgpu::Buffer buffer);
+  void EndAccessDawnBuffer(const wgpu::Device& device,
+                           wgpu::BackendType backend_type,
+                           wgpu::Buffer buffer);
 
   std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       SharedImageManager* manager,
