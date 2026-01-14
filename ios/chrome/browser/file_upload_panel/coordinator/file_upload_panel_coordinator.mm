@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -115,7 +116,6 @@
   [_mediator disconnect];
   _mediator = nil;
   [self hideFilePicker];
-  [self hideDriveFilePicker];
   [self hidePhotoPicker];
   [self hideCamera];
   [self hideContextMenu];
@@ -226,7 +226,7 @@
 
 - (void)doContextMenuInteractionEndAnimationCompletion {
   [self hideContextMenu];
-  if (!_cameraPicker && !_filePicker && !_photoPicker) {
+  if (!_mediator.isPresentingFilePicker) {
     [_mediator cancelFileSelection];
   }
 }
@@ -506,11 +506,9 @@
 }
 
 - (void)showDriveFilePicker {
-  // TODO(crbug.com/441659098): Show the Drive file picker.
-}
-
-- (void)hideDriveFilePicker {
-  // TODO(crbug.com/441659098): Hide the Drive file picker.
+  id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
+  [driveFilePickerCommands showDriveFilePicker];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -526,6 +524,7 @@
     (FileUploadPanelContextMenuActionVariant)actionVariant {
   base::UmaHistogramEnumeration("IOS.FileUploadPanel.ContextMenuActionVariant",
                                 actionVariant);
+  _mediator.isPresentingFilePicker = true;
   switch (actionVariant) {
     case FileUploadPanelContextMenuActionVariant::kFilePicker:
       [self showFilePicker];

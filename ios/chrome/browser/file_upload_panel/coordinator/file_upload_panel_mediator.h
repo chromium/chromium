@@ -52,6 +52,8 @@ API_AVAILABLE(ios(18.4))
 @property(nonatomic, readonly) BOOL allowsDirectorySelection;
 // Whether the page allows multiple selection.
 @property(nonatomic, readonly) BOOL allowsMultipleSelection;
+// Whether a file picker is currently being presented.
+@property(nonatomic, assign) BOOL isPresentingFilePicker;
 
 // Initializes the file upload panel and binds it to `controller`.
 - (instancetype)initWithChooseFileController:(ChooseFileController*)controller

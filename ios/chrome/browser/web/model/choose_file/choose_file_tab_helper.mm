@@ -63,6 +63,10 @@ void ChooseFileTabHelper::StopChoosingFiles(NSArray<NSURL*>* file_urls,
                                             NSString* display_string,
                                             UIImage* icon_image) {
   CHECK(controller_);
+  if (!file_urls.count) {
+    controller_.reset();
+    return;
+  }
   CHECK([[NSSet setWithArray:file_urls]
       isSubsetOfSet:[NSSet setWithArray:[file_urls_ready_for_selection_
                                             allKeys]]]);
@@ -200,8 +204,10 @@ void ChooseFileTabHelper::DidSubmitSelection(ChooseFileController* controller,
                                              NSArray<NSURL*>* file_urls,
                                              NSString* display_string,
                                              UIImage* icon_image) {
-  CHECK_EQ(controller, controller_.get());
-  controller_.reset();
+  if (controller_) {
+    CHECK_EQ(controller, controller_.get());
+    controller_.reset();
+  }
 }
 
 #pragma mark - web::WebStateObserver

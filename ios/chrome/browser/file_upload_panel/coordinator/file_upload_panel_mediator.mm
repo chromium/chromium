@@ -265,6 +265,14 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   return self.event.allow_multiple_files;
 }
 
+- (BOOL)isPresentingFilePicker {
+  return _chooseFileController->IsPresentingFilePicker();
+}
+
+- (void)setIsPresentingFilePicker:(BOOL)isPresentingFilePicker {
+  _chooseFileController->SetIsPresentingFilePicker(isPresentingFilePicker);
+}
+
 #pragma mark - Public
 
 - (void)adjustCaptureTypeToAvailableDevices {
