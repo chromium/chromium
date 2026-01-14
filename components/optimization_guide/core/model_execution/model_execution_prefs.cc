@@ -96,6 +96,10 @@ const char kModelQualityLoggingClientId[] =
 const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
     "optimization_guide.gen_ai_local_foundational_model_settings";
 
+// A boolean pref for the on-device GenAI foundational model user settings.
+const char kOnDeviceAiUserSettingsEnabled[] =
+    "optimization_guide.on_device_foundational_model_user_settings";
+
 }  // namespace localstate
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -113,6 +117,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                               PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
       localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
+  registry->RegisterBooleanPref(localstate::kOnDeviceAiUserSettingsEnabled,
+                                true);
 }
 
 void PruneOldUsagePrefs(PrefService* local_state) {

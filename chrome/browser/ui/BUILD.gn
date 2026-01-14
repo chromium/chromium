@@ -2984,6 +2984,8 @@ static_library("ui") {
       "webui/on_device_translation_internals/on_device_translation_internals_ui.h",
       "webui/profile_helper.cc",
       "webui/profile_helper.h",
+      "webui/settings/on_device_ai_settings_handler.cc",
+      "webui/settings/on_device_ai_settings_handler.h",
       "webui/settings/settings_default_browser_handler.cc",
       "webui/settings/settings_default_browser_handler.h",
       "webui/settings/settings_manage_profile_handler.cc",

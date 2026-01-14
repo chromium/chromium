@@ -8542,6 +8542,9 @@ test("unit_tests") {
         "../browser/ui/webui/password_manager/promo_cards/move_passwords_promo_unittest.cc",
       ]
     }
+    if (!is_chromeos && is_chrome_branded) {
+      sources += [ "../browser/ui/webui/settings/on_device_ai_settings_handler_unittest.cc" ]
+    }
 
     if (is_mac) {
       sources +=

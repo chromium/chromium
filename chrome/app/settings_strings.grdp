@@ -4095,6 +4095,14 @@
       Browser proxy settings are controlled by multiple sources
     </message>
   </if>
+  <if expr="not is_chromeos and _google_chrome">
+    <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL" desc="Label for the toggle that allows or prevents chrome to download on device GenAI models to local disk.">
+      On-device GenAI Enabled
+    </message>
+    <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL" desc="This string describes what turning off the toggle implies.">
+      Powers features like scam detection locally. Turning this off deletes GenAI models from your device and disables these features.
+    </message>
+  </if>
 
   <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
     <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.

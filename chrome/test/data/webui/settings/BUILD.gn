@@ -231,6 +231,9 @@ build_webui_tests("build") {
       "translate_page_metrics_test_browser.ts",
       "translate_page_test.ts",
     ]
+    if (is_chrome_branded) {
+      files += [ "system_page_official_test.ts" ]
+    }
   }
 
   if (is_mac) {

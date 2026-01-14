@@ -59,6 +59,9 @@ extern const char kGenAILocalFoundationalModelEnterprisePolicySettings[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsLocalFoundationalModelEnterprisePolicyAllowed();
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceAiUserSettingsEnabled[];
+
 }  // namespace localstate
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
