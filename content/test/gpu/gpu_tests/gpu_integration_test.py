@@ -314,6 +314,9 @@ class GpuIntegrationTest(
         # TODO(crbug.com/458424927): Remove this once the feature no longer
         # causes test failures.
         '--disable-features=SessionRestoreInfobar',
+        # TODO(crbug.com/458424927): Remove this once the feature no longer
+        # causes trace_test speed regression on Android devices.
+        '--disable-features=AndroidWarmUpSpareRendererWithTimeout',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
