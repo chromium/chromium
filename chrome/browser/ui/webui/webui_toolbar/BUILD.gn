@@ -11,7 +11,11 @@ import("//ui/webui/resources/tools/build_webui.gni")
 mojom("mojo_bindings") {
   sources = [ "webui_toolbar.mojom" ]
   webui_module_path = "/"
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry/mojom",
+  ]
 }
 
 source_set("webui_toolbar") {

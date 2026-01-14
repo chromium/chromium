@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -15,12 +16,16 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -49,7 +54,6 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   // We must save the pointer to the WebView so we can load the URL after the
   // view is added to a widget.
   web_view_ = AddChildView(std::move(web_view));
-  web_contents->SetDelegate(this);
   Observe(web_contents);
 
   // The accessibility and tooltip attributes are handled by the WebUI.
@@ -68,19 +72,31 @@ void WebUIToolbarWebView::AddedToWidget() {
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
+  GetWebUIToolbarUI()->SetDelegate(this);
   reload_control_.Init();
 }
 
-bool WebUIToolbarWebView::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
+void WebUIToolbarWebView::HandleContextMenu(
+    webui_toolbar::mojom::ContextMenuType menu_type,
+    gfx::Point viewport_coordinate_css_pixels,
+    ui::mojom::MenuSourceType source) {
+  CHECK(web_view_);
+  // The coordinates are in CSS pixels relative the viewport origin. We need
+  // to multiply by the page scaling factor to convert them to DIPs before we
+  // can use them as the offset from the viewport origin to show the menu.
+  double page_zoom_scale = blink::ZoomLevelToZoomFactor(
+      zoom::ZoomController::GetZoomLevelForWebContents(
+          web_view_->web_contents()));
   gfx::Point screen_location = GetBoundsInScreen().origin();
-  screen_location.Offset(params.x, params.y);
+  screen_location +=
+      ScaleToRoundedPoint(viewport_coordinate_css_pixels, page_zoom_scale)
+          .OffsetFromOrigin();
 
-  // TODO(crbug.com/470955454): Dispatch context menu based on which context
-  // menu was triggered.
-  return reload_control_.HandleContextMenu(GetWidget(), screen_location,
-                                           params);
+  switch (menu_type) {
+    case webui_toolbar::mojom::ContextMenuType::kReload:
+      reload_control_.HandleContextMenu(GetWidget(), screen_location, source);
+      break;
+  }
 }
 
 void WebUIToolbarWebView::DidFinishLoad(

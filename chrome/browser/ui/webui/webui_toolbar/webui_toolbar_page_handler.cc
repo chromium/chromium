@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -72,11 +73,13 @@ WebUIToolbarPageHandler::WebUIToolbarPageHandler(
     mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver,
     mojo::PendingRemote<webui_toolbar::mojom::Page> page,
     content::WebContents* web_contents,
-    CommandUpdater* command_updater)
+    CommandUpdater* command_updater,
+    WebUIToolbarDelegate* delegate)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_contents_(web_contents),
-      command_updater_(command_updater) {
+      command_updater_(command_updater),
+      delegate_(delegate) {
   CHECK(web_contents_);
   CHECK(command_updater_);
 }
@@ -135,13 +138,14 @@ void WebUIToolbarPageHandler::StopReload() {
   // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
-void WebUIToolbarPageHandler::ShowContextMenu(int32_t offset_x,
-                                              int32_t offset_y) {
-  content::ContextMenuParams params;
-  params.x = offset_x;
-  params.y = offset_y;
-  web_contents_->GetDelegate()->HandleContextMenu(
-      *web_contents_->GetPrimaryMainFrame(), params);
+void WebUIToolbarPageHandler::ShowContextMenu(
+    webui_toolbar::mojom::ContextMenuType menu_type,
+    const gfx::Point& viewport_coordinate_css_pixels,
+    ui::mojom::MenuSourceType source) {
+  if (delegate_) {
+    delegate_->HandleContextMenu(menu_type, viewport_coordinate_css_pixels,
+                                 source);
+  }
 }
 
 void WebUIToolbarPageHandler::SetReloadButtonState(bool is_loading,

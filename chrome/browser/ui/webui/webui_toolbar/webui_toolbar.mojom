@@ -4,6 +4,9 @@
 
 module webui_toolbar.mojom;
 
+import "ui/base/mojom/menu_source_type.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // Factory ensures that the Page and PageHandler interfaces are always created
 // together without requiring an initialization call from the WebUI to the
 // handler.
@@ -19,6 +22,11 @@ enum ClickDispositionFlag {
   kMiddleMouseButton = 0,
   kAltKeyDown = 1,
   kMetaKeyDown = 2,
+};
+
+// The context menu types that can be opened with PageHandler's ShowContextMenu.
+enum ContextMenuType {
+  kReload,
 };
 
 // Called from TS side of chrome://webui-toolbar.top-chrome
@@ -38,11 +46,13 @@ interface PageHandler {
   // Stops the current page from reloading. If the page is not in a loading
   // state, it is a no-op.
   StopReload();
-  // Displays the context menu for the associated button with the x and y offset
-  // in pixel relative to the WebUIToolbarWebView's origin.
-  // TODO(crbug.com/470955454): Adjust this API to indicate which control's
-  // context menu we need to show.
-  ShowContextMenu(int32 offset_x, int32 offset_y);
+  // Displays the context menu with the provided menu type at the provided
+  // offset in CSS pixels relative to the WebUIToolbarWebView's viewport origin.
+  // The source indicates what triggered showing this menu (mouse, keyboard,
+  // etc).
+  ShowContextMenu(ContextMenuType menu_type,
+                  gfx.mojom.Point viewport_coordinate_css_pixels,
+                  ui.mojom.MenuSourceType source);
 };
 
 // Called from C++ side of chrome://webui-toolbar.top-chrome

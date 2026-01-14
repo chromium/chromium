@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 
 class CommandUpdater;
 class MetricsReporter;
@@ -23,11 +24,20 @@ class WebContents;
 
 class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
  public:
+  class WebUIToolbarDelegate {
+   public:
+    virtual void HandleContextMenu(
+        webui_toolbar::mojom::ContextMenuType menu_type,
+        gfx::Point viewport_coordinate_css_pixels,
+        ui::mojom::MenuSourceType source) = 0;
+  };
+
   WebUIToolbarPageHandler(
       mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver,
       mojo::PendingRemote<webui_toolbar::mojom::Page> page,
       content::WebContents* web_contents,
-      CommandUpdater* command_updater);
+      CommandUpdater* command_updater,
+      WebUIToolbarDelegate* web_view);
 
   WebUIToolbarPageHandler(const WebUIToolbarPageHandler&) = delete;
   WebUIToolbarPageHandler& operator=(const WebUIToolbarPageHandler&) = delete;
@@ -41,7 +51,9 @@ class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
               const std::vector<webui_toolbar::mojom::ClickDispositionFlag>&
                   flags) override;
   void StopReload() override;
-  void ShowContextMenu(int32_t offset_x, int32_t offset_y) override;
+  void ShowContextMenu(webui_toolbar::mojom::ContextMenuType menu_type,
+                       const gfx::Point& viewport_coordinate_css_pixels,
+                       ui::mojom::MenuSourceType source) override;
 
  private:
   // Returns the MetricsReporter associated with `web_contents_` or nullptr.
@@ -65,6 +77,8 @@ class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
   const raw_ptr<content::WebContents> web_contents_;
   // Not owned.
   const raw_ptr<CommandUpdater> command_updater_;
+
+  raw_ptr<WebUIToolbarDelegate> delegate_;
 
   // Must be the last member.
   base::WeakPtrFactory<WebUIToolbarPageHandler> weak_ptr_factory_{this};

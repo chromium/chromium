@@ -53,14 +53,16 @@ constexpr char kInputToReloadMouseReleaseHistogram[] =
 constexpr char kInputToStopMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
-class MockWebContentsDelegate : public content::WebContentsDelegate {
+class MockWebWebUIToolbarDelegate
+    : public WebUIToolbarPageHandler::WebUIToolbarDelegate {
  public:
-  MockWebContentsDelegate() = default;
-  ~MockWebContentsDelegate() override = default;
+  MockWebWebUIToolbarDelegate() = default;
 
-  MOCK_METHOD(bool,
+  MOCK_METHOD(void,
               HandleContextMenu,
-              (content::RenderFrameHost&, const content::ContextMenuParams&),
+              (webui_toolbar::mojom::ContextMenuType,
+               gfx::Point,
+               ui::mojom::MenuSourceType),
               (override));
 };
 
@@ -84,7 +86,8 @@ class WebUIToolbarPageHandlerTest : public testing::Test {
     handler_ = std::make_unique<WebUIToolbarPageHandler>(
         mojo::PendingReceiver<webui_toolbar::mojom::PageHandler>(),
         page().BindAndGetRemote(), web_contents_.get(),
-        mock_command_updater_.get());
+        mock_command_updater_.get(),
+        /*delegate=*/&delegate_);
 
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
@@ -131,6 +134,7 @@ class WebUIToolbarPageHandlerTest : public testing::Test {
 
   WebUIToolbarPageHandler& handler() { return *handler_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  MockWebWebUIToolbarDelegate& delegate() { return delegate_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -143,6 +147,7 @@ class WebUIToolbarPageHandlerTest : public testing::Test {
   raw_ptr<testing::NiceMock<MockMetricsReporter>> mock_metrics_reporter_;
   std::unique_ptr<WebUIToolbarPageHandler> handler_;
   base::HistogramTester histogram_tester_;
+  MockWebWebUIToolbarDelegate delegate_;
 };
 
 // Test suite for Reload-related tests.
@@ -268,12 +273,12 @@ TEST_F(WebUIToolbarPageHandlerStopReloadTest, StopReloadNoMetricsReporter) {
 
 // Tests that calling ShowContextMenu() opens the context menu.
 TEST_F(WebUIToolbarPageHandlerTest, TestShowContextMenu) {
-  MockWebContentsDelegate delegate;
-  web_contents().SetDelegate(&delegate);
-  EXPECT_CALL(delegate, HandleContextMenu(testing::_, testing::_))
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(delegate(),
+              HandleContextMenu(testing::_, testing::_, testing::_));
 
-  handler().ShowContextMenu(/*offset_x=*/1, /*offset_y=*/2);
+  handler().ShowContextMenu(webui_toolbar::mojom::ContextMenuType::kReload,
+                            gfx::Point(1, 2),
+                            ui::mojom::MenuSourceType::kMouse);
   web_contents().SetDelegate(nullptr);
 }
 

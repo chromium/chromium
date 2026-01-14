@@ -37,7 +37,7 @@ class WebUIReloadControl : public ReloadControl {
 
   bool HandleContextMenu(views::Widget* widget,
                          gfx::Point screen_location,
-                         const content::ContextMenuParams& params);
+                         ui::mojom::MenuSourceType source);
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;

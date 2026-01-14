@@ -32,6 +32,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 
+  void SetDelegate(WebUIToolbarPageHandler::WebUIToolbarDelegate* delegate);
+
   WebUIToolbarPageHandler* webui_toolbar_page_handler_for_testing();
 
   // TopChromeWebUIController:
@@ -61,6 +63,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   std::unique_ptr<WebUIToolbarPageHandler> webui_toolbar_page_handler_;
   mojo::Receiver<webui_toolbar::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+
+  raw_ptr<WebUIToolbarPageHandler::WebUIToolbarDelegate> delegate_ = nullptr;
 
   // Initialized only in tests by SetCommandUpdaterForTesting().
   raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;

@@ -94,7 +94,14 @@ void WebUIToolbarUI::CreatePageHandler(
     return;
   }
   webui_toolbar_page_handler_ = std::make_unique<WebUIToolbarPageHandler>(
-      std::move(receiver), std::move(page), web_contents, command_updater);
+      std::move(receiver), std::move(page), web_contents, command_updater,
+      delegate_);
+}
+
+void WebUIToolbarUI::SetDelegate(
+    WebUIToolbarPageHandler::WebUIToolbarDelegate* delegate) {
+  DCHECK(!webui_toolbar_page_handler_);
+  delegate_ = delegate;
 }
 
 WebUIToolbarPageHandler*

@@ -56,6 +56,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/webui/webui_toolbar",
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/saved_tab_groups/public",

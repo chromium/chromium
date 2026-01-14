@@ -4,10 +4,10 @@
 
 import '//resources/js/cr.js';
 
-import {ClickDispositionFlag, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './webui_toolbar.mojom-webui.js';
+import {ClickDispositionFlag, ContextMenuType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './webui_toolbar.mojom-webui.js';
 import type {PageHandlerInterface} from './webui_toolbar.mojom-webui.js';
 
-export {ClickDispositionFlag};
+export {ClickDispositionFlag, ContextMenuType};
 
 export interface BrowserProxy {
   callbackRouter: PageCallbackRouter;
