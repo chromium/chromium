@@ -23,10 +23,6 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
-namespace gfx {
-class GpuMemoryBuffer;
-}  // namespace gfx
-
 namespace gpu {
 class ClientSharedImage;
 }  // namespace gpu
