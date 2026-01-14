@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_EMPTY_FOCUSED_BROWSER_MANAGER_H_
 
 #include "build/build_config.h"
-#include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"  // CLEANUP: Remove this
@@ -18,8 +18,7 @@ namespace glic {
 
 // Simple focused browser manager implementation for single browser strategies
 // where the browser window can never go out of focus.
-class GlicEmptyFocusedBrowserManager
-    : public GlicFocusedBrowserManagerInterface {
+class GlicEmptyFocusedBrowserManager : public GlicFocusedBrowserManager {
  public:
   GlicEmptyFocusedBrowserManager();
   ~GlicEmptyFocusedBrowserManager() override;
@@ -28,7 +27,7 @@ class GlicEmptyFocusedBrowserManager
   GlicEmptyFocusedBrowserManager& operator=(
       const GlicEmptyFocusedBrowserManager&) = delete;
 
-  // GlicFocusedBrowserManagerInterface implementation.
+  // GlicFocusedBrowserManager implementation.
   using FocusedBrowserChangedCallback =
       base::RepeatingCallback<void(BrowserWindowInterface* candidate,
                                    BrowserWindowInterface* focused)>;
@@ -38,6 +37,7 @@ class GlicEmptyFocusedBrowserManager
       base::RepeatingCallback<void(BrowserWindowInterface*)> callback) override;
   BrowserWindowInterface* GetFocusedBrowser() const override;
   BrowserWindowInterface* GetActiveBrowser() const override;
+  BrowserWindowInterface* GetCandidateBrowser() const override;
   void OnGlicWindowActivationChanged(bool active) override {}
 };
 

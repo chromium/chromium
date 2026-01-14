@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_enums.h"
-#include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -163,7 +163,7 @@ class GlicSharingManager {
   virtual BrowserWindowInterface* GetFocusedBrowser() const = 0;
 
   // TODO(b:444463509): remove direct access to underlying manager.
-  virtual GlicFocusedBrowserManagerInterface& focused_browser_manager() = 0;
+  virtual GlicFocusedBrowserManager& focused_browser_manager() = 0;
 
   // Registers a callback to be invoked when the pinned status of a tab changes.
   using TabPinningStatusChangedCallback =

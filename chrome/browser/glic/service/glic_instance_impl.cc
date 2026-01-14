@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -191,8 +192,8 @@ GlicInstanceImpl::GlicInstanceImpl(
                        metrics,
                        contextual_cueing_service,
 #if !BUILDFLAG(IS_ANDROID)
-                       new GlicFocusedBrowserManager(this, profile),
-                       new GlicFocusedBrowserManager(this, profile)
+                       new GlicFocusedBrowserManagerImpl(this, profile),
+                       new GlicFocusedBrowserManagerImpl(this, profile)
 #else
                        false
 #endif

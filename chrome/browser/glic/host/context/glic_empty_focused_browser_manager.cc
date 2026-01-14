@@ -32,4 +32,9 @@ BrowserWindowInterface* GlicEmptyFocusedBrowserManager::GetActiveBrowser()
   return nullptr;
 }
 
+BrowserWindowInterface* GlicEmptyFocusedBrowserManager::GetCandidateBrowser()
+    const {
+  return nullptr;
+}
+
 }  // namespace glic

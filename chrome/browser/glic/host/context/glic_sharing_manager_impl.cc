@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
@@ -68,11 +69,10 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
     GlicWindowControllerInterface* window_controller,
     GlicMetrics* metrics)
     : focused_browser_manager_(
-          std::make_unique<GlicFocusedBrowserManager>(window_controller,
-                                                      profile)),
+          std::make_unique<GlicFocusedBrowserManagerImpl>(window_controller,
+                                                          profile)),
       focused_tab_manager_(std::make_unique<GlicFocusedTabManager>(
-          static_cast<GlicFocusedBrowserManager*>(
-              focused_browser_manager_.get()))),
+          focused_browser_manager_.get())),
       pinned_tab_manager_(
           std::make_unique<GlicPinnedTabManagerImpl>(profile,
                                                      window_controller,
@@ -83,7 +83,7 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
 
 GlicSharingManagerImpl::GlicSharingManagerImpl(
     std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
-    std::unique_ptr<GlicFocusedBrowserManagerInterface> focused_browser_manager,
+    std::unique_ptr<GlicFocusedBrowserManager> focused_browser_manager,
     GlicPinnedTabManager* pinned_tab_manager,
     Profile* profile,
     GlicMetrics* metrics)
@@ -216,8 +216,7 @@ BrowserWindowInterface* GlicSharingManagerImpl::GetFocusedBrowser() const {
   return focused_browser_manager_->GetFocusedBrowser();
 }
 
-GlicFocusedBrowserManagerInterface&
-GlicSharingManagerImpl::focused_browser_manager() {
+GlicFocusedBrowserManager& GlicSharingManagerImpl::focused_browser_manager() {
   return *focused_browser_manager_;
 }
 
