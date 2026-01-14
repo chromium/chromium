@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -33,6 +35,8 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   int GetMinWebContentsWidthForTesting() const override;
 
  protected:
+  using WindowState = BrowserViewLayoutDelegate::WindowState;
+
   // The minimum width of the contents area itself. Applies even when side
   // panels are open and prevents zero or negative contents sizes.
   static constexpr int kContentsContainerMinimumWidth = 200;
@@ -138,10 +142,17 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
                                                 BrowserLayoutParams params,
                                                 bool needs_exclusion) const = 0;
 
+  // Configures the background of the top container as appropriate for the
+  // window. Since all browsers have a top container, common logic is here.
+  virtual void ConfigureTopContainerBackground(
+      const BrowserLayoutParams& params,
+      CustomCornersBackground* background);
+
   // Applies additional visual adjustments to UI elements that are not handled
   // by the traditional layout process. This could include clipping, text
   // rendering, overlay configuration, etc.
-  virtual void DoPostLayoutVisualAdjustments() {}
+  virtual void DoPostLayoutVisualAdjustments(
+      const BrowserLayoutParams& params) {}
 
  private:
   // Retrieve dimensions of modal dialogs.

@@ -85,36 +85,6 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
   View::PaintChildren(paint_info);
 }
 
-void TopContainerView::Layout(PassKey) {
-  LayoutSuperclass<views::View>(this);
-
-  auto* const background =
-      static_cast<CustomCornersBackground*>(GetBackground());
-
-  if (browser_view_->ShouldDrawVerticalTabStrip()) {
-    // Top container draws an opaque background when in vertical tabstrip mode.
-    background->SetVisible(true);
-    background->SetPrimaryColor(CustomCornersBackground::TopContainerTheme());
-
-    // Rounded corners are drawn when not maximized or fullscreen.
-    CustomCornersBackground::Corners corners;
-    if (!browser_view_->IsMaximized() && !browser_view_->IsFullscreen()) {
-      corners.upper_trailing = CustomCornersBackground::GetWindowCorner();
-    }
-    background->SetCorners(corners);
-  } else if (browser_view_->IsFullscreen()) {
-    // When in immersive mode, top container is painted with the frame color.
-    // The color matches the active frame, allowing the tabstrip to paint
-    // correctly.
-    background->SetVisible(true);
-    background->SetPrimaryColor(ui::kColorFrameActive);
-    background->SetCorners(CustomCornersBackground::Corners());
-  } else {
-    // No need to paint otherwise.
-    background->SetVisible(false);
-  }
-}
-
 void TopContainerView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }

@@ -22,6 +22,10 @@ class BrowserViewLayoutDelegate {
  public:
   virtual ~BrowserViewLayoutDelegate() = default;
 
+  // The state the window is in. We do not lay out when minimized/hidden, so
+  // that isn't included here.
+  enum class WindowState { kNormal, kMaximized, kFullscreen };
+
   virtual bool ShouldDrawTabStrip() const = 0;
   virtual bool ShouldUseTouchableTabstrip() const = 0;
   virtual bool ShouldDrawVerticalTabStrip() const = 0;
@@ -30,6 +34,7 @@ class BrowserViewLayoutDelegate {
   virtual bool GetBorderlessModeEnabled() const = 0;
   virtual BrowserLayoutParams GetBrowserLayoutParams(
       bool use_browser_bounds) const = 0;
+  virtual WindowState GetBrowserWindowState() const = 0;
   virtual views::LayoutAlignment GetWindowTitleAlignment() const = 0;
   virtual bool IsToolbarVisible() const = 0;
   virtual bool IsBookmarkBarVisible() const = 0;

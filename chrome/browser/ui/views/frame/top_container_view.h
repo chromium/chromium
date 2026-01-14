@@ -32,7 +32,6 @@ class TopContainerView : public views::View {
 
   // views::View overrides:
   void PaintChildren(const views::PaintInfo& paint_info) override;
-  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:

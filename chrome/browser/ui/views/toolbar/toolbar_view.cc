@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -56,10 +55,8 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
@@ -132,7 +129,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/frame_view.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -226,9 +222,6 @@ ToolbarView::~ToolbarView() {
 
   for (const auto& view_and_command : GetViewCommandMap()) {
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
-  }
-  if (browser_view_->GetSupportsTabStrip()) {
-    browser()->GetTabStripModel()->RemoveObserver(this);
   }
 }
 
@@ -482,9 +475,6 @@ void ToolbarView::Init() {
       button->set_tag(GetViewCommandMap().at(button->GetID()));
     }
   }
-  if (browser_view_->GetSupportsTabStrip()) {
-    browser()->GetTabStripModel()->AddObserver(this);
-  }
 
   initialized_ = true;
 }
@@ -572,8 +562,6 @@ void ToolbarView::UpdateForWebUITabStrip() {
   } else {
     new_tab_button_->SetVisible(false);
   }
-
-  InvalidateLayout();
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
@@ -764,10 +752,6 @@ void ToolbarView::Layout(PassKey) {
 
   if (display_mode_ == DisplayMode::kNormal) {
     LayoutCommon();
-    if (auto* const background =
-            static_cast<CustomCornersBackground*>(GetBackground())) {
-      background->SetCorners(GetCorners());
-    }
   }
 
   if (toolbar_controller_) {
@@ -1185,67 +1169,6 @@ void ToolbarView::OnTouchUiChanged() {
     LoadImages();
     PreferredSizeChanged();
   }
-}
-
-void ToolbarView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  // Corner rendering can be changed when selection model changes.
-  // This can be optimized by only detecting if the first tab is
-  // selected/unselected.
-  if (selection.selection_changed()) {
-    InvalidateLayout();
-  }
-}
-
-CustomCornersBackground::Corners ToolbarView::GetCorners() const {
-  const auto* const frame_view =
-      browser_view_->browser_widget()->GetFrameView();
-  const bool has_leading_frame_buttons =
-      frame_view->CaptionButtonsOnLeadingEdge();
-  const bool webui_tabstrip = browser_view_->webui_tab_strip();
-  const bool vertical_tabstrip = browser_view_->ShouldDrawVerticalTabStrip();
-
-  CustomCornersBackground::Corners corners;
-
-  if (vertical_tabstrip) {
-    if (!browser_view_->IsFullscreen()) {
-      // Draw leading corner if vertical tabstrip is directly adjacent to
-      // toolbar.
-      if (!has_leading_frame_buttons ||
-          !browser_view_->IsVerticalTabStripCollapsed()) {
-        corners.upper_leading.type =
-            CustomCornersBackground::CornerType::kRoundedWithBackground;
-      }
-      // Curve trailing corner when it goes all the way to the edge of the
-      // browser.
-      if (!frame_view->CaptionButtonsOnTrailingEdge()) {
-        corners.upper_trailing = CustomCornersBackground::GetWindowCorner();
-      }
-    }
-  } else if (!webui_tabstrip) {
-    // Trailing curve is always shown for normal horizontal tabstrip.
-    corners.upper_trailing.type =
-        CustomCornersBackground::CornerType::kRoundedWithBackground;
-
-    // If there is anything on the leading side or the first tab is not
-    // selected, then the corner radius is shown, otherwise we hide the corner
-    // radius. Also when showing WebUITabStrip, toolbar should not have receding
-    // corners.
-    const bool tab_strip_has_leading_action_buttons =
-        tabs::GetTabSearchPosition(browser()->profile()) ==
-        tabs::TabSearchPosition::kLeadingHorizontalTabstrip;
-    const bool first_tab_selected =
-        browser_->tab_strip_model()->IsTabInForeground(0);
-    if (has_leading_frame_buttons || tab_strip_has_leading_action_buttons ||
-        !first_tab_selected) {
-      corners.upper_leading.type =
-          CustomCornersBackground::CornerType::kRoundedWithBackground;
-    }
-  }
-
-  return corners;
 }
 
 BEGIN_METADATA(ToolbarView)

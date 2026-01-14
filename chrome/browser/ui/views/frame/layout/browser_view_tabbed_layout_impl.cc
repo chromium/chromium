@@ -15,9 +15,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 #include "chrome/browser/ui/views/frame/main_background_region_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -62,7 +64,7 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
   // In immersive mode, when the top container is visually separate, the
   // separator goes with the container to the overlay.
   bool top_container_is_visually_separate =
-      delegate().GetImmersiveModeController()->IsEnabled();
+      delegate().GetBrowserWindowState() == WindowState::kFullscreen;
 #if BUILDFLAG(IS_MAC)
   // On Mac, when in full browser fullscreen (but not content fullscreen), the
   // entire top container is always visible and does not look like an
@@ -790,4 +792,83 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
   return gfx::Rect(params.visual_client_area.x(), original_top,
                    params.visual_client_area.width(),
                    params.visual_client_area.y() - original_top);
+}
+
+void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
+    const BrowserLayoutParams& params,
+    CustomCornersBackground* background) {
+  // Fall back to default implementation when vertical tabstrip not present.
+  if (!delegate().ShouldDrawVerticalTabStrip()) {
+    BrowserViewLayoutImpl::ConfigureTopContainerBackground(params, background);
+    return;
+  }
+
+  // The top container always draws an opaque background when in vertical
+  // tabstrip mode.
+  background->SetVisible(true);
+  background->SetPrimaryColor(CustomCornersBackground::TopContainerTheme());
+
+  // Rounded corners are drawn when not maximized or fullscreen.
+  CustomCornersBackground::Corners corners;
+  if (delegate().GetBrowserWindowState() == WindowState::kNormal) {
+    corners.upper_trailing = CustomCornersBackground::GetWindowCorner();
+    const bool vertical_tab_strip_reaches_top =
+        !delegate().IsVerticalTabStripCollapsed() ||
+        params.leading_exclusion.IsEmpty();
+    if (!vertical_tab_strip_reaches_top) {
+      corners.upper_leading = CustomCornersBackground::GetWindowCorner();
+    }
+  }
+  background->SetCorners(corners);
+}
+
+void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
+    const BrowserLayoutParams& params) {
+  // Set toolbar corners.
+  CustomCornersBackground::Corners toolbar_corners;
+  switch (GetTabStripType()) {
+    case TabStripType::kHorizontal: {
+      // Trailing curve is always shown for normal horizontal tabstrip.
+      toolbar_corners.upper_trailing.type =
+          CustomCornersBackground::CornerType::kRoundedWithBackground;
+
+      // If there is anything on the leading side or the first tab is not
+      // selected, then the corner radius is shown, otherwise we hide the
+      // corner radius.
+      if (!delegate().IsActiveTabAtLeadingWindowEdge()) {
+        toolbar_corners.upper_leading.type =
+            CustomCornersBackground::CornerType::kRoundedWithBackground;
+      }
+      break;
+    }
+    case TabStripType::kVertical: {
+      const auto window_state = delegate().GetBrowserWindowState();
+      if (window_state != WindowState::kFullscreen) {
+        // Draw leading corner if vertical tabstrip is directly adjacent to
+        // toolbar. This happens when the tabstrip is full sized or if there
+        // are no caption buttons on the leading window edge.
+        if (!delegate().IsVerticalTabStripCollapsed() ||
+            params.leading_exclusion.IsEmpty()) {
+          toolbar_corners.upper_leading.type =
+              CustomCornersBackground::CornerType::kRoundedWithBackground;
+        }
+        // Curve trailing corner when it goes all the way to the edge of the
+        // browser.
+        if (params.trailing_exclusion.IsEmpty()) {
+          toolbar_corners.upper_trailing =
+              CustomCornersBackground::GetWindowCorner();
+        }
+      }
+      break;
+    }
+    case TabStripType::kWebUi:
+      // In WebUI tabstrip mode, there's a titlebar at the top of the window
+      // directly above the toolbar, so no corners are needed.
+      break;
+    default:
+      // Ideally this should not be reached.
+      break;
+  }
+  static_cast<CustomCornersBackground*>(views().toolbar->background())
+      ->SetCorners(toolbar_corners);
 }

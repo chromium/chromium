@@ -229,6 +229,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ExtraInfobarOffset) {
   ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
 
+  // Note that setting the immersive mode controller to "on" without making the
+  // window fullscreen may cause some minor discrepancies in layout. They should
+  // not adversely affect this test.
   ImmersiveModeControllerMac* controller =
       reinterpret_cast<ImmersiveModeControllerMac*>(
           ImmersiveModeController::From(browser()));
@@ -247,7 +250,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   controller->OnImmersiveModeMenuBarRevealChanged(1);
   RunScheduledLayouts();
   int revealed = controller->GetExtraInfobarOffset();
-  EXPECT_EQ(revealed, half_revealed * 2);
+  // The size may be even or odd, in which case one of these is true.
+  EXPECT_GE(revealed, half_revealed * 2);
+  EXPECT_LE(revealed, half_revealed * 2 + 1);
 
   // Now with non-zero menubar.
   controller->OnAutohidingMenuBarHeightChanged(30);

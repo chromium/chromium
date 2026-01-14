@@ -74,6 +74,17 @@ BrowserLayoutParams BrowserViewLayoutDelegateImpl::GetBrowserLayoutParams(
       use_browser_bounds ? browser_view_->bounds() : params.visual_client_area);
 }
 
+BrowserViewLayoutDelegateImpl::WindowState
+BrowserViewLayoutDelegateImpl::GetBrowserWindowState() const {
+  if (browser_view_->IsFullscreen()) {
+    return WindowState::kFullscreen;
+  }
+  if (browser_view_->IsMaximized()) {
+    return WindowState::kMaximized;
+  }
+  return WindowState::kNormal;
+}
+
 views::LayoutAlignment BrowserViewLayoutDelegateImpl::GetWindowTitleAlignment()
     const {
   return GetFrameView()->GetWindowTitleAlignment();

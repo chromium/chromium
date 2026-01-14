@@ -349,7 +349,8 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
   }
 }
 
-void BrowserViewAppLayoutImpl::DoPostLayoutVisualAdjustments() {
+void BrowserViewAppLayoutImpl::DoPostLayoutVisualAdjustments(
+    const BrowserLayoutParams&) {
   // Update the window controls overlay.
   if (overlay_rect_ && delegate().IsWindowControlsOverlayEnabled()) {
     delegate().UpdateWindowControlsOverlay(*overlay_rect_);

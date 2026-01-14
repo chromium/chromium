@@ -30,7 +30,7 @@ class BrowserViewAppLayoutImpl : public BrowserViewLayoutImpl {
   gfx::Rect CalculateTopContainerLayout(ProposedLayout& layout,
                                         BrowserLayoutParams params,
                                         bool needs_exclusion) const override;
-  void DoPostLayoutVisualAdjustments() override;
+  void DoPostLayoutVisualAdjustments(const BrowserLayoutParams&) override;
 
  private:
   // Lays out titlebar elements adding them to `parent`, and updating `params`.

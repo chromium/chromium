@@ -13,11 +13,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
-#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -74,8 +72,7 @@ class ToolbarView : public views::AccessiblePaneView,
                     public CommandObserver,
                     public AppMenuIconController::Delegate,
                     public ToolbarButtonProvider,
-                    public BrowserRootView::DropTarget,
-                    public TabStripModelObserver {
+                    public BrowserRootView::DropTarget {
   METADATA_HEADER(ToolbarView, views::AccessiblePaneView)
 
  public:
@@ -197,12 +194,6 @@ class ToolbarView : public views::AccessiblePaneView,
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   friend class AvatarToolbarButtonBaseBrowserTest;
 
  protected:
@@ -275,8 +266,6 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnTouchUiChanged();
 
   void NewTabButtonPressed(const ui::Event& event);
-
-  CustomCornersBackground::Corners GetCorners() const;
 
   gfx::SlideAnimation size_animation_{this};
 

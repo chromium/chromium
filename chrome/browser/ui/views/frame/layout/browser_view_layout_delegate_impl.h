@@ -29,6 +29,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   bool GetBorderlessModeEnabled() const override;
   BrowserLayoutParams GetBrowserLayoutParams(
       bool use_browser_bounds) const override;
+  WindowState GetBrowserWindowState() const override;
   views::LayoutAlignment GetWindowTitleAlignment() const override;
   bool IsToolbarVisible() const override;
   bool IsBookmarkBarVisible() const override;
