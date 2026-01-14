@@ -78,15 +78,17 @@ class SimulatorManager:
                 # Only process iOS runtimes.
                 if 'iOS' not in runtime:
                     continue
-                os_version = runtime.split('iOS-')[-1].replace('-', '.')
+                os_version_full = runtime.split('iOS-')[-1].replace('-', '.')
+                # Use only major.minor version for xcodebuild compatibility.
+                os_version = '.'.join(os_version_full.split('.')[:2])
                 for device in devices:
                     self.simulators.append(
                         Simulator(name=device.get('name', ''),
                                   udid=device.get('udid', ''),
                                   os_version=os_version,
                                   state=device.get('state', ''),
-                                  is_available=device.get('isAvailable',
-                                                          False)))
+                                  is_available=device.get(
+                                      'isAvailable', False)))
         except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
             print(f"Error fetching simulator list: {e}")
 
@@ -100,14 +102,15 @@ class SimulatorManager:
     def find_specific_device(self, identifier: str) -> Optional[Simulator]:
         """Finds a specific device by name or UDID."""
         for sim in self.simulators:
-            if sim.name.lower() == identifier.lower() or sim.udid == identifier:
+            if sim.name.lower() == identifier.lower(
+            ) or sim.udid == identifier:
                 return sim
         return None
 
     def find_best_available_device(self) -> Optional[Simulator]:
         """Finds the best available iPhone simulator to use as a default."""
         best_candidate = None
-        best_sdk_version = (0,)
+        best_sdk_version = (0, )
         best_iphone_version = 0
 
         for sim in self.simulators:
@@ -134,14 +137,16 @@ class SimulatorManager:
             os_version: Optional[str] = None) -> Optional[Simulator]:
         """Finds a device that matches a specific type and OS version."""
         best_candidate = None
-        best_sdk_version = (0,)
+        best_sdk_version = (0, )
 
         for sim in self.simulators:
             if not sim.is_available or sim.name.lower() != device_type.lower():
                 continue
 
             if os_version:
-                if sim.os_version == os_version:
+                # Truncate input os_version to major.minor for comparison.
+                os_version_truncated = '.'.join(os_version.split('.')[:2])
+                if sim.os_version == os_version_truncated:
                     return sim
             else:
                 current_sdk_version = sim.parsed_os_version
@@ -197,7 +202,8 @@ def find_and_boot_simulator(device_type: Optional[str],
             return None
 
     print(
-        f"{Colors.BLUE}Device: {simulator_to_use.display_string}{Colors.RESET}")
+        f"{Colors.BLUE}Device: {simulator_to_use.display_string}{Colors.RESET}"
+    )
 
     # Boot the selected device if it's not already running.
     if not simulator_to_use.booted:
