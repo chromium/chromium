@@ -639,6 +639,64 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.Android.AAudioXRunCount.Input.Interval"
+    units="glitches" expires_after="2026-06-30">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs the number of glitches reported by `AAudioStream_getXRunCount()` in a
+    regular 10s interval. Logged once every 10s, for each input stream. Note:
+    glitch counts cannot be mapped back to a number of frames or a duration.
+    There is no way to assess the severity of glitches, only the number of
+    glitches. Note: Some input devices do not support `getXRunCount()`, and
+    always report 0 glitches in that case.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Android.AAudioXRunCount.Input.Short"
+    units="glitches" expires_after="2026-06-30">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs the number of glitches reported by `AAudioStream_getXRunCount()`, when
+    we've accumulated fewer than 10s of data. This covers all input streams who
+    are closed within 10s of being created, as well as the last few seconds of
+    any longer-lived stream's lifetime. Logged on stream closure, for each input
+    stream. Note: glitch counts cannot be mapped back to a number of frames or a
+    duration. There is no way to assess the severity of glitches, only the
+    number of glitches. Note: Some input devices do not support
+    `getXRunCount()`, and always report 0 glitches in that case.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Android.AAudioXRunCount.Output.Interval"
+    units="glitches" expires_after="2026-06-30">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs the number of glitches reported by `AAudioStream_getXRunCount()` in a
+    regular 10s interval. Logged once every 10s, for each output stream. Note:
+    glitch counts cannot be mapped back to a number of frames or a duration.
+    There is no way to assess the severity of glitches, only the number of
+    glitches.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Android.AAudioXRunCount.Output.Short"
+    units="glitches" expires_after="2026-06-30">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs the number of glitches reported by `AAudioStream_getXRunCount()`, when
+    we've accumulated fewer than 10s of data. This covers all output streams who
+    are closed within 10s of being created, as well as the last few seconds of
+    any longer-lived stream's lifetime. Logged on stream closure, for each
+    output stream. Note: glitch counts cannot be mapped back to a number of
+    frames or a duration. There is no way to assess the severity of glitches,
+    only the number of glitches.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Android.DevicesChanged" enum="DeviceChangeKind"
     expires_after="2026-10-20">
   <owner>mjel@google.com</owner>

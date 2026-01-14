@@ -19,6 +19,7 @@
 namespace media {
 
 class AAudioDestructionHelper;
+class AAudioGlitchReporter;
 
 // Small wrapper around AAudioStream which handles its lifetime.
 class AAudioStreamWrapper {
@@ -105,6 +106,9 @@ class AAudioStreamWrapper {
 
   // Constant used for calculating latency. Amount of nanoseconds per frame.
   const double ns_per_frame_;
+
+  // Helper to log underruns/overruns to UMAs.
+  std::unique_ptr<AAudioGlitchReporter> glitch_reporter_;
 
   // Bound to the audio data callback. Outlives |this| in case the callbacks
   // continue after |this| is destroyed. See crbug.com/1183255.
