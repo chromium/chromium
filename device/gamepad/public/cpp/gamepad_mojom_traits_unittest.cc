@@ -86,19 +86,19 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
 
   send.connected = true;
   for (size_t i = 0; i < kTestIdStringLength; i++) {
-    UNSAFE_TODO(send.id[i]) = kTestIdString[i];
+    send.id[i] = kTestIdString[i];
   }
   send.mapping = GamepadMapping::kNone;
   send.timestamp = base::TimeTicks::Now().since_origin().InMicroseconds();
   send.axes_length = 0U;
   for (size_t i = 0; i < Gamepad::kAxesLengthCap; i++) {
     send.axes_length++;
-    UNSAFE_TODO(send.axes[i]) = 1.0;
+    send.axes[i] = 1.0;
   }
   send.buttons_length = 0U;
   for (size_t i = 0; i < Gamepad::kButtonsLengthCap; i++) {
     send.buttons_length++;
-    UNSAFE_TODO(send.buttons[i]) = wgb;
+    send.buttons[i] = wgb;
   }
   send.pose = wgp;
   send.hand = GamepadHand::kRight;
@@ -107,7 +107,7 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   send.touch_events_length = 0U;
   for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
     send.touch_events_length++;
-    UNSAFE_TODO(send.touch_events[i]) = wgt;
+    send.touch_events[i] = wgt;
   }
   return send;
 }
@@ -172,25 +172,23 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
     return false;
   }
   for (size_t i = 0; i < Gamepad::kIdLengthCap; i++) {
-    if (UNSAFE_TODO(send.id[i]) != UNSAFE_TODO(echo.id[i])) {
+    if (send.id[i] != echo.id[i]) {
       return false;
     }
   }
   for (size_t i = 0; i < Gamepad::kAxesLengthCap; i++) {
-    if (UNSAFE_TODO(send.axes[i]) != UNSAFE_TODO(echo.axes[i])) {
+    if (send.axes[i] != echo.axes[i]) {
       return false;
     }
   }
   for (size_t i = 0; i < Gamepad::kButtonsLengthCap; i++) {
-    if (!isWebGamepadButtonEqual(UNSAFE_TODO(send.buttons[i]),
-                                 UNSAFE_TODO(echo.buttons[i]))) {
+    if (!isWebGamepadButtonEqual(send.buttons[i], echo.buttons[i])) {
       return false;
     }
   }
 
   for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
-    if (!isWebGamepadTouchEqual(UNSAFE_TODO(send.touch_events[i]),
-                                UNSAFE_TODO(echo.touch_events[i]))) {
+    if (!isWebGamepadTouchEqual(send.touch_events[i], echo.touch_events[i])) {
       return false;
     }
   }

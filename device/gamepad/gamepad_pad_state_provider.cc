@@ -131,10 +131,10 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   if (pad_state->axis_mask != full_axis_mask) {
     for (size_t axis = 0; axis < pad->axes_length; ++axis) {
       if (!(pad_state->axis_mask & 1 << axis)) {
-        if (fabs(UNSAFE_TODO(pad->axes[axis])) < kMinAxisResetValue) {
+        if (fabs(pad->axes[axis]) < kMinAxisResetValue) {
           pad_state->axis_mask |= 1 << axis;
         } else {
-          UNSAFE_TODO(pad->axes[axis]) = 0.0f;
+          pad->axes[axis] = 0.0f;
         }
       }
     }
@@ -145,11 +145,11 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   if (pad_state->button_mask != full_button_mask) {
     for (size_t button = 0; button < pad->buttons_length; ++button) {
       if (!(pad_state->button_mask & 1 << button)) {
-        if (!UNSAFE_TODO(pad->buttons[button]).pressed) {
+        if (!pad->buttons[button].pressed) {
           pad_state->button_mask |= 1 << button;
         } else {
-          UNSAFE_TODO(pad->buttons[button]).pressed = false;
-          UNSAFE_TODO(pad->buttons[button]).value = 0.0f;
+          pad->buttons[button].pressed = false;
+          pad->buttons[button].value = 0.0f;
         }
       }
     }

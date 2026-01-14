@@ -620,8 +620,7 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
         break;
     }
   }
-  UNSAFE_TODO(dst_pad.buttons[remapped_index]) =
-      UNSAFE_TODO(src_pad.buttons[button_index]);
+  dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];
 }
 
 // Update the state for a single button. The button state is taken from
@@ -676,8 +675,7 @@ void UpdateButtonForRightSide(const Gamepad& src_pad,
         NOTREACHED();
     }
   }
-  UNSAFE_TODO(dst_pad.buttons[remapped_index]) =
-      UNSAFE_TODO(src_pad.buttons[button_index]);
+  dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];
 }
 
 // Update the state for a single axis. The axis state is taken from the axis at
@@ -690,7 +688,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
                            size_t axis_index,
                            bool horizontal) {
   size_t remapped_index = axis_index;
-  double axis_value = UNSAFE_TODO(src_pad.axes[axis_index]);
+  double axis_value = src_pad.axes[axis_index];
   // The internal axis values assume a docked orientation for Joy-Cons. If a
   // Joy-Con is used by itself, remap the axis indices and adjust the sign on
   // the axis value for a horizontal orientation.
@@ -709,7 +707,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
         NOTREACHED();
     }
   }
-  UNSAFE_TODO(dst_pad.axes[remapped_index]) = axis_value;
+  dst_pad.axes[remapped_index] = axis_value;
 }
 
 // Update the state for a single axis. The axis state is taken from the axis at
@@ -722,7 +720,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
                             size_t axis_index,
                             bool horizontal) {
   size_t remapped_index = axis_index;
-  double axis_value = UNSAFE_TODO(src_pad.axes[axis_index]);
+  double axis_value = src_pad.axes[axis_index];
   // The internal axis values assume a docked orientation for Joy-Cons. If a
   // Joy-Con is used by itself, remap the axis indices and adjust the sign on
   // the axis value for a horizontal orientation.
@@ -741,7 +739,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
         NOTREACHED();
     }
   }
-  UNSAFE_TODO(dst_pad.axes[remapped_index]) = axis_value;
+  dst_pad.axes[remapped_index] = axis_value;
 }
 
 // Convert the vibration parameters |frequency| and |amplitude| into a set of
