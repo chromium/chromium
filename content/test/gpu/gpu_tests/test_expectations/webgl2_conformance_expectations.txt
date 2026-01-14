@@ -1025,6 +1025,9 @@ crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExt
 #[ highsierra nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 #[ mac nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 
+# Incorrect colors
+crbug.com/475877304 [ linux intel-0x9bc5 angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
+
 ####################
 # Fuchsia Failures #
 ####################
