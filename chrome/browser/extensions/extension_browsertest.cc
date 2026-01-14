@@ -877,6 +877,19 @@ content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
 #endif
 }
 
+BrowserWindowInterface* ExtensionBrowserTest::CreateBrowserWindowWithType(
+    BrowserWindowInterface::Type type) {
+  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+      type, *GetProfile(), /*from_user_gesture=*/false);
+  if (type == BrowserWindowInterface::Type::TYPE_APP) {
+    // Apps must have an app name.
+    create_params.app_name = "app_name";
+  }
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  return future.Get();
+}
+
 BrowserWindowInterface* ExtensionBrowserTest::CreateIncognitoBrowserWindow() {
   auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
   Profile* incognito_profile =

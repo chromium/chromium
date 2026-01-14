@@ -201,6 +201,11 @@ class ExtensionTabUtil {
   // Gets the extensions-specific split view ID.
   static int GetSplitId(const split_tabs::SplitTabId& id);
 
+  // Returns true if the `browser` supports tab groups in its tab strip. For
+  // example, tab groups are not supported by many app types (PWAs, WebApks,
+  // Chrome Apps, etc.).
+  static bool SupportsTabGroups(BrowserWindowInterface* browser);
+
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
   // found. `out_window`, `out_id`, or `out_visual_data` may be nullptr and will
   // not be set within the function if so.

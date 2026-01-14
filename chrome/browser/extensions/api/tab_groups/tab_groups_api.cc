@@ -173,13 +173,9 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
           }
         }
 
-#if !BUILDFLAG(IS_ANDROID)
-        // Android does not have a SupportsTabGroups() method.
-        TabStripModel* tab_strip = browser_window_interface->GetTabStripModel();
-        if (!tab_strip->SupportsTabGroups()) {
+        if (!ExtensionTabUtil::SupportsTabGroups(browser_window_interface)) {
           return true;
         }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
         TabListInterface* tab_list =
             TabListInterface::From(browser_window_interface);
@@ -273,14 +269,10 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Android does not have a SupportsTabGroups() method.
-  TabStripModel* tab_strip_model = window->GetBrowser()->tab_strip_model();
-  if (!tab_strip_model->SupportsTabGroups()) {
+  if (!ExtensionTabUtil::SupportsTabGroups(browser)) {
     return RespondNow(
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
-#endif
 
   // Update the visual data.
   auto* tab_list = TabListInterface::From(browser);
@@ -345,14 +337,11 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  // Android does not have a SupportsTabGroups() method.
-  TabStripModel* tab_strip = source_browser->GetTabStripModel();
-  if (!tab_strip->SupportsTabGroups()) {
+
+  if (!ExtensionTabUtil::SupportsTabGroups(source_browser)) {
     *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   TabListInterface* source_tab_list = TabListInterface::From(source_browser);
   if (!source_tab_list) {

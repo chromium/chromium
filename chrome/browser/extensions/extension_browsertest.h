@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/disable_reason.h"
@@ -32,7 +33,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class BrowserWindowInterface;
 class OwningTestTabModel;
 class Profile;
 
@@ -259,6 +259,11 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // for `url`.
   content::WebContents* PlatformOpenURLOffTheRecord(Profile* profile,
                                                     const GURL& url);
+
+  // Creates a browser window of `type` using the test's profile from
+  // GetProfile().
+  BrowserWindowInterface* CreateBrowserWindowWithType(
+      BrowserWindowInterface::Type type);
 
   // Creates a new incognito browser window using the incognito profile owned
   // by the test's profile from GetProfile().

@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -183,6 +184,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
                    GURL("chrome://version")),
                "");
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, SupportsTabGroups) {
+  // Tests default to a normal browser window.
+  ASSERT_EQ(BrowserWindowInterface::TYPE_NORMAL,
+            browser_window_interface()->GetType());
+
+  // Normal browsers support tab groups.
+  EXPECT_TRUE(ExtensionTabUtil::SupportsTabGroups(browser_window_interface()));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, DoesNotSupportTabGroups) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android doesn't support Chrome Apps, so we test with popups.
+  const auto window_type = BrowserWindowInterface::Type::TYPE_POPUP;
+#else
+  // Test other platforms with apps, because they are a more typical use case.
+  const auto window_type = BrowserWindowInterface::Type::TYPE_APP;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  BrowserWindowInterface* browser = CreateBrowserWindowWithType(window_type);
+
+  // The window does not support tab groups.
+  EXPECT_FALSE(ExtensionTabUtil::SupportsTabGroups(browser));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
