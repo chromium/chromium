@@ -14,6 +14,7 @@ namespace autofill {
 namespace payments {
 struct BnplIssuerContext;
 struct BnplIssuerTosDetail;
+struct TouchToFillDisplayOptions;
 }  // namespace payments
 
 class Iban;
@@ -30,8 +31,7 @@ class TouchToFillPaymentMethodView {
   virtual bool ShowPaymentMethods(
       TouchToFillPaymentMethodViewController* controller,
       base::span<const Suggestion> suggestions,
-      bool should_show_scan_credit_card,
-      bool should_show_gpay_logo) = 0;
+      const payments::TouchToFillDisplayOptions& options) = 0;
   virtual bool ShowIbans(TouchToFillPaymentMethodViewController* controller,
                          base::span<const Iban> ibans_to_suggest) = 0;
   virtual bool ShowAffiliatedLoyaltyCards(

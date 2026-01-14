@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -70,8 +71,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               ShowPaymentMethods,
               ((TouchToFillPaymentMethodViewController * controller),
                (base::span<const Suggestion> suggestions),
-               (bool should_show_scan_credit_card),
-               (bool should_show_gpay_logo)));
+               (const payments::TouchToFillDisplayOptions& options)));
   MOCK_METHOD(bool,
               ShowIbans,
               (TouchToFillPaymentMethodViewController * controller,
@@ -310,10 +310,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowPaymentMethodsPassesCreditCardsToTheView) {
   // Test that the cards have propagated to the view.
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
@@ -382,10 +382,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   std::optional<int64_t> extracted_amount = 12345;
   std::optional<std::string> app_locale = "en-US";
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_,
               OnPurchaseAmountExtracted(
                   testing::ElementsAre(
@@ -422,10 +422,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowProgressScreenOnPreexistingView) {
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
 
@@ -463,10 +463,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
       std::make_unique<MockTouchToFillPaymentMethodViewImpl>();
 
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_, ShowProgressScreen).Times(0);
   EXPECT_CALL(*new_mock_view, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
@@ -507,10 +507,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   base::MockOnceCallback<void(autofill::BnplIssuer)>
       mock_selected_issuer_callback;
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_,
               ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
       .WillOnce(Return(true));
@@ -624,10 +624,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   const std::u16string description = u"Error Description";
 
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true))
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_view_,
               ShowErrorScreen(&payment_method_controller(), title, description))
@@ -660,10 +660,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   const std::u16string description = u"Error Description";
 
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true,
-                                 /*should_show_gpay_logo=*/true))
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_view_, ShowErrorScreen).Times(0);
   EXPECT_CALL(*new_mock_view,

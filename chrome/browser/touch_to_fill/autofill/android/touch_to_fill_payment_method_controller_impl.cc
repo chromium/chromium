@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/android/window_android.h"
@@ -82,9 +83,11 @@ bool TouchToFillPaymentMethodControllerImpl::ShowPaymentMethods(
     return false;
   }
 
-  if (!view->ShowPaymentMethods(this, suggestions,
-                                delegate->ShouldShowScanCreditCard(),
-                                delegate->ShouldShowGPayLogo())) {
+  if (!view->ShowPaymentMethods(
+          this, suggestions,
+          payments::TouchToFillDisplayOptions{
+              .show_scan_credit_card = delegate->ShouldShowScanCreditCard(),
+              .show_gpay_logo = delegate->ShouldShowGPayLogo()})) {
     ResetJavaObject();
     return false;
   }

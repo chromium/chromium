@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -123,8 +124,7 @@ bool TouchToFillPaymentMethodViewImpl::IsReadyToShow(
 bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const Suggestion> suggestions,
-    bool should_show_scan_credit_card,
-    bool should_show_gpay_logo) {
+    const payments::TouchToFillDisplayOptions& options) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!IsReadyToShow(controller, env)) {
     return false;
@@ -165,8 +165,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
   }
   Java_TouchToFillPaymentMethodViewBridge_showPaymentMethods(
       env, java_object_, std::move(suggestions_array),
-      Java_TouchToFillDisplayOptions_create(env, should_show_scan_credit_card,
-                                            should_show_gpay_logo));
+      Java_TouchToFillDisplayOptions_create(env, options.show_scan_credit_card,
+                                            options.show_gpay_logo));
   return true;
 }
 
