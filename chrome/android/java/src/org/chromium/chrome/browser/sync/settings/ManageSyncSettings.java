@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.sync.settings;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -220,6 +221,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private boolean mIsFromSigninScreen;
     private boolean mShouldReplaceSyncSettingsWithAccountSettings;
+    private boolean mShouldUpdatePrefs;
 
     private SyncErrorCardPreference mSyncErrorCardPreference;
     private PreferenceCategory mSyncingCategory;
@@ -742,7 +744,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         updateDataTypeState();
         updateEncryptionState();
-        notifyPreferencesUpdated();
+
+        if (mShouldUpdatePrefs) {
+            notifyPreferencesUpdated();
+            mShouldUpdatePrefs = false;
+        }
     }
 
     /** Gets the state from data type checkboxes and saves this state into {@link SyncService}. */
@@ -1118,6 +1124,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL) {
             TrustedVaultClient.get()
                     .notifyKeysChanged(TrustedVaultUserActionTriggerForUMA.SETTINGS);
+            if (resultCode == Activity.RESULT_OK) {
+                mShouldUpdatePrefs = true;
+            }
         }
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
             TrustedVaultClient.get().notifyRecoverabilityChanged();
