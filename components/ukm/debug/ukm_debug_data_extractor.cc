@@ -123,7 +123,8 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
 
     base::Value::List entries_list;
     for (ukm::mojom::UkmEntry* entry : kv.second.entries) {
-      entries_list.Append(ConvertEntryToDict(ukm_service->decode_map_, *entry));
+      entries_list.Append(
+          ConvertEntryToDict(ukm_service->GetDecodeMap(), *entry));
     }
 
     source_dict.Set("events", std::move(entries_list));

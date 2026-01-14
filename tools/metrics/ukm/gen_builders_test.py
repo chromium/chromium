@@ -111,7 +111,7 @@ struct EntryDecoder {
   const MetricDecodeMap metric_map;
 };
 typedef std::map<uint64_t, EntryDecoder> DecodeMap;
-DecodeMap CreateDecodeMap();""", decode_header_output)
+const DecodeMap& GetDecodeMap();""", decode_header_output)
 
     decode_impl_output = DECODE_IMPL_TEMPLATE._StampFileCode(relpath, data)
     self.assertIsNotNone(decode_impl_output)

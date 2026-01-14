@@ -42,16 +42,6 @@ mojom::UkmEntryPtr BlankUkmEntry(SourceId source_id) {
                               base::flat_map<uint64_t, int64_t>());
 }
 
-std::map<uint64_t, builders::EntryDecoder> CreateTestingDecodeMap() {
-  return {
-      {kTestEntryHash,
-       {kTestEntryName,
-        {
-            {kTestMetricsHash, kTestMetrics},
-        }}},
-  };
-}
-
 MATCHER_P2(MatchesDownsamplingRate,
            event_hash,
            standard_rate,
@@ -322,13 +312,30 @@ TEST(UkmRecorderImplTest, WebIdentityScopeUrl) {
   EXPECT_EQ(SourceIdType::WEB_IDENTITY_ID, GetSourceIdType(id));
 }
 
+// A test version of TestAutoSetUkmRecorder that overrides the GetDecodeMap()
+// method to return a mock `decode_map`.
+class TestAutoSetUkmRecorderWithMockEntries : public TestAutoSetUkmRecorder {
+ public:
+  const builders::DecodeMap& GetDecodeMap() const override {
+    return decode_map_;
+  }
+
+ private:
+  builders::DecodeMap decode_map_ = {
+      {kTestEntryHash,
+       {kTestEntryName,
+        {
+            {kTestMetricsHash, kTestMetrics},
+        }}},
+  };
+};
+
 // Tests that UkmRecorderObserver is notified on a new UKM entry.
 TEST(UkmRecorderImplTest, ObserverNotifiedOnNewEntry) {
   base::test::TaskEnvironment env;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ukm::TestAutoSetUkmRecorderWithMockEntries test_ukm_recorder;
   TestUkmObserver test_observer(&test_ukm_recorder);
 
-  test_ukm_recorder.decode_map_ = CreateTestingDecodeMap();
   auto entry = mojom::UkmEntry::New();
   entry->event_hash = kTestEntryHash;
   entry->source_id = 345;

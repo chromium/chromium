@@ -231,6 +231,10 @@ void UkmRecorderImpl::DisableRecording() {
   OnRecorderParametersChanged();
 }
 
+const builders::DecodeMap& UkmRecorderImpl::GetDecodeMap() const {
+  return builders::GetDecodeMap();
+}
+
 void UkmRecorderImpl::SetSamplingForTesting(int rate) {
   sampling_forced_for_testing_ = true;
   default_sampling_rate_ = rate;
@@ -967,7 +971,7 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
 
   // This should not happen in practice, but possible if an event name
   // coming from Android implementation in UkmRecorder.java is misspelled.
-  if (HasUnknownMetrics(decode_map_, *entry)) {
+  if (HasUnknownMetrics(GetDecodeMap(), *entry)) {
     return;
   }
 
@@ -1030,7 +1034,7 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   DVLOG(DebuggingLogLevel::Medium)
       << "AddEntry recorded: [source_id=" << entry->source_id
       << " event_hash=" << entry->event_hash
-      << " event_name=" << decode_map_.find(entry->event_hash)->second.name
+      << " event_name=" << GetDecodeMap().find(entry->event_hash)->second.name
       << "]";
 
   recordings_.entries.push_back(std::move(entry));
@@ -1211,11 +1215,6 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
   sampled_num = base::Crc32(sampled_num, base::byte_span_from_ref(event_id));
 
   return sampled_num % sampling_rate == 0;
-}
-
-void UkmRecorderImpl::InitDecodeMap() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  decode_map_ = builders::CreateDecodeMap();
 }
 
 void UkmRecorderImpl::NotifyObserversWithNewEntry(

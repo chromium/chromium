@@ -50,10 +50,9 @@ std::vector<UkmMetricNameAndValue> ResetMillisecondsSinceParse(
 // Turns an event and metric hash into a human-readable name.
 // The name is only the metric's name. It does not include the event's name.
 std::string_view GetMetricName(uint64_t event_hash, uint64_t metric_hash) {
-  static base::NoDestructor<ukm::builders::DecodeMap> decode_map(
-      ukm::builders::CreateDecodeMap());
-  auto outer_it = decode_map->find(event_hash);
-  if (outer_it == decode_map->end()) {
+  const ukm::builders::DecodeMap& decode_map = ukm::builders::GetDecodeMap();
+  auto outer_it = decode_map.find(event_hash);
+  if (outer_it == decode_map.end()) {
     LOG(ERROR) << "Unknown event hash " << event_hash;
     return "<Unknown event hash>";
   }
