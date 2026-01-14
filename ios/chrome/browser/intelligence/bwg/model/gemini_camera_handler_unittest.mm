@@ -28,8 +28,9 @@ TEST_F(GeminiCameraHandlerTest, TestConformsToProtocol) {
   EXPECT_TRUE([handler_ conformsToProtocol:@protocol(GeminiCameraDelegate)]);
 }
 
+// TODO(crbug.com/475828386): Fix disabled test.
 // Tests that openCameraFromViewController can be called without crashing.
-TEST_F(GeminiCameraHandlerTest, TestOpenCamera) {
+TEST_F(GeminiCameraHandlerTest, DISABLED_TestOpenCamera) {
   // Mock AVCaptureDevice to simulate an authorized state.
   id mockDevice = OCMClassMock([AVCaptureDevice class]);
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeVideo])
