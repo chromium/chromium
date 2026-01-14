@@ -128,8 +128,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     // hashdance lookup query.
     sct_metadata.emplace();
     const net::ct::SignedCertificateTimestamp* sct =
-        validated_scts.at(base::RandInt(0, validated_scts.size() - 1))
-            .sct.get();
+        base::RandomChoice(validated_scts).sct.get();
     sct_metadata->issued = sct->timestamp;
     net::ct::MerkleTreeLeaf tree_leaf;
     bool result = net::ct::GetMerkleTreeLeaf(validated_certificate_chain, sct,
