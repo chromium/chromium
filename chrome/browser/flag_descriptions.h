@@ -3916,11 +3916,6 @@ inline constexpr char kAccessibilityOnScreenModeDescription[] =
     "allows assistive technologies to access only accessibility nodes that are "
     "on-screen";
 
-inline constexpr char kFeedbackIncludeVariationsName[] =
-    "Feedback include variations";
-inline constexpr char kFeedbackIncludeVariationsDescription[] =
-    "In Chrome feedback report, include commandline variations.";
-
 inline constexpr char kOpenDraggedLinksSameTabName[] =
     "Open Dragged Links in the Same Tab";
 inline constexpr char kOpenDraggedLinksSameTabDescription[] =

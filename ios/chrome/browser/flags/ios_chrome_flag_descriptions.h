@@ -375,9 +375,6 @@ extern const char kFeedBackgroundRefreshDescription[];
 extern const char kFeedSwipeInProductHelpName[];
 extern const char kFeedSwipeInProductHelpDescription[];
 
-extern const char kFeedbackIncludeVariationsName[];
-extern const char kFeedbackIncludeVariationsDescription[];
-
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 

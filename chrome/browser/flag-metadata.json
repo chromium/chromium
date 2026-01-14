@@ -4666,11 +4666,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "feedback-include-variations",
-    "owners": [ "svenzheng@google.com", "chrome-metrics-team@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "field-classification-model-caching",
     "owners": [ "kazinova@google.com", "lamort@google.com", "chrome-password-manager-team@google.com" ],
     "expiry_milestone": 146

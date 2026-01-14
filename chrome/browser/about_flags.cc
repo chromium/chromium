@@ -5228,13 +5228,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"show-overdraw-feedback", flag_descriptions::kShowOverdrawFeedbackName,
      flag_descriptions::kShowOverdrawFeedbackDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kShowOverdrawFeedback)},
-#if !BUILDFLAG(IS_CHROMEOS)
-    {"feedback-include-variations",
-     flag_descriptions::kFeedbackIncludeVariationsName,
-     flag_descriptions::kFeedbackIncludeVariationsDescription,
-     kOsWin | kOsLinux | kOsMac | kOsAndroid,
-     FEATURE_VALUE_TYPE(variations::kFeedbackIncludeVariations)},
-#endif
     {"ui-disable-partial-swap", flag_descriptions::kUiPartialSwapName,
      flag_descriptions::kUiPartialSwapDescription, kOsAll,
      SINGLE_DISABLE_VALUE_TYPE(switches::kUIDisablePartialSwap)},
