@@ -141,17 +141,22 @@ void DocumentAnimations::UpdateTriggerAttachments(
   // get added below.
   animation.NamedTriggerAttachments().swap(named_trigger_attachments_copy);
 
-  // Track triggers from obsolete associations.
-  HeapHashSet<Member<AnimationTrigger>> obsolete_triggers;
+  const auto& relevant_attachment_values = relevant_attachments.Values();
+  // Remove obsolete triggers.
   for (const auto& [scope, trigger] : named_trigger_attachments_copy) {
-    auto it = relevant_attachments.find(scope);
-    if (it != relevant_attachments.end()) {
+    // As only a single trigger is allowed per animation, we need to first
+    // remove obsolete triggers before relevant triggers can be attached.
+    if (std::any_of(
+            relevant_attachment_values.begin(),
+            relevant_attachment_values.end(),
+            [&](const std::pair<Member<AnimationTrigger>,
+                                Member<const StyleTriggerAttachment>>& pair) {
+              return pair.first == trigger;
+            })) {
       continue;
     }
-    // If a previous attachment was not found in the search, it is now
-    // obsolete and should be removed. However, don't call removeAnimation just
-    // yet, as the trigger might simply be under a different scope.
-    obsolete_triggers.insert(trigger);
+
+    trigger->removeAnimation(&animation);
   }
 
   for (const auto& [scope, trigger_attachment] : relevant_attachments) {
@@ -160,12 +165,6 @@ void DocumentAnimations::UpdateTriggerAttachments(
 
     animation.SetNamedTriggerAttachment(scope, trigger);
     attachment->Attach(*trigger, *scope, animation);
-
-    obsolete_triggers.erase(trigger);
-  }
-
-  for (AnimationTrigger* trigger : obsolete_triggers) {
-    trigger->removeAnimation(&animation);
   }
 }
 

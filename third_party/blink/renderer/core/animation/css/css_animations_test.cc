@@ -1236,13 +1236,6 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
       .single {
         animation-trigger: --trigger play;
       }
-      .double {
-        animation-trigger: --trigger1 play --trigger2 pause;
-      }
-      .multiple_double {
-        animation-trigger: --trigger3 play --trigger4 pause,
-                           --trigger1 play --trigger2 pause;
-      }
     </style>
     <div id="target"></div>
   )HTML");
@@ -1278,30 +1271,6 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
   EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
             AtomicString("--trigger"));
   EXPECT_EQ(trigger_attachments2, nullptr);
-
-  target->setAttribute(html_names::kClassAttr, AtomicString("double"));
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(trigger_attachments->size(), 2);
-  EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
-            AtomicString("--trigger1"));
-  EXPECT_EQ(trigger_attachments->at(1)->TriggerName()->GetName(),
-            AtomicString("--trigger2"));
-  EXPECT_EQ(trigger_attachments2, nullptr);
-
-  target->setAttribute(html_names::kClassAttr, AtomicString("multiple_double"));
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(trigger_attachments->size(), 2);
-  EXPECT_EQ(trigger_attachments2->size(), 2);
-
-  EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
-            AtomicString("--trigger3"));
-  EXPECT_EQ(trigger_attachments->at(1)->TriggerName()->GetName(),
-            AtomicString("--trigger4"));
-  EXPECT_EQ(trigger_attachments2->at(0)->TriggerName()->GetName(),
-            AtomicString("--trigger1"));
-  EXPECT_EQ(trigger_attachments2->at(1)->TriggerName()->GetName(),
-            AtomicString("--trigger2"));
 }
 
 void VerifyTriggerRangeBoundary(
@@ -2384,9 +2353,9 @@ TEST_P(CSSAnimationsTriggerTest, UnequalAnimationAttachments) {
                               const CSSProperty& triggered_property) {
     for (auto& animation : animations) {
       if (animation->Affects(*target, triggered_property)) {
-        EXPECT_EQ(animation->GetTriggersForTest().size(), 1);
+        EXPECT_EQ(animation->GetTriggers().size(), 1);
       } else {
-        EXPECT_EQ(animation->GetTriggersForTest().size(), 0);
+        EXPECT_EQ(animation->GetTriggers().size(), 0);
       }
     }
   };

@@ -3816,14 +3816,17 @@ void Animation::ResetPlayback() {
 
 void Animation::AddTrigger(AnimationTrigger* trigger) {
   triggers_.insert(trigger);
+  // TODO(crbug.com/474398437): Support multiple triggers per animation when
+  // the working group resolevs to do so:
+  // https://github.com/w3c/csswg-drafts/issues/12399#issuecomment-3089703026
+  CHECK_EQ(triggers_.size(), 1u);
 }
 
 void Animation::RemoveTrigger(AnimationTrigger* trigger) {
   triggers_.erase(trigger);
 }
 
-const HeapHashSet<WeakMember<AnimationTrigger>>&
-Animation::GetTriggersForTest() {
+const HeapHashSet<WeakMember<AnimationTrigger>>& Animation::GetTriggers() {
   return triggers_;
 }
 

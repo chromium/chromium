@@ -3678,17 +3678,12 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
         to { transform: scaleX(5); }
       }
 
-      .one {
+      .single-animation {
         timeline-trigger: --trigger view();
         animation: expand .5s, expand;
         animation-trigger: --trigger play;
       }
-      .two {
-        timeline-trigger: --trigger view(), --trigger2 view();
-        animation: expand .5s, expand2 .4s;
-        animation-trigger: --trigger play --trigger2 pause;
-      }
-      .three {
+      .multiple-animations {
         timeline-trigger: --trigger view(), --trigger2 view(),
                           --trigger3 view();
         animation: expand .5s, expand2 .4s, expand3 .3s;
@@ -3711,6 +3706,12 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
   const cc::AnimationHost::IdToTriggerMap& triggers =
       host->GetTriggersForTesting();
 
+  // Test for the presence of n triggers, each of which is associated with a
+  // separate animation.
+  // NOTE(crbug.com/474398437): Currently, a trigger may be associated with
+  // multiple animations but an animation may only be associated with a single
+  // trigger. We will eventually support associating an animation with multiple
+  // triggers.
   auto test_for_n_triggers = [&](int n) {
     EXPECT_EQ(triggers.size(), n);
     for (auto& it : triggers) {
@@ -3723,27 +3724,20 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
 
   test_for_n_triggers(0);
 
-  target->classList().add({"one"}, ASSERT_NO_EXCEPTION);
+  target->classList().add({"single-animation"}, ASSERT_NO_EXCEPTION);
   Compositor().BeginFrame();
   test_for_n_triggers(1);
 
-  target->classList().remove({"one"}, ASSERT_NO_EXCEPTION);
+  target->classList().remove({"single-animation"}, ASSERT_NO_EXCEPTION);
   Compositor().BeginFrame();
   test_for_n_triggers(0);
 
-  target->classList().add({"two"}, ASSERT_NO_EXCEPTION);
-  Compositor().BeginFrame();
-  test_for_n_triggers(2);
-
-  target->classList().remove({"two"}, ASSERT_NO_EXCEPTION);
-  Compositor().BeginFrame();
-  test_for_n_triggers(0);
-
-  target->classList().add({"three"}, ASSERT_NO_EXCEPTION);
+  // This tests multiple animations, each with a single trigger.
+  target->classList().add({"multiple-animations"}, ASSERT_NO_EXCEPTION);
   Compositor().BeginFrame();
   test_for_n_triggers(3);
 
-  target->classList().remove({"three"}, ASSERT_NO_EXCEPTION);
+  target->classList().remove({"multiple-animations"}, ASSERT_NO_EXCEPTION);
   Compositor().BeginFrame();
   test_for_n_triggers(0);
 }

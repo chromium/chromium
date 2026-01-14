@@ -165,6 +165,17 @@ void AnimationTrigger::addAnimation(
     return;
   }
 
+  const HeapHashSet<WeakMember<AnimationTrigger>>& animation_triggers =
+      animation->GetTriggers();
+  if (!animation_triggers.empty() && !animation_triggers.Contains(this)) {
+    // TODO(crbug.com/474398437): Support multiple triggers per animation when
+    // the working group resolevs to do so:
+    // https://github.com/w3c/csswg-drafts/issues/12399#issuecomment-3089703026
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Attaching multiple triggers to an animation is not allowed.");
+  }
+
   WillAddAnimation(animation, activate_behavior.AsEnum(),
                    deactivate_behavior.AsEnum(), exception_state);
   if (exception_state.HadException()) {

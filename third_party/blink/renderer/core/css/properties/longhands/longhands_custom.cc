@@ -119,9 +119,15 @@ CSSValue* ConsumeSingleAnimationTrigger(CSSParserTokenStream& stream,
           css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
     return value;
   }
-  return css_parsing_utils::ConsumeSpaceSeparatedList(
+  CSSValueList* list = css_parsing_utils::ConsumeSpaceSeparatedList(
       css_parsing_utils::ConsumeSingleAnimationTriggerAttachment, stream,
       context);
+
+  // TODO(crbug.com/474398437): We only support attaching one trigger per
+  // animation. When we support multiple triggers, we should allow lists with
+  // multiple trigger declarations:
+  // https://github.com/w3c/csswg-drafts/issues/12399#issuecomment-3089703026
+  return (list && list->length() == 1) ? list : nullptr;
 }
 
 }  // namespace
