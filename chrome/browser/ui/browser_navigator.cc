@@ -642,8 +642,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         params->source_contents, contents_to_navigate_or_insert);
   }
 
-  // TODO(crbug.com/364657540): Revisit integration with web_application system
-  // later if needed.
   int singleton_index = -1;
 
   std::unique_ptr<web_app::NavigationCapturingProcess> app_navigation =
