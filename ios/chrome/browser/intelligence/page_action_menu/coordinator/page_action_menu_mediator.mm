@@ -380,6 +380,29 @@ const CGFloat kFeatureRowIconSize = 20;
                  actionType:PageActionMenuButtonAction];
     priceTrackingFeature.actionText =
         l10n_util::GetNSString(IDS_IOS_AI_HUB_PRICE_TRACKING_BUTTON_LABEL);
+
+    ContextualPanelTabHelper* tabHelper =
+        ContextualPanelTabHelper::FromWebState(_webState);
+    if (tabHelper) {
+      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configs =
+          tabHelper->GetCurrentCachedConfigurations();
+      for (const auto& config_weak : configs) {
+        if (!config_weak) {
+          continue;
+        }
+        ContextualPanelItemConfiguration* config = config_weak.get();
+        if (config->item_type == ContextualPanelItemType::PriceInsightsItem) {
+          PriceInsightsItemConfiguration* priceInsightsConfig =
+              static_cast<PriceInsightsItemConfiguration*>(config);
+          if (!priceInsightsConfig->is_subscribed) {
+            priceTrackingFeature.actionText = l10n_util::GetNSString(
+                IDS_IOS_AI_HUB_PRICE_TRACKING_TRACK_BUTTON_LABEL);
+          }
+          break;
+        }
+      }
+    }
+
     [features addObject:priceTrackingFeature];
   }
 
