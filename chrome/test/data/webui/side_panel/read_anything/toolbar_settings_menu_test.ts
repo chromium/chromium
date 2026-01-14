@@ -8,7 +8,8 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import {MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement, SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -208,17 +209,24 @@ suite('Toolbar Settings Menu', () => {
     timer.uninstall();
   });
 
-  test('sending a arrow event opens submenu of focused element', () => {
+  test(
+      'sending horizontal forward arrow event opens submenu of focused element',
+      () => {
+        const targetItem = getMenuItem(SettingsOption.FONT);
+        assertTrue(!!targetItem);
+        targetItem.focus();
+
+        keyDownOn(settingsMenu, 0, undefined, 'ArrowRight');
+        assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+      });
+
+  test('sending vertical forward arrow focuses a different element', () => {
     const targetItem = getMenuItem(SettingsOption.FONT);
     assertTrue(!!targetItem);
     targetItem.focus();
 
-    settingsMenu.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'ArrowRight',
-      bubbles: true,
-      composed: true,
-    }));
-    assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    keyDownOn(settingsMenu, 0, undefined, 'ArrowUp');
+    assertNotEquals(document.activeElement, targetItem);
   });
 
   test('sending a arrow event does nothing on toggle items', () => {
@@ -237,4 +245,22 @@ suite('Toolbar Settings Menu', () => {
     }));
     assertFalse(didToggleLinks);
   });
+
+  test(
+      'sending horizontal backward arrow or escape key closes submenu if open',
+      () => {
+        const targetItem = getMenuItem(SettingsOption.FONT);
+        const targetMenu = toolbar.$.fontMenu.$.menu.$.lazyMenu.get();
+        assertTrue(!!targetItem);
+
+        targetItem.click();
+        assertTrue(targetMenu.open);
+        keyDownOn(settingsMenu, 0, undefined, 'ArrowLeft');
+        assertFalse(targetMenu.open);
+
+        targetItem.click();
+        assertTrue(targetMenu.open);
+        keyDownOn(settingsMenu, 0, undefined, 'Escape');
+        assertFalse(targetMenu.open);
+      });
 });

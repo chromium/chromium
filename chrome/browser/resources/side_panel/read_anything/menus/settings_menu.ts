@@ -17,7 +17,7 @@ import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup
 import type {SettingsPrefs} from '../content/read_anything_types.js';
 import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
-import {isActivationKey, isForwardArrow, isVerticalArrow} from '../shared/keyboard_util.js';
+import {isActivationKey, isBackwardArrow, isForwardArrow, isVerticalArrow} from '../shared/keyboard_util.js';
 
 import {getCss} from './settings_menu.css.js';
 import {getHtml} from './settings_menu.html.js';
@@ -454,7 +454,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   private onKeyDown_(e: KeyboardEvent) {
     const key = e.key;
-    if (isVerticalArrow(key) || isActivationKey(key)) {
+    if (isVerticalArrow(key) || isForwardArrow(key) || isActivationKey(key)) {
       this.clearOpenTimer_();
 
       const menu = this.$.lazyMenu.get();
@@ -463,19 +463,24 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       }
     }
 
-    // The submenu handles the Escape key by clearing the current ID to
-    // close itself. We return early but intentionally allow the event to
-    // bubble up.
-    if (this.currentOpenId_ && (key === 'Escape')) {
+    // Handle Escape or horizontal backward navigation to close the currently
+    // open submenu. We consume the event to stop further propagation.
+    if (this.currentOpenId_ &&
+        (key === 'Escape' || (isBackwardArrow(key) && !isVerticalArrow(key)))) {
+      e.stopPropagation();
+      e.preventDefault();
+      this.fire(
+          ToolbarEvent.CLOSE_SUBMENU_REQUESTED,
+          {previousId: this.currentOpenId_});
       this.currentOpenId_ = null;
       return;
     }
 
-    if (isForwardArrow(key)) {
+    if (isForwardArrow(key) && !isVerticalArrow(key)) {
       e.stopPropagation();
       e.preventDefault();
 
-      const focused = this.shadowRoot?.activeElement as HTMLElement;
+      const focused = this.shadowRoot.activeElement as HTMLElement;
       if (!focused || !focused.classList.contains('menu-row')) {
         return;
       }

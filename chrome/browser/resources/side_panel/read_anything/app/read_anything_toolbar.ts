@@ -757,6 +757,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.closeAllMenus_(event.detail?.previousId);
   }
 
+  protected onCloseSubmenuRequested_(
+      event: CustomEvent<{previousId: SettingsOption}>) {
+    this.closeSubmenu_(event.detail.previousId);
+  }
+
   protected onOpenSettingsSubmenu_(event: CustomEvent<{
     id: SettingsOption,
     previousId: SettingsOption|null,
@@ -787,11 +792,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
 
     if (previousId) {
-      const previousMenu = this.settingsMenu_[previousId];
-      previousMenu?.close();
+      this.closeSubmenu_(previousId);
     }
 
     this.$.settingsMenu.close();
+  }
+
+  private closeSubmenu_(submenuId: SettingsOption) {
+    const previousMenu = this.settingsMenu_[submenuId];
+    assert(previousMenu, `settings ${submenuId} submenu not found`);
+    previousMenu.close();
   }
 
   get settingsMenu_(): Partial<Record<SettingsOption, ToolbarMenu>> {

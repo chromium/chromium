@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {getNewIndex, isActivationKey, isArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getNewIndex, isActivationKey, isArrow, isBackwardArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('Keyboard utils', () => {
+  setup(() => {
+    document.documentElement.dir = 'ltr';
+  });
+
   test('isArrow', () => {
     assertTrue(isArrow('ArrowRight'));
     assertTrue(isArrow('ArrowUp'));
@@ -19,8 +23,6 @@ suite('Keyboard utils', () => {
   });
 
   test('isForwardArrow ltr', () => {
-    document.documentElement.dir = 'ltr';
-
     assertTrue(isForwardArrow('ArrowRight'));
     assertTrue(isForwardArrow('ArrowDown'));
     assertFalse(isForwardArrow('ArrowUp'));
@@ -42,6 +44,30 @@ suite('Keyboard utils', () => {
     assertFalse(isForwardArrow('w'));
     assertFalse(isForwardArrow('Tab'));
     assertFalse(isForwardArrow('Space'));
+  });
+
+  test('isBackwardArrow ltr', () => {
+    assertTrue(isBackwardArrow('ArrowLeft'));
+    assertTrue(isBackwardArrow('ArrowUp'));
+    assertFalse(isBackwardArrow('ArrowRight'));
+    assertFalse(isBackwardArrow('ArrowDown'));
+    assertFalse(isBackwardArrow('Space'));
+    assertFalse(isForwardArrow('not a key'));
+    assertFalse(isForwardArrow('w'));
+    assertFalse(isForwardArrow('Tab'));
+  });
+
+  test('isBackwardArrow rtl', () => {
+    document.documentElement.dir = 'rtl';
+
+    assertTrue(isBackwardArrow('ArrowRight'));
+    assertTrue(isBackwardArrow('ArrowDown'));
+    assertFalse(isBackwardArrow('ArrowLeft'));
+    assertFalse(isBackwardArrow('ArrowUp'));
+    assertFalse(isBackwardArrow('Space'));
+    assertFalse(isForwardArrow('not a key'));
+    assertFalse(isForwardArrow('w'));
+    assertFalse(isForwardArrow('Tab'));
   });
 
   test('isHorizontalArrow', () => {

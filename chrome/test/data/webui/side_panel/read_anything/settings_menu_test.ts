@@ -8,8 +8,9 @@ import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS} from 'chr
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -188,4 +189,25 @@ suite('SettingsMenuElement', () => {
 
     assertEquals(0, submenuEvents, 'Submenu event should not have fired');
   });
+
+  test(
+      'pressing escape or back horizontal arrow fires close submenu event',
+      async () => {
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        const menuItems =
+            Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
+        const targetItem =
+            menuItems.find(item => item.id === SettingsOption.FONT);
+        assertTrue(!!targetItem);
+        targetItem.click();
+
+        const whenFired =
+            eventToPromise(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, settingsMenu);
+        keyDownOn(settingsMenu, 0, undefined, 'Escape');
+        await whenFired;
+
+        targetItem.click();
+        keyDownOn(settingsMenu, 0, undefined, 'ArrowLeft');
+        await whenFired;
+      });
 });

@@ -196,6 +196,7 @@ ${renderTextStyleOptions.call(this)}
   id="settingsMenu"
   .presentationState="${this.presentationState}"
   .settingsPrefs="${this.settingsPrefs}"
+  @close-submenu-requested="${this.onCloseSubmenuRequested_}"
   @close-all-menus="${this.onCloseAllMenus_}"
   @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
 </settings-menu>

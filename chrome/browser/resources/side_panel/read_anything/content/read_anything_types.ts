@@ -122,6 +122,7 @@ export enum ToolbarEvent {
   CLOSE_ALL_MENUS = 'close-all-menus',
   OPEN_SETTINGS_SUBMENU = 'open-settings-submenu',
   PRESENTATION_CHANGE = 'presentation-change',
+  CLOSE_SUBMENU_REQUESTED = 'close-submenu-requested',
 }
 
 // The available menu items in Reading mode

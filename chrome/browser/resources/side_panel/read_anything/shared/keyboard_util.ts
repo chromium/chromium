@@ -40,6 +40,10 @@ export function isForwardArrow(key: string): boolean {
   return (isRTL() ? BACKWARD_ARROWS : FORWARD_ARROWS).includes(key);
 }
 
+export function isBackwardArrow(key: string): boolean {
+  return (isRTL() ? FORWARD_ARROWS : BACKWARD_ARROWS).includes(key);
+}
+
 export function isHorizontalArrow(key: string): boolean {
   return HORIZONTAL_ARROWS.includes(key);
 }
