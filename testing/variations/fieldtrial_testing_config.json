@@ -13342,6 +13342,21 @@
             ]
         }
     ],
+    "IOSCustomFileUploadMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSCustomFileUploadMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserOffCyclePromo": [
         {
             "platforms": [
