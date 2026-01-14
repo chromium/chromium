@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"

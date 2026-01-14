@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -119,7 +118,7 @@ cast_streaming::ReceiverConfig CreateConfig(
         continue;
       }
 
-      if (!base::Contains(audio_codecs, converted_codec)) {
+      if (!std::ranges::contains(audio_codecs, converted_codec)) {
         audio_codecs.push_back(converted_codec);
 
         audio_limits.emplace_back();
@@ -170,7 +169,7 @@ cast_streaming::ReceiverConfig CreateConfig(
         continue;
       }
 
-      if (!base::Contains(video_codecs, converted_codec)) {
+      if (!std::ranges::contains(video_codecs, converted_codec)) {
         video_codecs.push_back(converted_codec);
       }
     }

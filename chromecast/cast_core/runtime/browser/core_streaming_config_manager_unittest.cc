@@ -4,9 +4,9 @@
 
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
@@ -133,8 +133,8 @@ TEST_F(CoreStreamingConfigManagerTest, OnSingleValidMessageWithCodecs) {
 
   auto video_codecs = config.video_codecs;
   EXPECT_EQ(video_codecs.size(), size_t{3});
-  EXPECT_TRUE(base::Contains(video_codecs, ::media::VideoCodec::kVP9));
-  EXPECT_TRUE(base::Contains(video_codecs, ::media::VideoCodec::kVP8));
+  EXPECT_TRUE(std::ranges::contains(video_codecs, ::media::VideoCodec::kVP9));
+  EXPECT_TRUE(std::ranges::contains(video_codecs, ::media::VideoCodec::kVP8));
   EXPECT_TRUE(config.video_limits.empty());
 }
 
