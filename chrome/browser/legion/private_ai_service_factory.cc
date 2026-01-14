@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/blind_sign_auth_factory_impl.h"
 
 namespace legion {
 
@@ -49,7 +50,7 @@ PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<legion::PrivateAiService>(
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile);
+      profile, std::make_unique<phosphor::BlindSignAuthFactoryImpl>());
 }
 
 }  // namespace legion

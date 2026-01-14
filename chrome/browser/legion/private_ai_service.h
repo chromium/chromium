@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
+#include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher_impl.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "components/prefs/pref_service.h"
@@ -35,12 +37,14 @@ class Client;
 // `legion::Client`, which serves as the primary interface for interacting with
 // the Legion feature.
 class PrivateAiService : public KeyedService,
-                         public phosphor::TokenFetcherImpl::Delegate,
+                         public phosphor::OAuthTokenProvider,
                          public signin::IdentityManager::Observer {
  public:
-  explicit PrivateAiService(signin::IdentityManager* identity_manager,
-                            PrefService* pref_service,
-                            Profile* profile);
+  explicit PrivateAiService(
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service,
+      Profile* profile,
+      std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory);
   ~PrivateAiService() override;
 
   // KeyedService override:
@@ -53,13 +57,11 @@ class PrivateAiService : public KeyedService,
 
   Client* GetClient();
 
-  // phosphor::TokenFetcherImpl::Delegate override:
+  // phosphor::OAuthTokenProvider override:
   bool IsTokenFetchEnabled() override;
   void RequestOAuthToken(RequestOAuthTokenCallback callback) override;
 
  private:
-  void InitializeServicesIfNeeded();
-
   void OnRequestOAuthTokenCompleted(
       std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
       RequestOAuthTokenCallback callback,
@@ -75,6 +77,8 @@ class PrivateAiService : public KeyedService,
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory_;
 
   std::unique_ptr<phosphor::TokenManager> token_manager_;
   // Owned by `token_manager_`.

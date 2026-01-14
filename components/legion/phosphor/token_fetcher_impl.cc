@@ -23,8 +23,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/config_http.h"
 #include "components/legion/phosphor/data_types.h"
+#include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
@@ -33,18 +35,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace legion::phosphor {
-
-std::unique_ptr<quiche::BlindSignAuthInterface>
-TokenFetcherImpl::Delegate::CreateBlindSignAuth(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
-  privacy::ppn::BlindSignAuthOptions bsa_options{};
-  bsa_options.set_enable_privacy_pass(true);
-
-  return std::make_unique<quiche::BlindSignAuth>(
-      std::make_unique<ConfigHttp>(std::move(pending_url_loader_factory)),
-      std::move(bsa_options));
-}
 
 TokenFetcherImpl::SequenceBoundFetch::SequenceBoundFetch(
     std::unique_ptr<quiche::BlindSignAuthInterface> blind_sign_auth)
@@ -65,18 +55,13 @@ void TokenFetcherImpl::SequenceBoundFetch::GetTokensFromBlindSignAuth(
 }
 
 TokenFetcherImpl::TokenFetcherImpl(
-    Delegate* delegate,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory)
-    : delegate_(delegate),
+    OAuthTokenProvider* oauth_token_provider,
+    std::unique_ptr<quiche::BlindSignAuthInterface> bsa)
+    : oauth_token_provider_(oauth_token_provider),
       thread_pool_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  CHECK(pending_url_loader_factory);
-
-  helper_.emplace(
-      thread_pool_task_runner_,
-      delegate->CreateBlindSignAuth(std::move(pending_url_loader_factory)));
+  helper_.emplace(thread_pool_task_runner_, std::move(bsa));
 }
 
 TokenFetcherImpl::~TokenFetcherImpl() = default;
@@ -103,7 +88,7 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
       &TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens,
       weak_ptr_factory_.GetWeakPtr(), batch_size, std::move(callback));
 
-  delegate_->RequestOAuthToken(std::move(request_token_callback));
+  oauth_token_provider_->RequestOAuthToken(std::move(request_token_callback));
 }
 
 void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(

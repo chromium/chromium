@@ -20,7 +20,10 @@
 #include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
+#include "components/legion/phosphor/blind_sign_auth_factory_impl.h"
 #include "components/legion/phosphor/mock_blind_sign_auth.h"
+#include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -86,21 +89,26 @@ MATCHER_P(IsNearWithJitter, expected, "") {
   return false;
 }
 
-// A mock delegate for use in testing the fetcher.
-struct MockTokenFetcherImplDelegate : public TokenFetcherImpl::Delegate {
+// A mock OAuthTokenProvider for use in testing the fetcher.
+struct MockOAuthTokenProvider : public OAuthTokenProvider {
   bool IsTokenFetchEnabled() override { return is_token_fetch_enabled; }
   void RequestOAuthToken(RequestOAuthTokenCallback callback) override {
     std::move(callback).Run(response_result, std::move(response_access_token));
   }
+
+  bool is_token_fetch_enabled = true;
+  GetAuthnTokensResult response_result = GetAuthnTokensResult::kSuccess;
+  std::optional<std::string> response_access_token = "access_token";
+};
+
+// A mock BlindSignAuthFactory for use in testing the fetcher.
+struct MockBlindSignAuthFactory : public BlindSignAuthFactory {
   std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory) override {
     return std::move(bsa_to_return);
   }
 
-  bool is_token_fetch_enabled = true;
-  GetAuthnTokensResult response_result = GetAuthnTokensResult::kSuccess;
-  std::optional<std::string> response_access_token = "access_token";
   std::unique_ptr<quiche::BlindSignAuthInterface> bsa_to_return;
 };
 
@@ -121,9 +129,8 @@ class TokenFetcherImplTest : public testing::Test {
         legion::kLegion, {{"LegionBackoffJitter", "0.25"}});
     auto bsa = std::make_unique<MockBlindSignAuth>();
     bsa_ = bsa.get();
-    delegate_.bsa_to_return = std::move(bsa);
-    fetcher_ = std::make_unique<TokenFetcherImpl>(
-        &delegate_, test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+    fetcher_ = std::make_unique<TokenFetcherImpl>(&oauth_token_provider_,
+                                                  std::move(bsa));
   }
 
   // Call `GetAuthnTokens()` and run until it completes.
@@ -169,8 +176,9 @@ class TokenFetcherImplTest : public testing::Test {
 
   base::Time expiration_time_;
 
-  // Delegate for the fetcher under test.
-  MockTokenFetcherImplDelegate delegate_;
+  // Mock providers for the fetcher under test.
+  MockOAuthTokenProvider oauth_token_provider_;
+  MockBlindSignAuthFactory bsa_factory_;
 
   // Fetcher under test.
   std::unique_ptr<TokenFetcherImpl> fetcher_;
@@ -357,8 +365,9 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenErrorOther) {
 
 // Fetching OAuth token returns a transient error.
 TEST_F(TokenFetcherImplTest, AuthTokenTransientError) {
-  delegate_.response_access_token = std::nullopt;
-  delegate_.response_result = GetAuthnTokensResult::kFailedOAuthTokenTransient;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedOAuthTokenTransient;
   GetAuthnTokens(1);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
@@ -367,8 +376,9 @@ TEST_F(TokenFetcherImplTest, AuthTokenTransientError) {
 
 // Fetching OAuth token returns a persistent error.
 TEST_F(TokenFetcherImplTest, AuthTokenPersistentError) {
-  delegate_.response_access_token = std::nullopt;
-  delegate_.response_result = GetAuthnTokensResult::kFailedOAuthTokenPersistent;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedOAuthTokenPersistent;
 
   GetAuthnTokens(1);
 
@@ -378,8 +388,9 @@ TEST_F(TokenFetcherImplTest, AuthTokenPersistentError) {
 
 // No primary account.
 TEST_F(TokenFetcherImplTest, NoAccount) {
-  delegate_.response_access_token = std::nullopt;
-  delegate_.response_result = GetAuthnTokensResult::kFailedNoAccount;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedNoAccount;
 
   GetAuthnTokens(1);
 
@@ -491,17 +502,16 @@ TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   check_fn(kFailedBSA400, default_bug_backoff_, true);
 }
 
-// This implementation of `TokenFetcherImpl::Delegate` does not override
-// `CreateBlindSignAuth()` and therefore uses production implementation of
+// `OAuthTokenProvider` that uses production implementation of
 // `CreateBlindSignAuth()`.
-class ProdBlindSignAuthTokenFetcherImplDelegate
-    : public TokenFetcherImpl::Delegate {
+class ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider
+    : public OAuthTokenProvider {
  public:
-  ProdBlindSignAuthTokenFetcherImplDelegate() = default;
+  ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider() = default;
 
-  ~ProdBlindSignAuthTokenFetcherImplDelegate() override = default;
+  ~ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider() override = default;
 
-  // TokenFetcherImpl::Delegate override:
+  // OAuthTokenProvider override:
   bool IsTokenFetchEnabled() override { return true; }
   void RequestOAuthToken(RequestOAuthTokenCallback callback) override {}
 };
@@ -518,13 +528,16 @@ class ProdBlindSignAuthTokenFetcherImplTest : public testing::Test {
 };
 
 // Tests that TokenFetcherImpl that uses
-// `ProdBlindSignAuthTokenFetcherImplDelegate` can safely be created and
-// destroyed.
+// `ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider` can safely be created
+// and destroyed.
 TEST_F(ProdBlindSignAuthTokenFetcherImplTest, CtorAndDtor) {
-  ProdBlindSignAuthTokenFetcherImplDelegate delegate;
+  ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider oauth_token_provider;
+  BlindSignAuthFactoryImpl bsa_factory;
 
-  TokenFetcherImpl fetcher(
-      &delegate, test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+  auto bsa = bsa_factory.CreateBlindSignAuth(
+      test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+
+  TokenFetcherImpl fetcher(&oauth_token_provider, std::move(bsa));
 }
 
 }  // namespace legion::phosphor

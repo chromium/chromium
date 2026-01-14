@@ -19,7 +19,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/data_types.h"
+#include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
@@ -35,32 +37,8 @@ class ConfigHttp;
 // authentication tokens for Legion.
 class TokenFetcherImpl : public TokenFetcher {
  public:
-  // A delegate to support getting OAuth tokens to authenticate requests.
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    // Checks if token fetching is enabled.
-    virtual bool IsTokenFetchEnabled() = 0;
-
-    // Calls the IdentityManager asynchronously to request the OAuth token for
-    // the logged in user, or nullopt and an error code.
-    using RequestOAuthTokenCallback =
-        base::OnceCallback<void(GetAuthnTokensResult result,
-                                std::optional<std::string> token)>;
-    virtual void RequestOAuthToken(RequestOAuthTokenCallback callback) = 0;
-
-    // Creates a `quiche::BlindSignAuthInterface` instance. Can be overridden
-    // by tests to provide a mock.
-    virtual std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-        std::unique_ptr<network::PendingSharedURLLoaderFactory>
-            pending_url_loader_factory);
-  };
-
-  explicit TokenFetcherImpl(
-      Delegate* delegate,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory);
+  TokenFetcherImpl(OAuthTokenProvider* oauth_token_provider,
+                   std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
   ~TokenFetcherImpl() override;
 
@@ -120,7 +98,7 @@ class TokenFetcherImpl : public TokenFetcher {
   // `last_get_authn_tokens_..` fields, and updates those fields.
   std::optional<base::TimeDelta> CalculateBackoff(GetAuthnTokensResult result);
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<OAuthTokenProvider> oauth_token_provider_;
 
   // The result of the last call to `GetAuthnTokens()`, and the
   // backoff applied to `try_again_after`. `last_get_authn_tokens_backoff_`

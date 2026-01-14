@@ -4,11 +4,15 @@
 
 source_set("phosphor") {
   sources = [
+    "blind_sign_auth_factory.h",
+    "blind_sign_auth_factory_impl.cc",
+    "blind_sign_auth_factory_impl.h",
     "config_http.cc",
     "config_http.h",
     "data_types.h",
     "feature_token_manager.cc",
     "feature_token_manager.h",
+    "oauth_token_provider.h",
     "token_fetcher.h",
     "token_fetcher_helper.cc",
     "token_fetcher_helper.h",

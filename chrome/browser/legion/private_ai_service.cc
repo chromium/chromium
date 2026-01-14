@@ -10,6 +10,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/legion/client.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/token_fetcher_impl.h"
 #include "components/legion/phosphor/token_manager_impl.h"
 #include "components/signin/public/base/consent_level.h"
@@ -25,13 +26,30 @@ bool PrivateAiService::CanLegionBeEnabled() {
   return base::FeatureList::IsEnabled(kLegion);
 }
 
-PrivateAiService::PrivateAiService(signin::IdentityManager* identity_manager,
-                                   PrefService* pref_service,
-                                   Profile* profile)
+PrivateAiService::PrivateAiService(
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
+    Profile* profile,
+    std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory)
     : profile_(profile),
       identity_manager_(identity_manager),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      bsa_factory_(std::move(bsa_factory)) {
   identity_manager_->AddObserver(this);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto url_loader_factory = profile_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
+  auto bsa = bsa_factory_->CreateBlindSignAuth(url_loader_factory->Clone());
+  auto token_fetcher =
+      std::make_unique<phosphor::TokenFetcherImpl>(this, std::move(bsa));
+  token_fetcher_ = token_fetcher.get();
+  token_manager_ =
+      std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
+  client_ = legion::Client::Create(
+      token_manager_.get(),
+      profile_->GetDefaultStoragePartition()->GetNetworkContext());
 }
 
 PrivateAiService::~PrivateAiService() {
@@ -45,43 +63,14 @@ void PrivateAiService::Shutdown() {
   identity_manager_->RemoveObserver(this);
 }
 
-// TODO(b:469400476): Move into ctor. Currently some tests will fail because
-// vtable is not matching the expectation that
-// `TestPrivateAiService::CreateBlindSignAuth()` will be called.
-void PrivateAiService::InitializeServicesIfNeeded() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (is_shutting_down_) {
-    return;
-  }
-  if (token_manager_ && client_) {
-    return;
-  }
-
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
-  auto token_fetcher = std::make_unique<phosphor::TokenFetcherImpl>(
-      this, url_loader_factory->Clone());
-  token_fetcher_ = token_fetcher.get();
-  token_manager_ =
-      std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
-  client_ = legion::Client::Create(
-      token_manager_.get(),
-      profile_->GetDefaultStoragePartition()->GetNetworkContext());
-}
-
 phosphor::TokenManager* PrivateAiService::GetTokenManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  InitializeServicesIfNeeded();
 
   return token_manager_.get();
 }
 
 Client* PrivateAiService::GetClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  InitializeServicesIfNeeded();
 
   return client_.get();
 }
@@ -139,8 +128,6 @@ void PrivateAiService::OnRequestOAuthTokenCompleted(
 void PrivateAiService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  InitializeServicesIfNeeded();
 
   if (token_fetcher_) {
     bool account_available =
