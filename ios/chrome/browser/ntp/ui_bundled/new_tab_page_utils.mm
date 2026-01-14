@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 
 #import "base/time/time.h"
+#import "components/lens/lens_overlay_invocation_source.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -24,7 +25,9 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
                   const base::Time& query_start_time) {
   return GetUrlForAim(turl_service,
                       omnibox::IOS_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT,
-                      query_start_time);
+                      query_start_time, /*query_text=*/u"",
+                      lens::LensOverlayInvocationSource::kNtpContextualQuery,
+                      /*additional_params=*/{});
 }
 
 UIButtonConfigurationUpdateHandler CreateThemedButtonConfigurationUpdateHandler(

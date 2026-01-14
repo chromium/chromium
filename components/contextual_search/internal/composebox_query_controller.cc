@@ -506,6 +506,7 @@ void ComposeboxQueryController::CreateSearchUrl(
       template_url_service_, search_url_request_info->aim_entry_point,
       search_url_request_info->query_start_time,
       base::UTF8ToUTF16(search_url_request_info->query_text),
+      search_url_request_info->invocation_source,
       std::move(search_url_request_info->additional_params)));
 }
 

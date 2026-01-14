@@ -670,14 +670,27 @@ bool IsAimURL(const GURL& url) {
   return has_udm && udm == kAimUdmQueryParameterValue;
 }
 
-GURL GetUrlForAim(TemplateURLService* turl_service,
-                  omnibox::ChromeAimEntryPoint aim_entrypoint,
-                  const base::Time& query_start_time,
-                  const std::u16string& query_text,
-                  std::map<std::string, std::string> additional_params) {
-  return GetSearchUrlWithUdm(turl_service, aim_entrypoint,
-                             kAimUdmQueryParameterValue, query_start_time,
-                             query_text, additional_params);
+GURL GetUrlForAim(
+    TemplateURLService* turl_service,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
+    const base::Time& query_start_time,
+    const std::u16string& query_text,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source,
+    std::map<std::string, std::string> additional_params) {
+  GURL result_url = GetSearchUrlWithUdm(
+      turl_service, aim_entrypoint, kAimUdmQueryParameterValue,
+      query_start_time, query_text, additional_params);
+  if (invocation_source.has_value()) {
+    // If the invocation source is set, send the contextual tasks invocation
+    // source, as only the unmigrated LensOverlay flow, which uses a different
+    // code path for url generation, should be sending non contextual tasks
+    // invocation sources. This prevents non LensOverlay flows (i.e. the
+    // omnibox popup) from polluting the metrics for the existing LensOverlay
+    // feature.
+    result_url = lens::AppendInvocationSourceParamToURL(
+        result_url, *invocation_source, /*is_contextual_tasks=*/true);
+  }
+  return result_url;
 }
 
 GURL GetUrlForMultimodalSearch(

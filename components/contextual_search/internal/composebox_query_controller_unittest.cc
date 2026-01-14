@@ -1336,6 +1336,28 @@ TEST_F(
             lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
 }
 
+TEST_F(ComposeboxQueryControllerTest, CreateSearchUrlWithInvocationSource) {
+  CreateController(/*send_lns_surface=*/false);
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test query";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->invocation_source =
+      lens::LensOverlayInvocationSource::kAppMenu;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  std::string source_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, "source", &source_param));
+  EXPECT_EQ(source_param, "chrome.crn.menu");
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextPdfFileWithViewportRequestSuccess) {
   // Act: Start the session.
@@ -3499,9 +3521,6 @@ TEST_F(ComposeboxQueryControllerTest, HandleInteractionResponse) {
   lens::LensOverlayInteractionResponse actual_response = response_future.Take();
   EXPECT_EQ(actual_response.text().content_language(), "en");
 }
-
-
-
 
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest,

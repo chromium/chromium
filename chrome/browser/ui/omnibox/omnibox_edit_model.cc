@@ -41,6 +41,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -809,7 +810,9 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
                    omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
-                   /*query_start_time=*/base::Time::Now(), query_text);
+                   /*query_start_time=*/base::Time::Now(), query_text,
+                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+                   /*additional_params=*/{});
   controller_->client()->OpenUrl(ai_mode_url);
 }
 
