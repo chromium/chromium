@@ -710,46 +710,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 
 // Documents/frames
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
-  map->Add<media::mojom::VideoDecodePerfHistory>(
-      base::BindRepeating(&RenderProcessHost::BindVideoDecodePerfHistory,
-                          base::Unretained(host->GetProcess())));
-
-  map->Add<network::mojom::RestrictedCookieManager>(
-      base::BindRepeating(&RenderFrameHostImpl::BindRestrictedCookieManager,
-                          base::Unretained(host)));
-
-  map->Add<network::mojom::TrustTokenQueryAnswerer>(
-      base::BindRepeating(&RenderFrameHostImpl::BindTrustTokenQueryAnswerer,
-                          base::Unretained(host)));
-
-  map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
-      &BindBarcodeDetectionProvider);
-
-  map->Add<shape_detection::mojom::FaceDetectionProvider>(
-      &BindFaceDetectionProvider);
-
-  map->Add<shape_detection::mojom::TextDetection>(&BindTextDetection);
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableGpuBenchmarking)) {
-    map->Add<mojom::InputInjector>(
-        base::BindRepeating(&RenderFrameHostImpl::BindInputInjectorReceiver,
-                            base::Unretained(host)));
-  }
-
-#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
-  map->Add<device::mojom::NFC>(base::BindRepeating(
-      &RenderFrameHostImpl::BindNFCReceiver, base::Unretained(host)));
-#else
-  map->Add<blink::mojom::HidService>(base::BindRepeating(
-      &RenderFrameHostImpl::GetHidService, base::Unretained(host)));
-
-  map->Add<blink::mojom::InstalledAppProvider>(
-      base::BindRepeating(&RenderFrameHostImpl::CreateInstalledAppProvider,
-                          base::Unretained(host)));
-#endif  // BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_IOS_TVOS))
-
   map->Add<blink::mojom::SerialService>(base::BindRepeating(
       &RenderFrameHostImpl::BindSerialService, base::Unretained(host)));
 
@@ -1121,6 +1081,58 @@ void PopulateBinderMapWithContext(
         host->GetProcess()->CreatePeriodicSyncService(
             host->GetStorageKey().origin(), std::move(receiver));
       }));
+
+  map->Add<media::mojom::VideoDecodePerfHistory>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver) {
+        host->GetProcess()->BindVideoDecodePerfHistory(std::move(receiver));
+      }));
+
+  map->Add<network::mojom::RestrictedCookieManager>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindRestrictedCookieManager>);
+
+  map->Add<network::mojom::TrustTokenQueryAnswerer>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindTrustTokenQueryAnswerer>);
+
+  map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
+      base::BindRepeating(
+          [](RenderFrameHost* host,
+             mojo::PendingReceiver<
+                 shape_detection::mojom::BarcodeDetectionProvider> receiver) {
+            BindBarcodeDetectionProvider(std::move(receiver));
+          }));
+
+  map->Add<shape_detection::mojom::FaceDetectionProvider>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<shape_detection::mojom::FaceDetectionProvider>
+             receiver) { BindFaceDetectionProvider(std::move(receiver)); }));
+
+  map->Add<shape_detection::mojom::TextDetection>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<shape_detection::mojom::TextDetection>
+             receiver) { BindTextDetection(std::move(receiver)); }));
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableGpuBenchmarking)) {
+    map->Add<mojom::InputInjector>(
+        &BindRenderFrameHostImpl<
+            &RenderFrameHostImpl::BindInputInjectorReceiver>);
+  }
+
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
+  map->Add<device::mojom::NFC>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindNFCReceiver>);
+#else
+  map->Add<blink::mojom::HidService>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetHidService>);
+
+  map->Add<blink::mojom::InstalledAppProvider>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateInstalledAppProvider>);
+#endif  // BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_IOS_TVOS))
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);
