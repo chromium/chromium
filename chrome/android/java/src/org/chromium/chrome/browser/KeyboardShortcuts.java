@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.PinnedTabClosureManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1112,15 +1113,25 @@ public class KeyboardShortcuts {
                                     : selectedTabs;
                     Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
                     if (tab != null) {
-                        currentTabModel
-                                .getTabRemover()
-                                .closeTabs(
-                                        TabClosureParams.closeTabs(tabsToClose)
-                                                .allowUndo(false)
-                                                .tabClosingSource(
-                                                        TabClosingSource.KEYBOARD_SHORTCUT)
-                                                .build(),
-                                        /* allowDialog= */ true);
+                        // Pinned tabs require a second Ctrl+W to confirm closure unless part of a
+                        // bulk selection or already confirmed by the manager.
+                        boolean canClose =
+                                PinnedTabClosureManagerFactory.getInstance()
+                                        .shouldCloseTab(
+                                                tabModelSelector,
+                                                tab,
+                                                /* isBulkClose= */ tabsToClose.size() > 1);
+                        if (canClose) {
+                            currentTabModel
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTabs(tabsToClose)
+                                                    .allowUndo(false)
+                                                    .tabClosingSource(
+                                                            TabClosingSource.KEYBOARD_SHORTCUT)
+                                                    .build(),
+                                            /* allowDialog= */ true);
+                        }
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE:

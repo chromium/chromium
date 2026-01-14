@@ -250,7 +250,7 @@ public interface TabModelSelector {
     ObservableSupplier<@Nullable TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier();
 
     /** Reset the internal filter list to allow initialization again. */
-    public void resetTabGroupModelFilterListForTesting();
+    void resetTabGroupModelFilterListForTesting(); // IN-TEST
 
     /** Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector. */
     void destroy();
