@@ -8805,7 +8805,7 @@
       "ddac@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
   {
     "name": "supervised-user-interstitial-without-approvals",
