@@ -9899,8 +9899,8 @@
   },
   {
     "name": "windows11-mica-titlebar",
-    "owners": [ "j@jloeffler.com", "pkasting@chromium.org" ],
-    "expiry_milestone": 140
+    "owners": [ "j@jloeffler.com", "kylixrd@chromium.org" ],
+    "expiry_milestone": 160
   },
   {
     "name": "writer-api-for-gemini-nano",
