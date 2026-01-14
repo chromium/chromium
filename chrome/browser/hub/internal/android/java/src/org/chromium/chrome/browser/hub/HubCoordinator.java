@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -311,6 +312,11 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
     public void onPaneSwipe(boolean isSwipeLeft) {
         Pane currentPane = getFocusedPane();
         if (currentPane == null) return;
+
+        RecordUserAction.record("Android.Hub.PaneSwiped");
+        String direction = isSwipeLeft ? "Left" : "Right";
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Hub.PaneSwiped." + direction, currentPane.getPaneId(), PaneId.COUNT);
 
         List<Integer> orderedPaneIds =
                 mPaneManager.getPaneOrderController().getPaneOrder().asList();

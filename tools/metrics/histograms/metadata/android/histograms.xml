@@ -126,6 +126,11 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="HubSwipeDirection">
+  <variant name=".Left" summary="left"/>
+  <variant name=".Right" summary="right"/>
+</variants>
+
 <!-- LINT.IfChange(MessageIdentifier) -->
 
 <variants name="MessageIdentifiers">
@@ -2422,6 +2427,17 @@ chromium-metrics-reviews@google.com.
     such as the back button, Incognito reauth dialog, etc. See
     &quot;Android.Hub.PaneFocused&quot; for all pane focus events.
   </summary>
+</histogram>
+
+<histogram name="Android.Hub.PaneSwiped.{Direction}" enum="HubPaneId"
+    expires_after="2026-06-28">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    The pane ID of the current pane when the user swipes {Direction} to navigate
+    to the next pane.
+  </summary>
+  <token key="Direction" variants="HubSwipeDirection"/>
 </histogram>
 
 <histogram name="Android.Hub.ToolbarPresentOnAnimation" enum="Boolean"

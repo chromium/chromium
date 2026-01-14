@@ -44,6 +44,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -438,6 +439,26 @@ public class HubCoordinatorUnitTest {
 
                             coordinator.destroy();
                         });
+    }
+
+    @Test
+    public void onPaneSwipe_recordsHistograms() {
+        var leftSwipeWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.Hub.PaneSwiped.Left", PaneId.TAB_SWITCHER)
+                        .expectNoRecords("Android.Hub.PaneSwiped.Right")
+                        .build();
+        mHubCoordinator.onPaneSwipe(true);
+        leftSwipeWatcher.assertExpected("Expected a left swipe to be recorded.");
+
+        var rightSwipeWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.Hub.PaneSwiped.Right", PaneId.INCOGNITO_TAB_SWITCHER)
+                        .expectNoRecords("Android.Hub.PaneSwiped.Left")
+                        .build();
+        mHubCoordinator.onPaneSwipe(false);
+        rightSwipeWatcher.assertExpected("Expected a right swipe to be recorded.");
     }
 
     @Test
