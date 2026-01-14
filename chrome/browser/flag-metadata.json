@@ -680,7 +680,7 @@
   {
     "name": "audio-selection-improvement",
     "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 148
   },
   {
     "name": "auto-framing-override",
@@ -8267,7 +8267,7 @@
   {
     "name": "reset-audio-selection-improvement-pref",
     "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 148
   },
   {
     "name": "reset-shortcut-customizations",
