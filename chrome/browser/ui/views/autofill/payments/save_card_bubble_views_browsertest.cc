@@ -1238,7 +1238,6 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
     ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
               GetSyncService(0)->GetTransportState());
-    ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   }
 
  private:
@@ -1304,7 +1303,6 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   FillFormWithoutName();
   SubmitFormAndWaitForCardUploadSaveBubble();

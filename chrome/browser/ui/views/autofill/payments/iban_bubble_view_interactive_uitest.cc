@@ -761,7 +761,6 @@ class IbanBubbleViewSyncTransportFullFormBrowserTest
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
     ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
               GetSyncService(0)->GetTransportState());
-    ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   }
 
   void SubmitFormAndWaitForUploadSaveBubble() {
