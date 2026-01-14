@@ -43,7 +43,7 @@ bool RequiresPageStabilization(const mojom::ActionResult& result) {
 mojom::ActionResultPtr MakeOkResult(bool requires_page_stabilization) {
   return mojom::ActionResult::New(
       mojom::ActionResultCode::kOk, requires_page_stabilization, std::string(),
-      /*script_tool_response=*/std::nullopt,
+      /*script_tool_response=*/nullptr,
       /*execution_end_time=*/base::TimeTicks::Now());
 }
 
@@ -54,7 +54,7 @@ mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
   DCHECK(!IsOk(code));
   return mojom::ActionResult::New(
       code, requires_page_stabilization, std::string(msg),
-      /*script_tool_response=*/std::nullopt,
+      /*script_tool_response=*/nullptr,
       /*execution_end_time=*/base::TimeTicks::Now());
 }
 

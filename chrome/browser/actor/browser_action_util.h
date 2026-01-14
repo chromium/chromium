@@ -108,7 +108,11 @@ void CopyScriptToolResults(
       auto* script_tool_result = proto.add_script_tool_results();
       script_tool_result->set_index_of_script_tool_action(i);
       script_tool_result->set_result(
-          *action_results[i].result->script_tool_response);
+          action_results[i].result->script_tool_response->result);
+      script_tool_result->set_tool_name(
+          action_results[i].result->script_tool_response->name);
+      script_tool_result->set_input_arguments(
+          action_results[i].result->script_tool_response->input_arguments);
     }
   }
 }

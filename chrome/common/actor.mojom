@@ -532,6 +532,15 @@ struct ToolInvocation {
   ObservedToolTarget? observed_target;
 };
 
+struct ScriptToolResponse {
+  // The name and input arguments provided in the script tool action.
+  string name;
+  string input_arguments;
+
+  // The result of executing the action.
+  string result;
+};
+
 struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
@@ -545,7 +554,7 @@ struct ActionResult {
 
   // If the action is a script tool, provides the result of that execution. This
   // is only populated if the execution was successful.
-  string? script_tool_response;
+  ScriptToolResponse? script_tool_response;
 
   // Time at which execution of the action was complete and page
   // stabilization was started. This field may not be available if the action's

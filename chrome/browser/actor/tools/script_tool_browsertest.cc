@@ -52,8 +52,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   const auto& action_results = result.Get<2>();
   ASSERT_EQ(action_results.size(), 1u);
   ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(*action_results.at(0).result->script_tool_response,
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
             "This is an example sentence.");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->name, "echo");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
+            input_arguments);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
@@ -88,8 +91,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
   const auto& echo_action_results = echo_result.Get<2>();
   ASSERT_EQ(echo_action_results.size(), 1u);
   ASSERT_TRUE(echo_action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(*echo_action_results.at(0).result->script_tool_response,
+  EXPECT_EQ(echo_action_results.at(0).result->script_tool_response->result,
             "Hello World");
+  EXPECT_EQ(echo_action_results.at(0).result->script_tool_response->name,
+            "echo");
+  EXPECT_EQ(
+      echo_action_results.at(0).result->script_tool_response->input_arguments,
+      echo_input);
 
   const std::string reverse_input =
       R"JSON(
@@ -104,8 +112,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
   const auto& reverse_action_results = reverse_result.Get<2>();
   ASSERT_EQ(reverse_action_results.size(), 1u);
   ASSERT_TRUE(reverse_action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(*reverse_action_results.at(0).result->script_tool_response,
+  EXPECT_EQ(reverse_action_results.at(0).result->script_tool_response->result,
             "321cba");
+  EXPECT_EQ(reverse_action_results.at(0).result->script_tool_response->name,
+            "reverse");
+  EXPECT_EQ(reverse_action_results.at(0)
+                .result->script_tool_response->input_arguments,
+            reverse_input);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {

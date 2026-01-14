@@ -23,6 +23,8 @@ namespace actor {
 namespace {
 
 mojom::ActionResultPtr OnToolExecuted(
+    const std::string& name,
+    const std::string& input_arguments,
     base::expected<blink::WebString, blink::WebDocument::ScriptToolError>
         response) {
   if (!response.has_value()) {
@@ -39,7 +41,12 @@ mojom::ActionResultPtr OnToolExecuted(
   }
 
   auto result = MakeOkResult();
-  result->script_tool_response = response->Utf8();
+  auto script_tool_response = mojom::ScriptToolResponse::New();
+  script_tool_response->name = name;
+  script_tool_response->input_arguments = input_arguments;
+  script_tool_response->result = response->Utf8();
+  result->script_tool_response = std::move(script_tool_response);
+
   return result;
 }
 
@@ -64,7 +71,8 @@ void ScriptTool::Execute(ToolFinishedCallback callback) {
   frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
       blink::WebString::FromUTF8(action_->name),
       blink::WebString::FromUTF8(action_->input_arguments),
-      base::BindOnce(&OnToolExecuted).Then(std::move(callback)));
+      base::BindOnce(&OnToolExecuted, action_->name, action_->input_arguments)
+          .Then(std::move(callback)));
 }
 
 std::string ScriptTool::DebugString() const {
