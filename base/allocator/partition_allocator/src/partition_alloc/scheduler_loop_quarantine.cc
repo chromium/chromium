@@ -299,10 +299,8 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
       // Unless during its destruction, we can assume ThreadCache is valid
       // because this branch is embedded inside ThreadCache.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-      PA_DCHECK(being_destructed_ ||
-                ThreadCache::IsValid(allocator_root_->GetThreadCache()));
-      PA_DCHECK(being_destructed_ ||
-                allocator_root_->GetThreadCache() == tcache_);
+      PA_DCHECK(being_destructed_ || ThreadCache::IsValid(ThreadCache::Get()));
+      PA_DCHECK(being_destructed_ || ThreadCache::Get() == tcache_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
       std::optional<size_t> slot_size_opt =

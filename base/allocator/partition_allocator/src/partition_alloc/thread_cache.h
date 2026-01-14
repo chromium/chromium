@@ -74,27 +74,11 @@ namespace internal {
 
 extern PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 
-constexpr inline size_t kMaxThreadCacheIndex = 4;
-constexpr inline size_t kDefaultRootThreadCacheIndex = 0;
-constexpr inline size_t kInvalidThreadCacheIndex = static_cast<size_t>(-1);
-
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
 extern PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC) thread_local ThreadCache* g_thread_caches
-    [kMaxThreadCacheIndex];
+    PARTITION_ALLOC) thread_local ThreadCache* g_thread_cache;
 #endif
 
-#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-// Represents a special index value within the thread-local `g_thread_caches`
-// array used to mark a "tombstone" state. Marking only at a specific index is
-// sufficient because all ThreadCaches for a single thread are deallocated
-// together when the thread terminates.
-constexpr inline size_t kThreadCacheTombstoneIndex = 0;
-#endif
-
-// Represents an index of the array (g_thread_caches, PartitionTls)
-// storing the thread cache for SchedulerLoopQuarantine.
-constexpr inline size_t kThreadCacheQuarantineIndex = 0;
 }  // namespace internal
 
 // Global registry of all ThreadCache instances.
@@ -123,7 +107,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   void RegisterThreadCache(ThreadCache* cache);
   void UnregisterThreadCache(ThreadCache* cache);
   // Prints statistics for all thread caches, or this thread's only.
-  void DumpStats(bool my_thread_only, ThreadCacheStats* stats, size_t index);
+  void DumpStats(bool my_thread_only, ThreadCacheStats* stats);
   // Purge() this thread's cache, and asks the other ones to trigger Purge() at
   // a later point (during a deallocation).
   void PurgeAll();
@@ -241,10 +225,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // May only be called by a single PartitionRoot.
   static void Init(PartitionRoot* root);
 
-  static void DeleteForTesting();
+  static void DeleteForTesting(ThreadCache* tcache);
 
   // Deletes existing thread cache and creates a new one for |root|.
-  static void SwapForTesting(PartitionRoot* root, size_t index);
+  static void SwapForTesting(PartitionRoot* root);
 
   // Removes the tombstone marker that would be returned by Get() otherwise.
   static void RemoveTombstoneForTesting();
@@ -253,66 +237,31 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // interactions.
   static void EnsureThreadSpecificDataInitialized();
 
-  static ThreadCache* Get(size_t index) {
-    PA_DCHECK(index < internal::kMaxThreadCacheIndex);
+  static ThreadCache* Get() {
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-    return PA_UNSAFE_TODO(internal::g_thread_caches[index]);
+    return internal::g_thread_cache;
 #else
     // This region isn't MTE-tagged.
-    auto* ptr = reinterpret_cast<ThreadCache*>(
+    return reinterpret_cast<ThreadCache*>(
         internal::PartitionTlsGet(internal::g_thread_cache_key));
-    // TODO(crbug.com/467243745): Eliminate the `IsValidPtr` check. Improve
-    // `IsValidPtr` to also validate against `nullptr + index` and `kTombstone +
-    // index`.
-    if (!ThreadCache::IsValidPtr(ptr)) [[unlikely]] {
-      return nullptr;
-    }
-    return PA_UNSAFE_TODO(ptr + index);
 #endif
   }
 
-  // Get ThreadCache for SchedulerLoopQurantine, which is stored in index 0.
-  static ThreadCache* EnsureAndGetForQuarantine();
+  static ThreadCache* EnsureAndGet();
 
-  // Returns true if the given pointer is not nullptr or kTombstone.
-  static bool IsValidPtr(ThreadCache* tcache) {
+  static bool IsValid(ThreadCache* tcache) {
     // Do not MTE-untag, as it'd mess up the sentinel value.
     return reinterpret_cast<uintptr_t>(tcache) & kTombstoneMask;
   }
 
-  // Returns true if the ThreadCache* from ThreadCache::Get() is valid
-  // and initialized.
-  static bool IsValid(ThreadCache* tcache) {
-#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-    // `g_thread_caches[index]` has valid pointers only if the ThreadCache
-    // object is initialized.
-    return IsValidPtr(tcache);
-#else
-    // Even if the array of ThreadCache is allocated, the ThreadCache object
-    // may not be initialized, and thus check `root_` to know if initialized.
-    // We use pointer arithmetic to directly inspect the memory for `root_`, as
-    // accessing `tcache->root_` is UB before the ThreadCache object's lifetime
-    // begins (i.e., between memset(0) and placement new).
-    return tcache && PA_UNSAFE_TODO(*reinterpret_cast<uintptr_t*>(
-                         (reinterpret_cast<uint8_t*>(tcache) +
-                          offsetof(ThreadCache, root_))));
-#endif
-  }
-
-  static bool IsTombstone() {
-#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-    void* ptr = PA_UNSAFE_TODO(
-        internal::g_thread_caches[internal::kThreadCacheTombstoneIndex]);
-#else
-    void* ptr = internal::PartitionTlsGet(internal::g_thread_cache_key);
-#endif
+  static bool IsTombstone(ThreadCache* tcache) {
     // Do not MTE-untag, as it'd mess up the sentinel value.
-    return reinterpret_cast<uintptr_t>(ptr) == kTombstone;
+    return reinterpret_cast<uintptr_t>(tcache) == kTombstone;
   }
 
   // Create a new ThreadCache associated with |root|.
   // Must be called without the partition locked, as this may allocate.
-  static ThreadCache* Create(PartitionRoot* root, size_t index);
+  static ThreadCache* Create(PartitionRoot* root);
 
   ~ThreadCache();
 
@@ -436,7 +385,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
 
   explicit ThreadCache(PartitionRoot* root);
-  static void Delete(void* thread_caches_ptr);
+  static void Delete(void* thread_cache_ptr);
 
   static void* operator new(size_t count);
   static void operator delete(void* ptr);

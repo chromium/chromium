@@ -9,8 +9,7 @@
 namespace partition_alloc {
 ScopedSchedulerLoopQuarantineExclusion::
     ScopedSchedulerLoopQuarantineExclusion() {
-  // The thread cache storing the SchedulerLoopQuarantineBranch is in index 0.
-  ThreadCache* tcache = ThreadCache::Get(internal::kThreadCacheQuarantineIndex);
+  ThreadCache* tcache = ThreadCache::Get();
   if (!ThreadCache::IsValid(tcache)) {
     return;
   }
@@ -49,7 +48,7 @@ void SchedulerLoopQuarantineScanPolicyUpdater::AllowScanlessPurge() {
 
 internal::ThreadBoundSchedulerLoopQuarantineBranch*
 SchedulerLoopQuarantineScanPolicyUpdater::GetQuarantineBranch() {
-  ThreadCache* tcache = ThreadCache::EnsureAndGetForQuarantine();
+  ThreadCache* tcache = ThreadCache::EnsureAndGet();
   if (!ThreadCache::IsValid(tcache)) {
     return nullptr;
   }
@@ -68,7 +67,7 @@ ScopedSchedulerLoopQuarantineBranchAccessorForTesting::
     ScopedSchedulerLoopQuarantineBranchAccessorForTesting(
         PartitionRoot* allocator_root) {
   if (allocator_root->settings.with_thread_cache) {
-    ThreadCache* tcache = allocator_root->thread_cache_for_testing();
+    ThreadCache* tcache = ThreadCache::Get();
     if (ThreadCache::IsValid(tcache)) {
       branch_ = &tcache->GetSchedulerLoopQuarantineBranch();
       return;

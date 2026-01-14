@@ -109,7 +109,7 @@ class PartitionAllocThreadCacheTest
     ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
 
     // Cleanup the global state so next test can recreate ThreadCache.
-    if (ThreadCache::IsTombstone()) {
+    if (ThreadCache::IsTombstone(ThreadCache::Get())) {
       ThreadCache::RemoveTombstoneForTesting();
     }
   }
@@ -189,15 +189,13 @@ class PartitionAllocThreadCacheTest
            raw_size <= ThreadCache::kLargeSizeThreshold; raw_size++) {
         FillThreadCacheAndReturnIndex(raw_size, batch);
 
-        if (root()->thread_cache_for_testing()->CachedMemory() >=
-            target_cached_memory) {
+        if (ThreadCache::Get()->CachedMemory() >= target_cached_memory) {
           return;
         }
       }
     }
 
-    ASSERT_GE(root()->thread_cache_for_testing()->CachedMemory(),
-              target_cached_memory);
+    ASSERT_GE(ThreadCache::Get()->CachedMemory(), target_cached_memory);
   }
 
   std::unique_ptr<PartitionAllocatorForTesting> allocator_;
@@ -614,8 +612,7 @@ TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
 
   // Memory footprint.
   ThreadCacheStats stats;
-  ThreadCacheRegistry::Instance().DumpStats(
-      true, &stats, root()->settings.thread_cache_index);
+  ThreadCacheRegistry::Instance().DumpStats(true, &stats);
   // Bucket was cleared (set to kDefaultCountForMediumBucket / 2) after going
   // above the limit (-1), then refilled by batches (1 + floor(allocations /
   // kFillCountForSmallBucket) times).
@@ -649,8 +646,7 @@ class ThreadDelegateForMultipleThreadCachesAccounting
         FillThreadCacheAndReturnIndex(root_, kMediumSize, bucket_distribution_);
 
     ThreadCacheStats stats;
-    ThreadCacheRegistry::Instance().DumpStats(
-        false, &stats, root_->settings.thread_cache_index);
+    ThreadCacheRegistry::Instance().DumpStats(false, &stats);
     // 2* for this thread and the parent one.
     EXPECT_EQ(2 * PA_UNSAFE_TODO(root_->buckets[bucket_index]).slot_size *
                   kFillCountForMediumBucket,
@@ -690,13 +686,11 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
     // non-joinable thread at InotifyReader::StartThread(). The thread will
     // be still running after the tests are finished. We need to count
     // the joinable threads here.
-    ThreadCacheRegistry::Instance().DumpStats(
-        false, &wqthread_stats, root()->settings.thread_cache_index);
+    ThreadCacheRegistry::Instance().DumpStats(false, &wqthread_stats);
 
     // Remove this thread's thread cache stats from wqthread_stats.
     ThreadCacheStats this_stats;
-    ThreadCacheRegistry::Instance().DumpStats(
-        true, &this_stats, root()->settings.thread_cache_index);
+    ThreadCacheRegistry::Instance().DumpStats(true, &this_stats);
 
     wqthread_stats.alloc_count -= this_stats.alloc_count;
     wqthread_stats.metadata_overhead -= this_stats.metadata_overhead;
@@ -814,7 +808,7 @@ TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
   EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);
 
   // Small amount of memory, the period gets longer.
-  auto* tcache = allocator_->root()->thread_cache_for_testing();
+  auto* tcache = ThreadCache::Get();
   ASSERT_LT(tcache->CachedMemory(),
             ThreadCacheRegistry::kMinCachedMemoryForPurgingBytes);
   registry.RunPeriodicPurge();
@@ -866,15 +860,13 @@ void FillThreadCacheWithMemory(PartitionRoot* root,
           root, root->AdjustSizeForExtrasAdd(allocation_size),
           bucket_distribution, batch);
 
-      if (root->thread_cache_for_testing()->CachedMemory() >=
-          target_cached_memory) {
+      if (ThreadCache::Get()->CachedMemory() >= target_cached_memory) {
         return;
       }
     }
   }
 
-  ASSERT_GE(root->thread_cache_for_testing()->CachedMemory(),
-            target_cached_memory);
+  ASSERT_GE(ThreadCache::Get()->CachedMemory(), target_cached_memory);
 }
 
 class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
@@ -921,7 +913,7 @@ TEST_P(PartitionAllocThreadCacheTest,
   EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);
 
   // Small amount of memory, the period gets longer.
-  auto* tcache = allocator_->root()->thread_cache_for_testing();
+  auto* tcache = ThreadCache::Get();
   ASSERT_LT(tcache->CachedMemory(),
             ThreadCacheRegistry::kMinCachedMemoryForPurgingBytes);
   registry.RunPeriodicPurge();
