@@ -4002,8 +4002,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getSnackbarManager(),
                 getLayoutManager(),
                 mTabModelSelector,
-                ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
-                        .getTabModelSelector());
+                assertNonNull(
+                        ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
+                                .getTabModelSelector()));
     }
 
     private boolean isTabNtp(Tab tab) {
