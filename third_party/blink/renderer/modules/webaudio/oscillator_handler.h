@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OSCILLATOR_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OSCILLATOR_HANDLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_options.h"
@@ -97,7 +98,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   double ProcessARate(int n,
                       float* dest_p,
                       double virtual_read_index,
-                      float* phase_increments) const;
+                      base::span<float> phase_increments) const;
 
   // Scalar version of ProcessARate().  Also handles any values not handled by
   // the vector version.
@@ -118,7 +119,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
                             int n,
                             float* destination,
                             double virtual_read_index,
-                            const float* phase_increments) const;
+                            base::span<const float> phase_increments) const;
 
   // Vector version of ProcessARate().  Returns the number of frames processed
   // and the update virtual_read_index.
@@ -126,7 +127,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
       int n,
       float* destination,
       double virtual_read_index,
-      const float* phase_increments) const;
+      base::span<const float> phase_increments) const;
 
   // Handles the linear interpolation in ProcessARateVector().
   //
@@ -150,11 +151,11 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   double ProcessARateVectorKernel(
       float* destination,
       double virtual_read_index,
-      const float* phase_increments,
+      base::span<const float> phase_increments,
       unsigned periodic_wave_size,
-      const float* const lower_wave_data[4],
-      const float* const higher_wave_data[4],
-      const float table_interpolation_factor[4]) const;
+      const std::array<base::span<const float>, 4>& lower_wave_data,
+      const std::array<base::span<const float>, 4>& higher_wave_data,
+      const std::array<float, 4>& table_interpolation_factor) const;
 
   // One of the waveform types defined in the enum.
   uint8_t type_;

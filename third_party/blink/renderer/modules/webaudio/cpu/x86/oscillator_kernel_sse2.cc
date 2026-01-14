@@ -89,8 +89,8 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
   const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
   const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
 
-  float* higher_wave_data = nullptr;
-  float* lower_wave_data = nullptr;
+  base::span<const float> lower_wave_data;
+  base::span<const float> higher_wave_data;
   float table_interpolation_factor = 0;
   float incr = frequency * rate_scale;
   DCHECK_GE(incr, kInterpolate2Point);
@@ -150,10 +150,10 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     // Get the samples from the wave tables and save them in work arrays so we
     // can load them into simd registers.
     for (int m = 0; m < 4; ++m) {
-      sample1_lower[m] = UNSAFE_TODO(lower_wave_data[r0[m]]);
-      sample2_lower[m] = UNSAFE_TODO(lower_wave_data[r1[m]]);
-      sample1_higher[m] = UNSAFE_TODO(higher_wave_data[r0[m]]);
-      sample2_higher[m] = UNSAFE_TODO(higher_wave_data[r1[m]]);
+      sample1_lower[m] = lower_wave_data[UNSAFE_TODO(r0[m])];
+      sample2_lower[m] = lower_wave_data[UNSAFE_TODO(r1[m])];
+      sample1_higher[m] = higher_wave_data[UNSAFE_TODO(r0[m])];
+      sample2_higher[m] = higher_wave_data[UNSAFE_TODO(r1[m])];
     }
 
     const __m128 s1_low = _mm_load_ps(sample1_lower.data());
@@ -197,11 +197,11 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 double OscillatorHandler::ProcessARateVectorKernel(
     float* dest_p,
     double virtual_read_index,
-    const float* phase_increments,
+    base::span<const float> phase_increments,
     unsigned periodic_wave_size,
-    const float* const lower_wave_data[4],
-    const float* const higher_wave_data[4],
-    const float table_interpolation_factor[4]) const {
+    const std::array<base::span<const float>, 4>& lower_wave_data,
+    const std::array<base::span<const float>, 4>& higher_wave_data,
+    const std::array<float, 4>& table_interpolation_factor) const {
   // See the scalar version in oscillator_node.cc for the basic algorithm.
   double inv_periodic_wave_size = 1.0 / periodic_wave_size;
   unsigned read_index_mask = periodic_wave_size - 1;
@@ -212,7 +212,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
   std::array<double, 4> incr_sum;
   incr_sum[0] = phase_increments[0];
   for (int m = 1; m < 4; ++m) {
-    incr_sum[m] = incr_sum[m - 1] + UNSAFE_TODO(phase_increments[m]);
+    incr_sum[m] = incr_sum[m - 1] + phase_increments[m];
   }
 
   // It's really important for accuracy that we use doubles instead of
@@ -252,17 +252,17 @@ double OscillatorHandler::ProcessARateVectorKernel(
   std::array<float, 4> sample1_higher __attribute__((aligned(16)));
   std::array<float, 4> sample2_higher __attribute__((aligned(16)));
 
-  const unsigned* read0 = reinterpret_cast<const unsigned*>(&v_read0);
-  const unsigned* read1 = reinterpret_cast<const unsigned*>(&v_read1);
+  const uint32_t* read0 = reinterpret_cast<const uint32_t*>(&v_read0);
+  const uint32_t* read1 = reinterpret_cast<const uint32_t*>(&v_read1);
 
   for (int m = 0; m < 4; ++m) {
     UNSAFE_TODO(DCHECK_LT(read0[m], periodic_wave_size));
     UNSAFE_TODO(DCHECK_LT(read1[m], periodic_wave_size));
 
-    sample1_lower[m] = UNSAFE_TODO(lower_wave_data[m][read0[m]]);
-    sample2_lower[m] = UNSAFE_TODO(lower_wave_data[m][read1[m]]);
-    sample1_higher[m] = UNSAFE_TODO(higher_wave_data[m][read0[m]]);
-    sample2_higher[m] = UNSAFE_TODO(higher_wave_data[m][read1[m]]);
+    sample1_lower[m] = lower_wave_data[m][UNSAFE_TODO(read0[m])];
+    sample2_lower[m] = lower_wave_data[m][UNSAFE_TODO(read1[m])];
+    sample1_higher[m] = higher_wave_data[m][UNSAFE_TODO(read0[m])];
+    sample2_higher[m] = higher_wave_data[m][UNSAFE_TODO(read1[m])];
   }
 
   const __m128 v_factor =
@@ -278,7 +278,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
       _mm_mul_ps(v_factor, _mm_sub_ps(_mm_load_ps(sample2_lower.data()),
                                       _mm_load_ps(sample1_lower.data()))));
   const __m128 sample = _mm_add_ps(
-      sample_higher, _mm_mul_ps(_mm_load_ps(table_interpolation_factor),
+      sample_higher, _mm_mul_ps(_mm_load_ps(table_interpolation_factor.data()),
                                 _mm_sub_ps(sample_lower, sample_higher)));
 
   _mm_storeu_ps(dest_p, sample);
