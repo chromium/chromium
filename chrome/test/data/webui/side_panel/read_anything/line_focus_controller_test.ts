@@ -1064,6 +1064,35 @@ suite('LineFocusController', () => {
     assertEquals(0, speechLines);
   });
 
+  test('snapToNextLine after user scroll uses current position', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const height = 100;
+    const scroller = document.createElement('div');
+    scroller.style.height = `${height}px`;
+    scroller.style.overflow = 'auto';
+    const container = document.createElement('p');
+    container.innerText =
+        'Like a siege rocked by a sky bird\nin a distant wood\n' +
+        'in a distant wood\nin a distant wood\nin a distant wood\n' +
+        'in a distant wood\nin a distant wood\nin a distant wood\n';
+    scroller.appendChild(container);
+    document.body.appendChild(scroller);
+    lineFocusController.onStyleChange(
+        LineFocusStyle.MEDIUM_WINDOW, container, height);
+    lineFocusController.onMovementChange(
+        LineFocusMovement.CURSOR, container, height);
+
+    lineFocusController.snapToNextLine(true);
+    lineFocusController.onScrollEnd(height);
+    lineFocusController.snapToNextLine(true);
+
+    // The window is 3 lines high. If the line index was kept then the second
+    // snapToNextLine call would move by one line, and this would be 4. But
+    // after the scroll, the current line index has to be recalculated and so
+    // all 3 of the new highlighted lines are counted.
+    assertEquals(6, keyboardLines);
+  });
+
   test('snapToNextLine scrolls up to line if out of view', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const height = 100;

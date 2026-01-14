@@ -45,6 +45,9 @@ export class LineFocusModel {
   // Used for logging line focus session scroll distance.
   private lastScrollTop_: number = 0;
 
+  // Whether line focus caused the latest scroll action.
+  private initiatedScroll_: boolean = false;
+
   getMinY(): number {
     return this.minY_;
   }
@@ -139,5 +142,13 @@ export class LineFocusModel {
 
   setLastScrollTop(top: number): void {
     this.lastScrollTop_ = top;
+  }
+
+  getInitiatedScroll(): boolean {
+    return this.initiatedScroll_;
+  }
+
+  setInitiatedScroll(initiated: boolean) {
+    this.initiatedScroll_ = initiated;
   }
 }

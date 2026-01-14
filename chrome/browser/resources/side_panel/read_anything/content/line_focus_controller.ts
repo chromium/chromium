@@ -73,9 +73,18 @@ export class LineFocusController {
 
   onScrollEnd(newScrollTop: number) {
     if (this.isEnabled()) {
-      const distance = Math.abs(newScrollTop - this.model_.getLastScrollTop());
+      const distance =
+          Math.round(Math.abs(newScrollTop - this.model_.getLastScrollTop()));
       chrome.readingMode.addLineFocusScrollDistance(distance);
       this.model_.setLastScrollTop(newScrollTop);
+
+      if (this.model_.getInitiatedScroll()) {
+        this.model_.setInitiatedScroll(false);
+      } else {
+        // If the scroll is user-initiated then reset the line index for the
+        // purpose of line-by-line keyboard movement.
+        this.model_.setCurrentLineIndex(null);
+      }
     }
   }
 
@@ -262,7 +271,7 @@ export class LineFocusController {
 
         // Center it vertically.
         const scrollDiff = (lines.at(newIndex)! - (this.model_.getMaxY() / 2));
-        this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
+        this.scroll_(scrollDiff);
       } else if (this.model_.getCurrentLineIndex() !== previousLineIndex) {
         chrome.readingMode.incrementLineFocusKeyboardLines();
         this.setyOrScroll_(lines[newIndex]!);
@@ -297,10 +306,15 @@ export class LineFocusController {
   private setyOrScroll_(newY: number) {
     if (this.isStatic_()) {
       const scrollDiff = newY - this.model_.getY();
-      this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
+      this.scroll_(scrollDiff);
     } else {
       this.setY_(newY);
     }
+  }
+
+  private scroll_(scrollDiff: number) {
+    this.model_.setInitiatedScroll(true);
+    this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
   }
 
   private setY_(y: number, quietly: boolean = false) {
