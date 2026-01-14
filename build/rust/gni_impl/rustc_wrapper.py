@@ -202,7 +202,10 @@ def ConvertPathsToAbsolute(env):
 def _SaveRustEnvAndFlags(path, rustenv, rustflags):
   os.makedirs(os.path.dirname(path), exist_ok=True)
   data = {'rustenv': rustenv, 'rustflags': rustflags}
-  with action_helpers.atomic_output(path, 'w', encoding='utf-8') as json_file:
+  with action_helpers.atomic_output(path,
+                                    'w',
+                                    encoding='utf-8',
+                                    only_if_changed=False) as json_file:
     json.dump(data, json_file, indent=4)
 
 
@@ -313,7 +316,8 @@ def main():
       return 1
 
   if dirty:  # we made a change, let's write out the file
-    with action_helpers.atomic_output(args.depfile) as output:
+    with action_helpers.atomic_output(args.depfile,
+                                      only_if_changed=False) as output:
       output.write("\n".join(final_depfile_lines).encode("utf-8"))
 
 
