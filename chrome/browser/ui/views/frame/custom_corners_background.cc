@@ -47,21 +47,10 @@ CustomCornersBackground::CustomCornersBackground(views::View& view,
                                                  BrowserView& browser_view,
                                                  ColorChoice primary_color,
                                                  ColorChoice corner_color)
-    : primary_color_(primary_color),
+    : CustomCorners(browser_view),
+      primary_color_(primary_color),
       corner_color_(corner_color),
-      view_(view),
-      browser_view_(browser_view) {
-  // Browser may not yet have a widget, but we need to track the widget in
-  // case we need active/inactive frame color.
-  if (browser_view_->GetWidget()) {
-    // This hooks up the active/inactive state listener.
-    OnViewAddedToWidget(&browser_view);
-  } else {
-    // This will hook up the listener when the browser view is added to a
-    // widget.
-    browser_view_observation_.Observe(&browser_view);
-  }
-}
+      view_(view) {}
 
 CustomCornersBackground::~CustomCornersBackground() = default;
 
@@ -113,7 +102,7 @@ CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
     corner.type = CornerType::kSquare;
   }
 #elif BUILDFLAG(IS_LINUX)
-  if (auto* const widget = browser_view_->browser_widget()) {
+  if (auto* const widget = browser_view().browser_widget()) {
     if (auto* const frame = widget->GetFrameView()) {
       const auto rrect = frame->GetRestoredClipRegion();
       const auto radii = rrect.radii(upper ? SkRRect::kUpperLeft_Corner
@@ -197,41 +186,8 @@ CustomCornersBackground::GetRoundedCornerRadii() const {
       CornerToRadius(corners_.lower_leading, default_corner_radius));
 }
 
-void CustomCornersBackground::PaintPath(gfx::Canvas* canvas,
-                                        const SkPath& path,
-                                        ColorChoice color_choice,
-                                        bool anti_alias) const {
-  if (std::holds_alternative<TopContainerTheme>(color_choice)) {
-    gfx::ScopedCanvas scoped(canvas);
-    canvas->ClipPath(path, anti_alias);
-    TopContainerBackground::PaintBackground(canvas, &*view_, &*browser_view_);
-    return;
-  }
-
-  ui::ColorVariant color;
-  if (std::holds_alternative<FrameColor>(color_choice)) {
-    color = browser_view_->GetWidget()->ShouldPaintAsActive()
-                ? ui::kColorFrameActive
-                : ui::kColorFrameInactive;
-  } else {
-    color = std::get<ui::ColorId>(color_choice);
-  }
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(anti_alias);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(color.ResolveToSkColor(view_->GetColorProvider()));
-  canvas->DrawPath(path, flags);
-}
-
-void CustomCornersBackground::OnViewAddedToWidget(views::View* view) {
-  CHECK_EQ(view, &*browser_view_);
-  browser_view_observation_.Reset();
-  browser_frame_active_subscription_ =
-      view->GetWidget()->RegisterPaintAsActiveChangedCallback(
-          base::BindRepeating(
-              &CustomCornersBackground::OnBrowserPaintAsActiveChanged,
-              base::Unretained(this)));
+const views::View& CustomCornersBackground::GetView() const {
+  return *view_;
 }
 
 void CustomCornersBackground::OnBrowserPaintAsActiveChanged() {

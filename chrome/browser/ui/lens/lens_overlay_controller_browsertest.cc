@@ -8878,14 +8878,10 @@ class LensOverlayControllerSideBySideBrowserTest
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(
             BrowserView::GetBrowserViewForBrowser(browser()));
-    views::View* start_corner =
+    views::View* corner =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kContentsSeparatorLeadingTopCornerElementId, context);
-    views::View* end_corner =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kContentsSeparatorTrailingTopCornerElementId, context);
-    return (start_corner && start_corner->GetVisible()) ||
-           (end_corner && end_corner->GetVisible());
+            kContentsSeparatorTopCornerElementId, context);
+    return corner && corner->GetVisible();
   }
 
  private:

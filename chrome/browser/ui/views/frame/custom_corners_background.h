@@ -7,15 +7,12 @@
 
 #include <variant>
 
-#include "base/callback_list.h"
-#include "base/scoped_observation.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/ui/views/frame/custom_corners.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
-#include "ui/views/widget/widget.h"
 
 class BrowserView;
 
@@ -24,8 +21,7 @@ class BrowserView;
 //
 // Used by a number of top-level browser elements to prevent overdrawing the
 // browser's corners or providing nice curved interfaces between elements.
-class CustomCornersBackground : public views::Background,
-                                public views::ViewObserver {
+class CustomCornersBackground : public views::Background, public CustomCorners {
  public:
   // Specifies how a corner should be painted.
   enum class CornerType {
@@ -56,18 +52,6 @@ class CustomCornersBackground : public views::Background,
     bool operator==(const Corners&) const = default;
   };
 
-  // Designates that the current frame color (either active or inactive) should
-  // be used. If you want to force e.g. active color, use `kColorFrameActive`
-  // instead.
-  using FrameColor = base::StrongAlias<class FrameColorTag, std::monostate>;
-
-  // Designates that the top container theme background should be used.
-  using TopContainerTheme =
-      base::StrongAlias<class TopContainerThemeTag, std::monostate>;
-
-  // Specifies which color to be used for the background.
-  using ColorChoice = std::variant<FrameColor, TopContainerTheme, ui::ColorId>;
-
   CustomCornersBackground(views::View& view,
                           BrowserView& browser_view,
                           ColorChoice primary_color,
@@ -96,31 +80,19 @@ class CustomCornersBackground : public views::Background,
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
   std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const override;
 
+  // CustomCorners:
+  const views::View& GetView() const override;
+  void OnBrowserPaintAsActiveChanged() override;
+
  private:
   // Hide this as it should not be used directly.
   using Background::SetColor;
-
-  // Paints the given `path` on `canvas` using `color_choice`.
-  void PaintPath(gfx::Canvas* canvas,
-                 const SkPath& path,
-                 ColorChoice color_choice,
-                 bool anti_alias) const;
-
-  // views::ViewObserver:
-  void OnViewAddedToWidget(views::View*) override;
-
-  // Called when the browser's paint-as-active state changes.
-  void OnBrowserPaintAsActiveChanged();
 
   bool visible_ = true;
   ColorChoice primary_color_;
   ColorChoice corner_color_;
   Corners corners_;
   const raw_ref<views::View> view_;
-  const raw_ref<const BrowserView> browser_view_;
-  base::CallbackListSubscription browser_frame_active_subscription_;
-  base::ScopedObservation<views::View, views::ViewObserver>
-      browser_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_BACKGROUND_H_

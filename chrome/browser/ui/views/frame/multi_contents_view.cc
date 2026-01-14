@@ -15,12 +15,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/multi_contents_background_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
@@ -45,6 +47,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -55,8 +58,7 @@ void MultiContentsView::ContentsSeparators::Reset() {
   top_separator = nullptr;
   leading_separator = nullptr;
   trailing_separator = nullptr;
-  top_leading_rounded_corner = nullptr;
-  top_trailing_rounded_corner = nullptr;
+  corner_separator = nullptr;
 }
 
 MultiContentsView::MultiContentsView(
@@ -108,21 +110,14 @@ MultiContentsView::MultiContentsView(
   contents_separators_.trailing_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorTrailingEdgeElementId);
 
-  contents_separators_.top_leading_rounded_corner =
-      AddChildView(std::make_unique<ContentsRoundedCorner>(
-          browser_view_, views::ShapeContextTokens::kContentSeparatorRadius,
-          base::BindRepeating([]() { return base::i18n::IsRTL(); })));
-  contents_separators_.top_leading_rounded_corner->SetProperty(
-      views::kElementIdentifierKey,
-      kContentsSeparatorLeadingTopCornerElementId);
-
-  contents_separators_.top_trailing_rounded_corner =
-      AddChildView(std::make_unique<ContentsRoundedCorner>(
-          browser_view_, views::ShapeContextTokens::kContentSeparatorRadius,
-          base::BindRepeating([]() { return !base::i18n::IsRTL(); })));
-  contents_separators_.top_trailing_rounded_corner->SetProperty(
-      views::kElementIdentifierKey,
-      kContentsSeparatorTrailingTopCornerElementId);
+  contents_separators_.corner_separator =
+      AddChildView(std::make_unique<CustomFloatingCorner>(
+          *browser_view_, CustomFloatingCorner::CornerOrientation::kTopLeading,
+          views::ShapeContextTokens::kContentSeparatorRadius,
+          CustomFloatingCorner::TopContainerTheme(),
+          kColorToolbarContentAreaSeparator));
+  contents_separators_.corner_separator->SetProperty(
+      views::kElementIdentifierKey, kContentsSeparatorTopCornerElementId);
 
   for (auto* contents_container_view : contents_container_views_) {
     web_contents_focused_subscriptions_.push_back(
@@ -501,12 +496,8 @@ gfx::Rect MultiContentsView::CalculateSeparatorLayouts(
                                false, gfx::Rect());
     child_layouts.emplace_back(contents_separators_.trailing_separator.get(),
                                false, gfx::Rect());
-    child_layouts.emplace_back(
-        contents_separators_.top_leading_rounded_corner.get(), false,
-        gfx::Rect());
-    child_layouts.emplace_back(
-        contents_separators_.top_trailing_rounded_corner.get(), false,
-        gfx::Rect());
+    child_layouts.emplace_back(contents_separators_.corner_separator.get(),
+                               false, gfx::Rect());
     return available_space;
   }
 
@@ -547,23 +538,28 @@ gfx::Rect MultiContentsView::CalculateSeparatorLayouts(
       gfx::Rect(available_space.right() - trailing_separator_width,
                 available_space.y(), trailing_separator_width, height));
 
-  child_layouts.emplace_back(
-      contents_separators_.top_leading_rounded_corner.get(),
-      should_show_leading && contents_separators_.should_show_top,
-      gfx::Rect(
-          available_space.origin(),
-          contents_separators_.top_leading_rounded_corner->GetPreferredSize()));
-
-  child_layouts.emplace_back(
-      contents_separators_.top_trailing_rounded_corner.get(),
-      should_show_trailing && contents_separators_.should_show_top,
-      gfx::Rect({available_space.right() -
-                     contents_separators_.top_trailing_rounded_corner
-                         ->GetPreferredSize()
-                         .width(),
-                 available_space.y()},
-                contents_separators_.top_trailing_rounded_corner
-                    ->GetPreferredSize()));
+  // Place the corner separator and set its orientation.
+  auto* const corner_separator = contents_separators_.corner_separator.get();
+  const auto corner_preferred_size = corner_separator->GetPreferredSize();
+  views::ChildLayout corner_layout(
+      corner_separator, contents_separators_.should_show_top &&
+                            (should_show_leading || should_show_trailing));
+  if (corner_layout.visible) {
+    if (should_show_leading) {
+      corner_layout.bounds =
+          gfx::Rect(available_space.origin(), corner_preferred_size);
+      corner_separator->SetOrientation(
+          CustomFloatingCorner::CornerOrientation::kTopLeading);
+    } else {
+      corner_layout.bounds = gfx::Rect(
+          gfx::Point(available_space.right() - corner_preferred_size.width(),
+                     available_space.y()),
+          corner_preferred_size);
+      corner_separator->SetOrientation(
+          CustomFloatingCorner::CornerOrientation::kTopTrailing);
+    }
+  }
+  child_layouts.push_back(corner_layout);
 
   return gfx::Rect(available_space.x() + leading_separator_width,
                    available_space.y() + separator_height,
