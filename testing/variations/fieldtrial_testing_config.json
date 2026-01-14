@@ -14239,21 +14239,6 @@
             ]
         }
     ],
-    "IOSSeparateProfilesForManagedAccountsForceMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SeparateProfilesForManagedAccountsForceMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSShowTabGroupInGridOnStart": [
         {
             "platforms": [

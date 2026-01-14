@@ -547,7 +547,7 @@ constexpr base::FeatureParam<base::TimeDelta> kMultiProfileMigrationGracePeriod{
     /*default_value=*/base::Days(90)};
 
 BASE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
 
