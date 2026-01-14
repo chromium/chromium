@@ -149,7 +149,7 @@
 }
 
 :host-context([searchbox-layout-mode='Compact']) input {
-  padding-top: 19px;
+  padding-top: 2px;
 }
 
 :host([searchbox-chrome-refresh-theming]) :is(input, textarea)::selection {
