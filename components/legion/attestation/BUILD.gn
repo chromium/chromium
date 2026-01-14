@@ -8,16 +8,22 @@ source_set("attestation") {
     "server_evidence.h",
     "server_verification_key.cc",
     "server_verification_key.h",
+    "verification_key_utils.cc",
+    "verification_key_utils.h",
   ]
   deps = [
     "//base",
     "//components/legion:features",
+    "//crypto",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "server_verification_key_unittest.cc" ]
+  sources = [
+    "server_verification_key_unittest.cc",
+    "verification_key_utils_unittest.cc",
+  ]
   deps = [
     ":attestation",
     "//base/test:test_support",
