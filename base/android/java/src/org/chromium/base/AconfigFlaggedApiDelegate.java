@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Display;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
@@ -207,32 +206,6 @@ public interface AconfigFlaggedApiDelegate {
      */
     default int getTextCursorBlinkInterval(ViewConfiguration viewConfiguration) {
         return DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
-    }
-
-    /**
-     * Calls {@link android.view.View#requestRectangleOnScreen(Rect, boolean, int)} if supported,
-     * with focus type of {@link android.view.View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_INPUT_FOCUS}.
-     *
-     * @param view view on which the method should be called
-     * @param boundsInView the rect to request on screen, in coordinates relative to {@code view}
-     * @return whether the Android API was invoked
-     */
-    default boolean requestInputFocusOnScreen(View view, Rect boundsInView) {
-        // TODO(crbug.com/450540343) inline internal delegate into callsites when API 36.1 releases.
-        return false;
-    }
-
-    /**
-     * Calls {@link View#requestRectangleOnScreen(Rect, boolean, int)} if supported, with focus type
-     * of {@link View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR}.
-     *
-     * @param view view on which the method should be called
-     * @param boundsInView the rect to request on screen, in coordinates relative to {@code view}
-     * @return whether the Android API was invoked
-     */
-    default boolean requestTextCursorOnScreen(View view, Rect boundsInView) {
-        // TODO(crbug.com/450540343) inline internal delegate into callsites when API 36.1 releases.
-        return false;
     }
 
     /**
