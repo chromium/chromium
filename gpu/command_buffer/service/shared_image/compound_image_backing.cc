@@ -839,21 +839,12 @@ CompoundImageBacking::CompoundImageBacking(
       copy_manager_(std::move(copy_manager)) {
   // Create the element from the backing.
   ElementHolder element;
-
-  // We set the inner backing to support all streams so that we forward all
-  // Produce calls to it. This is necessary because:
-  // 1. The inner backing might support more than we assume (e.g. SharedMemory
-  // supporting Overlay).
-  // 2. We want to delegate the decision of "is this supported?" to the inner
-  // backing. For example, if ProduceMemory is called on a GPU backing, we want
-  // to forward it so the backing can return nullptr (unsupported), rather than
-  // CompoundImageBacking logging an error because it thinks no backing exists
-  // for that stream.
-  // 3. This matches current behavior where we just have one backing handling
-  // everything.
-  // Future work for dynamic backing allocation will need a way to identify
-  // backing support for specific streams based on usage.
-  element.access_streams = AccessStreamSet::All();
+  if (backing->GetType() == SharedImageBackingType::kSharedMemory) {
+    element.access_streams = kMemoryStreamSet;
+  } else {
+    element.access_streams =
+        base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
+  }
 
   // |backing| may have a cleared rect set (e.g. from initial pixel data).
   // Propagate this to the CompoundImageBacking to keep them in sync.
