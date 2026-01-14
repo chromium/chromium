@@ -54,7 +54,7 @@ process_template_includes() {
   INCSTACK=${INCSTACK%"$1->"}
 }
 
-# Replace template variables (@@VARNAME@@) in the given template file. If a
+# Replace template variables (@@VARNAME) in the given template file. If a
 # second argument is given, save the processed text to that filename, otherwise
 # modify the template file in place.
 process_template() {
@@ -65,12 +65,15 @@ process_template() {
   local TMPLINCL="$(process_template_includes "$TMPLIN")"
 
   # Substitute templated variables from the environment.
+  # 'tac' reverses the sort order to handle the situation where one variable
+  # is an initial part of another variable - the longer variable should take
+  # priority.
   local sed_args=""
   for varname in $(comm -2 <(compgen -v | sort) \
-      <(env -0 | cut -z -f1 -d= | tr '\0' '\n' | sort)); do
-    if [[ "$TMPLINCL" == *"@@${varname}@@"* ]]; then
+      <(env -0 | cut -z -f1 -d= | tr '\0' '\n' | sort) | tac); do
+    if [[ "$TMPLINCL" == *"@@${varname}"* ]]; then
       val=$(printf '%s' "${!varname}" | sed 's/[#\/&]/\\&/g')
-      sed_args="${sed_args}s#@@${varname}@@#${val}#g;"
+      sed_args="${sed_args}s#@@${varname}#${val}#g;"
     fi
   done
   echo "$TMPLINCL" | sed "$sed_args" > "$TMPLOUT"
