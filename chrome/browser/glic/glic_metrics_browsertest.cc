@@ -17,6 +17,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -50,6 +54,14 @@ class GlicMetricsBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_SingleInstance) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/475900964): Test fails when capturing
+  // Glic.Fre.Dismissed.Onboarding user action.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP() << "Test failing on Wayland: crbug.com/475900964";
+  }
+#endif
+
   ASSERT_FALSE(GlicEnabling::IsMultiInstanceEnabled());
 
   base::UserActionTester user_action_tester;

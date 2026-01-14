@@ -530,6 +530,9 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [ "//components/account_id:test_support" ]
     }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
 
     data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 
