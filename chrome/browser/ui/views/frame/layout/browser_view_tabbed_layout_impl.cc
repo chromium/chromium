@@ -37,9 +37,56 @@ namespace {
 
 // Loading bar is thicker than a separator, but instead of moving the bottom
 // of the top container down, it starts above where the separator would go.
-static constexpr int kLoadingBarHeight = 3;
-static constexpr int kLoadingBarOffset =
+constexpr int kLoadingBarHeight = 3;
+constexpr int kLoadingBarOffset =
     kLoadingBarHeight - views::Separator::kThickness;
+
+// Minimum area next to caption buttons to use as a grab handle.
+constexpr int kVerticalTabsGrabHandleSize = 54;
+
+// Increases the leading or trailing exclusion area of `top_container_params` in
+// order to make room for a grab handle in Vertical Tabstrip mode.
+//
+// The `browser_params` are the unmodified layout parameters with the original
+// visual area and exclusions; `current_params` represents the params after the
+// vertical tabstrip is laid out (if it is to be laid out after the top
+// container).
+void MaybeAddGrabHandleToTopContainer(
+    BrowserLayoutParams& top_container_params,
+    const BrowserLayoutParams& browser_params,
+    const BrowserLayoutParams& current_params) {
+  if (!top_container_params.trailing_exclusion.IsEmpty()) {
+    // When caption buttons are on the trailing edge, the extra grab handle
+    // area is between the toolbar app menu button and the caption buttons.
+    top_container_params.trailing_exclusion.horizontal_padding =
+        std::max(top_container_params.trailing_exclusion.horizontal_padding,
+                 float{kVerticalTabsGrabHandleSize});
+  } else if (!browser_params.leading_exclusion.IsEmpty()) {
+    // When caption buttons are leading, even if the vertical tabstrip provides
+    // some grab handle, additional space may be required to hit the minimum
+    // size; allocate any remaining space to a gap between the tabstrip and
+    // toolbar (or caption buttons and toolbar, if the tabstrip is below the
+    // caption buttons).
+
+    // Calculate the furthest left the trailing edge of the toolbar should be.
+    const int min_left =
+        browser_params.visual_client_area.x() +
+        browser_params.leading_exclusion.content.width() +
+        std::max(base::ClampCeil(
+                     browser_params.leading_exclusion.horizontal_padding),
+                 kVerticalTabsGrabHandleSize);
+
+    // Calculate how much space remains to be allocated after the caption
+    // buttons and vertical tabstrip.
+    const int new_padding =
+        min_left - (current_params.visual_client_area.x() +
+                    current_params.leading_exclusion.content.width());
+
+    // Update the exclusion area to include the required padding.
+    top_container_params.leading_exclusion.horizontal_padding =
+        std::max(0, new_padding);
+  }
+}
 
 }  // namespace
 
@@ -359,20 +406,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         params.InLocalCoordinates(params.visual_client_area);
 
     // In vertical tabs mode, extra space is allocated next to the top element
-    // to serve as a grab handle, either on the trailing edge, or on the leading
-    // edge if the tabstrip isn't collapsed.
+    // to serve as a grab handle, on whatever side the caption buttons are.
     if (tab_strip_type == TabStripType::kVertical) {
-      constexpr int kVerticalTabsGrabHandleSize = 54;
-      if (!top_container_params.trailing_exclusion.IsEmpty()) {
-        top_container_params.trailing_exclusion.horizontal_padding =
-            std::max(top_container_params.trailing_exclusion.horizontal_padding,
-                     float{kVerticalTabsGrabHandleSize});
-      } else if (vertical_tabstrip_collapsed &&
-                 !top_container_params.leading_exclusion.IsEmpty()) {
-        top_container_params.leading_exclusion.horizontal_padding =
-            std::max(top_container_params.leading_exclusion.horizontal_padding,
-                     float{kVerticalTabsGrabHandleSize});
-      }
+      MaybeAddGrabHandleToTopContainer(top_container_params, browser_params,
+                                       params);
     }
     const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
         top_container_layout, top_container_params, needs_exclusion);
