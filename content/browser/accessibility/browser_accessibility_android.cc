@@ -1022,9 +1022,11 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     text = std::move(value);
   }
 
+  // Append the URL/filename only if we don't already have an accessible name.
   if (text.empty() &&
       (ui::IsLink(GetRole()) || ui::IsImageOrVideo(GetRole())) &&
-      !HasExplicitlyEmptyName()) {
+      !HasExplicitlyEmptyName() &&
+      ComputeAndroidNameTo() == AndroidNameTo::kText) {
     std::u16string url = GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = ui::AXUrlBaseText(url);
   }

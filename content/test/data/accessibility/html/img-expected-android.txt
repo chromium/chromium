@@ -1,10 +1,10 @@
 android.webkit.WebView focusable focused has_image
 ++android.view.View has_image
-++++android.widget.Image has_image interesting name='pipe' content_description='pipe'
+++++android.widget.Image has_image interesting content_description='pipe'
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
-++++android.widget.Image has_image interesting name='pipe' content_description='  '
+++++android.widget.Image has_image content_description='  '
 ++++android.widget.TextView name=' '
-++++android.widget.Image has_image interesting name='svg-face' content_description='SVG face'
+++++android.widget.Image has_image interesting content_description='SVG face'
 ++++android.widget.TextView name=' '
-++++android.widget.ImageButton clickable has_image interesting name='pipe' content_description='clickable_image'
+++++android.widget.ImageButton clickable has_image interesting content_description='clickable_image'
