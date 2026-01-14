@@ -1818,7 +1818,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
-               'version': '9AgFghC99R1A3IPlL_OqHWtpnYHvS9mujd700QWghPIC',
+               'version': '22TeXNcAIQUr7pSY29vAeqnrZ-6ihoWxi5mWjh4ffwcC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
