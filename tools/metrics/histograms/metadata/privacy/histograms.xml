@@ -46,11 +46,6 @@ reviewer.
                privacy_sandbox.activity_type.record2 pref"/>
 </variants>
 
-<variants name="DIPSCachedResponseStatus">
-  <variant name="Cached" summary="The HTTP response was cached."/>
-  <variant name="NoCache" summary="The HTTP response was not cached."/>
-</variants>
-
 <variants name="DIPSCookieMode">
   <variant name=".Block3PC"
       summary="in a NON-off-the-record profile, with third-party cookies
@@ -353,7 +348,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2026-02-22">
+    enum="DIPSRedirectCategory" expires_after="2026-08-22">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -367,17 +362,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
   <token key="DIPSRedirectType" variants="DIPSRedirectType"/>
-</histogram>
-
-<histogram name="Privacy.DIPS.BounceStatusCode.{DIPSCachedResponseStatus}"
-    enum="HttpResponseCode" expires_after="2026-02-22">
-  <owner>liu@chromium.org</owner>
-  <owner>src/content/browser/btm/OWNERS</owner>
-  <summary>
-    The HTTP response status codes for each redirect within a DIPS-eligible
-    redirect chain.
-  </summary>
-  <token key="DIPSCachedResponseStatus" variants="DIPSCachedResponseStatus"/>
 </histogram>
 
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
@@ -523,31 +507,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
     Since these error codes can be recorded several times by a client, using
     per-client aggregation when analyzing this metric is recommended.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.DIPS.ServerBounceChainDelay" units="ms"
-    expires_after="2026-02-22">
-  <owner>liu@chromium.org</owner>
-  <owner>src/content/browser/btm/OWNERS</owner>
-  <summary>
-    The cumulative amount of time across all server redirects within a single
-    DIPS-eligible redirect chain. This is effectively the sum of the
-    ServerBounceDelay metric across all entries in the same redirect chain.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.DIPS.ServerBounceDelay" units="ms"
-    expires_after="2026-02-22">
-  <owner>liu@chromium.org</owner>
-  <owner>src/content/browser/btm/OWNERS</owner>
-  <summary>
-    The amount of time between server redirects within a DIPS-eligible redirect
-    chain. Each bounce within the redirect chain will be its own entry.
-
-    The only bounces that are measured are for DIPS-eligible users, so this
-    metric will record the delays for all of the bounces at the end of the
-    redirect chain.
   </summary>
 </histogram>
 
