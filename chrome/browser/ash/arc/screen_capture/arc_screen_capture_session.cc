@@ -276,8 +276,8 @@ void ArcScreenCaptureSession::QueryCompleted(
   ri->DeleteQueriesEXT(1, &query_id);
 
   // Return resources for ARC++ buffer.
-  sii->DestroySharedImage(gpu::SyncToken(),
-                          std::move(pending_buffer->shared_image_));
+  pending_buffer->shared_image_->UpdateDestructionSyncToken(gpu::SyncToken());
+  pending_buffer->shared_image_.reset();
 }
 
 void ArcScreenCaptureSession::OnDesktopCaptured(

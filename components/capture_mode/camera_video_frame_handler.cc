@@ -237,8 +237,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     if (!shared_image_) {
       return;
     }
-    shared_image_interface->DestroySharedImage(release_sync_token_,
-                                               std::move(shared_image_));
+    shared_image_->UpdateDestructionSyncToken(release_sync_token_);
   }
 
   // BufferHandleHolder:
