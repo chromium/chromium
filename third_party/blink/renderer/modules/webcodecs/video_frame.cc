@@ -822,12 +822,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     auto client_shared_image = sbi->GetSharedImage();
     CHECK(client_shared_image);
-    auto shared_image_cs = client_shared_image->color_space();
+    gfx_color_space = client_shared_image->color_space();
     frame = media::VideoFrame::WrapSharedImage(
         format, std::move(client_shared_image), sbi->GetSyncToken(),
         std::move(release_cb), coded_size, parsed_init.visible_rect,
         parsed_init.display_size, timestamp);
-    frame->set_color_space(shared_image_cs);
 
     // Note: We could add the StaticBitmapImage to the VideoFrameHandle so we
     // can round trip through VideoFrame back to canvas w/o any copies, but
