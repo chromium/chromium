@@ -1862,11 +1862,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "cpe-signal-api",
-    "owners": ["rgod@google.com", "sugoi@chromium.org", "bling-transactions-eng@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "cras-output-plugin-processor",
     "owners": ["hunghsienchen@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 151

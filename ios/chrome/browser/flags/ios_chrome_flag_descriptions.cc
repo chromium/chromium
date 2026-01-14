@@ -421,11 +421,6 @@ const char kCredentialProviderPerformanceImprovementsDescription[] =
     "Enables a series of performance improvements for the Credential Provider "
     "Extension.";
 
-const char kCredentialProviderSignalAPIName[] =
-    "Credential Provider Signal API";
-const char kCredentialProviderSignalAPIDescription[] =
-    "Enables signal API for Passkeys in the Credential Provider Extension.";
-
 const char kDataSharingDebugLogsName[] = "Enable data sharing debug logs";
 const char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
