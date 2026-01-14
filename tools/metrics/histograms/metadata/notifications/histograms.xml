@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Tips.FeatureTipPromo.EventType{NotificationTipsFeatureType}"
-    enum="NotificationSchedulerUserActionType" expires_after="2026-06-07">
+    enum="TipsNotificationsFeatureTipPromoEventType" expires_after="2026-06-07">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
