@@ -188,6 +188,9 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
 
   auto& path_value = *path;
 
+  const bool is_preserving_percent_encoded_dot_in_path =
+      IsPreservingPercentEncodedDotInPath();
+
   bool success = true;
   for (size_t i = 0; i < path_value.size(); i++) {
     UCHAR uch = static_cast<UCHAR>(path_value[i]);
@@ -214,13 +217,22 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
           // slightly).
           if (output->length() > path_begin_in_output &&
               output->at(output->length() - 1) == '/') {
-            // Slash followed by a dot, check to see if this is means relative
+            // Slash followed by a dot: check for single- or double-dot URL
+            // path segments
+            // (https://url.spec.whatwg.org/#single-dot-path-segment).
             size_t consumed_len;
             switch (ClassifyAfterDot(path_value.substr(i + dotlen),
                                      &consumed_len)) {
               case NOT_A_DIRECTORY:
                 // Copy the dot to the output, it means nothing special.
-                output->push_back('.');
+                if (dotlen == 3 && is_preserving_percent_encoded_dot_in_path) {
+                  // Preserve %2E/%2e case.
+                  output->push_back('%');
+                  output->push_back('2');
+                  output->push_back(path_value[i + 2]);
+                } else {
+                  output->push_back('.');
+                }
                 i += dotlen - 1;
                 break;
               case DIRECTORY_CUR:  // Current directory, just skip the input.
@@ -234,7 +246,14 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
           } else {
             // This dot is not preceded by a slash, it is just part of some
             // file name.
-            output->push_back('.');
+            if (dotlen == 3 && is_preserving_percent_encoded_dot_in_path) {
+              // Preserve %2E/%2e case.
+              output->push_back('%');
+              output->push_back('2');
+              output->push_back(path_value[i + 2]);
+            } else {
+              output->push_back('.');
+            }
             i += dotlen - 1;
           }
 

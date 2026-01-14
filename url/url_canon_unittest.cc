@@ -1371,11 +1371,14 @@ DualComponentCase kCommonPathCases[] = {
     // we should not be able to go above the root
     {"/foo/../../..", L"/foo/../../..", "/", Component(0, 1), true},
     {"/foo/../../../ton", L"/foo/../../../ton", "/ton", Component(0, 4), true},
-    // escaped dots should be unescaped and treated the same as dots
+    // %2E in navigation (/./ and /../) is decoded; otherwise preserved with
+    // original case.
     {"/foo/%2e", L"/foo/%2e", "/foo/", Component(0, 5), true},
-    {"/foo/%2e%2", L"/foo/%2e%2", "/foo/.%2", Component(0, 8), true},
+    {"/foo/%2e%2", L"/foo/%2e%2", "/foo/%2e%2", Component(0, 10), true},
     {"/foo/%2e./%2e%2e/.%2e/%2e.bar", L"/foo/%2e./%2e%2e/.%2e/%2e.bar",
-     "/..bar", Component(0, 6), true},
+     "/%2e.bar", Component(0, 8), true},
+    {"/foo%2Ebar", L"/foo%2Ebar", "/foo%2Ebar", Component(0, 10), true},
+    {"/foo%2ehtml", L"/foo%2ehtml", "/foo%2ehtml", Component(0, 11), true},
     // Multiple slashes in a row should be preserved and treated like empty
     // directory names.
     {"////../..", L"////../..", "//", Component(0, 2), true},
@@ -1546,6 +1549,62 @@ TEST_F(URLCanonTest, PartialPath) {
              CanonicalizePartialPath);
   DoPathTest(partial_path_cases, CanonicalizePartialPath,
              CanonicalizePartialPath);
+}
+
+// Test that when kPreservePercentEncodedDotInPath is disabled, %2E is decoded
+// to a literal dot (the old, non-WHATWG-compliant behavior). This ensures the
+// kill switch works correctly.
+class URLCanonPathPreservePercentEncodedDotDisabledTest
+    : public ::testing::Test {
+ public:
+  URLCanonPathPreservePercentEncodedDotDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        kPreservePercentEncodedDotInPath);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(URLCanonPathPreservePercentEncodedDotDisabledTest, DecodesPercentDot) {
+  // When the feature is disabled, %2E should be decoded to a literal dot.
+  DualComponentCase path_cases[] = {
+      // %2E not in navigation context should be decoded to a literal dot.
+      {"/foo%2Ebar", L"/foo%2Ebar", "/foo.bar", Component(0, 8), true},
+      {"/foo%2ehtml", L"/foo%2ehtml", "/foo.html", Component(0, 9), true},
+      // %2E followed by incomplete escape sequence should decode %2E to dot.
+      {"/foo/%2e%2", L"/foo/%2e%2", "/foo/.%2", Component(0, 8), true},
+      // Multiple %2E in navigation context.
+      {"/foo/%2e./%2e%2e/.%2e/%2e.bar", L"/foo/%2e./%2e%2e/.%2e/%2e.bar",
+       "/..bar", Component(0, 6), true},
+  };
+
+  for (const auto& path_case : path_cases) {
+    SCOPED_TRACE(path_case.input8);
+
+    if (path_case.input8) {
+      std::string out_str;
+      StdStringCanonOutput output(&out_str);
+      Component out_comp;
+      bool success =
+          CanonicalizeSpecialPath(path_case.input8, &output, &out_comp);
+      output.Complete();
+      EXPECT_EQ(path_case.expected_success, success);
+      EXPECT_EQ(path_case.expected, out_str);
+    }
+
+    if (path_case.input16) {
+      std::u16string input16(
+          test_utils::TruncateWStringToUTF16(path_case.input16));
+      std::string out_str;
+      StdStringCanonOutput output(&out_str);
+      Component out_comp;
+      bool success = CanonicalizeSpecialPath(input16, &output, &out_comp);
+      output.Complete();
+      EXPECT_EQ(path_case.expected_success, success);
+      EXPECT_EQ(path_case.expected, out_str);
+    }
+  }
 }
 
 TEST_F(URLCanonTest, Query) {

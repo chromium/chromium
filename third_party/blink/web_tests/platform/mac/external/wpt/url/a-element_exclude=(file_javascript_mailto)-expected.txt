@@ -1,13 +1,7 @@
 This is a testharness.js-based test.
-Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
-[FAIL] Parsing: <http://example.com/foo/%2e%2> against <about:blank>
-  assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
-[FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> against <about:blank>
-  assert_equals: href expected "http://example.com/%2e.bar" but got "http://example.com/..bar"
-[FAIL] Parsing: <http://www/foo%2Ehtml> against <about:blank>
-  assert_equals: href expected "http://www/foo%2Ehtml" but got "http://www/foo.html"
 [FAIL] Parsing: <http://example example.com> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>

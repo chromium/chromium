@@ -37,6 +37,14 @@ COMPONENT_EXPORT(URL) bool IsNonSpecialLeadingSlashHandlingEnabled();
 // to the WHATWG URL Standard.
 COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kNonSpecialLeadingSlashHandling);
 
+// Returns true if %2E should be preserved in URL paths instead of being
+// decoded to a literal dot.
+COMPONENT_EXPORT(URL) bool IsPreservingPercentEncodedDotInPath();
+
+// When enabled, preserve %2E encoding in URL paths to comply with the
+// WHATWG URL Standard.
+COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kPreservePercentEncodedDotInPath);
+
 }  // namespace url
 
 #endif  // URL_URL_FEATURES_H_

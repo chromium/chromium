@@ -6,12 +6,6 @@ Found 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "http://x/hello" but got "file://x/hello"
 [FAIL] Parsing: <c:/foo> against <http://example.org/foo/bar>
   assert_equals: href expected "c:/foo" but got "file:///C:/foo"
-[FAIL] Parsing: <http://example.com/foo/%2e%2> without base
-  assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
-[FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> without base
-  assert_equals: href expected "http://example.com/%2e.bar" but got "http://example.com/..bar"
-[FAIL] Parsing: <http://www/foo%2Ehtml> without base
-  assert_equals: href expected "http://www/foo%2Ehtml" but got "http://www/foo.html"
 [FAIL] Parsing: <http://example example.com> against <http://other.com/>
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>

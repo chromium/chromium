@@ -16,9 +16,9 @@ cases = [
   ["http:////////user:@google.com:99?foo", "http://user@google.com:99/?foo"],
   ["www.google.com", "file:///www.google.com"],
   ["http://192.0x00A80001", "http://192.168.0.1/"],
-  // This test matches Blink's current behaviour, but the URL standard
-  // does not unescape %2E.
-  ["http://www/foo%2Ehtml", "http://www/foo.html"],
+  // URL Standard single-dot path segment keeps %2E encoded
+  // (https://url.spec.whatwg.org/#single-dot-path-segment).
+  ["http://www/foo%2Ehtml", "http://www/foo%2Ehtml"],
   ["http://user:pass@/", "http://user:pass@/"],
   ["http://%25DOMAIN:foobar@foodomain.com/", "http://%25DOMAIN:foobar@foodomain.com/"],
   // Backslashes should get converted to forward slashes.
