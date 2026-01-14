@@ -100,6 +100,7 @@ source_set("impl") {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/contextual_search:public",
       "//components/optimization_guide/core:model_execution",

@@ -25,12 +25,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -285,10 +285,12 @@ ContextualTasksContextService::GetAllEligibleTabs() {
         if (browser->GetProfile() != profile_) {
           return true;
         }
-        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->count(); i++) {
+        TabListInterface* tab_list = TabListInterface::From(browser);
+        CHECK(tab_list);
+        for (int i = 0; i < tab_list->GetTabCount(); i++) {
+          tabs::TabInterface* tab = tab_list->GetTab(i);
           content::WebContents* web_contents =
-              tab_strip_model->GetWebContentsAt(i);
+              tab ? tab->GetContents() : nullptr;
           if (!web_contents) {
             continue;
           }
