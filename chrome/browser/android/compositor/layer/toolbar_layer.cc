@@ -130,18 +130,17 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   // The location bar background doubles as the anonymize layer -- it just
   // needs to be drawn on top of the toolbar bitmap.
   int background_layer_index = GetIndexOfLayer(toolbar_background_layer_);
-  scoped_refptr<cc::slim::Layer> parent = ToolbarParentLayer();
   bool needs_move_to_front =
-      anonymize && parent->children().back() != url_bar_background_layer_;
+      anonymize && layer_->children().back() != url_bar_background_layer_;
   bool needs_move_to_back =
       !anonymize &&
-      parent->children()[background_layer_index] != url_bar_background_layer_;
+      layer_->children()[background_layer_index] != url_bar_background_layer_;
 
   // If the layer needs to move, remove and re-add it.
   if (needs_move_to_front) {
-    parent->AddChild(url_bar_background_layer_);
+    layer_->AddChild(url_bar_background_layer_);
   } else if (needs_move_to_back) {
-    parent->InsertChild(url_bar_background_layer_, background_layer_index + 1);
+    layer_->InsertChild(url_bar_background_layer_, background_layer_index + 1);
   }
 
   debug_layer_->SetBounds(resource->size());
@@ -165,18 +164,13 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {
-  scoped_refptr<cc::slim::Layer> parent = ToolbarParentLayer();
-  for (unsigned int i = 0; i < parent->children().size(); ++i) {
-    if (parent->children()[i] == layer) {
+  for (unsigned int i = 0; i < layer_->children().size(); ++i) {
+    if (layer_->children()[i] == layer) {
       return i;
     }
   }
 
   return -1;
-}
-
-scoped_refptr<cc::slim::Layer> ToolbarLayer::ToolbarParentLayer() {
-  return layer_;
 }
 
 void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
@@ -249,8 +243,6 @@ void ToolbarLayer::SetOpacity(float opacity) {
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
     : resource_manager_(resource_manager->GetWeakPtr()),
       layer_(cc::slim::Layer::Create()),
-      toolbar_layers_(cc::slim::Layer::Create()),
-      progress_bar_layers_(cc::slim::Layer::Create()),
       toolbar_background_layer_(cc::slim::SolidColorLayer::Create()),
       url_bar_background_layer_(cc::slim::NinePatchLayer::Create()),
       bitmap_layer_(cc::slim::UIResourceLayer::Create()),
