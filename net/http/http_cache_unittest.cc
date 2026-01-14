@@ -15060,7 +15060,13 @@ class TestCacheBackendFactoryWithEncryption
   const base::FilePath path_;
 };
 
-TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
+#if BUILDFLAG(IS_FUCHSIA) && defined(LEAK_SANITIZER)
+// TODO(crbug.com/473061179): Re-enable this test once the memory leak is fixed.
+#define MAYBE_EncryptionDelegateInitSuccess DISABLED_EncryptionDelegateInitSuccess
+#else
+#define MAYBE_EncryptionDelegateInitSuccess EncryptionDelegateInitSuccess
+#endif
+TEST_F(HttpCacheTest, MAYBE_EncryptionDelegateInitSuccess) {
   MockCacheEncryptionDelegate mock_delegate;
   mock_delegate.SetInitResult(net::OK);
 
