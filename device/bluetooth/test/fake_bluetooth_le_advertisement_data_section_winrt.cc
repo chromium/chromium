@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/win/winrt_storage_util.h"
 
 namespace device {
@@ -39,8 +40,7 @@ HRESULT FakeBluetoothLEAdvertisementDataSectionWinrt::put_DataType(
 HRESULT FakeBluetoothLEAdvertisementDataSectionWinrt::get_Data(
     IBuffer** value) {
   ComPtr<IBuffer> buffer;
-  HRESULT hr = base::win::CreateIBufferFromData(
-      data_.data(), static_cast<uint32_t>(data_.size()), &buffer);
+  HRESULT hr = base::win::CreateIBufferFromData(data_, &buffer);
   return SUCCEEDED(hr) ? buffer.CopyTo(value) : hr;
 }
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/win/winrt_storage_util.h"
@@ -28,9 +29,11 @@ ComPtr<ISoftwareBitmap> CreateWinBitmapFromSkBitmap(
 
   // Create IBuffer from bitmap data.
   ComPtr<ABI::Windows::Storage::Streams::IBuffer> buffer;
+  // SAFETY: Trust that bitmap.computeByteSize() returns the right size.
   HRESULT hr = base::win::CreateIBufferFromData(
-      static_cast<uint8_t*>(bitmap.getPixels()),
-      static_cast<UINT32>(bitmap.computeByteSize()), &buffer);
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
+                                static_cast<UINT32>(bitmap.computeByteSize())),
+                     &buffer));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Create IBuffer from bitmap data failed: "
                 << logging::SystemErrorCodeToString(hr);

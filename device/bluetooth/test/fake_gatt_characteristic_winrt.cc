@@ -234,11 +234,10 @@ HRESULT FakeGattCharacteristicWinrt::WriteValueWithResultAndOptionAsync(
   if (!bluetooth_test_winrt_) {
     return E_UNEXPECTED;
   }
-  uint8_t* data;
-  uint32_t size;
-  base::win::GetPointerToBufferData(value, &data, &size);
+  base::span<uint8_t> data_span;
+  base::win::GetPointerToBufferData(value, data_span);
   bluetooth_test_winrt_->OnFakeBluetoothCharacteristicWriteValue(
-      std::vector<uint8_t>(data, UNSAFE_TODO(data + size)));
+      std::vector<uint8_t>(data_span.begin(), data_span.end()));
   auto async_op = Make<base::win::AsyncOperation<GattWriteResult*>>();
   DCHECK(!write_value_callback_);
   if (write_option == GattWriteOption_WriteWithResponse) {

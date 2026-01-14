@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/win/winrt_storage_util.h"
 
 namespace device {
@@ -30,8 +31,7 @@ FakeGattValueChangedEventArgsWinrt::~FakeGattValueChangedEventArgsWinrt() =
 HRESULT
 FakeGattValueChangedEventArgsWinrt::get_CharacteristicValue(IBuffer** value) {
   ComPtr<IBuffer> buffer;
-  HRESULT hr =
-      base::win::CreateIBufferFromData(value_.data(), value_.size(), &buffer);
+  HRESULT hr = base::win::CreateIBufferFromData(value_, &buffer);
   return SUCCEEDED(hr) ? buffer.CopyTo(value) : hr;
 }
 

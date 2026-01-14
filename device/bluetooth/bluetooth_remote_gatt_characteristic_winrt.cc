@@ -234,7 +234,7 @@ void BluetoothRemoteGattCharacteristicWinrt::WriteRemoteCharacteristic(
   }
 
   ComPtr<IBuffer> buffer;
-  hr = base::win::CreateIBufferFromData(value.data(), value.size(), &buffer);
+  hr = base::win::CreateIBufferFromData(value, &buffer);
   if (FAILED(hr)) {
     BLUETOOTH_LOG(DEBUG) << "base::win::CreateIBufferFromData failed: "
                          << logging::SystemErrorCodeToString(hr);
@@ -528,9 +528,8 @@ void BluetoothRemoteGattCharacteristicWinrt::OnReadValue(
     return;
   }
 
-  uint8_t* data = nullptr;
-  uint32_t length = 0;
-  hr = base::win::GetPointerToBufferData(value.Get(), &data, &length);
+  base::span<uint8_t> data_span;
+  hr = base::win::GetPointerToBufferData(value.Get(), data_span);
   if (FAILED(hr)) {
     BLUETOOTH_LOG(DEBUG) << "Getting Pointer To Buffer Data failed: "
                          << logging::SystemErrorCodeToString(hr);
@@ -540,7 +539,7 @@ void BluetoothRemoteGattCharacteristicWinrt::OnReadValue(
     return;
   }
 
-  value_.assign(data, UNSAFE_TODO(data + length));
+  value_.assign(data_span.begin(), data_span.end());
   std::move(pending_read_callback).Run(/*error_code=*/std::nullopt, value_);
 }
 
@@ -597,16 +596,15 @@ void BluetoothRemoteGattCharacteristicWinrt::OnValueChanged(
     return;
   }
 
-  uint8_t* data = nullptr;
-  uint32_t length = 0;
-  hr = base::win::GetPointerToBufferData(value.Get(), &data, &length);
+  base::span<uint8_t> data_span;
+  hr = base::win::GetPointerToBufferData(value.Get(), data_span);
   if (FAILED(hr)) {
     BLUETOOTH_LOG(DEBUG) << "Getting Pointer To Buffer Data failed: "
                          << logging::SystemErrorCodeToString(hr);
     return;
   }
 
-  value_.assign(data, UNSAFE_TODO(data + length));
+  value_.assign(data_span.begin(), data_span.end());
   service_->GetDevice()->GetAdapter()->NotifyGattCharacteristicValueChanged(
       this, value_);
 }
