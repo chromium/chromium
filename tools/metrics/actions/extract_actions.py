@@ -346,11 +346,12 @@ def GrepForActions(path, actions):
     # exceed Windows' path length limit of 260 characters.
     path = '\\\\?\\' + os.path.abspath(path)
 
-  try:
-    content = open(path, encoding='utf-8').read()
-  except UnicodeDecodeError:
-    # If the file is not UTF-8, it's not a Chrome source file, ignore it.
-    return
+  with open(path, encoding='utf-8') as file:
+    try:
+      content = file.read()
+    except UnicodeDecodeError:
+      # If the file is not UTF-8, it's not a Chrome source file, ignore it.
+      return
 
   finder = ActionNameFinder(path, content, action_re)
   while True:
@@ -366,7 +367,7 @@ def GrepForActions(path, actions):
     return
 
   line_number = 0
-  for line in open(path, encoding='utf-8'):
+  for line in content.splitlines():
     line_number = line_number + 1
     if COMPUTED_ACTION_RE.search(line):
       # Warn if this file shouldn't be calling RecordComputedAction.
@@ -424,7 +425,8 @@ def GrepForWebUIActions(path, actions):
   close_called = False
   try:
     parser = WebUIActionsParser(actions)
-    parser.feed(open(path, encoding='utf-8').read())
+    with open(path, encoding='utf-8') as file:
+      parser.feed(file.read())
     # An exception can be thrown by parser.close(), so do it in the try to
     # ensure the path of the file being parsed gets printed if that happens.
     close_called = True
@@ -451,9 +453,9 @@ def GrepForDevToolsActions(path, actions):
   if ext != '.js':
     return
 
-  finder = ActionNameFinder(path,
-                            open(path, encoding='utf-8').read(),
-                            USER_METRICS_ACTION_RE_DEVTOOLS)
+  with open(path, encoding='utf-8') as file:
+    finder = ActionNameFinder(path, file.read(),
+                              USER_METRICS_ACTION_RE_DEVTOOLS)
   while True:
     try:
       action_name = finder.FindNextAction()
@@ -752,13 +754,11 @@ def _GeneratedActions() -> set[str]:
   return actions
 
 
-def UpdateXml(original_xml):
+def UpdateXml(original_xml: str, generated_actions_names: set[str]) -> str:
   actions_dict, comment_nodes, variants_dict = action_utils.ParseActionFile(
       original_xml)
 
   expanded_actions_dict = action_utils.CreateActionsFromVariants(actions_dict)
-
-  generated_actions_names = _GeneratedActions()
 
   # For generated actions we create a trivial action with no owners or
   # description. However we don't override the action if it's already present
@@ -771,11 +771,12 @@ def UpdateXml(original_xml):
 
 
 def main(argv):
-  presubmit_util.DoPresubmitMain(argv,
-                                 'actions.xml',
-                                 'actions.old.xml',
-                                 UpdateXml,
-                                 script_name='extract_actions.py')
+  presubmit_util.DoPresubmitMain(
+      argv,
+      'actions.xml',
+      'actions.old.xml',
+      lambda file_content: UpdateXml(file_content, _GeneratedActions()),
+      script_name='extract_actions.py')
 
 
 if '__main__' == __name__:

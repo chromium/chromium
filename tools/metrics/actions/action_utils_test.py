@@ -120,6 +120,5 @@ class ActionXmlTest(unittest.TestCase):
     for scenario in scenarios:
       self._RunSubTest(scenario.name, lambda: testFunction(scenario))
 
-
 if __name__ == '__main__':
   unittest.main()
