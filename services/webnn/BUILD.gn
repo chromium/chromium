@@ -263,21 +263,7 @@ source_set("tests") {
     "webnn_test_utils.h",
   ]
 
-  if (is_win) {
-    sources += [
-      "dml/adapter_test.cc",
-      "dml/command_queue_test.cc",
-      "dml/command_recorder_test.cc",
-      "dml/context_impl_dml_test.cc",
-      "dml/graph_builder_dml_test.cc",
-      "dml/platform_functions_test.cc",
-      "dml/tensor_desc_test.cc",
-      "dml/test_base.cc",
-      "dml/test_base.h",
-    ]
-  }
-
-  if (webnn_use_tflite || is_mac || is_win) {
+  if ((webnn_use_tflite && !is_win) || is_mac) {
     sources += [
       "webnn_graph_impl_backend_test.cc",
       "webnn_tensor_impl_backend_test.cc",

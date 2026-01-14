@@ -6,7 +6,6 @@
 
 #include <wrl.h>
 
-#include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -37,13 +36,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
                                         "WebNN is blocklisted for GPU."));
   }
 
-  if (!dxgi_adapter) {
-    // Unit tests do not pass in an IDXGIAdapter. `GetGpuInstanceForTesting`
-    // will select the default adapter returned by `IDXGIFactory::EnumAdapters`.
-    CHECK_IS_TEST();
-    return Adapter::GetGpuInstanceForTesting();
-  }
-
+  CHECK(dxgi_adapter);
   return Adapter::GetGpuInstance(std::move(dxgi_adapter));
 }
 
@@ -131,24 +124,24 @@ CreateContextFromOptions(
       NOTREACHED();
     case mojom::Device::kGpu: {
       ComPtr<IDXGIAdapter> dxgi_adapter;
-      if (shared_context_state) {
-        ComPtr<ID3D11Device> d3d11_device =
-            shared_context_state->GetD3D11Device();
-        if (!d3d11_device) {
-          return base::unexpected(
-              CreateError(mojom::Error::Code::kNotSupportedError,
-                          "Failed to get D3D11 device."));
-        }
-        ComPtr<IDXGIDevice> dxgi_device;
-        // A QueryInterface() via As() from an ID3D11Device to IDXGIDevice is
-        // always expected to succeed.
-        CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
-
-        // The D3D team has promised that asking for an adapter from a valid
-        // IDXGIDevice will always succeed.
-        CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
-        CHECK(dxgi_adapter);
+      CHECK(shared_context_state);
+      ComPtr<ID3D11Device> d3d11_device =
+          shared_context_state->GetD3D11Device();
+      if (!d3d11_device) {
+        return base::unexpected(
+            CreateError(mojom::Error::Code::kNotSupportedError,
+                        "Failed to get D3D11 device."));
       }
+      ComPtr<IDXGIDevice> dxgi_device;
+      // A QueryInterface() via As() from an ID3D11Device to IDXGIDevice is
+      // always expected to succeed.
+      CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
+
+      // The D3D team has promised that asking for an adapter from a valid
+      // IDXGIDevice will always succeed.
+      CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
+      CHECK(dxgi_adapter);
+
       adapter_creation_result =
           GetDmlGpuAdapter(dxgi_adapter.Get(), gpu_feature_info);
       break;

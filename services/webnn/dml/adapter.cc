@@ -8,7 +8,6 @@
 
 #include <string_view>
 
-#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -55,34 +54,6 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetGpuInstance(
   }
 
   return Adapter::Create(std::move(dxgi_adapter), DML_FEATURE_LEVEL_4_0);
-}
-
-// static
-base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-Adapter::GetGpuInstanceForTesting() {
-  CHECK_IS_TEST();
-
-  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
-  HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
-  if (FAILED(hr)) {
-    return HandleAdapterFailure(
-        mojom::Error::Code::kUnknownError,
-        "Failed to create an IDXGIFactory1 for testing.", hr);
-  }
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  hr = factory->EnumAdapters(0, &dxgi_adapter);
-  if (FAILED(hr)) {
-    return HandleAdapterFailure(
-        mojom::Error::Code::kUnknownError,
-        "Failed to get an IDXGIAdapter from EnumAdapters for testing.", hr);
-  }
-
-  // If the `Adapter` instance is created, add a reference and return it.
-  if (gpu_instance_) {
-    return base::WrapRefCounted(gpu_instance_);
-  }
-
-  return Adapter::Create(std::move(dxgi_adapter), DML_FEATURE_LEVEL_2_0);
 }
 
 // static
@@ -142,16 +113,6 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
 }
 
 // static
-base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-Adapter::GetNpuInstanceForTesting() {
-  CHECK_IS_TEST();
-  gpu::GpuFeatureInfo gpu_feature_info;
-  gpu::GPUInfo gpu_info;
-  gpu::CollectBasicGraphicsInfo(&gpu_info);
-  return GetNpuInstance(gpu_feature_info, gpu_info);
-}
-
-// static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
     Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
     DML_FEATURE_LEVEL min_required_dml_feature_level) {
@@ -160,20 +121,6 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
     return HandleAdapterFailure(
         mojom::Error::Code::kNotSupportedError,
         "Failed to load required DML/DXCore/D3D12 libraries on this platform.");
-  }
-
-  bool is_d3d12_debug_layer_enabled = false;
-  // Enable the d3d12 debug layer mainly for services_unittests.exe.
-  if (enable_d3d12_debug_layer_for_testing_) {
-    // Enable the D3D12 debug layer.
-    // Must be called before the D3D12 device is created.
-    auto d3d12_get_debug_interface_proc =
-        platform_functions->d3d12_get_debug_interface_proc();
-    Microsoft::WRL::ComPtr<ID3D12Debug> d3d12_debug;
-    if (SUCCEEDED(d3d12_get_debug_interface_proc(IID_PPV_ARGS(&d3d12_debug)))) {
-      d3d12_debug->EnableDebugLayer();
-      is_d3d12_debug_layer_enabled = true;
-    }
   }
 
   // D3D_FEATURE_LEVEL_1_0_CORE allows Microsoft Compute Driver Model (MCDM)
@@ -212,14 +159,12 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
                                 "Failed to create D3D12 device.", hr);
   }
 
-  // The d3d12 debug layer can also be enabled via Microsoft (R) DirectX Control
+  // The d3d12 debug layer can be enabled via Microsoft (R) DirectX Control
   // Panel (dxcpl.exe) for any executable apps by users.
-  if (!is_d3d12_debug_layer_enabled) {
-    Microsoft::WRL::ComPtr<ID3D12DebugDevice> debug_device;
-    // Ignore failure.
-    d3d12_device->QueryInterface(IID_PPV_ARGS(&debug_device));
-    is_d3d12_debug_layer_enabled = (debug_device != nullptr);
-  }
+  Microsoft::WRL::ComPtr<ID3D12DebugDevice> debug_device;
+  // Ignore failure.
+  d3d12_device->QueryInterface(IID_PPV_ARGS(&debug_device));
+  bool is_d3d12_debug_layer_enabled = (debug_device != nullptr);
 
   // Enable the DML debug layer if the D3D12 debug layer was enabled.
   DML_CREATE_DEVICE_FLAGS flags = DML_CREATE_DEVICE_FLAG_NONE;
@@ -297,12 +242,6 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
                   max_supported_dml_feature_level, is_uma));
 }
 
-// static
-void Adapter::EnableDebugLayerForTesting() {
-  CHECK_IS_TEST();
-  enable_d3d12_debug_layer_for_testing_ = true;
-}
-
 Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
                  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
                  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
@@ -357,17 +296,7 @@ bool Adapter::IsDMLFeatureLevelSupported(
   return feature_level <= max_supported_dml_feature_level_;
 }
 
-bool Adapter::IsDMLDeviceCompileGraphSupportedForTesting() const {
-  CHECK_IS_TEST();
-  // IDMLDevice1::CompileGraph was introduced in DirectML version 1.2.0 or
-  // DML_FEATURE_LEVEL_2_1.
-  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
-  return IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_2_1);
-}
-
 Adapter* Adapter::gpu_instance_ = nullptr;
 Adapter* Adapter::npu_instance_ = nullptr;
-
-bool Adapter::enable_d3d12_debug_layer_for_testing_ = false;
 
 }  // namespace webnn::dml

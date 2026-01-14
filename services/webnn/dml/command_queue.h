@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/win/object_watcher.h"
@@ -67,8 +66,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
                        uint64_t wait_fence_value);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebNNCommandQueueTest, ReferenceAndRelease);
-
   friend class base::RefCountedThreadSafe<CommandQueue>;
   CommandQueue(Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
                Microsoft::WRL::ComPtr<ID3D12Fence> fence);
@@ -88,8 +85,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
   };
   std::deque<QueuedObject> queued_objects_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  const std::deque<QueuedObject>& GetQueuedObjectsForTesting() const;
 
   struct QueuedCallback {
     QueuedCallback() = delete;

@@ -4,7 +4,6 @@
 
 #include "services/webnn/dml/command_queue.h"
 
-#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -222,13 +221,6 @@ uint64_t CommandQueue::GetCompletedValue() const {
 uint64_t CommandQueue::GetLastFenceValue() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_fence_value_;
-}
-
-const std::deque<CommandQueue::QueuedObject>&
-CommandQueue::GetQueuedObjectsForTesting() const {
-  CHECK_IS_TEST();
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return queued_objects_;
 }
 
 HRESULT CommandQueue::WaitForFence(

@@ -35,8 +35,7 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
-  // First try to Load DirectML.dll from the module folder. It would enable
-  // running unit tests which require DirectML feature level 4.0+ on Windows 10.
+  // First try to Load DirectML.dll from the module folder.
   base::ScopedNativeLibrary dml_library;
   base::FilePath module_path;
   if (base::PathService::Get(base::DIR_MODULE, &module_path)) {

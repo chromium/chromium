@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
 // Windows SDK headers should be included after DirectX headers.
@@ -94,10 +93,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorDesc final {
   void SetTotalTensorSizeInBytes(uint64_t new_total_tensor_size_bytes);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);
-  FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescB);
-  FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescC);
-
   // DML_BUFFER_TENSOR_DESC consists of the pointers to a DirectML tensor's
   // dimensions and strides.
   std::vector<uint32_t> dimensions_;

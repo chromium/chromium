@@ -6,7 +6,6 @@
 #define SERVICES_WEBNN_DML_ADAPTER_H_
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -48,24 +47,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetGpuInstance(
       Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter);
 
-  // Similar to `GetGpuInstance()` but use the first enumerated DXGI adapter.
-  // The returned `Adapter` is guaranteed to support a feature level equal to or
-  // greater than DML_FEATURE_LEVEL_2_0 because that is where DMLCreateDevice1
-  // was introduced.
-  static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-  GetGpuInstanceForTesting();
-
   // Similar to the `GetGpuInstance` method above, get the shared `Adapter`
   // instance for NPU.  The returned `Adapter` is guaranteed to support a
   // feature level equal to or greater than DML_FEATURE_LEVEL_6_4.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetNpuInstance(
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::GPUInfo& gpu_info);
-
-  // Similar to the `GetNpuInstance` method above, get the shared NPU `Adapter`
-  // instance for testing.
-  static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-  GetNpuInstanceForTesting();
 
   Adapter(const Adapter&) = delete;
   Adapter& operator=(const Adapter&) = delete;
@@ -90,26 +77,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
 
   bool IsNPU() const { return npu_instance_ == this; }
 
-  // Enable the debug layer (requires the Graphics Tools "optional feature").
-  // Must be called prior to Adapter::GetGpuInstance() since the D3D12 device
-  // must be created after the debug layer is enabled.
-  // TODO(crbug.com/40206287): move this once adapter enumeration is
-  // implemented.
-  static void EnableDebugLayerForTesting();
-
   bool IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL feature_level) const;
-
-  // Determines if IDMLDevice1::CompileGraph can be used.
-  bool IsDMLDeviceCompileGraphSupportedForTesting() const;
 
   // Indicates whether the underlying D3D12 device supports UMA (Unified Memory
   // Architecture).
   bool IsUMA() const { return is_uma_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetGpuInstance);
-  FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetNpuInstance);
-
   friend class base::RefCountedThreadSafe<Adapter>;
   Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
           Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
@@ -146,8 +120,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   scoped_refptr<base::SequencedTaskRunner> init_task_runner_for_npu_;
 
   DML_FEATURE_LEVEL max_supported_dml_feature_level_ = DML_FEATURE_LEVEL_1_0;
-
-  static bool enable_d3d12_debug_layer_for_testing_;
 
   // Store the info of D3D12_FEATURE_DATA_ARCHITECTURE.
   const bool is_uma_ = false;

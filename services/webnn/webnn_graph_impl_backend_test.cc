@@ -39,22 +39,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/fp16/src/include/fp16.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/containers/fixed_flat_map.h"
-#include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/command_queue.h"
-#include "services/webnn/dml/command_recorder.h"
-#include "services/webnn/dml/context_impl_dml.h"
-#include "services/webnn/dml/graph_impl_dml.h"
-#include "services/webnn/dml/test_base.h"
-#include "services/webnn/dml/utils.h"
-#include "third_party/microsoft_dxheaders/include/directml.h"
-
-// Windows SDK headers should be included after DirectX headers.
-#include <wrl.h>
-
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -287,101 +271,6 @@ void VerifyIsEqual(base::span<const T> actual, const OperandInfo<T>& expected) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_WIN)
-class WebNNGraphImplBackendTest : public testing::Test {
- public:
-  WebNNGraphImplBackendTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{webnn::mojom::features::
-                                  kWebMachineLearningNeuralNetwork,
-                              webnn::mojom::features::kWebNNDirectML},
-        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
-  }
-
-  void SetUp() override;
-  void SetUpBase();
-  void TearDown() override;
-
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
-
-  mojo::Remote<mojom::WebNNContext>& context() { return webnn_context_; }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<dml::Adapter> adapter_;
-
-  WebNNTestEnvironment webnn_test_environment_;
-  mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
-  mojo::Remote<mojom::WebNNContext> webnn_context_;
-};
-
-void WebNNGraphImplBackendTest::SetUp() {
-  SKIP_TEST_IF(!UseGPUInTests());
-
-  dml::Adapter::EnableDebugLayerForTesting();
-  auto adapter_creation_result = dml::Adapter::GetGpuInstanceForTesting();
-  // If the adapter creation result has no value, it's most likely because
-  // platform functions were not properly loaded.
-  SKIP_TEST_IF(!adapter_creation_result.has_value());
-  adapter_ = adapter_creation_result.value();
-  // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
-  // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
-  // DirectML version doesn't support this feature.
-  SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
-
-  // Skip a test if the required feature level is not supported for the
-  // operator being tested.
-  auto kRequiredFeatureLevels = base::MakeFixedFlatMap<std::string_view,
-                                                       DML_FEATURE_LEVEL>(
-      {// DML_BATCHNORMALIZATION_OPERATOR_DESC support for 1~8 dimension counts
-       // was introduced in DML_FEATURE_LEVEL_3_1.
-       {"FuseStandaloneActivationIntoBatchNormalization",
-        DML_FEATURE_LEVEL_3_1},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"FuseStandaloneActivationIntoGemm", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildAndComputeMultipleOperatorGemm", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildOneInputAndOneConstantOperand", DML_FEATURE_LEVEL_4_0},
-       // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC support for 1~8
-       // dimension
-       // counts was introduced in DML_FEATURE_LEVEL_3_1.
-       {"BuildSingleOperatorLayerNormalization", DML_FEATURE_LEVEL_3_1},
-       // DML_GEMM_OPERATOR_DESC support for 2~4 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"FuseStandaloneOperationsIntoMatmul", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMultipleInputsAppendingConstants", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMultipleConstantsAppendingInputs", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildGemmWithReshapedConstantOperand", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPoolingAsThirdOperator", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPoolingAsSecondOperator", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPoolingAsFirstOperator", DML_FEATURE_LEVEL_4_0}});
-  auto it = kRequiredFeatureLevels.find(
-      ::testing::UnitTest::GetInstance()->current_test_info()->name());
-  if (it != kRequiredFeatureLevels.end()) {
-    const auto& required_feature_level = it->second;
-    SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(required_feature_level));
-  }
-
-  SetUpBase();
-}
-#endif  // #if BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_MAC)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
@@ -504,7 +393,8 @@ void WebNNGraphImplBackendTest::SetUp() {
 
   SetUpBase();
 }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC) &&
+        // !BUILDFLAG(IS_WIN)
 
 void WebNNGraphImplBackendTest::SetUpBase() {
   webnn_test_environment_.BindWebNNContextProvider(
@@ -3574,17 +3464,7 @@ struct Resample2dTester {
   }
 };
 
-// Test building and computing a graph with single operator resample2d.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM_FAMILY)
-// Test times out on Windows 11 / ARM bot, see https:  // crbug.com/381510750.
-#define MAYBE_BuildAndComputeSingleOperatorResample2d \
-  DISABLED_BuildAndComputeSingleOperatorResample2d
-#else
-#define MAYBE_BuildAndComputeSingleOperatorResample2d \
-  BuildAndComputeSingleOperatorResample2d
-#endif
-TEST_F(WebNNGraphImplBackendTest,
-       MAYBE_BuildAndComputeSingleOperatorResample2d) {
+TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorResample2d) {
   // Test resample2d with "NearestNeighbor" mode, explicit scales = [2, 3] and
   // axes = [2, 3].
   {
