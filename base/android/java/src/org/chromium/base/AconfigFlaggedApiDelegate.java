@@ -310,16 +310,6 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
-     * TODO(crbug.com/443078007): Deprecated, remove after internal implementation is updated.
-     *
-     * @return Id of
-     *     androidx.core.view.accessibility.AccessibilityNodeInfo.AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION
-     */
-    default @Nullable Integer getActionSetExtendedSelectionId() {
-        return null;
-    }
-
-    /**
      * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
      * supported.
      *
