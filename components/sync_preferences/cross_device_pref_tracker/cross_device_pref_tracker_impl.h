@@ -59,6 +59,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `CrossDevicePrefTracker` overrides
   void AddObserver(CrossDevicePrefTracker::Observer* observer) override;
   void RemoveObserver(CrossDevicePrefTracker::Observer* observer) override;
+  ServiceStatus GetServiceStatus() const override;
   std::vector<TimestampedPrefValue> GetValues(
       std::string_view pref_name,
       const DeviceFilter& filter) const override;

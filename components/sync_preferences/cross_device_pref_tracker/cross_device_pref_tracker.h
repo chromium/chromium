@@ -92,6 +92,11 @@ class CrossDevicePrefTracker : public KeyedService {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Returns the current status of the service. (Clients can use this to
+  // determine if they should wait to query the tracker until it is
+  // `kAvailable`.)
+  virtual ServiceStatus GetServiceStatus() const = 0;
+
   // Retrieves all values for a tracked pref matching the filter, sorted in
   // descending order by timestamp (i.e., most recent first).
   // `pref_name` can be either the tracked pref name (e.g.,

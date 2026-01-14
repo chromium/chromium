@@ -1874,5 +1874,66 @@ TEST_F(CrossDevicePrefTrackerTest, CloningTimestampedValueReturnsDeepCopy) {
             &cloned_value.device_sync_cache_guid);
 }
 
+// Verifies that `GetServiceStatus` returns `kAvailable` when properly
+// configured.
+TEST_F(CrossDevicePrefTrackerTest, GetServiceStatusReturnsAvailable) {
+  CreateTracker();
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kAvailable);
+}
+
+// Verifies that `GetServiceStatus` returns `kSyncNotConfigured` when Sync is
+// disabled.
+TEST_F(CrossDevicePrefTrackerTest, GetServiceStatusReturnsSyncNotConfigured) {
+  SetSyncEnabled(false);
+  CreateTracker();
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kSyncNotConfigured);
+}
+
+// Verifies that `GetServiceStatus` returns `kLocalDeviceInfoMissing` when
+// `DeviceInfo` is not ready.
+TEST_F(CrossDevicePrefTrackerTest,
+       GetServiceStatusReturnsLocalDeviceInfoMissing) {
+  ResetLocalDeviceInfo();
+  CreateTracker();
+  EXPECT_EQ(tracker_->GetServiceStatus(),
+            ServiceStatus::kLocalDeviceInfoMissing);
+}
+
+// Verifies that `GetServiceStatus` returns the combined status when both
+// Sync is disabled and `DeviceInfo` is missing.
+TEST_F(CrossDevicePrefTrackerTest,
+       GetServiceStatusReturnsSyncNotConfiguredAndLocalDeviceInfoMissing) {
+  ResetLocalDeviceInfo();
+  SetSyncEnabled(false);
+  CreateTracker();
+  EXPECT_EQ(tracker_->GetServiceStatus(),
+            ServiceStatus::kSyncNotConfiguredAndLocalDeviceInfoMissing);
+}
+
+// Verifies that `GetServiceStatus` updates dynamically when `DeviceInfo`
+// becomes ready.
+TEST_F(CrossDevicePrefTrackerTest, GetServiceStatusUpdatesOnStateChange) {
+  ResetLocalDeviceInfo();
+  CreateTracker();
+
+  // Initially missing.
+  EXPECT_EQ(tracker_->GetServiceStatus(),
+            ServiceStatus::kLocalDeviceInfoMissing);
+
+  InitializeLocalDeviceInfo();
+
+  // Should now be available.
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kAvailable);
+}
+
+// Verifies that `GetServiceStatus` works correctly when the tracker is
+// initialized with a null `SyncService`.
+TEST_F(CrossDevicePrefTrackerTest, GetServiceStatusWithNullSyncService) {
+  InitializeLocalDeviceInfo();
+  CreateTracker(/*pass_sync_service=*/false);
+  // If `SyncService` is null, it is technically "Not Configured".
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kSyncNotConfigured);
+}
+
 }  // namespace
 }  // namespace sync_preferences

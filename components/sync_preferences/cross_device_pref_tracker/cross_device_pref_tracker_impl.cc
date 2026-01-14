@@ -89,7 +89,7 @@ bool IsDeviceExpired(const syncer::DeviceInfo& device_info,
 }
 
 // Helper to determine the current service availability state.
-ServiceStatus GetAvailabilityState(
+ServiceStatus ComputeServiceStatus(
     const syncer::DeviceInfoTracker* device_info_tracker,
     bool is_local_device_info_ready,
     bool is_sync_configured_for_writes) {
@@ -118,7 +118,7 @@ void LogTrackerServiceAvailability(
     bool is_local_device_info_ready,
     bool is_sync_configured_for_writes) {
   ServiceStatus availability =
-      GetAvailabilityState(device_info_tracker, is_local_device_info_ready,
+      ComputeServiceStatus(device_info_tracker, is_local_device_info_ready,
                            is_sync_configured_for_writes);
 
   base::UmaHistogramEnumeration(kTrackerAvailabilityAtQueryHistogram,
@@ -566,6 +566,12 @@ void CrossDevicePrefTrackerImpl::AddObserver(
 void CrossDevicePrefTrackerImpl::RemoveObserver(
     CrossDevicePrefTracker::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+ServiceStatus CrossDevicePrefTrackerImpl::GetServiceStatus() const {
+  return ComputeServiceStatus(device_info_sync_service_->GetDeviceInfoTracker(),
+                              is_local_device_info_ready_,
+                              is_sync_configured_for_writes_);
 }
 
 std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
