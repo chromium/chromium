@@ -112,6 +112,7 @@ if (enable_swift_cxx_interop) {
     }
     _modulemap_contents += [
       "  export *",
+      "  requires cplusplus",
       "}",
       "",
     ]
