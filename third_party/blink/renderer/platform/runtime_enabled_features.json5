@@ -922,11 +922,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/389726691.
-      name: "CanvasTextMemoryPressure",
-      status: "stable",
-    },
-    {
       // crbug.com/450531794.
       name: "CanvasTextSwitchFrameOnFinalize",
       status: "stable",

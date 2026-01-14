@@ -18,8 +18,7 @@ namespace blink {
 
 PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {
   // We don't use FrameShapeCache in the kShared mode. See GetCacheFor().
-  if (mode_ == kCanvas &&
-      RuntimeEnabledFeatures::CanvasTextMemoryPressureEnabled()) {
+  if (mode_ == kCanvas) {
     memory_pressure_listener_registration_.emplace(
         FROM_HERE, base::MemoryPressureListenerTag::kPlainTextPainter, this);
   }
