@@ -411,8 +411,16 @@ void ImageLoader::UpdateImageState(ImageResourceContent* new_image_content) {
     }
   } else {
     image_complete_ = false;
-    if (lazy_image_load_state_ == LazyImageLoadState::kDeferred)
-      LazyImageHelper::StartMonitoring(GetElement());
+    if (lazy_image_load_state_ == LazyImageLoadState::kDeferred) {
+      if (new_image_content->IsLoaded() &&
+          RuntimeEnabledFeatures::LazyImageConformantLoadEventTimingEnabled()) {
+        LazyImageHelper::StopMonitoring(GetElement());
+        lazy_image_load_state_ = LazyImageLoadState::kFullImage;
+        EnqueueImageLoadingMicroTask(kUpdateNormal);
+      } else {
+        LazyImageHelper::StartMonitoring(GetElement());
+      }
+    }
   }
   delay_until_image_notify_finished_ = nullptr;
 }
@@ -768,8 +776,11 @@ void ImageLoader::ImageChanged(ImageResourceContent* content,
   if (!document.IsActive())
     return;
 
-  delay_until_image_notify_finished_ =
-      std::make_unique<IncrementLoadEventDelayCount>(document);
+  if (lazy_image_load_state_ != LazyImageLoadState::kDeferred ||
+      !RuntimeEnabledFeatures::LazyImageConformantLoadEventTimingEnabled()) {
+    delay_until_image_notify_finished_ =
+        std::make_unique<IncrementLoadEventDelayCount>(document);
+  }
 }
 
 void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
@@ -783,9 +794,23 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   CHECK(!image_complete_);
 
   if (lazy_image_load_state_ == LazyImageLoadState::kDeferred) {
-    // A placeholder was requested, but the result was an error or a full image.
-    // In these cases, consider this as the final image and suppress further
-    // reloading and proceed to the image load completion process below.
+    // Some other content may have triggered the load of this image, but that
+    // shouldn't fire this <img loading="lazy">'s load event at this time,
+    // because in the spec this <img> is still in Step 25 of
+    // https://html.spec.whatwg.org/#update-the-image-data.
+    // When LazyLoadImageObserver reports it to be intersecting (or close to)
+    // the viewport later (i.e. this <img> proceeds to Step 26 of the spec),
+    // actual load/error event will be fired, by going through the loading
+    // process again from `UpdateFromElement()`. Note that in Chromium
+    // implementation (unlike in the spec), the image content itself can be
+    // still loaded/updated even in this case, which can be observed via e.g.
+    // <img>'s width/height.
+    if (RuntimeEnabledFeatures::LazyImageConformantLoadEventTimingEnabled()) {
+      return;
+    }
+    // TODO(paint-dev): This is incorrect legacy behavior: the loading="lazy"
+    // <img> will fire its load event immediately. If the above feature flag
+    // doesn't cause breakage this should be removed.
     LazyImageHelper::StopMonitoring(GetElement());
     lazy_image_load_state_ = LazyImageLoadState::kFullImage;
   }
@@ -806,7 +831,6 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       svg_image->MaybeRecordSvgImageProcessingTime(GetElement()->GetDocument());
     }
   }
-
 
   DispatchDecodeRequestsIfComplete();
 

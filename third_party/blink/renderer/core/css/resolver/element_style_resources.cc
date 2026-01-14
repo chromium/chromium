@@ -432,9 +432,7 @@ void ElementStyleResources::LoadPendingImages(
                 FetchParameters::ImageRequestBehavior::kNone;
             StyleImage* new_image = loader.Load(*pending_value, length_resolver,
                                                 image_request_behavior);
-            if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
-              LazyImageHelper::StartMonitoring(&element_);
-            }
+            CHECK(!new_image || !new_image->IsLazyloadPossiblyDeferred());
             background_layer->SetImage(new_image);
           }
         }
