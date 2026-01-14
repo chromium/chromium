@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import android.app.Activity;
 import android.util.Pair;
@@ -30,8 +31,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
-import org.chromium.chrome.browser.tab.TabStateStorageService;
-import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -252,42 +251,24 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,
-                (selector) -> {
-                    createArchivedTabModelInDeferredTask(tabContentManager);
-                });
+                (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
 
         if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabStateStoreIsAuthoritative = TabStateStorageFlagHelper.isStorageAuthoritative();
             // Temporary variable usage to avoid unused variable warning.
             Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
 
-            assert mProfileProviderSupplier.get() != null;
-            ProfileProvider profileProvider = mProfileProviderSupplier.get();
-            Profile profile = profileProvider.getOriginalProfile();
-            assert profile != null;
-
-            TabCreatorManager shadowTabCreatorManager =
-                    incognito -> incognito ? mIncognitoShadowTabCreator : mRegularShadowTabCreator;
-            assert !mWindowTag.isEmpty();
-
-            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
-            assert service != null;
-
             mShadowTabPersistentStore =
-                    new TabStateStore(
-                            service,
+                    buildShadowStore(
+                            mProfileProviderSupplier,
+                            mRegularShadowTabCreator,
+                            mIncognitoShadowTabCreator,
                             mTabModelSelector,
-                            mWindowTag,
-                            shadowTabCreatorManager,
                             mTabPersistencePolicy,
-                            mCipherFactory);
-
-            new ShadowTabStoreValidator(
-                    mTabPersistentStore,
-                    mShadowTabPersistentStore,
-                    mTabModelSelector.getModel(/* incognito= */ false),
-                    mRegularShadowTabCreator,
-                    /* recordMetrics= */ true);
+                            mTabPersistentStore,
+                            mWindowTag,
+                            mCipherFactory,
+                            /* recordMetrics= */ true);
         }
     }
 
