@@ -89,23 +89,8 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
         return new TransitiveObservableSupplier<>(
                 (NullableObservableSupplier) this,
                 unwrapFunction,
-                /* defaultValue= */ null,
+                /* initialValue= */ null,
                 /* allowSetToNull= */ true);
-    }
-
-    /**
-     * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
-     * If either supplier has not yet been initialized, uses the given default value. The current
-     * and transitive suppliers must both be non-null or monotonic.
-     */
-    @SuppressWarnings("Unchecked")
-    default <ChildT> SettableNonNullObservableSupplier<ChildT> createTransitiveNonNull(
-            ChildT defaultValue, Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
-        return new TransitiveObservableSupplier<>(
-                (NullableObservableSupplier) this,
-                unwrapFunction,
-                defaultValue,
-                /* allowSetToNull= */ false);
     }
 
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
