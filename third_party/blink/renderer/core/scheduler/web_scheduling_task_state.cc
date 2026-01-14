@@ -50,9 +50,22 @@ TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
 TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
     const scheduler::TaskAttributionId next_task_id,
     SoftNavigationContext* soft_navigation_context) {
-  // `SoftNavigationContext` is known not be created in web scheduling tasks
-  // and continuations.
-  NOTREACHED();
+  // TODO(crbug.com/475261410):  `SoftNavigationContext` is not expected to be
+  // created in web scheduling tasks and continuations, but this didn't hold in
+  // the case of dispatching simulated clicks to a form control's label. This
+  // has been fixed, but to be safe, this is being marked as non-fatal to flush
+  // out any other cases. Everything below the NOTREACHED should be removed once
+  // we're confident there are no more such cases.
+  NOTREACHED(base::NotFatalUntil::M149);
+
+  scheduler::TaskAttributionInfo* current_task_attribution_info =
+      MakeGarbageCollected<TaskAttributionInfoImpl>(
+          next_task_id, soft_navigation_context,
+          GetTaskAttributionInfo()
+              ? GetTaskAttributionInfo()->GetResourceTimingContext()
+              : nullptr);
+  return MakeGarbageCollected<WebSchedulingTaskState>(
+      current_task_attribution_info, GetSchedulerTaskContext());
 }
 
 }  // namespace blink

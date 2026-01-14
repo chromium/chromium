@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<title>Test soft navigation heuristics with a non-fully trusted event</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<label id="target" for="foo"></label>
+<select id="foo"></select>
+
+<script>
+  async_test(t => {
+    requestIdleCallback(t.step_func_done(() => {
+      // Regression test for crbug.com/475261410. This should not crash.
+      target.click();
+    }));
+  }, "Test that an untrusted click causing a trusted click on a form control" +
+     " doesn't crash");
+</script>
