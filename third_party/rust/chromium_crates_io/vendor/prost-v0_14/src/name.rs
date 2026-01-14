@@ -8,7 +8,8 @@ use alloc::{format, string::String};
 /// Associate a type name with a [`Message`] type.
 pub trait Name: Message {
     /// Simple name for this [`Message`].
-    /// This name is the same as it appears in the source .proto file, e.g. `FooBar`.
+    /// This name is the same as it appears in the source .proto file, e.g.
+    /// `FooBar`.
     const NAME: &'static str;
 
     /// Package name this message type is contained in. They are domain-like
@@ -21,7 +22,11 @@ pub trait Name: Message {
     /// By default, this is the package name followed by the message name.
     /// Fully-qualified names must be unique within a domain of Type URLs.
     fn full_name() -> String {
-        format!("{}.{}", Self::PACKAGE, Self::NAME)
+        if Self::PACKAGE.is_empty() {
+            Self::NAME.into()
+        } else {
+            format!("{}.{}", Self::PACKAGE, Self::NAME)
+        }
     }
 
     /// Type URL for this [`Message`], which by default is the full name with a

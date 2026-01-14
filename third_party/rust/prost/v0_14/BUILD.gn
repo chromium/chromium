@@ -36,7 +36,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A Protocol Buffers implementation for the Rust Language."
   cargo_pkg_repository = "https://github.com/tokio-rs/prost"
-  cargo_pkg_version = "0.14.1"
+  cargo_pkg_version = "0.14.3"
 
   allow_unsafe = true
 
