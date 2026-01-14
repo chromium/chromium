@@ -244,6 +244,9 @@ class GlicInstanceMetrics {
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
 
+  void RecordTabPinningStatusEvent(tabs::TabInterface* tab,
+                                   GlicPinningStatusEvent event);
+
   int GetPinnedTabCount() const;
 
   bool is_active() const {
@@ -329,6 +332,7 @@ class GlicInstanceMetrics {
   std::map<tabs::TabHandle, int> tab_depths_;
 
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
+  base::CallbackListSubscription tab_pinning_status_subscription_;
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
 };
 

@@ -1076,6 +1076,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.TabPinTrigger" enum="GlicPinTrigger"
+    expires_after="2026-07-15">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the trigger responsible for pinning a tab to a Glic Instance.
+    Recorded each time a tab is pinned.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.TimeBetweenSessions.{Range}" units="ms"
     expires_after="2026-10-27">
   <owner>birnie@google.com</owner>

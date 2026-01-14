@@ -73,6 +73,10 @@ GlicInstanceMetrics::GlicInstanceMetrics(GlicSharingManager* sharing_manager)
           sharing_manager->AddPinnedTabsChangedCallback(
               base::BindRepeating(&GlicInstanceMetrics::OnPinnedTabsChanged,
                                   base::Unretained(this)))),
+      tab_pinning_status_subscription_(
+          sharing_manager->AddTabPinningStatusEventCallback(base::BindRepeating(
+              &GlicInstanceMetrics::RecordTabPinningStatusEvent,
+              base::Unretained(this)))),
       sharing_manager_(sharing_manager) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
@@ -90,6 +94,15 @@ void GlicInstanceMetrics::OnPinnedTabsChanged(
     const std::vector<content::WebContents*>& pinned_contents) {
   pinned_tab_count_ = pinned_contents.size();
   session_manager_.SetPinnedTabCount(pinned_tab_count_);
+}
+
+void GlicInstanceMetrics::RecordTabPinningStatusEvent(
+    tabs::TabInterface* tab,
+    GlicPinningStatusEvent event) {
+  if (const auto* pin_event = std::get_if<GlicPinEvent>(&event)) {
+    base::UmaHistogramEnumeration("Glic.Instance.TabPinTrigger",
+                                  pin_event->trigger);
+  }
 }
 
 void GlicInstanceMetrics::OnInstanceDestroyed() {
