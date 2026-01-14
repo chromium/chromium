@@ -140,6 +140,7 @@ class MockObserver : public CrossDevicePrefTracker::Observer {
                const TimestampedPrefValue& value,
                const syncer::DeviceInfo& device_info),
               (override));
+  MOCK_METHOD(void, OnServiceStatusChanged, (ServiceStatus status), (override));
 };
 
 class CrossDevicePrefTrackerTest : public testing::Test {
@@ -1933,6 +1934,92 @@ TEST_F(CrossDevicePrefTrackerTest, GetServiceStatusWithNullSyncService) {
   CreateTracker(/*pass_sync_service=*/false);
   // If `SyncService` is null, it is technically "Not Configured".
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kSyncNotConfigured);
+}
+
+// Verifies that observers are notified when the service status changes from
+// `kLocalDeviceInfoMissing` to `kAvailable`.
+TEST_F(CrossDevicePrefTrackerTest,
+       NotifiesObserverOnServiceStatusChangeWhenDeviceInfoBecomesReady) {
+  ResetLocalDeviceInfo();
+  CreateTracker();
+  ASSERT_EQ(tracker_->GetServiceStatus(),
+            ServiceStatus::kLocalDeviceInfoMissing);
+
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnServiceStatusChanged(ServiceStatus::kAvailable));
+
+  InitializeLocalDeviceInfo();
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that observers are notified when the service status changes due to
+// Sync configuration changes (enabling and disabling).
+TEST_F(CrossDevicePrefTrackerTest,
+       NotifiesObserverOnServiceStatusChangeWhenSyncConfigChanges) {
+  SetSyncEnabled(false);
+  CreateTracker();
+  ASSERT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kSyncNotConfigured);
+
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  // Enabling Sync: Status should transition to `kAvailable`.
+  EXPECT_CALL(mock_observer, OnServiceStatusChanged(ServiceStatus::kAvailable));
+  ChangeSyncState(true);
+
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Disabling Sync: Status should transition back to `kSyncNotConfigured`.
+  EXPECT_CALL(mock_observer,
+              OnServiceStatusChanged(ServiceStatus::kSyncNotConfigured));
+  ChangeSyncState(false);
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that observers are notified when the service status changes to
+// `kSyncNotConfiguredAndLocalDeviceInfoMissing`.
+TEST_F(CrossDevicePrefTrackerTest,
+       NotifiesObserverWhenServiceStatusChangesToTotallyUnavailable) {
+  // Start with just local device info missing.
+  ResetLocalDeviceInfo();
+  CreateTracker();
+  ASSERT_EQ(tracker_->GetServiceStatus(),
+            ServiceStatus::kLocalDeviceInfoMissing);
+
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  // Disable Sync. Now both are missing.
+  EXPECT_CALL(mock_observer,
+              OnServiceStatusChanged(
+                  ServiceStatus::kSyncNotConfiguredAndLocalDeviceInfoMissing));
+  ChangeSyncState(false);
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that observers are NOT notified if an event occurs (like a Sync
+// state change) but the calculated `ServiceStatus` remains unchanged.
+TEST_F(CrossDevicePrefTrackerTest,
+       DoesNotNotifyObserverIfServiceStatusRemainsUnchanged) {
+  CreateTracker();
+  ASSERT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kAvailable);
+
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  // We expect 0 calls because the status remains `kAvailable`.
+  EXPECT_CALL(mock_observer, OnServiceStatusChanged).Times(0);
+
+  // Trigger a state change notification without actually changing the
+  // configuration (Sync remains active).
+  ChangeSyncState(true);
+
+  tracker_->RemoveObserver(&mock_observer);
 }
 
 }  // namespace

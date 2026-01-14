@@ -21,7 +21,9 @@ struct TimestampedPrefValue;
 }  // namespace sync_preferences
 
 // Objective-C protocol mirroring `CrossDevicePrefTracker::Observer`.
-@protocol CrossDevicePrefTrackerObserver
+@protocol CrossDevicePrefTrackerObserver <NSObject>
+
+@optional
 
 // Called when `prefName` is updated to `prefValue` on a remote device.
 // The `prefName` reported here is always the tracked pref name on iOS (e.g.,
@@ -30,6 +32,11 @@ struct TimestampedPrefValue;
                   prefValue:
                       (const sync_preferences::TimestampedPrefValue&)prefValue
            remoteDeviceInfo:(const syncer::DeviceInfo&)remoteDeviceInfo;
+
+// Called when the service status changes (e.g., the tracker becomes available
+// to use).
+- (void)onServiceStatusChanged:
+    (sync_preferences::CrossDevicePrefTracker::ServiceStatus)status;
 
 @end
 
@@ -41,7 +48,6 @@ class CrossDevicePrefTrackerObserverBridge
   CrossDevicePrefTrackerObserverBridge(
       id<CrossDevicePrefTrackerObserver> delegate,
       sync_preferences::CrossDevicePrefTracker* tracker);
-
   ~CrossDevicePrefTrackerObserverBridge() override;
 
   // `sync_preferences::CrossDevicePrefTracker::Observer` implementation.
@@ -49,6 +55,8 @@ class CrossDevicePrefTrackerObserverBridge
       std::string_view pref_name,
       const sync_preferences::TimestampedPrefValue& pref_value,
       const syncer::DeviceInfo& remote_device_info) override;
+  void OnServiceStatusChanged(
+      sync_preferences::CrossDevicePrefTracker::ServiceStatus status) override;
 
  private:
   __weak id<CrossDevicePrefTrackerObserver> delegate_ = nil;

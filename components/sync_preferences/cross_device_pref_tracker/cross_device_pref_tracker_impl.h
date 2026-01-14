@@ -179,6 +179,10 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // it has not expired, based on its `DeviceInfo::last_updated_timestamp`.
   std::vector<const syncer::DeviceInfo*> GetActiveDevices() const;
 
+  // Compares the old and new service status of the tracker and notifies
+  // observers if changes have occurred.
+  void UpdateServiceStatus();
+
   // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until `Shutdown()`.
   raw_ptr<PrefService> profile_pref_service_;
@@ -238,6 +242,9 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Tracks the last known state of Sync configuration for writes. Used to
   // detect transitions from unconfigured to configured and trigger refreshes.
   bool is_sync_configured_for_writes_ = false;
+
+  // The current service status.
+  ServiceStatus service_status_ = ServiceStatus::kSyncNotConfigured;
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

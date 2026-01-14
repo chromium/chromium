@@ -75,6 +75,9 @@ class CrossDevicePrefTracker : public KeyedService {
         std::string_view pref_name,
         const TimestampedPrefValue& pref_value,
         const syncer::DeviceInfo& remote_device_info) {}
+    // Called when the service status changes (e.g., the tracker becomes
+    // available to use).
+    virtual void OnServiceStatusChanged(ServiceStatus status) {}
   };
 
   // Defines criteria for querying devices.

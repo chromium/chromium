@@ -25,7 +25,17 @@ void CrossDevicePrefTrackerObserverBridge::OnRemotePrefChanged(
     std::string_view pref_name,
     const sync_preferences::TimestampedPrefValue& pref_value,
     const syncer::DeviceInfo& remote_device_info) {
-  [delegate_ onRemotePrefChanged:pref_name
-                       prefValue:pref_value
-                remoteDeviceInfo:remote_device_info];
+  if ([delegate_ respondsToSelector:@selector
+                 (onRemotePrefChanged:prefValue:remoteDeviceInfo:)]) {
+    [delegate_ onRemotePrefChanged:pref_name
+                         prefValue:pref_value
+                  remoteDeviceInfo:remote_device_info];
+  }
+}
+
+void CrossDevicePrefTrackerObserverBridge::OnServiceStatusChanged(
+    sync_preferences::CrossDevicePrefTracker::ServiceStatus status) {
+  if ([delegate_ respondsToSelector:@selector(onServiceStatusChanged:)]) {
+    [delegate_ onServiceStatusChanged:status];
+  }
 }

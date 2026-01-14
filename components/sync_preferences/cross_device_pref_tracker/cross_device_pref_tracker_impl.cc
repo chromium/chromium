@@ -512,6 +512,10 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
 
   is_sync_configured_for_writes_ = IsSyncConfiguredForWrites();
 
+  service_status_ = ComputeServiceStatus(
+      device_info_sync_service_->GetDeviceInfoTracker(),
+      is_local_device_info_ready_, is_sync_configured_for_writes_);
+
   // Initialize `DeviceInfoTracker` observation and cache known GUIDs.
   if (syncer::DeviceInfoTracker* tracker =
           device_info_sync_service_->GetDeviceInfoTracker()) {
@@ -569,9 +573,7 @@ void CrossDevicePrefTrackerImpl::RemoveObserver(
 }
 
 ServiceStatus CrossDevicePrefTrackerImpl::GetServiceStatus() const {
-  return ComputeServiceStatus(device_info_sync_service_->GetDeviceInfoTracker(),
-                              is_local_device_info_ready_,
-                              is_sync_configured_for_writes_);
+  return service_status_;
 }
 
 std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
@@ -669,10 +671,12 @@ void CrossDevicePrefTrackerImpl::OnDeviceInfoChange() {
   HandleLocalDeviceInfoIfAvailable();
   HandleRemoteDeviceInfoChanges();
   GarbageCollectStaleCacheGuids();
+  UpdateServiceStatus();
 }
 
 void CrossDevicePrefTrackerImpl::OnStateChanged(syncer::SyncService* sync) {
   OnSyncStateChanged();
+  UpdateServiceStatus();
 }
 
 void CrossDevicePrefTrackerImpl::OnSyncShutdown(syncer::SyncService* sync) {
@@ -1097,6 +1101,22 @@ CrossDevicePrefTrackerImpl::GetActiveDevices() const {
   }
 
   return active_devices;
+}
+
+void CrossDevicePrefTrackerImpl::UpdateServiceStatus() {
+  ServiceStatus new_status = ComputeServiceStatus(
+      device_info_sync_service_->GetDeviceInfoTracker(),
+      is_local_device_info_ready_, is_sync_configured_for_writes_);
+
+  if (new_status == service_status_) {
+    return;
+  }
+
+  service_status_ = new_status;
+
+  for (auto& observer : observers_) {
+    observer.OnServiceStatusChanged(service_status_);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
