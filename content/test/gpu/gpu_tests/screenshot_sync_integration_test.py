@@ -120,7 +120,15 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                            red=canvasRGB.r,
                            green=canvasRGB.g,
                            blue=canvasRGB.b)
-    screenshot = tab.Screenshot(10)
+
+    screenshot_timeout = 10
+    # TODO(crbug.com/458607668): Either remove this workaround or update this
+    # comment once we know whether increasing the timeout works around flaky
+    # failures to capture screenshots that we are seeing on Windows 11.
+    if 'win11' in self.GetPlatformTags(self.browser):
+      screenshot_timeout = 30
+    screenshot = tab.Screenshot(screenshot_timeout)
+
     effective_dpr = screenshot_utils.GetEffectiveDpr(tab)
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
     # interpolation precision (crbug.com/847984). We inset by one CSS pixel
