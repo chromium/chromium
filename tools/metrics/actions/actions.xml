@@ -450,6 +450,8 @@ should be able to be added at any place in this file.
       summary="For Gemini contextual cue chip feature."/>
   <variant name="_iOSGeminiFullscreenPromoFeature"
       summary="For iOSGeminiFullscreenPromoFeature feature"/>
+  <variant name="_iOSGeminiImageRemix"
+      summary="For iOSGeminiImageRemix IPH feature"/>
   <variant name="_iOSHistoryOnOverflowMenuFeature"
       summary="For iOSHistoryOnOverflowMenuFeature feature"/>
   <variant name="_iOSHomepageCustomizationNewBadge"

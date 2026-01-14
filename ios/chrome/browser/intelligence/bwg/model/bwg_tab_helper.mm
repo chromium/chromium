@@ -39,8 +39,10 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -378,6 +380,10 @@ void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
   bwg_commands_handler_ = handler;
 }
 
+void BwgTabHelper::SetHelpCommandsHandler(id<HelpCommands> handler) {
+  help_commands_handler_ = handler;
+}
+
 void BwgTabHelper::SetSnackbarCommandsHandler(id<SnackbarCommands> handler) {
   CHECK(IsWebPageReportedImagesSheetEnabled());
   snackbar_commands_handler_ = handler;
@@ -464,7 +470,6 @@ void BwgTabHelper::DidStartNavigation(
 void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-
   const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();
   if (previous_main_frame_url_ == current_url) {
     return;
@@ -730,6 +735,8 @@ void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
     return;
   }
 
+  // `can_apply` is true by default. If the decision is `kTrue`, then we need to
+  // do more checks.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     zero_state_suggestions_->can_apply = true;
     return;
@@ -744,6 +751,18 @@ void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
   }
   zero_state_suggestions_->can_apply =
       suggestions_metadata->contextual_suggestions_eligible();
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (zero_state_suggestions_->can_apply && IsGeminiImageRemixToolEnabled() &&
+      feature_engagement::TrackerFactory::GetForProfile(profile)
+          ->WouldTriggerHelpUI(
+              feature_engagement::kIPHiOSGeminiImageRemixFeature) &&
+      !IsUrlNtp(web_state_->GetVisibleURL())) {
+    [help_commands_handler_
+        presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix];
+    return;
+  }
 }
 
 void BwgTabHelper::OnCanApplyZeroStateSuggestionsOnDemandDecision(

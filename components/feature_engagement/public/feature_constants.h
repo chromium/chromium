@@ -371,6 +371,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSHomepageLensNewBadge);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSHomepageCustomizationNewBadge);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSOneTimeDefaultBrowserNotificationFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiImageRemixFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

@@ -47,6 +47,8 @@ enum class InProductHelpType : NSInteger {
   kPageActionMenu,
   /// Help bubble for Reader Mode options menu.
   kReaderModeOptions,
+  /// Help bubble for Gemini image remixing.
+  kGeminiImageRemix,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_

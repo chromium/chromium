@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -59,11 +60,15 @@
 
   // The feature engagement tracker.
   raw_ptr<feature_engagement::Tracker> _tracker;
+
+  // The entry point BWG was started from.
+  gemini::EntryPoint _entryPoint;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
+                         entryPoint:(gemini::EntryPoint)entryPoint
                          BWGService:(BwgService*)BWGService
                     BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker {
@@ -75,6 +80,7 @@
     _BWGService = BWGService;
     _BWGBrowserAgent = BWGBrowserAgent;
     _tracker = tracker;
+    _entryPoint = entryPoint;
   }
   return self;
 }
@@ -196,7 +202,8 @@
   }
 
   _BWGBrowserAgent->PresentFloatyWithPageContext(
-      self.baseViewController, std::move(pageContextWrapperResponse));
+      self.baseViewController, std::move(pageContextWrapperResponse),
+      _entryPoint);
 
   base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
@@ -225,7 +232,7 @@
   partialPageContext->set_title(base::UTF16ToUTF8(activeWebState->GetTitle()));
 
   _BWGBrowserAgent->PresentFloatyWithPendingContext(
-      self.baseViewController, std::move(partialPageContext));
+      self.baseViewController, std::move(partialPageContext), _entryPoint);
 
   base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram

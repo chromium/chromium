@@ -16,6 +16,7 @@ class FullscreenController;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
+@protocol BWGCommands;
 @protocol PageActionMenuEntryPointCommands;
 @protocol PopupMenuCommands;
 @protocol TabStripCommands;
@@ -149,6 +150,13 @@ class DeviceSwitcherResultDispatcher;
 
 // Optionally presents a bubble associated with the reader mode options.
 - (void)presentReaderModeOptionsBubble;
+
+// Optionally presents a bubble associated with the Gemini image remix feature
+// (Page Action Menu entry point).
+- (void)presentGeminiImageRemixBubbleWithBWGHandler:(id<BWGCommands>)BWGHandler
+                    pageActionMenuEntryPointHandler:
+                        (id<PageActionMenuEntryPointCommands>)
+                            pageActionMenuEntryPointHandler;
 
 // Delegate method to be invoked when the user has performed a swipe on the
 // toolbar to switch tabs. Remove `toolbarSwipeGestureIPH` if visible.

@@ -275,6 +275,12 @@
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(
           id<LocationBarBadgeCommands>(_commandDispatcher));
     }
+
+    if (IsGeminiImageRemixToolEnabled()) {
+      id<HelpCommands> helpCommandsHandler =
+          HandlerForProtocol(_commandDispatcher, HelpCommands);
+      BWGTabHelper->SetHelpCommandsHandler(helpCommandsHandler);
+    }
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
@@ -413,6 +419,9 @@
     }
     if (IsAskGeminiChipEnabled()) {
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(nil);
+    }
+    if (IsGeminiImageRemixToolEnabled()) {
+      BWGTabHelper->SetHelpCommandsHandler(nil);
     }
   }
 

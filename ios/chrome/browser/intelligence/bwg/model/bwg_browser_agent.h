@@ -74,7 +74,8 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   void PresentFloatyWithPageContext(
       UIViewController* base_view_controller,
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                     PageContextWrapperError> expected_page_context);
+                     PageContextWrapperError> expected_page_context,
+      gemini::EntryPoint entry_point);
 
   // Presents the floaty on a given view controller in a pending state
   // with a partial PageContext.
@@ -82,7 +83,8 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // `StartGeminiFlow` instead.
   void PresentFloatyWithPendingContext(
       UIViewController* base_view_controller,
-      std::unique_ptr<optimization_guide::proto::PageContext> page_context);
+      std::unique_ptr<optimization_guide::proto::PageContext> page_context,
+      gemini::EntryPoint entry_point);
 
   // Updates the page context for the floaty.
   // TODO(crbug.com/465535924): Deprecated, new callers should use
@@ -119,6 +121,7 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Presents the floaty on a given view controller in a pending state
   // with partial PageContext and optional image attachment.
   void PresentFloatyWithPendingContext(UIViewController* base_view_controller,
+                                       gemini::EntryPoint entry_point,
                                        UIImage* image_attachment);
 
   // Presents the floaty on a given view controller with page context,
@@ -129,6 +132,7 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
       std::unique_ptr<optimization_guide::proto::PageContext>
           page_context_proto,
       ios::provider::BWGPageContextComputationState computation_state,
+      gemini::EntryPoint entry_point,
       UIImage* image_attachment = nil);
 
   // Fetches the favicon for the page or a default favicon if not available.

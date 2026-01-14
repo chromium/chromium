@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -122,6 +124,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _feedSwipeBubblePresenter;
   BubbleViewControllerPresenter* _pageActionMenuBubblePresenter;
   BubbleViewControllerPresenter* _readerModeOptionsBubblePresenter;
+  BubbleViewControllerPresenter* _geminiImageRemixBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -194,6 +197,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [_pageActionMenuBubblePresenter dismissAnimated:NO];
   [_readerModeOptionsBubblePresenter dismissAnimated:NO];
+  [_geminiImageRemixBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
@@ -755,7 +759,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         [weakSelf.pageActionMenuEntryPointHandler
             toggleEntryPointHighlight:YES];
       }
-      dismissAction:^{
+      dismissAction:^(IPHDismissalReasonType reason) {
         [weakSelf.pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
       }];
 
@@ -801,6 +805,57 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   if (presenter) {
     _readerModeOptionsBubblePresenter = presenter;
+  }
+}
+
+- (void)presentGeminiImageRemixBubbleWithBWGHandler:(id<BWGCommands>)BWGHandler
+                    pageActionMenuEntryPointHandler:
+                        (id<PageActionMenuEntryPointCommands>)
+                            pageActionMenuEntryPointHandler {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
+                         GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBottomOmnibox);
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH);
+
+  CGPoint pageActionMenuEntrypointAnchor =
+      [self anchorPointToGuide:kPageActionMenuEntrypointGuide
+                     direction:arrowDirection];
+  // To prevent the bubble from extending beyond the screen's edge, an offset is
+  // added, with the anchor point positioned at the top left corner.
+  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
+  // are fixed.
+  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSGeminiImageRemixFeature
+      direction:arrowDirection
+      alignment:BubbleAlignmentTopOrLeading
+      text:text
+      voiceOverAnnouncement:text
+      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x + anchorXOffset,
+                          pageActionMenuEntrypointAnchor.y)
+      presentAction:^{
+        [pageActionMenuEntryPointHandler toggleEntryPointHighlight:YES];
+      }
+      dismissAction:^(IPHDismissalReasonType reason) {
+        [pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
+
+        if (reason == IPHDismissalReasonType::kTappedIPH ||
+            reason == IPHDismissalReasonType::kTappedAnchorView) {
+          [BWGHandler
+              startGeminiFlowWithEntryPoint:gemini::EntryPoint::ImageRemixIPH];
+        }
+      }];
+
+  if (presenter) {
+    _geminiImageRemixBubblePresenter = presenter;
   }
 }
 
@@ -903,7 +958,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
                 anchorPoint:(CGPoint)anchorPoint
               presentAction:(ProceduralBlock)presentAction
-              dismissAction:(ProceduralBlock)dismissAction {
+              dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
   DCHECK(_engagementTracker);
   BubbleViewControllerPresenter* presenter =
       [self bubblePresenterForFeature:feature
@@ -1022,7 +1077,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                     direction:(BubbleArrowDirection)direction
                     alignment:(BubbleAlignment)alignment
                          text:(NSString*)text
-                dismissAction:(ProceduralBlock)dismissAction {
+                dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
   DCHECK(_engagementTracker);
   // Capture `weakSelf` instead of the feature engagement tracker object
   // because `weakSelf` will safely become `nil` if it is deallocated, whereas
@@ -1032,7 +1087,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType) {
         if (dismissAction) {
-          dismissAction();
+          dismissAction(IPHDismissalReasonType);
         }
         [weakSelf stopAnimatedFullscreenDisabler];
         [weakSelf featureDismissed:feature];
@@ -1059,8 +1114,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
            feature_engagement::kIPHiOSLensOverlayEntrypointTipFeature.name);
   BOOL isPageActionMenuIPH =
       feature.name == feature_engagement::kIPHIOSPageActionMenu.name;
+  BOOL isGeminiImageRemixIPH =
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name;
   bubbleViewControllerPresenter.forceDisablePanGestureRecognizer =
-      (shouldDisablePanRecognizer && isLensOverlayIPH) || isPageActionMenuIPH;
+      (shouldDisablePanRecognizer && isLensOverlayIPH) || isPageActionMenuIPH ||
+      isGeminiImageRemixIPH;
 
   return bubbleViewControllerPresenter;
 }
@@ -1166,7 +1224,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     (const base::Feature&)feature {
   // Display FollowWhileBrowsing in-product help bubble with custom duration.
   if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name ||
-      feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+      feature.name == feature_engagement::kIPHIOSPageActionMenu.name ||
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
     return kDefaultLongDurationBubbleVisibility;
   }
 
@@ -1177,7 +1236,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // given feature.
 - (BOOL)shouldIgnoreWebContentAreaInteractionsForFeature:
     (const base::Feature&)feature {
-  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name ||
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
     return YES;
   }
 
@@ -1187,7 +1247,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // Returns whether fullscreen should be disabled before presenting the bubble
 // for a given feature.
 - (BOOL)shouldDisableFullscreenForFeature:(const base::Feature&)feature {
-  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name ||
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
     return YES;
   }
 

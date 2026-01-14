@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
 #import <memory>
+#import <optional>
+#import <string>
+#import <vector>
 
 #import "base/functional/callback_helpers.h"
 #import "base/test/scoped_feature_list.h"
@@ -22,21 +25,40 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "mojo/public/cpp/bindings/remote.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
+
+// Defined to match the layout of BwgTabHelper::ZeroStateSuggestions which is
+// opaque in the header.
+namespace {
+struct TestZeroStateSuggestions {
+  TestZeroStateSuggestions() = default;
+  ~TestZeroStateSuggestions() = default;
+  mojo::Remote<ai::mojom::ZeroStateSuggestionsService> service;
+  std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
+  GURL url;
+  std::optional<std::vector<std::string>> suggestions;
+  bool can_apply = false;
+};
+}  // namespace
 
 class BwgTabHelperTest : public PlatformTest {
  protected:
@@ -65,6 +87,8 @@ class BwgTabHelperTest : public PlatformTest {
         OCMProtocolMock(@protocol(LocationBarBadgeCommands));
     tab_helper_->SetLocationBarBadgeCommandsHandler(
         mock_location_bar_badge_handler_);
+    mock_help_handler_ = OCMProtocolMock(@protocol(HelpCommands));
+    tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
   }
 
   bool IsBwgUiShowing() { return tab_helper_->is_bwg_ui_showing_; }
@@ -90,6 +114,8 @@ class BwgTabHelperTest : public PlatformTest {
   id mock_bwg_handler_;
   // Mock Location Bar Badge handler.
   id mock_location_bar_badge_handler_;
+  // Mock Help commands handler.
+  id mock_help_handler_;
 
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
@@ -125,6 +151,17 @@ class BwgTabHelperTest : public PlatformTest {
     tracker->NotifyEvent(feature_engagement::events::kIOSFirstRunComplete);
     task_environment_.FastForwardBy(base::Days(days));
     ForceFirstRunRecency(days);
+  }
+
+  void SimulateZeroStateSuggestionsDecisionReceived(
+      const GURL& url,
+      const optimization_guide::OptimizationMetadata& metadata) {
+    auto* suggestions_struct = reinterpret_cast<TestZeroStateSuggestions*>(
+        tab_helper_->zero_state_suggestions_.get());
+    suggestions_struct->url = GURL("https://www.chromium.org");
+    suggestions_struct->can_apply = true;
+    tab_helper_->OnCanApplyZeroStateSuggestionsDecision(
+        url, optimization_guide::OptimizationGuideDecision::kTrue, metadata);
   }
 };
 
@@ -297,6 +334,44 @@ TEST_F(BwgTabHelperTest, TestWasHidden_BackgroundsSession) {
 
   ASSERT_TRUE(IsBwgSessionActiveInBackground());
   EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
+}
+
+TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list;
+  iph_feature_list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSGeminiImageRemixFeature, kPageActionMenu,
+       kGeminiImageRemixTool, kZeroStateSuggestions});
+
+  web_state_ = std::make_unique<web::FakeWebState>();
+  web_state_->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state_.get());
+  tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+  tab_helper_->SetBwgCommandsHandler(mock_bwg_handler_);
+  tab_helper_->SetLocationBarBadgeCommandsHandler(
+      mock_location_bar_badge_handler_);
+  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
+
+  feature_engagement::Tracker* tracker = InitializeTracker();
+  SimulateFirstRunRecency(tracker, 2);
+
+  OCMExpect([mock_help_handler_
+      presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
+
+  optimization_guide::proto::GlicZeroStateSuggestionsMetadata
+      suggestions_metadata;
+  suggestions_metadata.set_contextual_suggestions_eligible(true);
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.GlicZeroStateSuggestionsMetadata");
+  suggestions_metadata.SerializeToString(any_metadata.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  SimulateZeroStateSuggestionsDecisionReceived(web_state_->GetVisibleURL(),
+                                               metadata);
+
+  EXPECT_OCMOCK_VERIFY(mock_help_handler_);
 }
 
 TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsPromo) {

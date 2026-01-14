@@ -226,6 +226,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
       initWithPrefService:_prefService
              webStateList:self.browser->GetWebStateList()
        baseViewController:self.baseViewController
+               entryPoint:_entryPoint
                BWGService:BwgServiceFactory::GetForProfile(self.profile)
           BWGBrowserAgent:BwgBrowserAgent::FromBrowser(self.browser)
                   tracker:_tracker];

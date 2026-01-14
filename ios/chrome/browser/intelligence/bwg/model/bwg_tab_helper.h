@@ -22,6 +22,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol BWGCommands;
+@protocol HelpCommands;
 @protocol LocationBarBadgeCommands;
 @protocol SnackbarCommands;
 @class GeminiPageContext;
@@ -87,6 +88,9 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Set the BWG commands handler, used to show/hide the BWG UI.
   void SetBwgCommandsHandler(id<BWGCommands> handler);
+
+  // Set help commands handler, for showing in-product help UI.
+  void SetHelpCommandsHandler(id<HelpCommands> handler);
 
   // Set the snackbar commands handler for presenting snackbars.
   void SetSnackbarCommandsHandler(id<SnackbarCommands> handler);
@@ -225,6 +229,9 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Commands handler for BWG commands.
   __weak id<BWGCommands> bwg_commands_handler_ = nullptr;
+
+  // Commands handler for help commands.
+  __weak id<HelpCommands> help_commands_handler_ = nullptr;
 
   // Commands handler for snackbars.
   __weak id<SnackbarCommands> snackbar_commands_handler_ = nullptr;

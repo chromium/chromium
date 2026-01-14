@@ -218,8 +218,8 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentFloatyWithPageContext) {
   bwg_tab_helper_->PrepareBwgFreBackgrounding();
   ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 
-  bwg_browser_agent_->PresentFloatyWithPageContext(base_view_controller,
-                                                   std::move(response));
+  bwg_browser_agent_->PresentFloatyWithPageContext(
+      base_view_controller, std::move(response), gemini::EntryPoint::Promo);
 
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
@@ -235,8 +235,8 @@ TEST_F(BwgBrowserAgentTest,
   bwg_tab_helper_->PrepareBwgFreBackgrounding();
   ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 
-  bwg_browser_agent_->PresentFloatyWithPendingContext(base_view_controller,
-                                                      std::move(page_context));
+  bwg_browser_agent_->PresentFloatyWithPendingContext(
+      base_view_controller, std::move(page_context), gemini::EntryPoint::Promo);
 
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());

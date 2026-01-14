@@ -145,13 +145,14 @@ void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
 
   id<BWGCommands> gemini_commands_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
+  base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
   [gemini_commands_handler
       startGeminiFREWithCompletion:^(BOOL success) {
         if (success) {
-          base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
           if (weak_ptr) {
             weak_ptr->PresentFloaty(base_view_controller, image_attachment,
-                                    entry_point, /*first_run_shown=*/true);
+                                    entry_point,
+                                    /*first_run_shown=*/true);
           }
         }
       }
@@ -198,7 +199,8 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 
   if (IsGeminiImmediateOverlayEnabled()) {
     // Present the overlay immediately without page context.
-    PresentFloatyWithPendingContext(base_view_controller, image_attachment);
+    PresentFloatyWithPendingContext(base_view_controller, entry_point,
+                                    image_attachment);
 
     page_context_completion_callback = base::BindOnce(
         [](base::WeakPtr<BwgBrowserAgent> weak_ptr,
@@ -227,30 +229,34 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 void BwgBrowserAgent::PresentFloatyWithPageContext(
     UIViewController* base_view_controller,
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                   PageContextWrapperError> expected_page_context) {
+                   PageContextWrapperError> expected_page_context,
+    gemini::EntryPoint entry_point) {
   if (expected_page_context.has_value()) {
     PresentFloatyWithState(
         base_view_controller, std::move(expected_page_context.value()),
-        ios::provider::BWGPageContextComputationState::kSuccess);
+        ios::provider::BWGPageContextComputationState::kSuccess, entry_point);
   } else {
     PresentFloatyWithState(
         base_view_controller,
         /*page_context_proto=*/nullptr,
         BWGPageContextComputationStateFromPageContextWrapperError(
-            expected_page_context.error()));
+            expected_page_context.error()),
+        entry_point);
   }
 }
 
 void BwgBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context) {
+    std::unique_ptr<optimization_guide::proto::PageContext> page_context,
+    gemini::EntryPoint entry_point) {
   PresentFloatyWithState(
       base_view_controller, std::move(page_context),
-      ios::provider::BWGPageContextComputationState::kPending);
+      ios::provider::BWGPageContextComputationState::kPending, entry_point);
 }
 
 void BwgBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
+    gemini::EntryPoint entry_point,
     UIImage* image_attachment) {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
@@ -266,7 +272,7 @@ void BwgBrowserAgent::PresentFloatyWithPendingContext(
 
   PresentFloatyWithState(
       base_view_controller, std::move(partial_page_context),
-      ios::provider::BWGPageContextComputationState::kPending,
+      ios::provider::BWGPageContextComputationState::kPending, entry_point,
       image_attachment);
 }
 
@@ -439,6 +445,7 @@ void BwgBrowserAgent::PresentFloatyWithState(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto,
     ios::provider::BWGPageContextComputationState computation_state,
+    gemini::EntryPoint entry_point,
     UIImage* image_attachment) {
   SetSessionCommandHandlers();
   [bwg_page_state_change_handler_ setBaseViewController:base_view_controller];
@@ -468,6 +475,8 @@ void BwgBrowserAgent::PresentFloatyWithState(
   config.shouldShowSuggestionChips =
       gemini_tab_helper->ShouldShowSuggestionChips();
   config.contextualCueChipLabel = gemini_tab_helper->GetContextualCueLabel();
+  config.imageRemixIPHShouldShow =
+      entry_point == gemini::EntryPoint::ImageRemixIPH;
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.
@@ -532,14 +541,14 @@ void BwgBrowserAgent::OnPageContextReady(
   if (response.has_value()) {
     PresentFloatyWithState(
         base_view_controller, std::move(response.value()),
-        ios::provider::BWGPageContextComputationState::kSuccess,
+        ios::provider::BWGPageContextComputationState::kSuccess, entry_point,
         image_attachment);
   } else {
     PresentFloatyWithState(
         base_view_controller, nullptr,
         BWGPageContextComputationStateFromPageContextWrapperError(
             response.error()),
-        image_attachment);
+        entry_point, image_attachment);
   }
 
   base::UmaHistogramLongTimes(first_run_shown ? kStartupTimeWithFREHistogram
