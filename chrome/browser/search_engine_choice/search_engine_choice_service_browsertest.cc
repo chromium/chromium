@@ -250,8 +250,15 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
   search_engine_choice_service->RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       TemplateURLServiceFactory::GetForProfile(profile));
+
+  auto metadata = GetChoiceCompletionMetadata(*profile->GetPrefs());
+  ASSERT_TRUE(metadata.has_value());
   ASSERT_TRUE(HasChoiceTimestamp(profile));
-  ASSERT_TRUE(GetChoiceCompletionMetadata(*profile->GetPrefs()).has_value());
+
+  // To prevent flakiness since the `DoesChoicePredateDeviceRestore()` function
+  // only has per-second granularity, adjust the timestamp back by a second.
+  metadata->timestamp -= base::Seconds(1);
+  SetChoiceCompletionMetadata(*profile->GetPrefs(), *metadata);
 
   ASSERT_EQ(GetStaticConditions(profile),
             GetRunExpectations().expected_delayed_static_conditions);
@@ -292,6 +299,12 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
   EXPECT_EQ(GetStaticConditions(profile),
             GetRunExpectations().expected_delayed_static_conditions);
   EXPECT_EQ(GetChoiceStatus(profile), GetRunExpectations().choice_status);
+
+  // To prevent flakiness since the `DoesChoicePredateDeviceRestore()` function
+  // only has per-second granularity, adjust the timestamp back by a second.
+  choice_completion_metadata->timestamp -= base::Seconds(1);
+  SetChoiceCompletionMetadata(*profile->GetPrefs(),
+                              *choice_completion_metadata);
 }
 
 // Run 2, where the metrics ID gets reset following the clone detection.
