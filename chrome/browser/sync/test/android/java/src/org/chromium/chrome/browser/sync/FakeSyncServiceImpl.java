@@ -402,6 +402,12 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
+    public int getBookmarksLimit() {
+        ThreadUtils.assertOnUiThread();
+        return mDelegate.getBookmarksLimit();
+    }
+
+    @Override
     public boolean shouldOfferTrustedVaultOptIn() {
         return mDelegate.shouldOfferTrustedVaultOptIn();
     }

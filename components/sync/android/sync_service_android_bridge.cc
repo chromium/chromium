@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service.h"
@@ -180,6 +181,10 @@ void SyncServiceAndroidBridge::OnSyncShutdown(SyncService* sync) {
 void SyncServiceAndroidBridge::AcknowledgeBookmarksLimitExceededError(
     JNIEnv* env) {
   native_sync_service_->AcknowledgeBookmarksLimitExceededError();
+}
+
+jint SyncServiceAndroidBridge::GetBookmarksLimit(JNIEnv* env) {
+  return static_cast<jint>(kSyncBookmarksLimitValue.Get());
 }
 
 bool SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {

@@ -281,6 +281,11 @@ public interface SyncService {
     void acknowledgeBookmarksLimitExceededError();
 
     /**
+     * @return The limit for the number of bookmarks.
+     */
+    int getBookmarksLimit();
+
+    /**
      * @return Whether the user should be offered to opt in to trusted vault encryption.
      */
     boolean shouldOfferTrustedVaultOptIn();
