@@ -1705,9 +1705,9 @@ chromium-metrics-reviews@google.com.
              are cleared to enforce the initial sync flow and download any
              potential passwords notes on the server"/>
   <int value="6"
-      label="Reading successful, but suspicious bulk deletions were detected.
-             To err on the side of safety, drop all password sync metadata
-             and start again."/>
+      label="(Obsolete) Reading successful, but suspicious bulk deletions
+             were detected. To err on the side of safety, drop all password
+             sync metadata and start again."/>
   <int value="7"
       label="Reading successful, but undecryptable passwords were detected.
              To err on the side of safety, drop all password sync metadata

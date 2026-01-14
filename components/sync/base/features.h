@@ -130,21 +130,6 @@ constexpr bool IsReadingListAccountStorageEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Flag to enable clean up of password deletions that may be unintentional.
-BASE_DECLARE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions);
-// The minimum number of deletions that can be considered a batch deletion.
-inline constexpr base::FeatureParam<int>
-    kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold{
-        &kSyncPasswordCleanUpAccidentalBatchDeletions,
-        "SyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold", 3};
-// The maximum time between earliest and latest deletion to be considered an
-// accidental batch deletion.
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold{
-        &kSyncPasswordCleanUpAccidentalBatchDeletions,
-        "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
-        base::Milliseconds(100)};
-
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);

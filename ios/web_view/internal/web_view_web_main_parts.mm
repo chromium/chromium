@@ -17,7 +17,6 @@
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/base/signin_switches.h"
-#import "components/sync/base/features.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "ios/web_view/internal/app/application_context.h"
@@ -88,8 +87,6 @@ void WebViewWebMainParts::PreCreateThreads() {
 
   std::vector<const base::Feature*> enabled_features = {
       &autofill::features::kAutofillUpstream,
-
-      &syncer::kSyncPasswordCleanUpAccidentalBatchDeletions,
   };
   std::vector<const base::Feature*> disabled_features;
   if ([CWVGlobalState sharedInstance].autofillAcrossIframesEnabled) {
