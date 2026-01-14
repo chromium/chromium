@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -50,6 +52,7 @@ public class BookmarkActivity extends SnackbarActivity {
     private @Nullable BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable OnKeyDownHandler mOnKeyDownHandler;
+    private @Nullable ActivityWindowAndroid mWindowAndroid;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
@@ -62,6 +65,13 @@ public class BookmarkActivity extends SnackbarActivity {
                         () -> BookmarkModel.getForProfile(profile),
                         /* context= */ this,
                         /* componentName= */ parentComponent);
+        mWindowAndroid =
+                new ActivityWindowAndroid(
+                        this,
+                        /* listenToActivityState= */ true,
+                        IntentRequestTracker.createFromActivity(this),
+                        getInsetObserver(),
+                        /* trackOcclusion= */ true);
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         this,
@@ -105,6 +115,11 @@ public class BookmarkActivity extends SnackbarActivity {
 
         if (mBookmarkOpener != null) {
             mBookmarkOpener = null;
+        }
+
+        if (mWindowAndroid != null) {
+            mWindowAndroid.destroy();
+            mWindowAndroid = null;
         }
     }
 
