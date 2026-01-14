@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -88,8 +89,9 @@ bool GetTestModules(std::vector<TestModule>* test_modules,
     base::File binary(path, base::File::FLAG_READ | base::File::FLAG_OPEN);
     if (!binary.IsValid())
       return false;
-    if (binary.Read(0, &buffer[0], kPageSize) != kPageSize)
+    if (!binary.ReadAndCheck(0, base::as_writable_byte_span(buffer))) {
       return false;
+    }
     base::win::PEImage pe_image(buffer);
     if (!pe_image.VerifyMagic())
       return false;
@@ -153,15 +155,9 @@ class ThirdPartyFileTest : public testing::Test {
     // Write content {metadata}{array_of_modules}.
     PackedListMetadata meta = {
         kInitialVersion, static_cast<uint32_t>(test_packed_array_.size())};
-    ASSERT_EQ(file.Write(0, reinterpret_cast<const char*>(&meta), sizeof(meta)),
-              static_cast<int>(sizeof(meta)));
-    int size =
-        static_cast<int>(test_packed_array_.size() * sizeof(PackedListModule));
-    ASSERT_EQ(
-        file.Write(sizeof(PackedListMetadata),
-                   reinterpret_cast<const char*>(test_packed_array_.data()),
-                   size),
-        size);
+    ASSERT_TRUE(file.WriteAndCheck(0, base::byte_span_from_ref(meta)));
+    ASSERT_TRUE(file.WriteAndCheck(sizeof(PackedListMetadata),
+                                   base::as_byte_span(test_packed_array_)));
 
     // Leave file handle open for DELETE_ON_CLOSE.
     bl_file_ = std::move(file);
@@ -227,21 +223,18 @@ TEST_F(ThirdPartyFileTest, CorruptFile) {
 
   // 1) Not enough data for array size
   PackedListMetadata meta = {kCurrent, static_cast<uint32_t>(50)};
-  ASSERT_EQ(file->Write(0, reinterpret_cast<const char*>(&meta), sizeof(meta)),
-            static_cast<int>(sizeof(meta)));
+  ASSERT_TRUE(file->WriteAndCheck(0, base::byte_span_from_ref(meta)));
   EXPECT_EQ(InitFromFile(), ThirdPartyStatus::kFileArrayReadFailure);
 
   // 2) Corrupt data or just unsupported metadata version.
   meta = {kUnsupported, static_cast<uint32_t>(50)};
-  ASSERT_EQ(file->Write(0, reinterpret_cast<const char*>(&meta), sizeof(meta)),
-            static_cast<int>(sizeof(meta)));
+  ASSERT_TRUE(file->WriteAndCheck(0, base::byte_span_from_ref(meta)));
   EXPECT_EQ(InitFromFile(), ThirdPartyStatus::kFileInvalidFormatVersion);
 
   // 3) Not enough data for metadata.
   meta = {kCurrent, static_cast<uint32_t>(10)};
-  ASSERT_EQ(
-      file->Write(0, reinterpret_cast<const char*>(&meta), sizeof(meta) / 2),
-      static_cast<int>(sizeof(meta) / 2));
+  ASSERT_TRUE(file->WriteAndCheck(
+      0, base::byte_span_from_ref(meta).first(sizeof(meta) / 2)));
   ASSERT_TRUE(file->SetLength(sizeof(meta) / 2));
   EXPECT_EQ(InitFromFile(), ThirdPartyStatus::kFileMetadataReadFailure);
 }
