@@ -409,10 +409,6 @@ public class StripLayoutHelper
 
                     // Foreground the pinned/unpinned tab to start animation.
                     stripTab.setIsForegrounded(/* isForegrounded= */ true);
-                    mTabDelegate.setIsTabNonDragReordering(
-                            stripTab,
-                            /* isNonDragReordering= */ !stripTab.getIsSelected()
-                                    && !stripTab.getIsMultiSelected());
                     List<Animator> pinnedAnimations =
                             computeAndUpdateTabWidth(
                                     /* animate= */ true, /* deferAnimations= */ true);
@@ -434,6 +430,17 @@ public class StripLayoutHelper
                                     startOffsetX,
                                     endOffsetX,
                                     ANIM_TAB_MOVE_MS));
+
+                    // Only set the tab container to opaque if the tab is actually changing
+                    // position. This prevents the divider from hiding and unhiding due to the
+                    // change in container opacity, avoiding unnecessary visual flickers for
+                    // tab dividers.
+                    if (startOffsetX != 0 || endOffsetX != 0) {
+                        mTabDelegate.setIsTabNonDragReordering(
+                                stripTab,
+                                /* isNonDragReordering= */ !stripTab.getIsSelected()
+                                        && !stripTab.getIsMultiSelected());
+                    }
 
                     queueAnimations(
                             pinnedAnimations,
