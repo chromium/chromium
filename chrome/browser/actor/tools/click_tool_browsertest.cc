@@ -511,6 +511,24 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, UserInteractionTriggered) {
   ASSERT_TRUE(observer.WasUserInteractionReceived());
 }
 
+// Test that we can dispatch a click to a checkbox that's entirely overlaid by
+// a pseudo element in its associated label.
+IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, CheckboxOverlayedByPseudo) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  std::optional<int> checkbox_id =
+      GetDOMNodeId(*main_frame(), "#checkboxPseudo");
+  ASSERT_TRUE(checkbox_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), checkbox_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+}
+
 class ActorClickToolScaledBrowserTest : public ActorToolsTest {
  public:
   ActorClickToolScaledBrowserTest() = default;

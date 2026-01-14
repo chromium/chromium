@@ -199,7 +199,11 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
        test_point.has_value(); test_point = ipr.GetPoint()) {
     const blink::WebHitTestResult hit_test_result =
         widget->HitTestResultAt(test_point.value());
-    blink::WebElement hit_element = hit_test_result.GetElement();
+    auto hit_element =
+        hit_test_result.GetNodeOrPseudoNode().DynamicTo<blink::WebElement>();
+    if (hit_element.IsNull()) {
+      return test_point;
+    }
 
     // The action target from APC is not as granular as the live DOM hit
     // test. Include shadow host element as the hit test would land on
