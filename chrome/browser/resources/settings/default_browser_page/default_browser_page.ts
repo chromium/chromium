@@ -17,6 +17,9 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import {RouteObserverMixin} from '../router.js';
+import type {Route} from '../router.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
@@ -25,7 +28,7 @@ import {DefaultBrowserBrowserProxyImpl} from './default_browser_browser_proxy.js
 import {getTemplate} from './default_browser_page.html.js';
 
 const SettingsDefaultBrowserPageElementBase =
-    WebUiListenerMixin(PolymerElement);
+    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
 
 export class SettingsDefaultBrowserPageElement extends
     SettingsDefaultBrowserPageElementBase implements SettingsPlugin {
@@ -70,17 +73,18 @@ export class SettingsDefaultBrowserPageElement extends
 
     this.browserProxy_.requestDefaultBrowserState().then(
         this.updateDefaultBrowserState_.bind(this));
+  }
+
+  override currentRouteChanged(newRoute: Route) {
+    if (newRoute !== routes.DEFAULT_BROWSER) {
+      return;
+    }
 
     // The feature flag state is fetched asynchronously on page navigation,
     // instead of using loadTimeData, to support a Finch experiment with
     // `starts_active = false`. This ensures that the user is activated in the
     // experiment (e.g. the feature flag is checked) only when visiting the
-    // page. This approach relies on the fact that the settings subpages are
-    // lazily rendered, and this component's connectedCallback() is only called
-    // upon rendering of this page (happens on navigation to this subpage or
-    // on search issue in settings searchbox.
-    // TODO(crbug.com/459593729): Refactor to be called only at navigation, e.g.
-    // by using currentRouteChanged() from RouteObserverMixin.
+    // page.
     this.browserProxy_.requestUserValueStringsFeatureState().then(
         (isEnabled) => {
           this.userValueDefaultBrowserStringsEnabled_ = isEnabled;
