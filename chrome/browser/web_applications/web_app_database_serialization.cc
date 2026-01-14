@@ -658,9 +658,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(
           ProtoParseResult::kInvalidDisplayOverrideUrlPatterns);
     }
   }
-  // The deprecated `display_mode_override` should be empty after the v6
+  // The field `display_mode_override_deprecated` should be empty after the v6
   // migration. Fail parsing if it is not empty.
-  if (proto.display_mode_override_size() > 0) {
+  if (proto.display_mode_override_deprecated_size() > 0) {
     return nullptr;
   }
   web_app->SetDisplayModeOverride(std::move(display_mode_override));

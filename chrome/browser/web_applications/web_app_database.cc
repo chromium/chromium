@@ -671,22 +671,23 @@ void WebAppDatabase::MigrateDisplayModeOverrideToDisplayOverrides(
   CHECK_LT(state.metadata.version(), 6);
   int apps_migrated_count = 0;
   for (auto& [app_id, app_proto] : state.apps) {
-    if (app_proto.display_mode_override_size() == 0) {
+    if (app_proto.display_mode_override_deprecated_size() == 0) {
       // This app does not have the deprecated field, nothing to migrate.
       continue;
     }
 
     // Ignore the deprecated field if the new field is set.
     if (app_proto.display_overrides_size() == 0) {
-      for (int i = 0; i < app_proto.display_mode_override_size(); ++i) {
-        auto old_mode = app_proto.display_mode_override(i);
+      for (int i = 0; i < app_proto.display_mode_override_deprecated_size();
+           ++i) {
+        auto old_mode = app_proto.display_mode_override_deprecated(i);
         auto* new_item = app_proto.add_display_overrides();
         new_item->set_display_mode(old_mode);
       }
     }
 
     // At this point both fields are non-empty. Clear the deprecated field.
-    app_proto.clear_display_mode_override();
+    app_proto.clear_display_mode_override_deprecated();
     changed_apps.insert(app_id);
     apps_migrated_count++;
   }

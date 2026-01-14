@@ -1550,8 +1550,10 @@ TEST_F(WebAppDatabaseSerializationTest,
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   // Set the deprecated `display_mode_override` field. The new field is empty.
-  proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
-  proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_STANDALONE);
+  proto.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
+  proto.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_STANDALONE);
   ASSERT_EQ(0, proto.display_overrides_size());
 
   // Parse should fail as migration should have cleared the deprecated field.
@@ -1569,7 +1571,8 @@ TEST_F(WebAppDatabaseSerializationTest,
   auto* override_item = proto.add_display_overrides();
   override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
 
-  proto.add_display_mode_override(proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
+  proto.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
 
   // Parse should fail as migration should have cleared the deprecated field.
   std::unique_ptr<WebApp> web_app = ParseWebAppProto(proto, app_id);

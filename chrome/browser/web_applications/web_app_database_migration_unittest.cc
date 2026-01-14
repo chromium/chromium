@@ -1725,15 +1725,18 @@ TEST_F(WebAppDatabaseMigrationTest,
   // App 1: Only old field (should be migrated).
   proto::WebApp app_old =
       CreateWebAppProtoForTesting("App 1", GURL("https://app1.com/"));
-  app_old.add_display_mode_override(proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
-  app_old.add_display_mode_override(proto::WebApp::DISPLAY_MODE_STANDALONE);
+  app_old.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
+  app_old.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_STANDALONE);
 
   // App 2: Has both new and old fields (should reset the old field).
   proto::WebApp app_new =
       CreateWebAppProtoForTesting("App 2", GURL("https://app2.com/"));
   auto* override_item = app_new.add_display_overrides();
   override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_FULLSCREEN);
-  app_new.add_display_mode_override(proto::WebApp::DISPLAY_MODE_BROWSER);
+  app_new.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_BROWSER);
 
   // App 3: No overrides (should remain unchanged).
   proto::WebApp app_none =

@@ -250,7 +250,8 @@ message WebApp {
   // LINT.IfChange(MemberVariables)
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
-      "run_on_os_login_os_integration_state", "url_handlers", "update_token";
+      "run_on_os_login_os_integration_state", "url_handlers", "update_token",
+      "display_mode_override";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -342,7 +343,8 @@ message WebApp {
 
   // DEPRECATED: Use `display_overrides` instead.
   // A list of display modes specified in app manifest.
-  repeated DisplayMode display_mode_override = 22 [deprecated = true];
+  repeated DisplayMode display_mode_override_deprecated = 22
+      [deprecated = true];
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
   // that are designed for masking (ie. IconPurpose::MASKABLE). See also:
