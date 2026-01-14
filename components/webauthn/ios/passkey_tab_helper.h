@@ -80,6 +80,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Utility function to defer the passkey request back to the renderer.
   void DeferToRenderer(IOSPasskeyClient::RequestInfo request_info) const;
 
+  // Sets the passkey command handler.
+  void SetIOSPasskeyClientCommandsHandler(id<IOSPasskeyClientCommands> handler);
+
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
   friend class PasskeyTabHelperTest;

@@ -97,6 +97,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   FakeIOSPasskeyClient() = default;
   ~FakeIOSPasskeyClient() override = default;
 
+  void SetIOSPasskeyClientCommandsHandler(
+      id<IOSPasskeyClientCommands> handler) override {}
   bool PerformUserVerification() override { return false; }
   void FetchKeys(ReauthenticatePurpose purpose,
                  KeysFetchedCallback callback) override {

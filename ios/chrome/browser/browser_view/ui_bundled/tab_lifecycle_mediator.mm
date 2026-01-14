@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
 
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -123,6 +124,13 @@
     passwordTabHelper->SetPasswordControllerDelegate(
         _passwordControllerDelegate);
     passwordTabHelper->SetDispatcher(_commandDispatcher);
+  }
+
+  webauthn::PasskeyTabHelper* passkeyTabHelper =
+      webauthn::PasskeyTabHelper::FromWebState(webState);
+  if (passkeyTabHelper) {
+    passkeyTabHelper->SetIOSPasskeyClientCommandsHandler(
+        HandlerForProtocol(_commandDispatcher, IOSPasskeyClientCommands));
   }
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
@@ -303,6 +311,12 @@
   if (passwordTabHelper) {
     passwordTabHelper->SetPasswordControllerDelegate(nil);
     passwordTabHelper->SetDispatcher(nil);
+  }
+
+  webauthn::PasskeyTabHelper* passkeyTabHelper =
+      webauthn::PasskeyTabHelper::FromWebState(webState);
+  if (passkeyTabHelper) {
+    passkeyTabHelper->SetIOSPasskeyClientCommandsHandler(nil);
   }
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =

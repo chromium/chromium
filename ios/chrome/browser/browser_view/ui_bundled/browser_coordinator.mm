@@ -41,6 +41,7 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
@@ -1262,6 +1263,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(PromosManagerCommands),
     @protocol(FileUploadPanelCommands),
     @protocol(FindInPageCommands),
+    @protocol(IOSPasskeyClientCommands),
     @protocol(BWGCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
@@ -2322,6 +2324,16 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissAutofillProgressDialog {
   [self.autofillProgressDialogCoordinator stop];
   self.autofillProgressDialogCoordinator = nil;
+}
+
+#pragma mark - IOSPasskeyClientCommands
+
+- (void)showPasskeyCreationBottomSheet:(const std::string&)requestId {
+  // TODO(crbug.com/460485496) : Add implementation.
+}
+
+- (void)showPasskeySuggestionBottomSheet:(const std::string&)requestId {
+  // TODO(crbug.com/460485496) : Add implementation.
 }
 
 #pragma mark - BrowserCoordinatorCommands

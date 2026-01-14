@@ -22,6 +22,8 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   ~IOSChromePasskeyClient() override;
 
   // IOSPasskeyClient overrides.
+  void SetIOSPasskeyClientCommandsHandler(
+      id<IOSPasskeyClientCommands> handler) override;
   bool PerformUserVerification() override;
   void FetchKeys(webauthn::ReauthenticatePurpose purpose,
                  webauthn::KeysFetchedCallback callback) override;
@@ -38,6 +40,9 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   // Pointer to the associated ProfileIOS. Must outlive
   // IOSChromePasskeyClient.
   raw_ptr<ProfileIOS> profile_;
+
+  // Command handler for the browser.
+  id<IOSPasskeyClientCommands> command_handler_;
 
   // Provider that manages passkey vault keys.
   std::unique_ptr<PasskeyKeychainProvider> passkey_keychain_provider_;

@@ -52,6 +52,7 @@ source_set("ui_bundled") {
     "//components/translate/core/browser",
     "//components/ukm/ios:ukm_url_recorder",
     "//components/url_formatter",
+    "//components/webauthn/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/strings",

@@ -277,6 +277,11 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
   }
 }
 
+void PasskeyTabHelper::SetIOSPasskeyClientCommandsHandler(
+    id<IOSPasskeyClientCommands> handler) {
+  client_->SetIOSPasskeyClientCommandsHandler(handler);
+}
+
 web::WebFrame* PasskeyTabHelper::GetWebFrame(
     const std::string& frame_id) const {
   web::WebState* web_state = web_state_.get();

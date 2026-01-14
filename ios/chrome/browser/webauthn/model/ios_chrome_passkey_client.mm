@@ -47,6 +47,11 @@ PasskeyKeychainProvider* IOSChromePasskeyClient::GetPasskeyKeychainProvider() {
              ?: passkey_keychain_provider_.get();
 }
 
+void IOSChromePasskeyClient::SetIOSPasskeyClientCommandsHandler(
+    id<IOSPasskeyClientCommands> handler) {
+  command_handler_ = handler;
+}
+
 bool IOSChromePasskeyClient::PerformUserVerification() {
   // TODO(crbug.com/460484682): Perform user verification.
   // See PasskeyKeychainProvider::Reauthenticate and ReauthenticationModule.

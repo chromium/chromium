@@ -16,6 +16,17 @@ namespace password_manager {
 class WebAuthnCredentialsDelegate;
 }
 
+// Commands related to the IOSPasskeyClient.
+@protocol IOSPasskeyClientCommands
+
+// Shows the passkey creation bottom sheet.
+- (void)showPasskeyCreationBottomSheet:(const std::string&)requestId;
+
+// Shows the passkey suggestion bottom sheet.
+- (void)showPasskeySuggestionBottomSheet:(const std::string&)requestId;
+
+@end
+
 namespace webauthn {
 
 // Virtual class which exposes the API required by the PasskeyTabHelper to
@@ -36,6 +47,10 @@ class IOSPasskeyClient {
   };
 
   virtual ~IOSPasskeyClient() = default;
+
+  // Sets the passkey command handler.
+  virtual void SetIOSPasskeyClientCommandsHandler(
+      id<IOSPasskeyClientCommands> handler) = 0;
 
   // Performs user verification and returns whether it was successful.
   virtual bool PerformUserVerification() = 0;
