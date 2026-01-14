@@ -205,6 +205,10 @@ class AiModePageActionController;
 class OmniboxPopupCloser;
 }  // namespace omnibox
 
+namespace skills {
+class SkillsUiController;
+}  // namespace skills
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop.
 //
@@ -794,6 +798,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<SearchboxContextData> searchbox_context_data_;
 
   std::unique_ptr<omnibox::OmniboxPopupCloser> omnibox_popup_closer_;
+
+  std::unique_ptr<skills::SkillsUiController> skills_ui_controller_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

@@ -8,6 +8,8 @@ source_set("skills") {
   sources = [
     "skills_service_factory.cc",
     "skills_service_factory.h",
+    "skills_ui_controller.cc",
+    "skills_ui_controller.h",
   ]
 
   public_deps = [
@@ -18,10 +20,12 @@ source_set("skills") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common:channel_info",
     "//components/keyed_service/core",
     "//components/skills/internal",
     "//components/skills/public",
     "//components/sync/model",
+    "//ui/base/unowned_user_data",
   ]
 }

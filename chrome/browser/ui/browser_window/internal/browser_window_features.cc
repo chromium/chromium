@@ -28,6 +28,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/skills/skills_ui_controller.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
@@ -845,6 +846,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   omnibox_popup_closer_ =
       std::make_unique<omnibox::OmniboxPopupCloser>(browser_view);
 
+  skills_ui_controller_ =
+      std::make_unique<skills::SkillsUiController>(browser_);
+
   // Initialize post-BrowserView-dependent embedder features last.
   embedder_browser_window_features_->InitPostBrowserViewConstruction(
       browser_view);
@@ -967,6 +971,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   find_bar_owner_.reset();
 
   ai_mode_page_action_controller_.reset();
+
+  skills_ui_controller_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
