@@ -2967,7 +2967,7 @@ ci.thin_tester(
             ),
             "media_foundation_browser_tests": targets.remove(
                 reason = [
-                    "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
+                    "TODO(crbug.com/40912267): Enable Media Foundation browser tests on AMD",
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
             ),
@@ -3250,12 +3250,6 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
                 ],
             ),
-            "media_foundation_browser_tests": targets.remove(
-                reason = [
-                    "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
-                    "gpu bots once the Windows OS supports HW secure decryption.",
-                ],
-            ),
         },
     ),
     targets_settings = targets.settings(
@@ -3263,10 +3257,10 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Windows|11|x64|AMD",
-    #     short_name = "rel",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|11|x64|AMD",
+        short_name = "rel",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
