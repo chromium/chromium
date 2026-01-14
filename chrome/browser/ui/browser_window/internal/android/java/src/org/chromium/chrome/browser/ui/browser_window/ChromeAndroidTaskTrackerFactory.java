@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import org.chromium.base.DeviceInfo;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public final class ChromeAndroidTaskTrackerFactory {
     public static ChromeAndroidTaskTracker getInstance() {
         // TODO(crbug.com/473636857): Remove once this is properly implemented on non-desktop
         // platforms.
-        if (!DeviceInfo.isDesktop()) return null;
+        if (!BuildConfig.IS_DESKTOP_ANDROID) return null;
 
         return ChromeAndroidTaskTrackerImpl.getInstance();
     }
