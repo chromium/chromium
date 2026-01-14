@@ -18,6 +18,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
@@ -394,6 +395,9 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
   if (!embedder) {
     return;
   }
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    service_->metrics()->OnTrustFirstOnboardingDismissed();
+  }
   instance_metrics_.OnClose();
   embedder->Close(options);
 }
@@ -402,6 +406,11 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               bool prevent_close,
                               glic::mojom::InvocationSource source,
                               std::optional<std::string> prompt_suggestion) {
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+      !service_->enabling().HasConsentedForProfile(profile_)) {
+    service_->metrics()->OnTrustFirstOnboardingShown();
+  }
+
   instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
