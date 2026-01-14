@@ -14082,6 +14082,21 @@
             ]
         }
     ],
+    "IOSPasskeyConditionalLoginWithShim": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "IOSPasskeyConditionalLoginWithShim"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasskeyModalLoginWithShim": [
         {
             "platforms": [

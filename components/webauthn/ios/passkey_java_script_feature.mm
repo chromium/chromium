@@ -63,7 +63,8 @@ GetPlaceholderReplacements() {
   // requests can be handled by the browser.
   bool handle_modal_passkey_requests =
       base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
-  bool handle_conditional_passkey_requests = false;
+  bool handle_conditional_passkey_requests =
+      base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
   std::u16string handle_passkey_requests_script_block = base::StrCat(
       {u"const shouldHandleModalPasskeyRequests = () => { return ",
        handle_modal_passkey_requests ? u"true;" : u"false;", u" };\n\n",
@@ -274,7 +275,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim) &&
+      !base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim)) {
     // TODO(crbug.com/369629469): Log metrics for unexpected events.
     return;
   }

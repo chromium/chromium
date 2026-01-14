@@ -395,7 +395,8 @@ bool IOSChromePasswordManagerClient::IsNewTabPage() const {
 password_manager::WebAuthnCredentialsDelegate*
 IOSChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
     password_manager::PasswordManagerDriver* driver) {
-  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim) &&
+      !base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim)) {
     return nullptr;
   }
 
