@@ -13,6 +13,16 @@ namespace blink {
 
 class Document;
 
+// A DeferredTimeline is a ScrollSnapshotTimeline that updates its state
+// (snapshot) from some other ScrollSnapshotTimeline, possibly attached
+// at a later time.
+//
+// Instances of DeferredTimeline are created by the 'timeline-scope' property
+// on some element, and their "attachments" (i.e. the timelines they fetch
+// their state from) are later attached by the animation update of a descendant
+// element (see CSSAnimations::CalculateTimelineAttachmentUpdate()).
+//
+// https://drafts.csswg.org/scroll-animations-1/#timeline-scope
 class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
  public:
   explicit DeferredTimeline(Document*);
@@ -42,6 +52,8 @@ class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
 
   void OnAttachedTimelineChange();
 
+  // Note that while multiple timelines can be attached, this DeferredTimeline
+  // is always inactive when there isn't exactly one attached timeline.
   HeapVector<Member<ScrollSnapshotTimeline>> attached_timelines_;
 };
 

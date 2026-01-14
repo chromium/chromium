@@ -217,8 +217,9 @@ class CORE_EXPORT CSSAnimationUpdate final {
     changed_view_timelines_ = std::move(timelines);
   }
 
-  void SetChangedDeferredTimelines(CSSDeferredTimelineMap timelines) {
-    changed_deferred_timelines_ = std::move(timelines);
+  void SetUpdatedDeferredTimelineMap(CSSDeferredTimelineMap map) {
+    has_updated_deferred_timeline_map_ = true;
+    updated_deferred_timeline_map_ = std::move(map);
   }
 
   void SetChangedTimelineAttachments(TimelineAttachmentMap attachments) {
@@ -295,8 +296,16 @@ class CORE_EXPORT CSSAnimationUpdate final {
   const CSSViewTimelineMap& ChangedViewTimelines() const {
     return changed_view_timelines_;
   }
-  const CSSDeferredTimelineMap& ChangedDeferredTimelines() const {
-    return changed_deferred_timelines_;
+  const CSSDeferredTimelineMap* UpdatedDeferredTimelineMap() const {
+    return has_updated_deferred_timeline_map_ ? &updated_deferred_timeline_map_
+                                              : nullptr;
+  }
+  std::optional<CSSDeferredTimelineMap> TakeUpdatedDeferredTimelineMap() {
+    if (has_updated_deferred_timeline_map_) {
+      return std::optional<CSSDeferredTimelineMap>(
+          std::move(updated_deferred_timeline_map_));
+    }
+    return std::nullopt;
   }
   const TimelineAttachmentMap& ChangedTimelineAttachments() const {
     return changed_timeline_attachments_;
@@ -337,9 +346,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !updated_compositor_keyframes_.empty() ||
            !changed_scroll_timelines_.empty() ||
            !changed_view_timelines_.empty() ||
-           !changed_deferred_timelines_.empty() ||
            !changed_timeline_attachments_.empty() ||
-           needs_named_trigger_update_;
+           has_updated_deferred_timeline_map_ || needs_named_trigger_update_;
   }
 
   void Trace(Visitor* visitor) const {
@@ -352,7 +360,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(active_interpolations_for_transitions_);
     visitor->Trace(changed_scroll_timelines_);
     visitor->Trace(changed_view_timelines_);
-    visitor->Trace(changed_deferred_timelines_);
+    visitor->Trace(updated_deferred_timeline_map_);
     visitor->Trace(changed_timeline_attachments_);
   }
 
@@ -379,7 +387,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
   CSSScrollTimelineMap changed_scroll_timelines_;
   CSSViewTimelineMap changed_view_timelines_;
-  CSSDeferredTimelineMap changed_deferred_timelines_;
+  bool has_updated_deferred_timeline_map_ = false;
+  CSSDeferredTimelineMap updated_deferred_timeline_map_;
   TimelineAttachmentMap changed_timeline_attachments_;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;

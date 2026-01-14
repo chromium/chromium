@@ -240,9 +240,11 @@ class CORE_EXPORT CSSAnimations final {
       return view_timelines_;
     }
 
-    void SetDeferredTimeline(const AtomicString& name, DeferredTimeline*);
-    const CSSDeferredTimelineMap& GetDeferredTimelines() const {
-      return deferred_timelines_;
+    void SetDeferredTimelineMap(CSSDeferredTimelineMap map) {
+      deferred_timeline_map_ = std::move(map);
+    }
+    const CSSDeferredTimelineMap& GetDeferredTimelineMap() const {
+      return deferred_timeline_map_;
     }
 
     void SetTimelineAttachment(ScrollSnapshotTimeline*, DeferredTimeline*);
@@ -253,12 +255,12 @@ class CORE_EXPORT CSSAnimations final {
 
     bool IsEmpty() const {
       return scroll_timelines_.empty() && view_timelines_.empty() &&
-             deferred_timelines_.empty() && timeline_attachments_.empty();
+             deferred_timeline_map_.IsEmpty() && timeline_attachments_.empty();
     }
     void Clear() {
       scroll_timelines_.clear();
       view_timelines_.clear();
-      deferred_timelines_.clear();
+      deferred_timeline_map_ = CSSDeferredTimelineMap();
       timeline_attachments_.clear();
     }
     void Trace(Visitor*) const;
@@ -266,7 +268,7 @@ class CORE_EXPORT CSSAnimations final {
    private:
     CSSScrollTimelineMap scroll_timelines_;
     CSSViewTimelineMap view_timelines_;
-    CSSDeferredTimelineMap deferred_timelines_;
+    CSSDeferredTimelineMap deferred_timeline_map_;
     TimelineAttachmentMap timeline_attachments_;
   };
 
@@ -362,9 +364,9 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateViewTimelineUpdate(CSSAnimationUpdate&,
                                           Element& animating_element,
                                           const ComputedStyleBuilder&);
-  static void CalculateDeferredTimelineUpdate(CSSAnimationUpdate&,
-                                              Element& animating_element,
-                                              const ComputedStyleBuilder&);
+  static void CalculateDeferredTimelineMapUpdate(CSSAnimationUpdate&,
+                                                 Element& animating_element,
+                                                 const ComputedStyleBuilder&);
 
   static CSSScrollTimelineMap CalculateChangedScrollTimelines(
       Element& animating_element,
@@ -373,10 +375,6 @@ class CORE_EXPORT CSSAnimations final {
   static CSSViewTimelineMap CalculateChangedViewTimelines(
       Element& animating_element,
       const CSSViewTimelineMap* existing_view_timelines,
-      const ComputedStyleBuilder&);
-  static CSSDeferredTimelineMap CalculateChangedDeferredTimelines(
-      Element& animating_element,
-      const CSSDeferredTimelineMap* existing_deferred_timelines,
       const ComputedStyleBuilder&);
 
   template <typename MapType>
@@ -412,14 +410,21 @@ class CORE_EXPORT CSSAnimations final {
                                               const TimelineData*,
                                               const CSSAnimationUpdate*);
 
+  static DeferredTimeline* FindDeferredTimelineForElement(
+      Document&,
+      const AtomicString& name,
+      const TimelineData*,
+      const CSSAnimationUpdate*);
+
   static ScrollSnapshotTimeline* FindAncestorTimeline(
       const AtomicString& name,
       Node*,
       const CSSAnimationUpdate*);
 
-  static DeferredTimeline* FindDeferredTimeline(const AtomicString& name,
-                                                Element*,
-                                                const CSSAnimationUpdate*);
+  static DeferredTimeline* FindAncestorDeferredTimeline(
+      const AtomicString& name,
+      Element*,
+      const CSSAnimationUpdate*);
 
   static AnimationTimeline* ComputeTimeline(
       Element*,

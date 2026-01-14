@@ -108,13 +108,14 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
     DCHECK(!IsUseCounted(feature));
   }
 
-  wtf_size_t DeferredTimelinesCount(Element* element) const {
+  bool HasDeferredTimeline(Element* element, const char* name) const {
     ElementAnimations* element_animations = element->GetElementAnimations();
     if (!element_animations) {
-      return 0;
+      return false;
     }
     CSSAnimations& css_animations = element_animations->CssAnimations();
-    return css_animations.timeline_data_.GetDeferredTimelines().size();
+    return css_animations.timeline_data_.GetDeferredTimelineMap().Find(
+               element->GetDocument(), AtomicString(name)) != nullptr;
   }
 
  private:
@@ -1162,19 +1163,23 @@ TEST_P(CSSAnimationsTest, DeferredTimelineUpdate) {
   Element* target = GetElementById("target");
   ASSERT_TRUE(target);
 
-  EXPECT_EQ(0u, DeferredTimelinesCount(target));
+  EXPECT_FALSE(HasDeferredTimeline(target, "--t1"));
+  EXPECT_FALSE(HasDeferredTimeline(target, "--t2"));
 
   target->SetInlineStyleProperty(CSSPropertyID::kTimelineScope, "--t1");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u, DeferredTimelinesCount(target));
+  EXPECT_TRUE(HasDeferredTimeline(target, "--t1"));
+  EXPECT_FALSE(HasDeferredTimeline(target, "--t2"));
 
   target->SetInlineStyleProperty(CSSPropertyID::kTimelineScope, "--t1, --t2");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(2u, DeferredTimelinesCount(target));
+  EXPECT_TRUE(HasDeferredTimeline(target, "--t1"));
+  EXPECT_TRUE(HasDeferredTimeline(target, "--t2"));
 
   target->SetInlineStyleProperty(CSSPropertyID::kTimelineScope, "none");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(0u, DeferredTimelinesCount(target));
+  EXPECT_FALSE(HasDeferredTimeline(target, "--t1"));
+  EXPECT_FALSE(HasDeferredTimeline(target, "--t2"));
 }
 
 TEST_P(CSSAnimationsTest, OpacityUnchangedWhileDeferred) {

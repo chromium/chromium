@@ -8,10 +8,15 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
 class DeferredTimeline;
+class Document;
 class ScrollSnapshotTimeline;
 class ScrollTimeline;
 class ViewTimeline;
@@ -20,9 +25,54 @@ template <typename TimelineType>
 using CSSTimelineMap = HeapHashMap<AtomicString, Member<TimelineType>>;
 using CSSViewTimelineMap = CSSTimelineMap<ViewTimeline>;
 using CSSScrollTimelineMap = CSSTimelineMap<ScrollTimeline>;
-using CSSDeferredTimelineMap = CSSTimelineMap<DeferredTimeline>;
 using TimelineAttachmentMap =
     HeapHashMap<Member<ScrollSnapshotTimeline>, Member<DeferredTimeline>>;
+
+// CSSDeferredTimelineMap, logically, contains one DeferredTimeline for every
+// possible key, except that only the names matching the specified filter
+// are retrievable.
+//
+// The 'timeline-scope' property, when specified one some element, determines
+// the filter used for that element's CSSDeferredTimelineMap:
+//
+// - For 'timeline-scope:none', an empty filter.
+// - For 'timeline-scope:--a,--b', a filter containing those names.
+// - For 'timeline-scope:all': TODO(crbug.com/41488030): Not implemented yet.
+//
+class CORE_EXPORT CSSDeferredTimelineMap {
+  DISALLOW_NEW();
+
+ public:
+  struct Filter {
+    bool operator==(const Filter& o) const { return names == o.names; }
+    bool operator!=(const Filter& o) const { return !(*this == o); }
+    HashSet<AtomicString> names;
+  };
+
+  // The default constructor a map with a "none" filter.
+  CSSDeferredTimelineMap() = default;
+  explicit CSSDeferredTimelineMap(Filter filter) : filter_(filter) {}
+  CSSDeferredTimelineMap(const CSSDeferredTimelineMap& other, Filter filter)
+      : filter_(std::move(filter)), map_(other.map_) {}
+
+  void Trace(blink::Visitor* visitor) const;
+
+  // Find a DeferredTimeline with a name matching `filter_`.
+  //
+  // As long as the name matches `filter_`, a non-nullptr value will always
+  // be returned. However, it does not necessarily return the same instance
+  // (for the same key) over time.
+  DeferredTimeline* Find(Document&, const AtomicString& name) const;
+
+  bool IsEmpty() const { return filter_.names.empty(); }
+
+  const Filter& GetFilter() const { return filter_; }
+
+ private:
+  Filter filter_;
+  using InnerMap = HeapHashMap<AtomicString, WeakMember<DeferredTimeline>>;
+  mutable InnerMap map_;
+};
 
 }  // namespace blink
 

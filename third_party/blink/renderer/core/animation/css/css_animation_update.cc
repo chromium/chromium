@@ -53,7 +53,9 @@ void CSSAnimationUpdate::Copy(const CSSAnimationUpdate& update) {
   updated_compositor_keyframes_ = update.UpdatedCompositorKeyframes();
   changed_scroll_timelines_ = update.changed_scroll_timelines_;
   changed_view_timelines_ = update.changed_view_timelines_;
-  changed_deferred_timelines_ = update.changed_deferred_timelines_;
+  has_updated_deferred_timeline_map_ =
+      update.has_updated_deferred_timeline_map_;
+  updated_deferred_timeline_map_ = update.updated_deferred_timeline_map_;
   changed_timeline_attachments_ = update.changed_timeline_attachments_;
   needs_named_trigger_update_ = update.needs_named_trigger_update_;
 }
@@ -71,7 +73,8 @@ void CSSAnimationUpdate::Clear() {
   updated_compositor_keyframes_.clear();
   changed_scroll_timelines_.clear();
   changed_view_timelines_.clear();
-  changed_deferred_timelines_.clear();
+  has_updated_deferred_timeline_map_ = false;
+  updated_deferred_timeline_map_ = CSSDeferredTimelineMap();
   changed_timeline_attachments_.clear();
   needs_named_trigger_update_ = false;
 }
