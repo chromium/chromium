@@ -61,12 +61,6 @@ void VerticalSplitTabView::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
 }
 
-void VerticalSplitTabView::OnMouseMoved(const ui::MouseEvent& event) {
-  // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
-  // an enter event and fail to hover the tab.
-  UpdateHovered(true);
-}
-
 void VerticalSplitTabView::OnMouseEntered(const ui::MouseEvent& event) {
   UpdateHovered(true);
 }
@@ -75,38 +69,10 @@ void VerticalSplitTabView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateHovered(false);
 }
 
-void VerticalSplitTabView::UpdateHovered(bool hovered) {
-  if (hovered_ == hovered) {
-    return;
-  }
-
-  hovered_ = hovered;
-
-  float radial_highlight_opacity = 1.0f;
-  for (views::View* child : children()) {
-    if (auto* tab_view = views::AsViewClass<VerticalTabView>(child)) {
-      tab_view->UpdateHovered(hovered_);
-      radial_highlight_opacity = tab_view->radial_highlight_opacity();
-    }
-  }
-
-  if (hover_controller_) {
-    if (hovered_) {
-      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity);
-      hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
-    } else {
-      hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
-    }
-  }
-
-  SchedulePaint();
-}
-
-double VerticalSplitTabView::GetHoverAnimationValue() const {
-  if (!hover_controller_) {
-    return hovered_ ? 1.0 : 0.0;
-  }
-  return hover_controller_->GetAnimationValue();
+void VerticalSplitTabView::OnMouseMoved(const ui::MouseEvent& event) {
+  // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
+  // an enter event and fail to hover the tab.
+  UpdateHovered(true);
 }
 
 views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
@@ -160,6 +126,13 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
   return layouts;
 }
 
+double VerticalSplitTabView::GetHoverAnimationValue() const {
+  if (!hover_controller_) {
+    return hovered_ ? 1.0 : 0.0;
+  }
+  return hover_controller_->GetAnimationValue();
+}
+
 void VerticalSplitTabView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -184,6 +157,33 @@ void VerticalSplitTabView::UpdateBorder() {
   } else {
     SetBorder(nullptr);
   }
+}
+
+void VerticalSplitTabView::UpdateHovered(bool hovered) {
+  if (hovered_ == hovered) {
+    return;
+  }
+
+  hovered_ = hovered;
+
+  float radial_highlight_opacity = 1.0f;
+  for (views::View* child : children()) {
+    if (auto* tab_view = views::AsViewClass<VerticalTabView>(child)) {
+      tab_view->UpdateHovered(hovered_);
+      radial_highlight_opacity = tab_view->radial_highlight_opacity();
+    }
+  }
+
+  if (hover_controller_) {
+    if (hovered_) {
+      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity);
+      hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
+    } else {
+      hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
+    }
+  }
+
+  SchedulePaint();
 }
 
 BEGIN_METADATA(VerticalSplitTabView)
