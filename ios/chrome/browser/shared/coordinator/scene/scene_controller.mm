@@ -1669,6 +1669,15 @@ void OnListFamilyMembersResponse(
 - (void)handleModalsDismissalWithMode:(ApplicationModeForTabOpening)targetMode
                         urlLoadParams:(const UrlLoadParams&)urlLoadParams
                            completion:(ProceduralBlock)completion {
+  // Disconnected scenes should no-op, since browser objects may not exist.
+  if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
+    return;
+  }
+
+  if (!self.mainInterface || !self.mainInterface.browser) {
+    return;
+  }
+
   BOOL canShowYoutubeIncognito =
       base::FeatureList::IsEnabled(kChromeStartupParametersAsync) &&
       base::FeatureList::IsEnabled(kYoutubeIncognito);
