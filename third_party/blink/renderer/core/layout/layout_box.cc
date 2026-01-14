@@ -2175,12 +2175,10 @@ void LayoutBox::ImageChanged(WrappedImagePtr image,
       if (layer->GetImage() && image == layer->GetImage()->Data()) {
         SetShouldDoFullPaintInvalidationWithoutLayoutChange(
             PaintInvalidationReason::kImage);
-        if (layer->GetImage()->IsMaskSource()) {
-          // Since an invalid <mask> reference does not yield a paint property
-          // (see CSSMaskPainter), we need to update paint properties when such
-          // a reference changes.
-          SetNeedsPaintPropertyUpdate();
-        }
+        // Since an invalid <mask> reference does not yield a paint property
+        // (see CSSMaskPainter), we need to update paint properties when such a
+        // reference changes.
+        SetNeedsPaintPropertyUpdate();
         break;
       }
     }

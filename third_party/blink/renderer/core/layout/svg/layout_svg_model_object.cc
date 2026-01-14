@@ -148,12 +148,10 @@ void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
     if (style_image && image == style_image->Data()) {
       SetShouldDoFullPaintInvalidationWithoutLayoutChange(
           PaintInvalidationReason::kImage);
-      if (style_image->IsMaskSource()) {
-        // Since an invalid <mask> reference does not yield a paint property on
-        // SVG content (see CSSMaskPainter), we need to update paint properties
-        // when such a reference changes.
-        SetNeedsPaintPropertyUpdate();
-      }
+      // Since an invalid <mask> reference does not yield a paint property on
+      // SVG content (see CSSMaskPainter), we need to update paint properties
+      // when such a reference changes.
+      SetNeedsPaintPropertyUpdate();
       break;
     }
   }
