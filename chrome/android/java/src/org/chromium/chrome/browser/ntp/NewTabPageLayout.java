@@ -158,6 +158,7 @@ public class NewTabPageLayout extends LinearLayout
     private Callback<Logo> mOnLogoAvailableCallback;
     private boolean mIsComposeplateEnabled;
     private boolean mIsComposeplateV2Enabled;
+    private boolean mIsComposeplatePolicyEnabled;
     private @Nullable Supplier<GURL> mComposeplateUrlSupplier;
     private OnClickListener mVoiceSearchButtonClickListener;
     private OnClickListener mLensButtonClickListener;
@@ -262,6 +263,8 @@ public class NewTabPageLayout extends LinearLayout
         mIsComposeplateV2Enabled =
                 mIsComposeplateEnabled
                         && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
+        mIsComposeplatePolicyEnabled =
+                mIsComposeplateV2Enabled && ComposeplateUtils.isEnabledByPolicy(profile);
         if (mIsComposeplateEnabled) {
             mComposeplateUrlSupplier = composeplateUrlSupplier;
         }
@@ -534,7 +537,9 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     private void onComposeplateButtonClicked(View view) {
-        if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled() && !mIsTablet) {
+        if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
+                && !mIsTablet
+                && mIsComposeplatePolicyEnabled) {
             mManager.focusSearchBox(false, AutocompleteRequestType.AI_MODE, null);
             return;
         }
