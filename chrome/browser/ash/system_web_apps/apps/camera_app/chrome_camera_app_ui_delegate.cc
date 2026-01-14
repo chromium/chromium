@@ -106,6 +106,9 @@ const int64_t kStorageCriticallyLowThreshold = 32 * 1024 * 1024;  // 32MB
 // PDFs saved from CCA are always 72 dpi.
 constexpr int kPdfDpi = 72;
 
+constexpr char kCloudDestinationGoogleDrive[] = "google_drive";
+constexpr char kCloudDestinationOnedrive[] = "microsoft_onedrive";
+
 }  // namespace
 
 // static
@@ -526,12 +529,15 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                         .value());
   auto camera_destination =
       policy::local_user_files::GetCameraDestination(profile);
-  source->AddBoolean(
-      "cloud_destination",
-      camera_destination ==
-              policy::local_user_files::FileSaveDestination::kGoogleDrive ||
-          camera_destination ==
-              policy::local_user_files::FileSaveDestination::kOneDrive);
+  std::string cloud_destination;
+  if (camera_destination ==
+      policy::local_user_files::FileSaveDestination::kGoogleDrive) {
+    cloud_destination = kCloudDestinationGoogleDrive;
+  } else if (camera_destination ==
+             policy::local_user_files::FileSaveDestination::kOneDrive) {
+    cloud_destination = kCloudDestinationOnedrive;
+  }
+  source->AddString("cloud_destination", cloud_destination);
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";

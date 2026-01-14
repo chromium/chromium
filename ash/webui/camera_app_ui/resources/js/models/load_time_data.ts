@@ -91,7 +91,14 @@ export function getPathRelativeToRoot(): string {
  * Returns whether the camera app saves files on cloud.
  */
 export function isCloudDestination(): boolean {
-  return loadTimeData.getBoolean('cloud_destination');
+  return !!loadTimeData.getString('cloud_destination');
+}
+
+/**
+ * Returns whether the camera app saves files on Microsoft OneDrive.
+ */
+export function isCloudDestinationOnedrive(): boolean {
+  return loadTimeData.getString('cloud_destination') === 'microsoft_onedrive';
 }
 
 /**
@@ -100,7 +107,6 @@ export function isCloudDestination(): boolean {
 export function getOsVersion(): string {
   return loadTimeData.getString('os_version');
 }
-
 
 /**
  * Returns if BigBuffer can be used.

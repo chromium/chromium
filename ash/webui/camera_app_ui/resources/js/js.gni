@@ -43,6 +43,7 @@ compile_js_files = [
   "lib/comlink.ts",
   "lib/comlink_protocol.ts",
   "lib/ffmpeg.js",
+  "lit/components/cloud-save-warning-dialog.ts",
   "lit/components/gallery-button.ts",
   "lit/components/index.ts",
   "lit/components/mode-selector.ts",
