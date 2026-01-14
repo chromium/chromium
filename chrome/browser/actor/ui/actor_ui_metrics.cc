@@ -75,6 +75,8 @@ void RecordTaskIconError(ActorUiTaskIconError error) {
 }
 
 void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state) {
+  DCHECK_NE(nudge_state.text, ActorTaskNudgeState::Text::kDefault)
+      << "Nudge is hidden in default state so it cannot be shown.";
   DCHECK_NE(nudge_state.text,
             ActorTaskNudgeState::Text::kMultipleTasksNeedAttention)
       << "MultipleTasksNeedAttention state is deprecated.";
@@ -83,8 +85,6 @@ void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state) {
 }
 
 void RecordGlobalTaskIndicatorNudgeShown(ActorTaskNudgeState nudge_state) {
-  DCHECK_NE(nudge_state.text, ActorTaskNudgeState::Text::kDefault)
-      << "Nudge is hidden in default state so it cannot be shown.";
   DCHECK_NE(nudge_state.text,
             ActorTaskNudgeState::Text::kMultipleTasksNeedAttention)
       << "MultipleTasksNeedAttention state is deprecated.";

@@ -182,9 +182,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
   // Now that the actor has stopped, the background should lose focus
   EXPECT_EQ(false, EvalJs(background_contents, "document.hasFocus()"));
-  // The foreground tab should still think it has focus and is the active web
-  // contents.
-  EXPECT_EQ(true, EvalJs(foreground_contents, "document.hasFocus()"));
+  // Normally would check that the foreground tab still has focus, but
+  // ActorTaskListBubble is expected to show immediately after a task is done
+  // and is expected to steal focus.
   ASSERT_EQ(web_contents(), foreground_contents);
 }
 
