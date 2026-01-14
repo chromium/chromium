@@ -57,7 +57,7 @@ TestAccountRepository::GetRandomFamilyByFeature(
   if (matching_families.empty()) {
     return std::nullopt;
   }
-  return matching_families[base::RandInt(0, matching_families.size() - 1)];
+  return base::RandomChoice(matching_families);
 }
 
 std::optional<test_accounts::FamilyMember> GetFirstFamilyMemberByRole(
@@ -136,7 +136,7 @@ bool FamilyMember::ParseRole(std::string_view value,
   *role = roles.at(value);
   return true;
 }
-// LINT.ThenChange(//components/supervised_user/core/browser/proto/families_common.proto::family_role)
+// LINT.ThenChange(//components/supervised_user/core/browser/proto/families_common.proto:family_role)
 
 FamilyMember::FamilyMember() = default;
 FamilyMember::FamilyMember(const FamilyMember&) = default;
