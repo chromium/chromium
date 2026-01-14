@@ -5462,7 +5462,7 @@
   {
     "name": "http-cache-custom-backend",
     "owners": ["horo@chromium.org", "net-dev@chromium.org"],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "http-cache-no-vary-search",
