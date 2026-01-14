@@ -1189,6 +1189,31 @@ chromium-metrics-reviews@google.com.
       variants="IOSTurnOnCredentialProviderExtensionPromptSource"/>
 </histogram>
 
+<histogram name="IOS.CrossPlatformPromos.Promo.Shown.{Source}"
+    enum="IOSCrossPlatformPromoType" expires_after="2026-06-21">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    The promo type of the Cross Platform Promo shown to the user when {Source}.
+  </summary>
+  <token key="Source">
+    <variant name="FromAppForeground" summary="the app enters the foreground"/>
+    <variant name="FromPush" summary="they interact with a push notification"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.CrossPlatformPromos.PushNotification.Interaction"
+    enum="IOSCrossPlatformPromoType" expires_after="2026-06-21">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    The promo type of the Cross Platform Promo push notification that the user
+    interacted with.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserAbandonment{PeriodConsidered}"
     enum="Boolean" expires_after="2026-06-28">
   <owner>gujen@google.com</owner>

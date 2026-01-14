@@ -16,7 +16,8 @@ enum class PromoType {
   kAddress = 2,
   kPayment = 3,
   kEnhancedBrowsing = 4,
-  kLens = 5
+  kLens = 5,
+  kMaxValue = kLens
 };
 
 // Bubble type for the desktop-to-mobile promos. A promo bubble can either

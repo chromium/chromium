@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_notification_client.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
 #import "components/prefs/pref_service.h"
@@ -65,6 +66,10 @@ bool CrossPlatformPromosNotificationClient::HandleNotificationInteraction(
   if (!promo_type) {
     return false;
   }
+
+  base::UmaHistogramEnumeration(
+      "IOS.CrossPlatformPromos.PushNotification.Interaction",
+      promo_type.value());
 
   Browser* browser = GetActiveForegroundBrowser();
   if (!browser) {
@@ -146,6 +151,9 @@ void CrossPlatformPromosNotificationClient::ShowPromo(
   // Clear the promo reminder pref after showing the promo so that the in-app
   // notification is not shown again later.
   GetProfile()->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
+
+  base::UmaHistogramEnumeration("IOS.CrossPlatformPromos.Promo.Shown.FromPush",
+                                promo_type);
 }
 
 NSArray<UNNotificationCategory*>*
