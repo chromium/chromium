@@ -913,25 +913,25 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="SigninAccessPoint">
-  <int value="0" label="Start page"/>
+  <int value="0" label="Start page (First Run Experience)"/>
   <int value="1" label="(obsolete) NTP Link"/>
-  <int value="2" label="Menu"/>
-  <int value="3" label="Settings"/>
+  <int value="2" label="Three-dot menu"/>
+  <int value="3" label="Top-level settings"/>
   <int value="4" label="(obsolete) Supervised user"/>
   <int value="5" label="Extension install bubble"/>
-  <int value="6" label="Extensions"/>
+  <int value="6" label="Extensions (via chrome.identity API)"/>
   <int value="7" label="(obsolete) Apps page link"/>
-  <int value="8" label="Bookmark bubble"/>
+  <int value="8" label="Bookmark save bubble"/>
   <int value="9" label="Bookmark manager"/>
-  <int value="10" label="Avatar bubble sign in"/>
+  <int value="10" label="Profile menu (aka avatar bubble)"/>
   <int value="11" label="Profile picker"/>
   <int value="12" label="(obsolete) Devices page"/>
   <int value="13" label="(obsolete) Cloud print"/>
   <int value="14" label="(obsolete) Content area"/>
   <int value="15" label="Fullscreen Signin promo shown on start-up"/>
-  <int value="16" label="Recent tabs"/>
+  <int value="16" label="Tabs from other devices"/>
   <int value="17" label="Unknown"/>
-  <int value="18" label="Password bubble"/>
+  <int value="18" label="Password save bubble"/>
   <int value="19" label="Autofill dropdown"/>
   <int value="20" label="(obsolete) NTP Content Suggestions"/>
   <int value="21" label="Re-signin infobar"/>
@@ -945,19 +945,19 @@ chromium-metrics-reviews@google.com.
       label="(obsolete) Re-signin from sync error card in settings"/>
   <int value="29" label="Forced sign-in"/>
   <int value="30" label="(obsolete) Re-signin after an account rename"/>
-  <int value="31" label="Web sign-in"/>
+  <int value="31" label="(deprecated) Implicit web sign-in"/>
   <int value="32" label="Safety check settings page"/>
   <int value="33" label="(obsolete) Kaleidoscope"/>
   <int value="34" label="(obsolete) Enterprise sign-out coordinator"/>
   <int value="35" label="Signin intercept first run experience"/>
   <int value="36" label="Send-tab-to-self promo"/>
-  <int value="37" label="Sign-in promo on NTP feed top section."/>
+  <int value="37" label="Sign-in promo on NTP feed top section"/>
   <int value="38" label="Sync off settings row"/>
   <int value="39" label="Post device restore sign-in promo"/>
   <int value="40" label="Post device restore background sign-in"/>
   <int value="41" label="NTP Signed-out icon"/>
-  <int value="42" label="Sign-in promo on NTP feed card menu section."/>
-  <int value="43" label="Sign-in promo on NTP feed bottom section."/>
+  <int value="42" label="Sign-in promo on NTP feed card menu section"/>
+  <int value="43" label="Sign-in promo on NTP feed bottom section"/>
   <int value="44"
       label="Automatic reset to match account cookies (Desktop only).">
     Used by the SigninManager when no other access point is specified.
@@ -983,11 +983,11 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="(obsolete) NTP Identity Disc"/>
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
-  <int value="66" label="Avatar bubble sign in with sync promo"/>
+  <int value="66" label="Profile menu (aka avatar bubble) with sync promo"/>
   <int value="67" label="Account menu: Switch account"/>
   <int value="68" label="Product Specifications"/>
   <int value="69" label="Account menu: Switch account failed"/>
-  <int value="70" label="Address bubble"/>
+  <int value="70" label="Address save bubble"/>
   <int value="71" label="CCT account mismatch notification"/>
   <int value="72" label="Drive file picker (iOS only)"/>
   <int value="73" label="Share collaboration tab group authentication"/>
