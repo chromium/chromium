@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -78,7 +81,7 @@ bool ExtensionsToolbarViewModel::AreActionsInitialized() {
 }
 
 bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents) const {
   for (const auto& [action_id, model] : actions_) {
     if (model->GetSiteInteraction(web_contents) ==
         extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
@@ -86,6 +89,34 @@ bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
     }
   }
   return false;
+}
+
+ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
+ExtensionsToolbarViewModel::GetButtonState(
+    content::WebContents* web_contents) const {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  const GURL& url = web_contents->GetLastCommittedURL();
+
+  if (actions_model_->IsRestrictedUrl(url)) {
+    return ExtensionsToolbarButtonState::kAllExtensionsBlocked;
+  }
+
+  extensions::PermissionsManager* manager =
+      extensions::PermissionsManager::Get(profile);
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      manager->GetUserSiteSetting(url::Origin::Create(url));
+
+  if (site_setting ==
+      extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    return ExtensionsToolbarButtonState::kAllExtensionsBlocked;
+  }
+
+  if (AnyActionHasCurrentSiteAccess(web_contents)) {
+    return ExtensionsToolbarButtonState::kAnyExtensionHasAccess;
+  }
+
+  return ExtensionsToolbarButtonState::kDefault;
 }
 
 ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionForId(

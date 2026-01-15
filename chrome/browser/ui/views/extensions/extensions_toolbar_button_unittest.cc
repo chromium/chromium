@@ -87,14 +87,16 @@ TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
 TEST_F(ExtensionsToolbarButtonUnitTest, UpdateState) {
   InstallExtension("Extension");
 
-  extensions_button()->UpdateState(ExtensionsToolbarButton::State::kDefault);
+  extensions_button()->UpdateState(
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
   EXPECT_EQ(extensions_button()->GetRenderedTooltipText({}),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
   EXPECT_EQ(extensions_button()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_ACC_NAME_EXTENSIONS_BUTTON));
 
   extensions_button()->UpdateState(
-      ExtensionsToolbarButton::State::kAllExtensionsBlocked);
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+          kAllExtensionsBlocked);
   EXPECT_EQ(extensions_button()->GetRenderedTooltipText({}),
             l10n_util::GetStringUTF16(
                 IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
@@ -103,7 +105,8 @@ TEST_F(ExtensionsToolbarButtonUnitTest, UpdateState) {
                 IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
 
   extensions_button()->UpdateState(
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+          kAnyExtensionHasAccess);
   EXPECT_EQ(extensions_button()->GetRenderedTooltipText({}),
             l10n_util::GetStringUTF16(
                 IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS));

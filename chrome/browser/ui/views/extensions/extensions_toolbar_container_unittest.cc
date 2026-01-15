@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -70,6 +71,16 @@ class ExtensionsToolbarContainerUnitTest : public ExtensionsToolbarUnitTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<content::WebContentsTester> web_contents_tester_;
+
+ protected:
+  ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
+  GetCurrentButtonState() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    CHECK(web_contents);
+    return extensions_container()->GetToolbarViewModel()->GetButtonState(
+        web_contents);
+  }
 };
 
 ExtensionsToolbarContainerUnitTest::ExtensionsToolbarContainerUnitTest()
@@ -593,6 +604,10 @@ TEST_F(ExtensionsToolbarContainerUnitTest, InvalidateDropCallbackOnPrefChange) {
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre());
 }
 
+// TODO(crbug.com/475863910): Move the tests testing
+// ExtensionsToolbarViewModel::GetButtonState() to
+// extensions_toolbar_view_model_unittest.cc once it's created.
+
 // Test that the extension button state changes after site permissions updates.
 TEST_F(ExtensionsToolbarContainerUnitTest,
        ExtensionsButton_SitePermissionsUpdates) {
@@ -612,8 +627,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
     manager->AddUserRestrictedSite(url_origin);
     manager_waiter.WaitForUserPermissionsSettingsChange();
     WaitForAnimation();
-    EXPECT_EQ(extensions_button()->state(),
-              ExtensionsToolbarButton::State::kAllExtensionsBlocked);
+    EXPECT_EQ(GetCurrentButtonState(),
+              ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                  kAllExtensionsBlocked);
   }
 
   {
@@ -624,8 +640,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
     manager->RemoveUserRestrictedSite(url_origin);
     manager_waiter.WaitForUserPermissionsSettingsChange();
     WaitForAnimation();
-    EXPECT_EQ(extensions_button()->state(),
-              ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+    EXPECT_EQ(GetCurrentButtonState(),
+              ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                  kAnyExtensionHasAccess);
   }
 
   {
@@ -635,8 +652,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
     // installed.
     WithholdHostPermissions(extension.get());
     WaitForAnimation();
-    EXPECT_EQ(extensions_button()->state(),
-              ExtensionsToolbarButton::State::kDefault);
+    EXPECT_EQ(
+        GetCurrentButtonState(),
+        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
   }
 }
 
@@ -651,8 +669,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Extensions button has "all extensions blocked" icon type for chrome
   // restricted sites.
-  EXPECT_EQ(extensions_button()->state(),
-            ExtensionsToolbarButton::State::kAllExtensionsBlocked);
+  EXPECT_EQ(GetCurrentButtonState(),
+            ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                kAllExtensionsBlocked);
 }
 
 // Tests that extensions appear in the request access button iff they have a
@@ -1148,8 +1167,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Extension menu button has default state since extensions are not blocked,
   // and there is no extension with access to the site.
-  EXPECT_EQ(extensions_button()->state(),
-            ExtensionsToolbarButton::State::kDefault);
+  EXPECT_EQ(GetCurrentButtonState(),
+            ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
 
   extensions::PermissionsManagerWaiter waiter(
       PermissionsManager::Get(profile()));
@@ -1162,8 +1181,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // extension has access" state. Extension's site access should be "on site",
   // since clicking the button grants always access to that site.
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
-  EXPECT_EQ(extensions_button()->state(),
-            ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+  EXPECT_EQ(GetCurrentButtonState(),
+            ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                kAnyExtensionHasAccess);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnSite);
 

@@ -73,6 +73,14 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
     virtual void OnPinnedActionsChanged() = 0;
   };
 
+  enum class ExtensionsToolbarButtonState {
+    // All extensions have blocked access to the current site.
+    kAllExtensionsBlocked,
+    // At least one extension has access to the current site.
+    kAnyExtensionHasAccess,
+    kDefault,
+  };
+
   ExtensionsToolbarViewModel(Delegate* delegate,
                              ToolbarActionsModel* actions_model);
   ExtensionsToolbarViewModel(const ExtensionsToolbarViewModel&) = delete;
@@ -103,7 +111,11 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   bool AreActionsInitialized();
 
   // Returns whether any of `actions` given have access to the `web_contents`.
-  bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents);
+  bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents) const;
+
+  // Returns the state of the extensions toolbar button based on 'web_contents'.
+  ExtensionsToolbarButtonState GetButtonState(
+      content::WebContents* web_contents) const;
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;

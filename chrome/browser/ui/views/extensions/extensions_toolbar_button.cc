@@ -28,28 +28,34 @@
 
 namespace {
 
-const gfx::VectorIcon& GetIcon(ExtensionsToolbarButton::State state) {
+const gfx::VectorIcon& GetIcon(
+    ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
   switch (state) {
-    case ExtensionsToolbarButton::State::kDefault:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault:
       return vector_icons::kExtensionChromeRefreshIcon;
-    case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+        kAllExtensionsBlocked:
       return vector_icons::kExtensionOffIcon;
-    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+        kAnyExtensionHasAccess:
       return vector_icons::kExtensionOnIcon;
   }
 }
 
 // Returns the accessible text for the button.
-std::u16string GetAccessibleText(ExtensionsToolbarButton::State state) {
+std::u16string GetAccessibleText(
+    ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
   int message_id;
   switch (state) {
-    case ExtensionsToolbarButton::State::kDefault:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault:
       message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON;
       break;
-    case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+        kAllExtensionsBlocked:
       message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
       break;
-    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+        kAnyExtensionHasAccess:
       message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
       break;
   }
@@ -78,7 +84,8 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
-  SetVectorIcon(GetIcon(state_));
+  SetVectorIcon(GetIcon(
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault));
 
   GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
 
@@ -91,7 +98,8 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    GetViewAccessibility().SetName(GetAccessibleText(state_));
+    GetViewAccessibility().SetName(GetAccessibleText(
+        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault));
     // By default, the button's accessible description is set to the button's
     // tooltip text. This is the accepted workaround to ensure only accessible
     // name is announced by a screenreader rather than tooltip text and
@@ -105,7 +113,8 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
   }
 
-  UpdateCachedTooltipText();
+  UpdateCachedTooltipText(
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
 }
 
 ExtensionsToolbarButton::~ExtensionsToolbarButton() {
@@ -152,17 +161,17 @@ void ExtensionsToolbarButton::OnBoundsChanged(
   SetLayoutInsets(new_insets);
 }
 
-void ExtensionsToolbarButton::UpdateState(State state) {
+void ExtensionsToolbarButton::UpdateState(
+    ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
+  // this check can probably be removed since UpdateState() is called from
+  // ExtensionsToolbarContainer::UpdateExtensionsButton() which already does
+  // this check
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
-  if (state == state_) {
-    return;
-  }
 
-  state_ = state;
-  SetVectorIcon(GetIcon(state_));
-  GetViewAccessibility().SetName(GetAccessibleText(state_));
-  UpdateCachedTooltipText();
+  SetVectorIcon(GetIcon(state));
+  GetViewAccessibility().SetName(GetAccessibleText(state));
+  UpdateCachedTooltipText(state);
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
@@ -225,16 +234,19 @@ int ExtensionsToolbarButton::GetIconSize() const {
   return kDefaultIconSizeChromeRefresh;
 }
 
-void ExtensionsToolbarButton::UpdateCachedTooltipText() {
+void ExtensionsToolbarButton::UpdateCachedTooltipText(
+    ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
   int message_id;
-  switch (state_) {
-    case ExtensionsToolbarButton::State::kDefault:
+  switch (state) {
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault:
       message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON;
       break;
-    case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+        kAllExtensionsBlocked:
       message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
       break;
-    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+        kAnyExtensionHasAccess:
       message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
       break;
   }

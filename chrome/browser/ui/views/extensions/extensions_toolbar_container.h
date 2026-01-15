@@ -104,12 +104,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // visibility, reordering views if necessary.
   void UpdatePinnedActions();
 
-  // Updates `extensions_button_` icon given user `site_setting` and whether
-  // `is_restricted_url` in `web_contents`.
-  void UpdateExtensionsButton(
-      extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* web_contents,
-      bool is_restricted_url);
+  // Updates `extensions_button_` icon given `web_contents`.
+  void UpdateExtensionsButton(content::WebContents* web_contents);
 
   // Updates the `request_access_button_` given user `site_setting` for the
   // current `web_contents`.

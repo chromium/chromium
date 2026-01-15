@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -27,13 +28,6 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   METADATA_HEADER(ExtensionsToolbarButton, ToolbarChipButton)
 
  public:
-  enum class State {
-    // All extensions have blocked access to the current site.
-    kAllExtensionsBlocked,
-    // At least one extension has access to the current site.
-    kAnyExtensionHasAccess,
-    kDefault,
-  };
 
   ExtensionsToolbarButton(BrowserWindowInterface* browser,
                           ExtensionsToolbarContainer* extensions_container,
@@ -48,9 +42,8 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
 
   bool GetExtensionsMenuShowing() const;
 
-  void UpdateState(State state);
-
-  State state() { return state_; }
+  void UpdateState(
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state);
 
   // ToolbarButton:
   gfx::Size CalculatePreferredSize(
@@ -59,7 +52,8 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool ShouldShowInkdropAfterIphInteraction() override;
 
-  void UpdateCachedTooltipText();
+  void UpdateCachedTooltipText(
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -86,8 +80,6 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       extension_menu_observation_{this};
 
-  // The type for the button icon.
-  State state_ = State::kDefault;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BUTTON_H_

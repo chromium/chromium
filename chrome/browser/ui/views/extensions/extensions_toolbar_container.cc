@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -231,29 +232,16 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
 }
 
 void ExtensionsToolbarContainer::UpdateExtensionsButton(
-    extensions::PermissionsManager::UserSiteSetting site_setting,
-    content::WebContents* web_contents,
-    bool is_restricted_url) {
+    content::WebContents* web_contents) {
   // Extensions button state can only change when feature is enabled.
   if (!base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     return;
   }
 
-  ExtensionsToolbarButton::State extensions_button_state =
-      ExtensionsToolbarButton::State::kDefault;
-
-  if (is_restricted_url || site_setting ==
-                               extensions::PermissionsManager::UserSiteSetting::
-                                   kBlockAllExtensions) {
-    extensions_button_state =
-        ExtensionsToolbarButton::State::kAllExtensionsBlocked;
-  } else if (toolbar_view_model_->AnyActionHasCurrentSiteAccess(web_contents)) {
-    extensions_button_state =
-        ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
-  }
-
-  extensions_button_->UpdateState(extensions_button_state);
+  ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state =
+      toolbar_view_model_->GetButtonState(web_contents);
+  extensions_button_->UpdateState(state);
 }
 
 void ExtensionsToolbarContainer::UpdateRequestAccessButton(
@@ -967,9 +955,11 @@ void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
 }
 
 void ExtensionsToolbarContainer::OnMenuOpening() {
+  content::WebContents* web_contents = GetCurrentWebContents();
   // Record IPH usage, which should only be shown when any extension has access.
-  if (GetExtensionsButton()->state() ==
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+  if (toolbar_view_model_->GetButtonState(web_contents) ==
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+          kAnyExtensionHasAccess) {
     BrowserUserEducationInterface::From(browser_)
         ->NotifyFeaturePromoFeatureUsed(
             feature_engagement::kIPHExtensionsMenuFeature,
@@ -1030,14 +1020,12 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
     return;
   }
 
-  bool is_restricted_url =
-      model_->IsRestrictedUrl(web_contents->GetLastCommittedURL());
   extensions::PermissionsManager::UserSiteSetting site_setting =
       extensions::PermissionsManager::Get(browser_->profile())
           ->GetUserSiteSetting(
               web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
-  UpdateExtensionsButton(site_setting, web_contents, is_restricted_url);
+  UpdateExtensionsButton(web_contents);
   UpdateRequestAccessButton(site_setting, web_contents);
 }
 

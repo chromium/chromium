@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -97,8 +98,12 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
           std::move(params));
     }
 
-    if (extensions_container_->GetExtensionsButton()->state() ==
-        ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+    content::WebContents* web_contents =
+        extensions_container_->GetCurrentWebContents();
+    if (extensions_container_->GetToolbarViewModel()->GetButtonState(
+            web_contents) ==
+        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+            kAnyExtensionHasAccess) {
       BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
           feature_engagement::kIPHExtensionsMenuFeature);
     }
