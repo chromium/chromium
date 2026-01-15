@@ -614,7 +614,8 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland"
+          "--ozone-platform=wayland",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.content_unittests_weston.filter"
         ],
         "isolate_profile_data": true,
         "merge": {

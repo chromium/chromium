@@ -718,6 +718,11 @@ ci.thin_tester(
                 # crbug.com/1473501
                 retry_only_failed_tests = True,
             ),
+            "content_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.content_unittests_weston.filter",
+                ],
+            ),
             "headless_browsertests": targets.remove(
                 reason = "Wayland bot doesn't support headless mode",
             ),
