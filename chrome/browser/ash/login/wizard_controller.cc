@@ -79,6 +79,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
+#include "chrome/browser/ash/login/screens/fjord_fw_update_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_station_setup_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_touch_controller_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
@@ -184,6 +185,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_fw_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -1038,6 +1040,8 @@ WizardController::CreateScreens() {
         oobe_ui->GetView<FjordStationSetupScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnFjordStationSetupScreenExit,
                             weak_factory_.GetWeakPtr())));
+    append(std::make_unique<FjordFwUpdateScreen>(
+        oobe_ui->GetView<FjordFwUpdateScreenHandler>()->AsWeakPtr()));
   }
 
   return result;
@@ -1409,6 +1413,10 @@ void WizardController::ShowFjordTouchControllerScreen() {
 
 void WizardController::ShowFjordStationSetupScreen() {
   SetCurrentScreen(GetScreen(FjordStationSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowFjordFwUpdateScreen() {
+  SetCurrentScreen(GetScreen(FjordFwUpdateScreenView::kScreenId));
 }
 
 void WizardController::OnUserCreationScreenExit(
