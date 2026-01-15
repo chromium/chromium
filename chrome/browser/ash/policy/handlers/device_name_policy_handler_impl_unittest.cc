@@ -118,7 +118,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   // does not matter.
   void VerifyDefaultStateUnmanagedDevice() {
     EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy,
-              handler_->GetDeviceNamePolicy());
+              handler_->GetDeviceNamePolicyForTesting());
 
     // GetHostnameChosenByAdministrator() should therefore return null.
     const std::optional<std::string> hostname =
@@ -132,7 +132,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   void VerifyDefaultStateManagedDevice() {
     EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
                   kPolicyHostnameNotConfigurable,
-              handler_->GetDeviceNamePolicy());
+              handler_->GetDeviceNamePolicyForTesting());
 
     // GetHostnameChosenByAdministrator() should therefore return null.
     const std::optional<std::string> hostname =
@@ -149,11 +149,11 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     // to kPolicyHostnameChosenByAdmin on setting template.
     EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
                   kPolicyHostnameNotConfigurable,
-              handler_->GetDeviceNamePolicy());
+              handler_->GetDeviceNamePolicyForTesting());
     const std::string hostname_template = "chromebook";
     SetTemplate(hostname_template);
     DeviceNamePolicyHandler::DeviceNamePolicy after =
-        handler_->GetDeviceNamePolicy();
+        handler_->GetDeviceNamePolicyForTesting();
     EXPECT_EQ(
         DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
         after);
@@ -168,11 +168,11 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     SetConfigurable(true);
     EXPECT_EQ(
         DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        handler_->GetDeviceNamePolicy());
+        handler_->GetDeviceNamePolicyForTesting());
     SetConfigurable(false);
     EXPECT_EQ(
         DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        handler_->GetDeviceNamePolicy());
+        handler_->GetDeviceNamePolicyForTesting());
   }
 
   // Verifies the number of calls received by the observer for any changes in
@@ -184,13 +184,13 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     // Both hostname and policy change, hence observer should be notified once
     EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
                   kPolicyHostnameNotConfigurable,
-              handler_->GetDeviceNamePolicy());
+              handler_->GetDeviceNamePolicyForTesting());
     EXPECT_FALSE(handler_->GetHostnameChosenByAdministrator());
     std::string hostname_template = "template1";
     SetTemplate(hostname_template);
     EXPECT_EQ(
         DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        handler_->GetDeviceNamePolicy());
+        handler_->GetDeviceNamePolicyForTesting());
     EXPECT_EQ(hostname_template, handler_->GetHostnameChosenByAdministrator());
     EXPECT_EQ(1u, GetNumObserverCalls());
 
@@ -214,7 +214,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     EXPECT_EQ(4u, GetNumObserverCalls());
   }
 
-  std::unique_ptr<DeviceNamePolicyHandler> handler_;
+  std::unique_ptr<DeviceNamePolicyHandlerImpl> handler_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -273,19 +273,19 @@ TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOffFlagOn) {
                     /*is_device_managed=*/true);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   SetConfigurable(true);
   EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
                 kPolicyHostnameConfigurableByManagedUser,
-            handler_->GetDeviceNamePolicy());
+            handler_->GetDeviceNamePolicyForTesting());
   SetConfigurable(false);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   UnsetConfigurable();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
 }
 
 // Verifies that when |kDeviceHostnameTemplate| policy is not set and flag
@@ -297,19 +297,19 @@ TEST_F(DeviceNamePolicyHandlerImplTest,
                     /*is_device_managed=*/true);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   SetConfigurable(true);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   SetConfigurable(false);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   UnsetConfigurable();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
 }
 
 // Verifies that OnHostnamePolicyChanged() correctly notifies observer when
@@ -323,27 +323,27 @@ TEST_F(DeviceNamePolicyHandlerImplTest, ObserverTestsFlagOn) {
   UnsetTemplate();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(5u, GetNumObserverCalls());
   SetTemplate("hostname_template");
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(6u, GetNumObserverCalls());
   UnsetTemplate();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(7u, GetNumObserverCalls());
   SetConfigurable(true);
   EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
                 kPolicyHostnameConfigurableByManagedUser,
-            handler_->GetDeviceNamePolicy());
+            handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(8u, GetNumObserverCalls());
   SetConfigurable(false);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(9u, GetNumObserverCalls());
 }
 
@@ -359,27 +359,27 @@ TEST_F(DeviceNamePolicyHandlerImplTest, ObserverTestsFlagOff) {
   UnsetTemplate();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(5u, GetNumObserverCalls());
   SetTemplate("hostname_template");
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(6u, GetNumObserverCalls());
   UnsetTemplate();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(7u, GetNumObserverCalls());
   SetConfigurable(false);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(7u, GetNumObserverCalls());
   SetConfigurable(true);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicy());
+      handler_->GetDeviceNamePolicyForTesting());
   EXPECT_EQ(7u, GetNumObserverCalls());
 }
 

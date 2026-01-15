@@ -78,14 +78,9 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
 
 DeviceNamePolicyHandlerImpl::~DeviceNamePolicyHandlerImpl() = default;
 
-DeviceNamePolicyHandler::DeviceNamePolicy
-DeviceNamePolicyHandlerImpl::GetDeviceNamePolicy() const {
-  return device_name_policy_;
-}
-
 std::optional<std::string>
 DeviceNamePolicyHandlerImpl::GetHostnameChosenByAdministrator() const {
-  if (GetDeviceNamePolicy() == DeviceNamePolicy::kPolicyHostnameChosenByAdmin) {
+  if (device_name_policy_ == DeviceNamePolicy::kPolicyHostnameChosenByAdmin) {
     return hostname_;
   }
   return std::nullopt;

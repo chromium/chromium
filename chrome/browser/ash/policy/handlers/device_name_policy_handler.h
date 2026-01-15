@@ -45,9 +45,6 @@ class DeviceNamePolicyHandler {
 
   virtual ~DeviceNamePolicyHandler();
 
-  // Provides the type of policy to be used for device name functionality.
-  virtual DeviceNamePolicy GetDeviceNamePolicy() const = 0;
-
   // Provides hostname if requested by administrator.
   // Returns null if no hostname was requested by administrator.
   virtual std::optional<std::string> GetHostnameChosenByAdministrator()

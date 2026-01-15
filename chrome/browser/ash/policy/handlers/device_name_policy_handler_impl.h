@@ -44,8 +44,12 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
   ~DeviceNamePolicyHandlerImpl() override;
 
   // DeviceNamePolicyHandler:
-  DeviceNamePolicy GetDeviceNamePolicy() const override;
   std::optional<std::string> GetHostnameChosenByAdministrator() const override;
+
+  // For unit tests:
+  DeviceNamePolicy GetDeviceNamePolicyForTesting() const {
+    return device_name_policy_;
+  }
 
  private:
   friend class DeviceNamePolicyHandlerImplTest;
