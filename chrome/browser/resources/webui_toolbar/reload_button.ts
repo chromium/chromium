@@ -132,7 +132,7 @@ export class ReloadButtonAppElement extends CrLitElement {
       this.isLongPressed_ = true;
       if (this.isMenuEnabled_) {
         BrowserProxyImpl.getInstance().handler.showContextMenu(
-            ContextMenuType.kReload, {x: e.clientX, y: e.clientY},
+            ContextMenuType.kReload, this.contextMenuPosition(),
             MenuSourceType.kLongPress);
       }
     }, LONG_PRESS_TIMER_THRESHOLD_MS);
@@ -212,10 +212,20 @@ export class ReloadButtonAppElement extends CrLitElement {
   protected onContextMenu_(e: PointerEvent) {
     if (this.isMenuEnabled_) {
       BrowserProxyImpl.getInstance().handler.showContextMenu(
-          ContextMenuType.kReload, {x: e.clientX, y: e.clientY},
+          ContextMenuType.kReload, this.contextMenuPosition(),
           MenuSourceType.kMouse);
     }
     e.preventDefault();
+  }
+
+  protected contextMenuPosition() {
+    const bounds = this.getBoundingClientRect();
+    let x = bounds.x;
+    if (document.dir === 'rtl') {
+      x = bounds.x + bounds.width;
+    }
+    const y = bounds.y + bounds.height;
+    return {x, y};
   }
 }
 
