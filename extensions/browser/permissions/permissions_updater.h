@@ -109,7 +109,7 @@ class PermissionsUpdater {
                                 base::OnceClosure completion_callback);
 
   // Removes the `permissions` from `extension` and makes no effort to determine
-  // if doing so is safe in the slightlest. This method shouldn't be used,
+  // if doing so is safe in the slightest. This method shouldn't be used,
   // except for removing permissions totally blocklisted by management.
   void RemovePermissionsUnsafe(const Extension* extension,
                                const PermissionSet& permissions);

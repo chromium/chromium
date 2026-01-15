@@ -87,7 +87,7 @@ class PermissionSet {
   bool HasAPIPermission(const std::string& permission_name) const;
 
   // Returns true if the set allows the given permission with the default
-  // permission detal.
+  // permission detail.
   bool CheckAPIPermission(mojom::APIPermissionID permission) const;
 
   // Returns true if the set allows the given permission and permission param.
