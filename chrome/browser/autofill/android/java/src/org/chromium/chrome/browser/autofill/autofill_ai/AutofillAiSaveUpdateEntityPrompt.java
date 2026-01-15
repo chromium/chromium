@@ -6,13 +6,16 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -94,10 +97,20 @@ public class AutofillAiSaveUpdateEntityPrompt {
      */
     @CalledByNative
     @VisibleForTesting
-    void setDialogDetails(String title, String positiveButtonText, String negativeButtonText) {
+    void setDialogDetails(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String positiveButtonText,
+            @JniType("std::u16string") String negativeButtonText) {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
         mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    void setSourceNotice(@JniType("std::u16string") String sourceNotice) {
+        showTextIfNotEmpty(
+                mDialogView.findViewById(R.id.autofill_ai_entity_source_notice), sourceNotice);
     }
 
     /** Dismisses the prompt without returning any user response. */
@@ -121,6 +134,15 @@ public class AutofillAiSaveUpdateEntityPrompt {
                 break;
         }
         mController.onPromptDismissed();
+    }
+
+    private void showTextIfNotEmpty(TextView textView, String text) {
+        if (TextUtils.isEmpty(text)) {
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        }
     }
 
     View getDialogViewForTesting() {

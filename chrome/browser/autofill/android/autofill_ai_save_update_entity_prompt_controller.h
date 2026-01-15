@@ -11,8 +11,12 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace autofill {
 
@@ -26,8 +30,9 @@ class AutofillAiSaveUpdateEntityPromptView;
 class AutofillAiSaveUpdateEntityPromptController {
  public:
   AutofillAiSaveUpdateEntityPromptController(
+      content::WebContents* web_contents,
       std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
-      const EntityTypeName entity_type_name,
+      EntityInstance entity_instance,
       AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
   AutofillAiSaveUpdateEntityPromptController(
       const AutofillAiSaveUpdateEntityPromptController&) = delete;
@@ -41,6 +46,8 @@ class AutofillAiSaveUpdateEntityPromptController {
   std::u16string GetPositiveButtonText() const;
   std::u16string GetNegativeButtonText() const;
 
+  std::u16string GetSourceNotice() const;
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   void OnUserAccepted(JNIEnv* env);
   void OnUserDeclined(JNIEnv* env);
@@ -53,8 +60,9 @@ class AutofillAiSaveUpdateEntityPromptController {
   void RunPromptClosedCallback(
       AutofillClient::AutofillAiBubbleClosedReason decision);
 
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;
-  const EntityTypeName entity_type_name_;
+  const EntityInstance entity_instance_;
   // If the user explicitly accepted/dismissed/edited the entity.
   bool had_user_interaction_ = false;
   // The callback to run when the user takes action on the prompt.

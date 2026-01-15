@@ -130,7 +130,7 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
           web_contents_);
   save_update_entity_prompt_controller_ =
       std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
-          std::move(prompt_view_android), entity.type().name(),
+          web_contents_, std::move(prompt_view_android), entity,
           std::move(prompt_closed_callback_));
   save_update_entity_prompt_controller_->DisplayPrompt();
 }

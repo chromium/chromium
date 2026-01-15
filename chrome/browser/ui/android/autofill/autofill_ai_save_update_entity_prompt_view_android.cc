@@ -71,17 +71,13 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
   CHECK(java_object_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> title =
-      base::android::ConvertUTF16ToJavaString(env, controller->GetTitle());
-  ScopedJavaLocalRef<jstring> positive_button_text =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller->GetPositiveButtonText());
-  ScopedJavaLocalRef<jstring> negative_button_text =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller->GetNegativeButtonText());
 
   Java_AutofillAiSaveUpdateEntityPrompt_setDialogDetails(
-      env, java_object_, title, positive_button_text, negative_button_text);
+      env, java_object_, controller->GetTitle(),
+      controller->GetPositiveButtonText(), controller->GetNegativeButtonText());
+
+  Java_AutofillAiSaveUpdateEntityPrompt_setSourceNotice(
+      env, java_object_, controller->GetSourceNotice());
 }
 
 }  // namespace autofill

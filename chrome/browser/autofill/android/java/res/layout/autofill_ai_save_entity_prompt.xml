@@ -11,4 +11,14 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/autofill_ai_entity_source_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dialog_padding_sides"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="@dimen/dialog_padding_sides"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:breakStrategy="balanced" />
+
 </ScrollView>
