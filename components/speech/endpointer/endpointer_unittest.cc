@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/fixed_array.h"
 #include "components/speech/audio_buffer.h"
@@ -21,9 +22,7 @@ namespace speech {
 class FrameProcessor {
  public:
   // Process a single frame of test audio samples.
-  virtual EpStatus ProcessFrame(int64_t time,
-                                int16_t* samples,
-                                int frame_size) = 0;
+  virtual EpStatus ProcessFrame(int64_t time, base::span<int16_t> samples) = 0;
 };
 
 void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
@@ -53,8 +52,7 @@ void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
       samples[i] = static_cast<int16_t>(gain * randNum);
     }
 
-    EpStatus ep_status =
-        processor->ProcessFrame(time, samples.data(), frame_size);
+    EpStatus ep_status = processor->ProcessFrame(time, samples);
     time += static_cast<int64_t>(frame_size * (1e6 / sample_rate));
 
     // Log the status.
@@ -80,10 +78,8 @@ class EnergyEndpointerFrameProcessor : public FrameProcessor {
   explicit EnergyEndpointerFrameProcessor(EnergyEndpointer* endpointer)
       : endpointer_(endpointer) {}
 
-  EpStatus ProcessFrame(int64_t time,
-                        int16_t* samples,
-                        int frame_size) override {
-    endpointer_->ProcessAudioFrame(time, samples, frame_size, nullptr);
+  EpStatus ProcessFrame(int64_t time, base::span<int16_t> samples) override {
+    endpointer_->ProcessAudioFrame(time, samples, nullptr);
     int64_t ep_time;
     return endpointer_->Status(&ep_time);
   }
@@ -127,11 +123,9 @@ class EndpointerFrameProcessor : public FrameProcessor {
   explicit EndpointerFrameProcessor(Endpointer* endpointer)
       : endpointer_(endpointer) {}
 
-  EpStatus ProcessFrame(int64_t time,
-                        int16_t* samples,
-                        int frame_size) override {
+  EpStatus ProcessFrame(int64_t time, base::span<int16_t> samples) override {
     scoped_refptr<AudioChunk> frame(
-        new AudioChunk(reinterpret_cast<uint8_t*>(samples), frame_size * 2, 2));
+        new AudioChunk(base::as_writable_byte_span(samples), 2));
     endpointer_->ProcessAudio(*frame.get(), nullptr);
     int64_t ep_time;
     return endpointer_->Status(&ep_time);

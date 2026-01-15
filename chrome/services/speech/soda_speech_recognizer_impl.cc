@@ -226,8 +226,10 @@ void SodaSpeechRecognizerImpl::ProcessAudioPipeline(
   num_samples_recorded_ += event_args.audio_data->frame_count;
   if (state_ >= STATE_ESTIMATING_ENVIRONMENT && state_ <= STATE_RECOGNIZING) {
     float rms = 0.0f;
-    endpointer_.ProcessAudio(event_args.audio_data->data.data(),
-                             event_args.audio_data->frame_count, &rms);
+    base::span<const int16_t> audio_data_span(event_args.audio_data->data);
+    endpointer_.ProcessAudio(audio_data_span.first(static_cast<size_t>(
+                                 event_args.audio_data->frame_count)),
+                             &rms);
   }
 }
 
