@@ -12,8 +12,7 @@ DomStorageSqlite::~DomStorageSqlite() = default;
 
 DbStatus DomStorageSqlite::Open(
     PassKey,
-    const base::FilePath& directory,
-    const std::string& name,
+    const base::FilePath& database_path,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {
   // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface

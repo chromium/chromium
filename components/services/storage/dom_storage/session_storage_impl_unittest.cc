@@ -43,8 +43,6 @@ std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-static const char kSessionStorageDirectory[] = "Session Storage";
-
 class SessionStorageImplTest : public testing::Test {
  public:
   SessionStorageImplTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
@@ -78,8 +76,7 @@ class SessionStorageImplTest : public testing::Test {
     if (!session_storage_) {
       remote_session_storage_.reset();
       session_storage_ = std::make_unique<SessionStorageImpl>(
-          temp_path(), backing_mode_, kSessionStorageDirectory,
-          base::DoNothing(),
+          temp_path(), backing_mode_, base::DoNothing(),
           remote_session_storage_.BindNewPipeAndPassReceiver());
     }
     return session_storage_.get();
@@ -470,10 +467,12 @@ void SessionStorageImplTest::TestInvalidVersionOnDisk(
     // Re-open the database.
     base::RunLoop open_db_run_loop;
     DbStatus status;
+    base::FilePath database_path =
+        DomStorageDatabase::GetPath(StorageType::kSessionStorage, temp_path());
 
     std::unique_ptr<AsyncDomStorageDatabase> database =
         AsyncDomStorageDatabase::Open(
-            StorageType::kSessionStorage, temp_path(), kSessionStorageDirectory,
+            StorageType::kSessionStorage, database_path,
             /*memory_dump_id=*/std::nullopt,
             base::BindLambdaForTesting([&](DbStatus callback_status) {
               status = callback_status;

@@ -154,15 +154,14 @@ SessionStorageLevelDB::~SessionStorageLevelDB() = default;
 DbStatus SessionStorageLevelDB::Open(
     PassKey,
     const base::FilePath& directory,
-    const std::string& name,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {
   ASSIGN_OR_RETURN(
-      leveldb_,
-      DomStorageDatabaseLevelDB::Open(
-          directory, name, memory_dump_id, kSessionStorageLevelDBVersionKey,
-          /*min_supported_version=*/kSessionStorageLevelDBVersion,
-          /*max_supported_version=*/kSessionStorageLevelDBVersion));
+      leveldb_, DomStorageDatabaseLevelDB::Open(
+                    StorageType::kSessionStorage, directory, memory_dump_id,
+                    kSessionStorageLevelDBVersionKey,
+                    /*min_supported_version=*/kSessionStorageLevelDBVersion,
+                    /*max_supported_version=*/kSessionStorageLevelDBVersion));
   return DbStatus::OK();
 }
 

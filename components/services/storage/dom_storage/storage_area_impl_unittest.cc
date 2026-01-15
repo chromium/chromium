@@ -171,7 +171,7 @@ class StorageAreaImplTest : public testing::Test,
     base::RunLoop loop;
     db_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
-        /*directory=*/base::FilePath(), "StorageAreaImplTest",
+        /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](DbStatus status) { loop.Quit(); }));
     loop.Run();

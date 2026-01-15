@@ -77,7 +77,6 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   // in-memory database, provide an empty `directory`.
   DbStatus Open(PassKey,
                 const base::FilePath& directory,
-                const std::string& name,
                 const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
                     memory_dump_id);
 

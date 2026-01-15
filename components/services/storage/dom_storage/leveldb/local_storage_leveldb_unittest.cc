@@ -139,7 +139,7 @@ void LocalStorageLevelDBTest::OpenInMemory(
 
   DbStatus status =
       instance->Open(DomStorageDatabaseFactory::CreatePassKeyForTesting(),
-                     /*directory=*/base::FilePath(), "LocalStorageLevelDBTest",
+                     /*directory=*/base::FilePath(),
                      /*memory_dump_id=*/std::nullopt);
 
   ASSERT_TRUE(status.ok()) << status.ToString();

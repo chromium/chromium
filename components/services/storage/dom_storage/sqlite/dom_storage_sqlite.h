@@ -24,8 +24,7 @@ class DomStorageSqlite : public DomStorageDatabase {
   DomStorageSqlite& operator=(const DomStorageSqlite&) = delete;
 
   DbStatus Open(PassKey,
-                const base::FilePath& directory,
-                const std::string& name,
+                const base::FilePath& database_path,
                 const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
                     memory_dump_id);
 

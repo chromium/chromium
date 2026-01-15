@@ -201,9 +201,8 @@ void OpenAsyncDomStorageDatabaseInMemorySync(
 
   std::unique_ptr<AsyncDomStorageDatabase> database =
       AsyncDomStorageDatabase::Open(
-          storage_type, /*directory=*/base::FilePath(),
-          "TestInMemoryDomStorageDatabase", /*memory_dump_id=*/std::nullopt,
-          status_future.GetCallback());
+          storage_type, /*database_path=*/base::FilePath(),
+          /*memory_dump_id=*/std::nullopt, status_future.GetCallback());
 
   const DbStatus& status = status_future.Get();
   ASSERT_TRUE(status.ok()) << status.ToString();

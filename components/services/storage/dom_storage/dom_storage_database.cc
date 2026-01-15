@@ -10,14 +10,52 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 #include "components/services/storage/dom_storage/sqlite/dom_storage_sqlite.h"
+#include "components/services/storage/public/cpp/constants.h"
 
 namespace storage {
 namespace {
+
+// Constructs an absolute path to the session storage database using
+// `storage_partition_dir`.  For LevelDB, the path is a directory:
+//
+// `storage_partition_dir`/Session Storage
+//
+// When the `kDomStorageSqlite` feature flag is enabled, the path is a file:
+//
+// `storage_partition_dir`/SessionStorage
+base::FilePath GetSessionStorageDatabasePath(
+    const base::FilePath& storage_partition_dir) {
+  CHECK(!storage_partition_dir.empty());
+  CHECK(storage_partition_dir.IsAbsolute());
+
+  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+    return storage_partition_dir.AppendASCII("SessionStorage");
+  }
+  return storage_partition_dir.AppendASCII("Session Storage");
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
+    const base::FilePath& database_path) {
+  if (database_path.empty()) {
+    // For the in-memory case, blocking shutdown is only important to avoid
+    // leaking the SequenceBound on shutdown (and triggering ASAN failures).
+    return base::ThreadPool::CreateSequencedTaskRunner(
+        {base::WithBaseSyncPrimitives(),
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  }
+
+  //  This will always return the same task runner for a given `database_path`.
+  return base::ThreadPool::CreateSequencedTaskRunnerForResource(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      database_path);
+}
 
 // Runs `callback` after casting `TDatabase` to `DomStorageDatabase`.
 template <typename TDatabase>
@@ -144,18 +182,31 @@ DomStorageDatabase::MapBatchUpdate::MapBatchUpdate(MapBatchUpdate&&) = default;
 DomStorageDatabase::MapBatchUpdate&
 DomStorageDatabase::MapBatchUpdate::operator=(MapBatchUpdate&&) = default;
 
+base::FilePath DomStorageDatabase::GetPath(
+    StorageType storage_type,
+    const base::FilePath& storage_partition_dir) {
+  switch (storage_type) {
+    case StorageType::kLocalStorage:
+      return GetLocalStorageDatabasePath(storage_partition_dir);
+    case StorageType::kSessionStorage:
+      return GetSessionStorageDatabasePath(storage_partition_dir);
+  }
+  NOTREACHED();
+}
+
 // static
 void DomStorageDatabaseFactory::Open(
     StorageType storage_type,
-    const base::FilePath& directory,
-    const std::string& name,
+    const base::FilePath& database_path,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
+      GetTaskRunnerForDb(database_path);
+
   if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
     return CreateSequenceBoundDomStorageDatabase<DomStorageSqlite>(
-        std::move(blocking_task_runner), directory, name, memory_dump_id,
+        std::move(blocking_task_runner), database_path, memory_dump_id,
         base::BindOnce(&OnDatabaseOpened<DomStorageSqlite>,
                        std::move(callback)));
   }
@@ -163,13 +214,13 @@ void DomStorageDatabaseFactory::Open(
   switch (storage_type) {
     case StorageType::kLocalStorage:
       return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
-          std::move(blocking_task_runner), directory, name, memory_dump_id,
+          std::move(blocking_task_runner), database_path, memory_dump_id,
           base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
                          std::move(callback)));
 
     case StorageType::kSessionStorage:
       return CreateSequenceBoundDomStorageDatabase<SessionStorageLevelDB>(
-          std::move(blocking_task_runner), directory, name, memory_dump_id,
+          std::move(blocking_task_runner), database_path, memory_dump_id,
           base::BindOnce(&OnDatabaseOpened<SessionStorageLevelDB>,
                          std::move(callback)));
   }
@@ -177,20 +228,24 @@ void DomStorageDatabaseFactory::Open(
 }
 
 // static
-void DomStorageDatabaseFactory::Destroy(
-    const base::FilePath& directory,
-    const std::string& name,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    base::OnceCallback<void(DbStatus)> callback) {
-  DomStorageDatabaseLevelDB::Destroy(
-      directory, name, std::move(blocking_task_runner), std::move(callback));
+void DomStorageDatabaseFactory::Destroy(const base::FilePath& database_path,
+                                        StatusCallback callback) {
+  CHECK(!database_path.empty());
+  CHECK(database_path.IsAbsolute());
+
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
+      GetTaskRunnerForDb(database_path);
+
+  blocking_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DomStorageDatabaseLevelDB::Destroy, database_path),
+      std::move(callback));
 }
 
 template <typename TDatabase>
 void DomStorageDatabaseFactory::CreateSequenceBoundDomStorageDatabase(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    const base::FilePath& directory,
-    const std::string& name,
+    const base::FilePath& database_path,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     base::OnceCallback<void(StatusOr<base::SequenceBound<TDatabase>> database)>
@@ -221,7 +276,7 @@ void DomStorageDatabaseFactory::CreateSequenceBoundDomStorageDatabase(
   ANNOTATE_LEAKING_OBJECT_PTR(database_ptr);
 
   database_ptr->AsyncCall(&TDatabase::Open)
-      .WithArgs(PassKey(), directory, name, memory_dump_id)
+      .WithArgs(PassKey(), database_path, memory_dump_id)
       .Then(base::BindOnce(
           [](base::SequenceBound<TDatabase>* database_ptr,
              base::OnceCallback<void(

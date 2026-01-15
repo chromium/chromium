@@ -33,6 +33,7 @@ class MemoryAllocatorDumpGuid;
 }  // namespace base
 
 namespace storage {
+enum class StorageType;
 
 // Abstract interface for DOM storage database implementations. Provides
 // key-value storage operations for DOMStorage StorageAreas.
@@ -244,6 +245,11 @@ class DomStorageDatabase {
     std::optional<Usage> map_usage;
   };
 
+  // Constructs an absolute path to the `storage_type` database under
+  // `storage_partition_dir`.
+  static base::FilePath GetPath(StorageType storage_type,
+                                const base::FilePath& storage_partition_dir);
+
   virtual ~DomStorageDatabase() = default;
 
   // Gets an entire map's key/value pairs.
@@ -319,26 +325,23 @@ class DomStorageDatabaseFactory {
   // `blocking_task_runner`. Runs `callback` with result after opening the
   // database.
   //
-  // To create an in-memory database, provide an empty `directory`.
+  // To create an in-memory database, provide an empty `database_path`.
   static void Open(
       StorageType storage_type,
-      const base::FilePath& directory,
-      const std::string& name,
+      const base::FilePath& database_path,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       OpenCallback callback);
 
-  // Destroys the persistent database named `name` within the filesystem
-  // directory identified by the absolute path in `directory`.
+  using StatusCallback = base::OnceCallback<void(DbStatus)>;
+
+  // Destroys the persistent database on the filesystem identified by the
+  // absolute path in `database_path`.
   //
   // All work is done on `task_runner`, which must support blocking operations,
   // and upon completion `callback` is called on the calling sequence.
-  static void Destroy(
-      const base::FilePath& directory,
-      const std::string& name,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      base::OnceCallback<void(DbStatus)> callback);
+  static void Destroy(const base::FilePath& database_path,
+                      StatusCallback callback);
 
  private:
   friend class LocalStorageLevelDBTest;
@@ -352,8 +355,7 @@ class DomStorageDatabaseFactory {
   template <typename TDatabase>
   static void CreateSequenceBoundDomStorageDatabase(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      const base::FilePath& directory,
-      const std::string& name,
+      const base::FilePath& database_path,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       base::OnceCallback<

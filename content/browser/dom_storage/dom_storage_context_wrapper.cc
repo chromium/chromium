@@ -112,10 +112,8 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
   // Report on disk LocalStorage db size.
   if (partition_->GetStoragePartitionPath()) {
     // Path to the LocalStorage leveldb directory.
-    base::FilePath db_path =
-        partition_->GetStoragePartitionPath()
-            ->Append(storage::kLocalStoragePath)
-            .AppendASCII(storage::kLocalStorageLeveldbName);
+    base::FilePath db_path = storage::GetLocalStorageDatabasePath(
+        *partition_->GetStoragePartitionPath());
 
     // Offload the blocking file operation and report the result.
     base::ThreadPool::PostTaskAndReplyWithResult(

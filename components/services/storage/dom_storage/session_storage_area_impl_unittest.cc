@@ -64,7 +64,7 @@ class SessionStorageAreaImplTest : public testing::Test {
     // Create an in-memory database.
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
-        /*directory=*/base::FilePath(), "SessionStorageAreaImplTestDatabase",
+        /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt, base::DoNothing());
 
     // Create a map with one key/value pair in the database.

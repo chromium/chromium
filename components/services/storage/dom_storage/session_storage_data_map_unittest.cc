@@ -86,7 +86,7 @@ class SessionStorageDataMapTest : public testing::Test {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
-        /*directory=*/base::FilePath(), "SessionStorageDataMapTest",
+        /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](DbStatus status) {
           ASSERT_TRUE(status.ok());

@@ -52,8 +52,6 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace {
 
-constexpr const char kTestDbName[] = "test_db";
-
 // Use "test-version" for the schema version key.
 constexpr const std::uint8_t kTestVersionKey[] = {'t', 'e', 's', 't', '-', 'v',
                                                   'e', 'r', 's', 'i', 'o', 'n'};
@@ -90,27 +88,12 @@ class DomStorageDatabaseLevelDBTest : public testing::Test {
             std::unique_ptr<DomStorageDatabaseLevelDB>* result) {
     StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> database =
         DomStorageDatabaseLevelDB::Open(
-            directory, kTestDbName, /*memory_dump_id=*/std::nullopt,
-            kTestVersionKey, kTestMinSupportedVersion,
-            kTestMaxSupportedVersion);
+            StorageType::kLocalStorage, directory,
+            /*memory_dump_id=*/std::nullopt, kTestVersionKey,
+            kTestMinSupportedVersion, kTestMaxSupportedVersion);
 
     ASSERT_TRUE(database.has_value()) << database.error().ToString();
     *result = *std::move(database);
-  }
-
-  // Helper for tests to block on the result of a Destroy call.
-  DbStatus DestroySync(const base::FilePath& directory,
-                       const std::string& db_name) {
-    DbStatus result;
-    base::RunLoop loop;
-    DomStorageDatabaseLevelDB::Destroy(
-        directory, db_name, blocking_task_runner_,
-        base::BindLambdaForTesting([&](DbStatus status) {
-          result = status;
-          loop.Quit();
-        }));
-    loop.Run();
-    return result;
   }
 
   void TestInvalidVersion(DomStorageDatabase::ValueView invalid_version);
@@ -175,7 +158,7 @@ TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
   // Because the database owns filesystem artifacts in the temp directory, we
   // will wait for the `DomStorageDatabaseLevelDB` instance to actually be
   // destroyed before completing the test.
-  EXPECT_STATUS_OK(DestroySync(temp_dir.GetPath(), kTestDbName));
+  EXPECT_STATUS_OK(DomStorageDatabaseLevelDB::Destroy(temp_dir.GetPath()));
 
   // Verify that the database was destroyed (open again and verify it's a blank
   // slate).
@@ -413,10 +396,10 @@ void DomStorageDatabaseLevelDBTest::TestInvalidVersion(
   // Re-open the database, which must fail due to the invalid version number.
   db.reset();
   StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> reopened_database =
-      DomStorageDatabaseLevelDB::Open(temp_dir.GetPath(), kTestDbName,
-                                      /*memory_dump_id=*/std::nullopt,
-                                      kTestVersionKey, kTestMinSupportedVersion,
-                                      kTestMaxSupportedVersion);
+      DomStorageDatabaseLevelDB::Open(
+          StorageType::kLocalStorage, temp_dir.GetPath(),
+          /*memory_dump_id=*/std::nullopt, kTestVersionKey,
+          kTestMinSupportedVersion, kTestMaxSupportedVersion);
   ASSERT_FALSE(reopened_database.has_value());
   EXPECT_TRUE(reopened_database.error().IsCorruption());
 }

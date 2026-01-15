@@ -68,7 +68,7 @@ class SessionStorageNamespaceImplTest
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
-        /*directory=*/base::FilePath(), "SessionStorageNamespaceImplTest",
+        /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();

@@ -359,8 +359,8 @@ class RemoveLocalStorageTester {
         // it's the same path, and calling `GetStoragePartition()` too early
         // will cause a race against DOMStorageContextWrapper/LocalStorageImpl
         // creation.
-        browser_context_->GetPath().Append(storage::kLocalStoragePath),
-        storage::kLocalStorageLeveldbName, /*memory_dump_id=*/std::nullopt,
+        storage::GetLocalStorageDatabasePath(browser_context_->GetPath()),
+        /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](storage::DbStatus status) {
           ASSERT_TRUE(status.ok());
           open_loop.Quit();

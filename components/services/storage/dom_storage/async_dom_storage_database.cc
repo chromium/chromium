@@ -10,38 +10,19 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 
 namespace storage {
 
 // static
-scoped_refptr<base::SequencedTaskRunner>
-AsyncDomStorageDatabase::GetTaskRunnerForDb(const base::FilePath& directory,
-                                            const std::string& dbname) {
-  CHECK(!directory.empty());
-  return base::ThreadPool::CreateSequencedTaskRunnerForResource(
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      directory.AppendASCII(dbname));
-}
-
-// static
 std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
     StorageType storage_type,
-    const base::FilePath& directory,
-    const std::string& dbname,
+    const base::FilePath& database_path,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
   DomStorageDatabaseFactory::Open(
-      storage_type, directory, dbname, memory_dump_id,
-      // For the in-memory case, blocking shutdown is only important to avoid
-      // leaking the SequenceBound on shutdown (and triggering ASAN failures).
-      directory.empty() ? base::ThreadPool::CreateSequencedTaskRunner(
-                              {base::WithBaseSyncPrimitives(),
-                               base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
-                        : GetTaskRunnerForDb(directory, dbname),
+      storage_type, database_path, memory_dump_id,
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return db;

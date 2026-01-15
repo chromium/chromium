@@ -53,13 +53,6 @@ class DomStorageDatabaseLevelDBEnv : public leveldb_env::ChromiumEnv {
       delete;
 };
 
-std::string MakeFullPersistentDBName(const base::FilePath& directory,
-                                     const std::string& db_name) {
-  // ChromiumEnv treats DB name strings as UTF-8 file paths.
-  return directory.Append(base::FilePath::FromUTF8Unsafe(db_name))
-      .AsUTF8Unsafe();
-}
-
 leveldb_env::Options MakeOnDiskOptions() {
   leveldb_env::Options options;
   options.create_if_missing = true;
@@ -89,21 +82,31 @@ DomStorageDatabase::KeyValuePair MakeKeyValuePair(const leveldb::Slice& key,
       DomStorageDatabase::Value(value_span.begin(), value_span.end()));
 }
 
+std::string ToString(StorageType storage_type) {
+  switch (storage_type) {
+    case StorageType::kLocalStorage:
+      return "Local Storage";
+    case StorageType::kSessionStorage:
+      return "Session Storage";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 DomStorageDatabaseLevelDB::DomStorageDatabaseLevelDB(
+    StorageType storage_type,
     const base::FilePath& directory,
-    const std::string& name,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id)
     : memory_dump_id_(memory_dump_id) {
   const bool is_in_memory = directory.empty();
   if (is_in_memory) {
-    env_ = leveldb_chrome::NewMemEnv(name);
+    env_ = leveldb_chrome::NewMemEnv(/*name=*/ToString(storage_type));
     options_.env = env_.get();
   } else {
     CHECK(directory.IsAbsolute());
-    name_ = MakeFullPersistentDBName(directory, name);
+    name_ = directory.AsUTF8Unsafe();
     options_ = MakeOnDiskOptions();
   }
   base::trace_event::MemoryDumpManager::GetInstance()
@@ -128,15 +131,15 @@ DomStorageDatabaseLevelDB::~DomStorageDatabaseLevelDB() {
 // static
 StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>>
 DomStorageDatabaseLevelDB::Open(
+    StorageType storage_type,
     const base::FilePath& directory,
-    const std::string& name,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     KeyView version_key,
     int64_t min_supported_version,
     int64_t max_supported_version) {
   std::unique_ptr<DomStorageDatabaseLevelDB> instance = base::WrapUnique(
-      new DomStorageDatabaseLevelDB(directory, name, memory_dump_id));
+      new DomStorageDatabaseLevelDB(storage_type, directory, memory_dump_id));
   DbStatus status = instance->InitializeLevelDB();
   if (!status.ok()) {
     return base::unexpected(std::move(status));
@@ -151,21 +154,9 @@ DomStorageDatabaseLevelDB::Open(
 }
 
 // static
-void DomStorageDatabaseLevelDB::Destroy(
-    const base::FilePath& directory,
-    const std::string& name,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    StatusCallback callback) {
-  blocking_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const std::string& db_name, StatusCallback callback) {
-            std::move(callback).Run(FromLevelDBStatus(
-                leveldb::DestroyDB(db_name, MakeOnDiskOptions())));
-          },
-          MakeFullPersistentDBName(directory, name),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(callback))));
+DbStatus DomStorageDatabaseLevelDB::Destroy(const base::FilePath& directory) {
+  return FromLevelDBStatus(
+      leveldb::DestroyDB(directory.AsUTF8Unsafe(), MakeOnDiskOptions()));
 }
 
 StatusOr<DomStorageDatabase::Value> DomStorageDatabaseLevelDB::Get(

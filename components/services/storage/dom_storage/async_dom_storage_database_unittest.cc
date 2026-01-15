@@ -149,8 +149,7 @@ TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
   base::test::TestFuture<DbStatus> open_status_future;
   std::unique_ptr<AsyncDomStorageDatabase> database =
       AsyncDomStorageDatabase::Open(
-          StorageType::kLocalStorage, /*directory=*/base::FilePath(),
-          "TestPendingTasks",
+          StorageType::kLocalStorage, /*database_path=*/base::FilePath(),
           /*memory_dump_id=*/std::nullopt, open_status_future.GetCallback());
 
   // Immediately start using the database, which will enqueue pending tasks

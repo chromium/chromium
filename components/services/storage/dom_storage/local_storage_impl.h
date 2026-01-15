@@ -47,10 +47,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   using DestructLocalStorageCallback =
       base::OnceCallback<void(LocalStorageImpl*)>;
   // Constructs a Local Storage implementation which will create its root
-  // "Local Storage" directory in |storage_root| if non-empty.If valid,
-  // |receiver| will be bound to this object to allow for remote control via the
-  // LocalStorageControl interface.
-  LocalStorageImpl(const base::FilePath& storage_root,
+  // "Local Storage" directory in `storage_partition_directory` if non-empty.If
+  // valid, |receiver| will be bound to this object to allow for remote control
+  // via the LocalStorageControl interface.
+  LocalStorageImpl(const base::FilePath& storage_partition_directory,
                    DestructLocalStorageCallback destruct_callback,
                    mojo::PendingReceiver<mojom::LocalStorageControl> receiver);
   ~LocalStorageImpl() override;
@@ -84,7 +84,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  base::FilePath GetStoragePath() const;
+  const base::FilePath& GetStoragePartitionDirectory() const;
 
   // Access the underlying AsyncDomStorageDatabase. May be null if the database
   // is not yet open.
@@ -103,6 +103,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   friend class DOMStorageBrowserTest;
 
   class StorageAreaHolder;
+
+  // Constructs an absolute path to the database using
+  // `storage_partition_directory_`.
+  base::FilePath GetDatabasePath() const;
 
   // Does dtor work. This is a distinct function mainly to retain git history.
   void ShutDown();
@@ -146,7 +150,12 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // that this LocalStorageImpl can be destructed when the Receiver is
   // disconnected.
   DestructLocalStorageCallback destruct_callback_;
-  const base::FilePath directory_;
+
+  // The profile data directory, which is an ancestor of the database path.
+  // Empty for in-memory databases. When not empty, the owner of
+  // `LocalStorageImpl` uses this path as an ID for the `LocalStorageImpl`
+  // instance.
+  const base::FilePath storage_partition_directory_;
 
   enum ConnectionState {
     NO_CONNECTION,

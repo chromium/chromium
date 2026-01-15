@@ -20,6 +20,7 @@ component("cpp") {
 
   public_deps = [
     "//base",
+    "//components/services/storage:storage_features",
     "//components/services/storage/public/cpp/buckets",
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/storage/public/mojom",

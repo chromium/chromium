@@ -89,15 +89,13 @@ void RecordSessionStorageCachePurgedHistogram(
 }  // namespace
 
 SessionStorageImpl::SessionStorageImpl(
-    const base::FilePath& partition_directory,
+    const base::FilePath& storage_partition_directory,
     BackingMode backing_mode,
-    std::string database_name,
     DestructSessionStorageCallback destruct_callback,
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver)
     : destruct_callback_(std::move(destruct_callback)),
       backing_mode_(backing_mode),
-      database_name_(std::move(database_name)),
-      partition_directory_(partition_directory),
+      storage_partition_directory_(storage_partition_directory),
       memory_dump_id_(base::StringPrintf("SessionStorage/0x%" PRIXPTR,
                                          reinterpret_cast<uintptr_t>(this))),
       receiver_(this, std::move(receiver)) {
@@ -537,6 +535,10 @@ bool SessionStorageImpl::OnMemoryDump(
   return true;
 }
 
+const base::FilePath& SessionStorageImpl::GetStoragePartitionDirectory() const {
+  return storage_partition_directory_;
+}
+
 void SessionStorageImpl::PretendToConnectForTesting() {
   OnDatabaseOpened(DbStatus::OK());
 }
@@ -555,6 +557,11 @@ void SessionStorageImpl::FlushAreaForTesting(
 void SessionStorageImpl::SetDatabaseOpenCallbackForTesting(
     base::OnceClosure callback) {
   RunWhenConnected(std::move(callback));
+}
+
+base::FilePath SessionStorageImpl::GetDatabasePath() const {
+  return DomStorageDatabase::GetPath(StorageType::kSessionStorage,
+                                     storage_partition_directory_);
 }
 
 scoped_refptr<DomStorageDatabase::SharedMapLocator>
@@ -733,20 +740,15 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
            base::NotFatalUntil::M146);
 
   if (backing_mode_ != BackingMode::kNoDisk && !in_memory_only &&
-      !partition_directory_.empty()) {
+      !storage_partition_directory_.empty()) {
     // We were given a subdirectory to write to, so use a disk backed database.
     if (backing_mode_ == BackingMode::kClearDiskStateOnOpen) {
-      DomStorageDatabaseFactory::Destroy(
-          partition_directory_, database_name_,
-          AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                      database_name_),
-          base::DoNothing());
+      DomStorageDatabaseFactory::Destroy(GetDatabasePath(), base::DoNothing());
     }
 
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::Open(
-        StorageType::kSessionStorage, partition_directory_, database_name_,
-        memory_dump_id_,
+        StorageType::kSessionStorage, GetDatabasePath(), memory_dump_id_,
         base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -756,7 +758,7 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
   in_memory_ = true;
   database_ = AsyncDomStorageDatabase::Open(
       StorageType::kSessionStorage,
-      /*directory=*/base::FilePath(), "SessionStorageDatabase", memory_dump_id_,
+      /*database_path=*/base::FilePath(), memory_dump_id_,
       base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -852,9 +854,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase() {
   // Destroy database, and try again.
   if (!in_memory_) {
     DomStorageDatabaseFactory::Destroy(
-        partition_directory_, database_name_,
-        AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                    database_name_),
+        GetDatabasePath(),
         base::BindOnce(&SessionStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));
   } else {

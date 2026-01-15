@@ -1056,7 +1056,8 @@ TEST_F(LocalStorageImplTest, OnDisk) {
   ShutDownStorage();
 
   // Should have created files.
-  EXPECT_EQ(base::FilePath(kLocalStoragePath), FirstEntryInDir().BaseName());
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("Local Storage")),
+            FirstEntryInDir().BaseName());
 
   // Should be able to re-open.
   InitializeStorage(storage_path());
@@ -1080,13 +1081,13 @@ TEST_F(LocalStorageImplTest, InvalidVersionOnDisk) {
 
   {
     // Re-open the database.
-    base::FilePath db_path = storage_path().Append(kLocalStoragePath);
+    base::FilePath db_path = GetLocalStorageDatabasePath(storage_path());
     base::RunLoop open_db_run_loop;
     DbStatus status;
 
     std::unique_ptr<AsyncDomStorageDatabase> database =
         AsyncDomStorageDatabase::Open(
-            StorageType::kLocalStorage, db_path, kLocalStorageLeveldbName,
+            StorageType::kLocalStorage, db_path,
             /*memory_dump_id*/ std::nullopt,
             base::BindLambdaForTesting([&](DbStatus callback_status) {
               status = callback_status;
@@ -1126,9 +1127,7 @@ TEST_F(LocalStorageImplTest, CorruptionOnDisk) {
   ShutDownStorage();
 
   // Delete manifest files to mess up opening DB.
-  base::FilePath db_path = storage_path()
-                               .Append(kLocalStoragePath)
-                               .AppendASCII(kLocalStorageLeveldbName);
+  base::FilePath db_path = GetLocalStorageDatabasePath(storage_path());
   base::FileEnumerator file_enum(db_path, true, base::FileEnumerator::FILES,
                                  FILE_PATH_LITERAL("MANIFEST*"));
   for (base::FilePath name = file_enum.Next(); !name.empty();
