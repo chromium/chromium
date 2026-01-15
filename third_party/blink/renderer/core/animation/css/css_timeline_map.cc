@@ -14,7 +14,10 @@ void CSSDeferredTimelineMap::Trace(blink::Visitor* visitor) const {
 
 DeferredTimeline* CSSDeferredTimelineMap::Find(Document& document,
                                                const AtomicString& name) const {
-  if (!filter_.names.Contains(name)) {
+  if (filter_.IsNone()) {
+    return nullptr;
+  }
+  if (!filter_.Names().Contains(name) && !filter_.IsAll()) {
     return nullptr;
   }
 

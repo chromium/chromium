@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
+#include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/core/style/style_trigger_scope.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_name.h"
@@ -446,8 +447,8 @@ class StyleBuilderConverter {
                                                         const CSSValue&);
   static Vector<AtomicString> ConvertViewTimelineName(StyleResolverState&,
                                                       const CSSValue&);
-  static Vector<AtomicString> ConvertTimelineScope(StyleResolverState&,
-                                                   const CSSValue&);
+  static StyleTimelineScope ConvertTimelineScope(StyleResolverState&,
+                                                 const CSSValue&);
 
   static PositionArea ConvertPositionArea(StyleResolverState&,
                                           const CSSValue&,

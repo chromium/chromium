@@ -262,7 +262,7 @@ bool HasTimelines(const StyleResolverState& state) {
   if (!state.StyleBuilder().ViewTimelineName().empty()) {
     return true;
   }
-  if (!state.StyleBuilder().TimelineScope().empty()) {
+  if (!state.StyleBuilder().TimelineScope().IsNone()) {
     return true;
   }
   if (ElementAnimations* element_animations = GetElementAnimations(state)) {

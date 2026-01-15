@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/core/style/text_overflow_data.h"
@@ -3907,19 +3908,23 @@ Vector<AtomicString> StyleBuilderConverter::ConvertViewTimelineName(
   return ConvertNoneOrCustomIdentListUnscoped(state, value);
 }
 
-Vector<AtomicString> StyleBuilderConverter::ConvertTimelineScope(
+StyleTimelineScope StyleBuilderConverter::ConvertTimelineScope(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsIdentifierValue()) {
-    DCHECK_EQ(CSSValueID::kNone, To<CSSIdentifierValue>(value).GetValueID());
-    return {};
+  using Type = StyleTimelineScope::Type;
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    if (ident->GetValueID() == CSSValueID::kNone) {
+      return StyleTimelineScope(Type::kNone, /*names=*/{});
+    }
+    DCHECK_EQ(CSSValueID::kAll, To<CSSIdentifierValue>(value).GetValueID());
+    return StyleTimelineScope(Type::kAll, /*names=*/{});
   }
   DCHECK(value.IsBaseValueList());
   Vector<AtomicString> names;
   for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
     names.push_back(ConvertCustomIdentUnscoped(state, *item));
   }
-  return names;
+  return StyleTimelineScope(Type::kNames, std::move(names));
 }
 
 PositionArea StyleBuilderConverter::ConvertPositionArea(

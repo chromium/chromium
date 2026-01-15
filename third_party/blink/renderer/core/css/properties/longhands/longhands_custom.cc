@@ -12382,6 +12382,10 @@ const CSSValue* TimelineScope::ParseSingleValue(
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
+  if (RuntimeEnabledFeatures::CSSTimelineScopeAllEnabled() &&
+      stream.Peek().Id() == CSSValueID::kAll) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
   using css_parsing_utils::ConsumeCommaSeparatedList;
   using css_parsing_utils::ConsumeDashedIdent;
   return ConsumeCommaSeparatedList<CSSCustomIdentValue*(
@@ -12394,11 +12398,14 @@ const CSSValue* TimelineScope::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.TimelineScope().empty()) {
+  if (style.TimelineScope().IsNone()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNone);
   }
+  if (style.TimelineScope().IsAll()) {
+    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAll);
+  }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const AtomicString& name : style.TimelineScope()) {
+  for (const AtomicString& name : style.TimelineScope().Names()) {
     list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name));
   }
   return list;

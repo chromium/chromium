@@ -1774,6 +1774,13 @@
       status: "experimental",
     },
     {
+      // Support for the 'all' keyword of the 'timeline-scope' property.
+      //
+      // https://drafts.csswg.org/scroll-animations-1/#timeline-scope
+      name: "CSSTimelineScopeAll",
+      status: "experimental",
+    },
+    {
       name: "CSSTypedArithmetic",
       status: "stable",
     },

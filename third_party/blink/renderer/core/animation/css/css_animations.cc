@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1117,18 +1118,15 @@ void CSSAnimations::CalculateDeferredTimelineMapUpdate(
     CSSAnimationUpdate& update,
     Element& animating_element,
     const ComputedStyleBuilder& style_builder) {
-  CSSDeferredTimelineMap::Filter new_filter;
-  for (const AtomicString& name : style_builder.TimelineScope()) {
-    new_filter.names.insert(name);
-  }
+  const StyleTimelineScope& new_filter = style_builder.TimelineScope();
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
   const CSSDeferredTimelineMap* existing_deferred_timeline_map =
       timeline_data ? &timeline_data->GetDeferredTimelineMap() : nullptr;
-  const CSSDeferredTimelineMap::Filter& existing_filter =
+  const StyleTimelineScope& existing_filter =
       existing_deferred_timeline_map
           ? existing_deferred_timeline_map->GetFilter()
-          : CSSDeferredTimelineMap::Filter();
+          : StyleTimelineScope();
   if (new_filter != existing_filter) {
     CSSDeferredTimelineMap new_map =
         existing_deferred_timeline_map

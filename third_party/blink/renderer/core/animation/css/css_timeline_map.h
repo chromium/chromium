@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_TIMELINE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -37,22 +38,19 @@ using TimelineAttachmentMap =
 //
 // - For 'timeline-scope:none', an empty filter.
 // - For 'timeline-scope:--a,--b', a filter containing those names.
-// - For 'timeline-scope:all': TODO(crbug.com/41488030): Not implemented yet.
+// - For 'timeline-scope:all', a filter (logically) containing all possible
+//   names (StyleTimelineScope::Type::kAll).
 //
 class CORE_EXPORT CSSDeferredTimelineMap {
   DISALLOW_NEW();
 
  public:
-  struct Filter {
-    bool operator==(const Filter& o) const { return names == o.names; }
-    bool operator!=(const Filter& o) const { return !(*this == o); }
-    HashSet<AtomicString> names;
-  };
-
   // The default constructor a map with a "none" filter.
   CSSDeferredTimelineMap() = default;
-  explicit CSSDeferredTimelineMap(Filter filter) : filter_(filter) {}
-  CSSDeferredTimelineMap(const CSSDeferredTimelineMap& other, Filter filter)
+  explicit CSSDeferredTimelineMap(StyleTimelineScope filter)
+      : filter_(filter) {}
+  CSSDeferredTimelineMap(const CSSDeferredTimelineMap& other,
+                         StyleTimelineScope filter)
       : filter_(std::move(filter)), map_(other.map_) {}
 
   void Trace(blink::Visitor* visitor) const;
@@ -64,12 +62,12 @@ class CORE_EXPORT CSSDeferredTimelineMap {
   // (for the same key) over time.
   DeferredTimeline* Find(Document&, const AtomicString& name) const;
 
-  bool IsEmpty() const { return filter_.names.empty(); }
+  bool IsEmpty() const { return filter_.IsNone(); }
 
-  const Filter& GetFilter() const { return filter_; }
+  const StyleTimelineScope& GetFilter() const { return filter_; }
 
  private:
-  Filter filter_;
+  StyleTimelineScope filter_;
   using InnerMap = HeapHashMap<AtomicString, WeakMember<DeferredTimeline>>;
   mutable InnerMap map_;
 };
