@@ -99,7 +99,8 @@ INSTANTIATE_TEST_SUITE_P(
             std::make_optional("byt"),
             std::make_optional(GetRequestedRangeError::kParseFailed))));
 
-TEST_P(WebUILoadingUtilSendDataTest, SendData) {
+// Disable due to flakiness: crbug.com/475586541.
+TEST_P(WebUILoadingUtilSendDataTest, DISABLED_SendData) {
   network::TestURLLoaderClient client;
   auto url_response_head = network::mojom::URLResponseHead::New();
   const scoped_refptr<base::RefCountedString> data =
