@@ -32,7 +32,7 @@
 #else
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/idle_bubble.h"
@@ -119,13 +119,13 @@ class CloseBrowsersAction : public Action {
     continuation_ = std::move(continuation);
     // TODO(crbug.com/40222234): Get customer feedback on whether
     // skip_beforeunload should be true or false.
-    BrowserList::CloseAllBrowsersWithProfile(
+    chrome::CloseAllBrowsersWithProfile(
         profile,
+        /*skip_beforeunload=*/true,
         base::BindRepeating(&CloseBrowsersAction::OnCloseSuccess,
                             base::Unretained(this)),
         base::BindRepeating(&CloseBrowsersAction::OnCloseAborted,
-                            base::Unretained(this)),
-        /*skip_beforeunload=*/true);
+                            base::Unretained(this)));
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {

@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -172,9 +172,7 @@ void ProfileCustomizationHandler::HandleDeleteProfile(
       ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
   // Since the profile is ephemeral, closing all browser windows triggers the
   // deletion.
-  BrowserList::CloseAllBrowsersWithProfile(
-      profile_, BrowserList::CloseCallback(), BrowserList::CloseCallback(),
-      /*skip_beforeunload=*/true);
+  chrome::CloseAllBrowsersWithProfile(profile_, /*skip_beforeunload=*/true);
 }
 
 void ProfileCustomizationHandler::HandleSetAvatarIcon(

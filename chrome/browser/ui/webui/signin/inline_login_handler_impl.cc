@@ -44,7 +44,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -284,11 +283,9 @@ void OnSigninComplete(Profile* profile,
   }
 
   if (!can_be_managed) {
-    BrowserList::CloseAllBrowsersWithProfile(
-        profile, base::BindRepeating(&LockProfileAndShowUserManager),
-        // Cannot be called because skip_beforeunload is true.
-        BrowserList::CloseCallback(),
-        /*skip_beforeunload=*/true);
+    chrome::CloseAllBrowsersWithProfile(
+        profile, /*skip_beforeunload=*/true,
+        base::BindRepeating(&LockProfileAndShowUserManager));
   }
 }
 
@@ -435,11 +432,11 @@ void InlineSigninHelper::UntrustedSigninConfirmed(
   }
 
   base::RecordAction(base::UserMetricsAction("Signin_Undo_Signin"));
-  BrowserList::CloseAllBrowsersWithProfile(
-      profile_, base::BindRepeating(&LockProfileAndShowUserManager),
+  chrome::CloseAllBrowsersWithProfile(
+      profile_, /*skip_beforeunload=*/true,
+      base::BindRepeating(&LockProfileAndShowUserManager),
       // Cannot be called because  skip_beforeunload is true.
-      BrowserList::CloseCallback(),
-      /*skip_beforeunload=*/true);
+      chrome::ProfileBrowsersCloseCallback());
 }
 
 void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {

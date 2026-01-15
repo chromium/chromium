@@ -81,7 +81,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
@@ -383,19 +383,19 @@ void ChromeSigninClient::PreSignOut(
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
       !profile_->IsGuestSession() && !profile_->IsChild() &&
       !keep_window_opened) {
-    BrowserList::CloseAllBrowsersWithProfile(
+    chrome::CloseAllBrowsersWithProfile(
         profile_,
-        base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
-                            base::Unretained(this), signout_source_metric,
-                            /*should_sign_out=*/true),
-        base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
-                            base::Unretained(this)),
         signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
             signout_source_metric == signin_metrics::ProfileSignout::
                                          kAuthenticationFailedWithForceSignin ||
             signout_source_metric ==
                 signin_metrics::ProfileSignout::
-                    kCancelSyncConfirmationOnWebOnlySignedIn);
+                    kCancelSyncConfirmationOnWebOnlySignedIn,
+        base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
+                            base::Unretained(this), signout_source_metric,
+                            /*should_sign_out=*/true),
+        base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
+                            base::Unretained(this)));
   } else {
 #else
   {
@@ -547,16 +547,15 @@ void ChromeSigninClient::OnTokenFetchComplete(bool token_is_valid) {
   // Token is not valid, we close all the browsers and open the Profile
   // Picker.
   should_display_user_manager_ = true;
-  BrowserList::CloseAllBrowsersWithProfile(
+  chrome::CloseAllBrowsersWithProfile(
       profile_,
+      /*skip_beforeunload=*/true,
       base::BindRepeating(
           &ChromeSigninClient::OnCloseBrowsersSuccess, base::Unretained(this),
           signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin,
           // Do not sign the user out to allow them to reauthenticate from the
           // profile picker.
-          /*should_sign_out=*/false),
-      /*on_close_aborted=*/base::DoNothing(),
-      /*skip_beforeunload=*/true);
+          /*should_sign_out=*/false));
 }
 #endif
 

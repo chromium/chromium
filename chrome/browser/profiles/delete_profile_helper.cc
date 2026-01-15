@@ -35,7 +35,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/pref_names.h"
@@ -150,14 +149,15 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     // Close all browser windows before deleting the profile. If the user
     // cancels the closing of any tab in an OnBeforeUnload event, profile
     // deletion is also cancelled. (crbug.com/289390)
-    BrowserList::CloseAllBrowsersWithProfile(
+    chrome::CloseAllBrowsersWithProfile(
         profile,
+        /*skip_beforeunload=*/false,
         base::BindRepeating(
             &DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion,
             base::Unretained(this), base::Passed(std::move(keep_alive)),
             base::Passed(std::move(profile_keep_alive)),
             base::Passed(std::move(callback))),
-        base::BindRepeating(&CancelProfileDeletion), false);
+        base::BindRepeating(&CancelProfileDeletion));
   } else {
     EnsureActiveProfileExistsBeforeDeletion(std::move(keep_alive),
                                             /*profile_keep_alive=*/nullptr,

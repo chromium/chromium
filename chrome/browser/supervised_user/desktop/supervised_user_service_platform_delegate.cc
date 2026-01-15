@@ -6,7 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 
 SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate(
     Profile& profile)
@@ -16,8 +16,6 @@ void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {
   Profile* otr_profile =
       profile_->GetPrimaryOTRProfile(/* create_if_needed =*/false);
   if (otr_profile) {
-    BrowserList::CloseAllBrowsersWithIncognitoProfile(
-        otr_profile, base::DoNothing(), base::DoNothing(),
-        /*skip_beforeunload=*/true);
+    chrome::CloseAllBrowsersWithIncognitoProfile(otr_profile);
   }
 }

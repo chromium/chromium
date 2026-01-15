@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -1286,8 +1285,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_CLOSE_PROFILE: {
       if (browser_->profile()->IsIncognitoProfile()) {
-        BrowserList::CloseAllBrowsersWithIncognitoProfile(
-            browser_->profile(), base::DoNothing(), base::DoNothing(), true);
+        chrome::CloseAllBrowsersWithIncognitoProfile(browser_->profile());
       } else {
         profiles::CloseProfileWindows(browser_->profile());
       }

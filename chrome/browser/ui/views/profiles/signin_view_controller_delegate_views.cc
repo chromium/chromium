@@ -19,7 +19,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -513,10 +513,8 @@ void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
       ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
   // Since the profile is ephemeral, closing all browser windows triggers the
   // deletion.
-  BrowserList::CloseAllBrowsersWithProfile(browser_->profile(),
-                                           BrowserList::CloseCallback(),
-                                           BrowserList::CloseCallback(),
-                                           /*skip_beforeunload=*/true);
+  chrome::CloseAllBrowsersWithProfile(browser_->profile(),
+                                      /*skip_beforeunload=*/true);
 }
 #endif
 
