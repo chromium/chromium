@@ -305,6 +305,10 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
   web_app_info->title = u"Name";
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
+  web_app::proto::WebAppMigrationSource source;
+  source.set_manifest_id("https://migration.example.com/start.html");
+  web_app_info->migration_sources.push_back(std::move(source));
+
   // Install & bypass os integration.
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;

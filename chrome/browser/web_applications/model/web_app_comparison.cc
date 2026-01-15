@@ -7,6 +7,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -186,6 +187,10 @@ WebAppComparison WebAppComparison::CompareWebApps(
       return false;
     }
     if (existing_web_app.tab_strip() != new_install_info.tab_strip) {
+      return false;
+    }
+    if (existing_web_app.unvalidated_migration_sources() !=
+        new_install_info.migration_sources) {
       return false;
     }
     // Add new manifest properties here to be considered for update.

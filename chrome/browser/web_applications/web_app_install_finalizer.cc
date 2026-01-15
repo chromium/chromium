@@ -37,10 +37,11 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -68,6 +69,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 
@@ -265,6 +267,13 @@ void WebAppInstallFinalizer::FinalizeInstall(
 
   webapps::ManifestId manifest_id = web_app_info.manifest_id();
 
+  if (options.install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION &&
+      web_app_info.migration_sources.empty()) {
+    std::move(callback).Run(
+        webapps::AppId(), webapps::InstallResultCode::kNoValidMigrationSource);
+    return;
+  }
+
   // parent_app_manifest_id can only exist if installing as a sub-app.
   CHECK((options.install_surface == webapps::WebappInstallSource::SUB_APP &&
          web_app_info.parent_app_manifest_id.has_value()) ||
@@ -276,15 +285,26 @@ void WebAppInstallFinalizer::FinalizeInstall(
                      weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
                      options, std::move(callback));
 
+  bool needs_scope_validation =
+      !web_app_info.scope_extensions.empty() &&
+      !web_app_info.validated_scope_extensions.has_value();
+  bool needs_migration_validation =
+      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
+      !web_app_info.migration_sources.empty();
+
   if (options.skip_origin_association_validation ||
-      web_app_info.scope_extensions.empty() ||
-      web_app_info.validated_scope_extensions.has_value()) {
+      (!needs_scope_validation && !needs_migration_validation)) {
     std::move(origin_association_validated_callback).Run(OriginAssociations());
     return;
   }
 
   OriginAssociations origin_associations;
-  origin_associations.scope_extensions = web_app_info.scope_extensions;
+  if (needs_scope_validation) {
+    origin_associations.scope_extensions = web_app_info.scope_extensions;
+  }
+  if (needs_migration_validation) {
+    origin_associations.migration_sources = web_app_info.migration_sources;
+  }
   provider_->origin_association_manager().GetWebAppOriginAssociations(
       manifest_id, std::move(origin_associations),
       std::move(origin_association_validated_callback));
@@ -297,8 +317,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     OriginAssociations validated_origin_associations) {
   webapps::AppId app_id = GenerateAppIdFromManifestId(
       web_app_info.manifest_id(), web_app_info.parent_app_manifest_id);
-  ScopeExtensions validated_scope_extensions =
-      validated_origin_associations.scope_extensions;
+
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
   std::unique_ptr<WebApp> web_app;
@@ -320,6 +339,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   }
 
+  ScopeExtensions validated_scope_extensions =
+      web_app_info.validated_scope_extensions.value_or(
+          validated_origin_associations.scope_extensions);
   for (auto& scope_extension : validated_scope_extensions) {
     // This is done to prune any queries or fragments from the scope URL which
     // may have been skipped by WebAppOriginAssociationManager validation.
@@ -327,6 +349,8 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         scope_extension.scope, scope_extension.has_origin_wildcard);
   }
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
+  web_app->SetValidatedMigrationSources(
+      validated_origin_associations.migration_sources);
 
   // When testing, the database state is compared with the in-memory registry,
   // and because proto time has less granularity, this comparison fails unless
@@ -506,15 +530,24 @@ void WebAppInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_inf
     return;
   }
 
+  bool needs_scope_validation =
+      !web_app_info.scope_extensions.empty() &&
+      !web_app_info.validated_scope_extensions.has_value();
+  bool needs_migration_validation = !web_app_info.migration_sources.empty();
+
   // Remove this shortcut after the ManifestUpdateCheckCommand is deleted:
-  if (web_app_info.validated_scope_extensions.has_value() &&
-      !web_app_info.validated_scope_extensions->empty()) {
+  if (!needs_scope_validation && !needs_migration_validation) {
     OnOriginAssociationValidatedForUpdate(
         web_app_info.Clone(), std::move(callback), OriginAssociations());
     return;
   }
   OriginAssociations origin_associations;
-  origin_associations.scope_extensions = web_app_info.scope_extensions;
+  if (needs_scope_validation) {
+    origin_associations.scope_extensions = web_app_info.scope_extensions;
+  }
+  if (needs_migration_validation) {
+    origin_associations.migration_sources = web_app_info.migration_sources;
+  }
   provider_->origin_association_manager().GetWebAppOriginAssociations(
       manifest_id, std::move(origin_associations),
       base::BindOnce(
@@ -574,8 +607,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
     OriginAssociations validated_origin_associations) {
   webapps::AppId app_id = GenerateAppIdFromManifestId(
       web_app_info.manifest_id(), web_app_info.parent_app_manifest_id);
-  ScopeExtensions validated_scope_extensions =
-      validated_origin_associations.scope_extensions;
+
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
 
@@ -612,6 +644,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
         pending_update_info->integrity_block_data);
   }
 
+  ScopeExtensions validated_scope_extensions =
+      web_app_info.validated_scope_extensions.value_or(
+          validated_origin_associations.scope_extensions);
   for (auto& scope_extension : validated_scope_extensions) {
     // This is done to prune any queries or fragments from the scope URL which
     // may have been skipped by WebAppOriginAssociationManager validation.
@@ -619,6 +654,8 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
         scope_extension.scope, scope_extension.has_origin_wildcard);
   }
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
+  web_app->SetValidatedMigrationSources(
+      validated_origin_associations.migration_sources);
 
   // Prepare copy-on-write to update existing app.
   // This is not reached unless the data obtained from the manifest
@@ -634,8 +671,23 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
     std::unique_ptr<WebApp> web_app,
     CommitCallback commit_callback,
     bool skip_icon_writes_on_download_failure) {
+  std::vector<proto::WebAppMigrationSource> old_sources;
+  const WebApp* existing_app =
+      provider_->registrar_unsafe().GetAppById(web_app->app_id());
+  if (existing_app) {
+    old_sources = existing_app->validated_migration_sources();
+  }
+
   SetWebAppManifestFields(web_app_info, *web_app,
                           skip_icon_writes_on_download_failure);
+
+  // If the validated migration sources change, schedule a command to update
+  // the pending migration info field for all web apps to reflect these changes.
+  if (old_sources != web_app->validated_migration_sources() &&
+      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    provider_->scheduler().ScheduleResolveWebAppPendingMigrationInfo(
+        base::DoNothing());
+  }
 
   webapps::AppId app_id = web_app->app_id();
   auto write_translations_callback = base::BindOnce(

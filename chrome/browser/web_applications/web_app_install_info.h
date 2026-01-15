@@ -522,6 +522,9 @@ struct WebAppInstallInfo {
   // IsolatedWebAppInstallForceList policy takes precedence over this value.
   std::optional<GURL> iwa_update_manifest_url;
 
+  // Migration sources to be associated with the app.
+  std::vector<proto::WebAppMigrationSource> migration_sources;
+
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);

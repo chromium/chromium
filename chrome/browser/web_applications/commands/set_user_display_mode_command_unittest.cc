@@ -101,6 +101,10 @@ TEST_F(SetUserDisplayModeCommandTest, NoDisplayModeSetForMigratingApps) {
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
+  web_app::proto::WebAppMigrationSource source;
+  source.set_manifest_id("https://migration.example.com/start.html");
+  install_info->migration_sources.push_back(std::move(source));
+
   WebAppInstallParams params;
   params.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
   params.add_to_applications_menu = false;

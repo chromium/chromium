@@ -60,6 +60,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -820,6 +821,10 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   if (web_app_info.validated_scope_extensions.has_value()) {
     web_app.SetValidatedScopeExtensions(
         web_app_info.validated_scope_extensions.value());
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    web_app.SetUnvalidatedMigrationSources(web_app_info.migration_sources);
   }
 
   web_app.SetIsDiyApp(web_app_info.is_diy_app);

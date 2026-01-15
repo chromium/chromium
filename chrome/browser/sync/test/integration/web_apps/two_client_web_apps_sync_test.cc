@@ -183,6 +183,10 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, MigratingAppsDoNotSync) {
   info->scope = GURL("http://www.chromium.org/");
   info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
+  web_app::proto::WebAppMigrationSource source;
+  source.set_manifest_id("http://migration.chromium.org/start.html");
+  info->migration_sources.push_back(std::move(source));
+
   // Install app on first profile, mark it suggested for migration.
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;

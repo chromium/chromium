@@ -93,6 +93,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kManifestIdMismatch";
     case InstallResultCode::kFallbackInstallUsingTrustedIcons:
       return os << "kFallbackInstallUsingTrustedIcons";
+    case InstallResultCode::kNoValidMigrationSource:
+      return os << "kNoValidMigrationSource";
   }
 }
 

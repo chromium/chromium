@@ -718,7 +718,7 @@ class WebAppCommandScheduler {
 
   // Schedules the ResolveWebAppPendingMigrationInfoCommand to resolve pending
   // migration info for all apps.
-  void ScheduleResolveWebAppPendingMigrationInfo(
+  virtual void ScheduleResolveWebAppPendingMigrationInfo(
       base::OnceClosure callback,
       const base::Location& location = FROM_HERE);
 
