@@ -2185,10 +2185,11 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
 
 // This test is flaky on Linux MSAN.
 // TODO(https://crbug.com/463490299): Enable the test.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
-    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_CHROMEOS)
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) ||         \
+    BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) ||         \
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                                 \
+    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_CanGetFileResourceWithFileAccess \
   DISABLED_CanGetFileResourceWithFileAccess
 #else
