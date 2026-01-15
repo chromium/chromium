@@ -99,6 +99,7 @@ source_set("permissions") {
     "permission_manager.cc",
     "permission_manager.h",
     "permission_prompt.h",
+    "permission_prompt_decision.h",
     "permission_recovery_success_rate_tracker.cc",
     "permission_recovery_success_rate_tracker.h",
     "permission_request.cc",

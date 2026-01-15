@@ -13,6 +13,10 @@
 
 class GURL;
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TopLevelStorageAccessRequestOutcome {
@@ -77,8 +81,7 @@ class TopLevelStorageAccessPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      PermissionDecision decision,
-      bool is_final_decision) override;
+      const permissions::PermissionPromptDecision& decision) override;
 
   // ContentSettingPermissionContextBase
   void UpdateContentSetting(

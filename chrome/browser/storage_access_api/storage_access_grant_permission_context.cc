@@ -36,6 +36,7 @@
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
@@ -612,12 +613,12 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_final_decision) {
-  CHECK(decision != PermissionDecision::kAllowThisTime);
-  CHECK(is_final_decision);
+    const permissions::PermissionPromptDecision& decision) {
+  CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
+  CHECK(decision.is_final);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  RequestOutcome outcome = RequestOutcomeFromPrompt(decision, persist);
+  RequestOutcome outcome =
+      RequestOutcomeFromPrompt(decision.overall_decision, persist);
   if (outcome == RequestOutcome::kReusedPreviousDecision) {
     // This could be an implicit, e.g. FPS or allowance based permission. Check
     // if the exception has an ephemeral session model.
@@ -643,8 +644,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
   NotifyPermissionSetInternal(
       request_data, std::move(callback),
       persist &&
-          ShouldPersistSetting(decision == PermissionDecision::kAllow, outcome),
-      decision, outcome);
+          ShouldPersistSetting(
+              decision.overall_decision == PermissionDecision::kAllow, outcome),
+      decision.overall_decision, outcome);
 }
 
 void StorageAccessGrantPermissionContext::ReportRelatedWebsiteSetsDeprecation(

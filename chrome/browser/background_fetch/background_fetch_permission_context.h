@@ -10,6 +10,10 @@
 
 class GURL;
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 // Manages user permissions for Background Fetch. Background Fetch permission
 // is currently dynamic and relies on either the download status from
 // DownloadRequestLimiter, or the Automatic Downloads content setting
@@ -42,8 +46,7 @@ class BackgroundFetchPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      PermissionDecision decision,
-      bool is_final_decision) override;
+      const permissions::PermissionPromptDecision& decision) override;
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_PERMISSION_CONTEXT_H_

@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -83,11 +84,10 @@ void BackgroundFetchPermissionContext::NotifyPermissionSet(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_final_decision) {
+    const permissions::PermissionPromptDecision& decision) {
   DCHECK(!persist);
-  DCHECK(is_final_decision);
+  DCHECK(decision.is_final);
 
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
-      request_data, std::move(callback), persist, decision, is_final_decision);
+      request_data, std::move(callback), persist, decision);
 }

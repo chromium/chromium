@@ -5,6 +5,7 @@
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/check_op.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -18,6 +19,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,8 +64,11 @@ void DurableStoragePermissionContext::DecidePermission(
   // origin is the last committed navigation origin to the web contents.
   if (request_data->requesting_origin != request_data->embedding_origin) {
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/false, PermissionDecision::kNone,
-                        /*is_final_decision=*/true);
+                        /*persist=*/false,
+                        permissions::PermissionPromptDecision{
+                            .overall_decision = PermissionDecision::kNone,
+                            .prompt_options = std::monostate(),
+                            .is_final = true});
     return;
   }
 
@@ -84,8 +89,11 @@ void DurableStoragePermissionContext::DecidePermission(
           net::CookieSettingOverrides(),
           rfh->GetStorageKey().ToCookiePartitionKey())) {
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/false, PermissionDecision::kNone,
-                        /*is_final_decision=*/true);
+                        /*persist=*/false,
+                        permissions::PermissionPromptDecision{
+                            .overall_decision = PermissionDecision::kNone,
+                            .prompt_options = std::monostate(),
+                            .is_final = true});
     return;
   }
 
@@ -103,8 +111,11 @@ void DurableStoragePermissionContext::DecidePermission(
           Profile::FromBrowserContext(browser_context()));
   if (installed_registerable_domains.contains(registerable_domain)) {
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/true, PermissionDecision::kAllow,
-                        /*is_final_decision=*/true);
+                        /*persist=*/true,
+                        permissions::PermissionPromptDecision{
+                            .overall_decision = PermissionDecision::kAllow,
+                            .prompt_options = request_data->prompt_options,
+                            .is_final = true});
     return;
   }
 
@@ -118,15 +129,21 @@ void DurableStoragePermissionContext::DecidePermission(
   for (const auto& important_site : important_sites) {
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(*request_data, std::move(callback),
-                          /*persist=*/true, PermissionDecision::kAllow,
-                          /*is_final_decision=*/true);
+                          /*persist=*/true,
+                          permissions::PermissionPromptDecision{
+                              .overall_decision = PermissionDecision::kAllow,
+                              .prompt_options = request_data->prompt_options,
+                              .is_final = true});
       return;
     }
   }
 
   NotifyPermissionSet(*request_data, std::move(callback),
-                      /*persist=*/false, PermissionDecision::kNone,
-                      /*is_final_decision=*/true);
+                      /*persist=*/false,
+                      permissions::PermissionPromptDecision{
+                          .overall_decision = PermissionDecision::kNone,
+                          .prompt_options = std::monostate(),
+                          .is_final = true});
 }
 
 void DurableStoragePermissionContext::UpdateContentSetting(

@@ -5,15 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_DECISION_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_DECISION_H_
 
-// Represents a permission decision on a prompt. These decisions are passed into
-// the infrastructure in `PermissionRequest`. Specifically, the
-// PermissionRequestManager forwards permission decisions by calling
-// `PermissionRequest::PermissionGranted`,
-// `PermissionRequest::PermissionDenied`, and `PermissionRequest::Cancelled`.
-// These methods then execute the permission decided callback with the
-// appropriate permission decision enum value, where the decision is used the
-// determine and possibly persist the permission state resulting from the
-// decision.
+// Represents a permission decision on a prompt. Should be mostly passed around
+// as part of permissions::PermissionPromptDecision.
 enum class PermissionDecision {
   kAllow = 0,
   kAllowThisTime = 1,

@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
@@ -189,19 +190,18 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_final_decision) {
-  CHECK(decision != PermissionDecision::kAllowThisTime);
-  CHECK(is_final_decision);
+    const permissions::PermissionPromptDecision& decision) {
+  CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
+  CHECK(decision.is_final);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (decision == PermissionDecision::kDeny) {
+  if (decision.overall_decision == PermissionDecision::kDeny) {
     CHECK(!persist);
   }
 
   NotifyPermissionSetInternal(
-      request_data, std::move(callback), persist, decision,
-      decision == PermissionDecision::kAllow
+      request_data, std::move(callback), persist, decision.overall_decision,
+      decision.overall_decision == PermissionDecision::kAllow
           ? TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet
           : TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet);
 }

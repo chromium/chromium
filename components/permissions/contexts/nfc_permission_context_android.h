@@ -9,6 +9,7 @@
 #include "components/permissions/contexts/nfc_permission_context.h"
 
 namespace permissions {
+struct PermissionPromptDecision;
 
 class PermissionRequestID;
 
@@ -22,11 +23,11 @@ class NfcPermissionContextAndroid : public NfcPermissionContext {
   friend class NfcPermissionContextTests;
 
   // NfcPermissionContext:
-  void NotifyPermissionSet(const PermissionRequestData& request_data,
-                           BrowserPermissionCallback callback,
-                           bool persist,
-                           PermissionDecision decision,
-                           bool is_final_decision) override;
+  void NotifyPermissionSet(
+      const PermissionRequestData& request_data,
+      BrowserPermissionCallback callback,
+      bool persist,
+      const permissions::PermissionPromptDecision& decision) override;
 
   void OnNfcSystemLevelSettingPromptClosed(const PermissionRequestID& id,
                                            const GURL& requesting_origin,

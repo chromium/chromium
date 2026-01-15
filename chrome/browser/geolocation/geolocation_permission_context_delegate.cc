@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,9 +37,13 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
     if (permission_set) {
       PermissionDecision decision = new_permission ? PermissionDecision::kAllow
                                                    : PermissionDecision::kDeny;
-      context->NotifyPermissionSet(request_data, std::move(*callback),
-                                   /*persist=*/false, decision,
-                                   /*is_final_decision=*/true);
+      context->NotifyPermissionSet(
+          request_data, std::move(*callback),
+          /*persist=*/false,
+          permissions::PermissionPromptDecision{
+              .overall_decision = decision,
+              .prompt_options = request_data.prompt_options,
+              .is_final = true});
     }
     return true;
   }

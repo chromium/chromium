@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
@@ -58,9 +59,18 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
         request_data.embedded_permission_request_descriptor.Clone();
     InstalledWebappBridge::PermissionCallback permission_callback =
         base::BindOnce(
-            &permissions::GeolocationPermissionContext::NotifyPermissionSet,
-            context->GetWeakPtr(), std::move(data), std::move(*callback),
-            false /* persist */);
+            [](base::OnceCallback<void(
+                   const permissions::PermissionPromptDecision&)> closure,
+               const PromptOptions& prompt_options, PermissionDecision decision,
+               bool is_final_decision) {
+              std::move(closure).Run(permissions::PermissionPromptDecision{
+                  decision, prompt_options, is_final_decision});
+            },
+            base::BindOnce(
+                &permissions::GeolocationPermissionContext::NotifyPermissionSet,
+                context->GetWeakPtr(), std::move(data), std::move(*callback),
+                /*persist=*/false),
+            request_data.prompt_options);
     InstalledWebappBridge::DecidePermission(
         ContentSettingsType::GEOLOCATION, request_data.requesting_origin,
         web_contents->GetLastCommittedURL(), std::move(permission_callback));

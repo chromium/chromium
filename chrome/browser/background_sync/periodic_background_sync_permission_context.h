@@ -27,6 +27,10 @@ BASE_DECLARE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine);
 
 }  // namespace features
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 // This permission context is responsible for getting, deciding on and updating
 // the Periodic Background Sync permission for a particular website. This
 // permission guards the use of the Periodic Background Sync API. It's not being
@@ -84,8 +88,7 @@ class PeriodicBackgroundSyncPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      PermissionDecision decision,
-      bool is_final_decision) override;
+      const permissions::PermissionPromptDecision& decision) override;
 
   // content_settings::Observer:
   void OnContentSettingChanged(

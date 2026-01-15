@@ -20,6 +20,7 @@
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/resolvers/permission_resolver.h"
 #include "content/public/browser/permission_result.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -28,6 +29,7 @@
 class GURL;
 
 namespace permissions {
+struct PermissionPromptDecision;
 class PermissionRequestID;
 }
 
@@ -203,11 +205,11 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Updates stored setting if persist is set, updates tab indicators
   // and runs the callback to finish the request.
-  virtual void NotifyPermissionSet(const PermissionRequestData& request_data,
-                                   BrowserPermissionCallback callback,
-                                   bool persist,
-                                   PermissionDecision decision,
-                                   bool is_final_decision);
+  virtual void NotifyPermissionSet(
+      const PermissionRequestData& request_data,
+      BrowserPermissionCallback callback,
+      bool persist,
+      const permissions::PermissionPromptDecision& decision);
 
   // Implementors can override this method to update the icons on the
   // url bar with the result of the new permission.
