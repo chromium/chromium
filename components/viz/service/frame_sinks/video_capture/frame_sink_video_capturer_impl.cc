@@ -1368,10 +1368,10 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     } else {
       CHECK_EQ(buffer_format_preference_,
                mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
-      // GMB ARGB results are written to the existing pool texture.
+      // MappableSI ARGB results are written to the existing pool texture.
       if (result->IsEmpty()) {
         frame_capture.CaptureFailed(
-            CaptureResult::kGpuMemoryBufferReadbackFailed);
+            CaptureResult::kMappableSharedImageReadbackFailed);
       } else {
         UMA_HISTOGRAM_CAPTURE_DURATION(
             "RGBA", base::TimeTicks::Now() - frame_capture.request_time);
@@ -1381,9 +1381,9 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     }
   } else {
     CHECK_EQ(pixel_format_, media::PIXEL_FORMAT_NV12);
-    // NV12 is only supported for GMBs for now, in which case there is nothing
-    // for us to do since the CopyOutputResults are already available in the
-    // video frame (assuming that we got the results).
+    // NV12 is only supported for mappable SIs for now, in which case there is
+    // nothing for us to do since the CopyOutputResults are already available in
+    // the video frame (assuming that we got the results).
 
     if (result->IsEmpty()) {
       frame_capture.CaptureFailed(CaptureResult::kNV12ReadbackFailed);

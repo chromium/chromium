@@ -267,7 +267,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     // Unable to read data out of the CopyOutputResult.
     kI420ReadbackFailed,
     kARGBReadbackFailed,
-    kGpuMemoryBufferReadbackFailed,
+    kMappableSharedImageReadbackFailed,
     kNV12ReadbackFailed,
     // Subcapture target changed during the capture process.
     kSubCaptureTargetChanged,
