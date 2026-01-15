@@ -794,7 +794,6 @@ void GlicMetrics::OnGlicScrollComplete(bool success) {
 }
 
 void GlicMetrics::LogClosedCaptionsShown() {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
   bool pref_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
   base::UmaHistogramBoolean("Glic.Response.ClosedCaptionsShown", pref_enabled);

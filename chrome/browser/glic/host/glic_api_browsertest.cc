@@ -231,7 +231,6 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         /*enabled_features=*/
         {
             {features::kGlicScrollTo, {}},
-            {features::kGlicClosedCaptioning, {}},
             {features::kGlicApiActivationGating, {}},
             {mojom::features::kGlicMultiTab, {}},
             {features::kGlicWebActuationSetting, {}},
@@ -315,7 +314,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
       : GlicApiTest(base::FieldTrialParams(), config) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kGlicClosedCaptioning},
+        {},
         /*disabled_features=*/
         {features::kGlicDefaultTabContextSetting});
   }

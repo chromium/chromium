@@ -69,7 +69,6 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
         /*disabled_features=*/
         {
 #if BUILDFLAG(ENABLE_GLIC)
-            features::kGlicClosedCaptioning,
             features::kGlicDefaultTabContextSetting
 #endif
         });
@@ -522,18 +521,7 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageLocationToggleLearnMoreTest,
           "runMochaSuite('GlicSubpage LocationToggleLearnMoreEnabled')");
 }
 
-class SettingsGlicSubageClosedCaptionsToggleTest : public SettingsBrowserTest {
- public:
-  SettingsGlicSubageClosedCaptionsToggleTest() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicClosedCaptioning},
-                                          /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubageClosedCaptionsToggleTest,
+IN_PROC_BROWSER_TEST_F(SettingsBrowserTest,
                        SettingsGlicSubageClosedCaptionsToggleEnabled) {
   RunTest("settings/glic_subpage_test.js",
           "runMochaSuite('GlicSubpage ClosedCaptionsToggleEnabled')");

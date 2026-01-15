@@ -680,12 +680,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.getDefaultTabContextPermissionState = undefined;
     }
 
-    if (!state.enableClosedCaptioningFeature) {
-      this.getClosedCaptioningSetting = undefined;
-      this.setClosedCaptioningSetting = undefined;
-      this.metrics.onClosedCaptionsShown = undefined;
-    }
-
     if (!state.enableMaybeRefreshUserStatus) {
       this.maybeRefreshUserStatus = undefined;
     }

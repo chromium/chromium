@@ -401,12 +401,6 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
     });
 
-    test('ClosedCaptionsToggleFeatureDisabled', () => {
-      const closedCaptionsToggle =
-          $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
-      assertFalse(isVisible(closedCaptionsToggle));
-    });
-
     test('DefaultTabContextSettingFeatureDisabled', () => {
       const defaultTabAccessToggle =
           $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
