@@ -748,13 +748,15 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   void FindRenderProcessesForSiteInstance(
       SiteInstanceImpl* site_instance,
       ProcessReusePolicy process_reuse_policy,
-      std::set<RenderProcessHost*>* foreground_processes,
-      std::set<RenderProcessHost*>* background_processes) {
+      std::vector<RenderProcessHost*>* foreground_processes,
+      std::vector<RenderProcessHost*>* background_processes) {
     auto result = map_.find(site_instance->GetSiteInfo());
     if (result == map_.end())
       return;
 
     ChildProcessIdCountMap& counts_per_process = result->second;
+    foreground_processes->reserve(counts_per_process.size());
+    background_processes->reserve(counts_per_process.size());
     for (auto iter : counts_per_process) {
       auto* host = RenderProcessHost::FromID(iter.first);
       if (!host) {
@@ -787,10 +789,15 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       }
 
       if (host->VisibleClientCount())
-        foreground_processes->insert(host);
+        foreground_processes->push_back(host);
       else
-        background_processes->insert(host);
+        background_processes->push_back(host);
     }
+
+    // At this point, both foreground_processes and background_processes contain
+    // eligible hosts in an arbitrary order. There are no duplicates in either
+    // vector, because they are subsets of the keys of counts_per_process, which
+    // is a map.
   }
 
   // Check whether |host| is associated with at least one URL for which
@@ -1282,8 +1289,8 @@ bool IsKeepAliveRefCountAllowed() {
 static RenderProcessHost* FindEmptyBackgroundHostForReuse(
     BrowserContext* browser_context,
     SiteInstanceImpl* site_instance) {
-  std::set<RenderProcessHost*> eligible_foreground_hosts;
-  std::set<RenderProcessHost*> eligible_background_hosts;
+  std::vector<RenderProcessHost*> eligible_foreground_hosts;
+  std::vector<RenderProcessHost*> eligible_background_hosts;
 
   SiteProcessCountTracker* tracker = static_cast<SiteProcessCountTracker*>(
       browser_context->GetUserData(kEmptySiteProcessCountTrackerKey));
@@ -5015,9 +5022,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
 
   // Now pick a random suitable renderer, if we have any.
   if (!suitable_renderers.empty()) {
-    int suitable_count = static_cast<int>(suitable_renderers.size());
-    int random_index = base::RandInt(0, suitable_count - 1);
-    return suitable_renderers[random_index];
+    return base::RandomChoice(suitable_renderers);
   }
 
   return nullptr;
@@ -5960,8 +5965,8 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
   if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
     return nullptr;
 
-  std::set<RenderProcessHost*> eligible_foreground_hosts;
-  std::set<RenderProcessHost*> eligible_background_hosts;
+  std::vector<RenderProcessHost*> eligible_foreground_hosts;
+  std::vector<RenderProcessHost*> eligible_background_hosts;
 
   // First, add the RenderProcessHosts expecting a navigation to |site_url| to
   // the list of eligible RenderProcessHosts.
@@ -6003,19 +6008,11 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
   }
 
   if (!eligible_foreground_hosts.empty()) {
-    int index = base::RandInt(0, eligible_foreground_hosts.size() - 1);
-    auto iterator = eligible_foreground_hosts.begin();
-    for (int i = 0; i < index; ++i)
-      ++iterator;
-    return *iterator;
+    return base::RandomChoice(eligible_foreground_hosts);
   }
 
   if (!eligible_background_hosts.empty()) {
-    int index = base::RandInt(0, eligible_background_hosts.size() - 1);
-    auto iterator = eligible_background_hosts.begin();
-    for (int i = 0; i < index; ++i)
-      ++iterator;
-    return *iterator;
+    return base::RandomChoice(eligible_background_hosts);
   }
 
   return nullptr;
