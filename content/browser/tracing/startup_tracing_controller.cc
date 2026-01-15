@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -206,12 +207,16 @@ class StartupTracingController::BackgroundTracer {
  private:
   void WriteData(const char* data, size_t size) {
     // Last chunk can be empty.
-    if (size == 0)
+    if (size == 0) {
       return;
+    }
+
+    base::span<const uint8_t> data_span =
+        UNSAFE_TODO(base::as_bytes(base::span(data, size)));
 
     // Proto files should be written directly to the file.
     if (output_format_ == tracing::TraceStartupConfig::OutputFormat::kProto) {
-      UNSAFE_TODO(file_.WriteAtCurrentPos(data, size));
+      file_.WriteAtCurrentPosAndCheck(data_span);
       return;
     }
 
@@ -221,12 +226,12 @@ class StartupTracingController::BackgroundTracer {
           std::make_unique<tracing::TracePacketTokenizer>();
     }
 
-    std::vector<perfetto::TracePacket> packets = trace_packet_tokenizer_->Parse(
-        UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(data), size)));
+    std::vector<perfetto::TracePacket> packets =
+        trace_packet_tokenizer_->Parse(data_span);
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
-        UNSAFE_TODO(file_.WriteAtCurrentPos(
-            reinterpret_cast<const char*>(slice.start), slice.size));
+        file_.WriteAtCurrentPosAndCheck(UNSAFE_TODO(base::span(
+            reinterpret_cast<const uint8_t*>(slice.start), slice.size)));
       }
     }
   }
