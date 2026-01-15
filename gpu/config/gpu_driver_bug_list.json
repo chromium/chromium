@@ -430,13 +430,13 @@
     },
     {
       "id": 95,
-      "cr_bugs": [421271],
+      "cr_bugs": [421271, 471017396],
       "description": "glClear does not always work on these drivers",
       "os": {
         "type": "android"
       },
       "gl_version": {
-        "op": "<",
+        "op": "<=",
         "value": "3.0"
       },
       "gl_vendor": "Imagination.*",
