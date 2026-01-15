@@ -53,7 +53,6 @@ source_set("impl") {
     "//chrome/browser/feedback",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/resources/commerce/product_specifications:resources_grit",
     "//chrome/browser/resources/side_panel/commerce:resources_grit",
     "//chrome/browser/resources/side_panel/shared:resources_grit",
     "//chrome/browser/signin",

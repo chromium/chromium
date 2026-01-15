@@ -39,7 +39,6 @@ group("resources") {
       "autofill_ml_internals:resources",
       "bookmarks:resources",
       "certificate_manager:resources",
-      "commerce/product_specifications:resources",
       "contextual_tasks:resources",
       "data_sharing:resources",
       "downloads:resources",
