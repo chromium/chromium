@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -17,6 +18,8 @@ import java.util.List;
  *
  * <p>NOTE: Any changes to this interface including the addition of new methods should be applied to
  * {@link TabGroupModelFilter} and {@link TabModelObserverJniBridge}.
+ *
+ * <p>TODO(crbug.com/476144237): Merge this interface with TabGroupModelFilterObserver.
  */
 @NullMarked
 public interface TabModelObserver {
@@ -225,6 +228,14 @@ public interface TabModelObserver {
 
     /** Called when the set of multi-selected tabs has changed. */
     default void onTabsSelectionChanged() {}
+
+    /**
+     * Called after a tab group is created. Note that new code should prefer using {@link
+     * TabGroupModelFilterObserver} for tab groups over this interface and method.
+     *
+     * @param groupId The ID of the group that was created.
+     */
+    default void onTabGroupCreated(Token groupId) {}
 
     /**
      * Called when the TabModel is destroyed. Note that for the incognito tab model this may be

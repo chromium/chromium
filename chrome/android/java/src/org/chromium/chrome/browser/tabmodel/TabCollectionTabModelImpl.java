@@ -2167,6 +2167,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
+        if (willCreateNewGroup) {
+            for (TabModelObserver observer : mTabModelObservers) {
+                observer.onTabGroupCreated(destinationTabGroupId);
+            }
+        }
+
         if ((notify == NOTIFY_IF_NOT_NEW_GROUP && !willCreateNewGroup) || notify == NOTIFY_ALWAYS) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.showUndoGroupSnackbar(undoGroupMetadata);
