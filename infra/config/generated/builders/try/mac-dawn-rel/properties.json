@@ -123,10 +123,10 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
     "keep_going": 3,
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },

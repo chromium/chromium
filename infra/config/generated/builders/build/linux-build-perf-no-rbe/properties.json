@@ -43,12 +43,12 @@
   "$build/siso": {
     "configs": [],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [
       "no-fallback"
     ],
     "fail_if_reapi_used": true,
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {

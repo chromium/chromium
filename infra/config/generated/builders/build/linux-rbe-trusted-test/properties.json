@@ -47,12 +47,12 @@
       "remote-link"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [
       "no-fallback"
     ],
     "output_local_strategy": "minimum",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-trusted-test",
     "remote_jobs": 250
   },
