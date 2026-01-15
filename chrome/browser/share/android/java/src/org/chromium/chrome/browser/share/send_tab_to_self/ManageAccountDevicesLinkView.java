@@ -133,7 +133,7 @@ class ManageAccountDevicesLinkView extends LinearLayout {
         IdentityManager identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
         var accountInfo = assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        var account = identityManager.findExtendedAccountInfoByEmailAddress(accountInfo.getEmail());
+        var account = identityManager.findExtendedAccountInfoByAccountId(accountInfo.getId());
         assert account != null : "Account info should be non-null.";
         return account;
     }
