@@ -15,6 +15,8 @@ enum class MobilePromoOnDesktopPromoType {
   kLensPromo = 1,
   kESBPromo = 2,
   kAutofillPromo = 3,
+  kTabGroups = 4,
+  kPriceTracking = 5,
 };
 
 // Enum to represent the forced promo type of feature
