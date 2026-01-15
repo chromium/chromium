@@ -279,7 +279,7 @@ suite('SupportToolTest', function() {
   test('spinner page', async () => {
     // Check the contents of spinner page.
     const spinner = supportTool.$.spinnerPage;
-    spinner.shadowRoot!.getElementById('cancelButton')!.click();
+    spinner.$.cancelButton.click();
     await browserProxy.whenCalled('cancelDataCollection');
     webUIListenerCallback('data-collection-cancelled');
     flush();

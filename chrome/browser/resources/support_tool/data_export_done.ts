@@ -2,43 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './support_tool_shared.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {getTemplate} from './data_export_done.html.js';
-import {SupportToolPageMixin} from './support_tool_page_mixin.js';
+import {getCss} from './data_export_done.css.js';
+import {getHtml} from './data_export_done.html.js';
+import {SupportToolPageMixinLit} from './support_tool_page_mixin_lit.js';
 
-const DataExportDoneElementBase = SupportToolPageMixin(PolymerElement);
+const DataExportDoneElementBase = SupportToolPageMixinLit(CrLitElement);
 
 export class DataExportDoneElement extends DataExportDoneElementBase {
   static get is() {
     return 'data-export-done';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      path_: {
-        type: String,
-        value: '',
-      },
+      path_: {type: String},
     };
   }
 
-  declare private path_: string;
+  protected accessor path_: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  private onFilePathClicked_() {
+  protected onFilePathClicked_() {
     this.browserProxy_.showExportedDataInFolder();
   }
 
