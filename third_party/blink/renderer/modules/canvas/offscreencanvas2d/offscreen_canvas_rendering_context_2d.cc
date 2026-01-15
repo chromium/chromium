@@ -402,7 +402,8 @@ OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   if (!is_valid_size_ || isContextLost()) [[unlikely]] {
     return nullptr;
   }
-  return resource_provider_ ? &resource_provider_->Canvas() : nullptr;
+  auto* recorder = Recorder();
+  return recorder ? &recorder->getRecordingCanvas() : nullptr;
 }
 
 const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
