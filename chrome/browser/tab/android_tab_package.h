@@ -25,7 +25,8 @@ struct AndroidTabPackage {
       int theme_color,
       long last_navigation_committed_timestamp_millis,
       bool tab_has_sensitive_content,
-      int launch_type_at_creation);
+      int launch_type_at_creation,
+      std::optional<std::string> url);
   ~AndroidTabPackage();
 
   AndroidTabPackage(const AndroidTabPackage&) = delete;
@@ -44,6 +45,7 @@ struct AndroidTabPackage {
   long last_navigation_committed_timestamp_millis_;
   bool tab_has_sensitive_content_;
   int launch_type_at_creation_;
+  std::optional<std::string> url_;
 };
 
 }  // namespace tabs

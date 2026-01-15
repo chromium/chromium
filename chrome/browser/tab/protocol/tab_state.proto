@@ -10,7 +10,7 @@ option java_package = "org.chromium.chrome.browser.tabs.proto";
 
 import "chrome/browser/tab/protocol/token.proto";
 
-// Next ID: 16
+// Next ID: 17
 message TabState {
   optional int32 tab_id = 15;
 
@@ -39,4 +39,6 @@ message TabState {
   optional bool tab_has_sensitive_content = 12;
 
   optional bool is_pinned = 13;
+
+  optional string url = 16;
 }

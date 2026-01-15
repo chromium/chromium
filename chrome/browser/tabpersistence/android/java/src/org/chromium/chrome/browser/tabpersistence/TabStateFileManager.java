@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.url.GURL;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -59,6 +60,7 @@ public class TabStateFileManager {
     // Different variants will be experimented with and each variant will have
     // a different prefix.
     private static final String FLATBUFFER_PREFIX = "flatbufferv1_";
+    private static final String NULL_STR = "";
 
     @VisibleForTesting public static final String SAVED_TAB_STATE_FILE_PREFIX = "tab";
 
@@ -365,7 +367,7 @@ public class TabStateFileManager {
             tabState.parentId = stream.readInt();
             try {
                 tabState.openerAppId = stream.readUTF();
-                if ("".equals(tabState.openerAppId)) tabState.openerAppId = null;
+                if (NULL_STR.equals(tabState.openerAppId)) tabState.openerAppId = null;
             } catch (EOFException eof) {
                 // Could happen if reading a version of a TabState that does not include the app id.
                 Log.w(TAG, "Failed to read opener app id state from tab state");
@@ -477,6 +479,16 @@ public class TabStateFileManager {
             } catch (EOFException eof) {
                 tabState.isPinned = false;
                 Log.w(TAG, "Failed to read isPinned from tab state. Assuming isPinned is false");
+            }
+            try {
+                String url = stream.readUTF();
+                if (!NULL_STR.equals(url)) {
+                    GURL gurl = new GURL(url);
+                    if (gurl.isValid()) tabState.url = gurl;
+                }
+            } catch (EOFException eof) {
+                // Can occur when reading a version of a TabState that does not include the url.
+                Log.w(TAG, "Failed to read url from tab state. Assuming url is null");
             }
             // If TabState was restored using legacy format and the FlatBuffer flag is on, that
             // indicates the TabState hasn't been migrated yet and should be.
@@ -667,7 +679,7 @@ public class TabStateFileManager {
             dataOutputStream.writeInt(contentsStateBytes.length);
             dataOutputStream.write(contentsStateBytes);
             dataOutputStream.writeInt(state.parentId);
-            dataOutputStream.writeUTF(state.openerAppId != null ? state.openerAppId : "");
+            dataOutputStream.writeUTF(state.openerAppId != null ? state.openerAppId : NULL_STR);
             dataOutputStream.writeInt(state.contentsState.version());
             dataOutputStream.writeLong(-1); // Obsolete sync ID.
             dataOutputStream.writeBoolean(false); // Obsolete attribute |SHOULD_PRESERVE|.
@@ -686,6 +698,7 @@ public class TabStateFileManager {
             dataOutputStream.writeLong(tokenLow);
             dataOutputStream.writeBoolean(state.tabHasSensitiveContent);
             dataOutputStream.writeBoolean(state.isPinned);
+            dataOutputStream.writeUTF(state.url != null ? state.url.getSpec() : NULL_STR);
             long saveTime = SystemClock.elapsedRealtime() - startTime;
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime", saveTime);
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.Legacy", saveTime);

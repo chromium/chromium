@@ -23,6 +23,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/flatbuffers:flatbuffers_java",
+    "//url:url_java",
   ]
 }
 
@@ -46,9 +47,11 @@ robolectric_library("junit") {
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabpersistence:flatbuffer_java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//url:url_java",
   ]
 }

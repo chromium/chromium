@@ -13,6 +13,7 @@ import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
 
@@ -96,7 +97,8 @@ public class StorageLoadedData implements Destroyable {
             long lastNavigationCommittedTimestampMillis,
             @Nullable Token tabGroupId,
             boolean tabHasSensitiveContent,
-            boolean isPinned) {
+            boolean isPinned,
+            @Nullable @JniType("std::string") String url) {
         TabState tabState = new TabState();
         tabState.parentId = parentTabId;
         tabState.rootId = rootId;
@@ -117,6 +119,12 @@ public class StorageLoadedData implements Destroyable {
         tabState.tabGroupId = tabGroupId;
         tabState.tabHasSensitiveContent = tabHasSensitiveContent;
         tabState.isPinned = isPinned;
+
+        if (url != null) {
+            GURL gurl = new GURL(url);
+            if (gurl.isValid()) tabState.url = gurl;
+        }
+
         return tabState;
     }
 

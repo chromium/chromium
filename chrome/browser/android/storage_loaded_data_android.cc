@@ -62,7 +62,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
           tab_state.user_agent(),
           tab_state.last_navigation_committed_timestamp_millis(),
           j_tab_group_id, tab_state.tab_has_sensitive_content(),
-          tab_state.is_pinned());
+          tab_state.is_pinned(), tab_state.url());
 
   return Java_StorageLoadedData_createLoadedTabState(env, tab_state.tab_id(),
                                                      j_tab_state);

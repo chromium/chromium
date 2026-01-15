@@ -10,6 +10,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 
@@ -69,8 +70,11 @@ public class TabState {
     // been migrated onto the new FlatBuffer format.
     public @Nullable File legacyFileToDelete;
 
-    /* Indicates whether the tab is pinned. */
+    /** Indicates whether the tab is pinned. */
     public boolean isPinned;
+
+    /** The current URL of the tab. */
+    public @Nullable GURL url;
 
     /** Returns true if the tab has a theme color set. */
     public boolean hasThemeColor() {

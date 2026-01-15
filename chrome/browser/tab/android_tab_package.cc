@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tab/android_tab_package.h"
 
+#include <optional>
+
 namespace tabs {
 
 AndroidTabPackage::AndroidTabPackage(
@@ -16,7 +18,8 @@ AndroidTabPackage::AndroidTabPackage(
     int theme_color,
     long last_navigation_committed_timestamp_millis,
     bool tab_has_sensitive_content,
-    int launch_type_at_creation)
+    int launch_type_at_creation,
+    std::optional<std::string> url)
     : version_(version),
       id_(id),
       parent_id_(parent_id),
@@ -27,7 +30,8 @@ AndroidTabPackage::AndroidTabPackage(
       last_navigation_committed_timestamp_millis_(
           last_navigation_committed_timestamp_millis),
       tab_has_sensitive_content_(tab_has_sensitive_content),
-      launch_type_at_creation_(launch_type_at_creation) {}
+      launch_type_at_creation_(launch_type_at_creation),
+      url_(std::move(url)) {}
 
 AndroidTabPackage::~AndroidTabPackage() = default;
 
