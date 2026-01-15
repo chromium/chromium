@@ -7528,10 +7528,9 @@ void RenderFrameHostImpl::ShowCreatedWindow(
   RenderFrameHostImpl* opener_frame_host =
       FromFrameToken(GetProcess()->GetDeprecatedID(), opener_frame_token);
 
-  // If |opener_frame_host| has been destroyed just return.
-  // TODO(crbug.com/40158114): Get rid of having to look up the opener frame
-  // to find the newly created web contents, because it is actually just
-  // |delegate_|.
+  // If |opener_frame_host| has been destroyed, just return. The opener frame is
+  // needed to find the newly created web contents. See crbug.com/40158114 for
+  // context.
   if (!opener_frame_host) {
     std::move(callback).Run();
     return;
