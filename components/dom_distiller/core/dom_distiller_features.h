@@ -42,13 +42,6 @@ COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
 BASE_DECLARE_FEATURE(kReaderModeImprovements);
 #endif
 
-
-#if BUILDFLAG(IS_IOS)
-// Feature to enable the new CSS for Reader mode.
-COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
-BASE_DECLARE_FEATURE(kEnableReaderModeNewCss);
-#endif  // BUILDFLAG(IS_IOS)
-
 }  // namespace dom_distiller
 
 #endif  // COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_FEATURES_H_

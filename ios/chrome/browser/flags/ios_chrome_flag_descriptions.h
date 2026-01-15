@@ -819,17 +819,8 @@ extern const char kProvisionalNotificationAlertDescription[];
 extern const char kRcapsDynamicProfileCountryName[];
 extern const char kRcapsDynamicProfileCountryDescription[];
 
-extern const char kReaderModeName[];
-extern const char kReaderModeDescription[];
-
-extern const char kReaderModeNewCssName[];
-extern const char kReaderModeNewCssDescription[];
-
 extern const char kReaderModeOmniboxEntrypointInUSName[];
 extern const char kReaderModeOmniboxEntrypointInUSDescription[];
-
-extern const char kReaderModeOmniboxEntrypointName[];
-extern const char kReaderModeOmniboxEntrypointDescription[];
 
 extern const char kReaderModeOptimizationGuideEligibilityName[];
 extern const char kReaderModeOptimizationGuideEligibilityDescription[];
@@ -842,9 +833,6 @@ extern const char kReaderModeReadabilityHeuristicDescription[];
 
 extern const char kReaderModeSupportNewFontsName[];
 extern const char kReaderModeSupportNewFontsDescription[];
-
-extern const char kReaderModeTranslationName[];
-extern const char kReaderModeTranslationDescription[];
 
 extern const char kReaderModeTranslationWithInfobarName[];
 extern const char kReaderModeTranslationWithInfobarDescription[];

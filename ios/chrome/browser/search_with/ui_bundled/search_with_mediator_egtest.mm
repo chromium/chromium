@@ -115,7 +115,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   if ([self isRunningTest:@selector(testSearchWithReaderMode)]) {
-    config.features_enabled.push_back(kEnableReaderMode);
     config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   return config;

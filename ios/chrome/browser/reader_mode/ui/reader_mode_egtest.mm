@@ -155,20 +155,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name;
+  config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
 
-  if ([self isRunningTest:@selector(testReadabilityEnabled)]) {
-    config.features_enabled_and_params.push_back(
-        {dom_distiller::kReaderModeUseReadability, {}});
-  }
-  if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
-    config.features_enabled_and_params.push_back(
-        {kEnableReaderMode,
-         {{{kReaderModeDistillationTimeoutDurationStringName, "0s"}}}});
-    config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
-  } else {
-    config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
-    config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
-  }
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)]) {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
@@ -177,11 +165,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
     config.features_enabled_and_params.push_back({kGeminiKillSwitch, {}});
   }
   if ([self isRunningTest:@selector(testOmniboxEntryPointDisabled)]) {
-    config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPoint);
     config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPointInUS);
   } else {
-    config.features_enabled_and_params.push_back(
-        {kEnableReaderModeOmniboxEntryPoint, {}});
     config.features_enabled_and_params.push_back(
         {kEnableReaderModeOmniboxEntryPointInUS, {}});
   }
@@ -498,22 +483,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   ExpectBodyHasThemeAndFont("light", "sans-serif");
 }
 
-// Tests that Reading Mode UI continues to be functional when changing the
-// underlying distillation architecture.
-- (void)testReadabilityEnabled {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
-
-  // Open Reader Mode UI.
-  GREYAssertTrue(
-      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
-      @"Reader mode content could not be loaded");
-  [self assertReaderModePageIsVisible];
-
-  // Close Reader Mode UI.
-  [ChromeEarlGrey hideReaderMode];
-  [self assertReaderModePageIsHidden];
-}
-
 // Tests that font size can be changed from the options view.
 - (void)testChangeReaderModeFontSizeFromOptionsView {
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
@@ -798,7 +767,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 // Tests that the contextual panel entrypoint disappears and a failure snackbar
 // is presented when distillation times out.
-- (void)testReaderModeDistillationTimeout {
+// TODO(crbug.com/475807792): Re-enable test once distillation failure can be
+// triggered independently.
+- (void)DISABLED_testReaderModeDistillationTimeout {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
   // Wait for the contextual panel entrypoint to appear.

@@ -89,7 +89,7 @@ void ReaderModeEligibilityDecider::StartDecision(const GURL& url) {
   ResetDecision(url);
 
   trigger_reader_mode_timer_.Start(
-      FROM_HERE, ReaderModeHeuristicPageLoadDelay(),
+      FROM_HERE, kReaderModeHeuristicPageLoadDelay,
       base::BindOnce(&ReaderModeEligibilityDecider::TriggerReaderModeHeuristic,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }

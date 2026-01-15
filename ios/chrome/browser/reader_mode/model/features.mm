@@ -27,17 +27,10 @@ bool IsUSCountryCode() {
 
 }  // namespace
 
-BASE_FEATURE(kEnableReaderMode, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableReaderModeOmniboxEntryPoint,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableReaderModeTranslation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeTranslationWithInfobar,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -47,47 +40,20 @@ BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableReaderModeOptimizationGuideEligibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =
-    "reader-mode-heuristic-page-load-delay-duration-string";
-
-const char kReaderModeDistillationTimeoutDurationStringName[] =
-    "reader-mode-distillation-timeout-duration-string";
-
-const base::TimeDelta ReaderModeDistillationTimeout() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kEnableReaderMode,
-      /*name=*/kReaderModeDistillationTimeoutDurationStringName,
-      /*default_value=*/kReaderModeDistillationTimeout);
-}
-
-const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kEnableReaderMode,
-      /*name=*/kReaderModeHeuristicPageLoadDelayDurationStringName,
-      /*default_value=*/kReaderModeHeuristicPageLoadDelay);
-}
-
 bool IsReaderModeAvailable() {
   if (IsUSCountryCode() &&
       !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return base::FeatureList::IsEnabled(kEnableReaderMode) &&
-           base::FeatureList::IsEnabled(kEnableReaderModeInUS);
+    return base::FeatureList::IsEnabled(kEnableReaderModeInUS);
   }
-  return base::FeatureList::IsEnabled(kEnableReaderMode);
+  return true;
 }
 
 bool IsReaderModeOmniboxEntryPointEnabled() {
   if (IsUSCountryCode() &&
       !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPoint) &&
-           base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPointInUS);
+    return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPointInUS);
   }
-  return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPoint);
-}
-
-bool IsReaderModeTranslationAvailable() {
-  return base::FeatureList::IsEnabled(kEnableReaderModeTranslation) ||
-         base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar);
+  return true;
 }
 
 bool IsReaderModeOptimizationGuideEligibilityAvailable() {

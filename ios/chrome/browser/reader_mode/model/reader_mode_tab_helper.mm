@@ -275,23 +275,21 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   RemoveTranslateInfobarIfExists(web_state_.get());
 
   // Apply translation to the page if it was applied on the original page.
-  if (IsReaderModeTranslationAvailable()) {
-    InfobarOverlayRequestInserter* infobar_overlay_request_inserter =
-        InfobarOverlayRequestInserter::FromWebState(web_state_.get());
-    if (infobar_overlay_request_inserter) {
-      infobar_overlay_request_inserter->SuppressNextInfobarOfType(
-          InfobarType::kInfobarTypeTranslate);
-    }
+  InfobarOverlayRequestInserter* infobar_overlay_request_inserter =
+      InfobarOverlayRequestInserter::FromWebState(web_state_.get());
+  if (infobar_overlay_request_inserter) {
+    infobar_overlay_request_inserter->SuppressNextInfobarOfType(
+        InfobarType::kInfobarTypeTranslate);
+  }
 
-    if (source_translation_state_.is_original_source_translated) {
-      reader_mode_content_tab_helper->ActivateTranslateOnPage(
-          source_translation_state_.source_code,
-          source_translation_state_.target_code);
-    } else {
-      language::IOSLanguageDetectionTabHelper::FromWebState(
-          reader_mode_web_state_.get())
-          ->StartLanguageDetection();
-    }
+  if (source_translation_state_.is_original_source_translated) {
+    reader_mode_content_tab_helper->ActivateTranslateOnPage(
+        source_translation_state_.source_code,
+        source_translation_state_.target_code);
+  } else {
+    language::IOSLanguageDetectionTabHelper::FromWebState(
+        reader_mode_web_state_.get())
+        ->StartLanguageDetection();
   }
 
   WebViewProxyTabHelper* tab_helper =
@@ -473,22 +471,20 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
 
   // Display translation badge if a translation was applied before or
   // during Reading Mode activation for active tabs.
-  if (IsReaderModeTranslationAvailable()) {
-    switch (reason) {
-      case ReaderModeDeactivationReason::kNavigationDeactivated:
-      case ReaderModeDeactivationReason::kUserDeactivated: {
-        ChromeIOSTranslateClient* translate_client =
-            ChromeIOSTranslateClient::FromWebState(web_state_.get());
-        ApplyLanguageSettingsFromClient(translate_client);
-        break;
-      }
-      case ReaderModeDeactivationReason::kDistillationFailureDeactivated: {
-        ApplyLanguageSettingsFromSource();
-        break;
-      }
-      case ReaderModeDeactivationReason::kHostTabDestructionDeactivated: {
-        break;
-      }
+  switch (reason) {
+    case ReaderModeDeactivationReason::kNavigationDeactivated:
+    case ReaderModeDeactivationReason::kUserDeactivated: {
+      ChromeIOSTranslateClient* translate_client =
+          ChromeIOSTranslateClient::FromWebState(web_state_.get());
+      ApplyLanguageSettingsFromClient(translate_client);
+      break;
+    }
+    case ReaderModeDeactivationReason::kDistillationFailureDeactivated: {
+      ApplyLanguageSettingsFromSource();
+      break;
+    }
+    case ReaderModeDeactivationReason::kHostTabDestructionDeactivated: {
+      break;
     }
   }
   source_translation_state_ = {};
@@ -555,24 +551,21 @@ void ReaderModeTabHelper::ApplyLanguageSettingsFromSource() {
 
 void ReaderModeTabHelper::CompleteDistillation(
     ReaderModeAccessPoint access_point) {
-  if (IsReaderModeTranslationAvailable()) {
-    ChromeIOSTranslateClient* translate_client =
-        ChromeIOSTranslateClient::FromWebState(web_state_.get());
-    TranslationState source_translation_state;
-    source_translation_state.is_original_source_translated =
-        IsTranslateEnabled(translate_client);
-    if (source_translation_state.is_original_source_translated) {
-      source_translation_state.source_code =
-          GetSourceLanguageCode(translate_client);
-      source_translation_state.target_code =
-          GetTargetLanguageCode(translate_client, web_state_.get());
-      if (base::FeatureList::IsEnabled(
-              kEnableReaderModeTranslationWithInfobar)) {
-        translate_client->GetTranslateManager()->RevertTranslation();
-      }
+  ChromeIOSTranslateClient* translate_client =
+      ChromeIOSTranslateClient::FromWebState(web_state_.get());
+  TranslationState source_translation_state;
+  source_translation_state.is_original_source_translated =
+      IsTranslateEnabled(translate_client);
+  if (source_translation_state.is_original_source_translated) {
+    source_translation_state.source_code =
+        GetSourceLanguageCode(translate_client);
+    source_translation_state.target_code =
+        GetTargetLanguageCode(translate_client, web_state_.get());
+    if (base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar)) {
+      translate_client->GetTranslateManager()->RevertTranslation();
     }
-    source_translation_state_ = source_translation_state;
   }
+  source_translation_state_ = source_translation_state;
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);
@@ -583,7 +576,7 @@ void ReaderModeTabHelper::CompleteDistillation(
                      weak_ptr_factory_.GetWeakPtr(), access_point));
 
   reader_mode_distillation_timer_.Start(
-      FROM_HERE, ReaderModeDistillationTimeout(),
+      FROM_HERE, kReaderModeDistillationTimeout,
       base::BindOnce(&ReaderModeTabHelper::CancelDistillation,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -30,7 +30,7 @@ class DistillerService : public KeyedService {
   // Extracts the content from the given `url` web page with instructions
   // from the `distiller_page` and runs the callback with a structured
   // result containing the simplified html, page, and image information.
-  void DistillPage(
+  virtual void DistillPage(
       const GURL& url,
       std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
       dom_distiller::Distiller::DistillationFinishedCallback finished_cb,

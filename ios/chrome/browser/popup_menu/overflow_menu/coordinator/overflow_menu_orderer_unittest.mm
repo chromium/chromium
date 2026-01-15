@@ -2329,7 +2329,7 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
 TEST_F(OverflowMenuOrdererTest,
        LoadActionsFromPrefsWithInvalidReadingModeState) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kEnableReaderMode);
+  scoped_feature_list.InitAndDisableFeature(kEnableReaderModeInUS);
   CreatePrefs();
 
   // Add Reading mode to the previous list of shown and hidden actions.

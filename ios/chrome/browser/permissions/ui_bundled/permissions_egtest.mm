@@ -123,7 +123,7 @@ void TapDoneButtonOnInfobarModal() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   if ([self isRunningTest:@selector(DISABLED_testPermissionsWithReaderMode)]) {
-    config.features_enabled.push_back(kEnableReaderMode);
+    config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   return config;
 }

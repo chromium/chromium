@@ -61,13 +61,7 @@ ReaderModeTest::ReaderModeTest()
 ReaderModeTest::~ReaderModeTest() = default;
 
 void ReaderModeTest::SetUp() {
-  base::FieldTrialParams custom_time_params = {
-      {kReaderModeHeuristicPageLoadDelayDurationStringName, "1s"},
-      {kReaderModeDistillationTimeoutDurationStringName, "5s"}};
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{kEnableReaderMode, custom_time_params}, {kEnableReaderModeInUS, {}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(kEnableReaderModeInUS);
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       OptimizationGuideServiceFactory::GetInstance(),

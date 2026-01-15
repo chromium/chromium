@@ -107,7 +107,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   config.features_enabled_and_params.push_back(
       {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
   if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
-    config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
     config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }
   return config;

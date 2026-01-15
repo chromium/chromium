@@ -1360,23 +1360,10 @@ const char kRcapsDynamicProfileCountryDescription[] =
     "When enabled, Chrome updates the country associated with "
     "the profile on open";
 
-const char kReaderModeName[] = "Enables Reader Mode";
-const char kReaderModeDescription[] =
-    "Enables Reader Mode UI and entry points.";
-
-const char kReaderModeNewCssName[] = "Reader mode new CSS on iOS";
-const char kReaderModeNewCssDescription[] =
-    "Enables the new CSS for Reader mode on iOS.";
-
 const char kReaderModeOmniboxEntrypointInUSName[] =
     "Reader Mode Omnibox Entrypoint In US";
 const char kReaderModeOmniboxEntrypointInUSDescription[] =
     "Enables the omnibox entrypoint for Reader Mode for users in the US.";
-
-const char kReaderModeOmniboxEntrypointName[] =
-    "Reader Mode Omnibox Entrypoint";
-const char kReaderModeOmniboxEntrypointDescription[] =
-    "Enables an entrypoint in the Omnibox for Reader Mode.";
 
 const char kReaderModeOptimizationGuideEligibilityName[] =
     "Enables Reader Mode Optimization Guide Eligibility";
@@ -1396,10 +1383,6 @@ const char kReaderModeReadabilityHeuristicDescription[] =
 const char kReaderModeSupportNewFontsName[] = "Reader Mode support new fonts";
 const char kReaderModeSupportNewFontsDescription[] =
     "Enables new accessible font options in Reader Mode.";
-
-const char kReaderModeTranslationName[] = "Enables Reader Mode Translation";
-const char kReaderModeTranslationDescription[] =
-    "Enables translation of web pages in Reader Mode.";
 
 const char kReaderModeTranslationWithInfobarName[] =
     "Enables Reader Mode Translation Settings";

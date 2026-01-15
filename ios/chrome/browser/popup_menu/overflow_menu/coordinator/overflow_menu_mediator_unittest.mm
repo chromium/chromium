@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -1185,8 +1184,6 @@ TEST_F(OverflowMenuMediatorTest, OpenPasswordsMetricLogged) {
 
 // Tests that items are disabled in RM
 TEST_F(OverflowMenuMediatorTest, TestReadingModeMenu) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableReaderMode);
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
   // Enable FontSize entry
