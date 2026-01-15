@@ -118,6 +118,17 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
   NOTREACHED();
 }
 
+std::string GetDestinationString(DownloadCheckResult result) {
+  switch (result) {
+    case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+      return "Google Drive";
+    case DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
+      return "OneDrive";
+    default:
+      return "";
+  }
+}
+
 enterprise_connectors::EventResult GetEventResult(
     DownloadCheckResult download_result,
     Profile* profile) {
@@ -789,7 +800,8 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     const auto& file_metadata = file_metadata_.at(current_path);
     report_callbacks_.AddUnsafe(base::BindOnce(
         &MaybeReportDeepScanningVerdict, profile, this, /*source=*/"",
-        /*destination=*/"", file_metadata.filename, file_metadata.sha256,
+        /*destination=*/GetDestinationString(download_result),
+        file_metadata.filename, file_metadata.sha256,
         file_metadata.mime_type,
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
