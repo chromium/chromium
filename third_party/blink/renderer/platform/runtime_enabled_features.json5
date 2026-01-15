@@ -1751,7 +1751,7 @@
     {
       // crbug.com/434361099
       name: "CssTextIndent",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CssTextIndentAsPrimitive",
