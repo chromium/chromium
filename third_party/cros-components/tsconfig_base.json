@@ -1,8 +1,6 @@
 {
   "extends": "../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "classic",
     "noUncheckedSideEffectImports": false,
     "useDefineForClassFields": false
   }
