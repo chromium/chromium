@@ -141,7 +141,7 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
 
   protected onDataCollectorCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     const index = Number((e.target as HTMLElement).dataset['index']);
-    this.dataCollectors_[index].isIncluded = e.detail.value;
+    this.dataCollectors_[index]!.isIncluded = e.detail.value;
     this.requestUpdate();
   }
 }

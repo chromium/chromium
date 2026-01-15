@@ -132,7 +132,6 @@ ts_library("library") {
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/commerce:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
-    "//chrome/browser/resources/support_tool:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/certificate_manager:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",

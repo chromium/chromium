@@ -110,13 +110,13 @@ export class PiiSelectionElement extends PiiSelectionElementBase {
 
   protected onPiiExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     const index = Number((e.target as HTMLElement).dataset['index']);
-    this.detectedPiiItems_[index].expandDetails = e.detail.value;
+    this.detectedPiiItems_[index]!.expandDetails = e.detail.value;
     this.requestUpdate();
   }
 
   protected onPiiCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     const index = Number((e.target as HTMLElement).dataset['index']);
-    this.detectedPiiItems_[index].keep = e.detail.value;
+    this.detectedPiiItems_[index]!.keep = e.detail.value;
     this.requestUpdate();
   }
 }

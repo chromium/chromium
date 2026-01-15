@@ -14,14 +14,12 @@ import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {BrowserProxy, DataCollectorItem, IssueDetails, PiiDataItem, SupportTokenGenerationResult} from 'chrome://support-tool/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://support-tool/browser_proxy.js';
 import type {DataExportResult, SupportToolElement} from 'chrome://support-tool/support_tool.js';
 import {SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import type {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -209,25 +207,24 @@ suite('SupportToolTest', function() {
     BrowserProxyImpl.setInstance(browserProxy);
     supportTool = document.createElement('support-tool');
     document.body.appendChild(supportTool);
-    await waitAfterNextRender(supportTool);
+    await microtasksFinished();
   });
 
   test('support tool pages navigation', async () => {
-    const pages = supportTool.shadowRoot!.querySelector('cr-page-selector');
+    const pages = supportTool.shadowRoot.querySelector('cr-page-selector');
     assertTrue(!!pages);
 
     // The selected page index must be 0, which means initial page is
     // IssueDetails.
     assertEquals(pages.selected, SupportToolPageIndex.ISSUE_DETAILS);
     // Only continue button container must be visible in initial page.
-    assertFalse(
-        supportTool.shadowRoot!.getElementById(
-                                   'continueButtonContainer')!.hidden);
-    // Click on continue button to move onto data collector selection page.
-    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    assertFalse(supportTool.$.continueButtonContainer.hidden);
+    supportTool.$.continueButton.click();
+    await microtasksFinished();
+
     assertEquals(pages.selected, SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     // Click on continue button to start data collection.
-    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    supportTool.$.continueButton.click();
     const [issueDetails, selectedDataCollectors] =
         await browserProxy.whenCalled('startDataCollection');
     assertEquals(issueDetails.caseId, 'testcaseid');
@@ -284,11 +281,11 @@ suite('SupportToolTest', function() {
     spinner.$.cancelButton.click();
     await browserProxy.whenCalled('cancelDataCollection');
     webUIListenerCallback('data-collection-cancelled');
-    flush();
+    await microtasksFinished();
     // Make sure the issue details page is displayed after cancelling data
     // collection.
     assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
+        supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.ISSUE_DETAILS);
     assertEquals(browserProxy.getCallCount('cancelDataCollection'), 1);
   });
@@ -297,16 +294,19 @@ suite('SupportToolTest', function() {
     // Go to the data collector selection page and start data collection by
     // clicking continue button twice so that the PII selection page gets
     // filled.
-    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    supportTool.$.continueButton.click();
+    await microtasksFinished();
+
     assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
+        supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
-    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    supportTool.$.continueButton.click();
+    await microtasksFinished();
+
     // Check the contents of PII selection page.
     const piiSelection = supportTool.$.piiSelection;
     await browserProxy.whenCalled('startDataCollection');
     webUIListenerCallback('data-collection-completed', PII_ITEMS);
-    flush();
     await microtasksFinished();
     const items =
         piiSelection.shadowRoot.querySelectorAll('.detected-pii-item');
@@ -315,9 +315,9 @@ suite('SupportToolTest', function() {
     piiSelection.shadowRoot.getElementById('exportButton')!.click();
     await browserProxy.whenCalled('startDataExport');
     webUIListenerCallback('support-data-export-started');
-    flush();
+    await microtasksFinished();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
+        supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.EXPORT_SPINNER);
     const exportResult: DataExportResult = {
       success: true,
@@ -325,9 +325,9 @@ suite('SupportToolTest', function() {
       error: '',
     };
     webUIListenerCallback('data-export-completed', exportResult);
-    flush();
+    await microtasksFinished();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
+        supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.DATA_EXPORT_DONE);
   });
 });
@@ -342,7 +342,7 @@ suite('UrlGeneratorTest', function() {
     BrowserProxyImpl.setInstance(browserProxy);
     urlGenerator = document.createElement('url-generator');
     document.body.appendChild(urlGenerator);
-    await waitAfterNextRender(urlGenerator);
+    await microtasksFinished();
   });
 
   test('url generation success', async () => {

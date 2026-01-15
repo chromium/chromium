@@ -74,7 +74,7 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
   protected onDataCollectorCheckboxChanged_(e: CustomEvent<{value: boolean}>) {
     const index = Number((e.target as HTMLElement).dataset['index']);
     const isIncluded = e.detail.value;
-    this.dataCollectors_[index].isIncluded = isIncluded;
+    this.dataCollectors_[index]!.isIncluded = isIncluded;
     this.requestUpdate();  // Trigger Lit update
     this.allSelected_ = this.dataCollectors_.every(item => item.isIncluded);
   }
