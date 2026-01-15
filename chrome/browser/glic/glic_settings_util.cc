@@ -58,7 +58,7 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
 namespace glic {
 
 void OpenGlicSettingsPage(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   NavigateParams params(profile,
                         chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
@@ -68,7 +68,7 @@ void OpenGlicSettingsPage(Profile* profile) {
 }
 
 void OpenGlicOsToggleSetting(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   ShowPromoInPage::Params params;
   params.bubble_anchor_id = kGlicOsToggleElementId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
@@ -82,7 +82,7 @@ void OpenGlicOsToggleSetting(Profile* profile) {
 }
 
 void OpenGlicKeyboardShortcutSetting(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   ShowPromoInPage::Params params;
   params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;

@@ -41,8 +41,9 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
-  DependsOn(ThemeServiceFactory::GetInstance());
-  DependsOn(contextual_cueing::ContextualCueingServiceFactory::GetInstance());
+  DependsOn(ThemeServiceFactory::GetInstance());  // NEEDS_ANDROID_IMPL
+  DependsOn(contextual_cueing::ContextualCueingServiceFactory::
+                GetInstance());  // NEEDS_ANDROID_IMPL
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
 #endif
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::

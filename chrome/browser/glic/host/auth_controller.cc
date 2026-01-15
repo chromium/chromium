@@ -184,8 +184,7 @@ void AuthController::ShowReauthForAccount(base::OnceClosure after_signin) {
       base::TimeTicks::Now() + base::Minutes(5);
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_ANDROID)
-  // NEEDS_ANDROID_IMPL
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   signin_ui_util::ShowReauthForAccount(
       profile_, primary_account_info.email,
       signin_metrics::AccessPoint::kGlicLaunchButton);

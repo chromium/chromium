@@ -17,10 +17,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/widget/glic_widget.h"
-#endif
-
 namespace glic {
 
 // Key for the floating embedder. This is a struct to make it a distinct type

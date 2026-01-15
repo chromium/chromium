@@ -27,7 +27,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif

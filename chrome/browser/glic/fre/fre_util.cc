@@ -22,7 +22,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #endif
@@ -42,6 +42,7 @@ GURL GetFreURL(Profile* profile) {
     return GURL();
   }
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   // Add the hotkey configuration to the URL as a query parameter.
   std::string hotkey_param_value;
 #if !BUILDFLAG(IS_MAC)
@@ -53,9 +54,10 @@ GURL GetFreURL(Profile* profile) {
   if (!hotkey_param_value.empty()) {
     url = net::AppendOrReplaceQueryParameter(url, "hotkey", hotkey_param_value);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add the current Chrome theme to the URL as a query parameter.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   const bool use_dark_mode =
       ThemeServiceFactory::GetForProfile(profile)->BrowserUsesDarkColors();
 #else

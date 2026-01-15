@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -283,12 +284,7 @@ void GlicShareImageHandler::OnCopyPolicyCheckComplete(
     ShareComplete(ShareImageResult::kFailedNoTab);
     return;
   }
-  BrowserWindowInterface* browser =
-#if !BUILDFLAG(IS_ANDROID)
-      tab->GetBrowserWindowInterface();
-#else
-      nullptr;  // NEEDS_ANDROID_IMPL
-#endif
+  BrowserWindowInterface* browser = GetBrowserWindowInterface(tab);
   if (!browser) {
     ShareComplete(ShareImageResult::kFailedNoBrowser);
     return;
@@ -444,13 +440,12 @@ void GlicShareImageHandler::MaybeShowErrorToast(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL for toast controller
   if (BrowserWindowInterface* browser = tab->GetBrowserWindowInterface()) {
     if (auto* controller = browser->GetFeatures().toast_controller()) {
       controller->MaybeShowToast(ToastParams(ToastId::kGlicShareImageFailed));
     }
   }
-#else  // TODO(b/470059315): Implement for android
 #endif
 }
 

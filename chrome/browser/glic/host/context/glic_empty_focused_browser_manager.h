@@ -8,10 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window.h"  // CLEANUP: Remove this
-#endif
-
 class BrowserWindowInterface;
 
 namespace glic {

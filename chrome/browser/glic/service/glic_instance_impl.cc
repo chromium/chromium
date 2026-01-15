@@ -220,12 +220,7 @@ GlicInstanceImpl::GlicInstanceImpl(
       id_(instance_id),
       host_(profile_, this, this, this),
       pinned_tab_manager_(
-#if !BUILDFLAG(IS_ANDROID)
-          std::make_unique<GlicPinnedTabManagerImpl>(profile, this, metrics)
-#else
-          std::make_unique<GlicEmptyPinnedTabManager>()
-#endif
-              ),
+          std::make_unique<GlicPinnedTabManagerImpl>(profile, this, metrics)),
 #if !BUILDFLAG(IS_ANDROID)
       detached_mode_sharing_manager_(
           std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
@@ -256,12 +251,9 @@ GlicInstanceImpl::GlicInstanceImpl(
       instance_metrics_(&sharing_manager_),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
-#if !BUILDFLAG(IS_ANDROID)
               &sharing_manager_,
               this,
-              contextual_cueing_service
-#endif
-              )),
+              contextual_cueing_service)),
       actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
       last_activation_timestamp_(base::Time::Now()),
       last_deactivation_timestamp_(base::TimeTicks::Now()) {

@@ -17,7 +17,6 @@ assert(enable_glic || enable_glic_android)
 source_set("glic") {
   sources = [
     "gemini_act_on_web_settings_policy_handler.h",
-    "glic_hotkey.h",
     "glic_metrics.h",
     "glic_net_log.h",
     "glic_pref_names.h",
@@ -74,6 +73,7 @@ source_set("glic") {
 
     # Desktop-only sources
     sources += [
+      "glic_hotkey.h",
       "widget/glic_view.h",
       "widget/glic_widget.h",
       "widget/local_hotkey_manager.h",
@@ -152,7 +152,6 @@ source_set("enum") {
 source_set("impl") {
   sources = [
     "gemini_act_on_web_settings_policy_handler.cc",
-    "glic_hotkey.cc",
     "glic_metrics.cc",
     "glic_metrics_provider.cc",
     "glic_metrics_provider.h",
@@ -241,6 +240,7 @@ source_set("impl") {
 
     # Desktop only
     sources += [
+      "glic_hotkey.cc",
       "glic_occlusion_notifier.cc",
       "glic_occlusion_notifier.h",
       "host/context/glic_focused_browser_manager_impl.cc",

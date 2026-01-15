@@ -13,7 +13,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #endif
@@ -24,7 +24,7 @@ namespace glic {
 
 inline BrowserWindowInterface* GetBrowserWindowInterface(
     tabs::TabInterface* tab) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return tab->GetBrowserWindowInterface();
 #else
   return nullptr;
@@ -34,7 +34,7 @@ inline BrowserWindowInterface* GetBrowserWindowInterface(
 inline base::CallbackListSubscription RegisterDidBecomeActive(
     BrowserWindowInterface* browser_window,
     base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window->RegisterDidBecomeActive(std::move(callback));
 #else
   return base::CallbackListSubscription();
@@ -44,7 +44,7 @@ inline base::CallbackListSubscription RegisterDidBecomeActive(
 inline base::CallbackListSubscription RegisterDidBecomeInactive(
     BrowserWindowInterface* browser_window,
     base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window->RegisterDidBecomeInactive(std::move(callback));
 #else
   return base::CallbackListSubscription();
@@ -54,15 +54,25 @@ inline base::CallbackListSubscription RegisterDidBecomeInactive(
 inline base::CallbackListSubscription RegisterBrowserDidClose(
     BrowserWindowInterface* browser_window,
     base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window->RegisterBrowserDidClose(std::move(callback));
 #else
   return base::CallbackListSubscription();
 #endif
 }
 
+inline base::CallbackListSubscription RegisterActiveTabDidChange(
+    BrowserWindowInterface* browser_window,
+    base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+  return browser_window->RegisterActiveTabDidChange(std::move(callback));
+#else
+  return base::CallbackListSubscription();
+#endif
+}
+
 inline bool IsActive(BrowserWindowInterface* browser_window) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window->IsActive();
 #else
   return true;
@@ -70,7 +80,7 @@ inline bool IsActive(BrowserWindowInterface* browser_window) {
 }
 
 inline bool IsDeleteScheduled(BrowserWindowInterface* browser_window) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window->GetBrowserForMigrationOnly()->is_delete_scheduled();
 #else
   return false;
@@ -79,7 +89,7 @@ inline bool IsDeleteScheduled(BrowserWindowInterface* browser_window) {
 
 inline tabs::TabInterface* GetActiveTabInterface(
     BrowserWindowInterface* browser_window) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window ? browser_window->GetActiveTabInterface() : nullptr;
 #else
   return nullptr;
@@ -88,7 +98,7 @@ inline tabs::TabInterface* GetActiveTabInterface(
 
 inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
     BrowserWindowInterface* browser_window) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return browser_window ? browser_window->GetWeakPtr() : nullptr;
 #else
   return nullptr;
@@ -97,7 +107,7 @@ inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
 
 inline base::WeakPtr<content::NavigationHandle> DoNavigate(
     NavigateParams* params) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return Navigate(params);
 #else
   return nullptr;

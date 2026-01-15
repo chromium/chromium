@@ -26,7 +26,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "chrome/browser/ui/tabs/tab_model.h"
 #endif
 
@@ -274,7 +274,6 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
   bool is_observable = is_audible || is_foreground;
   bool is_active_in_window = false;
   bool is_window_active = false;
-#if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
@@ -284,12 +283,12 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
     // cannot call GetBrowserWindowInterface to check for null. So we resort to
     // null checking the underlying tab strip.
     // TODO(crbug.com/456445100): Determine a better way to safely call this.
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     is_window_active = tab &&
                        static_cast<tabs::TabModel*>(tab)->owning_model() &&
                        tab->GetBrowserWindowInterface()->IsActive();
-  }
-#else  // TODO(b/470059315): Implement for android
 #endif
+  }
   return glic::mojom::TabData::New(
       GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),

@@ -11,10 +11,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/tab_model.h"
-#endif
-
 namespace glic {
 
 struct PageMetadataManager::PageMetadataSubscription {

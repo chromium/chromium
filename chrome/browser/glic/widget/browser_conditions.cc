@@ -20,7 +20,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
 #endif
@@ -128,16 +127,12 @@ bool IsBrowserInForeground(BrowserWindowInterface* bwi) {
 }
 
 bool IsBrowserVisible(BrowserWindowInterface* bwi) {
+  return bwi && bwi->GetWindow() && bwi->GetWindow()->IsVisible() &&
+         !bwi->GetWindow()->IsMinimized()
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = static_cast<Browser*>(bwi);
-  return browser && browser->window() &&
-         browser->GetBrowserView().GetWidget() &&
-         browser->window()->IsVisible() && !browser->window()->IsMinimized() &&
-         browser->capabilities()->IsVisibleOnScreen();
-#else
-  // NEEDS_ANDROID_IMPL
-  return bwi->GetWindow()->IsVisible();
+         && bwi->capabilities()->IsVisibleOnScreen()
 #endif
+      ;
 }
 
 BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {

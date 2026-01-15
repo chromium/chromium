@@ -20,7 +20,7 @@ namespace glic::prefs {
 // Boolean pref that enables or disables the launcher.
 inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 // String pref that keeps track of the non-localized version of the registered
 // hotkey for Glic.
 inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";

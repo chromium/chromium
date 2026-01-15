@@ -179,7 +179,7 @@ GlicKeyedService::GlicKeyedService(
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
       occlusion_notifier_(UseDefaultWindowController()
                               ? std::make_unique<GlicOcclusionNotifier>(
                                     GetSingleInstanceWindowController())
@@ -191,11 +191,11 @@ GlicKeyedService::GlicKeyedService(
           std::make_unique<GlicWebContentsWarmingPool>(profile)),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   CHECK(actor_keyed_service);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   if (UseDefaultWindowController()) {
     // TODO: Create the zero state suggestions manager on each instance.
     zero_state_suggestions_manager_ =
@@ -285,7 +285,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   // Show the FRE if not yet completed, and if we have a browser to use.
   if (fre_controller_->ShouldShowFreDialog()) {
     fre_controller_->MarkFreStartAttempt();
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
     if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {
       if (!fre_controller_->CanShowFreDialog(bwi)) {
         // If the FRE is blocked because it is already showing, we should
@@ -345,7 +345,7 @@ void GlicKeyedService::CloseFloatingPanel() {
   window_controller().Close({});
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::PrepareForOpen() {
   fre_controller().MaybePreconnect();
 
@@ -360,7 +360,7 @@ void GlicKeyedService::PrepareForOpen() {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 glic::GlicInstanceMetrics* GlicKeyedService::instance_metrics() {
   return nullptr;
 }
@@ -371,7 +371,7 @@ GlicWindowController& GlicKeyedService::window_controller() const {
   return *window_controller_.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 GlicWindowControllerInterface&
 GlicKeyedService::GetSingleInstanceWindowController() const {
   CHECK(UseDefaultWindowController());
@@ -388,7 +388,6 @@ GlicSharingManager& GlicKeyedService::sharing_manager() {
   return *sharing_manager_.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 bool GlicKeyedService::IsTabPinnedToAnyInstance(
     const tabs::TabHandle& tab_handle) const {
   auto instances = window_controller().GetInstances();
@@ -405,6 +404,7 @@ void GlicKeyedService::UnpinTabsFromAllInstances(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void GlicKeyedService::OnZeroStateSuggestionsFetched(
     mojom::ZeroStateSuggestionsPtr suggestions,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
@@ -477,7 +477,7 @@ void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
 }
 
 bool GlicKeyedService::IsWindowShowing() const {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   if (UseDefaultWindowController()) {
     return GetSingleInstanceWindowController().IsShowing();
   }
@@ -555,7 +555,7 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
   context_access_indicator_callback_list_.Notify(show);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::CreateTask(
     base::WeakPtr<actor::ActorTaskDelegate> delegate,
     actor::webui::mojom::TaskOptionsPtr options,
@@ -628,7 +628,7 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
   return user_input_submitted_callback_list_.Add(std::move(callback));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::CaptureRegion(
     content::WebContents* web_contents,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
@@ -814,7 +814,7 @@ void GlicKeyedService::Archive(
   window_controller().ArchiveInstanceWithFrame(outermost_render_frame_host);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::OnWebClientCleared() {
   actor_task_manager_->CancelTask();
 }
@@ -833,7 +833,7 @@ bool GlicKeyedService::IsActive() {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::RequestToShowCredentialSelectionDialog(
     actor::TaskId task_id,
     const base::flat_map<std::string, gfx::Image>& icons,

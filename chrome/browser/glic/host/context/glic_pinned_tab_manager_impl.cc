@@ -34,7 +34,7 @@
 #include "glic_pinned_tab_manager.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 

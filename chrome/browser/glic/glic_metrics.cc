@@ -19,8 +19,11 @@
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
@@ -35,12 +38,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -224,7 +224,6 @@ enum class BrowserActiveState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicBrowserActiveState)
 
-#if !BUILDFLAG(IS_ANDROID)
 // Computes BrowserActiveState.
 class BrowserActivityObserver : public BrowserCollectionObserver {
  public:
@@ -242,7 +241,9 @@ class BrowserActivityObserver : public BrowserCollectionObserver {
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [&browser_hidden](BrowserWindowInterface* browser_window_interface) {
           if (!browser_window_interface->GetWindow()->IsMinimized() &&
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
               browser_window_interface->capabilities()->IsVisibleOnScreen() &&
+#endif
               browser_window_interface->GetWindow()->IsVisible()) {
             browser_hidden = false;
             return false;
@@ -297,16 +298,6 @@ class BrowserActivityObserver : public BrowserCollectionObserver {
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};
 };
-#else  // TODO(b/470059315): Implement this for android.
-
-class BrowserActivityObserver {
- public:
-  BrowserActiveState GetBrowserActiveState() const {
-    return BrowserActiveState::kBrowserActive;
-  }
-};
-
-#endif
 
 }  // namespace internal
 

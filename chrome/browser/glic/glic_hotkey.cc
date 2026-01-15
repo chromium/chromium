@@ -19,12 +19,9 @@ namespace {
 
 std::string GetHotkeyStringWithMapping(
     base::RepeatingCallback<void(std::u16string&)> token_mapping) {
-  std::vector<std::u16string> hotkey_tokens
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-      = glic::GlicLauncherConfiguration::GetGlobalHotkey()
-            .GetShortcutVectorRepresentation()
-#endif
-      ;
+  std::vector<std::u16string> hotkey_tokens =
+      glic::GlicLauncherConfiguration::GetGlobalHotkey()
+          .GetShortcutVectorRepresentation();
   // If the hotkey is unset, return an empty string as its representation.
   if (hotkey_tokens.empty()) {
     return "";

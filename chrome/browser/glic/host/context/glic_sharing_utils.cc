@@ -19,10 +19,6 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#endif
-
 namespace glic {
 
 bool IsBrowserValidForSharingInProfile(
@@ -66,7 +62,6 @@ GlicUnpinEvent GetEmptyUnpinEvent() {
                         base::TimeTicks::Now());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
     : active_tab_changed_callback_list_(), profile_(profile) {
   browser_collection_observation_.Observe(
@@ -90,7 +85,8 @@ bool GlicActiveTabForProfileTracker::IsBrowserActiveForProfile(
 void GlicActiveTabForProfileTracker::UpdateActiveTabSubscription(
     BrowserWindowInterface* browser) {
   if (IsBrowserActiveForProfile(browser)) {
-    active_tab_subscription_ = browser->RegisterActiveTabDidChange(
+    active_tab_subscription_ = RegisterActiveTabDidChange(
+        browser,
         base::BindRepeating(&GlicActiveTabForProfileTracker::OnActiveTabChanged,
                             base::Unretained(this)));
   } else {
@@ -122,7 +118,7 @@ void GlicActiveTabForProfileTracker::UpdateActiveTab() {
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (IsBrowserActiveForProfile(browser)) {
-    active_tab = browser->GetActiveTabInterface();
+    active_tab = GetActiveTabInterface(browser);
   }
 
   if (last_notified_tab_.WasInvalidated() ||
@@ -147,12 +143,5 @@ void GlicActiveTabForProfileTracker::NotifyActiveTabChanged(
     tabs::TabInterface* active_tab) {
   active_tab_changed_callback_list_.Notify(active_tab);
 }
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(
-    Profile* profile) {}
-GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() = default;
-#endif
 
 }  // namespace glic

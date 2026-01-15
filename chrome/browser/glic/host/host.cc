@@ -34,7 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
@@ -273,6 +273,7 @@ Host::InstanceDelegate& Host::instance_delegate() {
 #if !BUILDFLAG(IS_ANDROID)
   return instance_delegate_ ? *instance_delegate_ : glic_service();
 #else
+  // Multi-instance always uses instance_delegate_.
   return *instance_delegate_;
 #endif
 }
@@ -673,7 +674,7 @@ void HostManager::Shutdown() {
 }
 
 void HostManager::GuestAdded(content::WebContents* guest_contents) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
 #endif

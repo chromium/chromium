@@ -28,10 +28,6 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/widget/local_hotkey_manager.h"
-#endif
-
 class Browser;
 
 namespace content {

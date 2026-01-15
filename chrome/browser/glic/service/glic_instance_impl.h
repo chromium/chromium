@@ -34,7 +34,7 @@
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 
-#if !BUILDFLAG(IS_ANDROID)  // Cleanup: Remove this
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #endif
 
