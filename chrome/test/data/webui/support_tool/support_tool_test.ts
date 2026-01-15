@@ -10,9 +10,7 @@
 import 'chrome://support-tool/support_tool.js';
 import 'chrome://support-tool/url_generator.js';
 
-import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -112,12 +110,16 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   getDataCollectors() {
     this.methodCalled('getDataCollectors');
-    return Promise.resolve(DATA_COLLECTORS);
+    // Using structuredClone since the UI modifies this data in place, and the
+    // data should reset between tests.
+    return Promise.resolve(structuredClone(DATA_COLLECTORS));
   }
 
   getAllDataCollectors() {
     this.methodCalled('getAllDataCollectors');
-    return Promise.resolve(ALL_DATA_COLLECTORS);
+    // Using structuredClone since the UI modifies this data in place, and the
+    // data should reset between tests.
+    return Promise.resolve(structuredClone(ALL_DATA_COLLECTORS));
   }
 
   startDataCollection(
@@ -345,20 +347,17 @@ suite('UrlGeneratorTest', function() {
 
   test('url generation success', async () => {
     // Ensure the button is disabled when we open the page.
-    const copyLinkButton = urlGenerator.shadowRoot!.getElementById(
-                               'copyURLButton')! as CrButtonElement;
-    assertTrue(copyLinkButton.disabled);
-    const caseIdInput = urlGenerator.shadowRoot!.getElementById(
-                            'caseIdInput')! as CrInputElement;
-    caseIdInput.value = 'test123';
+    const copyLinkButton = urlGenerator.$.copyURLButton;
+    assertTrue(copyLinkButton.disabled, 'link button is disabled');
+    urlGenerator.$.caseIdInput.value = 'test123';
     const dataCollectors =
-        urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
+        urlGenerator.shadowRoot.querySelectorAll('cr-checkbox');
     // Select one of data collectors to enable the button.
     const firstDataCollector = dataCollectors[0]!;
     firstDataCollector.click();
-    await firstDataCollector.updateComplete;
+    await microtasksFinished();
     // Ensure the button is enabled after we select at least one data collector.
-    assertFalse(copyLinkButton.disabled);
+    assertFalse(copyLinkButton.disabled, 'link button is now not disabled');
     const expectedToken = 'chrome://support-tool/?case_id=test123&module=jekhh';
     // Set the expected result of URL generation to successful.
     const expectedResult: SupportTokenGenerationResult = {
@@ -385,8 +384,7 @@ suite('UrlGeneratorTest', function() {
       errorMessage: 'Test error message',
     };
     browserProxy.setSupportTokenGenerationResult(expectedResult);
-    const copyLinkButton = urlGenerator.shadowRoot!.getElementById(
-                               'copyURLButton')! as CrButtonElement;
+    const copyLinkButton = urlGenerator.$.copyURLButton;
     // Enable the button for testing. The input fields are not important as
     // we're testing for the error message.
     copyLinkButton.disabled = false;
@@ -399,15 +397,14 @@ suite('UrlGeneratorTest', function() {
 
   test('token generation success', async () => {
     // Ensure the button is disabled when we open the page.
-    const copyTokenButton = urlGenerator.shadowRoot!.getElementById(
-                                'copyTokenButton')! as CrButtonElement;
+    const copyTokenButton = urlGenerator.$.copyTokenButton;
     assertTrue(copyTokenButton.disabled);
     const dataCollectors =
-        urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
+        urlGenerator.shadowRoot.querySelectorAll('cr-checkbox');
     // Select one of data collectors to enable the button.
     const firstDataCollector = dataCollectors[0]!;
     firstDataCollector.click();
-    await firstDataCollector.updateComplete;
+    await microtasksFinished();
     // Ensure the button is enabled after we select at least one data collector.
     assertFalse(copyTokenButton.disabled);
     const expectedToken = 'jekhh';

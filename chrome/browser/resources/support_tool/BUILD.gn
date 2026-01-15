@@ -14,10 +14,7 @@ build_webui("build") {
     "url_generator_container.html",
   ]
 
-  web_component_files = [
-    "support_tool.ts",
-    "url_generator.ts",
-  ]
+  web_component_files = [ "support_tool.ts" ]
 
   ts_files = [
     "browser_proxy.ts",
@@ -33,6 +30,8 @@ build_webui("build") {
     "spinner_page.ts",
     "support_tool_page_mixin.ts",
     "support_tool_page_mixin_lit.ts",
+    "url_generator.html.ts",
+    "url_generator.ts",
   ]
 
   css_files = [
@@ -43,6 +42,7 @@ build_webui("build") {
     "spinner_page.css",
     "support_tool_shared.css",
     "support_tool_shared_lit.css",
+    "url_generator.css",
   ]
 
   icons_html_files = [ "icons.html" ]
