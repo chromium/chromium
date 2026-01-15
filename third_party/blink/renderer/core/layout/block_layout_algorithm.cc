@@ -3476,7 +3476,6 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     }
     builder.SetLineClampData(line_clamp_data_.data);
     builder.SetLineClampEndMarginStrut(line_clamp_data_.end_margin_strut);
-    builder.SetLineClampEndPadding(Padding().block_end);
     builder.SetShouldTextBoxTrimInsideWhenLineClamp(
         line_clamp_data_.data.IsLineClampContext() &&
         (constraint_space.ShouldTextBoxTrimInsideWhenLineClamp() ||
