@@ -241,7 +241,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   NavigateToURLWithDisposition(browser(), GURL(url::kAboutBlankURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_FALSE(close_button->GetVisible());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
