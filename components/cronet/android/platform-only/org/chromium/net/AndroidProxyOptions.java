@@ -23,14 +23,24 @@ final class AndroidProxyOptions {
         }
 
         List<android.net.http.Proxy> proxies = new ArrayList<android.net.http.Proxy>();
+        int allProxiesFailedBehavior =
+                android.net.http.ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT;
         for (org.chromium.net.Proxy proxy : proxyOptions.getProxyList()) {
             if (proxy != null) {
                 proxies.add(AndroidProxy.fromCronetEngineProxy(proxy));
             } else {
-                proxies.add(null);
+                allProxiesFailedBehavior =
+                        android.net.http.ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT;
             }
         }
-        backend.setProxyOptions(android.net.http.ProxyOptions.fromProxyList(proxies));
+        if (proxies.isEmpty()) {
+            // CronetEngine accepts a list of proxies containing only the fallback option.
+            // HttpEngine does not. Until the two converge, translate this to a no-op on the
+            // underlying HttpEngine.
+            return;
+        }
+        backend.setProxyOptions(
+                android.net.http.ProxyOptions.fromProxyList(proxies, allProxiesFailedBehavior));
     }
 
     private AndroidProxyOptions() {}
