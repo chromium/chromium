@@ -139,7 +139,12 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     }
 
     protected void startSettings(Class<? extends Fragment> fragment) {
-        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        getContext(),
+                        fragment,
+                        /* fragmentArgs= */ null,
+                        /* addToBackStack= */ true);
     }
 
     @Override
