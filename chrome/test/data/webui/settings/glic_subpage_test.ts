@@ -523,28 +523,36 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('ClosedCaptionsToggleEnabled', () => {
-    test('ClosedCaptionsToggleFeatureEnabled', () => {
+  suite('ClosedCaptionsToggleHidden', () => {
+    test('IsNotVisible', () => {
+      const closedCaptionsToggle =
+          $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
+      assertFalse(isVisible(closedCaptionsToggle));
+    });
+  });
+
+  suite('ClosedCaptionsToggleVisible', () => {
+    test('IsVisible', () => {
       const closedCaptionsToggle =
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
       assertTrue(isVisible(closedCaptionsToggle));
     });
 
-    test('ClosedCaptionsToggleEnabled', () => {
+    test('Enabled', () => {
       page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, true);
 
       assertTrue(
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!.checked);
     });
 
-    test('ClosedCaptionsToggleDisabled', () => {
+    test('Disabled', () => {
       page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
 
       assertFalse(
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!.checked);
     });
 
-    test('ClosedCaptionsToggleChanged', async () => {
+    test('Changed', async () => {
       page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
 
       const closedCaptionsToggle =
