@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier.NotifyBehavior;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.tab.LookAheadObservableSupplier;
 
 /** Unit tests for {@link LookAheadObservableSupplier}. */
@@ -111,6 +113,7 @@ public class SettableLookAheadObservableSupplierUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testSetMismatchThrows() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
         mSupplier.willSet("value1");
         mSupplier.set("value2");
     }
@@ -121,9 +124,6 @@ public class SettableLookAheadObservableSupplierUnitTest {
         mSupplier.addObserver(mObserver);
 
         mSupplier.destroy();
-        mSupplier.set(SUPPLIER_VALUE);
-
-        verify(mLookAheadObserver, never()).onResult(SUPPLIER_VALUE);
-        verify(mObserver, never()).onResult(SUPPLIER_VALUE);
+        assertEquals(0, mSupplier.getObserverCount());
     }
 }
