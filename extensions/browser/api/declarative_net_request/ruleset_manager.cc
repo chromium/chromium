@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -228,8 +227,8 @@ bool RulesetManager::HasExtraHeadersMatcherForRequest(
   // request would potentially match any onHeadersReceived rules based on
   // non-header parameters.
   return HasRulesets(RulesetMatchingStage::kOnHeadersReceived) ||
-         base::Contains(actions, RequestAction::Type::MODIFY_HEADERS,
-                        &RequestAction::type);
+         std::ranges::contains(actions, RequestAction::Type::MODIFY_HEADERS,
+                               &RequestAction::type);
 }
 
 void RulesetManager::OnRenderFrameCreated(content::RenderFrameHost* host) {

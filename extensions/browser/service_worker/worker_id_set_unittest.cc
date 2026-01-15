@@ -4,10 +4,10 @@
 
 #include "extensions/browser/service_worker/worker_id_set.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +50,7 @@ class VectorWorkerIdListImpl {
   }
 
   bool Contains(const WorkerId& worker_id) const {
-    return base::Contains(workers_, worker_id);
+    return std::ranges::contains(workers_, worker_id);
   }
 
  private:

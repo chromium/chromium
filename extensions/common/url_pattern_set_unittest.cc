@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <sstream>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -409,8 +409,8 @@ TEST(URLPatternSetTest, ToStringVector) {
 
   EXPECT_EQ(2UL, string_vector.size());
 
-  EXPECT_TRUE(base::Contains(string_vector, "https://google.com/"));
-  EXPECT_TRUE(base::Contains(string_vector, "https://yahoo.com/"));
+  EXPECT_TRUE(std::ranges::contains(string_vector, "https://google.com/"));
+  EXPECT_TRUE(std::ranges::contains(string_vector, "https://yahoo.com/"));
 }
 
 TEST(URLPatternSetTest, MatchesHost) {

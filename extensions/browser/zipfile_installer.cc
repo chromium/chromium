@@ -4,10 +4,10 @@
 
 #include "extensions/browser/zipfile_installer.h"
 
+#include <algorithm>
 #include <optional>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -232,7 +232,7 @@ bool ZipFileInstaller::ShouldExtractFile(bool is_theme,
     if (extension.empty()) {
       return true;
     }
-    return base::Contains(kAllowedThemeFiletypes, extension);
+    return std::ranges::contains(kAllowedThemeFiletypes, extension);
   }
   return !base::FilePath::CompareEqualIgnoreCase(file_path.FinalExtension(),
                                                  FILE_PATH_LITERAL(".exe"));

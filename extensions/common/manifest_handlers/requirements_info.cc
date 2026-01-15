@@ -4,9 +4,9 @@
 
 #include "extensions/common/manifest_handlers/requirements_info.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/requirements.h"
@@ -76,7 +76,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
   if (requirements._3d) {
     // css3d is always available, so no check is needed, but no error is
     // generated.
-    requirements_info->webgl = base::Contains(
+    requirements_info->webgl = std::ranges::contains(
         requirements._3d->features, api::requirements::_3DFeature::kWebgl);
   }
 

@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/native_extension_bindings_system.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -441,7 +442,7 @@ bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
           extensions_features::kIncludeJSCallStackInExtensionApiRequest)) {
     return false;
   }
-  if (!base::Contains(kApiMethods, request.method_name)) {
+  if (!std::ranges::contains(kApiMethods, request.method_name)) {
     return false;
   }
   return true;

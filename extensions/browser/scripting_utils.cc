@@ -4,6 +4,8 @@
 
 #include "extensions/browser/scripting_utils.h"
 
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/browser_context.h"
@@ -493,8 +495,8 @@ bool GetFileResources(const std::vector<std::string>& files,
     }
 
     // ExtensionResource doesn't implement an operator==.
-    if (base::Contains(resources, resource.relative_path(),
-                       &ExtensionResource::relative_path)) {
+    if (std::ranges::contains(resources, resource.relative_path(),
+                              &ExtensionResource::relative_path)) {
       // Disallow duplicates. Note that we could allow this, if we wanted (and
       // there *might* be reason to with JS injection, to perform an operation
       // twice?). However, this matches content script behavior, and injecting

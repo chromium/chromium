@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,7 +67,7 @@ void CheckParse(const ConstCommandsTestData& data,
   if (data.key[0] != '\0') {
     std::string current_platform = extensions::Command::CommandPlatform();
     if (platform_specific_only &&
-        !base::Contains(platforms, current_platform)) {
+        !std::ranges::contains(platforms, current_platform)) {
       // Given a |current_platform| without a |suggested_key|, |default| is
       // used. However, some keys, such as Search on Chrome OS, are only valid
       // for platform specific entries. Skip the test in this case.

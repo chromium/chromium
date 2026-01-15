@@ -4,11 +4,11 @@
 
 #include "extensions/common/permissions/permissions_data.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/stack_allocated.h"
 #include "base/no_destructor.h"
@@ -120,7 +120,7 @@ bool PermissionsData::CanExecuteScriptEverywhere(
   const ExtensionsClient::ScriptingAllowlist& allowlist =
       ExtensionsClient::Get()->GetScriptingAllowlist();
 
-  return base::Contains(allowlist, extension_id);
+  return std::ranges::contains(allowlist, extension_id);
 }
 
 bool PermissionsData::IsRestrictedUrl(const GURL& document_url,

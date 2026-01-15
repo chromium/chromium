@@ -2676,7 +2676,8 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
   }
 
   const std::vector<WebRequestResourceType>& types = listener.filter.types;
-  if (!types.empty() && !base::Contains(types, request.web_request_type)) {
+  if (!types.empty() &&
+      !std::ranges::contains(types, request.web_request_type)) {
     return false;
   }
 

@@ -4,10 +4,10 @@
 
 #include "extensions/browser/extension_navigation_throttle.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -356,8 +356,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   const url::Origin& initiator_origin =
       navigation_handle()->GetInitiatorOrigin().value();
   if (initiator_origin.scheme() == kExtensionScheme &&
-      base::Contains(MimeTypesHandler::GetMIMETypeAllowlist(),
-                     initiator_origin.host())) {
+      std::ranges::contains(MimeTypesHandler::GetMIMETypeAllowlist(),
+                            initiator_origin.host())) {
     return content::NavigationThrottle::PROCEED;
   }
 

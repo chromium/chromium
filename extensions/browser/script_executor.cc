@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -73,7 +72,7 @@ class Handler : public content::WebContentsObserver {
         continue;
       }
 
-      DCHECK(!base::Contains(pending_render_frames_, frame));
+      DCHECK(!std::ranges::contains(pending_render_frames_, frame));
       if (!frame->IsRenderFrameLive()) {
         ExtensionApiFrameIdMap::DocumentId document_id =
             ExtensionApiFrameIdMap::GetDocumentId(frame);
@@ -193,7 +192,7 @@ class Handler : public content::WebContentsObserver {
 #endif  // BUILDFLAG(ENABLE_PDF)
 
     if (!frame->IsRenderFrameLive() ||
-        base::Contains(pending_render_frames_, frame)) {
+        std::ranges::contains(pending_render_frames_, frame)) {
       return content::RenderFrameHost::FrameIterationAction::kContinue;
     }
 
@@ -254,7 +253,7 @@ class Handler : public content::WebContentsObserver {
                        mojom::ExecuteCodeParamsPtr params,
                        content::RenderFrameHost* frame) {
     DCHECK(frame->IsRenderFrameLive());
-    DCHECK(base::Contains(pending_render_frames_, frame));
+    DCHECK(std::ranges::contains(pending_render_frames_, frame));
 
     if (params->injection->is_js()) {
       ScriptInjectionTracker::ScriptType script_type =

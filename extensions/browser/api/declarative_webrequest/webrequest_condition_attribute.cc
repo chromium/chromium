@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -168,7 +167,7 @@ bool WebRequestConditionAttributeResourceType::IsFulfilled(
     const WebRequestData& request_data) const {
   if (!(request_data.stage & GetStages()))
     return false;
-  return base::Contains(types_, request_data.request->web_request_type);
+  return std::ranges::contains(types_, request_data.request->web_request_type);
 }
 
 WebRequestConditionAttribute::Type
@@ -250,9 +249,9 @@ bool WebRequestConditionAttributeContentType::IsFulfilled(
                                   &had_charset, nullptr);
 
   if (inclusive_) {
-    return base::Contains(content_types_, mime_type);
+    return std::ranges::contains(content_types_, mime_type);
   } else {
-    return !base::Contains(content_types_, mime_type);
+    return !std::ranges::contains(content_types_, mime_type);
   }
 }
 

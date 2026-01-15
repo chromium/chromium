@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/app_window/app_window_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -286,7 +287,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           "F16F23C83C5F6DAD9B65A120448B34056DD80691",
           "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"};
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-          !base::Contains(kAllowlist, extension()->hashed_id().value())) {
+          !std::ranges::contains(kAllowlist,
+                                 extension()->hashed_id().value())) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }

@@ -4,9 +4,9 @@
 
 #include "extensions/renderer/content_setting.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -41,15 +41,15 @@ const char* const kDeprecatedTypesToBlock[] = {
 };
 
 const char* GetForcedValueForDeprecatedSetting(std::string_view type) {
-  if (base::Contains(kDeprecatedTypesToAllow, type))
+  if (std::ranges::contains(kDeprecatedTypesToAllow, type))
     return "allow";
-  DCHECK(base::Contains(kDeprecatedTypesToBlock, type));
+  DCHECK(std::ranges::contains(kDeprecatedTypesToBlock, type));
   return "block";
 }
 
 bool IsDeprecated(std::string_view type) {
-  return base::Contains(kDeprecatedTypesToAllow, type) ||
-         base::Contains(kDeprecatedTypesToBlock, type);
+  return std::ranges::contains(kDeprecatedTypesToAllow, type) ||
+         std::ranges::contains(kDeprecatedTypesToBlock, type);
 }
 
 }  // namespace

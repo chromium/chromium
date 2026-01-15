@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -32,8 +31,8 @@ bool IsExtraHeadersMatcherInternal(
                 "Modify this method to ensure IsExtraHeadersMatcherInternal is "
                 "updated as new actions are added.");
 
-  return base::Contains(*regex_list, flat::ActionType_modify_headers,
-                        &flat::RegexRule::action_type);
+  return std::ranges::contains(*regex_list, flat::ActionType_modify_headers,
+                               &flat::RegexRule::action_type);
 }
 
 // Helper to check if the `rule` metadata matches the given request `params`.
