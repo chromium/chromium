@@ -200,7 +200,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 getPreferenceManager().getContext(),
                                 AutofillOptionsFragment.class,
                                 AutofillOptionsFragment.createRequiredArgs(
-                                        AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT));
+                                        AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT),
+                                /* addToBackStack= */ true);
                     });
             getPreferenceScreen().addPreference(disabled_settings_info_pref);
         }
@@ -685,7 +686,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(
-                getActivity(), AutofillLocalCardEditor.class, preference.getExtras());
+                getActivity(),
+                AutofillLocalCardEditor.class,
+                preference.getExtras(),
+                /* addToBackStack= */ true);
     }
 
     /**
@@ -777,7 +781,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         settingsNavigation.startSettings(
                 getActivity(),
                 NonCardPaymentMethodsManagementFragment.class,
-                /* fragmentArgs= */ null);
+                /* fragmentArgs= */ null,
+                /* addToBackStack= */ true);
         return true;
     }
 
