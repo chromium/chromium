@@ -255,7 +255,38 @@ struct TfLitePadding {
   std::optional<std::array<uint32_t, 4>> paddings;
 };
 
-// Helper to get tflite padding mode for convolution 2d or pooling 2d.
+// Calculate explicit padding end to ensure TFLite's VALID padding produces the
+// expected WebNN output shape for ceil rounding type.
+base::expected<uint32_t, std::string> CalculatePaddingEndForCeilRoundingType(
+    uint32_t input_size,
+    uint32_t filter_size,
+    uint32_t stride,
+    uint32_t dilation,
+    uint32_t output_size,
+    uint32_t padding_begin) {
+  // Calculate the dilated filter sizes that are validated in graph validation.
+  base::CheckedNumeric<uint32_t> checked_effective_filter_size = filter_size;
+  checked_effective_filter_size -= 1;
+  checked_effective_filter_size *= dilation;
+  checked_effective_filter_size += 1;
+  CHECK(checked_effective_filter_size.IsValid());
+
+  // Adjust ending padding to match the specified output.
+  base::CheckedNumeric<uint32_t> checked_padding_end = output_size;
+  checked_padding_end -= 1;
+  checked_padding_end *= stride;
+  checked_padding_end += checked_effective_filter_size;
+  checked_padding_end -= input_size;
+  checked_padding_end -= padding_begin;
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_padding_end.IsValid()) {
+    return base::unexpected("The padding end is too large.");
+  }
+  return checked_padding_end.ValueOrDie();
+}
+
+// Helper to get tflite padding mode for convolution 2d or pooling 2d floor
+// rounding type, not ceil.
 base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
     const mojom::Padding2d& padding2d,
     const webnn::Size2d<uint32_t>& input,
@@ -295,6 +326,84 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
   // The explicit padding are used to insert a TfLite PAD operator.
   return TfLitePadding{.mode = ::tflite::Padding_VALID,
                        .paddings = explicit_padding};
+}
+
+// Helper to get tflite padding mode for pooling 2d.
+base::expected<TfLitePadding, std::string> GetPool2dTfLitePaddingMode(
+    const mojom::Padding2d& padding2d,
+    const webnn::Size2d<uint32_t>& input,
+    const webnn::Size2d<uint32_t>& filter,
+    const mojom::Size2d& stride,
+    const mojom::Size2d& dilation,
+    const webnn::Size2d<uint32_t>& output) {
+  // WebNN explicit padding is in [beginning_height, ending_height,
+  // beginning_width, ending_width] sequence.
+  std::array<uint32_t, 4> explicit_padding = {
+      padding2d.beginning->height, padding2d.ending->height,
+      padding2d.beginning->width, padding2d.ending->width};
+  std::array<uint32_t, 4> no_padding = {0, 0, 0, 0};
+  if (explicit_padding == no_padding) {
+    return TfLitePadding{.mode = ::tflite::Padding_VALID};
+  }
+
+  // TFLite always performs a floor operation in VALID mode. If WebNN's
+  // RoundingType is ceil, the `actual_output_height` might be 1 greater than
+  // what TFLite's VALID padding formula (floor based) would produce. In this
+  // case, the ending_padding must be increased to ensure the TFLite internal
+  // division result is large enough that its floor matches WebNN's ceil.
+  //
+  // Calculate double output sizes to get the type of rounding.
+  webnn::Padding2d webnn_padding2d = {
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = padding2d.beginning->height,
+                                  .width = padding2d.beginning->width},
+      .ending = webnn::Size2d<uint32_t>{.height = padding2d.ending->height,
+                                        .width = padding2d.ending->width}};
+  webnn::Size2d<uint32_t> webnn_strides = {.height = stride.height,
+                                           .width = stride.width};
+  webnn::Size2d<uint32_t> webnn_dilations = {.height = dilation.height,
+                                             .width = dilation.width};
+  ASSIGN_OR_RETURN(
+      const webnn::Size2d<double> calculated_output_sizes,
+      ValidateAndCalculateConv2dOutputSizes(
+          input.height, input.width, filter.height, filter.width,
+          webnn_padding2d, webnn_strides, webnn_dilations, "Pool2d"));
+
+  // Get the actual integer output size from the output operand and compare to
+  // determine rounding type.
+  const uint32_t actual_output_height = output.height;
+  const uint32_t actual_output_width = output.width;
+  if (actual_output_height ==
+          base::ClampFloor<uint32_t>(calculated_output_sizes.height) &&
+      actual_output_width ==
+          base::ClampFloor<uint32_t>(calculated_output_sizes.width)) {
+    // Use TFLite's SAME padding mode if it matches WebNN explicit padding.
+    // Otherwise, a TFLite PAD operator will be inserted later using VALID
+    // padding.
+    return GetTfLitePaddingMode(padding2d, input, filter, stride, dilation,
+                                /*is_transposed_conv2d*/ false);
+  } else if (actual_output_height ==
+                 base::ClampCeil<uint32_t>(calculated_output_sizes.height) &&
+             actual_output_width ==
+                 base::ClampCeil<uint32_t>(calculated_output_sizes.width)) {
+    ASSIGN_OR_RETURN(
+        const uint32_t padding_height_end,
+        CalculatePaddingEndForCeilRoundingType(
+            input.height, filter.height, stride.height, dilation.height,
+            output.height, padding2d.beginning->height));
+    ASSIGN_OR_RETURN(
+        const uint32_t padding_width_end,
+        CalculatePaddingEndForCeilRoundingType(
+            input.width, filter.width, stride.width, dilation.width,
+            output.width, padding2d.beginning->width));
+    explicit_padding = {padding2d.beginning->height, padding_height_end,
+                        padding2d.beginning->width, padding_width_end};
+    // The explicit padding are used to insert a TfLite PAD operator.
+    return TfLitePadding{.mode = ::tflite::Padding_VALID,
+                         .paddings = explicit_padding};
+  }
+
+  return base::unexpected("Output size does not match floor or ceil rounding.");
 }
 
 // Sort the indexes of the elements in the axes array based on their values and
@@ -709,7 +818,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/pooling.h
        /*average_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
-       /*l2_pool2d_input=*/{},
+       /*l2_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/prelu.h
@@ -6645,23 +6755,31 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
       operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
       quantized_output = CanFuseQuantizeAndGetOutput(pool2d);
       break;
-    case mojom::Pool2d::Kind::kL2Pool2d:
-      // TODO(crbug.com/361717758): Support L2Pool2d.
-      return base::unexpected("L2Pool2d is not supported in tflite.");
+    case mojom::Pool2d::Kind::kL2Pool2d: {
+      CHECK(context_properties_.data_type_limits.l2_pool2d_input.Supports(
+          input_operand.descriptor));
+      // L2Pool will be emulated as sqrt(AveragePool(x^2) * window_size).
+      operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
+      break;
+    }
   }
 
   const auto& input_shape = input_operand.descriptor.shape();
   CHECK_EQ(input_shape.size(), 4u);
+  const mojom::Operand& output_operand = GetOperand(pool2d.output_operand_id);
+  const auto& output_shape = output_operand.descriptor.shape();
   const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
                                                 .width = input_shape[2]};
+  const webnn::Size2d<uint32_t> output_size2d = {.height = output_shape[1],
+                                                 .width = output_shape[2]};
   webnn::Size2d<uint32_t> filter_size2d = {
       .height = pool2d.window_dimensions->height,
       .width = pool2d.window_dimensions->width};
-  ASSIGN_OR_RETURN(
-      TfLitePadding padding_mode,
-      GetTfLitePaddingMode(*pool2d.padding, input_size2d, filter_size2d,
-                           *pool2d.strides, *pool2d.dilations,
-                           /*is_transposed_conv2d=*/false));
+  ASSIGN_OR_RETURN(TfLitePadding padding_mode,
+                   GetPool2dTfLitePaddingMode(
+                       *pool2d.padding, input_size2d, filter_size2d,
+                       *pool2d.strides, *pool2d.dilations, output_size2d));
+
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(
@@ -6669,13 +6787,6 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
           /*quantize_params=*/0,
           /*operation_supports_float16=*/false,
           /*fuse_dequantize_quantize=*/quantized_output.has_value()));
-  // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
-  std::optional<TensorIndex> explicit_pad_index;
-  if (padding_mode.paddings) {
-    ASSIGN_OR_RETURN(
-        explicit_pad_index,
-        InsertPadOperation(input_tensor_info, padding_mode.paddings.value()));
-  }
 
   const auto pool_2d_options = ::tflite::CreatePool2DOptions(
       builder_, padding_mode.mode, pool2d.strides->width,
@@ -6685,12 +6796,73 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
+  const TensorInfo output_tensor_info =
+      SerializeOutputTensorInfo(pool2d.output_operand_id);
   TensorIndex output_tensor_index =
-      quantized_output
-          ? quantized_output->index
-          : SerializeOutputTensorInfo(pool2d.output_operand_id).index;
+      quantized_output ? quantized_output->index : output_tensor_info.index;
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(operator_code);
+  if (pool2d.kind == mojom::Pool2d::Kind::kL2Pool2d) {
+    // Square the original input first (x^2).
+    const TensorIndex squared_input_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeSquareOperation(
+        input_tensor_info.index, input_tensor_info.data_type,
+        squared_input_index));
+
+    // Apply explicit padding to the squared input if needed.
+    TensorIndex input_to_average_pool = squared_input_index;
+    if (padding_mode.paddings) {
+      ASSIGN_OR_RETURN(
+          input_to_average_pool,
+          InsertPadOperation(
+              TensorInfo(squared_input_index, input_tensor_info.data_type,
+                         input_tensor_info.dimensions),
+              padding_mode.paddings.value()));
+    }
+
+    // Average Pool the (potentially padded) squared input: AveragePool(x^2).
+    // TFLite's AVERAGE_POOL_2D with VALID padding always divides by (h * w).
+    const TensorIndex average_pooled_index = SerializeTemporaryTensor(
+        output_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(::tflite::CreateOperator(
+        builder_, operator_code_index,
+        builder_.CreateVector<TensorIndex>({input_to_average_pool}),
+        builder_.CreateVector<TensorIndex>({average_pooled_index}),
+        ::tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union()));
+
+    // Multiply by window size to get the sum of squares: SumPool(x^2) =
+    // AveragePool(x^2) * (h * w).
+    base::CheckedNumeric<float> checked_window_size =
+        base::MakeCheckedNum(pool2d.window_dimensions->height) *
+        pool2d.window_dimensions->width;
+    if (!checked_window_size.IsValid()) {
+      return base::unexpected("The window size is too large.");
+    }
+    ASSIGN_OR_RETURN(
+        const TensorIndex window_size_index,
+        SerializeTensorWithBuffer<float>(
+            std::array<float, 1>{checked_window_size.ValueOrDie()}, {}));
+    const TensorIndex sum_pooled_index = SerializeTemporaryTensor(
+        output_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MUL, average_pooled_index, window_size_index,
+        sum_pooled_index));
+
+    // Square root: sqrt(SumPool(x^2)).
+    return SerializeSquareRootOperation(
+        sum_pooled_index, input_tensor_info.data_type, output_tensor_index);
+  }
+
+  // TODO(crbug.com/475285740): Support explicit padding for average and max
+  // pool. Currently, inserting a PAD operator before the TFLite Pool2d operator
+  // is used as a workaround.
+  std::optional<TensorIndex> explicit_pad_index;
+  if (padding_mode.paddings) {
+    ASSIGN_OR_RETURN(
+        explicit_pad_index,
+        InsertPadOperation(input_tensor_info, padding_mode.paddings.value()));
+  }
   const std::array<TensorIndex, 1> op_inputs = {explicit_pad_index
                                                     ? explicit_pad_index.value()
                                                     : input_tensor_info.index};

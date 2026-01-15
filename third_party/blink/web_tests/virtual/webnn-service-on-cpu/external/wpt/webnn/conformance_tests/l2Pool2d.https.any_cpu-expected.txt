@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [optional] l2Pool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
+[FAIL] [optional] l2Pool2d float16 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
+Harness: the test ran to completion.
+

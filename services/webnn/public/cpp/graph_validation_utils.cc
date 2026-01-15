@@ -57,50 +57,6 @@ static constexpr char kVarianceParam[] = "variance";
 static constexpr char kWeightParam[] = "weight";
 static constexpr char kZeroPointParam[] = "zeroPoint";
 
-// Validate and calculate the output spatial dimensions of conv2d given
-// input sizes, filter sizes, padding, strides and dilations.
-// Return the calculated output sizes in double precision floating point number
-// if no errors.
-base::expected<Size2d<double>, std::string>
-ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
-                                      const uint32_t input_width,
-                                      const uint32_t filter_height,
-                                      const uint32_t filter_width,
-                                      const Padding2d& padding,
-                                      const Size2d<uint32_t>& strides,
-                                      const Size2d<uint32_t>& dilations,
-                                      std::string_view label) {
-  if (strides.height == 0 || strides.width == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "All strides should be greater than 0."));
-  }
-  if (dilations.height == 0 || dilations.width == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "All dilations should be greater than 0."));
-  }
-
-  const auto float_output_height = CalculateConv2dOutputSize(
-      input_height, filter_height, padding.beginning.height,
-      padding.ending.height, strides.height, dilations.height, label);
-  if (!float_output_height.has_value()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "Failed to calculate the output height: " +
-                                  float_output_height.error()));
-  }
-
-  const auto float_output_width = CalculateConv2dOutputSize(
-      input_width, filter_width, padding.beginning.width, padding.ending.width,
-      strides.width, dilations.width, label);
-  if (!float_output_width.has_value()) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "Failed to calculate the output width: " + float_output_width.error()));
-  }
-
-  return Size2d<double>{.height = float_output_height.value(),
-                        .width = float_output_width.value()};
-}
-
 // Validate and calculate the output spatial dimensions of convTranspose2d given
 // input sizes, filter sizes, padding, strides, dilations and output padding.
 base::expected<Size2d<uint32_t>, std::string>
@@ -651,6 +607,46 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
 
   return OperandDescriptor::Create(context_properties, output_type,
                                    output_shape, label);
+}
+
+base::expected<Size2d<double>, std::string>
+ValidateAndCalculateConv2dOutputSizes(uint32_t input_height,
+                                      uint32_t input_width,
+                                      uint32_t filter_height,
+                                      uint32_t filter_width,
+                                      const Padding2d& padding,
+                                      const Size2d<uint32_t>& strides,
+                                      const Size2d<uint32_t>& dilations,
+                                      std::string_view label) {
+  if (strides.height == 0 || strides.width == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "All strides should be greater than 0."));
+  }
+  if (dilations.height == 0 || dilations.width == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "All dilations should be greater than 0."));
+  }
+
+  const auto float_output_height = CalculateConv2dOutputSize(
+      input_height, filter_height, padding.beginning.height,
+      padding.ending.height, strides.height, dilations.height, label);
+  if (!float_output_height.has_value()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "Failed to calculate the output height: " +
+                                  float_output_height.error()));
+  }
+
+  const auto float_output_width = CalculateConv2dOutputSize(
+      input_width, filter_width, padding.beginning.width, padding.ending.width,
+      strides.width, dilations.width, label);
+  if (!float_output_width.has_value()) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "Failed to calculate the output width: " + float_output_width.error()));
+  }
+
+  return Size2d<double>{.height = float_output_height.value(),
+                        .width = float_output_width.value()};
 }
 
 base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(

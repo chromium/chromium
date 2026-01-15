@@ -450,6 +450,20 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                  const uint32_t axis,
                                  std::string_view label);
 
+// Validate and calculate the output spatial dimensions of conv2d given
+// input sizes, filter sizes, padding, strides and dilations.
+// Return the calculated output sizes in double precision floating point number
+// if no errors.
+base::expected<Size2d<double>, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    ValidateAndCalculateConv2dOutputSizes(uint32_t input_height,
+                                          uint32_t input_width,
+                                          uint32_t filter_height,
+                                          uint32_t filter_width,
+                                          const Padding2d& padding,
+                                          const Size2d<uint32_t>& strides,
+                                          const Size2d<uint32_t>& dilations,
+                                          std::string_view label);
+
 // Validate and infer output information of 2-D convolution operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
