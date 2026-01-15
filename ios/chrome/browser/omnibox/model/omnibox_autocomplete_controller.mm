@@ -742,6 +742,15 @@ using base::UserMetricsAction;
               match, "disposition", disposition, "altenate_nav_url",
               alternateNavURL, "pasted_text", pastedText);
 
+  // Update the match with the final destination URL.
+  const BOOL isPastedText = !pastedText.empty();
+  base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox =
+      [self.omniboxMetricsRecorder
+          elapsedTimeSinceUserFirstModifiedOmniboxWithPastedText:isPastedText];
+  self.autocompleteController
+      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
+          elapsedTimeSinceUserFirstModifiedOmnibox, &match);
+
   GURL destinationURL = action ? action->getUrl() : match.destination_url;
 
   std::u16string inputText(pastedText);
@@ -771,7 +780,7 @@ using base::UserMetricsAction;
                                 popupSelection:selection
                          windowOpenDisposition:disposition
                                       isAction:action
-                                  isPastedText:!pastedText.empty()];
+                                  isPastedText:isPastedText];
 
   if (action) {
     OmniboxAction::ExecutionContext context(

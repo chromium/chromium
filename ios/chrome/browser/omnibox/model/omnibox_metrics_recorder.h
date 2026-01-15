@@ -9,6 +9,7 @@
 
 #import <string>
 
+#import "base/time/time.h"
 #import "ui/base/window_open_disposition.h"
 
 class AutocompleteController;
@@ -46,6 +47,11 @@ struct OmniboxTextModel;
     windowOpenDisposition:(WindowOpenDisposition)disposition
                  isAction:(BOOL)isAction
              isPastedText:(BOOL)isPastedText;
+
+/// Returns the elapsed time since the user first modified the omnibox.
+/// Returns kDefaultTimeDelta if the input is zero suggest or pasted text.
+- (base::TimeDelta)elapsedTimeSinceUserFirstModifiedOmniboxWithPastedText:
+    (BOOL)isPastedText;
 
 // Records the number of lines in the omnibox text view.
 - (void)setNumberOfLines:(NSInteger)numberOfLines;

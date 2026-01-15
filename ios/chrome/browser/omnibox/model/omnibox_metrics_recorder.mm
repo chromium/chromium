@@ -93,12 +93,8 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
                                   20);
   }
   const base::TimeTicks& now(base::TimeTicks::Now());
-  base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox(
-      now - _omniboxTextModel->time_user_first_modified_omnibox);
-
-  _autocompleteController
-      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
-          elapsedTimeSinceUserFirstModifiedOmnibox, &match);
+  base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox = [self
+      elapsedTimeSinceUserFirstModifiedOmniboxWithPastedText:isPastedText];
 
   omnibox::RecordActionShownForAllActions(_autocompleteController->result(),
                                           selection);
@@ -116,7 +112,6 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   // cases when this happens, the user never modified the omnibox.)
   const bool popupIsOpen = self.omniboxAutocompleteController.hasSuggestions;
   if (_omniboxTextModel->input.IsZeroSuggest() || isPastedText) {
-    elapsedTimeSinceUserFirstModifiedOmnibox = kDefaultTimeDelta;
     elapsedTimeSinceLastChangeToDefaultMatch = kDefaultTimeDelta;
   }
 
@@ -248,6 +243,23 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
       _omniboxClient->OnBookmarkLaunched();
     }
   }
+}
+
+- (base::TimeDelta)elapsedTimeSinceUserFirstModifiedOmniboxWithPastedText:
+    (BOOL)isPastedText {
+  const base::TimeTicks& now(base::TimeTicks::Now());
+  base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox(
+      now - _omniboxTextModel->time_user_first_modified_omnibox);
+  // These elapsed times don't really make sense for matches that come from
+  // omnibox focus (because the user did not modify the omnibox), so for those
+  // we set the elapsed times to something that will be ignored by
+  // metrics_log.cc.  They also don't necessarily make sense if the omnibox
+  // dropdown is closed or the user used paste-and-go.  (In most
+  // cases when this happens, the user never modified the omnibox.)
+  if (_omniboxTextModel->input.IsZeroSuggest() || isPastedText) {
+    elapsedTimeSinceUserFirstModifiedOmnibox = kDefaultTimeDelta;
+  }
+  return elapsedTimeSinceUserFirstModifiedOmnibox;
 }
 
 @end
