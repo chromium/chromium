@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/config/gpu_feature_type.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
@@ -179,6 +180,17 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  // Force context creation to fail if the WebNN GPU feature is disabled, which
+  // happens when the GPU process has crashed too many times.
+  if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] ==
+      gpu::kGpuFeatureStatusDisabled) {
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kUnknownError,
+        "WebNN is disabled due to some unresolvable issues."));
+    return;
+  }
+
   // Generates unique IDs for WebNNContextImpl.
   static base::AtomicSequenceNumber g_next_route_id;
 

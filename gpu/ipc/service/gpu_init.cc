@@ -827,6 +827,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
   }
+  if (gl_disabled) {
+    // GL is disabled in display compositor mode, typically due to repeated GPU
+    // crashes. Disable WebNN to ensure stability in this state.
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
+        kGpuFeatureStatusDisabled;
+  }
 
   if (kGpuFeatureStatusEnabled !=
       gpu_feature_info_
@@ -1140,6 +1146,12 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
+  }
+  if (gl_disabled) {
+    // GL is disabled in display compositor mode, typically due to repeated GPU
+    // crashes. Disable WebNN to ensure stability in this state.
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
+        kGpuFeatureStatusDisabled;
   }
 
 #if BUILDFLAG(IS_OZONE)
