@@ -631,6 +631,11 @@ class BrowserAutofillManager : public AutofillManager {
   void HandleLoadedServerPredictionsForAutofillAi(
       base::span<const raw_ref<FormStructure>> forms);
 
+  // Retrieves the Autofill AI predictions for `form` in `cache` and adds them
+  // to `form`'s fields, then runs rationalization and sectioning.
+  void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
+                                      FormStructure& form);
+
   // Calls `OnDidIdentifyForms()` on all appropriate form event loggers,
   // depending on the form types of the `form_structure`.
   void OnDidIdentifyFormForMetrics(

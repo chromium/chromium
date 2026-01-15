@@ -870,11 +870,6 @@ void AutofillManager::OnLoadedServerPredictions(
       response->queried_form_signatures, log_manager(),
       /*ignore_small_forms=*/!client().IsTabInActorMode());
 
-  OnLoadedServerPredictionsImpl(queried_forms);
-  if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
-    driver().ExposeDomNodeIdsInAllFrames();
-  }
-
   for (const raw_ref<FormStructure>& form : queried_forms) {
     form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
                                        GetCurrentPageLanguage(), log_manager());
@@ -887,6 +882,11 @@ void AutofillManager::OnLoadedServerPredictions(
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
   }
+
+  if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
+    driver().ExposeDomNodeIdsInAllFrames();
+  }
+  OnLoadedServerPredictionsImpl(queried_forms);
 }
 
 void AutofillManager::UpdateFormCache(

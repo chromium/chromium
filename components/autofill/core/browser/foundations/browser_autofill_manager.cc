@@ -670,52 +670,6 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       form_for_autocomplete, &form_structure, client.IsAutocompleteEnabled());
 }
 
-// Retrieves the AutofillAI predictions for `form` in `cache` and adds them to
-// `form`'s fields.
-void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
-                                    FormStructure& form) {
-  // Mixing Autofill AI model predictions (which come from the online LLM) and
-  // Autofill AI server predictions (which come from the Autofill crowdsourcing
-  // server) may lead to too many false positives. We therefore favor server
-  // predictions over model predictions. (There's no specific reason for this
-  // precedence -- preferring model predictions may work just as well.)
-  if (std::ranges::any_of(form.fields(),
-                          [](const std::unique_ptr<AutofillField>& field) {
-                            return field->Type().GetGroups().contains(
-                                FieldTypeGroup::kAutofillAi);
-                          })) {
-    return;
-  }
-
-  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
-  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
-  const base::flat_map<FieldIdentifier, ModelFieldPrediction> predictions =
-      cache.GetFieldPredictions(form.form_signature());
-  if (predictions.empty()) {
-    return;
-  }
-  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-    auto it = predictions.find(FieldIdentifier{
-        .signature = field->GetFieldSignature(),
-        .rank_in_signature_group = field->rank_in_signature_group()});
-    if (it == predictions.end()) {
-      continue;
-    }
-    const ModelFieldPrediction& prediction = it->second;
-    if (prediction.field_type != NO_SERVER_DATA) {
-      using ServerPrediction = AutofillQueryResponse::FormSuggestion::
-          FieldSuggestion::FieldPrediction;
-      ServerPrediction server_prediction;
-      server_prediction.set_type(prediction.field_type);
-      server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
-      field->MaybeAddServerPrediction(std::move(server_prediction));
-    }
-    if (prediction.format_string) {
-      field->set_format_string_unless_overruled(
-          *prediction.format_string, AutofillFormatStringSource::kModelResult);
-    }
-  }
-}
 // Generates a compose suggestion for the given `form` and `field` if conditions
 // are met, returns `std::nullopt` otherwise.
 // TODO(crbug.com/409962888): Remove once new suggestion generator architecture
@@ -2589,16 +2543,8 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
           if (!form) {
             return;
           }
-          AddCachedAutofillAiPredictions(*model_cache, *form);
           auto* self_as_bam = static_cast<BrowserAutofillManager*>(self.get());
-          form->RationalizeAndAssignSections(
-              self->client().GetVariationConfigCountryCode(),
-              self_as_bam->GetCurrentPageLanguage(),
-              self_as_bam->log_manager());
-          self_as_bam->LogCurrentFieldTypes(&*form);
-          self->NotifyObservers(&Observer::OnFieldTypesDetermined,
-                                form->global_id(),
-                                Observer::FieldTypeSource::kAutofillAiModel);
+          self_as_bam->AddCachedAutofillAiPredictions(*model_cache, *form);
         };
     if (features::kAutofillAiServerModelSendPageContent.Get()) {
       LOG_AF(log_manager())
@@ -2621,6 +2567,57 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
           std::nullopt);
     }
   }
+}
+
+void BrowserAutofillManager::AddCachedAutofillAiPredictions(
+    const AutofillAiModelCache& cache,
+    FormStructure& form) {
+  // Mixing Autofill AI model predictions (which come from the online LLM) and
+  // Autofill AI server predictions (which come from the Autofill crowdsourcing
+  // server) may lead to too many false positives. We therefore favor server
+  // predictions over model predictions. (There's no specific reason for this
+  // precedence -- preferring model predictions may work just as well.)
+  if (std::ranges::any_of(form.fields(),
+                          [](const std::unique_ptr<AutofillField>& field) {
+                            return field->Type().GetGroups().contains(
+                                FieldTypeGroup::kAutofillAi);
+                          })) {
+    return;
+  }
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  const base::flat_map<FieldIdentifier, ModelFieldPrediction> predictions =
+      cache.GetFieldPredictions(form.form_signature());
+  if (predictions.empty()) {
+    return;
+  }
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    auto it = predictions.find(FieldIdentifier{
+        .signature = field->GetFieldSignature(),
+        .rank_in_signature_group = field->rank_in_signature_group()});
+    if (it == predictions.end()) {
+      continue;
+    }
+    const ModelFieldPrediction& prediction = it->second;
+    if (prediction.field_type != NO_SERVER_DATA) {
+      using ServerPrediction = AutofillQueryResponse::FormSuggestion::
+          FieldSuggestion::FieldPrediction;
+      ServerPrediction server_prediction;
+      server_prediction.set_type(prediction.field_type);
+      server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
+      field->MaybeAddServerPrediction(std::move(server_prediction));
+    }
+    if (prediction.format_string) {
+      field->set_format_string_unless_overruled(
+          *prediction.format_string, AutofillFormatStringSource::kModelResult);
+    }
+  }
+  form.RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
+                                    GetCurrentPageLanguage(), log_manager());
+  LogCurrentFieldTypes(&form);
+  NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
+                  Observer::FieldTypeSource::kAutofillAiModel);
 }
 
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
