@@ -39,11 +39,12 @@ final class SigninPromoMediator
 
     /** Strings used for promo event count histograms. */
     // LINT.IfChange(Event)
-    @StringDef({Event.CONTINUED, Event.DISMISSED, Event.SHOWN})
+    @StringDef({Event.CONTINUED, Event.DISMISSED, Event.SIGNIN_UNDONE, Event.SHOWN})
     @Retention(RetentionPolicy.SOURCE)
     @interface Event {
         String CONTINUED = "Continued";
         String DISMISSED = "Dismissed";
+        String SIGNIN_UNDONE = "SigninUndone";
         String SHOWN = "Shown";
     }
 
@@ -157,6 +158,14 @@ final class SigninPromoMediator
         }
 
         return !mMaxImpressionReached && mPromoDelegate.canShowPromo();
+    }
+
+    void onSigninUndone() {
+        recordEventHistogram(Event.SIGNIN_UNDONE);
+        if (mPromoDelegate.canBeDismissedPermanently()) {
+            mPromoDelegate.permanentlyDismissPromo();
+            refreshPromoContent(/* wasVisibleAccountUpdated= */ false);
+        }
     }
 
     /** Implements {@link IdentityManager.Observer} */

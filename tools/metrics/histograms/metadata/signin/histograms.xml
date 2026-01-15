@@ -139,8 +139,11 @@ chromium-metrics-reviews@google.com.
 <variants name="SigninPromoAction">
   <variant name="Continued"
       summary="the user presses on any button (except the dismiss cross) on"/>
-  <variant name="Dismissed" summary="the user dismisses"/>
+  <variant name="Dismissed"
+      summary="the user dismisses via dismiss [x] button"/>
   <variant name="Shown" summary="Chrome shows"/>
+  <variant name="SigninUndone"
+      summary="the user reverses signin via signed-in snackbar button"/>
 </variants>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediator.java:Event) -->

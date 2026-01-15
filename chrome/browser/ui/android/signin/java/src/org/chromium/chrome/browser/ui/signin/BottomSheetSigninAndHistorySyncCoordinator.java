@@ -15,7 +15,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -66,7 +65,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         implements SigninBottomSheetCoordinator.Delegate,
                 HistorySyncCoordinator.HistorySyncDelegate,
                 SigninSnackbarController.Listener {
-    private static final String TAG = "BottomSheetSignin";
+
     private static final String ADD_ACCOUNT_ACTIVITY_KEY = "ADD_ACCOUNT_ACTIVITY_KEY";
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
@@ -121,6 +120,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
         /** Called when the whole flow finishes. */
         void onFlowComplete(SigninAndHistorySyncCoordinator.Result result);
+
+        /**
+         * Called when the sign-in flow has been undone, executing after the user has been signed
+         * out and history sync has been optionally opted out.
+         */
+        void onSigninUndone();
     }
 
     /**
@@ -407,9 +412,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
     /** Implements {@link SigninSnackbarController.Listener} */
     @Override
-    public void onUndoSignin() {
-        Log.d(TAG, "onUndoSignin");
-        // TODO(crbug.com/437039311): Permanently dismiss the promo for non-recent-tabs promos
+    public void onSigninUndone() {
+        mDelegate.onSigninUndone();
     }
 
     /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */

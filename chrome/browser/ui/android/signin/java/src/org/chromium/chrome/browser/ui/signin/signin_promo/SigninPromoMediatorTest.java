@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -233,6 +234,26 @@ public class SigninPromoMediatorTest {
                 mContext.getString(R.string.signin_promo_choose_another_account),
                 mMediator.getModel().get(SigninPromoProperties.SECONDARY_BUTTON_TEXT));
         assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
+    }
+
+    @Test
+    public void testCannotDismissPromo_UndoSigninNeverDismissesPromo() {
+        doReturn(false).when(mPromoDelegate).canBeDismissedPermanently();
+        createSigninPromoMediator(mPromoDelegate);
+
+        mMediator.onSigninUndone();
+
+        verify(mPromoDelegate, never()).permanentlyDismissPromo();
+    }
+
+    @Test
+    public void testCanDismissPromo_UndoSigninDismissesPromo() {
+        doReturn(true).when(mPromoDelegate).canBeDismissedPermanently();
+        createSigninPromoMediator(mPromoDelegate);
+
+        mMediator.onSigninUndone();
+
+        verify(mPromoDelegate).permanentlyDismissPromo();
     }
 
     private void createSigninPromoMediator(SigninPromoDelegate delegate) {

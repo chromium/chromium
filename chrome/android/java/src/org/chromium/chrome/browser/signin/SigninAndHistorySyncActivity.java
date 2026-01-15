@@ -240,13 +240,19 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         overridePendingTransition(0, R.anim.fast_fade_out);
     }
 
-    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} */
+    @Override
+    public void onSigninUndone() {
+        throw new IllegalStateException("Reversing sign-in is not supported in this flow.");
+    }
+
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}. */
     @Override
     public boolean isHistorySyncShownFullScreen() {
         return !isTablet();
     }
 
-    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}. */
     @Override
     public void setStatusBarColor(int statusBarColor) {
         StatusBarColorController.setStatusBarColor(
@@ -329,7 +335,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     /**
      * Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} and {@link
-     * BottomSheetSigninAndHistorySyncCoordinator.Delegate}
+     * BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}
      */
     @Override
     public void addAccount() {

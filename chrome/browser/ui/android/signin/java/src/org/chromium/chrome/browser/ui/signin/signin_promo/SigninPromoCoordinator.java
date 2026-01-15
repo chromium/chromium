@@ -195,12 +195,20 @@ public class SigninPromoCoordinator
                 .set(SigninPromoProperties.SHOULD_SHOW_LOADING_STATE, shouldShowLoadingState);
     }
 
-    /** Implements {@link SigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {
         // TODO(https://crbug.com/437040024): Replace this class with real implementation.
     }
 
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} */
+    @Override
+    public void onSigninUndone() {
+        assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+        mMediator.onSigninUndone();
+    }
+
+    /** Implements {@link SigninPromoMediator.Delegate} */
     @Override
     public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
         assert (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)

@@ -45,7 +45,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
          * callback executes after the user has been signed out and history sync has been optionally
          * opted out.
          */
-        void onUndoSignin();
+        void onSigninUndone();
     }
 
     private final Activity mActivity;
@@ -90,7 +90,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
                 mSnackbarManager,
                 mSignoutReason,
                 () -> {
-                    assertNonNull(mListener).onUndoSignin();
+                    assertNonNull(mListener).onSigninUndone();
                     mListener = null;
                 });
     }

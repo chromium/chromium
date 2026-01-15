@@ -593,7 +593,17 @@ public class SigninPromoCoordinatorTest {
     // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testDismissButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
-        testDismissButtonClick(accessPoint, R.id.signin_promo_dismiss_button);
+        testPermanentDismissal(
+                accessPoint, R.id.signin_promo_dismiss_button, /* dueToUndoneSignin= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testUndoButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
+        testPermanentDismissal(
+                accessPoint, R.id.signin_promo_dismiss_button, /* dueToUndoneSignin= */ true);
     }
 
     @Test
@@ -602,19 +612,30 @@ public class SigninPromoCoordinatorTest {
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testDismissButtonClick_seamlessSigninDisabled(@SigninAccessPoint int accessPoint) {
-        testDismissButtonClick(accessPoint, R.id.sync_promo_close_button);
+        testPermanentDismissal(
+                accessPoint, R.id.sync_promo_close_button, /* dueToUndoneSignin= */ false);
     }
 
-    private void testDismissButtonClick(
-            @SigninAccessPoint int accessPoint, @IdRes int dismissButtonId) {
+    private void testPermanentDismissal(
+            @SigninAccessPoint int accessPoint,
+            @IdRes int dismissButtonId,
+            boolean dueToUndoneSignin) {
+        String event =
+                dueToUndoneSignin
+                        ? SigninPromoMediator.Event.SIGNIN_UNDONE
+                        : SigninPromoMediator.Event.DISMISSED;
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Signin.Promo.ImpressionsUntil.Dismissed."
+                                "Signin.Promo.ImpressionsUntil."
+                                        + event
+                                        + "."
                                         + getAccessPointToHistogramName(accessPoint),
                                 1)
                         .expectIntRecord(
-                                "Signin.SyncPromo.Dismissed.Count."
+                                "Signin.SyncPromo."
+                                        + event
+                                        + ".Count."
                                         + getAccessPointToHistogramName(accessPoint),
                                 1)
                         .build();
@@ -632,7 +653,15 @@ public class SigninPromoCoordinatorTest {
             return;
         }
 
-        onView(withId(dismissButtonId)).perform(click());
+        assertTrue(mDelegate.canBeDismissedPermanently());
+        if (dueToUndoneSignin) {
+            // Wait for promo to be shown (for recording impressions), then undo the sign-in flow.
+            onView(withId(dismissButtonId)).check(ViewAssertions.matches(isDisplayed()));
+            ThreadUtils.runOnUiThreadBlocking(() -> mPromoCoordinator.onSigninUndone());
+        } else {
+            // Dismiss the promo via [x] dismiss button.
+            onView(withId(dismissButtonId)).perform(click());
+        }
 
         verify(mOnPromoStateChange).run();
         String preferenceName = getAccessPointDismissPreferenceName(accessPoint);
