@@ -344,10 +344,6 @@ Pkcs12ReaderStatusCode Pkcs12Reader::CheckRelation(const KeyData& key_data,
     return Pkcs12ReaderStatusCode::kSuccess;
   }
 
-  if (result < 0) {
-    return Pkcs12ReaderStatusCode::kPkeyComparisonFailure;
-  }
-
   return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
 }
 
