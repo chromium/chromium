@@ -393,10 +393,11 @@ void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
     return;
   }
 
-  // Don't show the omnibox entrypoint for chrome:// URLs
+  // Don't show the omnibox entrypoint for non-HTTP(S) URLs. These URLs are not
+  // supported by Readability, which is used to check whether the current page is a
+  // good candidate for distillation.
   const GURL& url = tab_->GetContents()->GetLastCommittedURL();
-  if (url.SchemeIs(content::kChromeUIScheme) || url.IsAboutBlank() ||
-      url.is_empty()) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
     UpdateOmniboxEntryPoint(false);
     return;
   }
