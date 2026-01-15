@@ -1154,6 +1154,10 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
     title_str = content.Substr(comma + 1);
   }
 
+  if (HLSQuirks::AllowSpaceBetweenEXTINFAndTimestamp()) {
+    duration_str.TrimStart();
+  }
+
   // Extract duration
   // TODO(crbug.com/40210233): Below version 3 this should be rounded to an
   // integer

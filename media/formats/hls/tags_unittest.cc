@@ -1516,6 +1516,14 @@ TEST(HlsTagsTest, ParseInfTag) {
         "123", ParseStatusCode::kMissingRequiredSegmentInfoTrailingComma);
   }
 
+  if (HLSQuirks::AllowSpaceBetweenEXTINFAndTimestamp()) {
+    result = OkTest<InfTag>(" 8.7,");
+    EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(8.7)));
+  } else {
+    ErrorTest<InfTag>(" 8.7",
+                      ParseStatusCode::kFailedToParseDecimalFloatingPoint);
+  }
+
   // Test some invalid tags
   ErrorTest<InfTag>(std::nullopt, ParseStatusCode::kNoTagBody);
   ErrorTest<InfTag>("", ParseStatusCode::kFailedToParseDecimalFloatingPoint);
