@@ -99,6 +99,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                                  identityManager:identityManager
                              browsingDataRemover:browsingDataRemover
                              discoverFeedService:discoverFeedService
+                              templateURLService:nullptr
                    canPerformRadialWipeAnimation:_canPerformRadialWipeAnimation
                                  uiBlockerTarget:self.browser->GetSceneState()
                         featureEngagementTracker:tracker];

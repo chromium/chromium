@@ -113,6 +113,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   BrowsingDataCounterWrapperProducer* _counterWrapperProducer;
   raw_ptr<BrowsingDataRemover> _browsingDataRemover;
   raw_ptr<DiscoverFeedService> _discoverFeedService;
+  // TODO(crbug.com/465421681): Use `_templateURLService` to determine if Google
+  // is the default search engine.
+  // The service is used to retrieve the default search engine URL.
+  raw_ptr<TemplateURLService> _templateURLService;
 
   // The currently selected time range in the UI. Only saved into the
   // `kDeleteTimePeriod` pref when the deletion is triggered.
@@ -170,6 +174,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                        identityManager:(signin::IdentityManager*)identityManager
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                    templateURLService:(TemplateURLService*)templateURLService
          canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
                        uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
@@ -184,6 +189,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
             _identityManager, self);
     _browsingDataRemover = browsingDataRemover;
     _discoverFeedService = discoverFeedService;
+    _templateURLService = templateURLService;
     _tracker = tracker;
 
     _prefChangeRegistrar.Init(_prefs);
@@ -206,6 +212,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                        identityManager:(signin::IdentityManager*)identityManager
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                    templateURLService:(TemplateURLService*)templateURLService
                              timeRange:(browsing_data::TimePeriod)timeRange
                        uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
@@ -220,6 +227,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
             _identityManager, self);
     _browsingDataRemover = browsingDataRemover;
     _discoverFeedService = discoverFeedService;
+    _templateURLService = templateURLService;
     _tracker = tracker;
 
     _prefChangeRegistrar.Init(_prefs);

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator/quick_delete_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/coordinator/quick_delete_browsing_data_delegate.h"
@@ -61,6 +62,8 @@
       BrowsingDataRemoverFactory::GetForProfile(profile);
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
 
@@ -70,6 +73,7 @@
                                  identityManager:identityManager
                              browsingDataRemover:browsingDataRemover
                              discoverFeedService:discoverFeedService
+                              templateURLService:templateURLService
                                        timeRange:_initialTimeRange
                                  uiBlockerTarget:self.browser->GetSceneState()
                         featureEngagementTracker:tracker];
