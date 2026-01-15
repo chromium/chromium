@@ -252,8 +252,8 @@ handling.
   <tr>
     <td>Yes</td>
     <td>Yes</td>
-    <td>We make use of a gpu::MailboxHolder (see
-        AcceleratedStaticBitmapImage::EnsureMailbox()) that saves the
+    <td>We make use of a gpu::ClientSharedImage and blink::MailboxRef (see
+        AcceleratedStaticBitmapImage::EnsureSyncTokenVerified()) that saves the
         gpu::Mailbox and the gpu sync token that are necessary in rendering the
         image. Then the StaticBitmapImage is put in the resource map of the
         resource provider.</td>
