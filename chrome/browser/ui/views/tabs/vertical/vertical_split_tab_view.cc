@@ -89,6 +89,11 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
     return layouts;
   }
 
+  const int border_thickness =
+      pinned_
+          ? GetLayoutConstant(LayoutConstant::kVerticalTabPinnedBorderThickness)
+          : 0;
+
   // Layout children in order. Children will have their preferred height and
   // fill available width. If unbounded or both children fit on one row they
   // will share it, otherwise they will be stacked vertically.
@@ -103,10 +108,13 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
       bounds.set_x(x);
       // Fill available width if bounded.
       if (size_bounds.width().is_bounded()) {
-        bounds.set_width(std::floor(size_bounds.width().value() / 2));
+        bounds.set_width(x == 0 ? (std::floor(size_bounds.width().value() +
+                                              2 * border_thickness) /
+                                   2)
+                                : size_bounds.width().value() - x);
       }
+      x += bounds.width() - 2 * border_thickness;
       height = std::max(height, bounds.height());
-      x += bounds.width();
       layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     }
     width = x;
@@ -116,11 +124,12 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
       gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
       bounds.set_y(y);
       bounds.set_width(size_bounds.width().value());
-      y += bounds.height();
+      bounds.set_height(bounds.height());
+      y += bounds.height() - 2 * border_thickness;
       layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     }
     width = size_bounds.width().value();
-    height = y;
+    height = y + 2 * border_thickness;
   }
   layouts.host_size = gfx::Size(width, height);
   return layouts;
@@ -138,15 +147,17 @@ void VerticalSplitTabView::ResetCollectionNode() {
 }
 
 void VerticalSplitTabView::OnDataChanged() {
-  UpdateBorder();
-}
-
-void VerticalSplitTabView::UpdateBorder() {
   const tabs::TabCollection* tab_collection =
       std::get<const tabs::TabCollection*>(collection_node_->GetNodeData());
   const std::vector<tabs::TabInterface*> tabs =
       tab_collection->GetTabsRecursive();
-  if (tabs[0]->IsPinned()) {
+  pinned_ = tabs[0]->IsPinned();
+
+  UpdateBorder();
+}
+
+void VerticalSplitTabView::UpdateBorder() {
+  if (pinned_) {
     const bool is_frame_active =
         GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
     SetBorder(views::CreateRoundedRectBorder(
