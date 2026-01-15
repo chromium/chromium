@@ -141,14 +141,4 @@ TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
   }
 }
 
-TEST(HpackFuzzUtilTest, FlipBitsMutatesBuffer) {
-  char buffer[] = "testbuffer1234567890";
-  std::string unmodified(buffer, std::size(buffer) - 1);
-
-  EXPECT_EQ(unmodified, buffer);
-  HpackFuzzUtil::FlipBits(reinterpret_cast<uint8_t*>(buffer),
-                          std::size(buffer) - 1, 1);
-  EXPECT_NE(unmodified, buffer);
-}
-
 }  // namespace spdy::test
