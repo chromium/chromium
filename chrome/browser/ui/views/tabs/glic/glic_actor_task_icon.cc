@@ -8,7 +8,9 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -39,8 +41,10 @@ const gfx::VectorIcon& GetTaskIcon() {
 
 constexpr int kActorNudgeLabelMargin = 6;
 
-GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
-                                     PressedCallback pressed_callback)
+GlicActorTaskIcon::GlicActorTaskIcon(
+    TabStripController* tab_strip_controller,
+    BrowserWindowInterface* browser_window_interface,
+    PressedCallback pressed_callback)
     : TabStripNudgeButton(tab_strip_controller,
                           std::move(pressed_callback),
                           views::Button::PressedCallback(),
@@ -49,7 +53,8 @@ GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
                           Edge::kNone,
                           GetTaskIcon(),
                           /*show_close_button=*/false),
-      tab_strip_controller_(tab_strip_controller) {
+      tab_strip_controller_(tab_strip_controller),
+      browser_window_interface_(browser_window_interface) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
 
   // Explicitly overwrite the horizontal margins. The underlying
@@ -66,6 +71,8 @@ GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
     // set the corner radii for split button styling.
     SetLeftRightCornerRadii(kSplitButtonFlatEdgeRadius,
                             kSplitButtonRoundedEdgeRadius);
+    TabStripControlButton::SetInkdropHoverColorId(
+        kColorTabBackgroundInactiveHoverFrameActive);
   }
   UpdateColors();
 
@@ -126,6 +133,9 @@ void GlicActorTaskIcon::SetDefaultColors() {
       kColorNewTabButtonCRBackgroundFrameInactive);
 }
 
+// TODO(crbug.com/470120703): Remove this method when GlobalTaskIndicator is
+// enabled by default.
+// NOTE: This method is only used for the nudge and has a misleading name.
 void GlicActorTaskIcon::HighlightTaskIcon() {
   SetBackgroundFrameActiveColorId(kColorTabBackgroundInactiveHoverFrameActive);
   SetBackgroundFrameInactiveColorId(
@@ -171,6 +181,50 @@ void GlicActorTaskIcon::ShowNudgeLabel(const std::u16string nudge_label) {
 
 void GlicActorTaskIcon::RefreshBackground() {
   UpdateColors();
+}
+
+void GlicActorTaskIcon::AddedToWidget() {
+  TabStripNudgeButton::AddedToWidget();
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+
+  window_did_become_active_subscription_ =
+      browser_window_interface_->RegisterDidBecomeActive(base::BindRepeating(
+          &GlicActorTaskIcon::OnBrowserWindowDidBecomeActive,
+          base::Unretained(this)));
+  window_did_become_inactive_subscription_ =
+      browser_window_interface_->RegisterDidBecomeInactive(base::BindRepeating(
+          &GlicActorTaskIcon::OnBrowserWindowDidBecomeInactive,
+          base::Unretained(this)));
+
+  UpdateInkdropHoverColor(browser_window_interface_->IsActive());
+}
+
+void GlicActorTaskIcon::RemovedFromWidget() {
+  window_did_become_active_subscription_ = {};
+  window_did_become_inactive_subscription_ = {};
+  TabStripNudgeButton::RemovedFromWidget();
+}
+
+void GlicActorTaskIcon::OnBrowserWindowDidBecomeActive(
+    BrowserWindowInterface* bwi) {
+  UpdateInkdropHoverColor(true);
+}
+
+void GlicActorTaskIcon::OnBrowserWindowDidBecomeInactive(
+    BrowserWindowInterface* bwi) {
+  UpdateInkdropHoverColor(false);
+}
+
+void GlicActorTaskIcon::UpdateInkdropHoverColor(bool is_frame_active) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    SetInkdropHoverColorId(is_frame_active
+                               ? kColorTabBackgroundInactiveHoverFrameActive
+                               : kColorTabBackgroundInactiveHoverFrameInactive);
+    UpdateColors();
+  }
 }
 
 GlicActorTaskIcon::~GlicActorTaskIcon() = default;

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 
 namespace glic {
@@ -16,6 +18,7 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
 
  public:
   explicit GlicActorTaskIcon(TabStripController* tab_strip_controller,
+                             BrowserWindowInterface* browser_window_interface,
                              PressedCallback pressed_callback);
   GlicActorTaskIcon(const GlicActorTaskIcon&) = delete;
   GlicActorTaskIcon& operator=(const GlicActorTaskIcon&) = delete;
@@ -24,6 +27,10 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   // TabStripControlButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // TabStripNudgeButton:
   void SetIsShowingNudge(bool is_showing) override;
@@ -57,11 +64,19 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   AnimationMode GetAnimationMode() const { return animation_mode_; }
 
  private:
+  void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi);
+  void OnBrowserWindowDidBecomeInactive(BrowserWindowInterface* bwi);
+  void UpdateInkdropHoverColor(bool is_frame_active);
+
   void NotifyClick(const ui::Event& event) override;
 
   AnimationMode animation_mode_ = AnimationMode::kEntry;
+  base::CallbackListSubscription window_did_become_active_subscription_;
+  base::CallbackListSubscription window_did_become_inactive_subscription_;
+
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
 
 }  // namespace glic
